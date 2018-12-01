@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add Team - Kafka Administration Portal</title>
+<html ng-app="manageUsersApp" ng-controller="manageUsersCtrl">
+<head>
+	<script src="lib/angular.min.js"></script>
+	<script src="lib/angular-route.min.js"></script>
+	<script src="lib/angular-wm.js"></script>
+	<script src="js/manageUsers.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+		  crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+		  crossorigin="anonymous">
+	<link rel="stylesheet" href="//malihu.github.io/custom-scrollbar/jquery.mCustomScrollbar.min.css">
+	<link rel="stylesheet" href="assets/css/custom.css">
+	<link rel="stylesheet" href="assets/css/custom-themes.css">
+	<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
+
+
+</head>
+<body>
+<div class="page-wrapper chiller-theme sidebar-bg toggled"  ng-init="getAuth()">
+	<a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
+		<i class="fas fa-bars"></i>
+	</a>
+	<nav id="sidebar" class="sidebar-wrapper">
+		<div class="sidebar-content">
+			<div class="sidebar-brand">
+				<a href="index">Kafka Self-Service Portal</a>
+				<div id="close-sidebar">
+					<i class="fas fa-times"></i>
+				</div>
+			</div>
+			<div class="sidebar-header">
+				<div class="user-pic">
+					<img class="img-responsive img-rounded" src="assets/img/user.jpg" alt="User picture">
+				</div>
+				<div class="user-info">
+                        <span class="user-name">{{userlogged}}
+							<!--<strong>Smith</strong>-->
+                        </span>
+					<!--<span class="user-role">Administrator</span>-->
+					<span class="user-status">
+                            <i class="fa fa-circle"></i>
+                            <span>Online</span>
+                        </span>
+				</div>
+			</div>
+			<!-- sidebar-header  -->
+			<!--<div class="sidebar-search">-->
+			<!--<div>-->
+			<!--<div class="input-group">-->
+			<!--<input type="text" class="form-control search-menu" placeholder="Search...">-->
+			<!--<div class="input-group-append">-->
+			<!--<span class="input-group-text">-->
+			<!--<i class="fa fa-search" aria-hidden="true"></i>-->
+			<!--</span>-->
+			<!--</div>-->
+			<!--</div>-->
+			<!--</div>-->
+			<!--</div>-->
+			<!-- sidebar-search  -->
+			<div class="sidebar-menu">
+				<ul>
+					<li class="header-menu">
+						<span>Users</span>
+					</li>
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="fa fa-tachometer-alt"></i>
+							<span>Browse</span>
+							<!--<span class="badge badge-pill badge-danger">New</span>-->
+						</a>
+						<div class="sidebar-submenu">
+							<ul>
+								<li>
+									<a href="browseTopics">Topics
+										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									</a>
+								</li>
+								<li>
+									<a href="browseAcls">Acls
+									</a>
+								</li>
+								<li>
+									<a href="pcTopics">Producers-Consumers</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="fa fa-shopping-cart"></i>
+							<span>Requests</span>
+							<!--<span class="badge badge-pill badge-primary">3</span>-->
+						</a>
+						<div class="sidebar-submenu">
+							<ul>
+								<li>
+									<a href="requestTopics">Request Topic
+									</a>
+								</li>
+								<li>
+									<a href="requestAcls">Request ACL</a>
+								</li>
+								<li>
+									<a href="requestSchemaUpload">Request Avro Schema</a>
+								</li>
+								<li>
+									<a href="myTopicRequests">My Requests</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="far fa-gem"></i>
+							<span>Environments</span>
+						</a>
+						<div class="sidebar-submenu">
+							<ul>
+								<li>
+									<a href="envs">Kafka</a>
+								</li>
+								<li>
+									<a href="envs">Schema Registry</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+
+					<li class="header-menu">
+						<span>Administrators</span>
+					</li>
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="fa fa-tachometer-alt"></i>
+							<span>Approve - Execute<span class="badge badge-pill badge-danger">{{ notifications }}</span></span>
+							<!--<span class="badge badge-pill badge-danger">New</span>-->
+						</a>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
+							<ul>
+								<li>
+									<a href="execTopics">Topics
+										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									</a>
+								</li>
+								<li>
+									<a href="execAcls">Acls</a>
+								</li>
+								<li>
+									<a href="execSchemas">Schemas</a>
+								</li>
+							</ul>
+						</div>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
+							<ul>
+								<li>
+									<a>Topics
+										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									</a>
+								</li>
+								<li>
+									<a>Acls</a>
+								</li>
+								<li>
+									<a>Schemas</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="fa fa-chart-line"></i>
+							<span>Users - Teams</span>
+							<!--<span class="badge badge-pill badge-danger">New</span>-->
+						</a>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
+							<ul>
+								<li>
+									<a href="showUsers">View Users</a>
+								</li>
+								<li>
+									<a href="addUsers">Add Users
+										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									</a>
+								</li>
+								<li>
+									<a href="showTeams">View Teams</a>
+								</li>
+								<li>
+									<a href="addTeam">Add Teams
+										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									</a>
+								</li>
+							</ul>
+						</div>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
+							<ul>
+								<li>
+									<a>View</a>
+								</li>
+								<li>
+									<a>Add
+										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="fa fa-gem"></i>
+							<span>Environments</span>
+							<!--<span class="badge badge-pill badge-danger">New</span>-->
+						</a>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
+							<ul>
+								<li>
+									<a href="addnewenv">Add Environment</a>
+								</li>
+							</ul>
+						</div>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
+							<ul>
+								<li>
+									<a>Add Environment</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="fa fa-chart-line"></i>
+							<span>Synchronize Metadata</span>
+							<!--<span class="badge badge-pill badge-danger">New</span>-->
+						</a>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
+							<ul>
+								<li>
+									<a href="synchronizeTopics">Topics</a>
+								</li>
+								<li>
+									<a href="synchronizeAcls">Acls</a>
+								</li>
+							</ul>
+						</div>
+						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
+							<ul>
+								<li>
+									<a>Topics</a>
+								</li>
+								<li>
+									<a>Acls</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+
+				</ul>
+			</div>
+			<!-- sidebar-menu  -->
+		</div>
+		<!-- sidebar-content  -->
+		<div class="sidebar-footer">
+
+			<div class="dropdown">
+				<a href="#" class="" id="dropdownMenuMessage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<i class="fa fa-cog"></i>
+					<span class="badge-sonar"></span>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuMessage">
+					<a class="dropdown-item" href="myProfile">My profile</a>
+					<a class="dropdown-item" href="changePwd">Update Password</a>
+					<!--<a class="dropdown-item" href="#">Setting</a>-->
+				</div>
+			</div>
+			<div>
+				<A  href='#' ng-click="logout()">
+					<i class="fa fa-power-off"></i>
+				</a>
+			</div>
+		</div>
+	</nav>
+	<!-- sidebar-wrapper  -->
+	<main class="page-content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="form-group col-md-12">
+					<table width="100%">
+						<tr>
+							<td align="left"><h2>Add New Team</h2></td>
+							<td align="right"><img style="max-height: 100px; max-width: 100px;" src="images/kafka.png"><br><b>KafkaWize - {{ companyinfo }}</b></td>
+						</tr>
+					</table>
+
+				</div>
+			</div>
+			<hr>
+
+			<div class="main" ng-init="getExecAuth();loadTeamsSU();">
+				<div class="message" ng-show="alerttop != null && alerttop != ''" ng-init="">{{ alerttop }}</div>
+				<div style="margin: 10px;" ng-if="statusauth=='Authorized'">
+
+					<div class="message" ng-show="alert != null && alert != ''" ng-init="">{{ alert }}</div>
+					<div class="message" ng-show="errorMessage != null && errorMessage != ''" ng-init="">{{ errorMessage }}</div>
+
+					<input name=subject type=hidden value="Add Team Form">
+					<table  width=60% style="border: 2px #000066">
+						<tr>
+							<td>
+								<font face=verdana size=2><b>Existing Teams</b></font>
+							</td>
+							<td>
+								<select ng-model="addNewUser.team" ng-options="team as team.teamname for team in allTeams"></select>
+							</td>
+						</tr>
+					</table>
+					<table width=60% style="border: 2px #000066">
+						<tbody>
+
+						<tr>
+							<td>
+								<font face=verdana size=2>New Team Name</font>
+							</td>
+							<td>
+								<input ng-model="addNewTeam.teamname" required>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<font face=verdana size=2>Team Mail</font>
+							</td>
+							<td>
+								<input ng-model="addNewTeam.teammail" required>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<font face=verdana size=2>Team Phone</font>
+							</td>
+							<td>
+								<input ng-model="addNewTeam.teamphone" required>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<font face=verdana size=2>Team Contact Person</font>
+							</td>
+							<td>
+								<input ng-model="addNewTeam.contactperson" required>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<font face=verdana size=2>Team Application</font>
+							</td>
+							<td>
+								<input ng-model="addNewTeam.app" required>
+							</td>
+						</tr>
+
+						<tr>
+							<td>
+								<br/><br/><br/>
+								<div>
+									<button class="k1button" id="addTeam" ng-click="addNewTeam();">Submit New Team</button>
+								</div>
+							</td>
+							<td>
+
+							</td>
+						</tr>
+						</tbody>
+					</table>
+
+					<input name=body type=hidden value="">
+
+
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- page-content" -->
+</div>
+<!-- page-wrapper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+		crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+		crossorigin="anonymous"></script>
+<script src="//malihu.github.io/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
+<script src="assets/js/custom.js"></script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+.error {
+    color: white;
+    background-color: #CC3333 !important;
+}
+
+.functional_error {
+    color: white;
+    background-color: #FA8258 !important;
+}
+
+.success {
+    color: black;
+    background-color: #66CC66 !important;
+}
+
+.process {
+    color: black;
+    background-color: #FFFF00 !important;
+}
+.highlight {
+color: white;
+    font-weight: bold;
+}
+.normal {
+    font-weight: normal;
+}
+
+.expired {
+    color: white;
+    background-color: #d3d3d3 !important;
+}
+
+.delete {
+    color: white;
+    background-color: #808080 !important;
+}
