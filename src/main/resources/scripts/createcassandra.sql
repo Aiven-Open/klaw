@@ -20,3 +20,4 @@ Create table if not exists kafkamanagementapi.env(name text,host text,port text,
 
 Create table if not exists kafkamanagementapi.productdetails(name text,version text,PRIMARY KEY(name));
 
+Create table if not exists kafkamanagementapi.activitylog(req_no text PRIMARY KEY, activityname text, activitytype text, activitytime timestamp, details text, user text);
