@@ -145,6 +145,8 @@ public class ManageTopics {
 
     public Env selectEnvDetails(String env){return cassandraSelectHelper.selectEnvDetails(env);}
 
+    public List<ActivityLog> selectActivityLog(String user){return cassandraSelectHelper.selectActivityLog(user);}
+
     /*--------------------Update */
     public String updateTopicRequest(String topicName, String approver){
         return cassandraUpdateHelper.updateTopicRequest(topicName, approver);

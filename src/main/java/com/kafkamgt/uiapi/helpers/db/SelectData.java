@@ -577,6 +577,30 @@ public class SelectData {
         return userMap;
     }
 
+    public List<ActivityLog> selectActivityLog(String username){
+        List<ActivityLog> activityList = new ArrayList();
+        ActivityLog activityLog = null;
+        String tableName="activitylog";
+        ResultSet results = null;
+        Select selectQuery = QueryBuilder.select().all().from(keyspace,tableName);
+        results = session.execute(selectQuery);
+
+        for (Row row : results) {
+            activityLog = new ActivityLog();
+
+            activityLog.setActivityName(row.getString("activityname"));
+            activityLog.setActivityType(row.getString("activitytype"));
+            activityLog.setActivityTime(""+row.getTimestamp("activitytime"));
+            activityLog.setDetails(row.getString("details"));
+            activityLog.setUser(row.getString("user"));
+            activityLog.setEnv(row.getString("env"));
+
+            activityList.add(activityLog);
+        }
+
+        return activityList;
+    }
+
 
     public List<Team> selectTeamsOfUsers(String username){
 
