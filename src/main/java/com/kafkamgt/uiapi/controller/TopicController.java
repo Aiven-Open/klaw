@@ -330,9 +330,6 @@ public class TopicController {
             }
 
         }
-
-       // LOG.info("--startVar:"+startVar+"---lastVar:"+lastVar+"---"+topicsListMap.size());
-
         return new ResponseEntity<List<TopicInfo>>(topicsListMap, HttpStatus.OK);
     }
 

@@ -81,6 +81,9 @@ public class InsertData {
             session.execute(boundStatement.bind(topic.getTopicName(),topic.getTopicpartitions(),topic.getReplicationfactor(),topic.getEnvironment(), topic.getTeamname(), topic.getAppname(),
                     topicReqType, topic.getUsername(), new Date(),topic.getAcl_ip(), topic.getAcl_ssl(), topic.getRemarks(), "created"));
 
+            // Activity log
+        insertIntoActivityLogTopic(topic);
+
             // insert into SOT
         List<Topic> topics = new ArrayList<>();
         topics.add(topic);
@@ -119,6 +122,23 @@ public class InsertData {
         return "success";
     }
 
+    public String insertIntoActivityLogTopic(Topic topic){
+
+        String tableName = "activitylog", insertstat=null;
+
+        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, activityname, activitytype, activitytime, details, user, env, team)" +
+                "VALUES (?,?,?,?,?,?,?,?);";
+        PreparedStatement statement = session.prepare(insertstat);
+        BoundStatement boundStatement = new BoundStatement(statement);
+
+        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topic.getUsername());
+
+        session.execute(boundStatement.bind(getRandom(), "topic",
+                    "new", new Date(),""+topic.getTopicName(),""+topic.getUsername(), topic.getEnvironment(), userInfo.getTeam()));
+
+        return "success";
+    }
+
     public String insertIntoRequestAcl(AclReq aclReq){
 
         String tableName = null, topicReqType=null, insertstat=null;
@@ -135,7 +155,11 @@ public class InsertData {
                     topicReqType, aclReq.getUsername(), new Date(),aclReq.getAcl_ip(),aclReq.getAcl_ssl(),
                     aclReq.getRemarks(), "created",
                     aclReq.getConsumergroup(),cassandraSelectHelper.selectTeamsOfUsers(aclReq.getUsername()).get(0).getTeamname()));
-        // Insert to SOT
+
+            // Insert into acl
+        insertIntoActivityLogAcl(aclReq);
+
+            // Insert to SOT
         List<AclReq> acls = new ArrayList<>();
         acls.add(aclReq);
             insertIntoAclsSOT(acls);
@@ -156,6 +180,25 @@ public class InsertData {
             session.execute(boundStatement.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(), aclReq.getTeamname(),
                     aclReq.getConsumergroup(), aclReq.getTopictype(),aclReq.getAcl_ip(),aclReq.getAcl_ssl()));
         });
+
+        return "success";
+    }
+
+    public String insertIntoActivityLogAcl(AclReq aclReq){
+
+        String tableName = "activitylog", insertstat=null;
+
+        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, activityname, activitytype, activitytime, details, user, env, team)" +
+                "VALUES (?,?,?,?,?,?,?,?);";
+        PreparedStatement statement = session.prepare(insertstat);
+        BoundStatement boundStatement = new BoundStatement(statement);
+
+        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(aclReq.getUsername());
+
+        session.execute(boundStatement.bind(getRandom(), "acl",
+                "new", new Date(),aclReq.getAcl_ip()+"-"+aclReq.getTopicname()+"-"+aclReq.getAcl_ssl()+"-"+
+                        aclReq.getConsumergroup()+"-"+aclReq.getTopictype()
+                ,""+aclReq.getUsername(), aclReq.getEnvironment(), userInfo.getTeam()));
 
         return "success";
     }
