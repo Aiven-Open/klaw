@@ -12,7 +12,7 @@
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="lib/angular-wm.js"></script>
-	<script src="js/browseTopics.js"></script>
+	<script src="js/showActivityLog.js"></script>
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 		  crossorigin="anonymous">
@@ -113,9 +113,6 @@
 								<li>
 									<a href="requestSchemaUpload">Request Avro Schema</a>
 								</li>
-								<li>
-									<a href="myTopicRequests">My Requests</a>
-								</li>
 							</ul>
 						</div>
 					</li>
@@ -131,6 +128,22 @@
 								</li>
 								<li>
 									<a href="envs">Schema Registry</a>
+								</li>
+							</ul>
+						</div>
+					</li>
+					<li class="sidebar-dropdown">
+						<a href="#">
+							<i class="far fa-gem"></i>
+							<span>Audit</span>
+						</a>
+						<div class="sidebar-submenu">
+							<ul>
+								<li>
+									<a href="myTopicRequests">My Requests</a>
+								</li>
+								<li>
+									<a href="activityLog">Activity Log</a>
 								</li>
 							</ul>
 						</div>
@@ -299,7 +312,7 @@
 				<div class="form-group col-md-12">
 					<table width="100%">
 						<tr>
-							<td align="left"><h2>Browse Topics </h2></td>
+							<td align="left"><h2>Activity Log </h2></td>
 							<td align="right">
 								<img style="max-height: 100px; max-width: 100px;" src="images/kafka.png">
 								<br>
@@ -323,7 +336,7 @@
 					<div class="message" ng-show="errorMessage != null && errorMessage != ''" ng-init="">{{ errorMessage }}</div>
 					<p>
 
-					<div id="getTopics">
+					<div id="getActivityLog">
 						</br>
 						<table width=70%>
 							<tr><td>
@@ -335,7 +348,7 @@
 											<font face=verdana size=2><b>Environment</b></font>
 										</td>
 										<td>
-											<select ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs">
+											<select ng-model="getActivityLog.envName" ng-options="env as env.name for env in allenvs">
 											</select>
 										</td>
 									</tr>
@@ -345,7 +358,7 @@
 										<td>
 											<br/>
 											<div align=left>
-												<button class="k1button" id="browseTopicBtn" ng-click="getTopics(1)">Show</button>
+												<button class="k1button" id="showActivityLogBtn" ng-click="getActivityLog(1)">Show</button>
 											</div>
 										</td>
 
@@ -359,7 +372,7 @@
 						<tr><td>
 						<table width="100%" ng-show="resultPageSelected != null">
 							<tr><td>
-								<b>Pages:</b> <a href="#" ng-click="getTopics(allPages)" ng-repeat="allPages in resultPages">
+								<b>Pages:</b> <a href="#" ng-click="getActivityLog(allPages)" ng-repeat="allPages in resultPages">
 
 								<b ng-if="resultPageSelected==allPages"><strong>[{{allPages}}]</strong></b>
 								<i ng-if="resultPageSelected!=allPages">{{allPages}}</i>
@@ -369,16 +382,16 @@
 							<tr><td>
 							<table  class="gridtable" width="100%" border="1">
 								<tr>
-									<th>Sequence</th>
-									<th>TopicName</th>
-									<th>Partitions</th>
-									<th>Replicas</th>
-									<th>Owned by</th>
+									<th>ActivityName</th>
+									<th>Type</th>
+									<th>ActivityTime</th>
+									<th>Details</th>
+									<th>User</th><th>Team</th>
 								</tr>
 								<tr ng-repeat="resultBrowset in resultBrowse" >
-									<td>{{ resultBrowset.sequence}}</td><td>{{ resultBrowset.topicName}}</td>
-									<td>{{ resultBrowset.noOfPartitions}}</td><td>{{ resultBrowset.noOfReplcias}}</td>
-									<td>{{ resultBrowset.teamname}}</td>
+									<td>{{ resultBrowset.activityName}}</td><td>{{ resultBrowset.activityType}}</td>
+									<td>{{ resultBrowset.activityTime}}</td><td>{{ resultBrowset.details}}</td>
+									<td>{{ resultBrowset.user}}</td><td>{{ resultBrowset.team}}</td>
 								</tr>
 							</table>
 							</td>

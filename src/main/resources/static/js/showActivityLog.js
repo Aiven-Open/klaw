@@ -6,7 +6,7 @@
 // message store / key / gui
 var app = angular.module('showActivityLogApp',[]);
 
-app.controller("showActivityLogAppCtrl", function($scope, $http, $location, $window) {
+app.controller("showActivityLogCtrl", function($scope, $http, $location, $window) {
 	
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
@@ -80,23 +80,23 @@ app.controller("showActivityLogAppCtrl", function($scope, $http, $location, $win
 	// We add the "time" query parameter to prevent IE
 	// from caching ajax results
 
-	$scope.getTopics = function(pageNoSelected) {
+	$scope.getActivityLog = function(pageNoSelected) {
 
         var serviceInput = {};
 		
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
-		serviceInput['env'] = $scope.getTopics.envName.name;
+		serviceInput['env'] = $scope.getActivityLog.envName.name;
 		//alert("---"+$scope.getTopics.envName.value);
-		if (!window.confirm("Are you sure, you would like to view the topics in Environment : " +
-				$scope.getTopics.envName.name + " ?")) {
+		if (!window.confirm("Are you sure, you would like to view the activity Log in Environment : " +
+				$scope.getActivityLog.envName.name + " ?")) {
 			return;
 		}
 		
 		$http({
 			method: "GET",
-			url: "/getTopics",
+			url: "/activityLog",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getTopics.envName.name,
+            params: {'env' : $scope.getActivityLog.envName.name,
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;

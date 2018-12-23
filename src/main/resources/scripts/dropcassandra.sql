@@ -5,4 +5,5 @@ drop table if exists kafkamanagementapi.schema_requests;
 drop table if exists kafkamanagementapi.teams;
 drop table if exists kafkamanagementapi.users;
 drop table if exists kafkamanagementapi.env;
+drop table if exists kafkamanagementapi.activitylog;
 drop keyspace if exists kafkamanagementapi;

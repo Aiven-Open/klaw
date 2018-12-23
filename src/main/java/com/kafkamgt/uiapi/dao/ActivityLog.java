@@ -1,5 +1,7 @@
 package com.kafkamgt.uiapi.dao;
 
+import java.util.List;
+
 public class ActivityLog {
     private String activityName;
     private String activityType;
@@ -7,6 +9,33 @@ public class ActivityLog {
     private String details;
     private String env;
     private String user;
+    private String team;
+    private String totalNoPages;
+    private List<String> allPageNos;
+
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    public String getTotalNoPages() {
+        return totalNoPages;
+    }
+
+    public void setTotalNoPages(String totalNoPages) {
+        this.totalNoPages = totalNoPages;
+    }
+
+    public List<String> getAllPageNos() {
+        return allPageNos;
+    }
+
+    public void setAllPageNos(List<String> allPageNos) {
+        this.allPageNos = allPageNos;
+    }
 
     public String getActivityName() {
         return activityName;

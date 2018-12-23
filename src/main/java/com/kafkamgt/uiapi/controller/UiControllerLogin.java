@@ -137,5 +137,9 @@ public class UiControllerLogin {
         return "addNewEnv.html";
     }
 
+    @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
+    public String activityLog(ModelMap model) {
+        return "showActivityLog.html";
+    }
 
 }

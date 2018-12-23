@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
+import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
@@ -224,5 +225,40 @@ public class UiConfigController {
         LOG.info(userList + " --- userList ");
 
         return new ResponseEntity<UserInfo>(userList, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/activityLog", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<ActivityLog>> showActivityLog(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo){
+
+        UserDetails userDetails =
+                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        List<ActivityLog> origActivityList = manageTopics.selectActivityLog(userDetails.getUsername(), env);
+
+        int totalRecs = origActivityList.size();
+        int recsPerPage = 20;
+
+        int requestPageNo = Integer.parseInt(pageNo);
+        int startVar = (requestPageNo-1) * recsPerPage;
+        int lastVar = (requestPageNo) * (recsPerPage);
+
+        int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
+
+        List<ActivityLog> newList = new ArrayList<>();
+
+        List<String> numList = new ArrayList<>();
+        for (int k = 1; k <= totalPages; k++) {
+            numList.add("" + k);
+        }
+         for(int i=0;i<totalRecs;i++){
+             ActivityLog activityLog = origActivityList.get(i);
+            if(i>=startVar && i<lastVar) {
+                activityLog.setAllPageNos(numList);
+                activityLog.setTotalNoPages("" + totalPages);
+
+                newList.add(activityLog);
+            }
+        }
+        return new ResponseEntity<List<ActivityLog>>(newList, HttpStatus.OK);
     }
 }

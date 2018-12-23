@@ -577,14 +577,27 @@ public class SelectData {
         return userMap;
     }
 
-    public List<ActivityLog> selectActivityLog(String username){
+    public List<ActivityLog> selectActivityLog(String username, String env){
         List<ActivityLog> activityList = new ArrayList();
         ActivityLog activityLog = null;
         String tableName="activitylog";
         ResultSet results = null;
-        Select selectQuery = QueryBuilder.select().all().from(keyspace,tableName);
-        results = session.execute(selectQuery);
+        Select selectQuery = null;
+        UserInfo userInfo = selectUserInfo(username);
+        if(userInfo.getRole().equals("SUPERUSER"))
+        {
+            Clause eqclause2 = QueryBuilder.eq("env",env);
+            selectQuery = QueryBuilder.select().all().from(keyspace,tableName).where(eqclause2).allowFiltering();
+        }
+        else{
+            Clause eqclause1 = QueryBuilder.eq("team",userInfo.getTeam());
+            Clause eqclause2 = QueryBuilder.eq("env",env);
+            Ordering ordering = QueryBuilder.asc("activitytime");
+            selectQuery = QueryBuilder.select().all().from(keyspace,tableName).where(eqclause1).and(eqclause2)
+                    .allowFiltering().orderBy(ordering);
+        }
 
+        results = session.execute(selectQuery);
         for (Row row : results) {
             activityLog = new ActivityLog();
 
@@ -594,6 +607,7 @@ public class SelectData {
             activityLog.setDetails(row.getString("details"));
             activityLog.setUser(row.getString("user"));
             activityLog.setEnv(row.getString("env"));
+            activityLog.setTeam(row.getString("team"));
 
             activityList.add(activityLog);
         }

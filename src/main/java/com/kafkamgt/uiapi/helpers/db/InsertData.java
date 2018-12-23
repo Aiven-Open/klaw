@@ -126,13 +126,15 @@ public class InsertData {
 
         String tableName = "activitylog", insertstat=null;
 
-        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, activityname, activitytype, activitytime, details, user, env)" +
-                "VALUES (?,?,?,?,?,?);";
+        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, activityname, activitytype, activitytime, details, user, env, team)" +
+                "VALUES (?,?,?,?,?,?,?,?);";
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
 
+        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topic.getUsername());
+
         session.execute(boundStatement.bind(getRandom(), "topic",
-                    "new", new Date(),""+topic.getTopicName(),""+topic.getUsername(), topic.getEnvironment()));
+                    "new", new Date(),""+topic.getTopicName(),""+topic.getUsername(), topic.getEnvironment(), userInfo.getTeam()));
 
         return "success";
     }
@@ -186,15 +188,17 @@ public class InsertData {
 
         String tableName = "activitylog", insertstat=null;
 
-        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, activityname, activitytype, activitytime, details, user, env)" +
-                "VALUES (?,?,?,?,?,?);";
+        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, activityname, activitytype, activitytime, details, user, env, team)" +
+                "VALUES (?,?,?,?,?,?,?,?);";
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
+
+        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(aclReq.getUsername());
 
         session.execute(boundStatement.bind(getRandom(), "acl",
                 "new", new Date(),aclReq.getAcl_ip()+"-"+aclReq.getTopicname()+"-"+aclReq.getAcl_ssl()+"-"+
                         aclReq.getConsumergroup()+"-"+aclReq.getTopictype()
-                ,""+aclReq.getUsername(), aclReq.getEnvironment()));
+                ,""+aclReq.getUsername(), aclReq.getEnvironment(), userInfo.getTeam()));
 
         return "success";
     }
