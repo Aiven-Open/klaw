@@ -130,3 +130,5 @@ Default Users(with pwds)
 ![ImageFig3](https://github.com/muralibasani/kafkawize/blob/master/screenshots/AddTeam.JPG)
 
 ![ImageFig4](https://github.com/muralibasani/kafkawize/blob/master/screenshots/AddUser.JPG)
+
+![ImageFig17](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ActivityLog.JPG)

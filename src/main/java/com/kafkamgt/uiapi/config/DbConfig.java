@@ -56,7 +56,7 @@ public class DbConfig {
 
     public void createTables(){
 
-        try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/scripts/createcassandra.sql"))) {
+        try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/scripts/base/createcassandra.sql"))) {
             String tmpLine = "";
             while((tmpLine=in.readLine())!=null){
                 if(tmpLine.toLowerCase().startsWith("create"))
@@ -78,7 +78,7 @@ public class DbConfig {
 
     public void insertData(){
 
-        try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/scripts/insertdata.sql"))) {
+        try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/scripts/base/insertdata.sql"))) {
             String tmpLine = "";
             while((tmpLine=in.readLine())!=null){
                 if(tmpLine.toLowerCase().startsWith("insert"))

@@ -594,7 +594,7 @@ public class SelectData {
             Clause eqclause2 = QueryBuilder.eq("env",env);
             Ordering ordering = QueryBuilder.asc("activitytime");
             selectQuery = QueryBuilder.select().all().from(keyspace,tableName).where(eqclause1).and(eqclause2)
-                    .allowFiltering().orderBy(ordering);
+                    .allowFiltering();
         }
 
         results = session.execute(selectQuery);
