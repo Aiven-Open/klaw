@@ -7,7 +7,7 @@ Automate the process of creating and browsing Kafka components, by introducing r
 
 <h5>Technical Architecture:</h5>
 
-![ImageFig1](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)
+![ImageFig1](https://github.com/kafkawize/kafkawize/blob/master/screenshots/arch.png)
 
 
 User Interface API directly communicates between users and Cluster API.<br><br>
@@ -71,8 +71,8 @@ Users can logout. <br>
 <b>How to Run the application</b>
 
 KafkaWize needs the following applications to be up and running.
-1. Spring boot application KafkaWize https://github.com/muralibasani/kafkawize
-2. Spring boot application KafkaWize ClusterApi https://github.com/muralibasani/kafkawizeclusterapi
+1. Spring boot application KafkaWize https://github.com/kafkawize/kafkawize
+2. Spring boot application KafkaWize ClusterApi https://github.com/kafkawize/kafkawizeclusterapi
 3. Apache Cassandra
 
 Steps to run:
@@ -101,34 +101,34 @@ Default Users(with pwds)
 
 <b>Screenshots</b>
 
-![ImageFig10](https://github.com/muralibasani/kafkawize/blob/master/screenshots/login.JPG)
+![ImageFig10](https://github.com/kafkawize/kafkawize/blob/master/screenshots/login.JPG)
 
-![ImageFig8](https://github.com/muralibasani/kafkawize/blob/master/screenshots/BrowseTopics.JPG)
+![ImageFig8](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseTopics.JPG)
 
-![ImageFig7](https://github.com/muralibasani/kafkawize/blob/master/screenshots/BrowseAcls.JPG)
+![ImageFig7](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseAcls.JPG)
 
-![ImageFig12](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ProducersConsumers.JPG)
+![ImageFig12](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ProducersConsumers.JPG)
 
-![ImageFig14](https://github.com/muralibasani/kafkawize/blob/master/screenshots/RequestTopic.JPG)
+![ImageFig14](https://github.com/kafkawize/kafkawize/blob/master/screenshots/RequestTopic.JPG)
 
-![ImageFig13](https://github.com/muralibasani/kafkawize/blob/master/screenshots/RequestACL.JPG)
+![ImageFig13](https://github.com/kafkawize/kafkawize/blob/master/screenshots/RequestACL.JPG)
 
-![ImageFig11](https://github.com/muralibasani/kafkawize/blob/master/screenshots/MyRequests.JPG)
+![ImageFig11](https://github.com/kafkawize/kafkawize/blob/master/screenshots/MyRequests.JPG)
 
-![ImageFig6](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ApproveTopics.JPG)
+![ImageFig6](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ApproveTopics.JPG)
 
-![ImageFig5](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ApproveACL.JPG)
+![ImageFig5](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ApproveACL.JPG)
 
-![ImageFig15](https://github.com/muralibasani/kafkawize/blob/master/screenshots/SynchronizeAcls.JPG)
+![ImageFig15](https://github.com/kafkawize/kafkawize/blob/master/screenshots/SynchronizeAcls.JPG)
 
-![ImageFig16](https://github.com/muralibasani/kafkawize/blob/master/screenshots/SynchronizeTopics.JPG)
+![ImageFig16](https://github.com/kafkawize/kafkawize/blob/master/screenshots/SynchronizeTopics.JPG)
 
-![ImageFig2](https://github.com/muralibasani/kafkawize/blob/master/screenshots/AddCluster.JPG)
+![ImageFig2](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddCluster.JPG)
 
-![ImageFig9](https://github.com/muralibasani/kafkawize/blob/master/screenshots/Environments.JPG)
+![ImageFig9](https://github.com/kafkawize/kafkawize/blob/master/screenshots/Environments.JPG)
 
-![ImageFig3](https://github.com/muralibasani/kafkawize/blob/master/screenshots/AddTeam.JPG)
+![ImageFig3](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddTeam.JPG)
 
-![ImageFig4](https://github.com/muralibasani/kafkawize/blob/master/screenshots/AddUser.JPG)
+![ImageFig4](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddUser.JPG)
 
-![ImageFig17](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ActivityLog.JPG)
+![ImageFig17](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ActivityLog.JPG)
