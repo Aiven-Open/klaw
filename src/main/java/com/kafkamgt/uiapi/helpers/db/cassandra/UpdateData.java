@@ -1,4 +1,4 @@
-package com.kafkamgt.uiapi.helpers.db;
+package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
 import com.datastax.driver.core.*;
@@ -19,37 +19,11 @@ import java.util.stream.Collectors;
 public class UpdateData {
 
     private static Logger LOG = LoggerFactory.getLogger(UpdateData.class);
-    Cluster cluster;
+
     Session session;
-
-    @Value("${cassandradb.url}")
-    String clusterConnHost;
-
-    @Value("${cassandradb.port}")
-    int clusterConnPort;
 
     @Value("${cassandradb.keyspace}")
     String keyspace;
-
-
-
-    @PostConstruct
-    public void startCassandra() {
-
-        CodecRegistry myCodecRegistry;
-        myCodecRegistry = CodecRegistry.DEFAULT_INSTANCE;
-        myCodecRegistry.register(InstantCodec.instance);
-
-        cluster = Cluster
-                .builder()
-                .addContactPoint(clusterConnHost)
-                .withPort(clusterConnPort)
-                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-                .withCodecRegistry(myCodecRegistry)
-                .withoutJMXReporting()
-                .build();
-        session = cluster.connect(keyspace);
-    }
 
     public String updateTopicRequest(String topicName, String approver){
         Clause eqclause = QueryBuilder.eq("topicname",topicName);

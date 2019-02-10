@@ -1,4 +1,4 @@
-package com.kafkamgt.uiapi.helpers.db;
+package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
 import com.datastax.driver.core.*;
@@ -19,37 +19,12 @@ import java.util.stream.Collectors;
 public class DeleteData {
 
     private static Logger LOG = LoggerFactory.getLogger(DeleteData.class);
-    Cluster cluster;
+
     Session session;
-
-    @Value("${cassandradb.url}")
-    String clusterConnHost;
-
-    @Value("${cassandradb.port}")
-    int clusterConnPort;
 
     @Value("${cassandradb.keyspace}")
     String keyspace;
 
-
-
-    @PostConstruct
-    public void startCassandra() {
-
-        CodecRegistry myCodecRegistry;
-        myCodecRegistry = CodecRegistry.DEFAULT_INSTANCE;
-        myCodecRegistry.register(InstantCodec.instance);
-
-        cluster = Cluster
-                .builder()
-                .addContactPoint(clusterConnHost)
-                .withPort(clusterConnPort)
-                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-                .withCodecRegistry(myCodecRegistry)
-                .withoutJMXReporting()
-                .build();
-        session = cluster.connect(keyspace);
-    }
 
     public String deleteTopicRequest(String topicName){
         Clause eqclause = QueryBuilder.eq("topicname",topicName);
