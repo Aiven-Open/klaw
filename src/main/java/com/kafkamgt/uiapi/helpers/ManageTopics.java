@@ -1,181 +1,196 @@
 package com.kafkamgt.uiapi.helpers;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.helpers.db.DeleteData;
-import com.kafkamgt.uiapi.helpers.db.InsertData;
-import com.kafkamgt.uiapi.helpers.db.SelectData;
-import com.kafkamgt.uiapi.helpers.db.UpdateData;
+import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
+import com.kafkamgt.uiapi.helpers.db.jdbc.HandleDbRequestsJdbc;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
-
-@Component
+@Configuration
 public class ManageTopics {
 
-    @Autowired
-    SelectData cassandraSelectHelper;
+    @Value("${db.storetype}")
+    String dbStore;
 
-    @Autowired
-    InsertData cassandraInsertHelper;
+    HandleDbRequests handleDbRequests;
 
-    @Autowired
-    UpdateData cassandraUpdateHelper;
+    @PostConstruct
+    public void loadDb() throws Exception {
+        if(dbStore !=null && dbStore.equals("jdbc")){
+            handleDbRequests = handleJdbc();
+        }else {
+            handleDbRequests = handleCassandra();
+        }
+        handleDbRequests.connectToDb();
+    }
 
-    @Autowired
-    DeleteData cassandraDeleteHelper;
+    @Bean()
+    HandleDbRequestsJdbc handleJdbc() {
+        return new HandleDbRequestsJdbc();
+    }
+
+    @Bean()
+    HandleDbRequestsCassandra handleCassandra() {
+        return new HandleDbRequestsCassandra();
+    }
+
 
     /*--------------------Insert */
 
     public String requestForTopic(Topic topic){
-        return cassandraInsertHelper.insertIntoRequestTopic(topic);
+        return handleDbRequests.requestForTopic(topic);
     }
 
     public String requestForAcl(AclReq aclReq){
-        return cassandraInsertHelper.insertIntoRequestAcl(aclReq);
+        return handleDbRequests.requestForAcl(aclReq);
     }
 
     public String addNewUser(UserInfo userInfo){
-        return cassandraInsertHelper.insertIntoUsers(userInfo);
+        return handleDbRequests.addNewUser(userInfo);
     }
 
     public String addNewTeam(Team team){
-        return cassandraInsertHelper.insertIntoTeams(team);
+        return handleDbRequests.addNewTeam(team);
     }
 
     public String addNewEnv(Env env){
-        return cassandraInsertHelper.insertIntoEnvs(env);
+        return handleDbRequests.addNewEnv(env);
     }
 
     public String requestForSchema(SchemaRequest schemaRequest){
-        return cassandraInsertHelper.insertIntoRequestSchema(schemaRequest);
+        return handleDbRequests.requestForSchema(schemaRequest);
     }
 
     public String addToSynctopics(List<Topic> topics) {
-        return cassandraInsertHelper.insertIntoTopicSOT(topics);
+        return handleDbRequests.addToSynctopics(topics);
     }
 
     public String addToSyncacls(List<AclReq> acls) {
-        return cassandraInsertHelper.insertIntoAclsSOT(acls);
+        return handleDbRequests.addToSyncacls(acls);
     }
 
     /*--------------------Select */
 
     public int getAllRequestsToBeApproved(String requestor){
-        return cassandraSelectHelper.getAllRequestsToBeApproved(requestor);
+
+        return handleDbRequests.getAllRequestsToBeApproved(requestor);
     }
 
     public List<Topic> getAllTopicRequests(String requestor){
-        return cassandraSelectHelper.selectTopicRequests(false, requestor);
+        return handleDbRequests.getAllTopicRequests(requestor);
     }
     public List<Topic> getCreatedTopicRequests(String requestor){
-        return cassandraSelectHelper.selectTopicRequests(true,requestor);
+        return handleDbRequests.getCreatedTopicRequests(requestor);
     }
 
     public Topic selectTopicRequestsForTopic(String topicName) {
-        return cassandraSelectHelper.selectTopicRequestsForTopic(topicName);
+        return handleDbRequests.selectTopicRequestsForTopic(topicName);
     }
 
     public List<Topic> getSyncTopics(String env){
-        return cassandraSelectHelper.selectSyncTopics(env);
+        return handleDbRequests.getSyncTopics(env);
     }
 
     public List<AclReq> getSyncAcls(String env){
-        return cassandraSelectHelper.selectSyncAcls(env);
+        return handleDbRequests.getSyncAcls(env);
     }
 
     public List<AclReq> getAllAclRequests(String requestor){
-        return cassandraSelectHelper.selectAclRequests(false,requestor);
+        return handleDbRequests.getAllAclRequests(requestor);
     }
     public List<AclReq> getCreatedAclRequests(String requestor){
-        return cassandraSelectHelper.selectAclRequests(true,requestor);
+        return handleDbRequests.getCreatedAclRequests(requestor);
     }
 
     public List<SchemaRequest> getAllSchemaRequests(String requestor){
-        return cassandraSelectHelper.selectSchemaRequests(false,requestor);
+        return handleDbRequests.getAllSchemaRequests(requestor);
     }
     public List<SchemaRequest> getCreatedSchemaRequests(String requestor){
-        return cassandraSelectHelper.selectSchemaRequests(true,requestor);
+        return handleDbRequests.getCreatedSchemaRequests(requestor);
     }
 
     public SchemaRequest selectSchemaRequest(String topicName, String schemaVersion, String env){
-        return cassandraSelectHelper.selectSchemaRequest(topicName,schemaVersion, env);
+        return handleDbRequests.selectSchemaRequest(topicName,schemaVersion, env);
     }
 
     public List<Team> selectAllTeamsOfUsers(String username){
-        return cassandraSelectHelper.selectTeamsOfUsers(username);
+        return handleDbRequests.selectAllTeamsOfUsers(username);
     }
 
     public List<Team> selectAllTeams(){
-        return cassandraSelectHelper.selectAllTeams();
+        return handleDbRequests.selectAllTeams();
     }
 
     public List<UserInfo> selectAllUsersInfo(){
-        return cassandraSelectHelper.selectAllUsersInfo();
+        return handleDbRequests.selectAllUsersInfo();
     }
 
     public UserInfo getUsersInfo(String username){
-        return cassandraSelectHelper.selectUserInfo(username);
+        return handleDbRequests.getUsersInfo(username);
     }
     public List<Map<String,String>> selectAllUsers(){
-        return cassandraSelectHelper.selectAllUsers();
+        return handleDbRequests.selectAllUsers();
     }
 
     public AclReq selectAcl(String req_no){
-        return cassandraSelectHelper.selectAcl(req_no);
+        return handleDbRequests.selectAcl(req_no);
     }
 
     public Topic getTopicTeam(String topicName, String env){
-        return cassandraSelectHelper.selectTopicDetails(topicName, env);
+        return handleDbRequests.getTopicTeam(topicName, env);
     }
 
     public List<PCStream> selectTopicStreams(String envSelected){
-        return cassandraSelectHelper.selectTopicStreams(envSelected);
+        return handleDbRequests.selectTopicStreams(envSelected);
     }
 
     public List<Env> selectAllKafkaEnvs(){
-        return cassandraSelectHelper.selectAllEnvs("kafka");
+        return handleDbRequests.selectAllKafkaEnvs();
     }
 
     public List<Env> selectAllSchemaRegEnvs(){
-        return cassandraSelectHelper.selectAllEnvs("schemaregistry");
+        return handleDbRequests.selectAllSchemaRegEnvs();
     }
 
-    public Env selectEnvDetails(String env){return cassandraSelectHelper.selectEnvDetails(env);}
+    public Env selectEnvDetails(String env){return handleDbRequests.selectEnvDetails(env);}
 
-    public List<ActivityLog> selectActivityLog(String user, String env){return cassandraSelectHelper.selectActivityLog(user, env);}
+    public List<ActivityLog> selectActivityLog(String user, String env){return handleDbRequests.selectActivityLog(user, env);}
 
     /*--------------------Update */
     public String updateTopicRequest(String topicName, String approver){
-        return cassandraUpdateHelper.updateTopicRequest(topicName, approver);
+        return handleDbRequests.updateTopicRequest(topicName, approver);
     }
 
     public String updateAclRequest(String req_no, String approver){
-        return cassandraUpdateHelper.updateAclRequest(req_no, approver);
+        return handleDbRequests.updateAclRequest(req_no, approver);
     }
 
     public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
-        return cassandraUpdateHelper.updateSchemaRequest(topicName, schemaVersion, env,  approver);
+        return handleDbRequests.updateSchemaRequest(topicName, schemaVersion, env,  approver);
     }
 
     public String updatePassword(String username, String pwd){
-        return cassandraUpdateHelper.updatePassword(username,pwd);
+        return handleDbRequests.updatePassword(username,pwd);
     }
 
     /*--------------------Delete */
     public String deleteTopicRequest(String topicName){
-        return cassandraDeleteHelper.deleteTopicRequest(topicName);
+        return handleDbRequests.deleteTopicRequest(topicName);
     }
 
     public String deleteAclRequest(String req_no){
-        return cassandraDeleteHelper.deleteAclRequest(req_no);
+        return handleDbRequests.deleteAclRequest(req_no);
     }
 
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
-        return cassandraDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
+        return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){ return cassandraDeleteHelper.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<AclReq> aclReqs){ return handleDbRequests.deletePrevAclRecs(aclReqs);}
 }

@@ -1,4 +1,4 @@
-package com.kafkamgt.uiapi.helpers.db;
+package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
 import com.datastax.driver.core.*;
@@ -16,45 +16,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class SelectData {
+public class SelectData{
 
     private static Logger LOG = LoggerFactory.getLogger(SelectData.class);
-    Cluster cluster;
+
     Session session;
-
-    @Value("${cassandradb.url}")
-    String clusterConnHost;
-
-    @Value("${cassandradb.port}")
-    int clusterConnPort;
 
     @Value("${cassandradb.keyspace}")
     String keyspace;
 
-
-
-    @PostConstruct
-    public void startCassandra() {
-
-        CodecRegistry myCodecRegistry;
-        myCodecRegistry = CodecRegistry.DEFAULT_INSTANCE;
-        myCodecRegistry.register(InstantCodec.instance);
-
-        cluster = Cluster
-                .builder()
-                .addContactPoint(clusterConnHost)
-                .withPort(clusterConnPort)
-                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-                .withCodecRegistry(myCodecRegistry)
-                .withoutJMXReporting()
-                .build();
-        try {
-            session = cluster.connect(keyspace);
-        }catch (Exception e){
-            LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort);
-            System.exit(0);
-        }
-    }
 
     public int getAllRequestsToBeApproved(String requestor){
 
@@ -662,6 +632,5 @@ public class SelectData {
         else
             return teamList;
     }
-
 
 }
