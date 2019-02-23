@@ -16,28 +16,6 @@ public class LoadDbJdbc {
 
     public Session session;
 
-    public void createTables(){
-
-        try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/scripts/base/jdbc/createjdbc.sql"))) {
-            String tmpLine = "";
-            while((tmpLine=in.readLine())!=null){
-                if(tmpLine.toLowerCase().startsWith("create"))
-                    session.execute(tmpLine);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            LOG.error("Exiting .. could not setup database tables "+e);
-            System.exit(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-            LOG.error("Exiting .. could not setup database tables "+e);
-            System.exit(0);
-        }
-
-
-        LOG.info("Jdbc Create DB Tables setup done !! ");
-    }
-
     public void insertData(){
 
         try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/scripts/base/jdbc/insertdata.sql"))) {

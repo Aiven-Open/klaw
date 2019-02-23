@@ -1,8 +1,12 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
-import com.kafkamgt.uiapi.dao.*;
+import com.google.common.collect.Lists;
+import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.UserInfo;
+import com.kafkamgt.uiapi.helpers.db.jdbc.repo.UserInfoRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,11 +18,14 @@ public class SelectDataJdbc {
 
     private static Logger LOG = LoggerFactory.getLogger(SelectDataJdbc.class);
 
+    @Autowired
+    UserInfoRepo userInfoRepo;
+
     public int getAllRequestsToBeApproved(String requestor){
 
-//        List<AclReq> allAclReqs = selectAclRequests(true,requestor);
+//        List<Acls> allAclReqs = selectAclRequests(true,requestor);
 ////        List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true,requestor);
-////        List<Topic> allTopicReqs = selectTopicRequests(true,requestor);
+////        List<TopicRequest> allTopicReqs = selectTopicRequests(true,requestor);
 ////
 ////        int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicReqs.size();
 ////
@@ -26,9 +33,9 @@ public class SelectDataJdbc {
         return 0;
     }
 
-    public List<AclReq> selectAclRequests(boolean allReqs, String requestor){
-        AclReq aclReq = null;
-        List<AclReq> aclList = new ArrayList();
+    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){
+        AclRequests aclReq = null;
+        List<AclRequests> aclList = new ArrayList();
 //        ResultSet results = null;
 //        if(allReqs) {
 //            Clause eqclause = QueryBuilder.eq("topicstatus", "created");
@@ -59,7 +66,7 @@ public class SelectDataJdbc {
 //
 //            if (teamSelected != null && teamSelected.equals(teamName)) {
 //
-//                aclReq = new AclReq();
+//                aclReq = new Acls();
 //                aclReq.setUsername(row.getString("requestor"));
 //                aclReq.setAcl_ip(row.getString("acl_ip"));
 //                aclReq.setAcl_ssl(row.getString("acl_ssl"));
@@ -166,8 +173,8 @@ public class SelectDataJdbc {
         return schemaRequest;
     }
 
-    public Topic selectTopicDetails(String topic, String env){
-        Topic topicObj = null;
+    public TopicRequest selectTopicDetails(String topic, String env){
+        TopicRequest topicRequestObj = null;
 
 //        ResultSet results = null;
 //        Clause eqclause1 = QueryBuilder.eq("topicname", topic);
@@ -181,17 +188,17 @@ public class SelectDataJdbc {
 //
 //            String teamName = row.getString("teamname");
 //
-//                topicObj = new Topic();
-//                topicObj.setTeamname(teamName);
+//                topicRequestObj = new TopicRequest();
+//                topicRequestObj.setTeamname(teamName);
 //            }
 //
 
-        return topicObj;
+        return topicRequestObj;
     }
 
-    public List<Topic> selectSyncTopics(String env){
-        Topic topic = null;
-        List<Topic> topicList = new ArrayList();
+    public List<TopicRequest> selectSyncTopics(String env){
+        TopicRequest topicRequest = null;
+        List<TopicRequest> topicRequestList = new ArrayList();
 //        ResultSet results = null;
 //        Clause eqclause = QueryBuilder.eq("env", env);
 //        Select selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
@@ -200,21 +207,21 @@ public class SelectDataJdbc {
 //
 //        for (Row row : results) {
 //
-//            topic = new Topic();
-//            topic.setTopicName(row.getString("topicname"));
-//            topic.setAppname(row.getString("appname"));
-//            topic.setTeamname(row.getString("teamname"));
+//            topicRequest = new TopicRequest();
+//            topicRequest.setTopicName(row.getString("topicname"));
+//            topicRequest.setAppname(row.getString("appname"));
+//            topicRequest.setTeamname(row.getString("teamname"));
 //
-//            topicList.add(topic);
+//            topicRequestList.add(topicRequest);
 //            }
 //
 
-        return topicList;
+        return topicRequestList;
     }
 
-    public List<AclReq> selectSyncAcls(String env){
-        AclReq aclReq = null;
-        List<AclReq> aclList = new ArrayList();
+    public List<AclRequests> selectSyncAcls(String env){
+        AclRequests aclReq = null;
+        List<AclRequests> aclList = new ArrayList();
 //        ResultSet results = null;
 //        Clause eqclause = QueryBuilder.eq("env", env);
 //        Select selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
@@ -222,7 +229,7 @@ public class SelectDataJdbc {
 //
 //        for (Row row : results) {
 //
-//            aclReq = new AclReq();
+//            aclReq = new Acls();
 //            aclReq.setReq_no(row.getString("req_no"));
 //            aclReq.setTopicname(row.getString("topicname"));
 //            aclReq.setTeamname(row.getString("teamname"));
@@ -238,9 +245,9 @@ public class SelectDataJdbc {
         return aclList;
     }
 
-    public List<Topic> selectTopicRequests(boolean allReqs, String requestor){
-        Topic topic = null;
-        List<Topic> topicList = new ArrayList();
+    public List<TopicRequest> selectTopicRequests(boolean allReqs, String requestor){
+        TopicRequest topicRequest = null;
+        List<TopicRequest> topicRequestList = new ArrayList();
 //        ResultSet results = null;
 //        if(allReqs) {
 //            Clause eqclause = QueryBuilder.eq("topicstatus", "created");
@@ -268,30 +275,30 @@ public class SelectDataJdbc {
 //
 //            if(teamSelected!=null && teamSelected.equals(teamName)) {
 //
-//                topic = new Topic();
-//                topic.setUsername(row.getString("requestor"));
-//                topic.setAcl_ip(row.getString("acl_ip"));
-//                topic.setAcl_ssl(row.getString("acl_ssl"));
-//                topic.setTopicName(row.getString("topicname"));
-//                topic.setTopicpartitions(row.getString("partitions"));
-//                topic.setReplicationfactor(row.getString("replicationfactor"));
-//                topic.setAppname(row.getString("appname"));
-//                topic.setEnvironment(row.getString("env"));
-//                topic.setTeamname(teamName);
-//                topic.setRemarks(row.getString("remarks"));
-//                topic.setTopicstatus(row.getString("topicstatus"));
-//                topic.setApprovingtime("" + row.getTimestamp("exectime"));
-//                topic.setRequesttime("" + row.getTimestamp("requesttime"));
+//                topicRequest = new TopicRequest();
+//                topicRequest.setUsername(row.getString("requestor"));
+//                topicRequest.setAcl_ip(row.getString("acl_ip"));
+//                topicRequest.setAcl_ssl(row.getString("acl_ssl"));
+//                topicRequest.setTopicName(row.getString("topicname"));
+//                topicRequest.setTopicpartitions(row.getString("partitions"));
+//                topicRequest.setReplicationfactor(row.getString("replicationfactor"));
+//                topicRequest.setAppname(row.getString("appname"));
+//                topicRequest.setEnvironment(row.getString("env"));
+//                topicRequest.setTeamname(teamName);
+//                topicRequest.setRemarks(row.getString("remarks"));
+//                topicRequest.setTopicstatus(row.getString("topicstatus"));
+//                topicRequest.setApprovingtime("" + row.getTimestamp("exectime"));
+//                topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
 //
-//                topicList.add(topic);
+//                topicRequestList.add(topicRequest);
 //            }
 //        }
 
-        return topicList;
+        return topicRequestList;
     }
 
-    public Topic selectTopicRequestsForTopic(String topicName){
-        Topic topic = null;
+    public TopicRequest selectTopicRequestsForTopic(String topicName){
+        TopicRequest topicRequest = null;
 //        ResultSet results = null;
 //
 //            Clause eqclause = QueryBuilder.eq("topicname", topicName);
@@ -301,24 +308,24 @@ public class SelectDataJdbc {
 //
 //        for (Row row : results) {
 //
-//                topic = new Topic();
-//                topic.setUsername(row.getString("requestor"));
-//                topic.setAcl_ip(row.getString("acl_ip"));
-//                topic.setAcl_ssl(row.getString("acl_ssl"));
-//                topic.setTopicName(row.getString("topicname"));
-//                topic.setTopicpartitions(row.getString("partitions"));
-//                topic.setReplicationfactor(row.getString("replicationfactor"));
-//                topic.setAppname(row.getString("appname"));
-//                topic.setEnvironment(row.getString("env"));
-//                topic.setTeamname(row.getString("teamname"));
-//                topic.setRemarks(row.getString("remarks"));
-//                topic.setTopicstatus(row.getString("topicstatus"));
-//                topic.setApprovingtime("" + row.getTimestamp("exectime"));
-//                topic.setRequesttime("" + row.getTimestamp("requesttime"));
+//                topicRequest = new TopicRequest();
+//                topicRequest.setUsername(row.getString("requestor"));
+//                topicRequest.setAcl_ip(row.getString("acl_ip"));
+//                topicRequest.setAcl_ssl(row.getString("acl_ssl"));
+//                topicRequest.setTopicName(row.getString("topicname"));
+//                topicRequest.setTopicpartitions(row.getString("partitions"));
+//                topicRequest.setReplicationfactor(row.getString("replicationfactor"));
+//                topicRequest.setAppname(row.getString("appname"));
+//                topicRequest.setEnvironment(row.getString("env"));
+//                topicRequest.setTeamname(row.getString("teamname"));
+//                topicRequest.setRemarks(row.getString("remarks"));
+//                topicRequest.setTopicstatus(row.getString("topicstatus"));
+//                topicRequest.setApprovingtime("" + row.getTimestamp("exectime"));
+//                topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
 //
 //            }
 
-        return topic;
+        return topicRequest;
     }
 
     public List<PCStream> selectTopicStreams(String envSelected){
@@ -335,9 +342,9 @@ public class SelectDataJdbc {
 //                .from(keyspace,"acls").where(eqclause).allowFiltering();
 //        ResultSet results1 = session.execute(selectQuery1);
 //
-//        List<AclReq> aclReqList = new ArrayList<>();
+//        List<Acls> aclReqList = new ArrayList<>();
 //        for (Row row1 : results1) {
-//            AclReq aclReq = new AclReq();
+//            Acls aclReq = new Acls();
 //            aclReq.setTopicname(row1.getString("topicname"));
 //            aclReq.setRequestingteam(row1.getString("teamname"));
 //            aclReq.setTopictype(row1.getString("topictype"));
@@ -355,7 +362,7 @@ public class SelectDataJdbc {
 //            prodTeams.add(teamName);
 //           // LOG.info("-----------"+topicName);
 //
-//            for (AclReq row1 : aclReqList) {
+//            for (Acls row1 : aclReqList) {
 //                String teamName1 = row1.getRequestingteam();
 //                String topicName1 = row1.getTopicname();
 //                String aclType = row1.getTopictype();
@@ -399,8 +406,8 @@ public class SelectDataJdbc {
         return teamList;
     }
 
-    public AclReq selectAcl(String req_no){
-        AclReq aclReq = new AclReq();
+    public AclRequests selectAcl(String req_no){
+        AclRequests aclReq = new AclRequests();
 //        Clause eqclause = QueryBuilder.eq("req_no",req_no);
 //        ResultSet results = null;
 //        Select.Where selectQuery = QueryBuilder.select().from(keyspace,"acl_requests").where(eqclause);
@@ -439,7 +446,11 @@ public class SelectDataJdbc {
 
     public List<UserInfo> selectAllUsersInfo(){
 
-        List<UserInfo> userList = new ArrayList();
+        List<UserInfo> userList ;//= new ArrayList();
+
+        userList = (List)Lists.newArrayList(userInfoRepo.findAll());
+
+        userList.stream().forEach(a-> System.out.println("-----"+a.getTeam()));
 //        ResultSet results = null;
 //        Select selectQuery = QueryBuilder.select().all().from(keyspace,"users");
 //        results = session.execute(selectQuery);

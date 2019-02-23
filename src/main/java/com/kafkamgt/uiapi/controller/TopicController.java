@@ -2,7 +2,10 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.entities.Env;
+import com.kafkamgt.uiapi.entities.PCStream;
+import com.kafkamgt.uiapi.entities.TopicInfo;
+import com.kafkamgt.uiapi.entities.TopicRequest;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -11,18 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -54,19 +53,19 @@ public class TopicController {
         LOG.info("*********"+addTopicReq);
         Gson gson = new Gson();
 
-        Topic topicReq = gson.fromJson(addTopicReq, Topic.class);
+        TopicRequest topicRequestReq = gson.fromJson(addTopicReq, TopicRequest.class);
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        LOG.info(topicReq.getTopicName()+ "---" + topicReq.getTeamname()+"---"+topicReq.getEnvironment() + "---"+topicReq.getAppname());
-        topicReq.setUsername(userDetails.getUsername());
+        LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
+        topicRequestReq.setUsername(userDetails.getUsername());
 
         String execRes = null;
 
-        String topicPartitions = topicReq.getTopicpartitions();
+        String topicPartitions = topicRequestReq.getTopicpartitions();
         int topicPartitionsInt = 1;
-        String envSelected = topicReq.getEnvironment();
+        String envSelected = topicRequestReq.getEnvironment();
         String defPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.partitions");
         String defMaxPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.maxpartitions");
 
@@ -79,17 +78,17 @@ public class TopicController {
                 topicPartitionsInt = Integer.parseInt(topicPartitions);
 
                 if (topicPartitionsInt > defMaxPartnsInt)
-                    topicReq.setTopicpartitions(defMaxPartns);
+                    topicRequestReq.setTopicpartitions(defMaxPartns);
             } else
-                topicReq.setTopicpartitions(defPartns);
+                topicRequestReq.setTopicpartitions(defPartns);
 
-            topicReq.setReplicationfactor(defaultRf);
+            topicRequestReq.setReplicationfactor(defaultRf);
         }catch (Exception e){
             LOG.error("Unable to set topic partitions, setting default.");
-            topicReq.setTopicpartitions(defPartns);
+            topicRequestReq.setTopicpartitions(defPartns);
         }
 
-        execRes = createTopicHelper.requestForTopic(topicReq);
+        execRes = createTopicHelper.requestForTopic(topicRequestReq);
 
         String topicaddResult = "{\"result\":\""+execRes+"\"}";
         return new ResponseEntity<String>(topicaddResult, HttpStatus.OK);
@@ -115,8 +114,8 @@ public class TopicController {
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
         String topicSel=null,teamSelected=null,tmpToken=null;
-        List<Topic> listtopics = new ArrayList<>();
-        Topic t = null;
+        List<TopicRequest> listtopics = new ArrayList<>();
+        TopicRequest t = null;
         while(strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
 
@@ -125,8 +124,8 @@ public class TopicController {
                 topicSel = tmpToken.substring(0, indexOfSep);
                 teamSelected = tmpToken.substring(indexOfSep + 5, tmpToken.length());
 
-                t = new Topic();
-                t.setTopicName(topicSel);
+                t = new TopicRequest();
+                t.setTopicname(topicSel);
                 t.setTeamname(teamSelected);
                 t.setEnvironment(envSelected);
                 listtopics.add(t);
@@ -152,38 +151,38 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Topic>> getTopicRequests() {
+    public ResponseEntity<List<TopicRequest>> getTopicRequests() {
 
-        List<Topic> topicReqs = null;
+        List<TopicRequest> topicRequestReqs = null;
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        topicReqs = createTopicHelper.getAllTopicRequests(userDetails.getUsername());
+        topicRequestReqs = createTopicHelper.getAllTopicRequests(userDetails.getUsername());
 
-        return new ResponseEntity<List<Topic>>(topicReqs, HttpStatus.OK);
+        return new ResponseEntity<List<TopicRequest>>(topicRequestReqs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicTeam", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Topic> getTopicTeam(@RequestParam("topicName") String topicName,
-                                              @RequestParam("env") String env) {
+    public ResponseEntity<TopicRequest> getTopicTeam(@RequestParam("topicName") String topicName,
+                                                     @RequestParam("env") String env) {
 
-       Topic topic = createTopicHelper.getTopicTeam(topicName, env);
-      // LOG.info(env+"In get topic team"+topic + "---"+topicName);
+       TopicRequest topicRequest = createTopicHelper.getTopicTeam(topicName, env);
+      // LOG.info(env+"In get topicRequest team"+topicRequest + "---"+topicName);
 
-       return new ResponseEntity<Topic>(topic, HttpStatus.OK);
+       return new ResponseEntity<TopicRequest>(topicRequest, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getCreatedTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Topic>> getCreatedTopicRequests() {
+    public ResponseEntity<List<TopicRequest>> getCreatedTopicRequests() {
 
-        List<Topic> topicReqs = null;
+        List<TopicRequest> topicRequestReqs = null;
 
             UserDetails userDetails =
                     (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            topicReqs = createTopicHelper.getCreatedTopicRequests(userDetails.getUsername());
+            topicRequestReqs = createTopicHelper.getCreatedTopicRequests(userDetails.getUsername());
 
-        LOG.info("*****getCreatedTopicRequests"+topicReqs);
-        return new ResponseEntity<List<Topic>>(topicReqs, HttpStatus.OK);
+        LOG.info("*****getCreatedTopicRequests"+ topicRequestReqs);
+        return new ResponseEntity<List<TopicRequest>>(topicRequestReqs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/deleteTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -200,7 +199,7 @@ public class TopicController {
     @RequestMapping(value = "/execTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) {
 
-        Topic topic = createTopicHelper.selectTopicRequestsForTopic(topicName);
+        TopicRequest topicRequest = createTopicHelper.selectTopicRequestsForTopic(topicName);
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -211,15 +210,15 @@ public class TopicController {
 
         MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(topic.getEnvironment());
+        Env envSelected= createTopicHelper.selectEnvDetails(topicRequest.getEnvironment());
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
         params.add("env",bootstrapHost);
 
         params.add("topicName",topicName);
-        params.add("partitions",topic.getTopicpartitions());
-        params.add("rf",topic.getReplicationfactor());
-        params.add("acl_ip",topic.getAcl_ip());
-        params.add("acl_ssl",topic.getAcl_ssl());
+        params.add("partitions", topicRequest.getTopicpartitions());
+        params.add("rf", topicRequest.getReplicationfactor());
+        params.add("acl_ip", topicRequest.getAcl_ip());
+        params.add("acl_ssl", topicRequest.getAcl_ssl());
 
         HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -275,7 +274,7 @@ public class TopicController {
                 (uri, HttpMethod.GET, entity, Set.class);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<TopicRequest> topicsFromSOT = createTopicHelper.getSyncTopics(env);
 
         topicCounter = 0;
         List<String> topicsList = new ArrayList(s.getBody());
@@ -307,7 +306,7 @@ public class TopicController {
                     String teamUpdated = null;
                     try {
                         teamUpdated = topicsFromSOT.stream().filter(a -> {
-                            if (a.getTopicName().equals(tmpTopicName))
+                            if (a.getTopicname().equals(tmpTopicName))
                                 return true;
                             else
                                 return false;
@@ -334,7 +333,7 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<Topic>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
+    public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
 
         LOG.info(pageNo+" In get sync topics " + env);
         String json = "{ \"name\": \"\" }";
@@ -350,8 +349,8 @@ public class TopicController {
         if(authority.equals("ROLE_SUPERUSER")){}
         else{
             json = "{ \"name\": \"Not Authorized\" }";
-            List<Topic> topicsList1 = new ArrayList();
-            return new ResponseEntity<List<Topic>>(topicsList1, HttpStatus.OK);
+            List<TopicRequest> topicsList1 = new ArrayList();
+            return new ResponseEntity<List<TopicRequest>>(topicsList1, HttpStatus.OK);
         }
 
         Env envSelected= createTopicHelper.selectEnvDetails(env);
@@ -381,9 +380,9 @@ public class TopicController {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<TopicRequest> topicsFromSOT = createTopicHelper.getSyncTopics(env);
 
-        List<Topic> topicsListMap = new ArrayList<>();
+        List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;
         int lastVar = (requestPageNo) * (recsPerPage);
 
@@ -397,18 +396,18 @@ public class TopicController {
         for(int i=0;i<totalRecs;i++){
             int counterInc = counterIncrement();
             if(i>=startVar && i<lastVar) {
-                Topic mp = new Topic();
+                TopicRequest mp = new TopicRequest();
                 mp.setSequence(counterInc + "");
                 strTkr = new StringTokenizer(topicsList.get(i).toString(),":::::");
 
                 while(strTkr.hasMoreTokens()){
                     final String tmpTopicName = strTkr.nextToken();
 
-                    mp.setTopicName(tmpTopicName);
+                    mp.setTopicname(tmpTopicName);
                     String teamUpdated = null;
                     try {
                         teamUpdated = topicsFromSOT.stream().filter(a -> {
-                            if (a.getTopicName().equals(tmpTopicName))
+                            if (a.getTopicname().equals(tmpTopicName))
                                 return true;
                             else
                                 return false;
@@ -442,7 +441,7 @@ public class TopicController {
 
         }
 
-        return new ResponseEntity<List<Topic>>(topicsListMap, HttpStatus.OK);
+        return new ResponseEntity<List<TopicRequest>>(topicsListMap, HttpStatus.OK);
     }
 
     int topicCounter=0;

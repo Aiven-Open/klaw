@@ -1,6 +1,6 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.entities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class InsertDataJdbc {
         return builder.toString();
     }
 
-    public String insertIntoRequestTopic(Topic topic){
+    public String insertIntoRequestTopic(TopicRequest topicRequest){
 
 //        String tableName = null, topicReqType=null, insertstat=null;
 //
@@ -37,43 +37,43 @@ public class InsertDataJdbc {
 //                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
 //            PreparedStatement statement = session.prepare(insertstat);
 //            BoundStatement boundStatement = new BoundStatement(statement);
-//            session.execute(boundStatement.bind(topic.getTopicName(),topic.getTopicpartitions(),topic.getReplicationfactor(),topic.getEnvironment(), topic.getTeamname(), topic.getAppname(),
-//                    topicReqType, topic.getUsername(), new Date(),topic.getAcl_ip(), topic.getAcl_ssl(), topic.getRemarks(), "created"));
+//            session.execute(boundStatement.bind(topicRequest.getTopicName(),topicRequest.getTopicpartitions(),topicRequest.getReplicationfactor(),topicRequest.getEnvironment(), topicRequest.getTeamname(), topicRequest.getAppname(),
+//                    topicReqType, topicRequest.getUsername(), new Date(),topicRequest.getAcl_ip(), topicRequest.getAcl_ssl(), topicRequest.getRemarks(), "created"));
 //
 //            // Activity log
-//        insertIntoActivityLogTopic(topic);
+//        insertIntoActivityLogTopic(topicRequest);
 //
 //            // insert into SOT
-//        List<Topic> topics = new ArrayList<>();
-//        topics.add(topic);
+//        List<TopicRequest> topics = new ArrayList<>();
+//        topics.add(topicRequest);
 //            insertIntoTopicSOT(topics);
 //
-//        AclReq aclReq = new AclReq();
+//        Acls aclReq = new Acls();
 //        aclReq.setTopictype("Producer");
-//        aclReq.setEnvironment(topic.getEnvironment());
-//        aclReq.setTeamname(topic.getTeamname());
-//        aclReq.setAcl_ssl(topic.getAcl_ssl());
-//        aclReq.setAcl_ip(topic.getAcl_ip());
-//        aclReq.setTopicname(topic.getTopicName());
-//        aclReq.setRequestingteam(topic.getTeamname());
+//        aclReq.setEnvironment(topicRequest.getEnvironment());
+//        aclReq.setTeamname(topicRequest.getTeamname());
+//        aclReq.setAcl_ssl(topicRequest.getAcl_ssl());
+//        aclReq.setAcl_ip(topicRequest.getAcl_ip());
+//        aclReq.setTopicname(topicRequest.getTopicName());
+//        aclReq.setRequestingteam(topicRequest.getTeamname());
 //
-//        List<AclReq> acls = new ArrayList<>();
+//        List<Acls> acls = new ArrayList<>();
 //        acls.add(aclReq);
 //            insertIntoAclsSOT(acls);
 
         return "success";
     }
 
-    public String insertIntoTopicSOT(List<Topic> topics){
+    public String insertIntoTopicSOT(List<TopicRequest> topicRequests){
 
-//        String tableName = "topics", insertstat=null;
+//        String tableName = "topicRequests", insertstat=null;
 //
 //        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname,env,teamname,appname)" +
 //                "VALUES (?,?,?,?);";
 //        PreparedStatement statement = session.prepare(insertstat);
 //        BoundStatement boundStatement = new BoundStatement(statement);
 //
-//        topics.forEach(topic-> {
+//        topicRequests.forEach(topic-> {
 //            session.execute(boundStatement.bind(topic.getTopicName(), topic.getEnvironment(),
 //                    topic.getTeamname(), topic.getAppname()));
 //        });
@@ -81,7 +81,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoActivityLogTopic(Topic topic){
+    public String insertIntoActivityLogTopic(TopicRequest topicRequest){
 
 //        String tableName = "activitylog", insertstat=null;
 //
@@ -90,15 +90,15 @@ public class InsertDataJdbc {
 //        PreparedStatement statement = session.prepare(insertstat);
 //        BoundStatement boundStatement = new BoundStatement(statement);
 //
-//        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topic.getUsername());
+//        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topicRequest.getUsername());
 //
-//        session.execute(boundStatement.bind(getRandom(), "topic",
-//                    "new", new Date(),""+topic.getTopicName(),""+topic.getUsername(), topic.getEnvironment(), userInfo.getTeam()));
+//        session.execute(boundStatement.bind(getRandom(), "topicRequest",
+//                    "new", new Date(),""+topicRequest.getTopicName(),""+topicRequest.getUsername(), topicRequest.getEnvironment(), userInfo.getTeam()));
 
         return "success";
     }
 
-    public String insertIntoRequestAcl(AclReq aclReq){
+    public String insertIntoRequestAcl(AclRequests aclReq){
 
 //        String tableName = null, topicReqType=null, insertstat=null;
 //            tableName = "acl_requests";
@@ -119,14 +119,14 @@ public class InsertDataJdbc {
 //        insertIntoActivityLogAcl(aclReq);
 //
 //            // Insert to SOT
-//        List<AclReq> acls = new ArrayList<>();
+//        List<Acls> acls = new ArrayList<>();
 //        acls.add(aclReq);
 //            insertIntoAclsSOT(acls);
 
         return "success";
     }
 
-    public String insertIntoAclsSOT(List<AclReq> acls){
+    public String insertIntoAclsSOT(List<AclRequests> acls){
 
 //        String tableName = "acls", insertstat=null;
 //
@@ -143,7 +143,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoActivityLogAcl(AclReq aclReq){
+    public String insertIntoActivityLogAcl(AclRequests aclReq){
 
 //        String tableName = "activitylog", insertstat=null;
 //
@@ -177,7 +177,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoUsers(UserInfo userInfo){
+    public String insertIntoUsers(com.kafkamgt.uiapi.entities.UserInfo userInfo){
 //        String tableName = "users";
 //        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(fullname,userid, pwd, team, roleid) " +
 //                "VALUES (?,?,?,?,?);";

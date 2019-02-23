@@ -377,11 +377,11 @@
 										<th>TopicName</th>
 										<th>Team</th>
 									</tr>
-									<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicName}}">
+									<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}">
 										<td>{{ resultBrowset.sequence}}</td>
-										<td>{{ resultBrowset.topicName}}</td>
+										<td>{{ resultBrowset.topicname}}</td>
 										<td>
-											<select ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicName)"
+											<select ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicname)"
 													ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 													ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 											</select>

@@ -1,19 +1,19 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.entities.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
 
-
-@Component
+@Configuration
+@PropertySource(value= {"classpath:application.properties"})
 public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     private static Logger LOG = LoggerFactory.getLogger(HandleDbRequestsJdbc.class);
@@ -45,28 +45,53 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Value("${jdbc.pwd:#{null}}")
     String jdbcConnPwd;
 
-//    @PostConstruct
     public void connectToDb() throws Exception {
-        LOG.info("Establishing Connection to JDBC.");
-        System.exit(0);
-        throw new Exception("JDBC - Database not configured.");
+        LOG.info("Loading tables");
+
+//        Employee emp = new Employee();
+//        emp.setId(12778);
+//        emp.setName("fds");
+//
+//        empRepo.save(emp);
+        //loadDbJdbc.insertData();
     }
+
+//    @Bean
+//    public DataSource datasource() throws PropertyVetoException {
+//        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//        dataSource.setDriverClassName(environment.getProperty("spring.datasource.driver.class"));
+//        dataSource.setUrl(environment.getProperty("spring.datasource.url"));
+//        dataSource.setUsername(environment.getProperty("spring.datasource.username"));
+//        dataSource.setPassword(environment.getProperty("spring.datasource.password"));
+//        return dataSource;
+//    }
+
+//    @Bean
+//    public void saveEmp(EmployeeRepo empRepo){
+//        Employee emp = new Employee();
+//        emp.setId(12);
+//        emp.setName("fds");
+//
+//        empRepo.save(emp);
+//
+//        LOG.info("Saved emp to db.");
+//    }
 
     /*--------------------Insert */
 
-    public String requestForTopic(Topic topic){
-        return jdbcInsertHelper.insertIntoRequestTopic(topic);
+    public String requestForTopic(TopicRequest topicRequest){
+        return jdbcInsertHelper.insertIntoRequestTopic(topicRequest);
     }
 
-    public String requestForAcl(AclReq aclReq){
+    public String requestForAcl(AclRequests aclReq){
         return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
     }
 
-    public String addNewUser(UserInfo userInfo){
+    public String addNewUser(com.kafkamgt.uiapi.entities.UserInfo userInfo){
         return jdbcInsertHelper.insertIntoUsers(userInfo);
     }
 
-    public String addNewTeam(Team team){
+    public String addNewTeam(com.kafkamgt.uiapi.entities.Team team){
         return jdbcInsertHelper.insertIntoTeams(team);
     }
 
@@ -78,11 +103,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcInsertHelper.insertIntoRequestSchema(schemaRequest);
     }
 
-    public String addToSynctopics(List<Topic> topics) {
-        return jdbcInsertHelper.insertIntoTopicSOT(topics);
+    public String addToSynctopics(List<TopicRequest> topicRequests) {
+        return jdbcInsertHelper.insertIntoTopicSOT(topicRequests);
     }
 
-    public String addToSyncacls(List<AclReq> acls) {
+    public String addToSyncacls(List<AclRequests> acls) {
         return jdbcInsertHelper.insertIntoAclsSOT(acls);
     }
 
@@ -93,29 +118,29 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.getAllRequestsToBeApproved(requestor);
     }
 
-    public List<Topic> getAllTopicRequests(String requestor){
+    public List<TopicRequest> getAllTopicRequests(String requestor){
         return jdbcSelectHelper.selectTopicRequests(false, requestor);
     }
-    public List<Topic> getCreatedTopicRequests(String requestor){
+    public List<TopicRequest> getCreatedTopicRequests(String requestor){
         return jdbcSelectHelper.selectTopicRequests(true,requestor);
     }
 
-    public Topic selectTopicRequestsForTopic(String topicName) {
+    public TopicRequest selectTopicRequestsForTopic(String topicName) {
         return jdbcSelectHelper.selectTopicRequestsForTopic(topicName);
     }
 
-    public List<Topic> getSyncTopics(String env){
+    public List<TopicRequest> getSyncTopics(String env){
         return jdbcSelectHelper.selectSyncTopics(env);
     }
 
-    public List<AclReq> getSyncAcls(String env){
+    public List<AclRequests> getSyncAcls(String env){
         return jdbcSelectHelper.selectSyncAcls(env);
     }
 
-    public List<AclReq> getAllAclRequests(String requestor){
+    public List<AclRequests> getAllAclRequests(String requestor){
         return jdbcSelectHelper.selectAclRequests(false,requestor);
     }
-    public List<AclReq> getCreatedAclRequests(String requestor){
+    public List<AclRequests> getCreatedAclRequests(String requestor){
         return jdbcSelectHelper.selectAclRequests(true,requestor);
     }
 
@@ -138,22 +163,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectAllTeams();
     }
 
-    public List<UserInfo> selectAllUsersInfo(){
+    public List<com.kafkamgt.uiapi.entities.UserInfo> selectAllUsersInfo(){
         return jdbcSelectHelper.selectAllUsersInfo();
     }
 
-    public UserInfo getUsersInfo(String username){
+    public com.kafkamgt.uiapi.entities.UserInfo getUsersInfo(String username){
         return jdbcSelectHelper.selectUserInfo(username);
     }
     public List<Map<String,String>> selectAllUsers(){
         return jdbcSelectHelper.selectAllUsers();
     }
 
-    public AclReq selectAcl(String req_no){
+    public AclRequests selectAcl(String req_no){
         return jdbcSelectHelper.selectAcl(req_no);
     }
 
-    public Topic getTopicTeam(String topicName, String env){
+    public TopicRequest getTopicTeam(String topicName, String env){
         return jdbcSelectHelper.selectTopicDetails(topicName, env);
     }
 
@@ -203,5 +228,5 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<AclRequests> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
 }

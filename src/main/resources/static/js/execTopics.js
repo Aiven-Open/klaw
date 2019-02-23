@@ -39,8 +39,8 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                 method: "GET",
                 url: "/execTopicRequests",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'topicName' : $scope.execTopicRequest.topicName },
-                data: {'topicName' : $scope.execTopicRequest.topicName}
+                params: {'topicName' : $scope.execTopicRequest.topicname },
+                data: {'topicName' : $scope.execTopicRequest.topicname}
             }).success(function(output) {
 
                 $scope.alert = "Topic Approve Request : "+output.result;

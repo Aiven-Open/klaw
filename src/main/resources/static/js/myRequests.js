@@ -118,8 +118,8 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             method: "GET",
             url: "/deleteTopicRequests",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'topicName' : $scope.deleteTopicRequest.topicName },
-            data: {'topicName' : $scope.deleteTopicRequest.topicName}
+            params: {'topicName' : $scope.deleteTopicRequest.topicname },
+            data: {'topicName' : $scope.deleteTopicRequest.topicname}
         }).success(function(output) {
 
             $scope.alert = "Topic Delete Request : "+output.result;
@@ -160,8 +160,8 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 method: "GET",
                 url: "/deleteSchemaRequests",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'topicName' : $scope.deleteSchemaRequest.topicName },
-                data: {'topicName' : $scope.deleteSchemaRequest.topicName}
+                params: {'topicName' : $scope.deleteSchemaRequest.topicname },
+                data: {'topicName' : $scope.deleteSchemaRequest.topicname}
             }).success(function(output) {
 
                 $scope.alert = "Topic Delete Request : "+output.result;

@@ -1,6 +1,6 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
-import com.kafkamgt.uiapi.dao.AclReq;
+import com.kafkamgt.uiapi.entities.AclRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,10 +46,10 @@ public class DeleteDataJdbc {
         return "success";
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){
+    public String deletePrevAclRecs(List<AclRequests> aclReqs){
 
 
-//        for(AclReq aclReq:aclReqs){
+//        for(Acls aclReq:aclReqs){
 //            String aclType = aclReq.getTopictype();
 //            String host = aclReq.getAcl_ip();
 //            String principle = aclReq.getAcl_ssl();

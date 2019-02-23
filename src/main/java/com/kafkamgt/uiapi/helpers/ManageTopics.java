@@ -1,11 +1,13 @@
 package com.kafkamgt.uiapi.helpers;
 
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.helpers.db.cassandra.CassandraDataSourceCondition;
 import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.jdbc.HandleDbRequestsJdbc;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kafkamgt.uiapi.helpers.db.jdbc.JdbcDataSourceCondition;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
@@ -24,18 +26,20 @@ public class ManageTopics {
     public void loadDb() throws Exception {
         if(dbStore !=null && dbStore.equals("jdbc")){
             handleDbRequests = handleJdbc();
-        }else {
+        }else
             handleDbRequests = handleCassandra();
-        }
+
         handleDbRequests.connectToDb();
     }
 
     @Bean()
+    @Conditional(JdbcDataSourceCondition.class)
     HandleDbRequestsJdbc handleJdbc() {
         return new HandleDbRequestsJdbc();
     }
 
     @Bean()
+    @Conditional(CassandraDataSourceCondition.class)
     HandleDbRequestsCassandra handleCassandra() {
         return new HandleDbRequestsCassandra();
     }
@@ -43,19 +47,19 @@ public class ManageTopics {
 
     /*--------------------Insert */
 
-    public String requestForTopic(Topic topic){
-        return handleDbRequests.requestForTopic(topic);
+    public String requestForTopic(TopicRequest topicRequest){
+        return handleDbRequests.requestForTopic(topicRequest);
     }
 
-    public String requestForAcl(AclReq aclReq){
+    public String requestForAcl(AclRequests aclReq){
         return handleDbRequests.requestForAcl(aclReq);
     }
 
-    public String addNewUser(UserInfo userInfo){
+    public String addNewUser(com.kafkamgt.uiapi.entities.UserInfo userInfo){
         return handleDbRequests.addNewUser(userInfo);
     }
 
-    public String addNewTeam(Team team){
+    public String addNewTeam(com.kafkamgt.uiapi.entities.Team team){
         return handleDbRequests.addNewTeam(team);
     }
 
@@ -67,11 +71,11 @@ public class ManageTopics {
         return handleDbRequests.requestForSchema(schemaRequest);
     }
 
-    public String addToSynctopics(List<Topic> topics) {
-        return handleDbRequests.addToSynctopics(topics);
+    public String addToSynctopics(List<TopicRequest> topicRequests) {
+        return handleDbRequests.addToSynctopics(topicRequests);
     }
 
-    public String addToSyncacls(List<AclReq> acls) {
+    public String addToSyncacls(List<AclRequests> acls) {
         return handleDbRequests.addToSyncacls(acls);
     }
 
@@ -82,29 +86,29 @@ public class ManageTopics {
         return handleDbRequests.getAllRequestsToBeApproved(requestor);
     }
 
-    public List<Topic> getAllTopicRequests(String requestor){
+    public List<TopicRequest> getAllTopicRequests(String requestor){
         return handleDbRequests.getAllTopicRequests(requestor);
     }
-    public List<Topic> getCreatedTopicRequests(String requestor){
+    public List<TopicRequest> getCreatedTopicRequests(String requestor){
         return handleDbRequests.getCreatedTopicRequests(requestor);
     }
 
-    public Topic selectTopicRequestsForTopic(String topicName) {
+    public TopicRequest selectTopicRequestsForTopic(String topicName) {
         return handleDbRequests.selectTopicRequestsForTopic(topicName);
     }
 
-    public List<Topic> getSyncTopics(String env){
+    public List<TopicRequest> getSyncTopics(String env){
         return handleDbRequests.getSyncTopics(env);
     }
 
-    public List<AclReq> getSyncAcls(String env){
+    public List<AclRequests> getSyncAcls(String env){
         return handleDbRequests.getSyncAcls(env);
     }
 
-    public List<AclReq> getAllAclRequests(String requestor){
+    public List<AclRequests> getAllAclRequests(String requestor){
         return handleDbRequests.getAllAclRequests(requestor);
     }
-    public List<AclReq> getCreatedAclRequests(String requestor){
+    public List<AclRequests> getCreatedAclRequests(String requestor){
         return handleDbRequests.getCreatedAclRequests(requestor);
     }
 
@@ -127,22 +131,22 @@ public class ManageTopics {
         return handleDbRequests.selectAllTeams();
     }
 
-    public List<UserInfo> selectAllUsersInfo(){
+    public List<com.kafkamgt.uiapi.entities.UserInfo> selectAllUsersInfo(){
         return handleDbRequests.selectAllUsersInfo();
     }
 
-    public UserInfo getUsersInfo(String username){
+    public com.kafkamgt.uiapi.entities.UserInfo getUsersInfo(String username){
         return handleDbRequests.getUsersInfo(username);
     }
     public List<Map<String,String>> selectAllUsers(){
         return handleDbRequests.selectAllUsers();
     }
 
-    public AclReq selectAcl(String req_no){
+    public AclRequests selectAcl(String req_no){
         return handleDbRequests.selectAcl(req_no);
     }
 
-    public Topic getTopicTeam(String topicName, String env){
+    public TopicRequest getTopicTeam(String topicName, String env){
         return handleDbRequests.getTopicTeam(topicName, env);
     }
 
@@ -192,5 +196,5 @@ public class ManageTopics {
         return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){ return handleDbRequests.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<AclRequests> aclReqs){ return handleDbRequests.deletePrevAclRecs(aclReqs);}
 }

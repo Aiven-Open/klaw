@@ -1,4 +1,4 @@
-package com.kafkamgt.uiapi.dao;
+package com.kafkamgt.uiapi.entities;
 
 import java.util.List;
 

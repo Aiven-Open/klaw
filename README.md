@@ -16,19 +16,19 @@ Front end is built with AngularJs, HTML, and Java script.<br>
 Cluster API acts as middle layer between Kafka brokers and UserInterface API.<br>
 Cluster API creates Kafka Admin Client and executes the requests for Topic, Acls or Schema registry.<br>
 
-Apache Cassandra datastore stores all users, teams, topics, request and execution data from all the users., and to maintain source of truth.<br>
+Apache Cassandra datastore stores all users, teams, topicRequests, request and execution data from all the users., and to maintain source of truth.<br>
 
 Spring Security, Spring Boot frameworks are used to develop this application.<br>
 
 <h5>Functionalities:</h5><br> (Broadly divided into two categories based on user roles.)<br>
 ROLE : USER  can request for creation of kafka components, and browse kafka components.<br>
 ROLE : ADMIN  can approve and execute the requests of users to create kafka components.<br>
-ROLE : SUPERUSER can synchronize topics meta information with Cassandra Datastore from Kafka Brokers (Source of Truth.)<br>
+ROLE : SUPERUSER can synchronize topicRequests meta information with Cassandra Datastore from Kafka Brokers (Source of Truth.)<br>
 
 <b>Browse:</b> (ROLE : USER, ADMIN, SUPERUSER)<br>
 All users can Browse Topics<br>
 All users can Browse Acls<br>
-All users can view the producers and consumers of all topics. <br>
+All users can view the producers and consumers of all topicRequests. <br>
 
 <b>Requests:</b>(ROLE : USER)<br>
 Users can request for Kafka Topics <br>
@@ -42,7 +42,7 @@ Users can view the available environments <br>
 <b>Approve - Execute :</b>(ROLE : ADMIN)<br>
 Users can appprove requests for creating Kafka Topics <br>
 Users can appprove requests for creating Kafka Acls <br>
-Users can appprove requests for uploading schemas on topics<br>
+Users can appprove requests for uploading schemas on topicRequests<br>
 
 <b>Users :</b>(ROLE : ADMIN)<br>
 Users can view all user details <br>
@@ -56,7 +56,7 @@ Users can add new team <br>
 Users can add a new environment environments  <br>
 
 <b>Synchronize Metadata :</b>(ROLE : SUPERUSER)<br>
-Users can synchronize topic information from Brokers with Cassandra datastore. (Update team info.) <br>
+Users can synchronize topicRequest information from Brokers with Cassandra datastore. (Update team info.) <br>
 Users can synchronize acls information from Brokers with Cassandra datastore. (Update team info.) <br>
 
 <b>My Profile :</b>(ROLE : USER, ADMIN)<br>

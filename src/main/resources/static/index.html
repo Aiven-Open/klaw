@@ -336,7 +336,7 @@
 					Front end is built with AngularJs, HTML, and Java script.<br><br>
 					User Interface API directly communicates between users and Cluster API.<br><br>
 
-					Apache Cassandra datastore is used to store all users, teams, topics, request and execution information from all the users., and to maintain source of truth.<br><br>
+					Apache Cassandra datastore is used to store all users, teams, topicRequests, request and execution information from all the users., and to maintain source of truth.<br><br>
 
 					Spring Security, Spring Boot frameworks are used to develop this application.<br>
 					<img src="images/arch.png">
@@ -344,12 +344,12 @@
 					<h5>Functionalities:</h5><br> (Broadly divided into two categories based on user roles.)<br>
 					ROLE : USER  can request for creation of kafka components, and browse kafka components.<br>
 					ROLE : ADMIN  can approve and execute the requests of users to create kafka components.<br>
-					ROLE : SUPERUSER can synchronize topics meta information with Cassandra Datastore from Kafka Brokers (Source of Truth.)<br><br>
+					ROLE : SUPERUSER can synchronize topicRequests meta information with Cassandra Datastore from Kafka Brokers (Source of Truth.)<br><br>
 
 					<b>Browse:</b> (ROLE : USER, ADMIN)<br>
 					All users can <a href="browseTopics">Browse Topics</a><br>
 					All users can <a href="browseAcls">Browse Acls</a><br>
-					All users can view the producers and consumers of all topics. <a href="pcTopics">View</a><br><br>
+					All users can view the producers and consumers of all topicRequests. <a href="pcTopics">View</a><br><br>
 
 					<b>Requests:</b>(ROLE : USER)<br>
 					Users can request for Kafka Topics <a href="requestTopics"> Request Topics</a><br>
@@ -363,7 +363,7 @@
 					<b>Approve - Execute :</b>(ROLE : ADMIN)<br>
 					Users can appprove requests for creating Kafka Topics <a href="execTopics"> Approve Topics</a><br>
 					Users can appprove requests for creating Kafka Acls <a href="execAcls"> Approve Acls</a><br>
-					Users can appprove requests for uploading schemas on topics <a href="execSchemas"> Approve Schemas for Schema Registry</a><br><br>
+					Users can appprove requests for uploading schemas on topicRequests <a href="execSchemas"> Approve Schemas for Schema Registry</a><br><br>
 
 					<b>Users :</b>(ROLE : ADMIN)<br>
 					Users can view all user details <a href="showUsers"> View Users </a><br>
@@ -377,7 +377,7 @@
 					Users can add a new environment environments <a href="addNewEnv">Add New Environments</a> <br><br>
 
 					<b>Synchronize Metadata :</b>(ROLE : SUPERUSER)<br>
-					Users can synchronize topic information from Brokers with Cassandra datastore. (Update team info.) <a href="synchronizeTopics"> SynchronizeTopics</a><br><br>
+					Users can synchronize topicRequest information from Brokers with Cassandra datastore. (Update team info.) <a href="synchronizeTopics"> SynchronizeTopics</a><br><br>
 					Users can synchronize acls information from Brokers with Cassandra datastore. (Update team info.) <a href="synchronizeAcls"> SynchronizeAcls</a><br><br>
 
 					<b>My Profile :</b>(ROLE : USER, ADMIN)<br>

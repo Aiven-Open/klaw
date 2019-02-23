@@ -2,7 +2,9 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.entities.AclInfo;
+import com.kafkamgt.uiapi.entities.AclRequests;
+import com.kafkamgt.uiapi.entities.Env;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -10,18 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.*;
 
@@ -50,7 +48,7 @@ public class AclController {
         LOG.info("*********"+addAclRequest);
         Gson gson = new Gson();
 
-        AclReq aclReq = gson.fromJson(addAclRequest, AclReq.class);
+        AclRequests aclReq = gson.fromJson(addAclRequest, AclRequests.class);
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -85,15 +83,15 @@ public class AclController {
 
         StringTokenizer strTkr = new StringTokenizer(updateSyncAcls,"\n");
         String topicSel=null,teamSelected=null,consumerGroup=null,aclIp=null,aclSsl=null,aclType=null,tmpToken=null;
-        List<AclReq> listtopics = new ArrayList<>();
-        AclReq t = null;
+        List<AclRequests> listtopics = new ArrayList<>();
+        AclRequests t = null;
 
         StringTokenizer strTkrIn = null;
         while(strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
             strTkrIn = new StringTokenizer(tmpToken,"-----");
             while(strTkrIn.hasMoreTokens()){
-                t = new AclReq();
+                t = new AclRequests();
 
                 topicSel = strTkrIn.nextToken();
                 teamSelected = strTkrIn.nextToken();
@@ -124,29 +122,29 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclReq>> getAclRequests() {
+    public ResponseEntity<List<AclRequests>> getAclRequests() {
 
-        List<AclReq> topicReqs = null;
+        List<AclRequests> topicReqs = null;
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             topicReqs = createTopicHelper.getAllAclRequests(userDetails.getUsername());
 
 
-        return new ResponseEntity<List<AclReq>>(topicReqs, HttpStatus.OK);
+        return new ResponseEntity<List<AclRequests>>(topicReqs, HttpStatus.OK);
     }
 
 
 
     @RequestMapping(value = "/getCreatedAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclReq>> getCreatedAclRequests() {
+    public ResponseEntity<List<AclRequests>> getCreatedAclRequests() {
 
-        List<AclReq> topicReqs = null;
+        List<AclRequests> topicReqs = null;
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             topicReqs = createTopicHelper.getCreatedAclRequests(userDetails.getUsername());
 
         LOG.info("*****getCreatedTopicRequests"+topicReqs);
-        return new ResponseEntity<List<AclReq>>(topicReqs, HttpStatus.OK);
+        return new ResponseEntity<List<AclRequests>>(topicReqs, HttpStatus.OK);
     }
 
 
@@ -166,7 +164,7 @@ public class AclController {
     @PostMapping(value = "/execAclRequest")
     public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no) {
 
-        AclReq aclReq = createTopicHelper.selectAcl(req_no);
+        AclRequests aclReq = createTopicHelper.selectAcl(req_no);
         String topicName = aclReq.getTopicname();
         String env = aclReq.getEnvironment();
         String acl_ip = aclReq.getAcl_ip();
@@ -248,7 +246,7 @@ public class AclController {
         List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
 
         // Get Sync acls
-        List<AclReq> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        List<AclRequests> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
         topicCounter = 0;
 
@@ -281,7 +279,7 @@ public class AclController {
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                for(AclReq aclSotItem : aclsFromSOT){
+                for(AclRequests aclSotItem : aclsFromSOT){
                     String acl_ssl = aclSotItem.getAcl_ssl();
                     if(acl_ssl==null)
                         acl_ssl="User:*";
@@ -364,7 +362,7 @@ public class AclController {
         List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
 
         // Get Sync acls
-        List<AclReq> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        List<AclRequests> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
         topicCounter = 0;
 
@@ -403,7 +401,7 @@ public class AclController {
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                    for(AclReq aclSotItem : aclsFromSOT){
+                    for(AclRequests aclSotItem : aclsFromSOT){
                         String acl_ssl = aclSotItem.getAcl_ssl();
                         if(acl_ssl==null)
                             acl_ssl="User:*";
