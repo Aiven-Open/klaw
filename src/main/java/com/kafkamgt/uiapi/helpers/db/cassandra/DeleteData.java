@@ -3,7 +3,7 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.*;
-import com.kafkamgt.uiapi.entities.AclRequests;
+import com.kafkamgt.uiapi.entities.Acl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -56,14 +56,14 @@ public class DeleteData {
         return "success";
     }
 
-    public String deletePrevAclRecs(List<AclRequests> aclReqs){
+    public String deletePrevAclRecs(List<Acl> aclReqs){
 
         //if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
              //   aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
               //  aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
             //    aclSotItem.getTopictype().equals(mp.getTopictype()))
 
-        for(AclRequests aclReq:aclReqs){
+        for(Acl aclReq:aclReqs){
             String aclType = aclReq.getTopictype();
             String host = aclReq.getAcl_ip();
             String principle = aclReq.getAcl_ssl();

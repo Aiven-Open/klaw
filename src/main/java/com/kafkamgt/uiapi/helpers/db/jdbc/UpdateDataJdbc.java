@@ -9,7 +9,7 @@ public class UpdateDataJdbc {
 
     private static Logger LOG = LoggerFactory.getLogger(UpdateDataJdbc.class);
 
-    public String updateTopicRequest(String topicName, String approver){
+    public String updateTopicRequest(String topicName, String approver, String env){
 //        Clause eqclause = QueryBuilder.eq("topicname",topicName);
 //        Update.Where updateQuery = QueryBuilder.update(keyspace,"topic_requests")
 //                .with(QueryBuilder.set("topicstatus", "approved"))

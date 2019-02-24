@@ -11,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@IdClass(ActivityLog.class)
 @Table(name="activitylog")
 public class ActivityLog implements Serializable {
 

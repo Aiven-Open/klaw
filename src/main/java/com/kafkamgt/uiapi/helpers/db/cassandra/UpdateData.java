@@ -20,13 +20,15 @@ public class UpdateData {
     @Value("${cassandradb.keyspace}")
     String keyspace;
 
-    public String updateTopicRequest(String topicName, String approver){
+    public String updateTopicRequest(String topicName, String approver, String env){
         Clause eqclause = QueryBuilder.eq("topicname",topicName);
+        Clause eqclause1 = QueryBuilder.eq("env",env);
         Update.Where updateQuery = QueryBuilder.update(keyspace,"topic_requests")
                 .with(QueryBuilder.set("topicstatus", "approved"))
                 .and(QueryBuilder.set("approver", approver))
                 .and(QueryBuilder.set("exectime", new Date()))
-                .where(eqclause);
+                .where(eqclause)
+                .and(eqclause1);
         session.execute(updateQuery);
         return "success";
     }

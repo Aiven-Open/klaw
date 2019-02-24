@@ -1,6 +1,8 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
 import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.entities.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -48,7 +50,7 @@ public class InsertDataJdbc {
 //        topics.add(topicRequest);
 //            insertIntoTopicSOT(topics);
 //
-//        Acls aclReq = new Acls();
+//        Acl aclReq = new Acl();
 //        aclReq.setTopictype("Producer");
 //        aclReq.setEnvironment(topicRequest.getEnvironment());
 //        aclReq.setTeamname(topicRequest.getTeamname());
@@ -57,14 +59,14 @@ public class InsertDataJdbc {
 //        aclReq.setTopicname(topicRequest.getTopicName());
 //        aclReq.setRequestingteam(topicRequest.getTeamname());
 //
-//        List<Acls> acls = new ArrayList<>();
+//        List<Acl> acls = new ArrayList<>();
 //        acls.add(aclReq);
 //            insertIntoAclsSOT(acls);
 
         return "success";
     }
 
-    public String insertIntoTopicSOT(List<TopicRequest> topicRequests){
+    public String insertIntoTopicSOT(List<Topic> topicRequests){
 
 //        String tableName = "topicRequests", insertstat=null;
 //
@@ -119,14 +121,14 @@ public class InsertDataJdbc {
 //        insertIntoActivityLogAcl(aclReq);
 //
 //            // Insert to SOT
-//        List<Acls> acls = new ArrayList<>();
+//        List<Acl> acls = new ArrayList<>();
 //        acls.add(aclReq);
 //            insertIntoAclsSOT(acls);
 
         return "success";
     }
 
-    public String insertIntoAclsSOT(List<AclRequests> acls){
+    public String insertIntoAclsSOT(List<Acl> acls){
 
 //        String tableName = "acls", insertstat=null;
 //
@@ -177,7 +179,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoUsers(com.kafkamgt.uiapi.entities.UserInfo userInfo){
+    public String insertIntoUsers(UserInfo userInfo){
 //        String tableName = "users";
 //        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(fullname,userid, pwd, team, roleid) " +
 //                "VALUES (?,?,?,?,?);";

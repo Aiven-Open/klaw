@@ -1,6 +1,8 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
 import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.entities.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,11 +89,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
     }
 
-    public String addNewUser(com.kafkamgt.uiapi.entities.UserInfo userInfo){
+    public String addNewUser(UserInfo userInfo){
         return jdbcInsertHelper.insertIntoUsers(userInfo);
     }
 
-    public String addNewTeam(com.kafkamgt.uiapi.entities.Team team){
+    public String addNewTeam(Team team){
         return jdbcInsertHelper.insertIntoTeams(team);
     }
 
@@ -103,11 +105,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcInsertHelper.insertIntoRequestSchema(schemaRequest);
     }
 
-    public String addToSynctopics(List<TopicRequest> topicRequests) {
+    public String addToSynctopics(List<Topic> topicRequests) {
         return jdbcInsertHelper.insertIntoTopicSOT(topicRequests);
     }
 
-    public String addToSyncacls(List<AclRequests> acls) {
+    public String addToSyncacls(List<Acl> acls) {
         return jdbcInsertHelper.insertIntoAclsSOT(acls);
     }
 
@@ -125,11 +127,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectTopicRequests(true,requestor);
     }
 
-    public TopicRequest selectTopicRequestsForTopic(String topicName) {
-        return jdbcSelectHelper.selectTopicRequestsForTopic(topicName);
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) {
+        return jdbcSelectHelper.selectTopicRequestsForTopic(topicName, env);
     }
 
-    public List<TopicRequest> getSyncTopics(String env){
+    public List<Topic> getSyncTopics(String env){
         return jdbcSelectHelper.selectSyncTopics(env);
     }
 
@@ -163,22 +165,19 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectAllTeams();
     }
 
-    public List<com.kafkamgt.uiapi.entities.UserInfo> selectAllUsersInfo(){
+    public List<UserInfo> selectAllUsersInfo(){
         return jdbcSelectHelper.selectAllUsersInfo();
     }
 
-    public com.kafkamgt.uiapi.entities.UserInfo getUsersInfo(String username){
+    public UserInfo getUsersInfo(String username){
         return jdbcSelectHelper.selectUserInfo(username);
-    }
-    public List<Map<String,String>> selectAllUsers(){
-        return jdbcSelectHelper.selectAllUsers();
     }
 
     public AclRequests selectAcl(String req_no){
         return jdbcSelectHelper.selectAcl(req_no);
     }
 
-    public TopicRequest getTopicTeam(String topicName, String env){
+    public Topic getTopicTeam(String topicName, String env){
         return jdbcSelectHelper.selectTopicDetails(topicName, env);
     }
 
@@ -199,8 +198,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env){return jdbcSelectHelper.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver){
-        return jdbcUpdateHelper.updateTopicRequest(topicName, approver);
+    public String updateTopicRequest(String topicName, String approver, String env){
+        return jdbcUpdateHelper.updateTopicRequest(topicName, approver, env);
     }
 
     public String updateAclRequest(String req_no, String approver){
@@ -228,5 +227,5 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclRequests> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<Acl> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
 }

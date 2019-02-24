@@ -4,6 +4,7 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.*;
 import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -180,8 +181,8 @@ public class SelectData{
         return schemaRequest;
     }
 
-    public TopicRequest selectTopicDetails(String topic, String env){
-        TopicRequest topicRequestObj = null;
+    public Topic selectTopicDetails(String topic, String env){
+        Topic topicObj = null;
 
         ResultSet results = null;
         Clause eqclause1 = QueryBuilder.eq("topicname", topic);
@@ -195,17 +196,17 @@ public class SelectData{
 
             String teamName = row.getString("teamname");
 
-                topicRequestObj = new TopicRequest();
-                topicRequestObj.setTeamname(teamName);
+            topicObj = new Topic();
+            topicObj.setTeamname(teamName);
             }
 
 
-        return topicRequestObj;
+        return topicObj;
     }
 
-    public List<TopicRequest> selectSyncTopics(String env){
-        TopicRequest topicRequest = null;
-        List<TopicRequest> topicRequestList = new ArrayList();
+    public List<Topic> selectSyncTopics(String env){
+        Topic topicRequest = null;
+        List<Topic> topicRequestList = new ArrayList();
         ResultSet results = null;
         Clause eqclause = QueryBuilder.eq("env", env);
         Select selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
@@ -214,7 +215,7 @@ public class SelectData{
 
         for (Row row : results) {
 
-            topicRequest = new TopicRequest();
+            topicRequest = new Topic();
             topicRequest.setTopicname(row.getString("topicname"));
             topicRequest.setAppname(row.getString("appname"));
             topicRequest.setTeamname(row.getString("teamname"));
@@ -306,12 +307,13 @@ public class SelectData{
         return topicRequestList;
     }
 
-    public TopicRequest selectTopicRequestsForTopic(String topicName){
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env){
         TopicRequest topicRequest = null;
         ResultSet results = null;
 
             Clause eqclause = QueryBuilder.eq("topicname", topicName);
-            Select selectQuery = QueryBuilder.select().from(keyspace,"topic_requests").where(eqclause).allowFiltering();
+            Clause eqclause1 = QueryBuilder.eq("env", env);
+            Select selectQuery = QueryBuilder.select().from(keyspace,"topic_requests").where(eqclause).and(eqclause1).allowFiltering();
             results = session.execute(selectQuery);
 
 
@@ -386,23 +388,34 @@ public class SelectData{
                         consumerTeams.add(teamName1);
                 }
             }
+
+
+            consumerTeams = consumerTeams.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            prodTeams = prodTeams.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+
             pcStream.setConsumerTeams(consumerTeams);
             pcStream.setProducerTeams(prodTeams);
+
             pcStreams.add(pcStream);
         }
 
         return pcStreams;
     }
 
-    public List<com.kafkamgt.uiapi.entities.Team> selectAllTeams(){
-        com.kafkamgt.uiapi.entities.Team team = null;
-        List<com.kafkamgt.uiapi.entities.Team> teamList = new ArrayList();
+    public List<Team> selectAllTeams(){
+        Team team = null;
+        List<Team> teamList = new ArrayList();
         ResultSet results = null;
         Select selectQuery = QueryBuilder.select().all().from(keyspace,"teams");
         results = session.execute(selectQuery);
 
         for (Row row : results) {
-            team = new com.kafkamgt.uiapi.entities.Team();
+            team = new Team();
 
             team.setTeamname(row.getString("team"));
             team.setApp(row.getString("app"));
@@ -595,23 +608,23 @@ public class SelectData{
     }
 
 
-    public List<com.kafkamgt.uiapi.entities.Team> selectTeamsOfUsers(String username){
+    public List<Team> selectTeamsOfUsers(String username){
 
-        List<com.kafkamgt.uiapi.entities.Team> teamList = new ArrayList();
-        List<com.kafkamgt.uiapi.entities.Team> teamListSU = new ArrayList();
+        List<Team> teamList = new ArrayList();
+        List<Team> teamListSU = new ArrayList();
         List<String> superUserTeamListStr = new ArrayList();
         ResultSet results = null;
         Select selectQuery = QueryBuilder.select().all().from(keyspace,"users");
         results = session.execute(selectQuery);
 
         Map<String,String> userMap = null;
-        com.kafkamgt.uiapi.entities.Team team = null;
+        Team team = null;
 
         String teamName = null;
         boolean isSuperUser = false;
 
         for (Row row : results) {
-            team = new com.kafkamgt.uiapi.entities.Team();
+            team = new Team();
 
             teamName = row.getString("team");
 
@@ -622,7 +635,9 @@ public class SelectData{
                 if(role.equals("SUPERUSER")){
                     isSuperUser = true;
                 }else {
-                    team.setTeamname(teamName);
+                    TeamPK teamPK = new TeamPK();
+                    teamPK.setTeamname(teamName);
+                    team.setTeamPK(teamPK);
                     teamList.add(team);
                 }
             }
@@ -632,8 +647,10 @@ public class SelectData{
             List<String> listWithoutDuplicates = superUserTeamListStr.stream()
                     .distinct().collect(Collectors.toList());
             listWithoutDuplicates.stream().forEach(teamNameNew->{
-                com.kafkamgt.uiapi.entities.Team suTeam = new com.kafkamgt.uiapi.entities.Team();
-                suTeam.setTeamname(teamNameNew);
+                Team suTeam = new Team();
+                    TeamPK teamPK = new TeamPK();
+                    teamPK.setTeamname(teamNameNew);
+                    suTeam.setTeamPK(teamPK);
                 teamListSU.add(suTeam);
             });
             return teamListSU;

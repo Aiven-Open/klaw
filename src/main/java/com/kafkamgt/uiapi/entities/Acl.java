@@ -1,38 +1,36 @@
-package com.kafkamgt.uiapi.entities.jdbc;
+package com.kafkamgt.uiapi.entities;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
 @Setter
 @Entity
+@IdClass(Acl.class)
 @Table(name="acls")
-public class Acls implements Serializable {
+public class Acl implements Serializable {
 
     @Id
     @Column(name = "req_no")
-    private String reqNo;
+    private String req_no;
 
     @Column(name = "topicname")
-    private String topicName;
+    private String topicname;
 
     @Column(name = "env")
     private String environment;
 
     @Column(name = "teamname")
-    private String teamName;
+    private String teamname;
 
     @Column(name = "consumergroup")
-    private String consumerGroup;
+    private String consumergroup;
 
     @Column(name = "topictype")
-    private String topicType;
+    private String topictype;
 
     @Column(name = "acl_ip")
     private String acl_ip;

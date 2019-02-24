@@ -2,7 +2,7 @@
 
 CREATE KEYSPACE if not exists kafkamanagementapi  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
-Create table if not exists kafkamanagementapi.topic_requests(topicname text PRIMARY KEY,partitions text,replicationfactor text,env text,teamname text,appname text,topictype text,requestor text,requesttime timestamp,topicstatus text ,remarks text,acl_ip text,acl_ssl text,approver text,exectime timestamp);
+Create table if not exists kafkamanagementapi.topic_requests(topicname text,partitions text,	replicationfactor text,env text,teamname text,appname text,topictype text, 	requestor text,requesttime timestamp,topicstatus text ,remarks text,acl_ip text, 	acl_ssl text,approver text,exectime timestamp,  PRIMARY KEY(topicname,env));
 
 Create table if not exists kafkamanagementapi.topics(topicname text PRIMARY KEY,env text,teamname text,appname text);
 

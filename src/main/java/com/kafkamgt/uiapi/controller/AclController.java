@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.kafkamgt.uiapi.entities.AclInfo;
 import com.kafkamgt.uiapi.entities.AclRequests;
 import com.kafkamgt.uiapi.entities.Env;
+import com.kafkamgt.uiapi.entities.Acl;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -83,15 +84,15 @@ public class AclController {
 
         StringTokenizer strTkr = new StringTokenizer(updateSyncAcls,"\n");
         String topicSel=null,teamSelected=null,consumerGroup=null,aclIp=null,aclSsl=null,aclType=null,tmpToken=null;
-        List<AclRequests> listtopics = new ArrayList<>();
-        AclRequests t = null;
+        List<Acl> listtopics = new ArrayList<>();
+        Acl t = null;
 
         StringTokenizer strTkrIn = null;
         while(strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
             strTkrIn = new StringTokenizer(tmpToken,"-----");
             while(strTkrIn.hasMoreTokens()){
-                t = new AclRequests();
+                t = new Acl();
 
                 topicSel = strTkrIn.nextToken();
                 teamSelected = strTkrIn.nextToken();

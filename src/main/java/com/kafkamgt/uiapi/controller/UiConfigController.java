@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.kafkamgt.uiapi.entities.Team;
 import com.kafkamgt.uiapi.entities.ActivityLog;
 import com.kafkamgt.uiapi.entities.Env;
+import com.kafkamgt.uiapi.entities.UserInfo;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +101,7 @@ public class UiConfigController {
         LOG.info("*********"+addNewUser);
         Gson gson = new Gson();
 
-        com.kafkamgt.uiapi.entities.UserInfo newUser = gson.fromJson(addNewUser, com.kafkamgt.uiapi.entities.UserInfo.class);
+        UserInfo newUser = gson.fromJson(addNewUser, UserInfo.class);
 
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -133,7 +134,7 @@ public class UiConfigController {
 
         Gson gson = new Gson();
 
-        com.kafkamgt.uiapi.entities.Team newTeam = gson.fromJson(addNewTeam, com.kafkamgt.uiapi.entities.Team.class);
+        Team newTeam = gson.fromJson(addNewTeam, Team.class);
 
         String execRes = manageTopics.addNewTeam(newTeam);
 
@@ -204,26 +205,26 @@ public class UiConfigController {
     }
 
     @RequestMapping(value = "/showUserList", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<com.kafkamgt.uiapi.entities.UserInfo>> showUsers(){
+    public ResponseEntity<List<UserInfo>> showUsers(){
 
-        List<com.kafkamgt.uiapi.entities.UserInfo> userList = manageTopics.selectAllUsersInfo();
+        List<UserInfo> userList = manageTopics.selectAllUsersInfo();
 
         //LOG.info(userList + " --- userList ");
 
-        return new ResponseEntity<List<com.kafkamgt.uiapi.entities.UserInfo>>(userList, HttpStatus.OK);
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getMyProfileInfo", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<com.kafkamgt.uiapi.entities.UserInfo> getMyProfileInfo(){
+    public ResponseEntity<UserInfo> getMyProfileInfo(){
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        com.kafkamgt.uiapi.entities.UserInfo userList = manageTopics.getUsersInfo(userDetails.getUsername());
+        UserInfo userList = manageTopics.getUsersInfo(userDetails.getUsername());
 
         LOG.info(userList + " --- userList ");
 
-        return new ResponseEntity<com.kafkamgt.uiapi.entities.UserInfo>(userList, HttpStatus.OK);
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

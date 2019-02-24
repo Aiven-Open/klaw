@@ -1,6 +1,8 @@
 package com.kafkamgt.uiapi.helpers;
 
 import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.entities.Topic;
 
 import java.util.List;
 import java.util.Map;
@@ -17,17 +19,17 @@ public interface HandleDbRequests {
 
     public String requestForAcl(AclRequests aclReq);
 
-    public String addNewUser(com.kafkamgt.uiapi.entities.UserInfo userInfo);
+    public String addNewUser(UserInfo userInfo);
 
-    public String addNewTeam(com.kafkamgt.uiapi.entities.Team team);
+    public String addNewTeam(Team team);
 
     public String addNewEnv(Env env);
 
     public String requestForSchema(SchemaRequest schemaRequest);
 
-    public String addToSynctopics(List<TopicRequest> topicRequests);
+    public String addToSynctopics(List<Topic> topicRequests);
 
-    public String addToSyncacls(List<AclRequests> acls);
+    public String addToSyncacls(List<Acl> acls);
 
     /*--------------------Select */
 
@@ -36,9 +38,9 @@ public interface HandleDbRequests {
     public List<TopicRequest> getAllTopicRequests(String requestor);
     public List<TopicRequest> getCreatedTopicRequests(String requestor);
 
-    public TopicRequest selectTopicRequestsForTopic(String topicName) ;
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) ;
 
-    public List<TopicRequest> getSyncTopics(String env);
+    public List<Topic> getSyncTopics(String env);
 
     public List<AclRequests> getSyncAcls(String env);
 
@@ -54,14 +56,13 @@ public interface HandleDbRequests {
 
     public List<Team> selectAllTeams();
 
-    public List<com.kafkamgt.uiapi.entities.UserInfo> selectAllUsersInfo();
+    public List<UserInfo> selectAllUsersInfo();
 
-    public com.kafkamgt.uiapi.entities.UserInfo getUsersInfo(String username);
-    public List<Map<String,String>> selectAllUsers();
+    public UserInfo getUsersInfo(String username);
 
     public AclRequests selectAcl(String req_no);
 
-    public TopicRequest getTopicTeam(String topicName, String env);
+    public Topic getTopicTeam(String topicName, String env);
 
     public List<PCStream> selectTopicStreams(String envSelected);
 
@@ -74,7 +75,7 @@ public interface HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env);
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver);
+    public String updateTopicRequest(String topicName, String approver, String env);
 
     public String updateAclRequest(String req_no, String approver);
 
@@ -89,5 +90,5 @@ public interface HandleDbRequests {
 
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env);
 
-    public String deletePrevAclRecs(List<AclRequests> aclReqs);
+    public String deletePrevAclRecs(List<Acl> aclReqs);
 }

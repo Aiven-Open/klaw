@@ -6,6 +6,7 @@ import com.kafkamgt.uiapi.entities.Env;
 import com.kafkamgt.uiapi.entities.PCStream;
 import com.kafkamgt.uiapi.entities.TopicInfo;
 import com.kafkamgt.uiapi.entities.TopicRequest;
+import com.kafkamgt.uiapi.entities.Topic;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -114,8 +115,8 @@ public class TopicController {
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
         String topicSel=null,teamSelected=null,tmpToken=null;
-        List<TopicRequest> listtopics = new ArrayList<>();
-        TopicRequest t = null;
+        List<Topic> listtopics = new ArrayList<>();
+        Topic t = null;
         while(strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
 
@@ -124,7 +125,7 @@ public class TopicController {
                 topicSel = tmpToken.substring(0, indexOfSep);
                 teamSelected = tmpToken.substring(indexOfSep + 5, tmpToken.length());
 
-                t = new TopicRequest();
+                t = new Topic();
                 t.setTopicname(topicSel);
                 t.setTeamname(teamSelected);
                 t.setEnvironment(envSelected);
@@ -163,13 +164,13 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopicTeam", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<TopicRequest> getTopicTeam(@RequestParam("topicName") String topicName,
+    public ResponseEntity<Topic> getTopicTeam(@RequestParam("topicName") String topicName,
                                                      @RequestParam("env") String env) {
 
-       TopicRequest topicRequest = createTopicHelper.getTopicTeam(topicName, env);
+       Topic topicRequest = createTopicHelper.getTopicTeam(topicName, env);
       // LOG.info(env+"In get topicRequest team"+topicRequest + "---"+topicName);
 
-       return new ResponseEntity<TopicRequest>(topicRequest, HttpStatus.OK);
+       return new ResponseEntity<Topic>(topicRequest, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getCreatedTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -199,13 +200,17 @@ public class TopicController {
     @RequestMapping(value = "/execTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) {
 
-        TopicRequest topicRequest = createTopicHelper.selectTopicRequestsForTopic(topicName);
+        StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
+        topicName = strTkr.nextToken();
+        String env = strTkr.nextToken();
+
+        TopicRequest topicRequest = createTopicHelper.selectTopicRequestsForTopic(topicName, env);
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         String uri = clusterConnUrl+"/topics/createTopics";
-        LOG.info("URI is:"+uri);
+        LOG.info(topicName+"URI is:"+uri+"------"+env);
         RestTemplate restTemplate = new RestTemplate();
 
         MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
@@ -230,12 +235,11 @@ public class TopicController {
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-         updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicName,userDetails.getUsername());
+         updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicName,userDetails.getUsername(), env);
 
         updateTopicReqStatus = "{\"result\":\""+updateTopicReqStatus+"\"}";
         return new ResponseEntity<String>(updateTopicReqStatus, HttpStatus.OK);
     }
-
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
@@ -274,7 +278,7 @@ public class TopicController {
                 (uri, HttpMethod.GET, entity, Set.class);
 
         // Get Sync topics
-        List<TopicRequest> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
 
         topicCounter = 0;
         List<String> topicsList = new ArrayList(s.getBody());
@@ -380,7 +384,7 @@ public class TopicController {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<TopicRequest> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
 
         List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;

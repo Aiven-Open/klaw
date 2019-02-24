@@ -3,6 +3,7 @@ package com.kafkamgt.uiapi.entities;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,16 +13,40 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@IdClass(TopicRequest.class)
 @Table(name="topic_requests")
 public class TopicRequest implements Serializable {
 
-    @Id
-    @Column(name = "topicname")
+    @Transient
     private String topicname;
 
-    @Id
-    @Column(name = "env")
+    @Transient
     private String environment;
+
+    public String getTopicname() {
+        if(this.topicRequestPK == null)
+            return this.topicname;
+        else
+            return this.topicRequestPK.getTopicname();
+    }
+
+    public void setTopicname(String topicname) {
+        this.topicname = topicname;
+    }
+
+    public String getEnvironment() {
+        if(this.topicRequestPK == null)
+            return this.environment;
+        else
+            return this.topicRequestPK.getEnvironment();
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+
+    @EmbeddedId
+    private TopicRequestPK topicRequestPK;
 
     @Column(name = "partitions")
     private String topicpartitions;

@@ -3,12 +3,16 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.*;
 import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.entities.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Component
 public class InsertData {
@@ -53,27 +57,28 @@ public class InsertData {
         insertIntoActivityLogTopic(topicRequest);
 
             // insert into SOT
-        List<TopicRequest> topicRequests = new ArrayList<>();
-        topicRequests.add(topicRequest);
-            insertIntoTopicSOT(topicRequests);
+        List<Topic> topics = new ArrayList<>();
+        Topic topicObj = new Topic();
+        copyProperties(topicRequest,topicObj);
+        topics.add(topicObj);
+            insertIntoTopicSOT(topics);
 
-        AclRequests aclReq = new AclRequests();
+        Acl aclReq = new Acl();
         aclReq.setTopictype("Producer");
         aclReq.setEnvironment(topicRequest.getEnvironment());
         aclReq.setTeamname(topicRequest.getTeamname());
         aclReq.setAcl_ssl(topicRequest.getAcl_ssl());
         aclReq.setAcl_ip(topicRequest.getAcl_ip());
         aclReq.setTopicname(topicRequest.getTopicname());
-        aclReq.setRequestingteam(topicRequest.getTeamname());
 
-        List<AclRequests> acls = new ArrayList<>();
+        List<Acl> acls = new ArrayList<>();
         acls.add(aclReq);
             insertIntoAclsSOT(acls);
 
         return "success";
     }
 
-    public String insertIntoTopicSOT(List<TopicRequest> topicRequests){
+    public String insertIntoTopicSOT(List<Topic> topicRequests){
 
         String tableName = "topics", insertstat=null;
 
@@ -99,7 +104,7 @@ public class InsertData {
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
 
-        com.kafkamgt.uiapi.entities.UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topicRequest.getUsername());
+        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topicRequest.getUsername());
 
         session.execute(boundStatement.bind(getRandom(), "topicRequest",
                     "new", new Date(),""+ topicRequest.getTopicname(),""+ topicRequest.getUsername(), topicRequest.getEnvironment(), userInfo.getTeam()));
@@ -128,14 +133,16 @@ public class InsertData {
         insertIntoActivityLogAcl(aclReq);
 
             // Insert to SOT
-        List<AclRequests> acls = new ArrayList<>();
-        acls.add(aclReq);
+        List<Acl> acls = new ArrayList<>();
+        Acl aclObj = new Acl();
+        copyProperties(aclReq,aclObj);
+        acls.add(aclObj);
             insertIntoAclsSOT(acls);
 
         return "success";
     }
 
-    public String insertIntoAclsSOT(List<AclRequests> acls){
+    public String insertIntoAclsSOT(List<Acl> acls){
 
         String tableName = "acls", insertstat=null;
 
@@ -161,7 +168,7 @@ public class InsertData {
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
 
-        com.kafkamgt.uiapi.entities.UserInfo userInfo = cassandraSelectHelper.selectUserInfo(aclReq.getUsername());
+        UserInfo userInfo = cassandraSelectHelper.selectUserInfo(aclReq.getUsername());
 
         session.execute(boundStatement.bind(getRandom(), "acl",
                 "new", new Date(),aclReq.getAcl_ip()+"-"+aclReq.getTopicname()+"-"+aclReq.getAcl_ssl()+"-"+
@@ -187,7 +194,7 @@ public class InsertData {
         return "success";
     }
 
-    public String insertIntoUsers(com.kafkamgt.uiapi.entities.UserInfo userInfo){
+    public String insertIntoUsers(UserInfo userInfo){
         String tableName = "users";
         String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(fullname,userid, pwd, team, roleid) " +
                 "VALUES (?,?,?,?,?);";

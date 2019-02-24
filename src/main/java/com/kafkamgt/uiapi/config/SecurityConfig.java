@@ -1,6 +1,7 @@
 package com.kafkamgt.uiapi.config;
 
 
+import com.kafkamgt.uiapi.entities.UserInfo;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import com.kafkamgt.uiapi.helpers.Utilities;
 import org.slf4j.Logger;
@@ -62,11 +63,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             throw new Exception("Invalid License !!");
         }
 
-        List<com.kafkamgt.uiapi.entities.UserInfo> users = manageTopics.selectAllUsersInfo();
-        Iterator<com.kafkamgt.uiapi.entities.UserInfo> iter = users.iterator();
+        List<UserInfo> users = manageTopics.selectAllUsersInfo();
+        Iterator<UserInfo> iter = users.iterator();
         UserDetailsManagerConfigurer<AuthenticationManagerBuilder, InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder>>.UserDetailsBuilder userDetailsBuilder = null;
 
-        com.kafkamgt.uiapi.entities.UserInfo userInfo = iter.next();
+        UserInfo userInfo = iter.next();
         userDetailsBuilder = auth.inMemoryAuthentication()
                 .passwordEncoder(encoder)
                 .withUser(userInfo.getUsername()).password(encoder.encode(userInfo.getPwd())).roles(userInfo.getRole());
@@ -85,8 +86,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
         final Properties globalUsers = new Properties();
-        List<com.kafkamgt.uiapi.entities.UserInfo> users = manageTopics.selectAllUsersInfo();
-        Iterator<com.kafkamgt.uiapi.entities.UserInfo> iter = users.iterator();
+        List<UserInfo> users = manageTopics.selectAllUsersInfo();
+        Iterator<UserInfo> iter = users.iterator();
         com.kafkamgt.uiapi.entities.UserInfo userInfo = null;
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();

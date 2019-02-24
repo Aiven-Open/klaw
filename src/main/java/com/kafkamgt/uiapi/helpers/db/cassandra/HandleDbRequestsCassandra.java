@@ -6,6 +6,8 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.kafkamgt.uiapi.entities.*;
+import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.entities.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,11 +93,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraInsertHelper.insertIntoRequestAcl(aclReq);
     }
 
-    public String addNewUser(com.kafkamgt.uiapi.entities.UserInfo userInfo){
+    public String addNewUser(UserInfo userInfo){
         return cassandraInsertHelper.insertIntoUsers(userInfo);
     }
 
-    public String addNewTeam(com.kafkamgt.uiapi.entities.Team team){
+    public String addNewTeam(Team team){
         return cassandraInsertHelper.insertIntoTeams(team);
     }
 
@@ -107,11 +109,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraInsertHelper.insertIntoRequestSchema(schemaRequest);
     }
 
-    public String addToSynctopics(List<TopicRequest> topicRequests) {
+    public String addToSynctopics(List<Topic> topicRequests) {
         return cassandraInsertHelper.insertIntoTopicSOT(topicRequests);
     }
 
-    public String addToSyncacls(List<AclRequests> acls) {
+    public String addToSyncacls(List<Acl> acls) {
         return cassandraInsertHelper.insertIntoAclsSOT(acls);
     }
 
@@ -129,11 +131,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraSelectHelper.selectTopicRequests(true,requestor);
     }
 
-    public TopicRequest selectTopicRequestsForTopic(String topicName) {
-        return cassandraSelectHelper.selectTopicRequestsForTopic(topicName);
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) {
+        return cassandraSelectHelper.selectTopicRequestsForTopic(topicName, env);
     }
 
-    public List<TopicRequest> getSyncTopics(String env){
+    public List<Topic> getSyncTopics(String env){
         return cassandraSelectHelper.selectSyncTopics(env);
     }
 
@@ -167,22 +169,19 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraSelectHelper.selectAllTeams();
     }
 
-    public List<com.kafkamgt.uiapi.entities.UserInfo> selectAllUsersInfo(){
+    public List<UserInfo> selectAllUsersInfo(){
         return cassandraSelectHelper.selectAllUsersInfo();
     }
 
-    public com.kafkamgt.uiapi.entities.UserInfo getUsersInfo(String username){
+    public UserInfo getUsersInfo(String username){
         return cassandraSelectHelper.selectUserInfo(username);
-    }
-    public List<Map<String,String>> selectAllUsers(){
-        return cassandraSelectHelper.selectAllUsers();
     }
 
     public AclRequests selectAcl(String req_no){
         return cassandraSelectHelper.selectAcl(req_no);
     }
 
-    public TopicRequest getTopicTeam(String topicName, String env){
+    public Topic getTopicTeam(String topicName, String env){
         return cassandraSelectHelper.selectTopicDetails(topicName, env);
     }
 
@@ -203,8 +202,8 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env){return cassandraSelectHelper.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver){
-        return cassandraUpdateHelper.updateTopicRequest(topicName, approver);
+    public String updateTopicRequest(String topicName, String approver, String env){
+        return cassandraUpdateHelper.updateTopicRequest(topicName, approver, env);
     }
 
     public String updateAclRequest(String req_no, String approver){
@@ -232,5 +231,5 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclRequests> aclReqs){ return cassandraDeleteHelper.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<Acl> aclReqs){ return cassandraDeleteHelper.deletePrevAclRecs(aclReqs);}
 }
