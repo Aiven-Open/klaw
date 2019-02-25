@@ -183,8 +183,8 @@ public class ManageTopics {
     }
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName){
-        return handleDbRequests.deleteTopicRequest(topicName);
+    public String deleteTopicRequest(String topicName, String env){
+        return handleDbRequests.deleteTopicRequest(topicName, env);
     }
 
     public String deleteAclRequest(String req_no){

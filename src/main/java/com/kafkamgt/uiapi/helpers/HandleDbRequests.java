@@ -84,7 +84,7 @@ public interface HandleDbRequests {
     public String updatePassword(String username, String pwd);
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName);
+    public String deleteTopicRequest(String topicName, String env);
 
     public String deleteAclRequest(String req_no);
 

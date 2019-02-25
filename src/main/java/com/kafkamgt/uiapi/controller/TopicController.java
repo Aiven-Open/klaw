@@ -189,8 +189,12 @@ public class TopicController {
     @RequestMapping(value = "/deleteTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> deleteTopicRequests(@RequestParam("topicName") String topicName) {
 
+        StringTokenizer strTkr = new StringTokenizer(topicName,",");
+        topicName = strTkr.nextToken();
+        String env = strTkr.nextToken();
+
         LOG.info("In delete req"+topicName);
-        String deleteTopicReqStatus = createTopicHelper.deleteTopicRequest(topicName);
+        String deleteTopicReqStatus = createTopicHelper.deleteTopicRequest(topicName,env);
 
         deleteTopicReqStatus = "{\"result\":\""+deleteTopicReqStatus+"\"}";
         return new ResponseEntity<String>(deleteTopicReqStatus, HttpStatus.OK);
@@ -200,7 +204,7 @@ public class TopicController {
     @RequestMapping(value = "/execTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) {
 
-        StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
+        StringTokenizer strTkr = new StringTokenizer(topicName,",");
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 

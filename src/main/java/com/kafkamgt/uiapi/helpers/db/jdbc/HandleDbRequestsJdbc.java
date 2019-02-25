@@ -215,8 +215,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName){
-        return jdbcDeleteHelper.deleteTopicRequest(topicName);
+    public String deleteTopicRequest(String topicName, String env){
+        return jdbcDeleteHelper.deleteTopicRequest(topicName, env);
     }
 
     public String deleteAclRequest(String req_no){

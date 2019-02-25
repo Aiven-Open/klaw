@@ -22,9 +22,9 @@ public class DeleteData {
     String keyspace;
 
 
-    public String deleteTopicRequest(String topicName){
+    public String deleteTopicRequest(String topicName, String env){
         Clause eqclause = QueryBuilder.eq("topicname",topicName);
-        //Clause eqclause2 = QueryBuilder.eq("topicstatus","created");
+        Clause eqclause2 = QueryBuilder.eq("env",env);
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"topic_requests")
                 .where(eqclause);
                // .and(eqclause2);

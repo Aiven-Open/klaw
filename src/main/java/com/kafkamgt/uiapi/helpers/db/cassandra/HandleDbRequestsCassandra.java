@@ -219,8 +219,8 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     }
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName){
-        return cassandraDeleteHelper.deleteTopicRequest(topicName);
+    public String deleteTopicRequest(String topicName, String env){
+        return cassandraDeleteHelper.deleteTopicRequest(topicName, env);
     }
 
     public String deleteAclRequest(String req_no){
