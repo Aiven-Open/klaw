@@ -42,7 +42,7 @@ public interface HandleDbRequests {
 
     public List<Topic> getSyncTopics(String env);
 
-    public List<AclRequests> getSyncAcls(String env);
+    public List<Acl> getSyncAcls(String env);
 
     public List<AclRequests> getAllAclRequests(String requestor);
     public List<AclRequests> getCreatedAclRequests(String requestor);
@@ -75,7 +75,7 @@ public interface HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env);
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver, String env);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver);
 
     public String updateAclRequest(String req_no, String approver);
 

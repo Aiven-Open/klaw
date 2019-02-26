@@ -9,4 +9,11 @@ import java.util.Optional;
 public interface AclRepo extends CrudRepository<Acl, String> {
     Optional<Acl> findById(String req_no);
     List<Acl> findAllByEnvironment(String environment);
+    Optional<Acl> findByTopicnameAndEnvironmentAndTopictypeAndConsumergroupAndAclipAndAclssl(String topicName,
+                                                                                               String env,
+                                                                                               String topicType,
+                                                                                               String consumerGroup,
+                                                                                               String aclIp,
+                                                                                               String aclSsl
+    );
 }

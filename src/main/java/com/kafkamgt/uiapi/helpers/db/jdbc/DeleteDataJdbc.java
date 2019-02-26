@@ -1,9 +1,11 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
+import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.entities.Acl;
 import com.kafkamgt.uiapi.entities.AclRequests;
 import com.kafkamgt.uiapi.entities.SchemaRequest;
 import com.kafkamgt.uiapi.entities.TopicRequest;
+import com.kafkamgt.uiapi.helpers.db.jdbc.repo.AclRepo;
 import com.kafkamgt.uiapi.helpers.db.jdbc.repo.AclRequestsRepo;
 import com.kafkamgt.uiapi.helpers.db.jdbc.repo.SchemaRequestRepo;
 import com.kafkamgt.uiapi.helpers.db.jdbc.repo.TopicRequestsRepo;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class DeleteDataJdbc {
@@ -28,6 +31,9 @@ public class DeleteDataJdbc {
 
     @Autowired
     AclRequestsRepo aclRequestsRepo;
+
+    @Autowired
+    AclRepo aclRepo;
 
     public String deleteTopicRequest(String topicName, String env){
         TopicRequest topicRequest = new TopicRequest();
@@ -78,8 +84,25 @@ public class DeleteDataJdbc {
         return "success";
     }
 
-    public String deletePrevAclRecs(List<Acl> aclReqs){
+    public String deletePrevAclRecs(List<Acl> aclsToBeDeleted){
 
+        List<Acl> allAcls = Lists.newArrayList(aclRepo.findAll());
+
+        for(Acl aclToBeDeleted :aclsToBeDeleted){
+            for(Acl allAcl: allAcls) {
+                if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
+                        aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
+                        aclToBeDeleted.getConsumergroup().equals(allAcl.getConsumergroup()) &&
+                        aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment()) &&
+                        aclToBeDeleted.getAclip().equals(allAcl.getAclip()) &&
+                        aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))
+                {
+                    LOG.info("acl to be deleted" + allAcl);
+                    aclRepo.delete(allAcl);
+                    break;
+                }
+            }
+        }
 
 //        for(Acl aclReq:aclReqs){
 //            String aclType = aclReq.getTopictype();

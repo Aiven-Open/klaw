@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@IdClass(AclRequests.class)
 @Table(name="acl_requests")
 public class AclRequests implements Serializable {
 

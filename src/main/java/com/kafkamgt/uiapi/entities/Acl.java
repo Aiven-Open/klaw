@@ -9,7 +9,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@IdClass(Acl.class)
 @Table(name="acls")
 public class Acl implements Serializable {
 
@@ -33,8 +32,22 @@ public class Acl implements Serializable {
     private String topictype;
 
     @Column(name = "acl_ip")
-    private String acl_ip;
+    private String aclip;
 
     @Column(name = "acl_ssl")
-    private String acl_ssl;
+    private String aclssl;
+
+    @Override
+    public String toString() {
+        return "Acl{" +
+                "req_no='" + req_no + '\'' +
+                ", topicname='" + topicname + '\'' +
+                ", environment='" + environment + '\'' +
+                ", teamname='" + teamname + '\'' +
+                ", consumergroup='" + consumergroup + '\'' +
+                ", topictype='" + topictype + '\'' +
+                ", aclip='" + aclip + '\'' +
+                ", aclssl='" + aclssl + '\'' +
+                '}';
+    }
 }

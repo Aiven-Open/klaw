@@ -56,24 +56,7 @@ public class InsertData {
             // Activity log
         insertIntoActivityLogTopic(topicRequest);
 
-            // insert into SOT
-        List<Topic> topics = new ArrayList<>();
-        Topic topicObj = new Topic();
-        copyProperties(topicRequest,topicObj);
-        topics.add(topicObj);
-            insertIntoTopicSOT(topics);
 
-        Acl aclReq = new Acl();
-        aclReq.setTopictype("Producer");
-        aclReq.setEnvironment(topicRequest.getEnvironment());
-        aclReq.setTeamname(topicRequest.getTeamname());
-        aclReq.setAcl_ssl(topicRequest.getAcl_ssl());
-        aclReq.setAcl_ip(topicRequest.getAcl_ip());
-        aclReq.setTopicname(topicRequest.getTopicname());
-
-        List<Acl> acls = new ArrayList<>();
-        acls.add(aclReq);
-            insertIntoAclsSOT(acls);
 
         return "success";
     }
@@ -153,7 +136,7 @@ public class InsertData {
 
         acls.forEach(aclReq-> {
             session.execute(boundStatement.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(), aclReq.getTeamname(),
-                    aclReq.getConsumergroup(), aclReq.getTopictype(),aclReq.getAcl_ip(),aclReq.getAcl_ssl()));
+                    aclReq.getConsumergroup(), aclReq.getTopictype(),aclReq.getAclip(),aclReq.getAclssl()));
         });
 
         return "success";

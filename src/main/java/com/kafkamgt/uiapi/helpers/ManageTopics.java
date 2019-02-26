@@ -103,7 +103,7 @@ public class ManageTopics {
         return handleDbRequests.getSyncTopics(env);
     }
 
-    public List<AclRequests> getSyncAcls(String env){
+    public List<Acl> getSyncAcls(String env){
         return handleDbRequests.getSyncAcls(env);
     }
 
@@ -166,8 +166,8 @@ public class ManageTopics {
     public List<ActivityLog> selectActivityLog(String user, String env){return handleDbRequests.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver, String env){
-        return handleDbRequests.updateTopicRequest(topicName, approver, env);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+        return handleDbRequests.updateTopicRequest(topicRequest, approver);
     }
 
     public String updateAclRequest(String req_no, String approver){

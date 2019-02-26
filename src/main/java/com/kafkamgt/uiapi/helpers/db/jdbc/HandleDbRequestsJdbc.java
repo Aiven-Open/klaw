@@ -135,7 +135,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectSyncTopics(env);
     }
 
-    public List<AclRequests> getSyncAcls(String env){
+    public List<Acl> getSyncAcls(String env){
         return jdbcSelectHelper.selectSyncAcls(env);
     }
 
@@ -198,8 +198,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env){return jdbcSelectHelper.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver, String env){
-        return jdbcUpdateHelper.updateTopicRequest(topicName, approver, env);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+        return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
     }
 
     public String updateAclRequest(String req_no, String approver){

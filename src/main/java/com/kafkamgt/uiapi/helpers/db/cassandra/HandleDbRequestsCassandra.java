@@ -139,7 +139,7 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraSelectHelper.selectSyncTopics(env);
     }
 
-    public List<AclRequests> getSyncAcls(String env){
+    public List<Acl> getSyncAcls(String env){
         return cassandraSelectHelper.selectSyncAcls(env);
     }
 
@@ -202,8 +202,8 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env){return cassandraSelectHelper.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver, String env){
-        return cassandraUpdateHelper.updateTopicRequest(topicName, approver, env);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+        return cassandraUpdateHelper.updateTopicRequest(topicRequest, approver);
     }
 
     public String updateAclRequest(String req_no, String approver){

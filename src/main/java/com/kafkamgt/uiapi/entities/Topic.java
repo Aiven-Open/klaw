@@ -9,7 +9,6 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@IdClass(Topic.class)
 @Table(name="topics")
 public class Topic implements Serializable {
 
@@ -49,4 +48,15 @@ public class Topic implements Serializable {
 
     @Column(name = "appname")
     private String appname;
+
+    @Override
+    public String toString() {
+        return "Topic{" +
+                "topicname='" + topicname + '\'' +
+                ", environment='" + environment + '\'' +
+                ", topicPK=" + topicPK +
+                ", teamname='" + teamname + '\'' +
+                ", appname='" + appname + '\'' +
+                '}';
+    }
 }

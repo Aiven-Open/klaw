@@ -2,11 +2,7 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.entities.Env;
-import com.kafkamgt.uiapi.entities.PCStream;
-import com.kafkamgt.uiapi.entities.TopicInfo;
-import com.kafkamgt.uiapi.entities.TopicRequest;
-import com.kafkamgt.uiapi.entities.Topic;
+import com.kafkamgt.uiapi.entities.*;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -126,9 +122,14 @@ public class TopicController {
                 teamSelected = tmpToken.substring(indexOfSep + 5, tmpToken.length());
 
                 t = new Topic();
-                t.setTopicname(topicSel);
-                t.setTeamname(teamSelected);
+
+                TopicPK topicPK = new TopicPK();
+                topicPK.setTopicname(topicSel);
+                topicPK.setEnvironment(envSelected);
                 t.setEnvironment(envSelected);
+                t.setTeamname(teamSelected);
+                t.setTopicPK(topicPK);
+
                 listtopics.add(t);
             }
         }
@@ -239,7 +240,7 @@ public class TopicController {
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-         updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicName,userDetails.getUsername(), env);
+         updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,userDetails.getUsername());
 
         updateTopicReqStatus = "{\"result\":\""+updateTopicReqStatus+"\"}";
         return new ResponseEntity<String>(updateTopicReqStatus, HttpStatus.OK);
@@ -314,7 +315,7 @@ public class TopicController {
                     String teamUpdated = null;
                     try {
                         teamUpdated = topicsFromSOT.stream().filter(a -> {
-                            if (a.getTopicname().equals(tmpTopicName))
+                            if (a.getTopicPK().getTopicname().equals(tmpTopicName))
                                 return true;
                             else
                                 return false;
@@ -415,7 +416,7 @@ public class TopicController {
                     String teamUpdated = null;
                     try {
                         teamUpdated = topicsFromSOT.stream().filter(a -> {
-                            if (a.getTopicname().equals(tmpTopicName))
+                            if (a.getTopicPK().getTopicname().equals(tmpTopicName))
                                 return true;
                             else
                                 return false;

@@ -65,8 +65,8 @@ public class DeleteData {
 
         for(Acl aclReq:aclReqs){
             String aclType = aclReq.getTopictype();
-            String host = aclReq.getAcl_ip();
-            String principle = aclReq.getAcl_ssl();
+            String host = aclReq.getAclip();
+            String principle = aclReq.getAclssl();
             String consumergroup = aclReq.getConsumergroup();
             String topicName = aclReq.getTopicname();
 

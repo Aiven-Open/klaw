@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@IdClass(SchemaRequest.class)
 @Table(name="schema_requests")
 public class SchemaRequest implements Serializable {
 

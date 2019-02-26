@@ -48,6 +48,7 @@ public class InsertDataJdbc {
     @Autowired
     SchemaRequestRepo schemaRequestRepo;
 
+    @Autowired
     SelectDataJdbc jdbcSelectHelper;
 
     public String getRandom(){
@@ -65,6 +66,12 @@ public class InsertDataJdbc {
 
     public String insertIntoRequestTopic(TopicRequest topicRequest){
 
+        TopicRequestPK topicRequestPK = new TopicRequestPK();
+        topicRequestPK.setTopicname(topicRequest.getTopicname());
+        topicRequestPK.setEnvironment(topicRequest.getEnvironment());
+        topicRequest.setTopicRequestPK(topicRequestPK);
+        topicRequest.setTopicstatus("created");
+        topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())).toString());
         topicRequestsRepo.save(topicRequest);
 
         UserInfo userInfo = jdbcSelectHelper.selectUserInfo(topicRequest.getUsername());
@@ -93,30 +100,6 @@ public class InsertDataJdbc {
 //            session.execute(boundStatement.bind(topicRequest.getTopicName(),topicRequest.getTopicpartitions(),topicRequest.getReplicationfactor(),topicRequest.getEnvironment(), topicRequest.getTeamname(), topicRequest.getAppname(),
 //                    topicReqType, topicRequest.getUsername(), new Date(),topicRequest.getAcl_ip(), topicRequest.getAcl_ssl(), topicRequest.getRemarks(), "created"));
 //
-
-//
-//            // insert into SOT
-        List<Topic> topics = new ArrayList<>();
-
-        Topic topicObj = new Topic();
-        copyProperties(topicRequest,topicObj);
-        topics.add(topicObj);
-        insertIntoTopicSOT(topics);
-
-
-        Acl aclReq = new Acl();
-        aclReq.setTopictype("Producer");
-        aclReq.setEnvironment(topicRequest.getEnvironment());
-        aclReq.setTeamname(topicRequest.getTeamname());
-        aclReq.setAcl_ssl(topicRequest.getAcl_ssl());
-        aclReq.setAcl_ip(topicRequest.getAcl_ip());
-        aclReq.setTopicname(topicRequest.getTopicname());
-//        aclReq.setRequestingteam(topicRequest.getTeamname());
-//
-        List<Acl> acls = new ArrayList<>();
-        acls.add(aclReq);
-        insertIntoAclsSOT(acls);
-
         return "success";
     }
 
@@ -140,6 +123,10 @@ public class InsertDataJdbc {
 
     public String insertIntoRequestAcl(AclRequests aclReq){
 
+        aclReq.setReq_no(getRandom());
+        aclReq.setAclstatus("created");
+        aclReq.setRequesttime(new Timestamp(System.currentTimeMillis())+"");
+        aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getUsername()).getTeam());
         aclRequestsRepo.save(aclReq);
 
 //        String tableName = null, topicReqType=null, insertstat=null;
@@ -172,21 +159,13 @@ public class InsertDataJdbc {
 
             // Insert into acl activity log
         insertIntoActivityLog(activityLog);
-//
-        // Insert to SOT
-        List<Acl> acls = new ArrayList<>();
-        Acl aclObj = new Acl();
-        copyProperties(aclReq,aclObj);
-            aclObj.setReq_no(getRandom());
-        acls.add(aclObj);
-        insertIntoAclsSOT(acls);
-
         return "success";
     }
 
     public String insertIntoAclsSOT(List<Acl> acls){
 
         acls.forEach(acl->{
+            acl.setReq_no(getRandom());
             aclRepo.save(acl);
         });
 //        String tableName = "acls", insertstat=null;

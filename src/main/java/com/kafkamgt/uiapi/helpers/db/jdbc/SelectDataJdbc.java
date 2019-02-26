@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -152,7 +149,12 @@ public class SelectDataJdbc {
     public Topic selectTopicDetails(String topic, String env){
         Topic topicRequestObj = null;
 
-        return topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topic).get();
+        Optional<Topic> topicOpt =  topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topic);
+
+        if(topicOpt.isPresent())
+            return topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topic).get();
+        else
+            return null;
 
 //        ResultSet results = null;
 //        Clause eqclause1 = QueryBuilder.eq("topicname", topic);
@@ -198,9 +200,9 @@ public class SelectDataJdbc {
         //return topicRequestList;
     }
 
-    public List<AclRequests> selectSyncAcls(String env){
+    public List<Acl> selectSyncAcls(String env){
 
-        return aclRequestsRepo.findAllByEnvironment(env);
+        return aclRepo.findAllByEnvironment(env);
 //        ResultSet results = null;
 //        Clause eqclause = QueryBuilder.eq("env", env);
 //        Select selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
@@ -290,8 +292,10 @@ public class SelectDataJdbc {
         List<Acl> aclList = aclRepo.findAllByEnvironment(envSelected);
 
         for (Topic row : topicList) {
+            LOG.info(aclList.size()+"HHHHHHHHHHHHHHHHHH"+row);
+            LOG.info("&&&&&&&&&"+row.toString());
             String teamName = row.getTeamname();
-            String topicName = row.getTopicname();
+            String topicName = row.getTopicPK().getTopicname();
 
             pcStream = new PCStream();
             List<String> prodTeams = new ArrayList<>();
@@ -302,18 +306,32 @@ public class SelectDataJdbc {
            // LOG.info("-----------"+topicName);
 
             for (Acl row1 : aclList) {
-                String teamName1 = row1.getTeamname();
-                String topicName1 = row1.getTopicname();
-                String aclType = row1.getTopictype();
-              //  LOG.info("***-----------"+topicName1);
-                if(topicName.equals(topicName1)){
-                    LOG.info(topicName+"---"+aclType+"---"+teamName1+"---"+teamName);
-                    if(aclType.equals("Producer"))
-                        prodTeams.add(teamName1);
-                    else if(aclType.equals("Consumer"))
-                        consumerTeams.add(teamName1);
+                if(row1!=null) {
+                    LOG.info("Here...." + row1);
+                    LOG.info(row1.getTopicname() + "*************************" + row1.toString());
+                    String teamName1 = row1.getTeamname();
+
+                    String topicName1 = row1.getTopicname();
+                    String aclType = row1.getTopictype();
+                    //  LOG.info("***-----------"+topicName1);
+                    if (topicName.equals(topicName1)) {
+                        LOG.info(topicName + "---" + aclType + "---" + teamName1 + "---" + teamName);
+                        if (aclType.equals("Producer"))
+                            prodTeams.add(teamName1);
+                        else if (aclType.equals("Consumer"))
+                            consumerTeams.add(teamName1);
+                    }
                 }
             }
+
+            consumerTeams = consumerTeams.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            prodTeams = prodTeams.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+
             pcStream.setConsumerTeams(consumerTeams);
             pcStream.setProducerTeams(prodTeams);
             pcStreams.add(pcStream);

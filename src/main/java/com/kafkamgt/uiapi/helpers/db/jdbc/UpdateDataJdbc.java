@@ -1,9 +1,6 @@
 package com.kafkamgt.uiapi.helpers.db.jdbc;
 
-import com.kafkamgt.uiapi.entities.AclRequests;
-import com.kafkamgt.uiapi.entities.SchemaRequest;
-import com.kafkamgt.uiapi.entities.TopicRequest;
-import com.kafkamgt.uiapi.entities.UserInfo;
+import com.kafkamgt.uiapi.entities.*;
 import com.kafkamgt.uiapi.helpers.db.jdbc.repo.AclRequestsRepo;
 import com.kafkamgt.uiapi.helpers.db.jdbc.repo.SchemaRequestRepo;
 import com.kafkamgt.uiapi.helpers.db.jdbc.repo.TopicRequestsRepo;
@@ -14,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Component
 public class UpdateDataJdbc {
@@ -32,12 +33,16 @@ public class UpdateDataJdbc {
     @Autowired
     SchemaRequestRepo schemaRequestRepo;
 
-    public String updateTopicRequest(String topicName, String approver, String env){
-        TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setTopicname(topicName);
+    @Autowired
+    InsertDataJdbc insertDataJdbcHelper;
+
+    @Autowired
+    SelectDataJdbc selectDataJdbcHelper;
+
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+
         topicRequest.setApprover(approver);
         topicRequest.setTopicstatus("approved");
-        topicRequest.setEnvironment(env);
         topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         topicRequestsRepo.save(topicRequest);
 //        Clause eqclause = QueryBuilder.eq("topicname",topicName);
@@ -47,6 +52,32 @@ public class UpdateDataJdbc {
 //                .and(QueryBuilder.set("exectime", new Date()))
 //                .where(eqclause);
 //        session.execute(updateQuery);
+
+
+        //            // insert into SOT
+        List<Topic> topics = new ArrayList<>();
+
+        Topic topicObj = new Topic();
+        copyProperties(topicRequest,topicObj);
+        TopicPK topicPK = new TopicPK();
+        topicPK.setTopicname(topicObj.getTopicname());
+        topicPK.setEnvironment(topicObj.getEnvironment());
+        topicObj.setTopicPK(topicPK);
+        topics.add(topicObj);
+        insertDataJdbcHelper.insertIntoTopicSOT(topics);
+
+        Acl aclReq = new Acl();
+        aclReq.setTopictype("Producer");
+        aclReq.setEnvironment(topicRequest.getEnvironment());
+        aclReq.setTeamname(topicRequest.getTeamname());
+        aclReq.setAclssl(topicRequest.getAcl_ssl());
+        aclReq.setAclip(topicRequest.getAcl_ip());
+        aclReq.setTopicname(topicRequest.getTopicname());
+
+        List<Acl> acls = new ArrayList<>();
+        acls.add(aclReq);
+        insertDataJdbcHelper.insertIntoAclsSOT(acls);
+
         return "success";
     }
 
@@ -64,6 +95,17 @@ public class UpdateDataJdbc {
 //                .and(QueryBuilder.set("exectime", new Date()))
 //                .where(eqclause);
 //        session.execute(updateQuery);
+
+        // Insert to SOT
+
+        AclRequests aclReq = aclRequestsRepo.findById(req_no).get();
+        List<Acl> acls = new ArrayList<>();
+        Acl aclObj = new Acl();
+        copyProperties(aclReq,aclObj);
+        aclObj.setTeamname(aclReq.getRequestingteam());
+        acls.add(aclObj);
+        insertDataJdbcHelper.insertIntoAclsSOT(acls);
+
         return "success";
     }
 

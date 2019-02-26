@@ -13,7 +13,6 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@IdClass(TopicRequest.class)
 @Table(name="topic_requests")
 public class TopicRequest implements Serializable {
 

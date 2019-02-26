@@ -227,9 +227,9 @@ public class SelectData{
         return topicRequestList;
     }
 
-    public List<AclRequests> selectSyncAcls(String env){
-        AclRequests aclReq = null;
-        List<AclRequests> aclList = new ArrayList();
+    public List<Acl> selectSyncAcls(String env){
+        Acl aclReq = null;
+        List<Acl> aclList = new ArrayList();
         ResultSet results = null;
         Clause eqclause = QueryBuilder.eq("env", env);
         Select selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
@@ -237,12 +237,12 @@ public class SelectData{
 
         for (Row row : results) {
 
-            aclReq = new AclRequests();
+            aclReq = new Acl();
             aclReq.setReq_no(row.getString("req_no"));
             aclReq.setTopicname(row.getString("topicname"));
             aclReq.setTeamname(row.getString("teamname"));
-            aclReq.setAcl_ip(row.getString("acl_ip"));
-            aclReq.setAcl_ssl(row.getString("acl_ssl"));
+            aclReq.setAclip(row.getString("acl_ip"));
+            aclReq.setAclssl(row.getString("acl_ssl"));
             aclReq.setConsumergroup(row.getString("consumergroup"));
             aclReq.setTopictype(row.getString("topictype"));
 

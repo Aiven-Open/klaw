@@ -103,8 +103,8 @@ public class AclController {
 
                 t.setTopicname(topicSel);
                 t.setConsumergroup(consumerGroup);
-                t.setAcl_ip(aclIp);
-                t.setAcl_ssl(aclSsl);
+                t.setAclip(aclIp);
+                t.setAclssl(aclSsl);
                 t.setTeamname(teamSelected);
                 t.setEnvironment(envSelected);
                 t.setTopictype(aclType);
@@ -247,7 +247,7 @@ public class AclController {
         List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
 
         // Get Sync acls
-        List<AclRequests> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
         topicCounter = 0;
 
@@ -280,12 +280,12 @@ public class AclController {
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                for(AclRequests aclSotItem : aclsFromSOT){
-                    String acl_ssl = aclSotItem.getAcl_ssl();
+                for(Acl aclSotItem : aclsFromSOT){
+                    String acl_ssl = aclSotItem.getAclssl();
                     if(acl_ssl==null)
                         acl_ssl="User:*";
 
-                    String acl_host = aclSotItem.getAcl_ip();
+                    String acl_host = aclSotItem.getAclip();
                     if(acl_host==null)
                         acl_host="*";
 
@@ -322,7 +322,7 @@ public class AclController {
 
         // LOG.info("--startVar:"+startVar+"---lastVar:"+lastVar+"---"+topicsListMap.size());
 
-        return new ResponseEntity<List<AclInfo>>(aclListMap, HttpStatus.OK);
+        return new ResponseEntity<>(aclListMap, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -363,7 +363,7 @@ public class AclController {
         List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
 
         // Get Sync acls
-        List<AclRequests> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
         topicCounter = 0;
 
@@ -402,17 +402,17 @@ public class AclController {
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                    for(AclRequests aclSotItem : aclsFromSOT){
-                        String acl_ssl = aclSotItem.getAcl_ssl();
+                    for(Acl aclSotItem : aclsFromSOT){
+                        String acl_ssl = aclSotItem.getAclssl();
                         if(acl_ssl==null)
                             acl_ssl="User:*";
 
-                        String acl_host = aclSotItem.getAcl_ip();
+                        String acl_host = aclSotItem.getAclip();
                         if(acl_host==null)
                             acl_host="*";
 
                       //  LOG.info("------- aclListItem"+aclListItem);
-                        LOG.info("******* aclSotItem"+aclSotItem.getAcl_ssl()+"--"+aclSotItem.getAcl_ip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
+                        LOG.info("******* aclSotItem"+aclSotItem.getAclssl()+"--"+aclSotItem.getAclip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
                         if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
                                 aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
                                 aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
@@ -446,7 +446,7 @@ public class AclController {
 
         // LOG.info("--startVar:"+startVar+"---lastVar:"+lastVar+"---"+topicsListMap.size());
 
-        return new ResponseEntity<List<AclInfo>>(aclListMap, HttpStatus.OK);
+        return new ResponseEntity<>(aclListMap, HttpStatus.OK);
     }
 
 

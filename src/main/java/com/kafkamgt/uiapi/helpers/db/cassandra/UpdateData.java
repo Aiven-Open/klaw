@@ -3,12 +3,20 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.*;
+import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.entities.AclRequests;
+import com.kafkamgt.uiapi.entities.Topic;
+import com.kafkamgt.uiapi.entities.TopicRequest;
+import com.kafkamgt.uiapi.helpers.db.jdbc.repo.AclRequestsRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Component
 public class UpdateData {
@@ -20,9 +28,15 @@ public class UpdateData {
     @Value("${cassandradb.keyspace}")
     String keyspace;
 
-    public String updateTopicRequest(String topicName, String approver, String env){
-        Clause eqclause = QueryBuilder.eq("topicname",topicName);
-        Clause eqclause1 = QueryBuilder.eq("env",env);
+    @Autowired
+    InsertData insertDataHelper;
+
+    @Autowired
+    AclRequestsRepo aclRequestsRepo;
+
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+        Clause eqclause = QueryBuilder.eq("topicname",topicRequest.getTopicname());
+        Clause eqclause1 = QueryBuilder.eq("env",topicRequest.getEnvironment());
         Update.Where updateQuery = QueryBuilder.update(keyspace,"topic_requests")
                 .with(QueryBuilder.set("topicstatus", "approved"))
                 .and(QueryBuilder.set("approver", approver))
@@ -30,6 +44,26 @@ public class UpdateData {
                 .where(eqclause)
                 .and(eqclause1);
         session.execute(updateQuery);
+
+        // insert into SOT
+        List<Topic> topics = new ArrayList<>();
+        Topic topicObj = new Topic();
+        copyProperties(topicRequest,topicObj);
+        topics.add(topicObj);
+        insertDataHelper.insertIntoTopicSOT(topics);
+
+        Acl aclReq = new Acl();
+        aclReq.setTopictype("Producer");
+        aclReq.setEnvironment(topicRequest.getEnvironment());
+        aclReq.setTeamname(topicRequest.getTeamname());
+        aclReq.setAclssl(topicRequest.getAcl_ssl());
+        aclReq.setAclip(topicRequest.getAcl_ip());
+        aclReq.setTopicname(topicRequest.getTopicname());
+
+        List<Acl> acls = new ArrayList<>();
+        acls.add(aclReq);
+        insertDataHelper.insertIntoAclsSOT(acls);
+
         return "success";
     }
 
@@ -41,6 +75,17 @@ public class UpdateData {
                 .and(QueryBuilder.set("exectime", new Date()))
                 .where(eqclause);
         session.execute(updateQuery);
+
+        // Insert to SOT
+
+        AclRequests aclReq = aclRequestsRepo.findById(req_no).get();
+        List<Acl> acls = new ArrayList<>();
+        Acl aclObj = new Acl();
+        copyProperties(aclReq,aclObj);
+        aclObj.setTeamname(aclReq.getRequestingteam());
+        acls.add(aclObj);
+        insertDataHelper.insertIntoAclsSOT(acls);
+
         return "success";
     }
 

@@ -33,4 +33,12 @@ public class TopicPK implements Serializable {
     public int hashCode() {
         return Objects.hash(getEnvironment(),getTopicname());
     }
+
+    @Override
+    public String toString() {
+        return "TopicPK{" +
+                "topicname='" + topicname + '\'' +
+                ", environment='" + environment + '\'' +
+                '}';
+    }
 }
