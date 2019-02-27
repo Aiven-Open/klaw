@@ -81,8 +81,9 @@ public class SelectData{
                 aclReq.setAclstatus(row.getString("topicstatus"));
                 try {
                     aclReq.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
+                    aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
                 }catch (Exception e){}
-                aclReq.setRequesttime("" + row.getTimestamp("requesttime"));
+
                 aclReq.setConsumergroup("" + row.getString("consumergroup"));
                 aclReq.setTopictype("" + row.getString("topictype"));
                 aclReq.setReq_no(row.getString("req_no"));

@@ -202,8 +202,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        return jdbcUpdateHelper.updateAclRequest(req_no, approver);
+    public String updateAclRequest(AclRequests aclReq, String approver){
+        return jdbcUpdateHelper.updateAclRequest(aclReq, approver);
     }
 
     public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){

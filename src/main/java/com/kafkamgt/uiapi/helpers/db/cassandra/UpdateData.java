@@ -31,9 +31,6 @@ public class UpdateData {
     @Autowired
     InsertData insertDataHelper;
 
-    @Autowired
-    AclRequestsRepo aclRequestsRepo;
-
     public String updateTopicRequest(TopicRequest topicRequest, String approver){
         Clause eqclause = QueryBuilder.eq("topicname",topicRequest.getTopicname());
         Clause eqclause1 = QueryBuilder.eq("env",topicRequest.getEnvironment());
@@ -67,8 +64,8 @@ public class UpdateData {
         return "success";
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        Clause eqclause = QueryBuilder.eq("req_no",req_no);
+    public String updateAclRequest(AclRequests aclReq, String approver){
+        Clause eqclause = QueryBuilder.eq("req_no",aclReq.getReq_no());
         Update.Where updateQuery = QueryBuilder.update(keyspace,"acl_requests")
                 .with(QueryBuilder.set("topicstatus", "approved"))
                 .and(QueryBuilder.set("approver", approver))
@@ -78,11 +75,12 @@ public class UpdateData {
 
         // Insert to SOT
 
-        AclRequests aclReq = aclRequestsRepo.findById(req_no).get();
         List<Acl> acls = new ArrayList<>();
         Acl aclObj = new Acl();
         copyProperties(aclReq,aclObj);
         aclObj.setTeamname(aclReq.getRequestingteam());
+        aclObj.setAclip(aclReq.getAcl_ip());
+        aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
         insertDataHelper.insertIntoAclsSOT(acls);
 

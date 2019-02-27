@@ -42,7 +42,7 @@ public class AclRequests implements Serializable {
     private String username;
 
     @Column(name = "requesttime")
-    private String requesttime;
+    private Timestamp requesttime;
 
     @Column(name = "topicstatus")
     private String aclstatus;

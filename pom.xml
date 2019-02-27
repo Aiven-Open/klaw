@@ -5,7 +5,7 @@
 
     <groupId>com.kafkamgt.uiapi</groupId>
     <artifactId>kafkawize</artifactId>
-    <version>1.0.1</version>
+    <version>2.0</version>
     <packaging>jar</packaging>
 
     <name>uiapi</name>

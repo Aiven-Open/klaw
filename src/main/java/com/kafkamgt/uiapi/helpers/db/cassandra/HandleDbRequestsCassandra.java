@@ -206,8 +206,8 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraUpdateHelper.updateTopicRequest(topicRequest, approver);
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        return cassandraUpdateHelper.updateAclRequest(req_no, approver);
+    public String updateAclRequest(AclRequests aclReq, String approver){
+        return cassandraUpdateHelper.updateAclRequest(aclReq, approver);
     }
 
     public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){

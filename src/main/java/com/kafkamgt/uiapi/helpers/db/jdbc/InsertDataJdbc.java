@@ -125,7 +125,7 @@ public class InsertDataJdbc {
 
         aclReq.setReq_no(getRandom());
         aclReq.setAclstatus("created");
-        aclReq.setRequesttime(new Timestamp(System.currentTimeMillis())+"");
+        aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
         aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getUsername()).getTeam());
         aclRequestsRepo.save(aclReq);
 

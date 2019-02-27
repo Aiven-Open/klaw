@@ -203,7 +203,7 @@ public class AclController {
         String updateAclReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateAclReqStatus = createTopicHelper.updateAclRequest(req_no,userDetails.getUsername());
+            updateAclReqStatus = createTopicHelper.updateAclRequest(aclReq,userDetails.getUsername());
 
         updateAclReqStatus = "{\"result\":\""+updateAclReqStatus+"\"}";
         return new ResponseEntity<String>(updateAclReqStatus, HttpStatus.OK);

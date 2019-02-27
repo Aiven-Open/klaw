@@ -292,8 +292,7 @@ public class SelectDataJdbc {
         List<Acl> aclList = aclRepo.findAllByEnvironment(envSelected);
 
         for (Topic row : topicList) {
-            LOG.info(aclList.size()+"HHHHHHHHHHHHHHHHHH"+row);
-            LOG.info("&&&&&&&&&"+row.toString());
+
             String teamName = row.getTeamname();
             String topicName = row.getTopicPK().getTopicname();
 
@@ -307,15 +306,13 @@ public class SelectDataJdbc {
 
             for (Acl row1 : aclList) {
                 if(row1!=null) {
-                    LOG.info("Here...." + row1);
-                    LOG.info(row1.getTopicname() + "*************************" + row1.toString());
                     String teamName1 = row1.getTeamname();
 
                     String topicName1 = row1.getTopicname();
                     String aclType = row1.getTopictype();
                     //  LOG.info("***-----------"+topicName1);
                     if (topicName.equals(topicName1)) {
-                        LOG.info(topicName + "---" + aclType + "---" + teamName1 + "---" + teamName);
+            //            LOG.info(topicName + "---" + aclType + "---" + teamName1 + "---" + teamName);
                         if (aclType.equals("Producer"))
                             prodTeams.add(teamName1);
                         else if (aclType.equals("Consumer"))

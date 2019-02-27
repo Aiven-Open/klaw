@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -81,9 +82,7 @@ public class UpdateDataJdbc {
         return "success";
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        AclRequests aclRequests = new AclRequests();
-        aclRequests.setReq_no(req_no);
+    public String updateAclRequest(AclRequests aclRequests, String approver){
         aclRequests.setApprover(approver);
         aclRequests.setAclstatus("approved");
         aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
@@ -98,11 +97,13 @@ public class UpdateDataJdbc {
 
         // Insert to SOT
 
-        AclRequests aclReq = aclRequestsRepo.findById(req_no).get();
+        //AclRequests aclReq = aclRequestsRepo.findById(req_no).get();
         List<Acl> acls = new ArrayList<>();
         Acl aclObj = new Acl();
-        copyProperties(aclReq,aclObj);
-        aclObj.setTeamname(aclReq.getRequestingteam());
+        copyProperties(aclRequests,aclObj);
+        aclObj.setTeamname(aclRequests.getRequestingteam());
+        aclObj.setAclip(aclRequests.getAcl_ip());
+        aclObj.setAclssl(aclRequests.getAcl_ssl());
         acls.add(aclObj);
         insertDataJdbcHelper.insertIntoAclsSOT(acls);
 
@@ -125,15 +126,24 @@ public class UpdateDataJdbc {
 
     public String updateSchemaRequest(String topicName, String schemaVersion, String env, String approver){
 
-        SchemaRequest schemaRequest = new SchemaRequest();
-        schemaRequest.setTopicname(topicName);
-        schemaRequest.setSchemaversion(schemaVersion);
-        schemaRequest.setEnvironment(env);
-        schemaRequest.setApprover(approver);
-        schemaRequest.setTopicstatus("approved");
-        schemaRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+        SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
+        schemaRequestPK.setTopicname(topicName);
+        schemaRequestPK.setEnvironment(env);
+        schemaRequestPK.setSchemaversion(schemaVersion);
 
-        schemaRequestRepo.save(schemaRequest);
+        Optional<SchemaRequest> schemaRequestOpt = schemaRequestRepo.findById(schemaRequestPK);
+
+        if(schemaRequestOpt.isPresent()) {
+
+            schemaRequestOpt.get().setTopicname(topicName);
+            schemaRequestOpt.get().setSchemaversion(schemaVersion);
+            schemaRequestOpt.get().setEnvironment(env);
+            schemaRequestOpt.get().setApprover(approver);
+            schemaRequestOpt.get().setTopicstatus("approved");
+            schemaRequestOpt.get().setApprovingtime(new Timestamp(System.currentTimeMillis()));
+
+            schemaRequestRepo.save(schemaRequestOpt.get());
+        }
 //        Clause eqclause1 = QueryBuilder.eq("topicname",topicName);
 //        Clause eqclause2 = QueryBuilder.eq("versionschema",schemaVersion);
 //        Clause eqclause3 = QueryBuilder.eq("env",env);

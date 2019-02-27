@@ -77,7 +77,7 @@ public interface HandleDbRequests {
     /*--------------------Update */
     public String updateTopicRequest(TopicRequest topicRequest, String approver);
 
-    public String updateAclRequest(String req_no, String approver);
+    public String updateAclRequest(AclRequests aclRequests, String approver);
 
     public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver);
 

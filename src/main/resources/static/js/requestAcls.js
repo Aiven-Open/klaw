@@ -156,7 +156,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 "\nEnv : " + $scope.addAcl.envName.name +
                 "\nTeam :" + $scope.addAcl.team +
                 "\nApp :" + $scope.addAcl.app +
-                "\nAcl :" + $scope.addAcl.acl_ip + "  " + $scope.addAcl.acl_ssl
+                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \n Acl SSL:" + $scope.addAcl.acl_ssl
             )) {
                 return;
             }

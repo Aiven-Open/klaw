@@ -170,8 +170,8 @@ public class ManageTopics {
         return handleDbRequests.updateTopicRequest(topicRequest, approver);
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        return handleDbRequests.updateAclRequest(req_no, approver);
+    public String updateAclRequest(AclRequests aclRequests, String approver){
+        return handleDbRequests.updateAclRequest(aclRequests, approver);
     }
 
     public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
