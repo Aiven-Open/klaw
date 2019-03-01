@@ -20,6 +20,20 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
             var serviceInput = {};
 
+            if(($scope.addTopic.acl_ip !=null && $scope.addTopic.acl_ip.length>0) ||
+             ($scope.addTopic.acl_ssl !=null && $scope.addTopic.acl_ssl.length>0)){}
+             else
+             {
+                alert("Please fill in a valid IP address or SSL-CN Name of the Producer client");
+                return;
+             }
+
+             if(!$scope.addTopic.team)
+              {
+                 alert("Please select your team.");
+                 return;
+              }
+
             serviceInput['environment'] = $scope.addTopic.envName.name;
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = $scope.addTopic.topicpartitions;
@@ -28,14 +42,6 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['remarks'] = $scope.addTopic.remarks;
             serviceInput['acl_ip'] = $scope.addTopic.acl_ip;
             serviceInput['acl_ssl'] = $scope.addTopic.acl_ssl;
-
-            if(($scope.addTopic.acl_ip !=null && $scope.addTopic.acl_ip.length>0) ||
-             ($scope.addTopic.acl_ssl !=null && $scope.addTopic.acl_ssl.length>0)){}
-             else
-             {
-                alert("Please fill in a valid IP address or SSL-CN Name of the Producer client");
-                return;
-             }
 
             if (!window.confirm("Are you sure, you would like to create the topic : "
                 +  $scope.addTopic.topicname  +
@@ -107,6 +113,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                }).success(function(output) {
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
+                   $scope.teamname = output.teamname;
                    $scope.notifications = output.notifications;
                    $scope.statusauthexectopics = output.statusauthexectopics;
                    $scope.alerttop = output.alertmessage;

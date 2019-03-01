@@ -131,6 +131,8 @@ public class TopicController {
                 TopicPK topicPK = new TopicPK();
                 topicPK.setTopicname(topicSel);
                 topicPK.setEnvironment(envSelected);
+
+                t.setTopicname(topicSel);
                 t.setEnvironment(envSelected);
                 t.setTeamname(teamSelected);
                 t.setTopicPK(topicPK);
@@ -151,8 +153,8 @@ public class TopicController {
         LOG.info("Env is :::"+envSelected);
 
         topicReqs = createTopicHelper.selectTopicStreams(envSelected);
-        LOG.info(topicReqs+"");
-        topicReqs.stream().forEach(a->a.getConsumerTeams().forEach(b->LOG.info(b)));
+      //  LOG.info(topicReqs+"");
+       // topicReqs.stream().forEach(a->a.getConsumerTeams().forEach(b->LOG.info(b)));
 
         return new ResponseEntity<List<PCStream>>(topicReqs, HttpStatus.OK);
     }

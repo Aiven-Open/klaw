@@ -388,7 +388,7 @@ public class AclController {
         createTopicHelper.selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
 
-        LOG.info("------- aclList : "+aclList.size() + "  aclsFromSOT" +aclsFromSOT.size());
+        //LOG.info("------- aclList : "+aclList.size() + "  aclsFromSOT" +aclsFromSOT.size());
 
         for(int i=0;i<totalRecs;i++){
             int counterInc = counterIncrement();
@@ -417,7 +417,7 @@ public class AclController {
                             acl_host="*";
 
                       //  LOG.info("------- aclListItem"+aclListItem);
-                        LOG.info("******* aclSotItem"+aclSotItem.getAclssl()+"--"+aclSotItem.getAclip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
+                       // LOG.info("******* aclSotItem"+aclSotItem.getAclssl()+"--"+aclSotItem.getAclip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
                         if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
                                 aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
                                 aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&

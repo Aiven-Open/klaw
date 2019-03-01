@@ -26,6 +26,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 }).success(function(output) {
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
+                    $scope.teamname = output.teamname;
                      $scope.notifications = output.notifications;
                     $scope.statusauthexectopics = output.statusauthexectopics;
                     $scope.alerttop = output.alertmessage;
@@ -164,7 +165,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 "\nEnv : " + $scope.addAcl.envName.name +
                 "\nTeam :" + $scope.addAcl.team +
                 "\nApp :" + $scope.addAcl.app +
-                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \n Acl SSL:" + $scope.addAcl.acl_ssl
+                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \nAcl SSL: " + $scope.addAcl.acl_ssl
             )) {
                 return;
             }

@@ -214,10 +214,16 @@ public class SelectData{
         Select selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
         results = session.execute(selectQuery);
 
+        TopicPK topicPK ;
 
         for (Row row : results) {
 
             topicRequest = new Topic();
+            topicPK = new TopicPK();
+            topicPK.setTopicname(row.getString("topicname"));
+            topicPK.setEnvironment(env);
+
+            topicRequest.setTopicPK(topicPK);
             topicRequest.setTopicname(row.getString("topicname"));
             topicRequest.setAppname(row.getString("appname"));
             topicRequest.setTeamname(row.getString("teamname"));
@@ -386,7 +392,7 @@ public class SelectData{
                     //LOG.info(topicName+"---"+aclType+"---"+teamName1+"---"+teamName);
                     if(aclType.equals("Producer"))
                         prodTeams.add(teamName1);
-                    else if(aclType.equals("Consumer"))
+                    else if(aclType.equals("Consumer") && teamName1!=null)
                         consumerTeams.add(teamName1);
                 }
             }
@@ -440,12 +446,14 @@ public class SelectData{
         results = session.execute(selectQuery);
 
         for (Row row : results) {
+            aclReq.setReq_no(req_no);
             aclReq.setEnvironment(row.getString("env"));
             aclReq.setAcl_ip(row.getString("acl_ip"));
             aclReq.setAcl_ssl(row.getString("acl_ssl"));
             aclReq.setConsumergroup(row.getString("consumergroup"));
             aclReq.setTopictype(row.getString("topictype"));
             aclReq.setTopicname(row.getString("topicname"));
+            aclReq.setRequestingteam(row.getString("requestingteam"));
         }
 
         return aclReq;

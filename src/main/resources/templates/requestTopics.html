@@ -12,7 +12,7 @@
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="lib/angular-wm.js"></script>
-	<script src="js/requestTopics.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+	<script src="js/requestTopics.js"></script>
 	<link rel="stylesheet" href="css/main.css">
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
@@ -58,8 +58,7 @@
                         </span>
 					<!--<span class="user-role">Administrator</span>-->
 					<span class="user-status">
-                            <i class="fa fa-circle"></i>
-                            <span>Online</span>
+                            <span>{{teamname}}</span>
                         </span>
 				</div>
 			</div>

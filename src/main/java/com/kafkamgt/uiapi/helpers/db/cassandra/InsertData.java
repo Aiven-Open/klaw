@@ -83,8 +83,12 @@ public class InsertData {
                 statement1 = session.prepare(insertstat1);
                 boundStatement1 = new BoundStatement(statement1);
                 topicRequest = cassandraSelectHelper.selectTopicRequestsForTopic(topic.getTopicname(),topic.getEnvironment());
-                session.execute(boundStatement1.bind(getRandom(), topic.getTopicname(), topic.getEnvironment(), topic.getTeamname(),
+                if(topicRequest!=null)
+                    session.execute(boundStatement1.bind(getRandom(), topic.getTopicname(), topic.getEnvironment(), topic.getTeamname(),
                         "Producer", topicRequest.getAcl_ip(), topicRequest.getAcl_ssl()));
+                else
+                    session.execute(boundStatement1.bind(getRandom(), topic.getTopicname(), topic.getEnvironment(), topic.getTeamname(),
+                            "Producer", null, null));
             }
         }
 
@@ -147,7 +151,7 @@ public class InsertData {
 
         String tableName1 = "topics", insertstat1=null;
 
-        insertstat1 = "INSERT INTO " + keyspace + "."+tableName1+"(topicname,env,teamname,appname)" +
+        insertstat1 = "INSERT INTO " + keyspace + "."+tableName1+"(topicname,env,teamname)" +
                 "VALUES (?,?,?);";
         PreparedStatement statement1 = session.prepare(insertstat1);
         BoundStatement boundStatement1 = new BoundStatement(statement1);
@@ -155,8 +159,9 @@ public class InsertData {
         acls.forEach(aclReq-> {
             session.execute(boundStatement.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(), aclReq.getTeamname(),
                     aclReq.getConsumergroup(), aclReq.getTopictype(),aclReq.getAclip(),aclReq.getAclssl()));
+
             if(isSyncAcls && aclReq.getTopictype().equals("Producer")){
-                session.execute(boundStatement.bind(aclReq.getTopicname(), aclReq.getEnvironment(),
+                session.execute(boundStatement1.bind(aclReq.getTopicname(), aclReq.getEnvironment(),
                         aclReq.getTeamname()));
             }
         });

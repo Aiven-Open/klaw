@@ -55,10 +55,11 @@ public class UtilController {
         if(userDetails!=null) {
         LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
 
+        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
 
-        LOG.info("auth is " + authority);
+        //LOG.info("auth is " + authority);
         String statusAuth = null;
         String statusAuthExecTopics = null;
         String licenseValidity=null;
@@ -92,6 +93,7 @@ public class UtilController {
 
         json = "{ \"status\": \"" + statusAuth + "\" ," +
                 " \"username\":\"" + userDetails.getUsername() + "\"," +
+                " \"teamname\": \"" + teamName + "\"," +
                 " \"companyinfo\": \"" + companyInfo + "\"," +
                 " \"notifications\": \"" + outstandingReqs + "\"," +
                 " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
@@ -107,10 +109,12 @@ public class UtilController {
 
         LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
+        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
+
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
         String json = null;
-        LOG.info("auth is "+authority);
+        //LOG.info("auth is "+authority);
         String statusAuth = null;
         String licenseValidity=null;
 
@@ -134,6 +138,7 @@ public class UtilController {
 
         json = "{ \"status\": \""+statusAuth+"\" , " +
                 " \"companyinfo\": \"" + companyInfo + "\"," +
+                " \"teamname\": \"" + teamName + "\"," +
                 "\"username\":\""+userDetails.getUsername()+"\" }";
 
         return new ResponseEntity<String>(json, HttpStatus.OK);

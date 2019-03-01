@@ -80,6 +80,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                 }).success(function(output) {
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
+                    $scope.teamname = output.teamname;
                      $scope.notifications = output.notifications;
                     $scope.statusauthexectopics = output.statusauthexectopics;
                     $scope.alerttop = output.alertmessage;
