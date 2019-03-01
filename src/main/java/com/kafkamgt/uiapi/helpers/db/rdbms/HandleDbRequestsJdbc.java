@@ -4,7 +4,7 @@ import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,8 +206,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcUpdateHelper.updateAclRequest(aclReq, approver);
     }
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
-        return jdbcUpdateHelper.updateSchemaRequest(topicName, schemaVersion, env,  approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
+        return jdbcUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){

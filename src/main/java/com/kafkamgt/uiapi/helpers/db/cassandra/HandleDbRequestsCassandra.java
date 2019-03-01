@@ -9,7 +9,7 @@ import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,31 +24,31 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     private static Logger LOG = LoggerFactory.getLogger(HandleDbRequestsCassandra.class);
 
-    @Autowired
+    @Autowired(required=false)
     SelectData cassandraSelectHelper;
 
-    @Autowired
+    @Autowired(required=false)
     InsertData cassandraInsertHelper;
 
-    @Autowired
+    @Autowired(required=false)
     UpdateData cassandraUpdateHelper;
 
-    @Autowired
+    @Autowired(required=false)
     DeleteData cassandraDeleteHelper;
 
-    @Autowired
+    @Autowired(required=false)
     LoadDb loadDb;
 
     Cluster cluster;
     Session session;
 
-    @Value("${cassandradb.url}")
+    @Value("${cassandradb.url:@null}")
     String clusterConnHost;
 
-    @Value("${cassandradb.port}")
+    @Value("${cassandradb.port:9042}")
     int clusterConnPort;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
     public void connectToDb() {
@@ -78,7 +78,7 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
             loadDb.createTables();
             loadDb.insertData();
         }catch (Exception e){
-            LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort);
+            LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort + " Error : " + e.getMessage());
             System.exit(0);
         }
     }
@@ -210,8 +210,8 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraUpdateHelper.updateAclRequest(aclReq, approver);
     }
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
-        return cassandraUpdateHelper.updateSchemaRequest(topicName, schemaVersion, env,  approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
+        return cassandraUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){

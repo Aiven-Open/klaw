@@ -6,7 +6,7 @@ import com.datastax.driver.core.querybuilder.*;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +22,7 @@ public class SelectData{
 
     Session session;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
 
@@ -123,7 +123,7 @@ public class SelectData{
                     break;
             }
 
-            LOG.info("teamSelected--" + teamSelected);
+            //LOG.info("teamSelected--" + teamSelected);
 
             if (teamSelected != null && teamSelected.equals(teamName)) {
                 schemaRequest = new SchemaRequest();
@@ -139,11 +139,10 @@ public class SelectData{
                 try {
                     schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 }catch (Exception e){}
-                schemaRequest.setRequesttime("" + row.getTimestamp("requesttime"));
+                schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
 
                 schemaList.add(schemaRequest);
             }
-
 
         }
 
@@ -178,7 +177,7 @@ public class SelectData{
             try {
                 schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
             }catch (Exception e){}
-            schemaRequest.setRequesttime(""+row.getTimestamp("requesttime"));
+            schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
         }
 
         return schemaRequest;
@@ -384,7 +383,7 @@ public class SelectData{
                 String aclType = row1.getTopictype();
               //  LOG.info("***-----------"+topicName1);
                 if(topicName.equals(topicName1)){
-                    LOG.info(topicName+"---"+aclType+"---"+teamName1+"---"+teamName);
+                    //LOG.info(topicName+"---"+aclType+"---"+teamName1+"---"+teamName);
                     if(aclType.equals("Producer"))
                         prodTeams.add(teamName1);
                     else if(aclType.equals("Consumer"))

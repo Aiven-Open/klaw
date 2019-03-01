@@ -7,7 +7,7 @@ import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -174,8 +174,8 @@ public class ManageTopics {
         return handleDbRequests.updateAclRequest(aclRequests, approver);
     }
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
-        return handleDbRequests.updateSchemaRequest(topicName, schemaVersion, env,  approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
+        return handleDbRequests.updateSchemaRequest(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){

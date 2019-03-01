@@ -39,7 +39,7 @@ public class UtilController {
     @Value("${clusterapi.password}")
     String clusterApiPwd;
 
-    @Value("${license.spec}")
+    @Value("${app.company.name}")
     String companyInfo;
 
 

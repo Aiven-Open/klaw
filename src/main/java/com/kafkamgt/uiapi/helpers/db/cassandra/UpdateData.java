@@ -3,10 +3,7 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.*;
-import com.kafkamgt.uiapi.dao.Acl;
-import com.kafkamgt.uiapi.dao.AclRequests;
-import com.kafkamgt.uiapi.dao.Topic;
-import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.dao.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +21,7 @@ public class UpdateData {
 
     Session session;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
     @Autowired
@@ -95,10 +92,10 @@ public class UpdateData {
         return "success";
     }
 
-    public String updateSchemaRequest(String topicName, String schemaVersion, String env, String approver){
-        Clause eqclause1 = QueryBuilder.eq("topicname",topicName);
-        Clause eqclause2 = QueryBuilder.eq("versionschema",schemaVersion);
-        Clause eqclause3 = QueryBuilder.eq("env",env);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
+        Clause eqclause1 = QueryBuilder.eq("topicname",schemaRequest.getTopicname());
+        Clause eqclause2 = QueryBuilder.eq("versionschema",schemaRequest.getSchemaversion());
+        Clause eqclause3 = QueryBuilder.eq("env",schemaRequest.getEnvironment());
         Update.Where updateQuery = QueryBuilder.update(keyspace,"schema_requests")
                 .with(QueryBuilder.set("topicstatus", "approved"))
                 .and(QueryBuilder.set("approver", approver))
@@ -107,6 +104,15 @@ public class UpdateData {
                 .and(eqclause2)
                 .and(eqclause3);
         session.execute(updateQuery);
+
+        // Insert to SOT
+
+        List<MessageSchema> schemas = new ArrayList<>();
+        MessageSchema schemaObj = new MessageSchema();
+        copyProperties(schemaRequest,schemaObj);
+        schemas.add(schemaObj);
+        insertDataHelper.insertIntoMessageSchemaSOT(schemas);
+
         return "success";
     }
 

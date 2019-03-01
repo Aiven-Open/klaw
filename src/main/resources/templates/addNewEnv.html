@@ -118,7 +118,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -232,20 +232,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addnewenv">Add Environment</a>
+									<a href="addnewenv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -311,7 +311,7 @@
 				<div class="form-group col-md-12">
 					<table width="100%">
 						<tr>
-							<td align="left"><h2>Add New Environment</h2></td>
+							<td align="left"><h2>Add New Cluster</h2></td>
 							<td align="right"><img style="max-height: 100px; max-width: 100px;" src="images/kafka.png"><br><b>KafkaWize - {{ companyinfo }}</b></td>
 						</tr>
 					</table>
@@ -331,7 +331,7 @@
 					<table  width=50% style="border: 2px #000066">
 						<tr>
 							<td>
-								<font face=verdana size=2><b>Existing Environments</b></font>
+								<font face=verdana size=2><b>Existing Clusters</b></font>
 							</td>
 							<td>
 								<select ng-model="addNewEnv.name" ng-options="env as env.name for env in allenvs"></select>
@@ -343,7 +343,7 @@
 
 						<tr>
 							<td>
-								<font face=verdana size=2>New Environment name</font>
+								<font face=verdana size=2>New Cluster name</font>
 							</td>
 							<td>
 								<input ng-model="addNewEnv.envname" required>
@@ -380,7 +380,7 @@
 
 						<tr>
 							<td>
-								<font face=verdana size=2>Environment Type</font>
+								<font face=verdana size=2>Cluster Type</font>
 							</td>
 							<td>
 								<input ng-model="addNewEnv.type" id="addNewEnv.type"

@@ -119,7 +119,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -233,20 +233,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addNewEnv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -345,7 +345,7 @@
 
 									<tr>
 										<td>
-											<font face=verdana size=2><b>Environment</b></font>
+											<font face=verdana size=2><b>Cluster</b></font>
 										</td>
 										<td>
 											<select ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs">

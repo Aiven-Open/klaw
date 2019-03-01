@@ -1,6 +1,6 @@
 package com.kafkamgt.uiapi.repository;
 
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

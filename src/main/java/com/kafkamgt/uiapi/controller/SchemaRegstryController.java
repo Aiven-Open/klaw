@@ -122,7 +122,7 @@ public class SchemaRegstryController {
         ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
 
         if(response.getBody().contains("id\":")) {
-            String updateTopicReqStatus = createTopicHelper.updateSchemaRequest(topicName, schemaversion, env, userDetails.getUsername());
+            String updateTopicReqStatus = createTopicHelper.updateSchemaRequest(schemaRequest, userDetails.getUsername());
 
             updateTopicReqStatus = "{\"result\":\"" + updateTopicReqStatus + "\"}";
             return new ResponseEntity<String>(updateTopicReqStatus, HttpStatus.OK);

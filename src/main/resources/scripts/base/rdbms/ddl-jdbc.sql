@@ -74,6 +74,15 @@ Create table if not exists kafkametadb.schema_requests(
 	PRIMARY KEY(topicname,versionschema,env)
 );
 
+Create table if not exists kafkametadb.schemas(
+	topicname varchar(150),
+	env varchar(50),
+	teamname varchar(150),
+	schemafull text,
+	versionschema varchar(3),
+	PRIMARY KEY(topicname,versionschema,env)
+);
+
 Create table if not exists kafkametadb.teams(
 	team varchar(150),
 	app varchar(150),
@@ -117,7 +126,7 @@ Create table if not exists kafkametadb.activitylog(
 	activityname varchar(25),
 	activitytype varchar(25),
 	activitytime timestamp,
-	details varchar(50),
+	details varchar(250),
 	user varchar(20),
 	team varchar(150),
 	env varchar(50)

@@ -5,7 +5,7 @@
 <meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Environments - Kafka Self-service Topic Management Portal</title>
+<title>Clusters - Kafka Self-service Topic Management Portal</title>
 
 <html ng-app="envsApp" ng-controller="envsCtrl">
 <head>
@@ -118,7 +118,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -232,20 +232,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addNewEnv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -422,7 +422,7 @@
 				<div class="form-group col-md-12">
 					<table width="100%">
 						<tr>
-							<td align="left"><h2>Kafka Environments</h2></td>
+							<td align="left"><h2>Kafka Clusters</h2></td>
 							<td align="right"><img style="max-height: 100px; max-width: 100px;" src="images/kafka.png"><br><b>KafkaWize - {{ companyinfo }}</b></td>
 						</tr>
 					</table>
@@ -437,7 +437,7 @@
 				<div style="margin: 10px;" ng-if="statusauth=='Authorized'">
 					<table class="gridtable" width="50%" border="1">
 						<tr>
-							<th>Environment</th>
+							<th>Cluster</th>
 							<th>Host</th>
 							<th>Port</th>
 							<th>Protocol</th>
@@ -458,7 +458,7 @@
 
 					<table class="gridtable" width="50%" border="1">
 						<tr>
-							<th>Environment</th>
+							<th>Cluster</th>
 							<th>Host</th>
 							<th>Port</th>
 							<th>Protocol</th>

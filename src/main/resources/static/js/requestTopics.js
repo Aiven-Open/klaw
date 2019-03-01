@@ -43,7 +43,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 "\nEnv : " + $scope.addTopic.envName.name +
                 "\nTeam :" + $scope.addTopic.team.teamname +
                 "\nApp :" + $scope.addTopic.app +
-                "\nAcl :" + $scope.addTopic.acl_ip +"  "+ $scope.addTopic.acl_ssl
+                "\nAcl :" + $scope.addTopic.acl_ip +" \n Acl SSL:"+ $scope.addTopic.acl_ssl
                 )) {
                 return;
             }

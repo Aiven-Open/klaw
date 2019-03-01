@@ -18,7 +18,7 @@ public class DeleteData {
 
     Session session;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
 

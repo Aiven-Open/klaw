@@ -4,7 +4,7 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 import com.datastax.driver.core.*;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.dao.Topic;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ public class InsertData {
 
     Session session;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
     SelectData cassandraSelectHelper;
@@ -164,6 +164,8 @@ public class InsertData {
         return "success";
     }
 
+
+
     public String insertIntoActivityLogAcl(AclRequests aclReq){
 
         String tableName = "activitylog", insertstat=null;
@@ -196,6 +198,22 @@ public class InsertData {
                 schemaRequest.getTeamname(), schemaRequest.getAppname(),
                 schemaRequest.getUsername(), new Date(),schemaRequest.getSchemafull(), schemaRequest.getRemarks(), "created",
                 schemaRequest.getSchemaversion()));
+        return "success";
+    }
+
+    public String insertIntoMessageSchemaSOT(List<MessageSchema> messageSchemas){
+
+
+        String tableName = "schemas";
+        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname, env, teamname, " +
+                " schemafull, versionschema) " +
+                "VALUES (?,?,?,?,?);";
+        PreparedStatement statement = session.prepare(insertstat);
+        BoundStatement boundStatement = new BoundStatement(statement);
+        messageSchemas.forEach(messageSchema ->
+            session.execute(boundStatement.bind(messageSchema.getTopicname(),messageSchema.getEnvironment(),
+                messageSchema.getTeamname(), messageSchema.getSchemafull(),
+                messageSchema.getSchemaversion())));
         return "success";
     }
 

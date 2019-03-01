@@ -2,7 +2,7 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.dao.Topic;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,39 +14,40 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-import static org.springframework.beans.BeanUtils.copyProperties;
-
 @Component
 public class InsertDataJdbc {
 
     private static Logger LOG = LoggerFactory.getLogger(InsertDataJdbc.class);
 
-    @Autowired
+    @Autowired(required=false)
     UserInfoRepo userInfoRepo;
 
-    @Autowired
+    @Autowired(required=false)
     TeamRepo teamRepo;
 
-    @Autowired
+    @Autowired(required=false)
     EnvRepo envRepo;
 
-    @Autowired
+    @Autowired(required=false)
     ActivityLogRepo activityLogRepo;
 
-    @Autowired
+    @Autowired(required=false)
     AclRequestsRepo aclRequestsRepo;
 
-    @Autowired
+    @Autowired(required=false)
     TopicRepo topicRepo;
 
-    @Autowired
+    @Autowired(required=false)
     AclRepo aclRepo;
 
-    @Autowired
+    @Autowired(required=false)
     TopicRequestsRepo topicRequestsRepo;
 
-    @Autowired
+    @Autowired(required=false)
     SchemaRequestRepo schemaRequestRepo;
+
+    @Autowired(required=false)
+    MessageSchemaRepo messageSchemaRepo;
 
     @Autowired
     SelectDataJdbc jdbcSelectHelper;
@@ -88,18 +89,6 @@ public class InsertDataJdbc {
 
         insertIntoActivityLog(activityLog);
 
-//        String tableName = null, topicReqType=null, insertstat=null;
-//
-//            tableName = "topic_requests";
-//            topicReqType = "Producer";
-//            insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname,partitions,replicationfactor,env,teamname,appname,topictype,requestor," +
-//                    "requesttime, acl_ip, acl_ssl, remarks, topicstatus) " +
-//                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
-//            PreparedStatement statement = session.prepare(insertstat);
-//            BoundStatement boundStatement = new BoundStatement(statement);
-//            session.execute(boundStatement.bind(topicRequest.getTopicName(),topicRequest.getTopicpartitions(),topicRequest.getReplicationfactor(),topicRequest.getEnvironment(), topicRequest.getTeamname(), topicRequest.getAppname(),
-//                    topicReqType, topicRequest.getUsername(), new Date(),topicRequest.getAcl_ip(), topicRequest.getAcl_ssl(), topicRequest.getRemarks(), "created"));
-//
         return "success";
     }
 
@@ -113,7 +102,6 @@ public class InsertDataJdbc {
                         topicRequestPK.setEnvironment(topic.getEnvironment());
                         topicRequestPK.setTopicname(topic.getTopicname());
                         Optional<TopicRequest> topicRequest = topicRequestsRepo.findById(topicRequestPK);
-
 
                             Acl acl = new Acl();
                             acl.setReq_no(getRandom());
@@ -150,21 +138,6 @@ public class InsertDataJdbc {
         aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getUsername()).getTeam());
         aclRequestsRepo.save(aclReq);
 
-//        String tableName = null, topicReqType=null, insertstat=null;
-//            tableName = "acl_requests";
-//            topicReqType=aclReq.getTopictype();
-//            insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no,topicname,env,teamname,appname,topictype,requestor," +
-//                    "requesttime, acl_ip, acl_ssl, remarks, topicstatus,consumergroup,requestingteam) " +
-//                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-//            PreparedStatement statement = session.prepare(insertstat);
-//            BoundStatement boundStatement = new BoundStatement(statement);
-//
-//            session.execute(boundStatement.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(),
-//                    aclReq.getTeamname(), aclReq.getAppname(),
-//                    topicReqType, aclReq.getUsername(), new Date(),aclReq.getAcl_ip(),aclReq.getAcl_ssl(),
-//                    aclReq.getRemarks(), "created",
-//                    aclReq.getConsumergroup(),cassandraSelectHelper.selectTeamsOfUsers(aclReq.getUsername()).get(0).getTeamname()));
-//
         UserInfo userInfo = jdbcSelectHelper.selectUserInfo(aclReq.getUsername());
 
         ActivityLog activityLog = new ActivityLog();
@@ -200,22 +173,20 @@ public class InsertDataJdbc {
                 topicRepo.save(topic);
             }
         });
-//        String tableName = "acls", insertstat=null;
-//
-//        insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no, topicname, env, teamname, consumergroup, topictype, acl_ip, acl_ssl)" +
-//                "VALUES (?,?,?,?,?,?,?,?);";
-//        PreparedStatement statement = session.prepare(insertstat);
-//        BoundStatement boundStatement = new BoundStatement(statement);
-//
-//        acls.forEach(aclReq-> {
-//            session.execute(boundStatement.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(), aclReq.getTeamname(),
-//                    aclReq.getConsumergroup(), aclReq.getTopictype(),aclReq.getAcl_ip(),aclReq.getAcl_ssl()));
-//        });
-
         return "success";
     }
 
     public String insertIntoRequestSchema(SchemaRequest schemaRequest){
+
+        SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
+        schemaRequestPK.setEnvironment(schemaRequest.getEnvironment());
+        schemaRequestPK.setSchemaversion(schemaRequest.getSchemaversion());
+        schemaRequestPK.setTopicname(schemaRequest.getTopicname());
+        schemaRequest.setSchemaRequestPK(schemaRequestPK);
+
+        schemaRequest.setTopicstatus("created");
+        schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
+        schemaRequest.setTeamname(jdbcSelectHelper.selectUserInfo(schemaRequest.getUsername()).getTeam());
 
         schemaRequestRepo.save(schemaRequest);
 
@@ -233,55 +204,36 @@ public class InsertDataJdbc {
 
         // Insert into acl activity log
         insertIntoActivityLog(activityLog);
-//
-//        String tableName = "schema_requests";
-//        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname, env, teamname, appname, requestor," +
-//                "requesttime, schemafull, remarks, topicstatus, versionschema) " +
-//                "VALUES (?,?,?,?,?,?,?,?,?,?);";
-//        PreparedStatement statement = session.prepare(insertstat);
-//        BoundStatement boundStatement = new BoundStatement(statement);
-//        session.execute(boundStatement.bind(schemaRequest.getTopicname(),schemaRequest.getEnvironment(),
-//                schemaRequest.getTeamname(), schemaRequest.getAppname(),
-//                schemaRequest.getUsername(), new Date(),schemaRequest.getSchemafull(), schemaRequest.getRemarks(), "created",
-//                schemaRequest.getSchemaversion()));
+
+        return "success";
+    }
+
+    public String insertIntoMessageSchemaSOT(List<MessageSchema> schemas){
+
+        for(MessageSchema mSchema : schemas){
+            MessageSchemaPK messageSchemaPK = new MessageSchemaPK();
+            messageSchemaPK.setEnvironment(mSchema.getEnvironment());
+            messageSchemaPK.setSchemaversion(mSchema.getSchemaversion());
+            messageSchemaPK.setTopicname(mSchema.getTopicname());
+
+            mSchema.setMessageSchemaPK(messageSchemaPK);
+            messageSchemaRepo.save(mSchema);
+        };
         return "success";
     }
 
     public String insertIntoUsers(UserInfo userInfo){
         userInfoRepo.save(userInfo);
-//        String tableName = "users";
-//        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(fullname,userid, pwd, team, roleid) " +
-//                "VALUES (?,?,?,?,?);";
-//        PreparedStatement statement = session.prepare(insertstat);
-//        BoundStatement boundStatement = new BoundStatement(statement);
-//        session.execute(boundStatement.bind(userInfo.getFullname(),userInfo.getUsername(),userInfo.getPwd(),userInfo.getTeam(),userInfo.getRole()));
         return "success";
     }
 
     public String insertIntoTeams(Team team){
         teamRepo.save(team);
-//        String tableName = "teams";
-//        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(team, teammail, app, teamphone," +
-//                " contactperson) " +
-//                "VALUES (?,?,?,?,?);";
-//        PreparedStatement statement = session.prepare(insertstat);
-//        BoundStatement boundStatement = new BoundStatement(statement);
-//        session.execute(boundStatement.bind(team.getTeamname(),team.getTeammail(),team.getApp(),team.getTeamphone(),
-//                team.getContactperson()));
         return "success";
     }
 
     public String insertIntoEnvs(Env env){
         envRepo.save(env);
-//        String tableName = "env";
-//        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(name, host, port, protocol, type," +
-//                " keystorelocation, truststorelocation, keystorepwd, keypwd, truststorepwd ) " +
-//                "VALUES (?,?,?,?,?,?,?,?,?,?);";
-//        PreparedStatement statement = session.prepare(insertstat);
-//        BoundStatement boundStatement = new BoundStatement(statement);
-//        session.execute(boundStatement.bind(env.getName(),env.getHost(),env.getPort(),env.getProtocol(),env.getType()
-//        ,env.getKeystorelocation(),env.getTruststorelocation(),env.getKeystorepwd(),
-//                env.getKeypwd(),env.getTruststorepwd()));
         return "success";
     }
 

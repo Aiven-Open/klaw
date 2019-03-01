@@ -8,3 +8,4 @@ drop table if exists kafkametadb.env;
 drop table if exists kafkametadb.activitylog;
 drop table if exists kafkametadb.productdetails;
 drop table if exists kafkametadb.acls;
+drop table if exists kafkametadb.schemas;

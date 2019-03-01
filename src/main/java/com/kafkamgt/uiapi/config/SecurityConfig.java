@@ -1,7 +1,7 @@
 package com.kafkamgt.uiapi.config;
 
 
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +26,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     ManageTopics manageTopics;
-
-//    @Autowired
-//    Utilities utils;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

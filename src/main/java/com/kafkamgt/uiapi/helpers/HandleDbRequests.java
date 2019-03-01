@@ -3,7 +3,7 @@ package com.kafkamgt.uiapi.helpers;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 
 import java.util.List;
 
@@ -78,7 +78,7 @@ public interface HandleDbRequests {
 
     public String updateAclRequest(AclRequests aclRequests, String approver);
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
 
     public String updatePassword(String username, String pwd);
 

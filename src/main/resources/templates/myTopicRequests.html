@@ -120,7 +120,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -234,20 +234,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addNewEnv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -336,7 +336,7 @@
 						<tr>
 							<th></th>
 							<th>TopicName</th>
-							<th>Environment</th>
+							<th>Cluster</th>
 							<th>Requestor</th>
 							<th>Acl_IP</th>
 							<th>Acl_SSL</th>
@@ -379,7 +379,7 @@
 							<th>TopicName</th>
 							<th>AclType</th>
 							<th>ConsumerGroup</th>
-							<th>Environment</th>
+							<th>Cluster</th>
 							<th>Requestor</th>
 							<th>Acl_IP</th>
 							<th>Acl_SSL</th>
@@ -423,7 +423,7 @@
 							<th>TopicName</th>
 							<th>SchemaVersion</th>
 							<th>FullSchema</th>
-							<th>Environment</th>
+							<th>Cluster</th>
 							<th>Requestor</th>
 							<th>Application</th>
 							<th>Team</th>
@@ -434,7 +434,7 @@
 
 						</tr>
 						<tr ng-repeat="schemaRequest in schemaRequests">
-							<td><input type="radio" name="schGrp" ng-model="deleteSchemaRequest.topicName" value="{{schemaRequest.topicname}}-----{{schemaRequest.schemaversion}}-----{{schemaRequest.environment}}"/></td>
+							<td><input type="radio" name="schGrp" ng-model="deleteSchemaRequest.topicname" value="{{schemaRequest.topicname}}-----{{schemaRequest.schemaversion}}-----{{schemaRequest.environment}}"/></td>
 							<td>{{ schemaRequest.topicname }}</td>
 							<td>{{ schemaRequest.schemaversion }}</td>
 							<td>{{ schemaRequest.schemafull }}</td>

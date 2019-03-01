@@ -5,7 +5,7 @@ import com.kafkamgt.uiapi.repository.AclRequestsRepo;
 import com.kafkamgt.uiapi.repository.SchemaRequestRepo;
 import com.kafkamgt.uiapi.repository.TopicRequestsRepo;
 import com.kafkamgt.uiapi.repository.UserInfoRepo;
-import com.kafkamgt.uiapi.model.UserInfo;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -23,16 +22,16 @@ public class UpdateDataJdbc {
 
     private static Logger LOG = LoggerFactory.getLogger(UpdateDataJdbc.class);
 
-    @Autowired
+    @Autowired(required=false)
     TopicRequestsRepo topicRequestsRepo;
 
-    @Autowired
+    @Autowired(required=false)
     AclRequestsRepo aclRequestsRepo;
 
-    @Autowired
+    @Autowired(required=false)
     UserInfoRepo userInfoRepo;
 
-    @Autowired
+    @Autowired(required=false)
     SchemaRequestRepo schemaRequestRepo;
 
     @Autowired
@@ -47,16 +46,8 @@ public class UpdateDataJdbc {
         topicRequest.setTopicstatus("approved");
         topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         topicRequestsRepo.save(topicRequest);
-//        Clause eqclause = QueryBuilder.eq("topicname",topicName);
-//        Update.Where updateQuery = QueryBuilder.update(keyspace,"topic_requests")
-//                .with(QueryBuilder.set("topicstatus", "approved"))
-//                .and(QueryBuilder.set("approver", approver))
-//                .and(QueryBuilder.set("exectime", new Date()))
-//                .where(eqclause);
-//        session.execute(updateQuery);
 
-
-        //            // insert into SOT
+        // insert into SOT
         List<Topic> topics = new ArrayList<>();
 
         Topic topicObj = new Topic();
@@ -88,13 +79,6 @@ public class UpdateDataJdbc {
         aclRequests.setAclstatus("approved");
         aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         aclRequestsRepo.save(aclRequests);
-//        Clause eqclause = QueryBuilder.eq("req_no",req_no);
-//        Update.Where updateQuery = QueryBuilder.update(keyspace,"acl_requests")
-//                .with(QueryBuilder.set("topicstatus", "approved"))
-//                .and(QueryBuilder.set("approver", approver))
-//                .and(QueryBuilder.set("exectime", new Date()))
-//                .where(eqclause);
-//        session.execute(updateQuery);
 
         // Insert to SOT
 
@@ -116,45 +100,26 @@ public class UpdateDataJdbc {
         userInfo.setUsername(username);
         userInfo.setPwd(password);
         userInfoRepo.save(userInfo);
-//        Clause eqclause = QueryBuilder.eq("userid",username);
-//        Update.Where updateQuery = QueryBuilder.update(keyspace,"users")
-//                .with(QueryBuilder.set("pwd", password))
-//                .where(eqclause);
-//        session.execute(updateQuery);
+
         return "success";
     }
 
-    public String updateSchemaRequest(String topicName, String schemaVersion, String env, String approver){
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
 
-        SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
-        schemaRequestPK.setTopicname(topicName);
-        schemaRequestPK.setEnvironment(env);
-        schemaRequestPK.setSchemaversion(schemaVersion);
+        schemaRequest.setApprover(approver);
+        schemaRequest.setTopicstatus("approved");
+        schemaRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
 
-        Optional<SchemaRequest> schemaRequestOpt = schemaRequestRepo.findById(schemaRequestPK);
+        schemaRequestRepo.save(schemaRequest);
 
-        if(schemaRequestOpt.isPresent()) {
+        // Insert to SOT
 
-            schemaRequestOpt.get().setTopicname(topicName);
-            schemaRequestOpt.get().setSchemaversion(schemaVersion);
-            schemaRequestOpt.get().setEnvironment(env);
-            schemaRequestOpt.get().setApprover(approver);
-            schemaRequestOpt.get().setTopicstatus("approved");
-            schemaRequestOpt.get().setApprovingtime(new Timestamp(System.currentTimeMillis()));
+        List<MessageSchema> schemas = new ArrayList<>();
+        MessageSchema schemaObj = new MessageSchema();
+        copyProperties(schemaRequest,schemaObj);
+        schemas.add(schemaObj);
+        insertDataJdbcHelper.insertIntoMessageSchemaSOT(schemas);
 
-            schemaRequestRepo.save(schemaRequestOpt.get());
-        }
-//        Clause eqclause1 = QueryBuilder.eq("topicname",topicName);
-//        Clause eqclause2 = QueryBuilder.eq("versionschema",schemaVersion);
-//        Clause eqclause3 = QueryBuilder.eq("env",env);
-//        Update.Where updateQuery = QueryBuilder.update(keyspace,"schema_requests")
-//                .with(QueryBuilder.set("topicstatus", "approved"))
-//                .and(QueryBuilder.set("approver", approver))
-//                .and(QueryBuilder.set("exectime", new Date()))
-//                .where(eqclause1)
-//                .and(eqclause2)
-//                .and(eqclause3);
-//        session.execute(updateQuery);
         return "success";
     }
 

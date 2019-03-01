@@ -10,8 +10,8 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name="schema_requests")
-public class SchemaRequest implements Serializable {
+@Table(name="schemas")
+public class MessageSchema implements Serializable {
 
     @Transient
     private String topicname;
@@ -23,13 +23,13 @@ public class SchemaRequest implements Serializable {
     private String schemaversion;
 
     @EmbeddedId
-    private SchemaRequestPK schemaRequestPK;
+    private MessageSchemaPK messageSchemaPK;
 
     public String getTopicname() {
-        if(this.schemaRequestPK == null)
+        if(this.messageSchemaPK == null)
             return this.topicname;
         else
-            return this.schemaRequestPK.getTopicname();
+            return this.messageSchemaPK.getTopicname();
     }
 
     public void setTopicname(String topicname) {
@@ -37,10 +37,10 @@ public class SchemaRequest implements Serializable {
     }
 
     public String getEnvironment() {
-        if(this.schemaRequestPK == null)
+        if(this.messageSchemaPK == null)
             return this.environment;
         else
-            return this.schemaRequestPK.getEnvironment();
+            return this.messageSchemaPK.getEnvironment();
     }
 
     public void setEnvironment(String environment) {
@@ -48,10 +48,10 @@ public class SchemaRequest implements Serializable {
     }
 
     public String getSchemaversion() {
-        if(this.schemaRequestPK == null)
+        if(this.messageSchemaPK == null)
             return this.schemaversion;
         else
-            return this.schemaRequestPK.getSchemaversion();
+            return this.messageSchemaPK.getSchemaversion();
     }
 
     public void setSchemaversion(String schemaversion) {
@@ -61,28 +61,7 @@ public class SchemaRequest implements Serializable {
     @Column(name = "teamname")
     private String teamname;
 
-    @Column(name = "appname")
-    private String appname;
-
     @Column(name = "schemafull")
     private String schemafull;
-
-    @Column(name = "requestor")
-    private String username;
-
-    @Column(name = "requesttime")
-    private Timestamp requesttime;
-
-    @Column(name = "topicstatus")
-    private String topicstatus;
-
-    @Column(name = "remarks")
-    private String remarks;
-
-    @Column(name = "approver")
-    private String approver;
-
-    @Column(name = "exectime")
-    private Timestamp approvingtime;
 
 }
