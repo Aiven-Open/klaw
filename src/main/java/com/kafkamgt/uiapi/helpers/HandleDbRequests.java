@@ -1,12 +1,11 @@
 package com.kafkamgt.uiapi.helpers;
 
-import com.kafkamgt.uiapi.entities.*;
-import com.kafkamgt.uiapi.entities.Acl;
-import com.kafkamgt.uiapi.entities.Topic;
+import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.model.UserInfo;
 
 import java.util.List;
-import java.util.Map;
-
 
 
 public interface HandleDbRequests {

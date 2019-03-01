@@ -32,4 +32,4 @@ Insert into kafkamanagementapi.env(name,host,port,protocol,type) values ('DEV_SC
 
 /* Insert product and version */
 
-Insert into kafkamanagementapi.productdetails(name,version) values ('KafkaWize','1.0');
+Insert into kafkamanagementapi.productdetails(name,version) values ('KafkaWize','2.0');

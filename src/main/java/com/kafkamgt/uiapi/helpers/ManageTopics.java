@@ -1,12 +1,13 @@
 package com.kafkamgt.uiapi.helpers;
 
-import com.kafkamgt.uiapi.entities.*;
-import com.kafkamgt.uiapi.entities.Acl;
-import com.kafkamgt.uiapi.entities.Topic;
+import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.helpers.db.cassandra.CassandraDataSourceCondition;
 import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
-import com.kafkamgt.uiapi.helpers.db.jdbc.HandleDbRequestsJdbc;
-import com.kafkamgt.uiapi.helpers.db.jdbc.JdbcDataSourceCondition;
+import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
+import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.model.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -14,7 +15,6 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class ManageTopics {
@@ -26,7 +26,7 @@ public class ManageTopics {
 
     @PostConstruct
     public void loadDb() throws Exception {
-        if(dbStore !=null && dbStore.equals("jdbc")){
+        if(dbStore !=null && dbStore.equals("rdbms")){
             handleDbRequests = handleJdbc();
         }else
             handleDbRequests = handleCassandra();

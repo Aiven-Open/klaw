@@ -2,9 +2,9 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
 import com.datastax.driver.core.*;
-import com.kafkamgt.uiapi.entities.*;
-import com.kafkamgt.uiapi.entities.Acl;
-import com.kafkamgt.uiapi.entities.Topic;
+import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,13 +55,10 @@ public class InsertData {
 
             // Activity log
         insertIntoActivityLogTopic(topicRequest);
-
-
-
         return "success";
     }
 
-    public String insertIntoTopicSOT(List<Topic> topicRequests){
+    public String insertIntoTopicSOT(List<Topic> topicRequests, boolean isSyncTopics){
 
         String tableName = "topics", insertstat=null;
 
@@ -69,11 +66,31 @@ public class InsertData {
                 "VALUES (?,?,?,?);";
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
+        String tableName1 = "acls", insertstat1 = null;
+        PreparedStatement statement1 = null;
+        BoundStatement boundStatement1 = null;
+        TopicRequest topicRequest = null;
 
-        topicRequests.forEach(topic-> {
+        for(Topic topic:topicRequests) {
             session.execute(boundStatement.bind(topic.getTopicname(), topic.getEnvironment(),
                     topic.getTeamname(), topic.getAppname()));
-        });
+
+            if(isSyncTopics) {
+
+                insertstat1 = "INSERT INTO " + keyspace + "." + tableName1 + "(req_no, topicname, env, teamname, topictype," +
+                        " acl_ip, acl_ssl)" +
+                        "VALUES (?,?,?,?,?,?,?);";
+                statement1 = session.prepare(insertstat1);
+                boundStatement1 = new BoundStatement(statement1);
+                topicRequest = cassandraSelectHelper.selectTopicRequestsForTopic(topic.getTopicname(),topic.getEnvironment());
+                session.execute(boundStatement1.bind(getRandom(), topic.getTopicname(), topic.getEnvironment(), topic.getTeamname(),
+                        "Producer", topicRequest.getAcl_ip(), topicRequest.getAcl_ssl()));
+            }
+        }
+
+        //--------------------------------------
+
+
 
         return "success";
     }
@@ -91,6 +108,7 @@ public class InsertData {
 
         session.execute(boundStatement.bind(getRandom(), "topicRequest",
                     "new", new Date(),""+ topicRequest.getTopicname(),""+ topicRequest.getUsername(), topicRequest.getEnvironment(), userInfo.getTeam()));
+
 
         return "success";
     }
@@ -115,17 +133,10 @@ public class InsertData {
             // Insert into acl
         insertIntoActivityLogAcl(aclReq);
 
-            // Insert to SOT
-        List<Acl> acls = new ArrayList<>();
-        Acl aclObj = new Acl();
-        copyProperties(aclReq,aclObj);
-        acls.add(aclObj);
-            insertIntoAclsSOT(acls);
-
         return "success";
     }
 
-    public String insertIntoAclsSOT(List<Acl> acls){
+    public String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls){
 
         String tableName = "acls", insertstat=null;
 
@@ -134,9 +145,20 @@ public class InsertData {
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
 
+        String tableName1 = "topics", insertstat1=null;
+
+        insertstat1 = "INSERT INTO " + keyspace + "."+tableName1+"(topicname,env,teamname,appname)" +
+                "VALUES (?,?,?);";
+        PreparedStatement statement1 = session.prepare(insertstat1);
+        BoundStatement boundStatement1 = new BoundStatement(statement1);
+
         acls.forEach(aclReq-> {
             session.execute(boundStatement.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(), aclReq.getTeamname(),
                     aclReq.getConsumergroup(), aclReq.getTopictype(),aclReq.getAclip(),aclReq.getAclssl()));
+            if(isSyncAcls && aclReq.getTopictype().equals("Producer")){
+                session.execute(boundStatement.bind(aclReq.getTopicname(), aclReq.getEnvironment(),
+                        aclReq.getTeamname()));
+            }
         });
 
         return "success";

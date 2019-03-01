@@ -3,7 +3,7 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.*;
-import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.dao.Acl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;

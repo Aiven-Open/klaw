@@ -3,11 +3,10 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.querybuilder.*;
-import com.kafkamgt.uiapi.entities.Acl;
-import com.kafkamgt.uiapi.entities.AclRequests;
-import com.kafkamgt.uiapi.entities.Topic;
-import com.kafkamgt.uiapi.entities.TopicRequest;
-import com.kafkamgt.uiapi.helpers.db.jdbc.repo.AclRequestsRepo;
+import com.kafkamgt.uiapi.dao.Acl;
+import com.kafkamgt.uiapi.dao.AclRequests;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.dao.TopicRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ public class UpdateData {
         Topic topicObj = new Topic();
         copyProperties(topicRequest,topicObj);
         topics.add(topicObj);
-        insertDataHelper.insertIntoTopicSOT(topics);
+        insertDataHelper.insertIntoTopicSOT(topics,false);
 
         Acl aclReq = new Acl();
         aclReq.setTopictype("Producer");
@@ -59,7 +58,7 @@ public class UpdateData {
 
         List<Acl> acls = new ArrayList<>();
         acls.add(aclReq);
-        insertDataHelper.insertIntoAclsSOT(acls);
+        insertDataHelper.insertIntoAclsSOT(acls,false);
 
         return "success";
     }
@@ -82,7 +81,7 @@ public class UpdateData {
         aclObj.setAclip(aclReq.getAcl_ip());
         aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
-        insertDataHelper.insertIntoAclsSOT(acls);
+        insertDataHelper.insertIntoAclsSOT(acls,false);
 
         return "success";
     }

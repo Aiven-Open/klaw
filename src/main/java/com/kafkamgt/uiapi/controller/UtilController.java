@@ -2,7 +2,6 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.kafkamgt.uiapi.helpers.ManageTopics;
-import com.kafkamgt.uiapi.helpers.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,8 @@ public class UtilController {
     @Autowired
     ManageTopics createTopicHelper;
 
-    @Autowired
-    Utilities utils;
+//    @Autowired
+//    Utilities utils;
 
     @Value("${clusterapi.url}")
     String clusterConnUrl;
@@ -69,16 +68,16 @@ public class UtilController {
         if(outstanding>0)
             outstandingReqs = outstanding+"";
 
-        if(!utils.validateLicense()){
-            statusAuth = "NotAuthorized";
-            statusAuthExecTopics = "NotAuthorized";
-            licenseValidity = "Invalid License !! Pleae provide a valid license.";
-            json = "{ \"status\": \"" + statusAuth + "\" , \"username\":\"" + userDetails.getUsername() + "\"," +
-                    " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\"," +
-                    " \"companyinfo\": \"" + companyInfo + "\"," +
-                    " \"alertmessage\": \"" + licenseValidity + "\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
-        }
+//        if(!utils.validateLicense()){
+//            statusAuth = "NotAuthorized";
+//            statusAuthExecTopics = "NotAuthorized";
+//            licenseValidity = "Invalid License !! Pleae provide a valid license.";
+//            json = "{ \"status\": \"" + statusAuth + "\" , \"username\":\"" + userDetails.getUsername() + "\"," +
+//                    " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\"," +
+//                    " \"companyinfo\": \"" + companyInfo + "\"," +
+//                    " \"alertmessage\": \"" + licenseValidity + "\" }";
+//            return new ResponseEntity<String>(json, HttpStatus.OK);
+//        }
 
         if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
             statusAuth = "Authorized";
@@ -116,15 +115,15 @@ public class UtilController {
         String licenseValidity=null;
 
 
-        if(!utils.validateLicense()){
-            statusAuth = "NotAuthorized";
-            licenseValidity = "Invalid License !! Pleae provide a valid license.";
-            json = "{ \"status\": \"" + statusAuth + "\" ," +
-                    " \"username\":\"" + userDetails.getUsername() + "\"," +
-                    " \"companyinfo\": \"" + companyInfo + "\"," +
-                    ", \"alertmessage\": \"" + licenseValidity + "\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
-        }
+//        if(!utils.validateLicense()){
+//            statusAuth = "NotAuthorized";
+//            licenseValidity = "Invalid License !! Pleae provide a valid license.";
+//            json = "{ \"status\": \"" + statusAuth + "\" ," +
+//                    " \"username\":\"" + userDetails.getUsername() + "\"," +
+//                    " \"companyinfo\": \"" + companyInfo + "\"," +
+//                    ", \"alertmessage\": \"" + licenseValidity + "\" }";
+//            return new ResponseEntity<String>(json, HttpStatus.OK);
+//        }
 
         if(authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
             //statusAuth = userDetails.getUsername() +"-"+"Authorized";

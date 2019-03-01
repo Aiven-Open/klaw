@@ -1,9 +1,8 @@
 package com.kafkamgt.uiapi.config;
 
 
-import com.kafkamgt.uiapi.entities.UserInfo;
+import com.kafkamgt.uiapi.model.UserInfo;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
-import com.kafkamgt.uiapi.helpers.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +27,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     ManageTopics manageTopics;
 
-    @Autowired
-    Utilities utils;
+//    @Autowired
+//    Utilities utils;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -57,11 +56,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-        if(!utils.validateLicense()) {
-            LOG.error("Invalid License, exiting...");
-            System.exit(0);
-            throw new Exception("Invalid License !!");
-        }
+//        if(!utils.validateLicense()) {
+//            LOG.error("Invalid License, exiting...");
+//            System.exit(0);
+//            throw new Exception("Invalid License !!");
+//        }
 
         List<UserInfo> users = manageTopics.selectAllUsersInfo();
         Iterator<UserInfo> iter = users.iterator();
@@ -88,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final Properties globalUsers = new Properties();
         List<UserInfo> users = manageTopics.selectAllUsersInfo();
         Iterator<UserInfo> iter = users.iterator();
-        com.kafkamgt.uiapi.entities.UserInfo userInfo = null;
+        UserInfo userInfo = null;
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
         while(iter.hasNext()){

@@ -5,10 +5,11 @@ import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
-import com.kafkamgt.uiapi.entities.*;
-import com.kafkamgt.uiapi.entities.Acl;
-import com.kafkamgt.uiapi.entities.Topic;
+import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.model.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 
 
 @Component
@@ -110,11 +110,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     }
 
     public String addToSynctopics(List<Topic> topicRequests) {
-        return cassandraInsertHelper.insertIntoTopicSOT(topicRequests);
+        return cassandraInsertHelper.insertIntoTopicSOT(topicRequests,true);
     }
 
     public String addToSyncacls(List<Acl> acls) {
-        return cassandraInsertHelper.insertIntoAclsSOT(acls);
+        return cassandraInsertHelper.insertIntoAclsSOT(acls,true);
     }
 
     /*--------------------Select */

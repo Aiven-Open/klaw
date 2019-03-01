@@ -2,10 +2,10 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.entities.Team;
-import com.kafkamgt.uiapi.entities.ActivityLog;
-import com.kafkamgt.uiapi.entities.Env;
-import com.kafkamgt.uiapi.entities.UserInfo;
+import com.kafkamgt.uiapi.dao.Team;
+import com.kafkamgt.uiapi.dao.ActivityLog;
+import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.model.UserInfo;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 package com.kafkamgt.uiapi.config;
 
 
-import com.kafkamgt.uiapi.helpers.db.jdbc.JdbcDataSourceCondition;
+import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class DataSourceConfig {
         dataSource.setUrl(environment.getProperty("spring.datasource.url"));
         dataSource.setUsername(environment.getProperty("spring.datasource.username"));
         dataSource.setPassword(environment.getProperty("spring.datasource.password"));
-        LOG.info("Into connecting to Jdbc datasource..");
+        LOG.info("Connecting RDBMS datasource..");
         return dataSource;
     }
 }

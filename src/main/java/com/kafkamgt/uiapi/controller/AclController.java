@@ -2,10 +2,10 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.entities.AclInfo;
-import com.kafkamgt.uiapi.entities.AclRequests;
-import com.kafkamgt.uiapi.entities.Env;
-import com.kafkamgt.uiapi.entities.Acl;
+import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.dao.AclRequests;
+import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -360,7 +361,11 @@ public class AclController {
 
         ResponseEntity<Set> s = restTemplate.exchange
                 (uri, HttpMethod.GET, entity, Set.class);
-        List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
+        List<HashMap<String,String>> aclListOriginal = new ArrayList(s.getBody());
+
+        List<HashMap<String,String>> aclList = aclListOriginal.stream()
+                .filter(aclItem->aclItem.get("operation").equals("READ"))
+                .collect(Collectors.toList());
 
         // Get Sync acls
         List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);

@@ -2,8 +2,8 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.entities.Env;
-import com.kafkamgt.uiapi.entities.SchemaRequest;
+import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
