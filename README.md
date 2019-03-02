@@ -9,6 +9,7 @@ Automate the process of creating and browsing Kafka components, by introducing r
 
 ![ImageFig1](https://github.com/kafkawize/kafkawize/blob/master/screenshots/arch.png)
 
+Kafkawize contains two main APIs. (User Interface API  and Cluster management API)
 
 User Interface API directly communicates between users and Cluster API.<br><br>
 Front end is built with AngularJs, HTML, and Java script.<br>
@@ -16,19 +17,19 @@ Front end is built with AngularJs, HTML, and Java script.<br>
 Cluster API acts as middle layer between Kafka brokers and UserInterface API.<br>
 Cluster API creates Kafka Admin Client and executes the requests for Topic, Acls or Schema registry.<br>
 
-Apache Cassandra datastore stores all users, teams, topics, request and execution data from all the users., and to maintain source of truth.<br>
+Apache Cassandra Or RDBMS(MySql for ex) datastore stores all users, teams, topicRequests, request and execution data from all the users., and to maintain source of truth.<br>
 
-Spring Security, Spring Boot frameworks are used to develop this application.<br>
+Spring Security, Spring Boot frameworks, Hibernate are used to develop this application.<br>
 
 <h5>Functionalities:</h5><br> (Broadly divided into two categories based on user roles.)<br>
 ROLE : USER  can request for creation of kafka components, and browse kafka components.<br>
 ROLE : ADMIN  can approve and execute the requests of users to create kafka components.<br>
-ROLE : SUPERUSER can synchronize topics meta information with Cassandra Datastore from Kafka Brokers (Source of Truth.)<br>
+ROLE : SUPERUSER can synchronize topicRequests meta information with Cassandra/Rdbms Datastore from Kafka Brokers (Source of Truth.)<br>
 
 <b>Browse:</b> (ROLE : USER, ADMIN, SUPERUSER)<br>
 All users can Browse Topics<br>
 All users can Browse Acls<br>
-All users can view the producers and consumers of all topics. <br>
+All users can view the producers and consumers of all topicRequests. <br>
 
 <b>Requests:</b>(ROLE : USER)<br>
 Users can request for Kafka Topics <br>
@@ -36,13 +37,13 @@ Users can request for Kafka Acl <br>
 Users can request for Schemas to be registered on Confluent Schema registry. <br>
 Users can view all the requests from his team. <br>
 
-<b>Environments:</b>(ROLE : USER)<br>
+<b>Clusters:</b>(ROLE : USER)<br>
 Users can view the available environments <br>
 
 <b>Approve - Execute :</b>(ROLE : ADMIN)<br>
 Users can appprove requests for creating Kafka Topics <br>
 Users can appprove requests for creating Kafka Acls <br>
-Users can appprove requests for uploading schemas on topics<br>
+Users can appprove requests for uploading schemas on topicRequests<br>
 
 <b>Users :</b>(ROLE : ADMIN)<br>
 Users can view all user details <br>
@@ -52,12 +53,12 @@ Users can add new users <br>
 Users can view all team details <br>
 Users can add new team <br>
 
-<b>Environments:</b>(ROLE : SUPERUSER)<br>
+<b>Clusters:</b>(ROLE : SUPERUSER)<br>
 Users can add a new environment environments  <br>
 
 <b>Synchronize Metadata :</b>(ROLE : SUPERUSER)<br>
-Users can synchronize topic information from Brokers with Cassandra datastore. (Update team info.) <br>
-Users can synchronize acls information from Brokers with Cassandra datastore. (Update team info.) <br>
+Users can synchronize topicRequest information from Brokers with Cassandra/Rdbms datastore. (Update team info.) <br>
+Users can synchronize acls information from Brokers with Cassandra/Rdbms datastore. (Update team info.) <br>
 
 <b>My Profile :</b>(ROLE : USER, ADMIN)<br>
 Users can view their profile. <br>
@@ -71,18 +72,29 @@ Users can logout. <br>
 <b>How to Run the application</b>
 
 KafkaWize needs the following applications to be up and running.
-1. Spring boot application KafkaWize https://github.com/kafkawize/kafkawize
-2. Spring boot application KafkaWize ClusterApi https://github.com/kafkawize/kafkawizeclusterapi
-3. Apache Cassandra
+1. Spring boot application KafkaWize https://github.com/muralibasani/kafkawize
+2. Spring boot application KafkaWize ClusterApi https://github.com/muralibasani/kafkawizeclusterapi
+3. Apache Cassandra OR Rdbms(MySql/Oracle/..)
 
-Steps to run:
+<b>Steps to run with Cassandra as Metastore: </b>
 
 1. Install Apache Cassandra
 2. Setup project KafkawizeClusterApi and update server.port if necessary in application properties
 3. Start KafkaClusterApi
 4. Setup project KafkaWize, and configure Cassandra running host, Cluster api host, in application properties
-5. Start KafkaWize
-6. Cassandra db setup will be done on the startup of the application. We do not have to create manually.
+5. Set db.storetype=cassandra in application.properties
+6. Start KafkaWize
+7. Cassandra db setup will be done on the startup of the application. We do not have to create manually.
+
+<b>Steps to run with Rdbms as Metastore:</b>
+
+1. Install an Rdbms database (Mysql or Oracle or ..)
+2. Setup project KafkawizeClusterApi and update server.port if necessary in application properties
+3. Start KafkaClusterApi
+4. Setup project KafkaWize, and configure Cassandra running host, Cluster api host, in application properties
+5. Set db.storetype=rdbms and few other datasource properties in application.properties
+6. Start KafkaWize
+7. Run the ddl and insert scripts available in src/main/resources/scripts/base/rdbms.
 
 By default KafkaWize runs on port 9097. Access it by http://localhost:9097
 

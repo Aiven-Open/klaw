@@ -2,9 +2,9 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
+import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.slf4j.Logger;
@@ -84,11 +84,11 @@ public class UiConfigController {
 
         Env newEnv = gson.fromJson(addNewEnv, Env.class);
 
-        newEnv.setTruststorepwd("");
-        newEnv.setKeypwd("");
-        newEnv.setKeystorepwd("");
-        newEnv.setTruststorelocation("");
-        newEnv.setKeystorelocation("");
+        newEnv.setTrustStorePwd("");
+        newEnv.setKeyPwd("");
+        newEnv.setKeyStorePwd("");
+        newEnv.setTrustStoreLocation("");
+        newEnv.setKeyStoreLocation("");
         String execRes = manageTopics.addNewEnv(newEnv);
 
         String envAddResult = "{\"result\":\""+execRes+"\"}";
@@ -211,7 +211,7 @@ public class UiConfigController {
 
         //LOG.info(userList + " --- userList ");
 
-        return new ResponseEntity<List<UserInfo>>(userList, HttpStatus.OK);
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getMyProfileInfo", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -224,7 +224,7 @@ public class UiConfigController {
 
         LOG.info(userList + " --- userList ");
 
-        return new ResponseEntity<UserInfo>(userList, HttpStatus.OK);
+        return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

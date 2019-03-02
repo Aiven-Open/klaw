@@ -2,18 +2,14 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
 import com.datastax.driver.core.*;
-import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.core.querybuilder.*;
-import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Acl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class DeleteData {
@@ -22,16 +18,16 @@ public class DeleteData {
 
     Session session;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
 
-    public String deleteTopicRequest(String topicName){
+    public String deleteTopicRequest(String topicName, String env){
         Clause eqclause = QueryBuilder.eq("topicname",topicName);
-        Clause eqclause2 = QueryBuilder.eq("topicstatus","created");
+        Clause eqclause2 = QueryBuilder.eq("env",env);
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"topic_requests")
-                .where(eqclause)
-                .and(eqclause2);
+                .where(eqclause);
+               // .and(eqclause2);
         session.execute(deleteQuery);
         return "success";
     }
@@ -40,11 +36,11 @@ public class DeleteData {
         Clause eqclause1 = QueryBuilder.eq("topicname",topicName);
         Clause eqclause2 = QueryBuilder.eq("versionschema",schemaVersion);
         Clause eqclause3 = QueryBuilder.eq("env",env);
-        Clause eqclause4 = QueryBuilder.eq("topicstatus","created");
+        //Clause eqclause4 = QueryBuilder.eq("topicstatus","created");
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"schema_requests").where(eqclause1)
                 .and(eqclause2)
-                .and(eqclause3)
-                .and(eqclause4);
+                .and(eqclause3);
+                //.and(eqclause4);
         session.execute(deleteQuery);
         return "success";
     }
@@ -52,25 +48,25 @@ public class DeleteData {
     public String deleteAclRequest(String req_no){
         LOG.info("In delete acl req "+req_no);
         Clause eqclause = QueryBuilder.eq("req_no",req_no);
-        Clause eqclause2 = QueryBuilder.eq("topicstatus","created");
+        //Clause eqclause2 = QueryBuilder.eq("topicstatus","created");
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"acl_requests")
-                .where(eqclause)
-                .and(eqclause2);
+                .where(eqclause);
+                //.and(eqclause2);
         session.execute(deleteQuery);
         return "success";
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){
+    public String deletePrevAclRecs(List<Acl> aclReqs){
 
         //if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
              //   aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
               //  aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
             //    aclSotItem.getTopictype().equals(mp.getTopictype()))
 
-        for(AclReq aclReq:aclReqs){
+        for(Acl aclReq:aclReqs){
             String aclType = aclReq.getTopictype();
-            String host = aclReq.getAcl_ip();
-            String principle = aclReq.getAcl_ssl();
+            String host = aclReq.getAclip();
+            String principle = aclReq.getAclssl();
             String consumergroup = aclReq.getConsumergroup();
             String topicName = aclReq.getTopicname();
 

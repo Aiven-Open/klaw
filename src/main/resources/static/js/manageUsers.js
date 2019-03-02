@@ -138,11 +138,17 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
                     var serviceInput = {};
 
+                    if(!$scope.addNewTeam.app)
+                    {
+                        alert("Please fill in the application name.");
+                        return;
+                    }
                     serviceInput['teamname'] = $scope.addNewTeam.teamname;
                     serviceInput['teammail'] = $scope.addNewTeam.teammail;
                     serviceInput['teamphone'] = $scope.addNewTeam.teamphone;
                     serviceInput['contactperson'] = $scope.addNewTeam.contactperson;
                     serviceInput['app'] = $scope.addNewTeam.app;
+
 
                     if (!window.confirm("Are you sure, you would like to add team : "
                         +  $scope.addNewTeam.teamname + ": " +
@@ -210,6 +216,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 }).success(function(output) {
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
+                    $scope.teamname = output.teamname;
                      $scope.notifications = output.notifications;
                     $scope.statusauthexectopics = output.statusauthexectopics;
                     $scope.alerttop = output.alertmessage;

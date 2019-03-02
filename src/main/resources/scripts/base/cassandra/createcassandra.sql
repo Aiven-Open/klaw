@@ -2,7 +2,7 @@
 
 CREATE KEYSPACE if not exists kafkamanagementapi  WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
 
-Create table if not exists kafkamanagementapi.topic_requests(topicname text PRIMARY KEY,partitions text,replicationfactor text,env text,teamname text,appname text,topictype text,requestor text,requesttime timestamp,topicstatus text,remarks text,acl_ip text,acl_ssl text,approver text,exectime timestamp);
+Create table if not exists kafkamanagementapi.topic_requests(topicname text,partitions text,	replicationfactor text,env text,teamname text,appname text,topictype text, 	requestor text,requesttime timestamp,topicstatus text ,remarks text,acl_ip text, 	acl_ssl text,approver text,exectime timestamp,  PRIMARY KEY(topicname,env));
 
 Create table if not exists kafkamanagementapi.topics(topicname text PRIMARY KEY,env text,teamname text,appname text);
 
@@ -11,6 +11,8 @@ Create table if not exists kafkamanagementapi.acl_requests(req_no text PRIMARY K
 Create table if not exists kafkamanagementapi.acls(req_no text PRIMARY KEY, topicname text, env text,teamname text,consumergroup text, topictype text, acl_ip text, acl_ssl text);
 
 Create table if not exists kafkamanagementapi.schema_requests(topicname text,env text,teamname text,appname text,requestor text,requesttime timestamp,topicstatus text,remarks text,schemafull text,approver text,exectime timestamp,versionschema text,PRIMARY KEY(topicname,versionschema,env));
+
+Create table if not exists kafkamanagementapi.schemas(req_no text, topicname text, env text,teamname text,schemafull text, versionschema text,PRIMARY KEY(topicname,versionschema,env));
 
 Create table if not exists kafkamanagementapi.teams(team text,app text,teammail text,teamphone text,contactperson text,PRIMARY KEY(team,app));
 

@@ -1,16 +1,20 @@
 package com.kafkamgt.uiapi.helpers;
 
 import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.helpers.db.cassandra.CassandraDataSourceCondition;
 import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
-import com.kafkamgt.uiapi.helpers.db.jdbc.HandleDbRequestsJdbc;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
+import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class ManageTopics {
@@ -22,20 +26,22 @@ public class ManageTopics {
 
     @PostConstruct
     public void loadDb() throws Exception {
-        if(dbStore !=null && dbStore.equals("jdbc")){
+        if(dbStore !=null && dbStore.equals("rdbms")){
             handleDbRequests = handleJdbc();
-        }else {
+        }else
             handleDbRequests = handleCassandra();
-        }
+
         handleDbRequests.connectToDb();
     }
 
     @Bean()
+    @Conditional(JdbcDataSourceCondition.class)
     HandleDbRequestsJdbc handleJdbc() {
         return new HandleDbRequestsJdbc();
     }
 
     @Bean()
+    @Conditional(CassandraDataSourceCondition.class)
     HandleDbRequestsCassandra handleCassandra() {
         return new HandleDbRequestsCassandra();
     }
@@ -43,11 +49,11 @@ public class ManageTopics {
 
     /*--------------------Insert */
 
-    public String requestForTopic(Topic topic){
-        return handleDbRequests.requestForTopic(topic);
+    public String requestForTopic(TopicRequest topicRequest){
+        return handleDbRequests.requestForTopic(topicRequest);
     }
 
-    public String requestForAcl(AclReq aclReq){
+    public String requestForAcl(AclRequests aclReq){
         return handleDbRequests.requestForAcl(aclReq);
     }
 
@@ -67,11 +73,11 @@ public class ManageTopics {
         return handleDbRequests.requestForSchema(schemaRequest);
     }
 
-    public String addToSynctopics(List<Topic> topics) {
-        return handleDbRequests.addToSynctopics(topics);
+    public String addToSynctopics(List<Topic> topicRequests) {
+        return handleDbRequests.addToSynctopics(topicRequests);
     }
 
-    public String addToSyncacls(List<AclReq> acls) {
+    public String addToSyncacls(List<Acl> acls) {
         return handleDbRequests.addToSyncacls(acls);
     }
 
@@ -82,29 +88,29 @@ public class ManageTopics {
         return handleDbRequests.getAllRequestsToBeApproved(requestor);
     }
 
-    public List<Topic> getAllTopicRequests(String requestor){
+    public List<TopicRequest> getAllTopicRequests(String requestor){
         return handleDbRequests.getAllTopicRequests(requestor);
     }
-    public List<Topic> getCreatedTopicRequests(String requestor){
+    public List<TopicRequest> getCreatedTopicRequests(String requestor){
         return handleDbRequests.getCreatedTopicRequests(requestor);
     }
 
-    public Topic selectTopicRequestsForTopic(String topicName) {
-        return handleDbRequests.selectTopicRequestsForTopic(topicName);
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) {
+        return handleDbRequests.selectTopicRequestsForTopic(topicName, env);
     }
 
     public List<Topic> getSyncTopics(String env){
         return handleDbRequests.getSyncTopics(env);
     }
 
-    public List<AclReq> getSyncAcls(String env){
+    public List<Acl> getSyncAcls(String env){
         return handleDbRequests.getSyncAcls(env);
     }
 
-    public List<AclReq> getAllAclRequests(String requestor){
+    public List<AclRequests> getAllAclRequests(String requestor){
         return handleDbRequests.getAllAclRequests(requestor);
     }
-    public List<AclReq> getCreatedAclRequests(String requestor){
+    public List<AclRequests> getCreatedAclRequests(String requestor){
         return handleDbRequests.getCreatedAclRequests(requestor);
     }
 
@@ -134,11 +140,8 @@ public class ManageTopics {
     public UserInfo getUsersInfo(String username){
         return handleDbRequests.getUsersInfo(username);
     }
-    public List<Map<String,String>> selectAllUsers(){
-        return handleDbRequests.selectAllUsers();
-    }
 
-    public AclReq selectAcl(String req_no){
+    public AclRequests selectAcl(String req_no){
         return handleDbRequests.selectAcl(req_no);
     }
 
@@ -163,16 +166,16 @@ public class ManageTopics {
     public List<ActivityLog> selectActivityLog(String user, String env){return handleDbRequests.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver){
-        return handleDbRequests.updateTopicRequest(topicName, approver);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+        return handleDbRequests.updateTopicRequest(topicRequest, approver);
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        return handleDbRequests.updateAclRequest(req_no, approver);
+    public String updateAclRequest(AclRequests aclRequests, String approver){
+        return handleDbRequests.updateAclRequest(aclRequests, approver);
     }
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
-        return handleDbRequests.updateSchemaRequest(topicName, schemaVersion, env,  approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
+        return handleDbRequests.updateSchemaRequest(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){
@@ -180,8 +183,8 @@ public class ManageTopics {
     }
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName){
-        return handleDbRequests.deleteTopicRequest(topicName);
+    public String deleteTopicRequest(String topicName, String env){
+        return handleDbRequests.deleteTopicRequest(topicName, env);
     }
 
     public String deleteAclRequest(String req_no){
@@ -192,5 +195,5 @@ public class ManageTopics {
         return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){ return handleDbRequests.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<Acl> aclReqs){ return handleDbRequests.deletePrevAclRecs(aclReqs);}
 }

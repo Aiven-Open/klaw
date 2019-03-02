@@ -1,16 +1,11 @@
 package com.kafkamgt.uiapi.helpers;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.helpers.db.cassandra.DeleteData;
-import com.kafkamgt.uiapi.helpers.db.cassandra.InsertData;
-import com.kafkamgt.uiapi.helpers.db.cassandra.UpdateData;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.dao.UserInfo;
 
 import java.util.List;
-import java.util.Map;
-
 
 
 public interface HandleDbRequests {
@@ -19,9 +14,9 @@ public interface HandleDbRequests {
 
     /*--------------------Insert */
 
-    public String requestForTopic(Topic topic);
+    public String requestForTopic(TopicRequest topicRequest);
 
-    public String requestForAcl(AclReq aclReq);
+    public String requestForAcl(AclRequests aclReq);
 
     public String addNewUser(UserInfo userInfo);
 
@@ -31,25 +26,25 @@ public interface HandleDbRequests {
 
     public String requestForSchema(SchemaRequest schemaRequest);
 
-    public String addToSynctopics(List<Topic> topics);
+    public String addToSynctopics(List<Topic> topicRequests);
 
-    public String addToSyncacls(List<AclReq> acls);
+    public String addToSyncacls(List<Acl> acls);
 
     /*--------------------Select */
 
     public int getAllRequestsToBeApproved(String requestor);
 
-    public List<Topic> getAllTopicRequests(String requestor);
-    public List<Topic> getCreatedTopicRequests(String requestor);
+    public List<TopicRequest> getAllTopicRequests(String requestor);
+    public List<TopicRequest> getCreatedTopicRequests(String requestor);
 
-    public Topic selectTopicRequestsForTopic(String topicName) ;
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) ;
 
     public List<Topic> getSyncTopics(String env);
 
-    public List<AclReq> getSyncAcls(String env);
+    public List<Acl> getSyncAcls(String env);
 
-    public List<AclReq> getAllAclRequests(String requestor);
-    public List<AclReq> getCreatedAclRequests(String requestor);
+    public List<AclRequests> getAllAclRequests(String requestor);
+    public List<AclRequests> getCreatedAclRequests(String requestor);
 
     public List<SchemaRequest> getAllSchemaRequests(String requestor);
     public List<SchemaRequest> getCreatedSchemaRequests(String requestor);
@@ -63,9 +58,8 @@ public interface HandleDbRequests {
     public List<UserInfo> selectAllUsersInfo();
 
     public UserInfo getUsersInfo(String username);
-    public List<Map<String,String>> selectAllUsers();
 
-    public AclReq selectAcl(String req_no);
+    public AclRequests selectAcl(String req_no);
 
     public Topic getTopicTeam(String topicName, String env);
 
@@ -80,20 +74,20 @@ public interface HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env);
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver);
 
-    public String updateAclRequest(String req_no, String approver);
+    public String updateAclRequest(AclRequests aclRequests, String approver);
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
 
     public String updatePassword(String username, String pwd);
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName);
+    public String deleteTopicRequest(String topicName, String env);
 
     public String deleteAclRequest(String req_no);
 
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env);
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs);
+    public String deletePrevAclRecs(List<Acl> aclReqs);
 }

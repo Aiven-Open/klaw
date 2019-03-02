@@ -7,13 +7,13 @@
 <meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Synchronize Topics - Kafka Administration Portal</title>
+<title>Synchronize Topics - Kafka Self-service Topic Management Portal</title>
 
 <head>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="lib/angular-wm.js"></script>
-	<script src="js/synchronizeTopics.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+	<script src="js/synchronizeTopics.js"></script>
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 		  crossorigin="anonymous">
@@ -49,8 +49,7 @@
                         </span>
 					<!--<span class="user-role">Administrator</span>-->
 					<span class="user-status">
-                            <i class="fa fa-circle"></i>
-                            <span>Online</span>
+                           <span>{{teamname}}</span>
                         </span>
 				</div>
 			</div>
@@ -120,7 +119,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -226,20 +225,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addnewenv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -336,7 +335,7 @@
 
 									<tr>
 										<td>
-											<font face=verdana size=2><b>Environment</b></font>
+											<font face=verdana size=2><b>Cluster</b></font>
 										</td>
 										<td>
 											<select ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs">
@@ -377,11 +376,11 @@
 										<th>TopicName</th>
 										<th>Team</th>
 									</tr>
-									<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicName}}">
+									<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}">
 										<td>{{ resultBrowset.sequence}}</td>
-										<td>{{ resultBrowset.topicName}}</td>
+										<td>{{ resultBrowset.topicname}}</td>
 										<td>
-											<select ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicName)"
+											<select ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicname)"
 													ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 													ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 											</select>

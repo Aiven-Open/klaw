@@ -1,52 +1,30 @@
 package com.kafkamgt.uiapi.dao;
 
-public class UserInfo {
-    private String fullname;
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+@Getter
+@Setter
+@Entity
+@Table(name="users")
+public class UserInfo implements Serializable {
+
+    @Id
+    @Column(name = "userid")
     private String username;
+
+    @Column(name = "pwd")
     private String pwd;
+
+    @Column(name = "team")
     private String team;
+
+    @Column(name = "roleid")
     private String role;
 
-    public String getFullname() {
-        return fullname;
-    }
-
-    public void setFullname(String fullname) {
-        this.fullname = fullname;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-
-
+    @Column(name = "fullname")
+    private String fullname;
 }

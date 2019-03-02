@@ -5,13 +5,13 @@
 <meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>My Profile - Kafka Administration Portal</title>
+<title>My Profile - Kafka Self-service Topic Management Portal</title>
 <html ng-app="manageUsersApp" ng-controller="manageUsersCtrl">
 <head>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="lib/angular-wm.js"></script>
-	<script src="js/manageUsers.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+	<script src="js/manageUsers.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 		  crossorigin="anonymous">
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
@@ -46,8 +46,7 @@
                         </span>
 					<!--<span class="user-role">Administrator</span>-->
 					<span class="user-status">
-                            <i class="fa fa-circle"></i>
-                            <span>Online</span>
+                            <span>{{teamname}}</span>
                         </span>
 				</div>
 			</div>
@@ -117,7 +116,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -231,20 +230,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addnewenv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>

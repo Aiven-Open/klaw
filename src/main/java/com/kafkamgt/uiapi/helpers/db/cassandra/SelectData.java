@@ -2,16 +2,16 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
 import com.datastax.driver.core.*;
-import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.core.querybuilder.*;
-import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,24 +22,24 @@ public class SelectData{
 
     Session session;
 
-    @Value("${cassandradb.keyspace}")
+    @Value("${cassandradb.keyspace:@null}")
     String keyspace;
 
 
     public int getAllRequestsToBeApproved(String requestor){
 
-        List<AclReq> allAclReqs = selectAclRequests(true,requestor);
+        List<AclRequests> allAclReqs = selectAclRequests(true,requestor);
         List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true,requestor);
-        List<Topic> allTopicReqs = selectTopicRequests(true,requestor);
+        List<TopicRequest> allTopicRequestReqs = selectTopicRequests(true,requestor);
 
-        int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicReqs.size();
+        int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicRequestReqs.size();
 
         return allOutstanding;
     }
 
-    public List<AclReq> selectAclRequests(boolean allReqs, String requestor){
-        AclReq aclReq = null;
-        List<AclReq> aclList = new ArrayList();
+    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){
+        AclRequests aclReq = null;
+        List<AclRequests> aclList = new ArrayList();
         ResultSet results = null;
         if(allReqs) {
             Clause eqclause = QueryBuilder.eq("topicstatus", "created");
@@ -70,7 +70,7 @@ public class SelectData{
 
             if (teamSelected != null && teamSelected.equals(teamName)) {
 
-                aclReq = new AclReq();
+                aclReq = new AclRequests();
                 aclReq.setUsername(row.getString("requestor"));
                 aclReq.setAcl_ip(row.getString("acl_ip"));
                 aclReq.setAcl_ssl(row.getString("acl_ssl"));
@@ -81,8 +81,11 @@ public class SelectData{
                 aclReq.setRequestingteam(row.getString("requestingteam"));
                 aclReq.setRemarks(row.getString("remarks"));
                 aclReq.setAclstatus(row.getString("topicstatus"));
-                aclReq.setApprovingtime("" + row.getTimestamp("exectime"));
-                aclReq.setRequesttime("" + row.getTimestamp("requesttime"));
+                try {
+                    aclReq.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
+                    aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
+                }catch (Exception e){}
+
                 aclReq.setConsumergroup("" + row.getString("consumergroup"));
                 aclReq.setTopictype("" + row.getString("topictype"));
                 aclReq.setReq_no(row.getString("req_no"));
@@ -120,7 +123,7 @@ public class SelectData{
                     break;
             }
 
-            LOG.info("teamSelected--" + teamSelected);
+            //LOG.info("teamSelected--" + teamSelected);
 
             if (teamSelected != null && teamSelected.equals(teamName)) {
                 schemaRequest = new SchemaRequest();
@@ -133,12 +136,13 @@ public class SelectData{
                 schemaRequest.setTeamname(teamName);
                 schemaRequest.setRemarks(row.getString("remarks"));
                 schemaRequest.setTopicstatus(row.getString("topicstatus"));
-                schemaRequest.setApprovingtime("" + row.getTimestamp("exectime"));
-                schemaRequest.setRequesttime("" + row.getTimestamp("requesttime"));
+                try {
+                    schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
+                }catch (Exception e){}
+                schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
 
                 schemaList.add(schemaRequest);
             }
-
 
         }
 
@@ -170,8 +174,10 @@ public class SelectData{
             schemaRequest.setTeamname(row.getString("teamname"));
             schemaRequest.setRemarks(row.getString("remarks"));
             schemaRequest.setTopicstatus(row.getString("topicstatus"));
-            schemaRequest.setApprovingtime(""+row.getTimestamp("exectime"));
-            schemaRequest.setRequesttime(""+row.getTimestamp("requesttime"));
+            try {
+                schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
+            }catch (Exception e){}
+            schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
         }
 
         return schemaRequest;
@@ -192,8 +198,8 @@ public class SelectData{
 
             String teamName = row.getString("teamname");
 
-                topicObj = new Topic();
-                topicObj.setTeamname(teamName);
+            topicObj = new Topic();
+            topicObj.setTeamname(teamName);
             }
 
 
@@ -201,31 +207,37 @@ public class SelectData{
     }
 
     public List<Topic> selectSyncTopics(String env){
-        Topic topic = null;
-        List<Topic> topicList = new ArrayList();
+        Topic topicRequest = null;
+        List<Topic> topicRequestList = new ArrayList();
         ResultSet results = null;
         Clause eqclause = QueryBuilder.eq("env", env);
         Select selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
         results = session.execute(selectQuery);
 
+        TopicPK topicPK ;
 
         for (Row row : results) {
 
-            topic = new Topic();
-            topic.setTopicName(row.getString("topicname"));
-            topic.setAppname(row.getString("appname"));
-            topic.setTeamname(row.getString("teamname"));
+            topicRequest = new Topic();
+            topicPK = new TopicPK();
+            topicPK.setTopicname(row.getString("topicname"));
+            topicPK.setEnvironment(env);
 
-            topicList.add(topic);
+            topicRequest.setTopicPK(topicPK);
+            topicRequest.setTopicname(row.getString("topicname"));
+            topicRequest.setAppname(row.getString("appname"));
+            topicRequest.setTeamname(row.getString("teamname"));
+
+            topicRequestList.add(topicRequest);
             }
 
 
-        return topicList;
+        return topicRequestList;
     }
 
-    public List<AclReq> selectSyncAcls(String env){
-        AclReq aclReq = null;
-        List<AclReq> aclList = new ArrayList();
+    public List<Acl> selectSyncAcls(String env){
+        Acl aclReq = null;
+        List<Acl> aclList = new ArrayList();
         ResultSet results = null;
         Clause eqclause = QueryBuilder.eq("env", env);
         Select selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
@@ -233,12 +245,12 @@ public class SelectData{
 
         for (Row row : results) {
 
-            aclReq = new AclReq();
+            aclReq = new Acl();
             aclReq.setReq_no(row.getString("req_no"));
             aclReq.setTopicname(row.getString("topicname"));
             aclReq.setTeamname(row.getString("teamname"));
-            aclReq.setAcl_ip(row.getString("acl_ip"));
-            aclReq.setAcl_ssl(row.getString("acl_ssl"));
+            aclReq.setAclip(row.getString("acl_ip"));
+            aclReq.setAclssl(row.getString("acl_ssl"));
             aclReq.setConsumergroup(row.getString("consumergroup"));
             aclReq.setTopictype(row.getString("topictype"));
 
@@ -249,9 +261,9 @@ public class SelectData{
         return aclList;
     }
 
-    public List<Topic> selectTopicRequests(boolean allReqs, String requestor){
-        Topic topic = null;
-        List<Topic> topicList = new ArrayList();
+    public List<TopicRequest> selectTopicRequests(boolean allReqs, String requestor){
+        TopicRequest topicRequest = null;
+        List<TopicRequest> topicRequestList = new ArrayList();
         ResultSet results = null;
         if(allReqs) {
             Clause eqclause = QueryBuilder.eq("topicstatus", "created");
@@ -279,57 +291,62 @@ public class SelectData{
 
             if(teamSelected!=null && teamSelected.equals(teamName)) {
 
-                topic = new Topic();
-                topic.setUsername(row.getString("requestor"));
-                topic.setAcl_ip(row.getString("acl_ip"));
-                topic.setAcl_ssl(row.getString("acl_ssl"));
-                topic.setTopicName(row.getString("topicname"));
-                topic.setTopicpartitions(row.getString("partitions"));
-                topic.setReplicationfactor(row.getString("replicationfactor"));
-                topic.setAppname(row.getString("appname"));
-                topic.setEnvironment(row.getString("env"));
-                topic.setTeamname(teamName);
-                topic.setRemarks(row.getString("remarks"));
-                topic.setTopicstatus(row.getString("topicstatus"));
-                topic.setApprovingtime("" + row.getTimestamp("exectime"));
-                topic.setRequesttime("" + row.getTimestamp("requesttime"));
+                topicRequest = new TopicRequest();
+                topicRequest.setUsername(row.getString("requestor"));
+                topicRequest.setAcl_ip(row.getString("acl_ip"));
+                topicRequest.setAcl_ssl(row.getString("acl_ssl"));
+                topicRequest.setTopicname(row.getString("topicname"));
+                topicRequest.setTopicpartitions(row.getString("partitions"));
+                topicRequest.setReplicationfactor(row.getString("replicationfactor"));
+                topicRequest.setAppname(row.getString("appname"));
+                topicRequest.setEnvironment(row.getString("env"));
+                topicRequest.setTeamname(teamName);
+                topicRequest.setRemarks(row.getString("remarks"));
+                topicRequest.setTopicstatus(row.getString("topicstatus"));
+                try {
+                    topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
+                }catch (Exception e){}
+                topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
 
-                topicList.add(topic);
+                topicRequestList.add(topicRequest);
             }
         }
 
-        return topicList;
+        return topicRequestList;
     }
 
-    public Topic selectTopicRequestsForTopic(String topicName){
-        Topic topic = null;
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env){
+        TopicRequest topicRequest = null;
         ResultSet results = null;
 
             Clause eqclause = QueryBuilder.eq("topicname", topicName);
-            Select selectQuery = QueryBuilder.select().from(keyspace,"topic_requests").where(eqclause).allowFiltering();
+            Clause eqclause1 = QueryBuilder.eq("env", env);
+            Select selectQuery = QueryBuilder.select().from(keyspace,"topic_requests").where(eqclause).and(eqclause1).allowFiltering();
             results = session.execute(selectQuery);
 
 
         for (Row row : results) {
 
-                topic = new Topic();
-                topic.setUsername(row.getString("requestor"));
-                topic.setAcl_ip(row.getString("acl_ip"));
-                topic.setAcl_ssl(row.getString("acl_ssl"));
-                topic.setTopicName(row.getString("topicname"));
-                topic.setTopicpartitions(row.getString("partitions"));
-                topic.setReplicationfactor(row.getString("replicationfactor"));
-                topic.setAppname(row.getString("appname"));
-                topic.setEnvironment(row.getString("env"));
-                topic.setTeamname(row.getString("teamname"));
-                topic.setRemarks(row.getString("remarks"));
-                topic.setTopicstatus(row.getString("topicstatus"));
-                topic.setApprovingtime("" + row.getTimestamp("exectime"));
-                topic.setRequesttime("" + row.getTimestamp("requesttime"));
+                topicRequest = new TopicRequest();
+                topicRequest.setUsername(row.getString("requestor"));
+                topicRequest.setAcl_ip(row.getString("acl_ip"));
+                topicRequest.setAcl_ssl(row.getString("acl_ssl"));
+                topicRequest.setTopicname(row.getString("topicname"));
+                topicRequest.setTopicpartitions(row.getString("partitions"));
+                topicRequest.setReplicationfactor(row.getString("replicationfactor"));
+                topicRequest.setAppname(row.getString("appname"));
+                topicRequest.setEnvironment(row.getString("env"));
+                topicRequest.setTeamname(row.getString("teamname"));
+                topicRequest.setRemarks(row.getString("remarks"));
+                topicRequest.setTopicstatus(row.getString("topicstatus"));
+                try {
+                    topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
+                }catch (Exception e){}
+                topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
 
             }
 
-        return topic;
+        return topicRequest;
     }
 
     public List<PCStream> selectTopicStreams(String envSelected){
@@ -346,9 +363,9 @@ public class SelectData{
                 .from(keyspace,"acls").where(eqclause).allowFiltering();
         ResultSet results1 = session.execute(selectQuery1);
 
-        List<AclReq> aclReqList = new ArrayList<>();
+        List<AclRequests> aclReqList = new ArrayList<>();
         for (Row row1 : results1) {
-            AclReq aclReq = new AclReq();
+            AclRequests aclReq = new AclRequests();
             aclReq.setTopicname(row1.getString("topicname"));
             aclReq.setRequestingteam(row1.getString("teamname"));
             aclReq.setTopictype(row1.getString("topictype"));
@@ -366,21 +383,32 @@ public class SelectData{
             prodTeams.add(teamName);
            // LOG.info("-----------"+topicName);
 
-            for (AclReq row1 : aclReqList) {
+            for (AclRequests row1 : aclReqList) {
                 String teamName1 = row1.getRequestingteam();
                 String topicName1 = row1.getTopicname();
                 String aclType = row1.getTopictype();
               //  LOG.info("***-----------"+topicName1);
                 if(topicName.equals(topicName1)){
-                    LOG.info(topicName+"---"+aclType+"---"+teamName1+"---"+teamName);
+                    //LOG.info(topicName+"---"+aclType+"---"+teamName1+"---"+teamName);
                     if(aclType.equals("Producer"))
                         prodTeams.add(teamName1);
-                    else if(aclType.equals("Consumer"))
+                    else if(aclType.equals("Consumer") && teamName1!=null)
                         consumerTeams.add(teamName1);
                 }
             }
+
+
+            consumerTeams = consumerTeams.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+
+            prodTeams = prodTeams.stream()
+                    .distinct()
+                    .collect(Collectors.toList());
+
             pcStream.setConsumerTeams(consumerTeams);
             pcStream.setProducerTeams(prodTeams);
+
             pcStreams.add(pcStream);
         }
 
@@ -410,20 +438,22 @@ public class SelectData{
         return teamList;
     }
 
-    public AclReq selectAcl(String req_no){
-        AclReq aclReq = new AclReq();
+    public AclRequests selectAcl(String req_no){
+        AclRequests aclReq = new AclRequests();
         Clause eqclause = QueryBuilder.eq("req_no",req_no);
         ResultSet results = null;
         Select.Where selectQuery = QueryBuilder.select().from(keyspace,"acl_requests").where(eqclause);
         results = session.execute(selectQuery);
 
         for (Row row : results) {
+            aclReq.setReq_no(req_no);
             aclReq.setEnvironment(row.getString("env"));
             aclReq.setAcl_ip(row.getString("acl_ip"));
             aclReq.setAcl_ssl(row.getString("acl_ssl"));
             aclReq.setConsumergroup(row.getString("consumergroup"));
             aclReq.setTopictype(row.getString("topictype"));
             aclReq.setTopicname(row.getString("topicname"));
+            aclReq.setRequestingteam(row.getString("requestingteam"));
         }
 
         return aclReq;
@@ -487,11 +517,11 @@ public class SelectData{
             env.setPort(row.getString("port"));
             env.setProtocol(row.getString("protocol"));
             env.setType(row.getString("type"));
-            env.setKeystorelocation(row.getString("keystorelocation"));
-            env.setTruststorelocation(row.getString("truststorelocation"));
-            env.setKeystorepwd(row.getString("keystorepwd"));
-            env.setKeypwd(row.getString("keypwd"));
-            env.setTruststorepwd(row.getString("truststorepwd"));
+            env.setKeyStoreLocation(row.getString("keystorelocation"));
+            env.setTrustStoreLocation(row.getString("truststorelocation"));
+            env.setKeyStorePwd(row.getString("keystorepwd"));
+            env.setKeyPwd(row.getString("keypwd"));
+            env.setTrustStorePwd(row.getString("truststorepwd"));
 
             if(row.getString("type").equals(type))
                 envList.add(env);
@@ -517,11 +547,11 @@ public class SelectData{
             env.setPort(row.getString("port"));
             env.setProtocol(row.getString("protocol"));
             env.setType(row.getString("type"));
-            env.setKeystorelocation(row.getString("keystorelocation"));
-            env.setTruststorelocation(row.getString("truststorelocation"));
-            env.setKeystorepwd(row.getString("keystorepwd"));
-            env.setKeypwd(row.getString("keypwd"));
-            env.setTruststorepwd(row.getString("truststorepwd"));
+            env.setKeyStoreLocation(row.getString("keystorelocation"));
+            env.setTrustStoreLocation(row.getString("truststorelocation"));
+            env.setKeyStorePwd(row.getString("keystorepwd"));
+            env.setKeyPwd(row.getString("keypwd"));
+            env.setTrustStorePwd(row.getString("truststorepwd"));
 
         }
         return env;
@@ -573,7 +603,9 @@ public class SelectData{
 
             activityLog.setActivityName(row.getString("activityname"));
             activityLog.setActivityType(row.getString("activitytype"));
-            activityLog.setActivityTime(""+row.getTimestamp("activitytime"));
+            try {
+                activityLog.setActivityTime(new java.sql.Timestamp((row.getTimestamp("activitytime")).getTime()));
+            }catch (Exception e){}
             activityLog.setDetails(row.getString("details"));
             activityLog.setUser(row.getString("user"));
             activityLog.setEnv(row.getString("env"));
@@ -613,7 +645,9 @@ public class SelectData{
                 if(role.equals("SUPERUSER")){
                     isSuperUser = true;
                 }else {
-                    team.setTeamname(teamName);
+                    TeamPK teamPK = new TeamPK();
+                    teamPK.setTeamname(teamName);
+                    team.setTeamPK(teamPK);
                     teamList.add(team);
                 }
             }
@@ -624,7 +658,9 @@ public class SelectData{
                     .distinct().collect(Collectors.toList());
             listWithoutDuplicates.stream().forEach(teamNameNew->{
                 Team suTeam = new Team();
-                suTeam.setTeamname(teamNameNew);
+                    TeamPK teamPK = new TeamPK();
+                    teamPK.setTeamname(teamNameNew);
+                    suTeam.setTeamPK(teamPK);
                 teamListSU.add(suTeam);
             });
             return teamListSU;

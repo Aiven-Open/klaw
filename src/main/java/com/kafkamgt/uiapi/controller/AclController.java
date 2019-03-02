@@ -2,7 +2,10 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.google.gson.Gson;
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.dao.AclRequests;
+import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -10,20 +13,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -50,7 +50,7 @@ public class AclController {
         LOG.info("*********"+addAclRequest);
         Gson gson = new Gson();
 
-        AclReq aclReq = gson.fromJson(addAclRequest, AclReq.class);
+        AclRequests aclReq = gson.fromJson(addAclRequest, AclRequests.class);
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -85,15 +85,15 @@ public class AclController {
 
         StringTokenizer strTkr = new StringTokenizer(updateSyncAcls,"\n");
         String topicSel=null,teamSelected=null,consumerGroup=null,aclIp=null,aclSsl=null,aclType=null,tmpToken=null;
-        List<AclReq> listtopics = new ArrayList<>();
-        AclReq t = null;
+        List<Acl> listtopics = new ArrayList<>();
+        Acl t = null;
 
         StringTokenizer strTkrIn = null;
         while(strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
             strTkrIn = new StringTokenizer(tmpToken,"-----");
             while(strTkrIn.hasMoreTokens()){
-                t = new AclReq();
+                t = new Acl();
 
                 topicSel = strTkrIn.nextToken();
                 teamSelected = strTkrIn.nextToken();
@@ -104,8 +104,8 @@ public class AclController {
 
                 t.setTopicname(topicSel);
                 t.setConsumergroup(consumerGroup);
-                t.setAcl_ip(aclIp);
-                t.setAcl_ssl(aclSsl);
+                t.setAclip(aclIp);
+                t.setAclssl(aclSsl);
                 t.setTeamname(teamSelected);
                 t.setEnvironment(envSelected);
                 t.setTopictype(aclType);
@@ -124,29 +124,29 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclReq>> getAclRequests() {
+    public ResponseEntity<List<AclRequests>> getAclRequests() {
 
-        List<AclReq> topicReqs = null;
+        List<AclRequests> topicReqs = null;
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             topicReqs = createTopicHelper.getAllAclRequests(userDetails.getUsername());
 
 
-        return new ResponseEntity<List<AclReq>>(topicReqs, HttpStatus.OK);
+        return new ResponseEntity<List<AclRequests>>(topicReqs, HttpStatus.OK);
     }
 
 
 
     @RequestMapping(value = "/getCreatedAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclReq>> getCreatedAclRequests() {
+    public ResponseEntity<List<AclRequests>> getCreatedAclRequests() {
 
-        List<AclReq> topicReqs = null;
+        List<AclRequests> topicReqs = null;
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             topicReqs = createTopicHelper.getCreatedAclRequests(userDetails.getUsername());
 
         LOG.info("*****getCreatedTopicRequests"+topicReqs);
-        return new ResponseEntity<List<AclReq>>(topicReqs, HttpStatus.OK);
+        return new ResponseEntity<List<AclRequests>>(topicReqs, HttpStatus.OK);
     }
 
 
@@ -166,7 +166,7 @@ public class AclController {
     @PostMapping(value = "/execAclRequest")
     public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no) {
 
-        AclReq aclReq = createTopicHelper.selectAcl(req_no);
+        AclRequests aclReq = createTopicHelper.selectAcl(req_no);
         String topicName = aclReq.getTopicname();
         String env = aclReq.getEnvironment();
         String acl_ip = aclReq.getAcl_ip();
@@ -204,7 +204,7 @@ public class AclController {
         String updateAclReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateAclReqStatus = createTopicHelper.updateAclRequest(req_no,userDetails.getUsername());
+            updateAclReqStatus = createTopicHelper.updateAclRequest(aclReq,userDetails.getUsername());
 
         updateAclReqStatus = "{\"result\":\""+updateAclReqStatus+"\"}";
         return new ResponseEntity<String>(updateAclReqStatus, HttpStatus.OK);
@@ -248,7 +248,7 @@ public class AclController {
         List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
 
         // Get Sync acls
-        List<AclReq> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
         topicCounter = 0;
 
@@ -281,12 +281,12 @@ public class AclController {
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                for(AclReq aclSotItem : aclsFromSOT){
-                    String acl_ssl = aclSotItem.getAcl_ssl();
+                for(Acl aclSotItem : aclsFromSOT){
+                    String acl_ssl = aclSotItem.getAclssl();
                     if(acl_ssl==null)
                         acl_ssl="User:*";
 
-                    String acl_host = aclSotItem.getAcl_ip();
+                    String acl_host = aclSotItem.getAclip();
                     if(acl_host==null)
                         acl_host="*";
 
@@ -323,7 +323,7 @@ public class AclController {
 
         // LOG.info("--startVar:"+startVar+"---lastVar:"+lastVar+"---"+topicsListMap.size());
 
-        return new ResponseEntity<List<AclInfo>>(aclListMap, HttpStatus.OK);
+        return new ResponseEntity<>(aclListMap, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -361,10 +361,14 @@ public class AclController {
 
         ResponseEntity<Set> s = restTemplate.exchange
                 (uri, HttpMethod.GET, entity, Set.class);
-        List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
+        List<HashMap<String,String>> aclListOriginal = new ArrayList(s.getBody());
+
+        List<HashMap<String,String>> aclList = aclListOriginal.stream()
+                .filter(aclItem->aclItem.get("operation").equals("READ"))
+                .collect(Collectors.toList());
 
         // Get Sync acls
-        List<AclReq> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
         topicCounter = 0;
 
@@ -384,7 +388,7 @@ public class AclController {
         createTopicHelper.selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
 
-        LOG.info("------- aclList : "+aclList.size() + "  aclsFromSOT" +aclsFromSOT.size());
+        //LOG.info("------- aclList : "+aclList.size() + "  aclsFromSOT" +aclsFromSOT.size());
 
         for(int i=0;i<totalRecs;i++){
             int counterInc = counterIncrement();
@@ -403,17 +407,17 @@ public class AclController {
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                    for(AclReq aclSotItem : aclsFromSOT){
-                        String acl_ssl = aclSotItem.getAcl_ssl();
+                    for(Acl aclSotItem : aclsFromSOT){
+                        String acl_ssl = aclSotItem.getAclssl();
                         if(acl_ssl==null)
                             acl_ssl="User:*";
 
-                        String acl_host = aclSotItem.getAcl_ip();
+                        String acl_host = aclSotItem.getAclip();
                         if(acl_host==null)
                             acl_host="*";
 
                       //  LOG.info("------- aclListItem"+aclListItem);
-                        LOG.info("******* aclSotItem"+aclSotItem.getAcl_ssl()+"--"+aclSotItem.getAcl_ip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
+                       // LOG.info("******* aclSotItem"+aclSotItem.getAclssl()+"--"+aclSotItem.getAclip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
                         if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
                                 aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
                                 aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
@@ -447,7 +451,7 @@ public class AclController {
 
         // LOG.info("--startVar:"+startVar+"---lastVar:"+lastVar+"---"+topicsListMap.size());
 
-        return new ResponseEntity<List<AclInfo>>(aclListMap, HttpStatus.OK);
+        return new ResponseEntity<>(aclListMap, HttpStatus.OK);
     }
 
 

@@ -26,6 +26,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 }).success(function(output) {
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
+                    $scope.teamname = output.teamname;
                      $scope.notifications = output.notifications;
                     $scope.statusauthexectopics = output.statusauthexectopics;
                     $scope.alerttop = output.alertmessage;
@@ -151,12 +152,20 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 return false;
             }
 
+            if(($scope.addAcl.acl_ip !=null && $scope.addAcl.acl_ip.length>0) ||
+                         ($scope.addAcl.acl_ssl !=null && $scope.addAcl.acl_ssl.length>0)){}
+                         else
+                         {
+                            alert("Please fill in a valid IP address or SSL-CN Name of the Producer/Consumer client");
+                            return;
+                         }
+
             if (!window.confirm("Are you sure, you would like to create the acl : "
                 +  $scope.addAcl.topicname +
                 "\nEnv : " + $scope.addAcl.envName.name +
                 "\nTeam :" + $scope.addAcl.team +
                 "\nApp :" + $scope.addAcl.app +
-                "\nAcl :" + $scope.addAcl.acl_ip + "  " + $scope.addAcl.acl_ssl
+                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \nAcl SSL: " + $scope.addAcl.acl_ssl
             )) {
                 return;
             }

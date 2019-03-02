@@ -1,19 +1,21 @@
-package com.kafkamgt.uiapi.helpers.db.jdbc;
+package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 
-
-@Component
+@Configuration
+@PropertySource(value= {"classpath:application.properties"})
 public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     private static Logger LOG = LoggerFactory.getLogger(HandleDbRequestsJdbc.class);
@@ -33,32 +35,28 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Autowired
     LoadDbJdbc loadDbJdbc;
 
-    @Value("${jdbc.host:#{null}}")
+    @Value("${rdbms.host:#{null}}")
     String jdbcConnHost;
 
-    @Value("${jdbc.port:#{0}}")
+    @Value("${rdbms.port:#{0}}")
     int jdbcConnPort;
 
-    @Value("${jdbc.username:#{null}}")
+    @Value("${rdbms.username:#{null}}")
     String jdbcUsername;
 
-    @Value("${jdbc.pwd:#{null}}")
+    @Value("${rdbms.pwd:#{null}}")
     String jdbcConnPwd;
 
-//    @PostConstruct
     public void connectToDb() throws Exception {
-        LOG.info("Establishing Connection to JDBC.");
-        System.exit(0);
-        throw new Exception("JDBC - Database not configured.");
     }
 
     /*--------------------Insert */
 
-    public String requestForTopic(Topic topic){
-        return jdbcInsertHelper.insertIntoRequestTopic(topic);
+    public String requestForTopic(TopicRequest topicRequest){
+        return jdbcInsertHelper.insertIntoRequestTopic(topicRequest);
     }
 
-    public String requestForAcl(AclReq aclReq){
+    public String requestForAcl(AclRequests aclReq){
         return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
     }
 
@@ -78,12 +76,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcInsertHelper.insertIntoRequestSchema(schemaRequest);
     }
 
-    public String addToSynctopics(List<Topic> topics) {
-        return jdbcInsertHelper.insertIntoTopicSOT(topics);
+    public String addToSynctopics(List<Topic> topicRequests) {
+        return jdbcInsertHelper.insertIntoTopicSOT(topicRequests,true);
     }
 
-    public String addToSyncacls(List<AclReq> acls) {
-        return jdbcInsertHelper.insertIntoAclsSOT(acls);
+    public String addToSyncacls(List<Acl> acls) {
+        return jdbcInsertHelper.insertIntoAclsSOT(acls, true);
     }
 
     /*--------------------Select */
@@ -93,29 +91,29 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.getAllRequestsToBeApproved(requestor);
     }
 
-    public List<Topic> getAllTopicRequests(String requestor){
+    public List<TopicRequest> getAllTopicRequests(String requestor){
         return jdbcSelectHelper.selectTopicRequests(false, requestor);
     }
-    public List<Topic> getCreatedTopicRequests(String requestor){
+    public List<TopicRequest> getCreatedTopicRequests(String requestor){
         return jdbcSelectHelper.selectTopicRequests(true,requestor);
     }
 
-    public Topic selectTopicRequestsForTopic(String topicName) {
-        return jdbcSelectHelper.selectTopicRequestsForTopic(topicName);
+    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) {
+        return jdbcSelectHelper.selectTopicRequestsForTopic(topicName, env);
     }
 
     public List<Topic> getSyncTopics(String env){
         return jdbcSelectHelper.selectSyncTopics(env);
     }
 
-    public List<AclReq> getSyncAcls(String env){
+    public List<Acl> getSyncAcls(String env){
         return jdbcSelectHelper.selectSyncAcls(env);
     }
 
-    public List<AclReq> getAllAclRequests(String requestor){
+    public List<AclRequests> getAllAclRequests(String requestor){
         return jdbcSelectHelper.selectAclRequests(false,requestor);
     }
-    public List<AclReq> getCreatedAclRequests(String requestor){
+    public List<AclRequests> getCreatedAclRequests(String requestor){
         return jdbcSelectHelper.selectAclRequests(true,requestor);
     }
 
@@ -145,11 +143,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     public UserInfo getUsersInfo(String username){
         return jdbcSelectHelper.selectUserInfo(username);
     }
-    public List<Map<String,String>> selectAllUsers(){
-        return jdbcSelectHelper.selectAllUsers();
-    }
 
-    public AclReq selectAcl(String req_no){
+    public AclRequests selectAcl(String req_no){
         return jdbcSelectHelper.selectAcl(req_no);
     }
 
@@ -174,16 +169,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     public List<ActivityLog> selectActivityLog(String user, String env){return jdbcSelectHelper.selectActivityLog(user, env);}
 
     /*--------------------Update */
-    public String updateTopicRequest(String topicName, String approver){
-        return jdbcUpdateHelper.updateTopicRequest(topicName, approver);
+    public String updateTopicRequest(TopicRequest topicRequest, String approver){
+        return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
     }
 
-    public String updateAclRequest(String req_no, String approver){
-        return jdbcUpdateHelper.updateAclRequest(req_no, approver);
+    public String updateAclRequest(AclRequests aclReq, String approver){
+        return jdbcUpdateHelper.updateAclRequest(aclReq, approver);
     }
 
-    public String updateSchemaRequest(String topicName,String schemaVersion, String env, String approver){
-        return jdbcUpdateHelper.updateSchemaRequest(topicName, schemaVersion, env,  approver);
+    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
+        return jdbcUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){
@@ -191,8 +186,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName){
-        return jdbcDeleteHelper.deleteTopicRequest(topicName);
+    public String deleteTopicRequest(String topicName, String env){
+        return jdbcDeleteHelper.deleteTopicRequest(topicName, env);
     }
 
     public String deleteAclRequest(String req_no){
@@ -203,5 +198,5 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String deletePrevAclRecs(List<AclReq> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
+    public String deletePrevAclRecs(List<Acl> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
 }

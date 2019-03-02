@@ -5,14 +5,14 @@
 <meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Execute Schemas - Kafka Administration Portal</title>
+<title>Execute Schemas - Kafka Self-service Topic Management Portal</title>
 
 <html ng-app="execSchemasApp" ng-controller="execSchemasCtrl">
 <head>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="lib/angular-wm.js"></script>
-	<script src="js/execSchemas.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+	<script src="js/execSchemas.js"></script>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
           crossorigin="anonymous">
@@ -48,8 +48,7 @@
                         </span>
                     <!--<span class="user-role">Administrator</span>-->
                     <span class="user-status">
-                            <i class="fa fa-circle"></i>
-                            <span>Online</span>
+                            <span>{{teamname}}</span>
                         </span>
                 </div>
             </div>
@@ -119,7 +118,7 @@
                     <li class="sidebar-dropdown">
                         <a href="#">
                             <i class="far fa-gem"></i>
-                            <span>Environments</span>
+                            <span>Clusters</span>
                         </a>
                         <div class="sidebar-submenu">
                             <ul>
@@ -233,20 +232,20 @@
                     <li class="sidebar-dropdown">
                         <a href="#">
                             <i class="fa fa-gem"></i>
-                            <span>Environments</span>
+                            <span>Clusters</span>
                             <!--<span class="badge badge-pill badge-danger">New</span>-->
                         </a>
                         <div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
                             <ul>
                                 <li>
-                                    <a href="addNewEnv">Add Environment</a>
+                                    <a href="addNewEnv">Add Cluster</a>
                                 </li>
                             </ul>
                         </div>
                         <div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
                             <ul>
                                 <li>
-                                    <a>Add Environment</a>
+                                    <a>Add Cluster</a>
                                 </li>
                             </ul>
                         </div>
@@ -447,7 +446,7 @@
                             <th>TopicName</th>
                             <th>SchemaVersion</th>
                             <th>FullSchema</th>
-                            <th>Environment</th>
+                            <th>Cluster</th>
                             <th>Requestor</th>
                             <th>Application</th>
                             <th>Team</th>

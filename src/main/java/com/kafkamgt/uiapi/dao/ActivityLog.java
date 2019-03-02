@@ -1,87 +1,48 @@
 package com.kafkamgt.uiapi.dao;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.List;
 
-public class ActivityLog {
+@Getter
+@Setter
+@Entity
+@IdClass(ActivityLog.class)
+@Table(name="activitylog")
+public class ActivityLog implements Serializable {
+
+    @Id
+    @Column(name = "req_no")
+    private String req_no;
+
+    @Column(name = "activityname")
     private String activityName;
+
+    @Column(name = "activitytype")
     private String activityType;
-    private String activityTime;
+
+    @Column(name = "activitytime")
+    private Timestamp activityTime;
+
+    @Column(name = "details")
     private String details;
-    private String env;
+
+    @Column(name = "user")
     private String user;
+
+    @Column(name = "team")
     private String team;
+
+    @Column(name = "env")
+    private String env;
+
+    @Transient
     private String totalNoPages;
+
+    @Transient
     private List<String> allPageNos;
-
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
-    public String getTotalNoPages() {
-        return totalNoPages;
-    }
-
-    public void setTotalNoPages(String totalNoPages) {
-        this.totalNoPages = totalNoPages;
-    }
-
-    public List<String> getAllPageNos() {
-        return allPageNos;
-    }
-
-    public void setAllPageNos(List<String> allPageNos) {
-        this.allPageNos = allPageNos;
-    }
-
-    public String getActivityName() {
-        return activityName;
-    }
-
-    public void setActivityName(String activityName) {
-        this.activityName = activityName;
-    }
-
-    public String getActivityType() {
-        return activityType;
-    }
-
-    public void setActivityType(String activityType) {
-        this.activityType = activityType;
-    }
-
-    public String getActivityTime() {
-        return activityTime;
-    }
-
-    public void setActivityTime(String activityTime) {
-        this.activityTime = activityTime;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String details) {
-        this.details = details;
-    }
-
-    public String getEnv() {
-        return env;
-    }
-
-    public void setEnv(String env) {
-        this.env = env;
-    }
-
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
 }

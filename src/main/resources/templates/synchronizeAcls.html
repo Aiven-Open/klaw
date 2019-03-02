@@ -7,7 +7,7 @@
 <meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Synchronize Acls - Kafka Administration Portal</title>
+<title>Synchronize Acls - Kafka Self-service Topic Management Portal</title>
 
 <head>
 	<script src="lib/angular.min.js"></script>
@@ -49,8 +49,7 @@
                         </span>
 					<!--<span class="user-role">Administrator</span>-->
 					<span class="user-status">
-                            <i class="fa fa-circle"></i>
-                            <span>Online</span>
+                            <span>{{teamname}}</span>
                         </span>
 				</div>
 			</div>
@@ -120,7 +119,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -226,20 +225,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addnewenv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -336,7 +335,7 @@
 
 									<tr>
 										<td>
-											<font face=verdana size=2><b>Environment</b></font>
+											<font face=verdana size=2><b>Cluster</b></font>
 										</td>
 										<td>
 											<select ng-model="getAcls.envName" ng-options="env as env.name for env in allenvs">

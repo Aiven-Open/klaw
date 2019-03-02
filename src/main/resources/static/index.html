@@ -5,14 +5,14 @@
 <meta http-equiv='expires' content='0'>
 <meta http-equiv='pragma' content='no-cache'>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kafka Administration Portal - Home</title>
+<title>Kafka Self-service Topic Management Portal - Home</title>
 
 <html ng-app="indexApp" ng-controller="indexCtrl">
 <head>
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="lib/angular-wm.js"></script>
-	<script src="js/indexapp.js?ver<%=DateTime.Now.Ticks.ToString()%>"></script>
+	<script src="js/indexapp.js"></script>
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 		  crossorigin="anonymous">
@@ -48,8 +48,7 @@
                         </span>
 					<!--<span class="user-role">Administrator</span>-->
 					<span class="user-status">
-                            <i class="fa fa-circle"></i>
-                            <span>Online</span>
+                            <span>{{teamname}}</span>
                         </span>
 				</div>
 			</div>
@@ -119,7 +118,7 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="far fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 						</a>
 						<div class="sidebar-submenu">
 							<ul>
@@ -233,20 +232,20 @@
 					<li class="sidebar-dropdown">
 						<a href="#">
 							<i class="fa fa-gem"></i>
-							<span>Environments</span>
+							<span>Clusters</span>
 							<!--<span class="badge badge-pill badge-danger">New</span>-->
 						</a>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
 							<ul>
 								<li>
-									<a href="addNewEnv">Add Environment</a>
+									<a href="addNewEnv">Add Cluster</a>
 								</li>
 							</ul>
 						</div>
 						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
 							<ul>
 								<li>
-									<a>Add Environment</a>
+									<a>Add Cluster</a>
 								</li>
 							</ul>
 						</div>
@@ -312,7 +311,7 @@
 				<div class="form-group col-md-12">
 					<table width="100%">
 						<tr>
-							<td align="left"><h2>Welcome to KafkaWize 1.0 !!</h2><br><h5><i>Kafka Self Service Portal</i></h5></td>
+							<td align="left"><h2>Welcome to KafkaWize 2.0 !!</h2><br><h5><i>Kafka Self Service Portal</i></h5></td>
 							<td align="right"><img style="max-height: 100px; max-width: 100px;" src="images/kafka.png"><br><b>KafkaWize - {{ companyinfo }}</b></td>
 						</tr>
 					</table>
@@ -329,14 +328,14 @@
 					Automate the process of creating and browsing Kafka components, by introducing roles, teams and users.<br><br>
 
 					<h5>Architecture:</h5><br>
-					There are two apis running.<br>
+					There are two main apis.<br><br>
 					Cluster API acts as middle layer between Kafka brokers and UserInterface API.<br>
 					Cluster API creates Kafka Admin Client and executes the requests for Topic, Acls or Schema registry.<br><br>
 
 					Front end is built with AngularJs, HTML, and Java script.<br><br>
 					User Interface API directly communicates between users and Cluster API.<br><br>
 
-					Apache Cassandra datastore is used to store all users, teams, topics, request and execution information from all the users., and to maintain source of truth.<br><br>
+					Apache Cassandra/Rdbms(Mysql/Oracle..) datastore is used to store all users, teams, topicRequests, request and execution information from all the users., and to maintain source of truth.<br><br>
 
 					Spring Security, Spring Boot frameworks are used to develop this application.<br>
 					<img src="images/arch.png">
@@ -344,12 +343,12 @@
 					<h5>Functionalities:</h5><br> (Broadly divided into two categories based on user roles.)<br>
 					ROLE : USER  can request for creation of kafka components, and browse kafka components.<br>
 					ROLE : ADMIN  can approve and execute the requests of users to create kafka components.<br>
-					ROLE : SUPERUSER can synchronize topics meta information with Cassandra Datastore from Kafka Brokers (Source of Truth.)<br><br>
+					ROLE : SUPERUSER can synchronize topicRequests meta information with Cassandra/Rdbms Datastore from Kafka Brokers (Source of Truth.)<br><br>
 
 					<b>Browse:</b> (ROLE : USER, ADMIN)<br>
 					All users can <a href="browseTopics">Browse Topics</a><br>
 					All users can <a href="browseAcls">Browse Acls</a><br>
-					All users can view the producers and consumers of all topics. <a href="pcTopics">View</a><br><br>
+					All users can view the producers and consumers of all topicRequests. <a href="pcTopics">View</a><br><br>
 
 					<b>Requests:</b>(ROLE : USER)<br>
 					Users can request for Kafka Topics <a href="requestTopics"> Request Topics</a><br>
@@ -357,13 +356,13 @@
 					Users can request for Schemas to be registered on Confluent Schema registry. <a href="requestSchemaUpload"> Request Schema Upload</a><br>
 					Users can view all the requests from his team. <a href="myTopicRequests">My Requests</a><br><br>
 
-					<b>Environments:</b>(ROLE : USER)<br>
-					Users can view the available environments <a href="envs">All Environments</a> <br><br>
+					<b>Clusters:</b>(ROLE : USER)<br>
+					Users can view the available environments <a href="envs">All Clusters</a> <br><br>
 
 					<b>Approve - Execute :</b>(ROLE : ADMIN)<br>
 					Users can appprove requests for creating Kafka Topics <a href="execTopics"> Approve Topics</a><br>
 					Users can appprove requests for creating Kafka Acls <a href="execAcls"> Approve Acls</a><br>
-					Users can appprove requests for uploading schemas on topics <a href="execSchemas"> Approve Schemas for Schema Registry</a><br><br>
+					Users can appprove requests for uploading schemas on topicRequests <a href="execSchemas"> Approve Schemas for Schema Registry</a><br><br>
 
 					<b>Users :</b>(ROLE : ADMIN)<br>
 					Users can view all user details <a href="showUsers"> View Users </a><br>
@@ -373,12 +372,12 @@
 					Users can view all team details <a href="showTeams"> View Teams </a><br>
 					Users can add new team <a href="addTeam"> Add Team </a><br><br>
 
-					<b>Environments:</b>(ROLE : SUPERUSER)<br>
-					Users can add a new environment environments <a href="addNewEnv">Add New Environments</a> <br><br>
+					<b>Clusters:</b>(ROLE : SUPERUSER)<br>
+					Users can add a new environment environments <a href="addNewEnv">Add New Clusters</a> <br><br>
 
 					<b>Synchronize Metadata :</b>(ROLE : SUPERUSER)<br>
-					Users can synchronize topic information from Brokers with Cassandra datastore. (Update team info.) <a href="synchronizeTopics"> SynchronizeTopics</a><br><br>
-					Users can synchronize acls information from Brokers with Cassandra datastore. (Update team info.) <a href="synchronizeAcls"> SynchronizeAcls</a><br><br>
+					Users can synchronize topicRequest information from Brokers with Cassandra/Rdbms datastore. (Update team info.) <a href="synchronizeTopics"> SynchronizeTopics</a><br><br>
+					Users can synchronize acls information from Brokers with Cassandra/Rdbms datastore. (Update team info.) <a href="synchronizeAcls"> SynchronizeAcls</a><br><br>
 
 					<b>My Profile :</b>(ROLE : USER, ADMIN)<br>
 					Users can view their profile. <a href="myProfile"> My Profile </a><br><br>
@@ -411,7 +410,7 @@
 						<tr><td><a href="myProfile"><button class="k3button">My Profile</button></a></td></tr>
 						<tr><td><a href="changePwd"><button class="k3button">Change Password</button></a></td></tr>
 
-						<tr><td><a href="addNewEnv"><button class="k2button">Add Environment</button></a></td></tr>
+						<tr><td><a href="addNewEnv"><button class="k2button">Add Cluster</button></a></td></tr>
 
 						<tr><td><a href="synchronizeTopics"><button class="k1button">Synchronize Topics</button></a></td></tr>
 						<tr><td><a href="synchronizeAcls"><button class="k1button">Synchronize Acls</button></a></td></tr>
@@ -424,20 +423,7 @@
 			<div class="row">
 
 				<div class="message" ng-show="alerttop != null && alerttop != ''" ng-init="">{{ alerttop }}</div>
-				<!--<div class="form-group col-md-12">-->
-				<!--<a href="#" class="theme theme-bg selected"></a>-->
-				<!--<a href="#" data-bg="bg2" class="theme theme-bg"></a>-->
-				<!--<a href="#" data-bg="bg3" class="theme theme-bg"></a>-->
-				<!--<a href="#" data-bg="bg4" class="theme theme-bg"></a>-->
-				<!--</div>-->
-				<!--<div class="form-group col-md-12">-->
-				<!--<div class="form-check">-->
-				<!--<label class="form-check-label">-->
-				<!--<input type="checkbox" class="form-check-input" name="" id="toggle-bg" checked>-->
-				<!--Background image-->
-				<!--</label>-->
-				<!--</div>-->
-				<!--</div>-->
+
 
 			</div>
 		</div>

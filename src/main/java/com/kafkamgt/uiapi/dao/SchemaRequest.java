@@ -1,30 +1,35 @@
 package com.kafkamgt.uiapi.dao;
 
+import lombok.Getter;
+import lombok.Setter;
 
-public class SchemaRequest {
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
+@Getter
+@Setter
+@Entity
+@Table(name="schema_requests")
+public class SchemaRequest implements Serializable {
+
+    @Transient
     private String topicname;
+
+    @Transient
     private String environment;
-    private String username;
-    private String teamname;
-    private String appname;
-    private String schemafull;
-    private String remarks;
-    private String topicstatus;
-    private String requesttime;
-    private String approvingtime;
+
+    @Transient
     private String schemaversion;
 
-    public String getSchemaversion() {
-        return schemaversion;
-    }
-
-    public void setSchemaversion(String schemaversion) {
-        this.schemaversion = schemaversion;
-    }
+    @EmbeddedId
+    private SchemaRequestPK schemaRequestPK;
 
     public String getTopicname() {
-        return topicname;
+        if(this.schemaRequestPK == null)
+            return this.topicname;
+        else
+            return this.schemaRequestPK.getTopicname();
     }
 
     public void setTopicname(String topicname) {
@@ -32,74 +37,52 @@ public class SchemaRequest {
     }
 
     public String getEnvironment() {
-        return environment;
+        if(this.schemaRequestPK == null)
+            return this.environment;
+        else
+            return this.schemaRequestPK.getEnvironment();
     }
 
     public void setEnvironment(String environment) {
         this.environment = environment;
     }
 
-    public String getUsername() {
-        return username;
+    public String getSchemaversion() {
+        if(this.schemaRequestPK == null)
+            return this.schemaversion;
+        else
+            return this.schemaRequestPK.getSchemaversion();
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setSchemaversion(String schemaversion) {
+        this.schemaversion = schemaversion;
     }
 
-    public String getTeamname() {
-        return teamname;
-    }
+    @Column(name = "teamname")
+    private String teamname;
 
-    public void setTeamname(String teamname) {
-        this.teamname = teamname;
-    }
+    @Column(name = "appname")
+    private String appname;
 
-    public String getAppname() {
-        return appname;
-    }
+    @Column(name = "schemafull")
+    private String schemafull;
 
-    public void setAppname(String appname) {
-        this.appname = appname;
-    }
+    @Column(name = "requestor")
+    private String username;
 
-    public String getSchemafull() {
-        return schemafull;
-    }
+    @Column(name = "requesttime")
+    private Timestamp requesttime;
 
-    public void setSchemafull(String schemafull) {
-        this.schemafull = schemafull;
-    }
+    @Column(name = "topicstatus")
+    private String topicstatus;
 
-    public String getRemarks() {
-        return remarks;
-    }
+    @Column(name = "remarks")
+    private String remarks;
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
+    @Column(name = "approver")
+    private String approver;
 
-    public String getTopicstatus() {
-        return topicstatus;
-    }
+    @Column(name = "exectime")
+    private Timestamp approvingtime;
 
-    public void setTopicstatus(String topicstatus) {
-        this.topicstatus = topicstatus;
-    }
-
-    public String getRequesttime() {
-        return requesttime;
-    }
-
-    public void setRequesttime(String requesttime) {
-        this.requesttime = requesttime;
-    }
-
-    public String getApprovingtime() {
-        return approvingtime;
-    }
-
-    public void setApprovingtime(String approvingtime) {
-        this.approvingtime = approvingtime;
-    }
 }

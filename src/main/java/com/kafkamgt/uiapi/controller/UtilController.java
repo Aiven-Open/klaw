@@ -1,12 +1,7 @@
 package com.kafkamgt.uiapi.controller;
 
 
-import com.google.gson.Gson;
-import com.kafkamgt.uiapi.dao.AclReq;
-import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.helpers.ManageTopics;
-import com.kafkamgt.uiapi.helpers.Utilities;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +12,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
-import java.util.List;
-import java.util.StringTokenizer;
 
 
 @RestController
@@ -38,8 +27,8 @@ public class UtilController {
     @Autowired
     ManageTopics createTopicHelper;
 
-    @Autowired
-    Utilities utils;
+//    @Autowired
+//    Utilities utils;
 
     @Value("${clusterapi.url}")
     String clusterConnUrl;
@@ -50,7 +39,7 @@ public class UtilController {
     @Value("${clusterapi.password}")
     String clusterApiPwd;
 
-    @Value("${license.spec}")
+    @Value("${app.company.name}")
     String companyInfo;
 
 
@@ -66,10 +55,11 @@ public class UtilController {
         if(userDetails!=null) {
         LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
 
+        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
 
-        LOG.info("auth is " + authority);
+        //LOG.info("auth is " + authority);
         String statusAuth = null;
         String statusAuthExecTopics = null;
         String licenseValidity=null;
@@ -79,16 +69,16 @@ public class UtilController {
         if(outstanding>0)
             outstandingReqs = outstanding+"";
 
-        if(!utils.validateLicense()){
-            statusAuth = "NotAuthorized";
-            statusAuthExecTopics = "NotAuthorized";
-            licenseValidity = "Invalid License !! Pleae provide a valid license.";
-            json = "{ \"status\": \"" + statusAuth + "\" , \"username\":\"" + userDetails.getUsername() + "\"," +
-                    " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\"," +
-                    " \"companyinfo\": \"" + companyInfo + "\"," +
-                    " \"alertmessage\": \"" + licenseValidity + "\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
-        }
+//        if(!utils.validateLicense()){
+//            statusAuth = "NotAuthorized";
+//            statusAuthExecTopics = "NotAuthorized";
+//            licenseValidity = "Invalid License !! Pleae provide a valid license.";
+//            json = "{ \"status\": \"" + statusAuth + "\" , \"username\":\"" + userDetails.getUsername() + "\"," +
+//                    " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\"," +
+//                    " \"companyinfo\": \"" + companyInfo + "\"," +
+//                    " \"alertmessage\": \"" + licenseValidity + "\" }";
+//            return new ResponseEntity<String>(json, HttpStatus.OK);
+//        }
 
         if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
             statusAuth = "Authorized";
@@ -103,6 +93,7 @@ public class UtilController {
 
         json = "{ \"status\": \"" + statusAuth + "\" ," +
                 " \"username\":\"" + userDetails.getUsername() + "\"," +
+                " \"teamname\": \"" + teamName + "\"," +
                 " \"companyinfo\": \"" + companyInfo + "\"," +
                 " \"notifications\": \"" + outstandingReqs + "\"," +
                 " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
@@ -118,23 +109,25 @@ public class UtilController {
 
         LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
+        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
+
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
         String json = null;
-        LOG.info("auth is "+authority);
+        //LOG.info("auth is "+authority);
         String statusAuth = null;
         String licenseValidity=null;
 
 
-        if(!utils.validateLicense()){
-            statusAuth = "NotAuthorized";
-            licenseValidity = "Invalid License !! Pleae provide a valid license.";
-            json = "{ \"status\": \"" + statusAuth + "\" ," +
-                    " \"username\":\"" + userDetails.getUsername() + "\"," +
-                    " \"companyinfo\": \"" + companyInfo + "\"," +
-                    ", \"alertmessage\": \"" + licenseValidity + "\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
-        }
+//        if(!utils.validateLicense()){
+//            statusAuth = "NotAuthorized";
+//            licenseValidity = "Invalid License !! Pleae provide a valid license.";
+//            json = "{ \"status\": \"" + statusAuth + "\" ," +
+//                    " \"username\":\"" + userDetails.getUsername() + "\"," +
+//                    " \"companyinfo\": \"" + companyInfo + "\"," +
+//                    ", \"alertmessage\": \"" + licenseValidity + "\" }";
+//            return new ResponseEntity<String>(json, HttpStatus.OK);
+//        }
 
         if(authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
             //statusAuth = userDetails.getUsername() +"-"+"Authorized";
@@ -145,6 +138,7 @@ public class UtilController {
 
         json = "{ \"status\": \""+statusAuth+"\" , " +
                 " \"companyinfo\": \"" + companyInfo + "\"," +
+                " \"teamname\": \"" + teamName + "\"," +
                 "\"username\":\""+userDetails.getUsername()+"\" }";
 
         return new ResponseEntity<String>(json, HttpStatus.OK);

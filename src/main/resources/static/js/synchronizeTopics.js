@@ -41,6 +41,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
         }).success(function(output) {
             $scope.statusauth = output.status;
             $scope.userlogged = output.username;
+            $scope.teamname = output.teamname;
              $scope.notifications = output.notifications;
             $scope.statusauthexectopics = output.statusauthexectopics;
             $scope.alerttop = output.alertmessage;
