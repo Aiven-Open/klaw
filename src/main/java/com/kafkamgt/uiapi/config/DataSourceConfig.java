@@ -83,13 +83,7 @@ public class DataSourceConfig {
 
         Properties properties = new Properties();
 
-//        properties.put(PROPERTY_NAME_HIBERNATE_MAX_FETCH_DEPTH, env.getProperty(PROPERTY_NAME_HIBERNATE_MAX_FETCH_DEPTH));
-//        properties.put(PROPERTY_NAME_HIBERNATE_JDBC_FETCH_SIZE, env.getProperty(PROPERTY_NAME_HIBERNATE_JDBC_FETCH_SIZE));
-//        properties.put(PROPERTY_NAME_HIBERNATE_JDBC_BATCH_SIZE, env.getProperty(PROPERTY_NAME_HIBERNATE_JDBC_BATCH_SIZE));
-//        properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, env.getProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
-
-//        properties.put(AvailableSettings.SCHEMA_GEN_DATABASE_ACTION, "none");
-//        properties.put(AvailableSettings.USE_CLASS_ENHANCER, "false");
+        properties.put("hibernate.dialect",environment.getProperty("spring.jpa.properties.hibernate.dialect"));
         return properties;
     }
 

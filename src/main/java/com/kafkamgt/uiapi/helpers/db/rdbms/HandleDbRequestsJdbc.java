@@ -48,36 +48,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     String jdbcConnPwd;
 
     public void connectToDb() throws Exception {
-        LOG.info("Loading tables");
-
-//        Employee emp = new Employee();
-//        emp.setId(12778);
-//        emp.setName("fds");
-//
-//        empRepo.save(emp);
-        //loadDbJdbc.insertData();
     }
-
-//    @Bean
-//    public DataSource datasource() throws PropertyVetoException {
-//        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
-//        dataSource.setDriverClassName(environment.getProperty("spring.datasource.driver.class"));
-//        dataSource.setUrl(environment.getProperty("spring.datasource.url"));
-//        dataSource.setUsername(environment.getProperty("spring.datasource.username"));
-//        dataSource.setPassword(environment.getProperty("spring.datasource.password"));
-//        return dataSource;
-//    }
-
-//    @Bean
-//    public void saveEmp(EmployeeRepo empRepo){
-//        Employee emp = new Employee();
-//        emp.setId(12);
-//        emp.setName("fds");
-//
-//        empRepo.save(emp);
-//
-//        LOG.info("Saved emp to db.");
-//    }
 
     /*--------------------Insert */
 

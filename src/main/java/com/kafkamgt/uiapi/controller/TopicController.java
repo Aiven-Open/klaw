@@ -389,7 +389,7 @@ public class TopicController {
         Collections.sort(topicsList);
 
         int totalRecs = topicsList.size();
-        int recsPerPage = 100;
+        int recsPerPage = 20;
 
         int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
 
