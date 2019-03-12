@@ -96,7 +96,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 method: "POST",
                 url: "/updateSyncTopics",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updatedSyncTopics' : $scope.updatedSyncStr , 'envSelected': $scope.getTopics.envName.name},
+                params: {'updatedSyncTopics' : $scope.updatedSyncStr ,
+                         'envSelected': $scope.getTopics.envName.name
+                         },
                 data: {'updatedSyncTopics' : $scope.updatedSyncStr}
             }).success(function(output) {
                 $scope.alert = "Topic Sync Request : "+output.result;
@@ -126,11 +128,11 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 			method: "GET",
 			url: "/getSyncTopics",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getTopics.envName.name,
+            params: {'env' : $scope.getTopics.envName.name, 'topicnamesearch' : $scope.getTopics.topicnamesearch,
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
-			if(output!=null){
+			if(output!=null && output.length !=0){
                 $scope.resultPages = output[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
             }

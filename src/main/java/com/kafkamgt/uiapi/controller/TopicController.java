@@ -26,6 +26,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -254,7 +255,8 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
+    public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
+                                                     @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
 
         LOG.info(pageNo+" In get topics " + env);
         String json = "{ \"name\": \"John\" }";
@@ -273,6 +275,9 @@ public class TopicController {
             List<TopicInfo> topicsList1 = new ArrayList();
             return new ResponseEntity<List<TopicInfo>>(topicsList1, HttpStatus.OK);
         }
+
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
 
         Env envSelected= createTopicHelper.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
@@ -294,6 +299,23 @@ public class TopicController {
 
         topicCounter = 0;
         List<String> topicsList = new ArrayList(s.getBody());
+
+        List<String> topicFilteredList = topicsList;
+        // Filter topics on topic name for search
+
+        if(topicNameSearch!=null && topicNameSearch.length()>0){
+            final String topicSearchFilter = topicNameSearch;
+            topicFilteredList = topicsList.stream().filter(topic-> {
+                if(topic.contains(topicSearchFilter))
+                    return true;
+                else
+                    return false;
+                }
+            ).collect(Collectors.toList());
+        }
+
+        topicsList = topicFilteredList;
+
         Collections.sort(topicsList);
 
         int totalRecs = topicsList.size();
@@ -303,7 +325,10 @@ public class TopicController {
 
         int requestPageNo = Integer.parseInt(pageNo);
 
-        List<TopicInfo> topicsListMap = new ArrayList<>();
+        List<TopicInfo> topicsListMap = null;//new ArrayList<>();
+        if(totalRecs>0)
+            topicsListMap = new ArrayList<>();
+
         int startVar = (requestPageNo-1) * recsPerPage;
         int lastVar = (requestPageNo) * (recsPerPage);
 
@@ -349,7 +374,8 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
+    public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
+                        @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
 
         LOG.info(pageNo+" In get sync topics " + env);
         String json = "{ \"name\": \"\" }";
@@ -369,6 +395,9 @@ public class TopicController {
             return new ResponseEntity<List<TopicRequest>>(topicsList1, HttpStatus.OK);
         }
 
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
+
         Env envSelected= createTopicHelper.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
@@ -386,6 +415,23 @@ public class TopicController {
 
         topicCounter = 0;
         List<String> topicsList = new ArrayList(s.getBody());
+
+        List<String> topicFilteredList = topicsList;
+        // Filter topics on topic name for search
+
+        if(topicNameSearch!=null && topicNameSearch.length()>0){
+            final String topicSearchFilter = topicNameSearch;
+            topicFilteredList = topicsList.stream().filter(topic-> {
+                        if(topic.contains(topicSearchFilter))
+                            return true;
+                        else
+                            return false;
+                    }
+            ).collect(Collectors.toList());
+        }
+
+        topicsList = topicFilteredList;
+
         Collections.sort(topicsList);
 
         int totalRecs = topicsList.size();
