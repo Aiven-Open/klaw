@@ -98,12 +98,15 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 			url: "/getTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getTopics.envName.name,
-                'pageNo' : pageNoSelected }
+                'pageNo' : pageNoSelected,
+                 'topicnamesearch' : $scope.getTopics.topicnamesearch}
 		}).success(function(output) {
 			$scope.resultBrowse = output;
-			if(output!=null){
+			if(output!=null && output.length !=0){
                 $scope.resultPages = output[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
+            }else{
+                $scope.resultPages = null;
             }
 		}).error(
 			function(error) 
