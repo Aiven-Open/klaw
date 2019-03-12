@@ -1,4 +1,4 @@
-<b>Kafkawize</b> : A Web application which automates the process of creating and browsing Kafka components, by introducing  roles/authorizations to users of various teams of an organization
+<b>Kafkawize</b> : A Web application which automates the process of creating and browsing Kafka topics, acls, schemas, by introducing  roles/authorizations to users of various teams of an organization
 
 <h4>About the Application</h4> 
 
