@@ -83,8 +83,11 @@ KafkaWize needs the following applications to be up and running.
 3. Start KafkaClusterApi
 4. Setup project KafkaWize, and configure Cassandra running host, Cluster api host, in application properties
 5. Set db.storetype=cassandra in application.properties
-6. Start KafkaWize
-7. Cassandra db setup will be done on the startup of the application. We do not have to create manually.
+6. Start KafkaWize (from local profile for example)
+   From directory kafkawize-web\
+        mvn spring-boot:run -Plocal
+   application.properties are configured in kafkawize-conf\environments\local
+7. Cassandra db setup will be done on the startup of the application. It is not required to run the scripts manually.
 
 <b>Steps to run with Rdbms as Metastore:</b>
 
@@ -93,8 +96,11 @@ KafkaWize needs the following applications to be up and running.
 3. Start KafkaClusterApi
 4. Setup project KafkaWize, and configure Cassandra running host, Cluster api host, in application properties
 5. Set db.storetype=rdbms and few other datasource properties in application.properties
-6. Start KafkaWize
-7. Run the ddl and insert scripts available in src/main/resources/scripts/base/rdbms.
+6. Start KafkaWize (from local profile for example)
+   From directory kafkawize-web\
+            mvn spring-boot:run -Plocal
+   application.properties are configured in kafkawize-conf\environments\local
+7. Run the ddl and insert scripts available in kafkawize-web/src/main/resources/scripts/base/rdbms.
 
 By default KafkaWize runs on port 9097. Access it by http://localhost:9097
 
