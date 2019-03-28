@@ -1,3 +1,6 @@
+
+Download the full bundle from https://kafkawize.com/download-kafkawize/ and follow the instructions.
+
 <b>Kafkawize</b> : A Web application which automates the process of creating and browsing Kafka topics, acls, schemas, by introducing  roles/authorizations to users of various teams of an organization
 
 <h4>About the Application</h4> 
@@ -71,51 +74,8 @@ Users can logout. <br>
 
 <b>How to Run the application</b>
 
-KafkaWize needs the following applications to be up and running.
-1. Spring boot application KafkaWize https://github.com/muralibasani/kafkawize
-2. Spring boot application KafkaWize ClusterApi https://github.com/muralibasani/kafkawizeclusterapi
-3. Apache Cassandra OR Rdbms(MySql/Oracle/..)
+Download the full bundle from https://kafkawize.com/download-kafkawize/ and follow the instructions.
 
-<b>Steps to run with Cassandra as Metastore: </b>
-
-1. Install Apache Cassandra
-2. Setup project KafkawizeClusterApi and update server.port if necessary in application properties
-3. Start KafkaClusterApi
-4. Setup project KafkaWize, and configure Cassandra running host, Cluster api host, in application properties
-5. Set db.storetype=cassandra in application.properties
-6. Start KafkaWize (from local profile for example)
-   From directory kafkawize-web\
-        mvn spring-boot:run -Plocal
-   application.properties are configured in kafkawize-conf\environments\local
-7. Cassandra db setup will be done on the startup of the application. It is not required to run the scripts manually.
-
-<b>Steps to run with Rdbms as Metastore:</b>
-
-1. Install an Rdbms database (Mysql or Oracle or ..)
-2. Setup project KafkawizeClusterApi and update server.port if necessary in application properties
-3. Start KafkaClusterApi
-4. Setup project KafkaWize, and configure Cassandra running host, Cluster api host, in application properties
-5. Set db.storetype=rdbms and few other datasource properties in application.properties
-6. Start KafkaWize (from local profile for example)
-   From directory kafkawize-web\
-            mvn spring-boot:run -Plocal
-   application.properties are configured in kafkawize-conf\environments\local
-7. Run the ddl and insert scripts available in kafkawize-web/src/main/resources/scripts/base/rdbms.
-
-By default KafkaWize runs on port 9097. Access it by http://localhost:9097
-
-Default Teams
-    Team1
-    Team2
-    Team3
-
-Default Users(with pwds)
-    
-    uiuser1/user    from Team1
-    uiuser2/user    from Team2
-    uiuser4/user    from Team1  Admin
-    uiuser5/user    from Team2  Admin
-    superuser/user  from Team2  Superuser
 
 <b>Screenshots</b>
 
