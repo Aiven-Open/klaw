@@ -88,10 +88,10 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getAcls.envName.name;
 		//alert("---"+$scope.getTopics.envName.value);
-		if (!window.confirm("Are you sure, you would like to view the Acls in Environment : " +
-				$scope.getAcls.envName.name + " ?")) {
-			return;
-		}
+//		if (!window.confirm("Are you sure, you would like to view the Acls in Environment : " +
+//				$scope.getAcls.envName.name + " ?")) {
+//			return;
+//		}
 		
 		$http({
 			method: "GET",
@@ -109,6 +109,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 			function(error) 
 			{
 				$scope.alert = error;
+				$scope.resultPages = null;
+                $scope.resultPageSelected = null;
 			}
 		);
 		

@@ -37,15 +37,15 @@ public class UiControllerLogin {
         return "newlogin.html";
     }
 
-    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
-    public String browseTopics(ModelMap model) {
-        return "browseTopics.html";
-    }
+//    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
+//    public String browseTopics(ModelMap model) {
+//        return "browseTopics.html";
+//    }
 
-    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
-    public String browseAcls(ModelMap model) {
-        return "browseAcls.html";
-    }
+//    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
+//    public String browseAcls(ModelMap model) {
+//        return "browseAcls.html";
+//    }
 
     @RequestMapping(value = "/addUsers", method = RequestMethod.GET)
     public String addUsers(ModelMap model) {
@@ -140,6 +140,16 @@ public class UiControllerLogin {
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
     public String activityLog(ModelMap model) {
         return "showActivityLog.html";
+    }
+
+    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
+    public String tables(ModelMap model) {
+        return "browseTopicsNew.html";
+    }
+
+    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
+    public String browseAclsNew(ModelMap model) {
+        return "browseAclsNew.html";
     }
 
 }

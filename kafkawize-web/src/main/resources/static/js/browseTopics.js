@@ -87,11 +87,16 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 		
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getTopics.envName.name;
+		var topicFilter = $scope.getTopics.topicnamesearch;
+		if(topicFilter && topicFilter.length>0 && topicFilter.length<3){
+		    alert("Please enter atleast 3 characters of the topic name.");
+		    return;
+		    }
 		//alert("---"+$scope.getTopics.envName.value);
-		if (!window.confirm("Are you sure, you would like to view the topics in Environment : " +
-				$scope.getTopics.envName.name + " ?")) {
-			return;
-		}
+//		if (!window.confirm("Are you sure, you would like to view the topics in Environment : " +
+//				$scope.getTopics.envName.name + " ?")) {
+//			return;
+//		}
 		
 		$http({
 			method: "GET",
@@ -112,6 +117,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 			function(error) 
 			{
 				$scope.alert = error;
+				$scope.resultPages = null;
+				$scope.resultPageSelected = null;
 			}
 		);
 		
