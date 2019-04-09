@@ -88,10 +88,10 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getActivityLog.envName.name;
 		//alert("---"+$scope.getTopics.envName.value);
-		if (!window.confirm("Are you sure, you would like to view the activity Log in Environment : " +
-				$scope.getActivityLog.envName.name + " ?")) {
-			return;
-		}
+//		if (!window.confirm("Are you sure, you would like to view the activity Log in Environment : " +
+//				$scope.getActivityLog.envName.name + " ?")) {
+//			return;
+//		}
 		
 		$http({
 			method: "GET",
@@ -101,7 +101,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
-			if(output!=null){
+			if(output!=null && output.length>0){
                 $scope.resultPages = output[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
             }
@@ -109,6 +109,8 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 			function(error) 
 			{
 				$scope.alert = error;
+				$scope.resultPages = null;
+                $scope.resultPageSelected = null;
 			}
 		);
 		

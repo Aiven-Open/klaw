@@ -63,6 +63,7 @@ app.controller("pcTopicsCtrl", function($scope, $http, $location, $window) {
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.topicstreams = null;
                 }
             );
         }

@@ -54,7 +54,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/envs", method = RequestMethod.GET)
     public String envs(ModelMap model) {
-        return "envs.html";
+        return "envsNew.html";
     }
 
     @RequestMapping(value = "/execAcls", method = RequestMethod.GET)
@@ -74,7 +74,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
     public String myTopicRequests(ModelMap model) {
-        return "myTopicRequests.html";
+        return "myRequestsNew.html";
     }
 
     @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)
@@ -99,7 +99,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/pcTopics", method = RequestMethod.GET)
     public String pcTopics(ModelMap model) {
-        return "pcTopics.html";
+        return "pcTopicsNew.html";
     }
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
@@ -139,7 +139,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
     public String activityLog(ModelMap model) {
-        return "showActivityLog.html";
+        return "activityLogNew.html";
     }
 
     @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)

@@ -75,6 +75,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             function(error)
             {
                 $scope.alert = error;
+                $scope.topicRequests = null;
             }
         );
     }
@@ -91,6 +92,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.aclRequests = null;
                 }
             );
         }
@@ -107,13 +109,13 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.schemaRequests = null;
                 }
             );
         }
 
 
     $scope.deleteTopicRequest = function() {
-
 
         $http({
             method: "GET",
