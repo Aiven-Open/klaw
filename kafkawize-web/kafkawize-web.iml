@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module org.jetbrains.idea.maven.project.MavenProjectsManager.isMavenModule="true" type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="Spring" name="Spring">
+      <configuration />
+    </facet>
+  </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
     <output url="file://$MODULE_DIR$/target/classes" />
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
@@ -132,6 +137,6 @@
     <orderEntry type="library" name="Maven: com.github.jnr:jnr-posix:3.0.44" level="project" />
     <orderEntry type="library" name="Maven: com.github.jnr:jnr-constants:0.9.9" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.0.33.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.datastax.cassandra:cassandra-driver-extras:3.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.datastax.cassandra:cassandra-driver-extras:3.7.0" level="project" />
   </component>
 </module>
