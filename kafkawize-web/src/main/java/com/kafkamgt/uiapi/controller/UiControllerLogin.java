@@ -59,17 +59,17 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/execAcls", method = RequestMethod.GET)
     public String execAcls(ModelMap model) {
-        return "execAcls.html";
+        return "execAclsNew.html";
     }
 
     @RequestMapping(value = "/execSchemas", method = RequestMethod.GET)
     public String execSchemas(ModelMap model) {
-        return "execSchemas.html";
+        return "execSchemasNew.html";
     }
 
     @RequestMapping(value = "/execTopics", method = RequestMethod.GET)
     public String execTopics(ModelMap model) {
-        return "execTopics.html";
+        return "execTopicsNew.html";
     }
 
     @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
@@ -94,7 +94,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/showUsers", method = RequestMethod.GET)
     public String showUsers(ModelMap model) {
-        return "showUsers.html";
+        return "showUsersNew.html";
     }
 
     @RequestMapping(value = "/pcTopics", method = RequestMethod.GET)
@@ -114,17 +114,17 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/synchronizeTopics", method = RequestMethod.GET)
     public String synchronizeTopics(ModelMap model) {
-        return "synchronizeTopics.html";
+        return "synchronizeTopicsNew.html";
     }
 
     @RequestMapping(value = "/synchronizeAcls", method = RequestMethod.GET)
     public String synchronizeAcls(ModelMap model) {
-        return "synchronizeAcls.html";
+        return "synchronizeAclsNew.html";
     }
 
     @RequestMapping(value = "/showTeams", method = RequestMethod.GET)
     public String showTeams(ModelMap model) {
-        return "showTeams.html";
+        return "showTeamsNew.html";
     }
 
     @RequestMapping(value = "/addTeam", method = RequestMethod.GET)

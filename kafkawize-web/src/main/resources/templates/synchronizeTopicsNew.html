@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="browseAclsApp" ng-controller="browseAclsCtrl">
+<html ng-app="synchronizeTopicsApp" ng-controller="synchronizeTopicsCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Browse Acls | Kafka Self-service Topic Management Portal</title>
+		<title>Synchronize Topics | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -43,7 +43,7 @@
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/browseAcls.js"></script>
+		<script src="js/synchronizeTopics.js"></script>
 
 	</head>
 	<body>
@@ -62,19 +62,6 @@
 			
 				<!-- start: search & user box -->
 				<div class="header-right">
-			
-					<!--<form action="pages-search-results.html" class="search nav-form">-->
-						<!--<div class="input-group input-search">-->
-							<!--<input type="text" class="form-control" name="q" id="q" placeholder="Search...">-->
-							<!--<span class="input-group-btn">-->
-								<!--<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>-->
-							<!--</span>-->
-						<!--</div>-->
-					<!--</form>-->
-			<!---->
-					<!--<span class="separator"></span>-->
-			
-
 			
 					<span class="separator"></span>
 			
@@ -141,18 +128,18 @@
 											<!--<span>Mailbox</span>-->
 										<!--</a>-->
 									<!--</li>-->
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-copy" aria-hidden="true"></i>
 											<span>Browse</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
+											<li class="nav-active">
 												<a href="browseTopics">
 													Topics
 												</a>
 											</li>
-											<li class="nav-active">
+											<li>
 												<a href="browseAcls">
 													Acls
 												</a>
@@ -284,13 +271,13 @@
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-align-left" aria-hidden="true"></i>
 											<span>Synchronize Metadata</span>
 										</a>
 										<ul class="nav nav-children">
-											<li  ng-if="statusauthexectopics==='Authorized'">
+											<li class="nav-active" ng-if="statusauthexectopics==='Authorized'">
 												<a href="synchronizeTopics">
 													Topics
 												</a>
@@ -317,7 +304,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Acls</h2>
+						<h2>Synchronize Metadata - Topics</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -326,8 +313,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Browse</span></li>
-								<li><span>Acls</span></li>
+								<li><span>Synchronize Metadata</span></li>
+								<li><span>Topics</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -359,18 +346,18 @@
 						<!---->
 								<!--<h2 class="panel-title">Basic</h2>-->
 							<!--</header>-->
-							<div  id="getAcls" class="panel-body"  ng-init="getAuth();getEnvs();">
+							<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();">
 
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-12">
-										<select ng-change="getAcls(1);" ng-model="getAcls.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
+									<div class="col-md-5">
+										<select ng-change="getTopics(1);" ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
 
 										</select>
 									</div>
-									<!--<div class="col-md-7">-->
-										<!--<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">-->
-									<!--</div>-->
+									<div class="col-md-7">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">
+									</div>
 								</div>
 
 								<br>
@@ -378,32 +365,31 @@
 								<table class="table table-bordered table-striped mb-none"  ng-show="resultPages != null">
 									<thead>
 										<tr>
+											<!--<th>Sequence</th>-->
 											<th>TopicName</th>
-											<th>ConsumerGroup</th>
-											<th>Hosts</th>
-											<th>Principle</th>
-											<th>AclType</th>
-											<th>Owned by</th>
+											<th>Team</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="resultBrowset in resultBrowse" class="gradeX">
+										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
+											<!--<td>{{ resultBrowset.sequence}}</td>-->
 											<td>{{ resultBrowset.topicname}}</td>
-											<td>{{ resultBrowset.consumergroup}}</td>
-											<td>{{ resultBrowset.acl_ip}}</td>
-											<td>{{ resultBrowset.acl_ssl}}</td>
-											<td>{{ resultBrowset.topictype}}</td>
-											<td>{{ resultBrowset.teamname}}</td>
+											<td>
+												<select class="form-control populate" ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicname)"
+														ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
+														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
+												</select>
+											</td>
 										</tr>
 										
 									</tbody>
 								</table>
 
 								<div class="alert alert-info" ng-show="resultBrowse.length==0">
-									No Acls found !!
+									No topics found !!
 								</div>
 
-								<div class="row"  ng-show="resultPageSelected != null">
+								<div class="row"  ng-show="resultPageSelected != null && resultBrowse.length>0">
 									<div class="col-sm-12 col-md-6">
 
 									</div>
@@ -413,7 +399,7 @@
 												<span class="fa fa-chevron-left"></span>
 											</li>
 											<li ng-repeat="allPages in resultPages">
-												<a href="#" ng-click="getAcls(allPages)">{{allPages}}</a>
+												<a href="#" ng-click="getTopics(allPages)">{{allPages}}</a>
 											</li>
 											<li class="next disabled">
 												<span class="fa fa-chevron-right"></span>
@@ -421,6 +407,10 @@
 										</ul>
 									</div>
 								</div>
+
+								<br>
+								<button ng-show="resultBrowse.length > 0" type="button" ng-click="synchTopics();" class="mb-xs mt-xs mr-xs btn btn-info">Synchronize</button>
+
 							</div>
 						</section>
 						

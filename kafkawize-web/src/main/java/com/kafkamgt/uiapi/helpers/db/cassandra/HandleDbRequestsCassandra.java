@@ -66,17 +66,19 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
                 .withoutJMXReporting()
                 .build();
         try {
+            session = cluster.connect();
+
+            loadDb.session = session;
+            loadDb.createTables();
+            loadDb.insertData();
             session = cluster.connect(keyspace);
+
             cassandraSelectHelper.session = session;
             cassandraInsertHelper.session = session;
             cassandraUpdateHelper.session = session;
             cassandraDeleteHelper.session = session;
 
             cassandraInsertHelper.cassandraSelectHelper=cassandraSelectHelper;
-
-            loadDb.session = session;
-            loadDb.createTables();
-            loadDb.insertData();
         }catch (Exception e){
             LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort + " Error : " + e.getMessage());
             System.exit(0);

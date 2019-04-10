@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="browseAclsApp" ng-controller="browseAclsCtrl">
+<html ng-app="execSchemasApp" ng-controller="execSchemasCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Browse Acls | Kafka Self-service Topic Management Portal</title>
+		<title>Approve Schemas | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -43,7 +43,7 @@
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/browseAcls.js"></script>
+		<script src="js/execSchemas.js"></script>
 
 	</head>
 	<body>
@@ -141,7 +141,7 @@
 											<!--<span>Mailbox</span>-->
 										<!--</a>-->
 									<!--</li>-->
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-copy" aria-hidden="true"></i>
 											<span>Browse</span>
@@ -152,7 +152,7 @@
 													Topics
 												</a>
 											</li>
-											<li class="nav-active">
+											<li>
 												<a href="browseAcls">
 													Acls
 												</a>
@@ -233,13 +233,13 @@
 										</ul>
 									</li>
 
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
 											<span>Approve - Execute</span>
 										</a>
 										<ul class="nav nav-children">
-											<li  ng-if="statusauthexectopics==='Authorized'">
+											<li ng-if="statusauthexectopics==='Authorized'">
 												<a href="execTopics">
 													Topics
 												</a>
@@ -249,7 +249,7 @@
 													Acls
 												</a>
 											</li>
-											<li  ng-if="statusauthexectopics==='Authorized'">
+											<li class="nav-active" ng-if="statusauthexectopics==='Authorized'">
 												<a href="execSchemas">
 													Schemas
 												</a>
@@ -317,7 +317,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Acls</h2>
+						<h2>Approve Topics</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -326,8 +326,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Browse</span></li>
-								<li><span>Acls</span></li>
+								<li><span>Approve</span></li>
+								<li><span>Topics</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -337,89 +337,66 @@
 					<!-- start: page -->
 						<section class="panel">
 
-							<div ng-show="resultPages == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="schemaRequests == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="resultPages == null && alert != null && alert != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="schemaRequests == null && alert != null && alert != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alert }}.
 							</div>
 
-							<div ng-show="resultPages == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="schemaRequests == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
 							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
 								<!--<h2 class="panel-title">Basic</h2>-->
 							<!--</header>-->
-							<div  id="getAcls" class="panel-body"  ng-init="getAuth();getEnvs();">
+							<div  id="getTopics" class="panel-body"  ng-init="getExecAuth();getMySchemaRequests()">
 
-								<div class="row" align="center">
-									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-12">
-										<select ng-change="getAcls(1);" ng-model="getAcls.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
-
-										</select>
-									</div>
-									<!--<div class="col-md-7">-->
-										<!--<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">-->
-									<!--</div>-->
-								</div>
-
-								<br>
-
-								<table class="table table-bordered table-striped mb-none"  ng-show="resultPages != null">
+								<table class="table table-bordered table-striped mb-none"  ng-show="schemaRequests.length >0">
 									<thead>
 										<tr>
+											<th></th>
 											<th>TopicName</th>
-											<th>ConsumerGroup</th>
-											<th>Hosts</th>
-											<th>Principle</th>
-											<th>AclType</th>
-											<th>Owned by</th>
+											<th>SchemaVersion</th>
+											<th>FullSchema</th>
+											<th>Cluster</th>
+											<th>Requestor</th>
+											<th>Application</th>
+											<th>Team</th>
+											<th>Remarks</th>
+											<th>Status</th>
+											<th>RequestedTime</th>
+											<th>ApprovingTime</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="resultBrowset in resultBrowse" class="gradeX">
-											<td>{{ resultBrowset.topicname}}</td>
-											<td>{{ resultBrowset.consumergroup}}</td>
-											<td>{{ resultBrowset.acl_ip}}</td>
-											<td>{{ resultBrowset.acl_ssl}}</td>
-											<td>{{ resultBrowset.topictype}}</td>
-											<td>{{ resultBrowset.teamname}}</td>
+										<tr ng-repeat="schemaRequest in schemaRequests" class="gradeX">
+											<td><input type="radio" name="schGrp" ng-model="execSchemaRequest.topicName" value="{{schemaRequest.topicname}}-----{{schemaRequest.schemaversion}}-----{{schemaRequest.environment}}"/></td>
+											<td>{{ schemaRequest.topicname }}</td>
+											<td>{{ schemaRequest.schemaversion }}</td>
+											<td>{{ schemaRequest.schemafull }}</td>
+											<td>{{ schemaRequest.environment }}</td>
+											<td>{{ schemaRequest.username }}</td>
+											<td>{{ schemaRequest.appname }}</td>
+											<td>{{ schemaRequest.teamname }}</td>
+											<td>{{ schemaRequest.remarks }}</td>
+											<td>{{ schemaRequest.topicstatus }}</td>
+											<td>{{ schemaRequest.requesttime }}</td>
+											<td>{{ schemaRequest.approvingtime }}</td>
 										</tr>
 										
 									</tbody>
 								</table>
 
-								<div class="alert alert-info" ng-show="resultBrowse.length==0">
-									No Acls found !!
-								</div>
+								<br>
+								<button ng-show="schemaRequests.length > 0" type="button" ng-click="execSchemaRequest();" class="mb-xs mt-xs mr-xs btn btn-info">Approve</button>
 
-								<div class="row"  ng-show="resultPageSelected != null">
-									<div class="col-sm-12 col-md-6">
-
-									</div>
-									<div class="col-sm-12 col-md-6" align="right">
-										<ul class="pagination">
-											<li class="prev disabled">
-												<span class="fa fa-chevron-left"></span>
-											</li>
-											<li ng-repeat="allPages in resultPages">
-												<a href="#" ng-click="getAcls(allPages)">{{allPages}}</a>
-											</li>
-											<li class="next disabled">
-												<span class="fa fa-chevron-right"></span>
-											</li>
-										</ul>
-									</div>
+								<div class="alert alert-info" ng-show="schemaRequests.length==0">
+									No requests found !!
 								</div>
 							</div>
 						</section>
