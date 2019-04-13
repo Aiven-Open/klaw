@@ -33,6 +33,40 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
         );
     }
 
+    $scope.getTopicTeam = function(topicName) {
+
+                if(topicName == null){
+                    this.addAcl.topicname.focus();
+                    alert("Please mention a topic name.");
+                    return false;
+                }
+
+                $http({
+                    method: "GET",
+                    url: "/getTopicTeam",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'env' : $scope.addSchema.envName.name,
+                        'topicName' : topicName }
+                }).success(function(output) {
+                    $scope.topicDetails = output;
+                    //alert($scope.topicDetails.teamname + "---");
+                    if(!$scope.topicDetails.teamname){
+                            alert("There is NO team found for this topic : " +  topicName);
+                            $scope.addSchema.team="";
+                            addSchema.topicname.focus();
+                                return;
+                    }
+                    $scope.addSchema.team = $scope.topicDetails.teamname;
+                    //alert("---"+$scope.topicDetails.teamname);
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+
+            };
+
         $scope.addSchema = function() {
 
             var serviceInput = {};

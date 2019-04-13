@@ -49,7 +49,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/addUsers", method = RequestMethod.GET)
     public String addUsers(ModelMap model) {
-        return "addUsers.html";
+        return "addUserNew.html";
     }
 
     @RequestMapping(value = "/envs", method = RequestMethod.GET)
@@ -79,17 +79,17 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)
     public String requestAcls(ModelMap model) {
-        return "requestAcls.html";
+        return "requestAclsNew.html";
     }
 
     @RequestMapping(value = "/requestSchemaUpload", method = RequestMethod.GET)
     public String requestSchemaUpload(ModelMap model) {
-        return "requestSchemaUpload.html";
+        return "requestSchemaNew.html";
     }
 
     @RequestMapping(value = "/requestTopics", method = RequestMethod.GET)
     public String requestTopics(ModelMap model) {
-        return "requestTopics.html";
+        return "requestTopicsNew.html";
     }
 
     @RequestMapping(value = "/showUsers", method = RequestMethod.GET)
@@ -104,12 +104,12 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
     public String myProfile(ModelMap model) {
-        return "myProfile.html";
+        return "myProfileNew.html";
     }
 
     @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
     public String changePwd(ModelMap model) {
-        return "changePwd.html";
+        return "changePwdNew.html";
     }
 
     @RequestMapping(value = "/synchronizeTopics", method = RequestMethod.GET)
@@ -129,12 +129,12 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/addTeam", method = RequestMethod.GET)
     public String addTeam(ModelMap model) {
-        return "addTeam.html";
+        return "addTeamNew.html";
     }
 
     @RequestMapping(value = "/addNewEnv", method = RequestMethod.GET)
     public String addNewEnv(ModelMap model) {
-        return "addNewEnv.html";
+        return "addEnvNew.html";
     }
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
