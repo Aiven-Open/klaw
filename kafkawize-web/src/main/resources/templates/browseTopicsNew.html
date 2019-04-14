@@ -73,8 +73,18 @@
 					<!--</form>-->
 			<!---->
 					<!--<span class="separator"></span>-->
-			
 
+					<ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
+
+						<li>
+							<a href="execTopics" class="dropdown-toggle notification-icon">
+								<i class="fa fa-bell"></i>
+								<span class="badge">{{ notifications }}</span>
+							</a>
+
+
+						</li>
+					</ul>
 			
 					<span class="separator"></span>
 			
@@ -426,6 +436,7 @@
 										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">
 									</div>
 								</div>
+
 
 								<br>
 

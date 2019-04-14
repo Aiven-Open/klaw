@@ -73,8 +73,18 @@
 					<!--</form>-->
 			<!---->
 					<!--<span class="separator"></span>-->
-			
 
+					<ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
+
+						<li>
+							<a href="execTopics" class="dropdown-toggle notification-icon">
+								<i class="fa fa-bell"></i>
+								<span class="badge">{{ notifications }}</span>
+							</a>
+
+
+						</li>
+					</ul>
 			
 					<span class="separator"></span>
 			
@@ -364,7 +374,7 @@
 							</div>
 
 							<div class="panel-body" ng-init="getExecAuth();loadTeamsSU();">
-
+								<div ng-if="statusauthexectopics=='Authorized'">
 
 								<div class="form-group">
 									<label class="col-md-3 control-label">User Name</label>
@@ -416,7 +426,7 @@
 									</div>
 								</div>
 							</footer>
-
+							</div>
 						</section>
 							</form>
 						</div></div>

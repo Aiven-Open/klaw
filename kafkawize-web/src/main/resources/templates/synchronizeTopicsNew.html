@@ -62,7 +62,19 @@
 			
 				<!-- start: search & user box -->
 				<div class="header-right">
-			
+
+					<ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
+
+						<li>
+							<a href="execTopics" class="dropdown-toggle notification-icon">
+								<i class="fa fa-bell"></i>
+								<span class="badge">{{ notifications }}</span>
+							</a>
+
+
+						</li>
+					</ul>
+
 					<span class="separator"></span>
 			
 					<div id="userbox" class="userbox">
@@ -347,7 +359,7 @@
 								<!--<h2 class="panel-title">Basic</h2>-->
 							<!--</header>-->
 							<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();">
-
+								<div ng-if="statusauthexectopics=='Authorized'">
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
 									<div class="col-md-5">
@@ -411,6 +423,7 @@
 								<br>
 								<button ng-show="resultBrowse.length > 0" type="button" ng-click="synchTopics();" class="mb-xs mt-xs mr-xs btn btn-info">Synchronize</button>
 
+							</div>
 							</div>
 						</section>
 						

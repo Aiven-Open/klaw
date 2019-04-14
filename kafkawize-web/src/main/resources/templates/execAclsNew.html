@@ -73,8 +73,18 @@
 					<!--</form>-->
 			<!---->
 					<!--<span class="separator"></span>-->
-			
 
+					<ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
+
+						<li>
+							<a href="execTopics" class="dropdown-toggle notification-icon">
+								<i class="fa fa-bell"></i>
+								<span class="badge">{{ notifications }}</span>
+							</a>
+
+
+						</li>
+					</ul>
 			
 					<span class="separator"></span>
 			
@@ -348,7 +358,7 @@
 								<!--<h2 class="panel-title">Basic</h2>-->
 							<!--</header>-->
 							<div  id="getTopics" class="panel-body"  ng-init="getExecAuth();getMyAclRequests()">
-
+								<div ng-if="statusauthexectopics=='Authorized'">
 								<table class="table table-bordered table-striped mb-none"  ng-show="aclRequests.length >0">
 									<thead>
 										<tr>
@@ -364,8 +374,8 @@
 											<th>Requesting Team</th>
 											<th>Remarks</th>
 											<th>Status</th>
-											<th>RequestedTime</th>
-											<th>ApprovingTime</th>
+											<th>Requested Time</th>
+											<th>Approving Time</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -394,6 +404,7 @@
 
 								<div class="alert alert-info" ng-show="aclRequests.length==0">
 									No requests found !!
+								</div>
 								</div>
 							</div>
 						</section>

@@ -24,6 +24,7 @@ public class UiControllerLogin {
     public String login(ModelMap model) {
         LOG.info("in login......");
         try {
+            LOG.info("---"+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (userDetails != null) {
@@ -31,10 +32,11 @@ public class UiControllerLogin {
                 return "index";
             }
         }catch (Exception e){
-            return "newlogin.html";
+            LOG.info("Error logging in "+e.getMessage());
+            return "newloginnew.html";
         }
 
-        return "newlogin.html";
+        return "newloginnew.html";
     }
 
 //    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
