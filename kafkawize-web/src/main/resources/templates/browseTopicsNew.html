@@ -46,6 +46,20 @@
 		<script src="js/browseTopics.js"></script>
 
 	</head>
+	<style>
+		#myBtn {
+        position: fixed;
+        bottom: 50px;
+        float: right;
+        right: 7%;
+        left: 93%;
+
+    }
+/*On Hover Color Change*/
+    #myBtn:hover {
+        background-color: #7dbbf1;
+    }
+	</style>
 	<body>
 		<section class="body" ng-init="getAuth()">
 
@@ -484,6 +498,9 @@
 									</div>
 								</div>
 							</div>
+							<button  id="myBtn" class="btn btn-primary float:right">
+								<a href="requestTopics" style="color: white">Add Topic</a>
+							</button>
 						</section>
 						
 						<!--<section class="panel">-->

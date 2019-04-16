@@ -423,7 +423,7 @@
 
 
 							</div>
-							<footer class="panel-footer">
+							<footer ng-if="statusauthexectopics=='Authorized'" class="panel-footer">
 								<div class="row">
 									<div class="col-sm-12 col-sm-offset-5">
 										<button ng-click="addNewTeam();" class="btn btn-primary">Submit</button>
@@ -431,6 +431,12 @@
 									</div>
 								</div>
 							</footer>
+
+								<div ng-show="statusauthexectopics!='Authorized'" ng-init="" class="alert alert-danger">
+									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+									<strong>Ah snap!!</strong> You are not authorized.
+								</div>
+
 							</div>
 						</section>
 							</form>

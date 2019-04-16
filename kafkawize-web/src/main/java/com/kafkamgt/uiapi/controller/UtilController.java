@@ -53,7 +53,7 @@ public class UtilController {
         }catch (Exception e){}
         String json = null;
         if(userDetails!=null) {
-        LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
+        //LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
 
         String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
@@ -107,7 +107,7 @@ public class UtilController {
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
+        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
         String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
 

@@ -8,7 +8,7 @@
 	<!-- Basic -->
 	<meta charset="UTF-8">
 
-	<title>Browse Topics | Kafka Self-service Topic Management Portal</title>
+	<title>Dashboard | Kafka Self-service Topic Management Portal</title>
 	<meta name="keywords" content="HTML5 Admin Template" />
 	<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 	<meta name="author" content="okler.net">
@@ -138,7 +138,7 @@
 				<div class="nano-content">
 					<nav id="menu" class="nav-main" role="navigation">
 						<ul class="nav nav-main">
-							<li>
+							<li class="nav-active">
 								<a href="index">
 									<i class="fa fa-home" aria-hidden="true"></i>
 									<span>Dashboard</span>
@@ -151,13 +151,13 @@
 							<!--<span>Mailbox</span>-->
 							<!--</a>-->
 							<!--</li>-->
-							<li class="nav-parent nav-expanded nav-active">
+							<li class="nav-parent">
 								<a>
 									<i class="fa fa-copy" aria-hidden="true"></i>
 									<span>Browse</span>
 								</a>
 								<ul class="nav nav-children">
-									<li class="nav-active">
+									<li>
 										<a href="browseTopics">
 											Topics
 										</a>
@@ -327,7 +327,7 @@
 
 		<section role="main" class="content-body">
 			<header class="page-header">
-				<h2>Topics</h2>
+				<h2>Dashboard</h2>
 
 				<div class="right-wrapper pull-right">
 					<ol class="breadcrumbs">
@@ -336,8 +336,8 @@
 								<i class="fa fa-home"></i>
 							</a>
 						</li>
-						<li><span>Browse</span></li>
-						<li><span>Topics</span></li>
+						<li><span>Dashboard</span></li>
+
 					</ol>
 
 					<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -347,88 +347,286 @@
 			<!-- start: page -->
 			<section class="panel">
 
-				<div ng-show="resultPages == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
-					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-					<strong>Ah snap!!</strong> {{ alerttop }}.
-				</div>
+				<div class="row">
+					<div class="col-md-12" data-plugin-portlet id="portlet-1">
+						<section class="panel panel-secondary" id="panel-1" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+								<div class="panel-actions">
+									<a href="#" class="fa fa-caret-down"></a>
+									<a href="#" class="fa fa-times"></a>
+								</div>
 
-				<div ng-show="resultPages == null && alert != null && alert != ''" ng-init="" class="alert alert-danger">
-					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-					<strong>Ah snap!!</strong> {{ alert }}.
-				</div>
+								<h2 class="panel-title">Welcome to KafkaWize !!</h2>
+							</header>
+							<div class="panel-body">
+								Automates the process of creating and browsing Kafka topics, acls schemas, by introducing roles, teams and users.
+							</div>
+						</section>
 
-				<div ng-show="resultPages == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
-					<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-					<strong>Ah snap!!</strong> {{ errorMessage }}.
-				</div>
-				<!--<header class="panel-heading">-->
-				<!--<div class="panel-actions">-->
-				<!--<a href="#" class="fa fa-caret-down"></a>-->
-				<!--<a href="#" class="fa fa-times"></a>-->
-				<!--</div>-->
-				<!---->
-				<!--<h2 class="panel-title">Basic</h2>-->
-				<!--</header>-->
-				<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();">
-
-					<div class="row" align="center">
-						<!--<label class="col-md-3 control-label">Select Environment</label>-->
-						<div class="col-md-5">
-							<select ng-change="getTopics(1);" ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
-
-							</select>
-						</div>
-						<div class="col-md-7">
-							<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">
-						</div>
-					</div>
-
-					<br>
-
-					<table class="table table-bordered table-striped mb-none"  ng-show="resultPages != null">
-						<thead>
-						<tr>
-							<!--<th>Sequence</th>-->
-							<th>TopicName</th>
-							<th>Partitions</th>
-							<th class="hidden-phone">Replicas</th>
-							<th class="hidden-phone">Owned by</th>
-						</tr>
-						</thead>
-						<tbody>
-						<tr ng-repeat="resultBrowset in resultBrowse" class="gradeX">
-							<!--<td>{{ resultBrowset.sequence}}</td>-->
-							<td>{{ resultBrowset.topicName}}</td>
-							<td>{{ resultBrowset.noOfPartitions}}</td><td>{{ resultBrowset.noOfReplcias}}</td>
-							<td>{{ resultBrowset.teamname}}</td>
-						</tr>
-
-						</tbody>
-					</table>
-
-					<div class="alert alert-info" ng-show="resultBrowse.length==0">
-						No topics found !!
-					</div>
-
-					<div class="row"  ng-show="resultPageSelected != null && resultBrowse.length>0">
-						<div class="col-sm-12 col-md-6">
-
-						</div>
-						<div class="col-sm-12 col-md-6" align="right">
-							<ul class="pagination">
-								<li class="prev disabled">
-									<span class="fa fa-chevron-left"></span>
-								</li>
-								<li ng-repeat="allPages in resultPages">
-									<a href="#" ng-click="getTopics(allPages)">{{allPages}}</a>
-								</li>
-								<li class="next disabled">
-									<span class="fa fa-chevron-right"></span>
-								</li>
-							</ul>
-						</div>
 					</div>
 				</div>
+
+				<div class="row">
+
+					<div class="col-md-12 col-lg-12 col-xl-4">
+						<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg">Features</h5>
+						<div class="row">
+							<div class="col-md-6 col-xl-12">
+								<section class="panel panel-featured-left panel-featured-primary">
+									<div class="panel-body">
+										<div class="widget-summary widget-summary-sm">
+											<div class="widget-summary-col widget-summary-col-icon">
+												<div class="summary-icon bg-primary">
+													<i class="fa fa-search"></i>
+												</div>
+											</div>
+											<div class="widget-summary-col">
+												<div class="summary">
+													<strong class="amount">Browse Kafka Topics, Acls and Schemas</strong>
+													<div class="info">
+														<h4 class="title">View all topics and acl details in configured clusters.</h4>
+
+													</div>
+
+												</div>
+												<div class="summary-footer">
+													<a class="text-muted text-uppercase">(view all)</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</section>
+							</div>
+							<div class="col-md-6 col-xl-12">
+								<section class="panel panel-featured-left panel-featured-primary">
+									<div class="panel-body">
+										<div class="widget-summary widget-summary-sm">
+											<div class="widget-summary-col widget-summary-col-icon">
+												<div class="summary-icon bg-primary">
+													<i class="fa fa-bullseye"></i>
+												</div>
+											</div>
+											<div class="widget-summary-col">
+												<div class="summary">
+													<strong class="amount">Request and Approve - 4 eye principle</strong>
+
+													<div class="info">
+														<h4 class="title">Topics, Acls and Schemas can be requested and approved.</h4>
+
+													</div>
+												</div>
+												<div class="summary-footer">
+													<a class="text-muted text-uppercase">(view all)</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</section>
+							</div>
+							<div class="col-md-6 col-xl-12">
+								<section class="panel panel-featured-left panel-featured-primary">
+									<div class="panel-body">
+										<div class="widget-summary widget-summary-sm">
+											<div class="widget-summary-col widget-summary-col-icon">
+												<div class="summary-icon bg-primary">
+													<i class="fa fa-refresh"></i>
+												</div>
+											</div>
+											<div class="widget-summary-col">
+												<div class="summary">
+													<strong class="amount">Synchronize with Source of Truth</strong>
+
+													<div class="info">
+														<h4 class="title">Assign teams to topic owners, other producer and consumers.</h4>
+
+													</div>
+												</div>
+												<div class="summary-footer">
+													<a class="text-muted text-uppercase">(view all)</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</section>
+							</div>
+
+							<div class="col-md-6 col-xl-12">
+								<section class="panel panel-featured-left panel-featured-primary">
+									<div class="panel-body">
+										<div class="widget-summary widget-summary-sm">
+											<div class="widget-summary-col widget-summary-col-icon">
+												<div class="summary-icon bg-primary">
+													<i class="fa fa-file"></i>
+												</div>
+											</div>
+											<div class="widget-summary-col">
+												<div class="summary">
+													<strong class="amount">Audit and Activity tracking</strong>
+
+													<div class="info">
+														<h4 class="title">View and monitor activity from all users.</h4>
+
+													</div>
+												</div>
+												<div class="summary-footer">
+													<a class="text-muted text-uppercase">(view all)</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</section>
+							</div>
+
+							<div class="col-md-6 col-xl-12">
+								<section class="panel panel-featured-left panel-featured-primary">
+									<div class="panel-body">
+										<div class="widget-summary widget-summary-sm">
+											<div class="widget-summary-col widget-summary-col-icon">
+												<div class="summary-icon bg-primary">
+													<i class="fa fa-asterisk"></i>
+												</div>
+											</div>
+											<div class="widget-summary-col">
+												<div class="summary">
+													<strong class="amount">Manage clusters</strong>
+
+													<div class="info">
+														<h4 class="title">View and add new clusters.</h4>
+
+													</div>
+												</div>
+												<div class="summary-footer">
+													<a class="text-muted text-uppercase">(view all)</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</section>
+							</div>
+
+							<div class="col-md-6 col-xl-12">
+								<section class="panel panel-featured-left panel-featured-primary">
+									<div class="panel-body">
+										<div class="widget-summary widget-summary-sm">
+											<div class="widget-summary-col widget-summary-col-icon">
+												<div class="summary-icon bg-primary">
+													<i class="fa fa-cog"></i>
+												</div>
+											</div>
+											<div class="widget-summary-col">
+												<div class="summary">
+													<strong class="amount">Manage Users & Teams</strong>
+
+													<div class="info">
+														<h4 class="title">View and add Users, Teams</h4>
+
+													</div>
+												</div>
+												<div class="summary-footer">
+													<a class="text-muted text-uppercase">(view all)</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</section>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="row">
+					<div class="col-xs-12">
+						<section class="panel">
+							<header class="panel-heading">
+
+
+								<h2 class="panel-title">Architecture</h2>
+							</header>
+							<div class="panel-body">
+								<div align="center" style="width: 100%;">
+									<img width="60%" height="60%" align="center" src="images/arch.png">
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-4" data-plugin-portlet id="portlet-1">
+						<section class="panel panel-primary" id="panel-1" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+
+
+								<h2 class="panel-title">Front End</h2>
+							</header>
+							<div class="panel-body">
+								Front end is built with AngularJs, Bootstrap 4, HTML, CSS, and Java script. FE interacts with User interface Rest Api.
+							</div>
+						</section>
+						<section class="panel panel-success" id="panel-5" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+
+
+								<h2 class="panel-title">Frameworks</h2>
+							</header>
+							<div class="panel-body">
+								Spring boot, Spring Security, Spring Data, Hibernate, Kafka AdminClient Api, Datastax, Angular Js, HTML, CSS, Java script
+							</div>
+						</section>
+
+					</div>
+					<div class="col-md-4" data-plugin-portlet id="portlet-2">
+
+						<section class="panel panel-tertiary" id="panel-3" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+
+
+								<h2 class="panel-title">Cluster Api</h2>
+							</header>
+							<div class="panel-body">
+								Built with Spring boot, spring security frameworks, interacts with User Interface Api. Kafka AdminClient Api to interact with Clusters.
+							</div>
+						</section>
+
+						<section class="panel panel-quartenary" id="panel-4" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+
+								<h2 class="panel-title">Metastore</h2>
+							</header>
+							<div class="panel-body">
+								Apache Cassandra or RDBMS datastore stores all users, teams, topicRequests, request and execution data from all the users..
+							</div>
+						</section>
+
+					</div>
+
+					<div class="col-md-4" data-plugin-portlet id="portlet-3">
+
+						<section class="panel panel-secondary" id="panel-2" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+
+
+								<h2 class="panel-title">User Interface Api</h2>
+							</header>
+							<div class="panel-body">
+								Built with Spring boot, spring security frameworks, interacts with Front end, Cluster API and Metastore. Plays a major role in Kafkawize.
+							</div>
+						</section>
+						<section class="panel panel-warning" id="panel-6" data-portlet-item>
+							<header class="panel-heading portlet-handler">
+
+
+								<h2 class="panel-title">Roles & Authorizations</h2>
+							</header>
+							<div class="panel-body">
+								Users with USER role can request for components and users with ADMIN role can approve. SUPERUSER role have full access including Synchronizing Metadata.
+							</div>
+						</section>
+					</div>
+				</div>
+
+
 			</section>
 
 

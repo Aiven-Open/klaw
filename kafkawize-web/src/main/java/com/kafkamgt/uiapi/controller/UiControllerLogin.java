@@ -22,7 +22,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(ModelMap model) {
-        LOG.info("in login......");
+        //LOG.info("in login......");
         try {
             LOG.info("---"+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             UserDetails userDetails =
@@ -32,7 +32,7 @@ public class UiControllerLogin {
                 return "index";
             }
         }catch (Exception e){
-            LOG.info("Error logging in "+e.getMessage());
+            //LOG.info("Error logging in "+e.getMessage());
             return "newloginnew.html";
         }
 

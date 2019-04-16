@@ -121,7 +121,7 @@ public class UiConfigController {
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
+        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
