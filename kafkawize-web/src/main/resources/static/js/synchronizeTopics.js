@@ -87,6 +87,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
             var serviceInput = {};
 
+            if(!$scope.getTopics.envName)
+                   return;
+
             if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getTopics.envName.name)) {
                 $scope.updatedSyncStr="";
                 return;

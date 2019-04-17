@@ -90,6 +90,9 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 
             var serviceInput = {};
 
+            if(!$scope.getAcls.envName)
+                return;
+
             if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getAcls.envName.name)) {
                 $scope.updatedSyncStr="";
                 return;

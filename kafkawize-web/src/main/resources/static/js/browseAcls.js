@@ -84,6 +84,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 	$scope.getAcls = function(pageNoSelected) {
 
         var serviceInput = {};
+
+        if(!$scope.getAcls.envName)
+        		    return;
 		
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getAcls.envName.name;

@@ -429,7 +429,7 @@
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
 									<div class="col-md-12">
 										<select ng-change="getTopicStreams();" ng-model="getTopicStreams.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
-
+											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
 
@@ -466,177 +466,15 @@
 										
 									</tbody>
 								</table>
-								<!--<div class="row"  ng-show="resultPageSelected != null">-->
-									<!--<div class="col-sm-12 col-md-6">-->
 
-									<!--</div>-->
-									<!--<div class="col-sm-12 col-md-6" align="right">-->
-										<!--<ul class="pagination">-->
-											<!--<li class="prev disabled">-->
-												<!--<span class="fa fa-chevron-left"></span>-->
-											<!--</li>-->
-											<!--<li ng-repeat="allPages in resultPages">-->
-												<!--<a href="#" ng-click="getTopics(allPages)">{{allPages}}</a>-->
-											<!--</li>-->
-											<!--<li class="next disabled">-->
-												<!--<span class="fa fa-chevron-right"></span>-->
-											<!--</li>-->
-										<!--</ul>-->
-									<!--</div>-->
-								<!--</div>-->
 							</div>
 						</section>
 						
-						<!--<section class="panel">-->
-							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
-								<!--<h2 class="panel-title">Basic with Table Tools</h2>-->
-							<!--</header>-->
-							<!--<div class="panel-body">-->
-								<!--<table class="table table-bordered table-striped mb-none" id="datatable-tabletools" data-swf-path="assets/vendor/jquery-datatables/extras/TableTools/swf/copy_csv_xls_pdf.swf">-->
-									<!--<thead>-->
-										<!--<tr>-->
-											<!--<th>Rendering engine</th>-->
-											<!--<th>Browser</th>-->
-											<!--<th>Platform(s)</th>-->
-											<!--<th class="hidden-phone">Engine version</th>-->
-											<!--<th class="hidden-phone">CSS grade</th>-->
-										<!--</tr>-->
-									<!--</thead>-->
-									<!--<tbody>-->
-										<!--<tr class="gradeX">-->
-											<!--<td>Trident</td>-->
-											<!--<td>Internet-->
-												<!--Explorer 4.0-->
-											<!--</td>-->
-											<!--<td>Win 95+</td>-->
-											<!--<td class="center hidden-phone">4</td>-->
-											<!--<td class="center hidden-phone">X</td>-->
-										<!--</tr>-->
-										<!--<tr class="gradeC">-->
-											<!--<td>Trident</td>-->
-											<!--<td>Internet-->
-												<!--Explorer 5.0-->
-											<!--</td>-->
-											<!--<td>Win 95+</td>-->
-											<!--<td class="center hidden-phone">5</td>-->
-											<!--<td class="center hidden-phone">C</td>-->
-										<!--</tr>-->
-										<!---->
-									<!--</tbody>-->
-								<!--</table>-->
-							<!--</div>-->
-						<!--</section>-->
-						
-						<!--<section class="panel">-->
-							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
-								<!--<h2 class="panel-title">Rows with Details</h2>-->
-							<!--</header>-->
-							<!--<div class="panel-body">-->
-								<!--<table class="table table-bordered table-striped mb-none" id="datatable-details">-->
-									<!--<thead>-->
-										<!--<tr>-->
-											<!--<th>Rendering engine</th>-->
-											<!--<th>Browser</th>-->
-											<!--<th>Platform(s)</th>-->
-											<!--<th>Engine version</th>-->
-											<!--<th>CSS grade</th>-->
-										<!--</tr>-->
-									<!--</thead>-->
-									<!--<tbody>-->
-										<!--<tr class="gradeX">-->
-											<!--<td>Trident</td>-->
-											<!--<td>Internet-->
-												 <!--Explorer 4.0</td>-->
-											<!--<td>Win 95+</td>-->
-											<!--<td class="center">4</td>-->
-											<!--<td class="center">X</td>-->
-										<!--</tr>-->
-										<!---->
-									<!--</tbody>-->
-								<!--</table>-->
-							<!--</div>-->
-						<!--</section>-->
-					<!-- end: page -->
+
 				</section>
 			</div>
 
-			<!--<aside id="sidebar-right" class="sidebar-right">-->
-				<!--<div class="nano">-->
-					<!--<div class="nano-content">-->
-						<!--<a href="#" class="mobile-close visible-xs">-->
-							<!--Collapse <i class="fa fa-chevron-right"></i>-->
-						<!--</a>-->
-			<!---->
-						<!--<div class="sidebar-right-wrapper">-->
-			<!---->
-							<!--<div class="sidebar-widget widget-calendar">-->
-								<!--<h6>Upcoming Tasks</h6>-->
-								<!--<div data-plugin-datepicker data-plugin-skin="dark" ></div>-->
-			<!---->
-								<!--<ul>-->
-									<!--<li>-->
-										<!--<time datetime="2014-04-19T00:00+00:00">04/19/2014</time>-->
-										<!--<span>Company Meeting</span>-->
-									<!--</li>-->
-								<!--</ul>-->
-							<!--</div>-->
-			<!---->
-							<!--<div class="sidebar-widget widget-friends">-->
-								<!--<h6>Friends</h6>-->
-								<!--<ul>-->
-									<!--<li class="status-online">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-online">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-offline">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-offline">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-								<!--</ul>-->
-							<!--</div>-->
-			<!---->
-						<!--</div>-->
-					<!--</div>-->
-				<!--</div>-->
-			<!--</aside>-->
+
 		</section>
 
 		<!-- Vendor -->

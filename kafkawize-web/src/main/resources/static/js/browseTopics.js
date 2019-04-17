@@ -84,7 +84,9 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 	$scope.getTopics = function(pageNoSelected) {
 
         var serviceInput = {};
-		
+
+		if(!$scope.getTopics.envName)
+		    return;
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getTopics.envName.name;
 		var topicFilter = $scope.getTopics.topicnamesearch;

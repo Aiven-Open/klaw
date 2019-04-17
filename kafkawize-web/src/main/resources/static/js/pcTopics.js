@@ -52,6 +52,9 @@ app.controller("pcTopicsCtrl", function($scope, $http, $location, $window) {
 
         $scope.getTopicStreams = function() {
 
+            if(!$scope.getTopicStreams.envName)
+                return;
+
             $http({
                 method: "GET",
                 url: "/getTopicStreams",

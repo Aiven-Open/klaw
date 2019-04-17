@@ -442,8 +442,9 @@
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
 									<div class="col-md-5">
-										<select ng-change="getTopics(1);" ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
-
+										<select  ng-change="getTopics(1);"
+												ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
+											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
 									<div class="col-md-7">

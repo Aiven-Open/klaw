@@ -368,7 +368,7 @@
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
 									<div class="col-md-12">
 										<select ng-change="getActivityLog(1);" ng-model="getActivityLog.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
-
+											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
 
