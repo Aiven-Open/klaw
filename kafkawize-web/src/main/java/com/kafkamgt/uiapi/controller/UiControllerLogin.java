@@ -24,7 +24,6 @@ public class UiControllerLogin {
     public String login(ModelMap model) {
         //LOG.info("in login......");
         try {
-            LOG.info("---"+SecurityContextHolder.getContext().getAuthentication().getPrincipal());
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (userDetails != null) {

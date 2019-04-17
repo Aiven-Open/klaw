@@ -347,6 +347,14 @@
 					<!-- start: page -->
 						<section class="panel">
 
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+								</div>
+
+								<h2 class="panel-title">My User Profile</h2>
+							</header>
+
 							<div ng-show="allTeams == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
@@ -367,35 +375,34 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label">UserId</label>
 									<div class="col-md-6">
-										<input disabled required type="text" value="{{myProfInfo.username}}" >
+										<input class="form-control" disabled required type="text" value="{{myProfInfo.username}}" >
 									</div>
 								</div>
 
 								<div class="form-group">
 									<label class="col-md-3 control-label">Name</label>
 									<div class="col-md-6">
-										<input disabled required type="text" value="{{myProfInfo.fullname}}" >
+										<input class="form-control" disabled required type="text" value="{{myProfInfo.fullname}}" >
 									</div>
 								</div>
 
 								<div class="form-group">
 									<label class="col-md-3 control-label">Role</label>
 									<div class="col-md-6">
-										<input disabled required type="text" value="{{myProfInfo.role}}" >
+										<input class="form-control" disabled required type="text" value="{{myProfInfo.role}}" >
 									</div>
 								</div>
 
 								<div class="form-group">
 									<label class="col-md-3 control-label">Team</label>
 									<div class="col-md-6">
-										<input disabled required type="text" value="{{myProfInfo.team}}" >
+										<input class="form-control" disabled required type="text" value="{{myProfInfo.team}}" >
 									</div>
 								</div>
 
 
 							</div>
 						</section>
-						
 
 				</section>
 			</div>

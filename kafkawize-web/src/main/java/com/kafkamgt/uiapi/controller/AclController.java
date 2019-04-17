@@ -340,7 +340,7 @@ public class AclController {
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
 
-        if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")){}
+        if(authority.equals("ROLE_SUPERUSER")){}
         else{
             json = "{ \"name\": \"Not Authorized\" }";
             List<AclInfo> topicsList1 = new ArrayList();
