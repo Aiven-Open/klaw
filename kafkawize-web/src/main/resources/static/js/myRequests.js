@@ -21,7 +21,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             $scope.getAuth = function() {
             	$http({
                     method: "GET",
-                    url: "/getAuth",
+                    url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.statusauth = output.status;
@@ -50,7 +50,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -66,7 +66,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
     $scope.getMyTopicRequests = function() {
         $http({
             method: "GET",
-            url: "/getTopicRequests",
+            url: "getTopicRequests",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.topicRequests = output;
@@ -83,7 +83,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         $scope.getMyAclRequests = function() {
             $http({
                 method: "GET",
-                url: "/getAclRequests",
+                url: "getAclRequests",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.aclRequests = output;
@@ -100,7 +100,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         $scope.getMySchemaRequests = function() {
             $http({
                 method: "GET",
-                url: "/getSchemaRequests",
+                url: "getSchemaRequests",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.schemaRequests = output;
@@ -119,7 +119,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 
         $http({
             method: "GET",
-            url: "/deleteTopicRequests",
+            url: "deleteTopicRequests",
             headers : { 'Content-Type' : 'application/json' },
             params: {'topicName' : $scope.deleteTopicRequest.topicname },
             data: {'topicName' : $scope.deleteTopicRequest.topicname}
@@ -140,7 +140,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "/deleteAclRequests",
+                url: "deleteAclRequests",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'req_no' : $scope.deleteAclRequest.req_no },
                 data: {'req_no' : $scope.deleteAclRequest.req_no}
@@ -161,7 +161,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "/deleteSchemaRequests",
+                url: "deleteSchemaRequests",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : $scope.deleteSchemaRequest.topicname },
                 data: {'topicName' : $scope.deleteSchemaRequest.topicname}
@@ -184,7 +184,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
     	//alert("onload");
         $http({
             method: "GET",
-            url: "/getExecAuth",
+            url: "getExecAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -216,7 +216,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 		
 		$http({
 			method: "GET",
-			url: "/getTopics",
+			url: "getTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getTopics.envName.name }
 		}).success(function(output) {

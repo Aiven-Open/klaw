@@ -20,7 +20,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
         $http({
             method: "GET",
-            url: "/getEnvs",
+            url: "getEnvs",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.allenvs = output;
@@ -43,7 +43,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
                 $http({
                     method: "GET",
-                    url: "/getTopicTeam",
+                    url: "getTopicTeam",
                     headers : { 'Content-Type' : 'application/json' },
                     params: {'env' : $scope.addSchema.envName.name,
                         'topicName' : topicName }
@@ -91,7 +91,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
             $http({
                 method: "POST",
-                url: "/uploadSchema",
+                url: "uploadSchema",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addSchemaRequest' : serviceInput },
                 data: {'addSchemaRequest' : serviceInput}
@@ -110,7 +110,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
         $scope.loadTeams = function() {
             $http({
                 method: "GET",
-                url: "/getAllTeams",
+                url: "getAllTeams",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allTeams = output;
@@ -126,7 +126,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
             $scope.getAuth = function() {
             	$http({
                     method: "GET",
-                    url: "/getAuth",
+                    url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.statusauth = output.status;
@@ -155,7 +155,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -172,7 +172,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
     	//alert("onload");
         $http({
             method: "GET",
-            url: "/getExecAuth",
+            url: "getExecAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;

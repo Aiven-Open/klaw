@@ -21,7 +21,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.getAuth = function() {
             	$http({
                     method: "GET",
-                    url: "/getAuth",
+                    url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.statusauth = output.status;
@@ -50,7 +50,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -67,7 +67,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
                 $http({
                     method: "GET",
-                    url: "/getEnvs",
+                    url: "getEnvs",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allenvs = output;
@@ -84,7 +84,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
     	//alert("onload");
         $http({
             method: "GET",
-            url: "/getExecAuth",
+            url: "getExecAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -108,7 +108,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "/getTopicTeam",
+                url: "getTopicTeam",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'env' : $scope.addAcl.envName.name,
                     'topicName' : topicName }
@@ -172,7 +172,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "POST",
-                url: "/createAcl",
+                url: "createAcl",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addAclRequest' : serviceInput },
                 data: {'addAclRequest' : serviceInput}
@@ -191,7 +191,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
         $scope.loadTeams = function() {
             $http({
                 method: "GET",
-                url: "/getAllTeams",
+                url: "getAllTeams",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allTeams = output;

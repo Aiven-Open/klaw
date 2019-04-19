@@ -32,125 +32,115 @@ public class UiControllerLogin {
             }
         }catch (Exception e){
             //LOG.info("Error logging in "+e.getMessage());
-            return "newloginnew.html";
+            return "newlogin.html";
         }
 
-        return "newloginnew.html";
+        return "newlogin.html";
     }
-
-//    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
-//    public String browseTopics(ModelMap model) {
-//        return "browseTopics.html";
-//    }
-
-//    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
-//    public String browseAcls(ModelMap model) {
-//        return "browseAcls.html";
-//    }
 
     @RequestMapping(value = "/addUsers", method = RequestMethod.GET)
     public String addUsers(ModelMap model) {
-        return "addUserNew.html";
+        return "addUser.html";
     }
 
     @RequestMapping(value = "/envs", method = RequestMethod.GET)
     public String envs(ModelMap model) {
-        return "envsNew.html";
+        return "envs.html";
     }
 
     @RequestMapping(value = "/execAcls", method = RequestMethod.GET)
     public String execAcls(ModelMap model) {
-        return "execAclsNew.html";
+        return "execAcls.html";
     }
 
     @RequestMapping(value = "/execSchemas", method = RequestMethod.GET)
     public String execSchemas(ModelMap model) {
-        return "execSchemasNew.html";
+        return "execSchemas.html";
     }
 
     @RequestMapping(value = "/execTopics", method = RequestMethod.GET)
     public String execTopics(ModelMap model) {
-        return "execTopicsNew.html";
+        return "execTopics.html";
     }
 
     @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
     public String myTopicRequests(ModelMap model) {
-        return "myRequestsNew.html";
+        return "myRequests.html";
     }
 
     @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)
     public String requestAcls(ModelMap model) {
-        return "requestAclsNew.html";
+        return "requestAcls.html";
     }
 
     @RequestMapping(value = "/requestSchemaUpload", method = RequestMethod.GET)
     public String requestSchemaUpload(ModelMap model) {
-        return "requestSchemaNew.html";
+        return "requestSchema.html";
     }
 
     @RequestMapping(value = "/requestTopics", method = RequestMethod.GET)
     public String requestTopics(ModelMap model) {
-        return "requestTopicsNew.html";
+        return "requestTopics.html";
     }
 
     @RequestMapping(value = "/showUsers", method = RequestMethod.GET)
     public String showUsers(ModelMap model) {
-        return "showUsersNew.html";
+        return "showUsers.html";
     }
 
     @RequestMapping(value = "/pcTopics", method = RequestMethod.GET)
     public String pcTopics(ModelMap model) {
-        return "pcTopicsNew.html";
+        return "pcTopics.html";
     }
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
     public String myProfile(ModelMap model) {
-        return "myProfileNew.html";
+        return "myProfile.html";
     }
 
     @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
     public String changePwd(ModelMap model) {
-        return "changePwdNew.html";
+        return "changePwd.html";
     }
 
     @RequestMapping(value = "/synchronizeTopics", method = RequestMethod.GET)
     public String synchronizeTopics(ModelMap model) {
-        return "synchronizeTopicsNew.html";
+        return "synchronizeTopics.html";
     }
 
     @RequestMapping(value = "/synchronizeAcls", method = RequestMethod.GET)
     public String synchronizeAcls(ModelMap model) {
-        return "synchronizeAclsNew.html";
+        return "synchronizeAcls.html";
     }
 
     @RequestMapping(value = "/showTeams", method = RequestMethod.GET)
     public String showTeams(ModelMap model) {
-        return "showTeamsNew.html";
+        return "showTeams.html";
     }
 
     @RequestMapping(value = "/addTeam", method = RequestMethod.GET)
     public String addTeam(ModelMap model) {
-        return "addTeamNew.html";
+        return "addTeam.html";
     }
 
-    @RequestMapping(value = "/addNewEnv", method = RequestMethod.GET)
-    public String addNewEnv(ModelMap model) {
-        return "addEnvNew.html";
+    @RequestMapping(value = "/addEnv", method = RequestMethod.GET)
+    public String addEnv(ModelMap model) {
+        return "addEnv.html";
     }
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
     public String activityLog(ModelMap model) {
-        return "activityLogNew.html";
+        return "activityLog.html";
     }
 
     @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
     public String tables(ModelMap model) {
-        return "browseTopicsNew.html";
+        return "browseTopics.html";
     }
 
     @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
-    public String browseAclsNew(ModelMap model) {
-        return "browseAclsNew.html";
+    public String browseAcls(ModelMap model) {
+        return "browseAcls.html";
     }
 
 }

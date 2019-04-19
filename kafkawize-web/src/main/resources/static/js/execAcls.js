@@ -20,7 +20,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/getExecAuth",
+                url: "getExecAuth",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.statusauth = output.status;
@@ -35,7 +35,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
            $scope.getAuth = function() {
            	$http({
                    method: "GET",
-                   url: "/getAuth",
+                   url: "getAuth",
                    headers : { 'Content-Type' : 'application/json' }
                }).success(function(output) {
                    $scope.statusauth = output.status;
@@ -64,7 +64,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -81,7 +81,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
     	//alert("onload");
         $http({
             method: "GET",
-            url: "/getExecAuth",
+            url: "getExecAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -98,7 +98,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
         $scope.getMyAclRequests = function() {
             $http({
                 method: "GET",
-                url: "/getCreatedAclRequests",
+                url: "getCreatedAclRequests",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.aclRequests = output;
@@ -117,7 +117,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "POST",
-                url: "/execAclRequest",
+                url: "execAclRequest",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'req_no' : $scope.execAclRequest.req_no },
                 data: {'req_no' : $scope.execAclRequest.req_no}

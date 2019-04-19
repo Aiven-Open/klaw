@@ -1,6 +1,5 @@
 <!doctype html>
 <html class="fixed">
-
 <html ng-app="envsApp" ng-controller="envsCtrl">
 
 	<head>
@@ -8,7 +7,7 @@
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Clusters | Kafka Self-service Topic Management Portal</title>
+		<title>Add Cluster | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -37,7 +36,7 @@
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
 
-		<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
@@ -91,7 +90,7 @@
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
 							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
 							</figure>
 							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
 								<span class="name">{{userlogged}}</span>
@@ -157,7 +156,7 @@
 											<span>Browse</span>
 										</a>
 										<ul class="nav nav-children">
-											<li class="nav-active">
+											<li>
 												<a href="browseTopics">
 													Topics
 												</a>
@@ -205,7 +204,7 @@
 											<span>Clusters</span>
 										</a>
 										<ul class="nav nav-children">
-											<li class="nav-active">
+											<li>
 												<a href="envs">
 													Kafka
 												</a>
@@ -215,7 +214,7 @@
 													Schema Registry
 												</a>
 											</li>
-											<li  ng-if="statusauthexectopics==='Authorized'">
+											<li class="nav-active" ng-if="statusauthexectopics==='Authorized'">
 												<a href="addNewEnv">
 													Add Cluster
 												</a>
@@ -283,12 +282,12 @@
 												</a>
 											</li>
 											<li>
-												<a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
+												<a href="addUsers" ng-if="statusauthexectopics==='Authorized'">
 													Add Users
 												</a>
 											</li>
 											<li>
-												<a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
+												<a href="addTeam" ng-if="statusauthexectopics==='Authorized'">
 													Add Teams
 												</a>
 											</li>
@@ -301,12 +300,12 @@
 										</a>
 										<ul class="nav nav-children">
 											<li  ng-if="statusauthexectopics==='Authorized'">
-												<a href="execTopics">
+												<a href="synchronizeTopics">
 													Topics
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
-												<a href="execAcls">
+												<a href="synchronizeAcls">
 													Acls
 												</a>
 											</li>
@@ -317,61 +316,7 @@
 								</ul>
 							</nav>
 				
-							<!--<hr class="separator" />-->
-				<!---->
-							<!--<div class="sidebar-widget widget-tasks">-->
-								<!--<div class="widget-header">-->
-									<!--<h6>Projects</h6>-->
-									<!--<div class="widget-toggle">+</div>-->
-								<!--</div>-->
-								<!--<div class="widget-content">-->
-									<!--<ul class="list-unstyled m-none">-->
-										<!--<li><a href="#">Porto HTML5 Template</a></li>-->
-										<!--<li><a href="#">Tucson Template</a></li>-->
-										<!--<li><a href="#">Porto Admin</a></li>-->
-									<!--</ul>-->
-								<!--</div>-->
-							<!--</div>-->
-				<!---->
-							<!--<hr class="separator" />-->
-				
-							<!--<div class="sidebar-widget widget-stats">-->
-								<!--<div class="widget-header">-->
-									<!--<h6>Company Stats</h6>-->
-									<!--<div class="widget-toggle">+</div>-->
-								<!--</div>-->
-								<!--<div class="widget-content">-->
-									<!--<ul>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 1</span>-->
-											<!--<span class="stats-complete">85%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%;">-->
-													<!--<span class="sr-only">85% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 2</span>-->
-											<!--<span class="stats-complete">70%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%;">-->
-													<!--<span class="sr-only">70% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 3</span>-->
-											<!--<span class="stats-complete">2%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">-->
-													<!--<span class="sr-only">2% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-									<!--</ul>-->
-								<!--</div>-->
-							<!--</div>-->
+
 						</div>
 				
 					</div>
@@ -381,7 +326,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Kafka Clusters</h2>
+						<h2>Add Cluster</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -391,7 +336,7 @@
 									</a>
 								</li>
 								<li><span>Clusters</span></li>
-								<li><span>Kafka</span></li>
+								<li><span>Add Cluster</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -399,84 +344,99 @@
 					</header>
 
 					<!-- start: page -->
+					<div class="row">
+						<div class="col-lg-12">
+							<form id="form" class="form-horizontal">
 						<section class="panel">
 
-							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+								</div>
+
+								<h2 class="panel-title">Add Cluster Form</h2>
+							</header>
+
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Ah snap!!</strong> {{ alert }}.
+								<strong>Well done.</strong> {{ alert }}.
 							</div>
 
 							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
-							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
-								<!--<h2 class="panel-title">Basic</h2>-->
-							<!--</header>-->
-							<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();getSchemaRegEnvs();">
 
-								<table class="table table-bordered table-striped mb-none">
-									<thead>
-										<tr>
-											<th>Cluster</th>
-											<th>Host</th>
-											<th>Port</th>
-											<th>Protocol</th>
-											<th>Type</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="allenv in allenvs" class="gradeX">
-											<td>{{ allenv.name }}</td>
-											<td>{{ allenv.host }}</td>
-											<td>{{ allenv.port }}</td>
-											<td>{{ allenv.protocol }}</td>
-											<td>{{ allenv.type }}</td>
-										</tr>
-										
-									</tbody>
-								</table>
+							<div class="panel-body" ng-init="getExecAuth();loadTeamsSU();">
+								<div ng-if="statusauthexectopics=='Authorized'">
 
-								<br><b>Schema Registry Environments</b><br>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Cluster Name</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.envname" required type="text" placeholder="DEV" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a cluster name">
+									</div>
+								</div>
 
-								<table class="table table-bordered table-striped mb-none">
-									<thead>
-									<tr>
-										<th>Cluster</th>
-										<th>Host</th>
-										<th>Port</th>
-										<th>Protocol</th>
-										<th>Type</th>
-									</tr>
-									</thead>
-									<tbody>
-									<tr ng-repeat="allenv in allschenvs" class="gradeX">
-										<td>{{ allenv.name }}</td>
-										<td>{{ allenv.host }}</td>
-										<td>{{ allenv.port }}</td>
-										<td>{{ allenv.protocol }}</td>
-										<td>{{ allenv.type }}</td>
-									</tr>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Host</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.host" required type="text" placeholder="localhost" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a cluster host">
+									</div>
+								</div>
 
-									</tbody>
-								</table>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Port</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.port" required type="text" placeholder="9092" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a cluster port">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Protocol</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.protocol" id="addNewEnv.protocol"
+											   ng-init="addNewEnv.protocol = 'plain'" disabled type="text" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Only cluster with PLAIN protocol supported for Admin client access">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Cluster Type</label>
+									<div class="col-md-6">
+										<select class="form-control mb-md" ng-model="addNewEnv.type">
+											<option>kafka</option>
+											<option>schemaregistry</option>
+										</select>
+									</div>
+								</div>
+
+
 
 							</div>
+							<footer ng-if="statusauthexectopics=='Authorized'" class="panel-footer">
+								<div class="row">
+									<div class="col-sm-12 col-sm-offset-5">
+										<button ng-click="addNewEnv();" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-default">Reset</button>
+									</div>
+								</div>
+							</footer>
 
-							<br>
-							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addUsers">Add Cluster</a></button>
+								<div ng-show="statusauthexectopics!='Authorized'" ng-init="" class="alert alert-danger">
+									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+									<strong>Ah snap!!</strong> You are not authorized.
+								</div>
 
+							</div>
 						</section>
+							</form>
+
+						</div>
+					</div>
 
 				</section>
 			</div>

@@ -32,4 +32,4 @@ Insert into kafkametadb.env(name,host,port,protocol,type) values ('DEV_SCHEMAREG
 
 /* Insert product and version */
 
-Insert into kafkametadb.productdetails(name,version) values ('KafkaWize','2.0');
+Insert into kafkametadb.productdetails(name,version) values ('KafkaWize','3.0');

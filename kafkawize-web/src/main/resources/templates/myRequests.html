@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="execTopicsApp" ng-controller="execTopicsCtrl">
+<html ng-app="myRequestsApp" ng-controller="myRequestsCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Approve Topics | Kafka Self-service Topic Management Portal</title>
+		<title>My Requests | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -37,13 +37,13 @@
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
 
-		<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/execTopics.js"></script>
+		<script src="js/myRequests.js"></script>
 
 	</head>
 	<body>
@@ -91,7 +91,7 @@
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
 							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
 							</figure>
 							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
 								<span class="name">{{userlogged}}</span>
@@ -223,13 +223,13 @@
 
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Audit</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
+											<li class="nav-active">
 												<a href="myTopicRequests">
 													My Requests
 												</a>
@@ -243,13 +243,13 @@
 										</ul>
 									</li>
 
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
 											<span>Approve - Execute</span>
 										</a>
 										<ul class="nav nav-children">
-											<li class="nav-active" ng-if="statusauthexectopics==='Authorized'">
+											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execTopics">
 													Topics
 												</a>
@@ -327,7 +327,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Approve Topics</h2>
+						<h2>My Team requests</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -336,8 +336,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Approve</span></li>
-								<li><span>Topics</span></li>
+								<li><span>Audit</span></li>
+								<li><span>My Team requests</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -346,34 +346,37 @@
 
 					<!-- start: page -->
 						<section class="panel">
-
-							<div ng-show="topicRequests == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="topicRequests == null && alert != null && alert != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Ah snap!!</strong> {{ alert }}.
+								<strong>Well done.</strong> {{ alert }}.
 							</div>
 
-							<div ng-show="topicRequests == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
-							<!--<header class="panel-heading">-->
-								<!--<h2 class="panel-title">Basic</h2>-->
-							<!--</header>-->
-							<div  id="getTopics" class="panel-body"  ng-init="getExecAuth();getMyTopicRequests()">
-								<div ng-if="statusauthexectopics=='Authorized'">
+						</section>
 
-								<table class="table table-bordered table-striped mb-none"  ng-show="topicRequests.length >0">
+						<section class="panel" ng-show="topicRequests.length > 0">
+
+
+
+							<header class="panel-heading">
+								<h2 class="panel-title">Topic Requests</h2>
+							</header>
+
+							<div  id="getTopics" class="panel-body"  ng-init="getMyTopicRequests();">
+
+								<table class="table table-bordered table-striped mb-none"  ng-show="topicRequests.length > 0">
 									<thead>
 										<tr>
 											<th></th>
 											<th>TopicName</th>
-											<th>TopicPartitions</th>
-											<th>TopicReplication Factor</th>
 											<th>Cluster</th>
 											<th>Requestor</th>
 											<th>Acl_IP</th>
@@ -388,10 +391,8 @@
 									</thead>
 									<tbody>
 										<tr ng-repeat="topicRequest in topicRequests" class="gradeX">
-											<td><input type="radio" name="topicGrp" ng-model="execTopicRequest.topicname" value="{{topicRequest.topicname}},{{topicRequest.environment}}"/></td>
+											<td><input type="radio" name="topicGrp" ng-model="deleteTopicRequest.topicname" value="{{topicRequest.topicname}},{{ topicRequest.environment }}"/></td>
 											<td>{{ topicRequest.topicname }}</td>
-											<td>{{ topicRequest.topicpartitions }}</td>
-											<td>{{ topicRequest.replicationfactor }}</td>
 											<td>{{ topicRequest.environment }}</td>
 											<td>{{ topicRequest.username }}</td>
 											<td>{{ topicRequest.acl_ip }}</td>
@@ -406,21 +407,121 @@
 										
 									</tbody>
 								</table>
-
 								<br>
-								<button ng-show="topicRequests.length > 0" type="button" ng-click="execTopicRequest();" class="mb-xs mt-xs mr-xs btn btn-info">Approve</button>
+								<button ng-show="topicRequests.length > 0" type="button" ng-click="deleteTopicRequest();" class="mb-xs mt-xs mr-xs btn btn-info">Delete</button>
 
-								<div class="alert alert-info" ng-show="topicRequests.length==0">
-									No requests found !!
-								</div>
-								</div>
 							</div>
 						</section>
+
+					<section class="panel" ng-show="aclRequests.length > 0">
+
+						<header class="panel-heading">
+							<h2 class="panel-title">Acl Requests</h2>
+						</header>
+
+						<div  id="getAcls" class="panel-body"  ng-init="getMyAclRequests();">
+
+							<table class="table table-bordered table-striped mb-none"  ng-show="aclRequests.length > 0">
+								<thead>
+								<tr>
+									<th></th>
+									<th>TopicName</th>
+									<th>AclType</th>
+									<th>Consumer Group</th>
+									<th>Cluster</th>
+									<th>Requestor</th>
+									<th>Acl_IP</th>
+									<th>Acl_SSL</th>
+									<th>Application</th>
+									<th>Topic Owner Team</th>
+									<th>Remarks</th>
+									<th>Status</th>
+									<th>Requested Time</th>
+									<th>Approving Time</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr ng-repeat="aclRequest in aclRequests" class="gradeX">
+									<td><input type="radio" name="aclGrp" ng-model="deleteAclRequest.req_no" value="{{aclRequest.req_no}}"/></td>
+									<td>{{ aclRequest.topicname }}</td>
+									<td>{{ aclRequest.topictype }}</td>
+									<td>{{ aclRequest.consumergroup }}</td>
+									<td>{{ aclRequest.environment }}</td>
+									<td>{{ aclRequest.username }}</td>
+									<td>{{ aclRequest.acl_ip }}</td>
+									<td>{{ aclRequest.acl_ssl }}</td>
+									<td>{{ aclRequest.appname }}</td>
+									<td>{{ aclRequest.teamname }}</td>
+									<td>{{ aclRequest.remarks }}</td>
+									<td>{{ aclRequest.aclstatus }}</td>
+									<td>{{ aclRequest.requesttime }}</td>
+									<td>{{ aclRequest.approvingtime }}</td>
+								</tr>
+
+								</tbody>
+							</table>
+							<br>
+							<button ng-show="aclRequests.length > 0" type="button" ng-click="deleteAclRequest();" class="mb-xs mt-xs mr-xs btn btn-info">Delete</button>
+
+
+						</div>
+					</section>
+
+					<section class="panel" ng-show="schemaRequests.length > 0">
+
+						<header class="panel-heading">
+							<h2 class="panel-title">Schema Requests</h2>
+						</header>
+
+						<div  id="getSchemas" class="panel-body"  ng-init="getMySchemaRequests();">
+
+							<table class="table table-bordered table-striped mb-none"  ng-show="schemaRequests.length > 0">
+								<thead>
+								<tr>
+									<th></th>
+									<th>TopicName</th>
+									<th>SchemaVersion</th>
+									<th>FullSchema</th>
+									<th>Cluster</th>
+									<th>Requestor</th>
+									<th>Application</th>
+									<th>Team</th>
+									<th>Remarks</th>
+									<th>Status</th>
+									<th>Requested Time</th>
+									<th>Approving Time</th>
+								</tr>
+								</thead>
+								<tbody>
+								<tr ng-repeat="schemaRequest in schemaRequests" class="gradeX">
+									<td>
+										<input type="radio" name="schGrp" ng-model="deleteSchemaRequest.topicname"
+											   value="{{schemaRequest.topicname}}-----{{schemaRequest.schemaversion}}-----{{schemaRequest.environment}}"/>
+									</td>
+									<td>{{ schemaRequest.topicname }}</td>
+									<td>{{ schemaRequest.schemaversion }}</td>
+									<td>{{ schemaRequest.schemafull }}</td>
+									<td>{{ schemaRequest.environment }}</td>
+									<td>{{ schemaRequest.username }}</td>
+									<td>{{ schemaRequest.appname }}</td>
+									<td>{{ schemaRequest.teamname }}</td>
+									<td>{{ schemaRequest.remarks }}</td>
+									<td>{{ schemaRequest.topicstatus }}</td>
+									<td>{{ schemaRequest.requesttime }}</td>
+									<td>{{ schemaRequest.approvingtime }}</td>
+								</tr>
+
+								</tbody>
+							</table>
+							<br>
+							<button ng-show="schemaRequests.length > 0" type="button" ng-click="deleteSchemaRequest();" class="mb-xs mt-xs mr-xs btn btn-info">Delete</button>
+
+						</div>
+					</section>
 						
 
 				</section>
 			</div>
-
 
 		</section>
 

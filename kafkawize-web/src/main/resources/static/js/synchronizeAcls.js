@@ -21,7 +21,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 
 	        $http({
                 method: "GET",
-                url: "/getEnvs",
+                url: "getEnvs",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -36,7 +36,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
     $scope.getAuth = function() {
     	$http({
             method: "GET",
-            url: "/getAuth",
+            url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -65,7 +65,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -100,7 +100,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 
             $http({
                 method: "POST",
-                url: "/updateSyncAcls",
+                url: "updateSyncAcls",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'updatedSyncAcls' : $scope.updatedSyncStr , 'envSelected': $scope.getAcls.envName.name},
                 data: {'updatedSyncAcls' : $scope.updatedSyncStr}
@@ -130,7 +130,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 
 		$http({
 			method: "GET",
-			url: "/getSyncAcls",
+			url: "getSyncAcls",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getAcls.envName.name,
                 'pageNo' : pageNoSelected }
@@ -153,7 +153,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/getExecAuth",
+                url: "getExecAuth",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.statusauth = output.status;

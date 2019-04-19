@@ -20,7 +20,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.getMyTopicRequests = function() {
             $http({
                 method: "GET",
-                url: "/getCreatedTopicRequests",
+                url: "getCreatedTopicRequests",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.topicRequests = output;
@@ -37,7 +37,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "/execTopicRequests",
+                url: "execTopicRequests",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : $scope.execTopicRequest.topicname },
                 data: {'topicName' : $scope.execTopicRequest.topicname}
@@ -58,7 +58,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
     	//alert("onload");
         $http({
             method: "GET",
-            url: "/getExecAuth",
+            url: "getExecAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -75,7 +75,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
             $scope.getAuth = function() {
             	$http({
                     method: "GET",
-                    url: "/getAuth",
+                    url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.statusauth = output.status;
@@ -104,7 +104,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');

@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="manageUsersApp" ng-controller="manageUsersCtrl">
+<html ng-app="requestSchemaApp" ng-controller="requestSchemaCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Teams | Kafka Self-service Topic Management Portal</title>
+		<title>Request Avro Schema | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -37,13 +37,13 @@
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
 
-		<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/manageUsers.js"></script>
+		<script src="js/requestAvroSchemaUpload.js"></script>
 
 	</head>
 	<body>
@@ -91,7 +91,7 @@
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
 							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
 							</figure>
 							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
 								<span class="name">{{userlogged}}</span>
@@ -175,7 +175,7 @@
 
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-tasks" aria-hidden="true"></i>
 											<span>Requests</span>
@@ -191,7 +191,7 @@
 													Request ACL
 												</a>
 											</li>
-											<li>
+											<li class="nav-active">
 												<a href="requestSchemaUpload">
 													Request Avro Schema
 												</a>
@@ -266,7 +266,7 @@
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-columns" aria-hidden="true"></i>
 											<span>Users - Teams</span>
@@ -277,7 +277,7 @@
 													View Users
 												</a>
 											</li>
-											<li class="nav-active">
+											<li>
 												<a href="showTeams">
 													View Teams
 												</a>
@@ -327,7 +327,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Teams</h2>
+						<h2>Request an Avro Schema</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -336,8 +336,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Users-Teams</span></li>
-								<li><span>Teams</span></li>
+								<li><span>Request</span></li>
+								<li><span>Avro Schema</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -345,54 +345,101 @@
 					</header>
 
 					<!-- start: page -->
+					<div class="row">
+						<div class="col-lg-12">
+							<form id="form" class="form-horizontal">
 						<section class="panel">
 
-							<div ng-show="allTeams == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+							<header class="panel-heading">
+								<div class="panel-actions">
+
+								</div>
+
+								<h2 class="panel-title">Avro Schema Request Form</h2>
+							</header>
+
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="allTeams == null && alert != null && alert != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Ah snap!!</strong> {{ alert }}.
+								<strong>Well done.</strong> {{ alert }}.
 							</div>
 
-							<div ng-show="allTeams == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
 
-							<div  id="getTopics" class="panel-body"  ng-init="getAuth();loadTeamsSU();">
+							<div class="panel-body" ng-init="getAuth();getEnvs();loadTeams();">
 
-								<table class="table table-bordered table-striped mb-none"  ng-show="allTeams.length>0">
-									<thead>
-										<tr>
-											<th>TeamName</th>
-											<th>Team Mail</th>
-											<th>Team Phone</th>
-											<th>Team Contact Person</th>
-											<th>Team Application</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="teamDetails in allTeams" class="gradeX">
-											<td>{{ teamDetails.teamname }}</td>
-											<td>{{ teamDetails.teammail }}</td>
-											<td>{{ teamDetails.teamphone }}</td>
-											<td>{{ teamDetails.contactperson }}</td>
-											<td>{{ teamDetails.app }}</td>
-										</tr>
-										
-									</tbody>
-								</table>
+									<div class="form-group">
+										<label class="col-md-3 control-label">Select Cluster</label>
+										<div class="col-md-6">
+											<select class="form-control mb-md" ng-model="addSchema.envName" ng-options="env as env.name for env in allenvs">
 
+											</select>
+										</div>
+									</div>
+
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Topic Name</label>
+									<div class="col-md-6">
+										<input ng-model="addSchema.topicname" ng-blur="getTopicTeam(addSchema.topicname)" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter an existing topic name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Schema version</label>
+									<div class="col-md-6">
+										<input ng-model="addSchema.schemaversion" required type="text" placeholder="1.0" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a schema version to store in metadata">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Schema</label>
+									<div class="col-md-6">
+										<textarea placeholder="{&quot;type&quot; : &quot;string&quot;}" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Copy your avro schema here" ng-model="addSchema.schemafull" rows="3"></textarea>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Topic Owner Team</label>
+									<div class="col-md-6">
+										<input disabled ng-model="addSchema.team" type="text" placeholder="topicownerteam" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="This field is automatically filled based on the topic name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Application Name</label>
+									<div class="col-md-6">
+										<input ng-model="addSchema.app" required type="text" placeholder="applicationname" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter application name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Remarks</label>
+									<div class="col-md-6">
+										<textarea placeholder="Any specific comments" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter if any specific remarks" ng-model="addSchema.remarks" rows="3"></textarea>
+									</div>
+								</div>
 
 							</div>
-							<br>
-							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addUsers">Add Team</a></button>
+							<footer class="panel-footer">
+								<div class="row">
+									<div class="col-sm-12 col-sm-offset-5">
+										<button ng-click="addSchema();" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-default">Reset</button>
+									</div>
+								</div>
+							</footer>
 
 						</section>
-						
+							</form>
+						</div></div>
 
 				</section>
 			</div>

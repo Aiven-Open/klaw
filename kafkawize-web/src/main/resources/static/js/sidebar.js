@@ -14,7 +14,7 @@ app.controller("sidebarCtrl", function($scope, $http, $location, $window) {
         alert();
     	$http({
             method: "GET",
-            url: "/getAuth",
+            url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -43,7 +43,7 @@ app.controller("sidebarCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -73,7 +73,7 @@ app.controller("sidebarCtrl", function($scope, $http, $location, $window) {
 		
 		$http({
 			method: "GET",
-			url: "/getTopics",
+			url: "getTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getTopics.envName.name,
                 'pageNo' : pageNoSelected }

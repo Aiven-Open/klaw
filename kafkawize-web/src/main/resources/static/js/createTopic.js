@@ -30,7 +30,7 @@ app.controller("createTopicCtrl", function($scope, $http, $location, $window) {
             $scope.getAuth = function() {
             	$http({
                     method: "GET",
-                    url: "/getAuth",
+                    url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.statusauth = output.status;
@@ -58,7 +58,7 @@ app.controller("createTopicCtrl", function($scope, $http, $location, $window) {
         $scope.logout = function() {
            $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -89,7 +89,7 @@ app.controller("createTopicCtrl", function($scope, $http, $location, $window) {
 		
 		$http({
 			method: "POST",
-			url: "/eventbusweb/createtopic",
+			url: "eventbusweb/createtopic",
 			headers : { 'Content-Type' : 'application/json' },
             params: {'addTopicRequest' : serviceInput },
             data: {'addTopicRequest' : serviceInput}

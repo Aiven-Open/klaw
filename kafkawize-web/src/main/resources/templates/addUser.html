@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="requestAclsApp" ng-controller="requestAclsCtrl">
+<html ng-app="manageUsersApp" ng-controller="manageUsersCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Request ACLs | Kafka Self-service Topic Management Portal</title>
+		<title>Add Users | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -37,13 +37,13 @@
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
 
-		<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/requestAcls.js"></script>
+		<script src="js/manageUsers.js"></script>
 
 	</head>
 	<body>
@@ -91,7 +91,7 @@
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
 							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
 							</figure>
 							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
 								<span class="name">{{userlogged}}</span>
@@ -175,7 +175,7 @@
 
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-tasks" aria-hidden="true"></i>
 											<span>Requests</span>
@@ -186,7 +186,7 @@
 													Request Topic
 												</a>
 											</li>
-											<li class="nav-active">
+											<li>
 												<a href="requestAcls">
 													Request ACL
 												</a>
@@ -266,7 +266,7 @@
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-columns" aria-hidden="true"></i>
 											<span>Users - Teams</span>
@@ -282,13 +282,13 @@
 													View Teams
 												</a>
 											</li>
-											<li>
-												<a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
+											<li class="nav-active">
+												<a href="addUsers" ng-if="statusauthexectopics==='Authorized'">
 													Add Users
 												</a>
 											</li>
 											<li>
-												<a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
+												<a href="addTeam" ng-if="statusauthexectopics==='Authorized'">
 													Add Teams
 												</a>
 											</li>
@@ -327,7 +327,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Request an ACL</h2>
+						<h2>Add User</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -336,8 +336,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Request</span></li>
-								<li><span>Acl</span></li>
+								<li><span>Users-Teams</span></li>
+								<li><span>Add User</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -355,7 +355,7 @@
 
 								</div>
 
-								<h2 class="panel-title">ACL (Access Control List) Request Form</h2>
+								<h2 class="panel-title">Add User Form</h2>
 							</header>
 
 							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-primary">
@@ -373,86 +373,65 @@
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
 
-							<div class="panel-body" ng-init="getAuth();getEnvs();loadTeams();">
-
-									<div class="form-group">
-										<label class="col-md-3 control-label">Select Cluster</label>
-										<div class="col-md-6">
-											<select class="form-control mb-md" ng-model="addAcl.envName" ng-options="env as env.name for env in allenvs">
-
-											</select>
-										</div>
-									</div>
-
+							<div class="panel-body" ng-init="getExecAuth();loadTeamsSU();">
+								<div ng-if="statusauthexectopics=='Authorized'">
 
 								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Name</label>
+									<label class="col-md-3 control-label">User Name</label>
 									<div class="col-md-6">
-										<input ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter an existing topic name">
+										<input ng-model="addNewUser.username" required type="text" placeholder="johnwoo" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a username">
 									</div>
 								</div>
 
 								<div class="form-group">
-									<label class="col-md-3 control-label">ACL Type</label>
+									<label class="col-md-3 control-label">Password</label>
 									<div class="col-md-6">
-										<select class="form-control mb-md" ng-model="addAcl.topicreqtype" ng-options="topType as topType.label for topType in TopReqTypeList">
+										<input ng-model="addNewUser.pwd" required type="password" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a password">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Full Name</label>
+									<div class="col-md-6">
+										<input ng-model="addNewUser.fullname" required type="text" placeholder="John Woo" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter your full name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Select Your Team</label>
+									<div class="col-md-6">
+										<select class="form-control mb-md" ng-model="addNewUser.team" ng-options="team as team.teamname for team in allTeams">
 
 										</select>
 									</div>
 								</div>
 
 								<div class="form-group">
-									<label class="col-md-3 control-label">Consumer Group</label>
+									<label class="col-md-3 control-label">Select a Role</label>
 									<div class="col-md-6">
-										<input ng-model="addAcl.consumergroup" type="text" placeholder="applicationconsumergroup" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Required if ACL type is Consumer">
+										<select class="form-control mb-md" ng-model="addNewUser.role" ng-options="roleid as roleid.label for roleid in rolelist">
+
+										</select>
 									</div>
 								</div>
 
-								<div class="form-group">
-									<label class="col-md-3 control-label">ACLs IP Addresses</label>
-									<div class="col-md-6">
-										<textarea placeholder="192.168.12.104" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the IP Addresses, comma seperated" ng-model="addAcl.acl_ip" name="acl_ip" rows="3"></textarea>
-									</div>
-								</div>
 
-								<div class="form-group">
-									<label class="col-md-3 control-label">ACLs SSL username</label>
-									<div class="col-md-6">
-										<textarea placeholder="CN=cnname,OU=IS,OU=OU,OU=Services,O=Org" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the Ssl-CN certificate entry" ng-model="addAcl.acl_ssl" rows="3"></textarea>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Owner Team</label>
-									<div class="col-md-6">
-										<input disabled ng-model="addAcl.team" type="text" placeholder="topicownerteam" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="This field is automatically filled based on the topic name">
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Application Name</label>
-									<div class="col-md-6">
-										<input ng-model="addAcl.app" required type="text" placeholder="applicationname" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter application name">
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Remarks</label>
-									<div class="col-md-6">
-										<textarea placeholder="Any specific comments" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter if any specific remarks" ng-model="addAcl.remarks" rows="3"></textarea>
-									</div>
-								</div>
 
 							</div>
-							<footer class="panel-footer">
+							<footer ng-if="statusauthexectopics=='Authorized'" class="panel-footer">
 								<div class="row">
 									<div class="col-sm-12 col-sm-offset-5">
-										<button ng-click="addAcl();" class="btn btn-primary">Submit</button>
+										<button ng-click="addNewUser();" class="btn btn-primary">Submit</button>
 										<button type="reset" class="btn btn-default">Reset</button>
 									</div>
 								</div>
 							</footer>
 
+								<div ng-show="statusauthexectopics!='Authorized'" ng-init="" class="alert alert-danger">
+									<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+									<strong>Ah snap!!</strong> You are not authorized.
+								</div>
+							</div>
 						</section>
 							</form>
 						</div></div>

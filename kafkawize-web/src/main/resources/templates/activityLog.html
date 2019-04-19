@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="requestTopicsApp" ng-controller="requestTopicsCtrl">
+<html ng-app="showActivityLogApp" ng-controller="showActivityLogCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Request Topics | Kafka Self-service Topic Management Portal</title>
+		<title>ActivityLog | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -37,13 +37,13 @@
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
 
-		<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/requestTopics.js"></script>
+		<script src="js/showActivityLog.js"></script>
 
 	</head>
 	<body>
@@ -91,7 +91,7 @@
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
 							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
 							</figure>
 							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
 								<span class="name">{{userlogged}}</span>
@@ -175,13 +175,13 @@
 
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-tasks" aria-hidden="true"></i>
 											<span>Requests</span>
 										</a>
 										<ul class="nav nav-children">
-											<li class="nav-active">
+											<li>
 												<a href="requestTopics">
 													Request Topic
 												</a>
@@ -223,7 +223,7 @@
 
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Audit</span>
@@ -234,7 +234,7 @@
 													My Requests
 												</a>
 											</li>
-											<li>
+											<li class="nav-active">
 												<a href="activityLog">
 													Activity Log
 												</a>
@@ -327,7 +327,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Request Topic</h2>
+						<h2>ActivityLog</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -336,8 +336,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Request</span></li>
-								<li><span>Topics</span></li>
+								<li><span>Audit</span></li>
+								<li><span>ActivityLog</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -345,110 +345,77 @@
 					</header>
 
 					<!-- start: page -->
-					<div class="row">
-						<div class="col-lg-12">
-							<form id="form" class="form-horizontal">
 						<section class="panel">
 
-							<header class="panel-heading">
-								<div class="panel-actions">
-
-								</div>
-
-								<h2 class="panel-title">Topic Request Form</h2>
-							</header>
-
-							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-primary">
+							<div ng-show="resultBrowse == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
+							<div ng-show="resultBrowse == null && alert != null && alert != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Well done.</strong> {{ alert }}.
+								<strong>Ah snap!!</strong> {{ alert }}.
 							</div>
 
-							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="resultBrowse == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
 
-							<div class="panel-body" ng-init="getAuth();getEnvs();loadTeams();">
+							<div  id="getActivityLog" class="panel-body"  ng-init="getAuth();getEnvs();">
 
-									<div class="form-group">
-										<label class="col-md-3 control-label">Select Cluster</label>
-										<div class="col-md-6">
-											<select class="form-control mb-md" ng-model="addTopic.envName" ng-options="env as env.name for env in allenvs">
-
-											</select>
-										</div>
-									</div>
-
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Name</label>
-									<div class="col-md-6">
-										<input ng-model="addTopic.topicname" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the topic name">
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Partitions</label>
-									<div class="col-md-6">
-										<input ng-model="addTopic.topicpartitions" required type="text" placeholder="2" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a number for topic partitions">
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">ACLs IP Addresses</label>
-									<div class="col-md-6">
-										<textarea placeholder="192.168.12.104" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the IP Addresses of Producers" ng-model="addTopic.acl_ip" rows="3"></textarea>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">ACLs SSL username</label>
-									<div class="col-md-6">
-										<textarea placeholder="CN=cnname,OU=IS,OU=OU,OU=Services,O=Org" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the Ssl-CN certificate entry" ng-model="addTopic.acl_ssl" rows="3"></textarea>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Select Your Team</label>
-									<div class="col-md-6">
-										<select class="form-control mb-md" ng-model="addTopic.team" ng-options="team as team.teamname for team in allTeams">
-
+								<div class="row" align="center">
+									<!--<label class="col-md-3 control-label">Select Environment</label>-->
+									<div class="col-md-12">
+										<select ng-change="getActivityLog(1);" ng-model="getActivityLog.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
+											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
+
 								</div>
 
-								<div class="form-group">
-									<label class="col-md-3 control-label">Application Name</label>
-									<div class="col-md-6">
-										<input ng-model="addTopic.app" required type="text" placeholder="applicationname" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter application name">
+								<br>
+
+								<table class="table table-bordered table-striped mb-none"  ng-show="resultBrowse.length>0">
+									<thead>
+										<tr>
+											<th>ActivityName</th>
+											<th>Type</th>
+											<th>ActivityTime</th>
+											<th>Details</th>
+											<th>User</th><th>Team</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="resultBrowset in resultBrowse" class="gradeX">
+											<td>{{ resultBrowset.activityName}}</td><td>{{ resultBrowset.activityType}}</td>
+											<td>{{ resultBrowset.activityTime}}</td><td>{{ resultBrowset.details}}</td>
+											<td>{{ resultBrowset.user}}</td><td>{{ resultBrowset.team}}</td>
+										</tr>
+										
+									</tbody>
+								</table>
+								<div class="row"  ng-show="resultBrowse.length>0">
+									<div class="col-sm-12 col-md-6">
+
+									</div>
+									<div class="col-sm-12 col-md-6" align="right">
+										<ul class="pagination">
+											<li class="prev disabled">
+												<span class="fa fa-chevron-left"></span>
+											</li>
+											<li ng-repeat="allPages in resultPages">
+												<a href="#" ng-click="getActivityLog(allPages)">{{allPages}}</a>
+											</li>
+											<li class="next disabled">
+												<span class="fa fa-chevron-right"></span>
+											</li>
+										</ul>
 									</div>
 								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Remarks</label>
-									<div class="col-md-6">
-										<textarea placeholder="Any specific comments" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter if any specific remarks" ng-model="addTopic.remarks" rows="3"></textarea>
-									</div>
-								</div>
-
 							</div>
-							<footer class="panel-footer">
-								<div class="row">
-									<div class="col-sm-12 col-sm-offset-5">
-										<button ng-click="addTopic();" class="btn btn-primary">Submit</button>
-										<button type="reset" class="btn btn-default">Reset</button>
-									</div>
-								</div>
-							</footer>
-
 						</section>
-							</form>
-						</div></div>
+						
 
 				</section>
 			</div>

@@ -21,7 +21,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "/getEnvs",
+                url: "getEnvs",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -36,7 +36,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
     $scope.getAuth = function() {
     	$http({
             method: "GET",
-            url: "/getAuth",
+            url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -65,7 +65,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -102,7 +102,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 		
 		$http({
 			method: "GET",
-			url: "/getTopics",
+			url: "getTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getTopics.envName.name,
                 'pageNo' : pageNoSelected,

@@ -22,7 +22,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         $scope.loadTeams = function() {
             $http({
                 method: "GET",
-                url: "/getAllTeams",
+                url: "getAllTeams",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allTeams = output;
@@ -37,7 +37,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         $scope.loadTeamsSU = function() {
                     $http({
                         method: "GET",
-                        url: "/getAllTeamsSU",
+                        url: "getAllTeamsSU",
                         headers : { 'Content-Type' : 'application/json' }
                     }).success(function(output) {
                         $scope.allTeams = output;
@@ -52,7 +52,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
     $scope.getMyProfile = function(){
         $http({
                 method: "GET",
-                url: "/getMyProfileInfo",
+                url: "getMyProfileInfo",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.myProfInfo = output;
@@ -83,7 +83,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "POST",
-                url: "/chPwd",
+                url: "chPwd",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'changePwd' : serviceInput },
                 data: {'changePwd' : serviceInput}
@@ -119,7 +119,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "POST",
-                url: "/addNewUser",
+                url: "addNewUser",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addNewUser' : serviceInput },
                 data: {'addNewUser' : serviceInput}
@@ -160,7 +160,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
                     $http({
                         method: "POST",
-                        url: "/addNewTeam",
+                        url: "addNewTeam",
                         headers : { 'Content-Type' : 'application/json' },
                         params: {'addNewTeam' : serviceInput },
                         data: {'addNewTeam' : serviceInput}
@@ -178,7 +178,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         $scope.showUsers = function() {
             $http({
                 method: "GET",
-                url: "/showUserList",
+                url: "showUserList",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.userList = output;
@@ -194,7 +194,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
     	//alert("onload");
         $http({
             method: "GET",
-            url: "/getExecAuth",
+            url: "getExecAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -211,7 +211,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             $scope.getAuth = function() {
             	$http({
                     method: "GET",
-                    url: "/getAuth",
+                    url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.statusauth = output.status;
@@ -240,7 +240,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');

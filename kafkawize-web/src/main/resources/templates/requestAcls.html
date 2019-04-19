@@ -1,466 +1,496 @@
-<!DOCTYPE html>
-<html>
-<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
-<meta http-equiv='cache-control' content='no-cache'>
-<meta http-equiv='expires' content='0'>
-<meta http-equiv='pragma' content='no-cache'>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Request ACLs - Kafka Self-service Topic Management Portal</title>
+<!doctype html>
+<html class="fixed">
 
 <html ng-app="requestAclsApp" ng-controller="requestAclsCtrl">
-<head>
-	<script src="lib/angular.min.js"></script>
-	<script src="lib/angular-route.min.js"></script>
-	<script src="lib/angular-wm.js"></script>
-	<script src="js/requestAcls.js"></script>
-	<link rel="stylesheet" href="css/main.css">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-		  crossorigin="anonymous">
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
-		  crossorigin="anonymous">
-	<link rel="stylesheet" href="//malihu.github.io/custom-scrollbar/jquery.mCustomScrollbar.min.css">
-	<link rel="stylesheet" href="assets/css/custom.css">
-	<link rel="stylesheet" href="assets/css/custom-themes.css">
-	<link rel="shortcut icon" type="image/png" href="assets/img/favicon.png" />
 
-</head>
-<body>
-<div class="page-wrapper chiller-theme sidebar-bg toggled"  ng-init="getAuth()">
-	<a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
-		<i class="fas fa-bars"></i>
-	</a>
-	<nav id="sidebar" class="sidebar-wrapper">
-		<div class="sidebar-content">
-			<div class="sidebar-brand">
-				<a href="index">Kafka Self-Service Portal</a>
-				<div id="close-sidebar">
-					<i class="fas fa-times"></i>
+	<head>
+
+		<!-- Basic -->
+		<meta charset="UTF-8">
+
+		<title>Request ACLs | Kafka Self-service Topic Management Portal</title>
+		<meta name="keywords" content="HTML5 Admin Template" />
+		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
+		<meta name="author" content="okler.net">
+
+		<!-- Mobile Metas -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<!-- Web Fonts  -->
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+		<!-- Vendor CSS -->
+		<link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="assets/vendor/magnific-popup/magnific-popup.css" />
+		<link rel="stylesheet" href="assets/vendor/bootstrap-datepicker/css/datepicker3.css" />
+
+		<!-- Specific Page Vendor CSS -->
+		<link rel="stylesheet" href="assets/vendor/select2/select2.css" />
+
+		<!-- Theme CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
+
+		<!-- Skin CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/skins/default.css" />
+
+		<!-- Theme Custom CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
+
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
+
+		<!-- Head Libs -->
+		<script src="assets/vendor/modernizr/modernizr.js"></script>
+		<script src="lib/angular.min.js"></script>
+		<script src="lib/angular-route.min.js"></script>
+		<script src="js/requestAcls.js"></script>
+
+	</head>
+	<body>
+		<section class="body" ng-init="getAuth()">
+
+			<!-- start: header -->
+			<header class="header">
+				<div class="logo-container">
+					<a href="../" class="logo">
+						<img src="assets/images/logonew1.png" height="35" alt="Porto Admin" />
+					</a>
+					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+					</div>
 				</div>
-			</div>
-			<div class="sidebar-header">
-				<div class="user-pic">
-					<img class="img-responsive img-rounded" src="assets/img/user.jpg" alt="User picture">
+			
+				<!-- start: search & user box -->
+				<div class="header-right">
+			
+					<!--<form action="pages-search-results.html" class="search nav-form">-->
+						<!--<div class="input-group input-search">-->
+							<!--<input type="text" class="form-control" name="q" id="q" placeholder="Search...">-->
+							<!--<span class="input-group-btn">-->
+								<!--<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>-->
+							<!--</span>-->
+						<!--</div>-->
+					<!--</form>-->
+			<!---->
+					<!--<span class="separator"></span>-->
+
+					<ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
+
+						<li>
+							<a href="execTopics" class="dropdown-toggle notification-icon">
+								<i class="fa fa-bell"></i>
+								<span class="badge">{{ notifications }}</span>
+							</a>
+
+
+						</li>
+					</ul>
+			
+					<span class="separator"></span>
+			
+					<div id="userbox" class="userbox">
+						<a href="#" data-toggle="dropdown">
+							<figure class="profile-picture">
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
+							</figure>
+							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
+								<span class="name">{{userlogged}}</span>
+								<span class="role">{{teamname}}</span>
+							</div>
+			
+							<i class="fa custom-caret"></i>
+						</a>
+			
+						<div class="dropdown-menu">
+							<ul class="list-unstyled">
+								<li class="divider"></li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="myProfile"><i class="fa fa-user"></i> My Profile</a>
+								</li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="changePwd"><i class="fa fa-lock"></i> Change Password</a>
+								</li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="#"  ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a>
+								</li>
+							</ul>
+						</div>
+					</div>
 				</div>
-				<div class="user-info">
-                        <span class="user-name">{{userlogged}}
-							<!--<strong>Smith</strong>-->
-                        </span>
-					<!--<span class="user-role">Administrator</span>-->
-					<span class="user-status">
-                            <span>{{teamname}}</span>
-                        </span>
-				</div>
-			</div>
-			<!-- sidebar-header  -->
-			<!--<div class="sidebar-search">-->
-			<!--<div>-->
-			<!--<div class="input-group">-->
-			<!--<input type="text" class="form-control search-menu" placeholder="Search...">-->
-			<!--<div class="input-group-append">-->
-			<!--<span class="input-group-text">-->
-			<!--<i class="fa fa-search" aria-hidden="true"></i>-->
-			<!--</span>-->
-			<!--</div>-->
-			<!--</div>-->
-			<!--</div>-->
-			<!--</div>-->
-			<!-- sidebar-search  -->
-			<div class="sidebar-menu">
-				<ul>
-					<li class="header-menu">
-						<span>Users</span>
-					</li>
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="fa fa-tachometer-alt"></i>
-							<span>Browse</span>
-							<!--<span class="badge badge-pill badge-danger">New</span>-->
-						</a>
-						<div class="sidebar-submenu">
-							<ul>
+				<!-- end: search & user box -->
+			</header>
+			<!-- end: header -->
+
+			<div class="inner-wrapper">
+				<!-- start: sidebar -->
+				<aside id="sidebar-left" class="sidebar-left">
+				
+					<div class="sidebar-header">
+						<div class="sidebar-title">
+							Navigation
+						</div>
+						<div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+							<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+						</div>
+					</div>
+				
+					<div class="nano">
+						<div class="nano-content">
+							<nav id="menu" class="nav-main" role="navigation">
+								<ul class="nav nav-main">
+									<li>
+										<a href="index">
+											<i class="fa fa-home" aria-hidden="true"></i>
+											<span>Dashboard</span>
+										</a>
+									</li>
+									<!--<li>-->
+										<!--<a href="mailbox-folder.html">-->
+											<!--<span class="pull-right label label-primary">182</span>-->
+											<!--<i class="fa fa-envelope" aria-hidden="true"></i>-->
+											<!--<span>Mailbox</span>-->
+										<!--</a>-->
+									<!--</li>-->
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-copy" aria-hidden="true"></i>
+											<span>Browse</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="browseTopics">
+													Topics
+												</a>
+											</li>
+											<li>
+												<a href="browseAcls">
+													Acls
+												</a>
+											</li>
+											<li>
+												<a href="pcTopics">
+													Producers-Consumers
+												</a>
+											</li>
+
+										</ul>
+									</li>
+									<li class="nav-parent nav-expanded nav-active">
+										<a>
+											<i class="fa fa-tasks" aria-hidden="true"></i>
+											<span>Requests</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="requestTopics">
+													Request Topic
+												</a>
+											</li>
+											<li class="nav-active">
+												<a href="requestAcls">
+													Request ACL
+												</a>
+											</li>
+											<li>
+												<a href="requestSchemaUpload">
+													Request Avro Schema
+												</a>
+											</li>
+
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-list-alt" aria-hidden="true"></i>
+											<span>Clusters</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="envs">
+													Kafka
+												</a>
+											</li>
+											<li>
+												<a href="envs">
+													Schema Registry
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="addNewEnv">
+													Add Cluster
+												</a>
+											</li>
+
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-table" aria-hidden="true"></i>
+											<span>Audit</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="myTopicRequests">
+													My Requests
+												</a>
+											</li>
+											<li>
+												<a href="activityLog">
+													Activity Log
+												</a>
+											</li>
+
+										</ul>
+									</li>
+
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-map-marker" aria-hidden="true"></i>
+											<span>Approve - Execute</span>
+										</a>
+										<ul class="nav nav-children">
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="execTopics">
+													Topics
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="execAcls">
+													Acls
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="execSchemas">
+													Schemas
+												</a>
+											</li>
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-columns" aria-hidden="true"></i>
+											<span>Users - Teams</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="showUsers">
+													View Users
+												</a>
+											</li>
+											<li>
+												<a href="showTeams">
+													View Teams
+												</a>
+											</li>
+											<li>
+												<a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
+													Add Users
+												</a>
+											</li>
+											<li>
+												<a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
+													Add Teams
+												</a>
+											</li>
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-align-left" aria-hidden="true"></i>
+											<span>Synchronize Metadata</span>
+										</a>
+										<ul class="nav nav-children">
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="synchronizeTopics">
+													Topics
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="synchronizeAcls">
+													Acls
+												</a>
+											</li>
+
+										</ul>
+									</li>
+
+								</ul>
+							</nav>
+				
+
+						</div>
+				
+					</div>
+				
+				</aside>
+				<!-- end: sidebar -->
+
+				<section role="main" class="content-body">
+					<header class="page-header">
+						<h2>Request an ACL</h2>
+					
+						<div class="right-wrapper pull-right">
+							<ol class="breadcrumbs">
 								<li>
-									<a href="browseTopics">Topics
-										<!--<span class="badge badge-pill badge-success">Pro</span>-->
+									<a href="index">
+										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li>
-									<a href="browseAcls">Acls
-									</a>
-								</li>
-								<li>
-									<a href="pcTopics">Producers-Consumers</a>
-								</li>
-							</ul>
+								<li><span>Request</span></li>
+								<li><span>Acl</span></li>
+							</ol>
+
+							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
 						</div>
-					</li>
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="fa fa-shopping-cart"></i>
-							<span>Requests</span>
-							<!--<span class="badge badge-pill badge-primary">3</span>-->
-						</a>
-						<div class="sidebar-submenu">
-							<ul>
-								<li>
-									<a href="requestTopics">Request Topic
-									</a>
-								</li>
-								<li>
-									<a href="requestAcls">Request ACL</a>
-								</li>
-								<li>
-									<a href="requestSchemaUpload">Request Avro Schema</a>
-								</li>
-							</ul>
-						</div>
-					</li>
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="far fa-gem"></i>
-							<span>Clusters</span>
-						</a>
-						<div class="sidebar-submenu">
-							<ul>
-								<li>
-									<a href="envs">Kafka</a>
-								</li>
-								<li>
-									<a href="envs">Schema Registry</a>
-								</li>
-							</ul>
-						</div>
-					</li>
+					</header>
 
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="far fa-gem"></i>
-							<span>Audit</span>
-						</a>
-						<div class="sidebar-submenu">
-							<ul>
-								<li>
-									<a href="myTopicRequests">My Requests</a>
-								</li>
-								<li>
-									<a href="activityLog">Activity Log</a>
-								</li>
-							</ul>
-						</div>
-					</li>
+					<!-- start: page -->
+					<div class="row">
+						<div class="col-lg-12">
+							<form id="form" class="form-horizontal">
+						<section class="panel">
 
-					<li class="header-menu">
-						<span>Administrators</span>
-					</li>
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="fa fa-tachometer-alt"></i>
-							<span>Approve - Execute<span class="badge badge-pill badge-danger">{{ notifications }}</span></span>
-							<!--<span class="badge badge-pill badge-danger">New</span>-->
-						</a>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
-							<ul>
-								<li>
-									<a href="execTopics">Topics
-										<!--<span class="badge badge-pill badge-success">Pro</span>-->
-									</a>
-								</li>
-								<li>
-									<a href="execAcls">Acls</a>
-								</li>
-								<li>
-									<a href="execSchemas">Schemas</a>
-								</li>
-							</ul>
-						</div>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
-							<ul>
-								<li>
-									<a>Topics
-										<!--<span class="badge badge-pill badge-success">Pro</span>-->
-									</a>
-								</li>
-								<li>
-									<a>Acls</a>
-								</li>
-								<li>
-									<a>Schemas</a>
-								</li>
-							</ul>
-						</div>
-					</li>
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="fa fa-chart-line"></i>
-							<span>Users - Teams</span>
-							<!--<span class="badge badge-pill badge-danger">New</span>-->
-						</a>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
-							<ul>
-								<li>
-									<a href="showUsers">View Users</a>
-								</li>
-								<li>
-									<a href="addUsers">Add Users
-										<!--<span class="badge badge-pill badge-success">Pro</span>-->
-									</a>
-								</li>
-								<li>
-									<a href="showTeams">View Teams</a>
-								</li>
-								<li>
-									<a href="addTeam">Add Teams
-										<!--<span class="badge badge-pill badge-success">Pro</span>-->
-									</a>
-								</li>
-							</ul>
-						</div>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
-							<ul>
-								<li>
-									<a>View</a>
-								</li>
-								<li>
-									<a>Add
-										<!--<span class="badge badge-pill badge-success">Pro</span>-->
-									</a>
-								</li>
-							</ul>
-						</div>
-					</li>
+							<header class="panel-heading">
+								<div class="panel-actions">
 
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="fa fa-gem"></i>
-							<span>Clusters</span>
-							<!--<span class="badge badge-pill badge-danger">New</span>-->
-						</a>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
-							<ul>
-								<li>
-									<a href="addNewEnv">Add Cluster</a>
-								</li>
-							</ul>
-						</div>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
-							<ul>
-								<li>
-									<a>Add Cluster</a>
-								</li>
-							</ul>
-						</div>
-					</li>
+								</div>
 
-					<li class="sidebar-dropdown">
-						<a href="#">
-							<i class="fa fa-chart-line"></i>
-							<span>Synchronize Metadata</span>
-							<!--<span class="badge badge-pill badge-danger">New</span>-->
-						</a>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics==='Authorized'">
-							<ul>
-								<li>
-									<a href="synchronizeTopics">Topics</a>
-								</li>
-								<li>
-									<a href="synchronizeAcls">Acls</a>
-								</li>
-							</ul>
-						</div>
-						<div class="sidebar-submenu" ng-if="statusauthexectopics!='Authorized'">
-							<ul>
-								<li>
-									<a>Topics</a>
-								</li>
-								<li>
-									<a>Acls</a>
-								</li>
-							</ul>
-						</div>
-					</li>
+								<h2 class="panel-title">ACL (Access Control List) Request Form</h2>
+							</header>
 
-				</ul>
-			</div>
-			<!-- sidebar-menu  -->
-		</div>
-		<!-- sidebar-content  -->
-		<div class="sidebar-footer">
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-primary">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<strong>Ah snap!!</strong> {{ alerttop }}.
+							</div>
 
-			<div class="dropdown">
-				<a href="#" class="" id="dropdownMenuMessage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					<i class="fa fa-cog"></i>
-					<span class="badge-sonar"></span>
-				</a>
-				<div class="dropdown-menu" aria-labelledby="dropdownMenuMessage">
-					<a class="dropdown-item" href="myProfile">My profile</a>
-					<a class="dropdown-item" href="changePwd">Update Password</a>
-					<!--<a class="dropdown-item" href="#">Setting</a>-->
-				</div>
-			</div>
-			<div>
-				<A  href='#' ng-click="logout()">
-					<i class="fa fa-power-off"></i>
-				</a>
-			</div>
-		</div>
-	</nav>
-	<!-- sidebar-wrapper  -->
-	<main class="page-content">
-		<div class="container-fluid">
-			<div class="row">
-				<div class="form-group col-md-12">
-					<table width="100%">
-						<tr>
-							<td align="left"><h2>Request For ACL</h2></td>
-							<td align="right"><img style="max-height: 100px; max-width: 100px;" src="images/kafka.png"><br><b>KafkaWize - {{ companyinfo }}</b></td>
-						</tr>
-					</table>
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<strong>Well done.</strong> {{ alert }}.
+							</div>
 
-				</div>
-			</div>
-			<hr>
+							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<strong>Ah snap!!</strong> {{ errorMessage }}.
+							</div>
 
+							<div class="panel-body" ng-init="getAuth();getEnvs();loadTeams();">
 
-			<div class="main" ng-init="getAuth();loadTeams();getEnvs();">
-				<div class="message" ng-show="alerttop != null && alerttop != ''" ng-init="">{{ alerttop }}</div>
+									<div class="form-group">
+										<label class="col-md-3 control-label">Select Cluster</label>
+										<div class="col-md-6">
+											<select class="form-control mb-md" ng-model="addAcl.envName" ng-options="env as env.name for env in allenvs">
 
-				<div style="margin: 10px;" ng-if="statusauth=='Authorized'">
-
-					<div class="message" ng-show="alert != null && alert != ''" ng-init="">{{ alert }}</div>
-					<div class="message" ng-show="errorMessage != null && errorMessage != ''" ng-init="">{{ errorMessage }}</div>
-
-
-						<input name=subject type=hidden value="Acl Request Form">
-						<table width=60% style="border: 2px  #000066">
-							<tbody>
-							<tr>
-								<td valign=top>
-									<font face=verdana size=2>Select Cluster <br></font>
-								</td>
-								<td>
-									<table cellpadding="2" >
-										<!-- DEV section -->
-										<tr>
-											<td><select ng-model="addAcl.envName" ng-options="env as env.name for env in allenvs">
-											</select></td>
-										</tr>
-
-										<tr></tr>
-									</table>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Topic Names</font>
-								</td>
-								<td>
-									<input ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" required>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Type</font>
-								</td>
-								<td>
-									<select ng-model="addAcl.topicreqtype" ng-options="topType as topType.label for topType in TopReqTypeList">
-									</select>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Consumer group</font>
-								</td>
-								<td>
-									<input ng-model="addAcl.consumergroup">
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Acls IP</font>
-								</td>
-								<td>
-                <textarea ng-model="addAcl.acl_ip" name="acl_ip" cols="50" rows="3" placeholder="
-Ex:10.11.12.13,11.32.432.53"
-				></textarea>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Acls SSL</font>
-								</td>
-								<td>
-                <textarea ng-model="addAcl.acl_ssl" name="acl_ssl" cols="50" rows="3" placeholder="
-Ex:CN=cnname,OU=IS,OU=OU,OU=Services,O=Org"
-				></textarea>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Topic Owner Team</font>
-								</td>
-								<td>
-									<!--<select ng-model="addAcl.team" ng-options="team as team.teamname for team in teams"></select>-->
-									<input ng-model="addAcl.team" disabled>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Team Application</font>
-								</td>
-								<td>
-									  <input ng-model="addAcl.app" required>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<font face=verdana size=2>Remarks</font>
-								</td>
-								<td>
-									<textarea ng-model="addAcl.remarks" name="remarks" cols="50" rows="3"></textarea>
-								</td>
-							</tr>
-
-							<tr>
-								<td>
-									<br/><br/><br/>
-									<div>
-										<button class="k1button" id="addBA" ng-click="addAcl();">Submit Acl Request</button>
+											</select>
+										</div>
 									</div>
-								</td>
-								<td>
-
-								</td>
-							</tr>
-							</tbody>
-						</table>
-
-						<input name=body type=hidden value="">
 
 
-				</div>
+								<div class="form-group">
+									<label class="col-md-3 control-label">Topic Name</label>
+									<div class="col-md-6">
+										<input ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter an existing topic name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">ACL Type</label>
+									<div class="col-md-6">
+										<select class="form-control mb-md" ng-model="addAcl.topicreqtype" ng-options="topType as topType.label for topType in TopReqTypeList">
+
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Consumer Group</label>
+									<div class="col-md-6">
+										<input ng-model="addAcl.consumergroup" type="text" placeholder="applicationconsumergroup" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Required if ACL type is Consumer">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">ACLs IP Addresses</label>
+									<div class="col-md-6">
+										<textarea placeholder="192.168.12.104" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the IP Addresses, comma seperated" ng-model="addAcl.acl_ip" name="acl_ip" rows="3"></textarea>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">ACLs SSL username</label>
+									<div class="col-md-6">
+										<textarea placeholder="CN=cnname,OU=IS,OU=OU,OU=Services,O=Org" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the Ssl-CN certificate entry" ng-model="addAcl.acl_ssl" rows="3"></textarea>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Topic Owner Team</label>
+									<div class="col-md-6">
+										<input disabled ng-model="addAcl.team" type="text" placeholder="topicownerteam" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="This field is automatically filled based on the topic name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Application Name</label>
+									<div class="col-md-6">
+										<input ng-model="addAcl.app" required type="text" placeholder="applicationname" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter application name">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Remarks</label>
+									<div class="col-md-6">
+										<textarea placeholder="Any specific comments" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter if any specific remarks" ng-model="addAcl.remarks" rows="3"></textarea>
+									</div>
+								</div>
+
+							</div>
+							<footer class="panel-footer">
+								<div class="row">
+									<div class="col-sm-12 col-sm-offset-5">
+										<button ng-click="addAcl();" class="btn btn-primary">Submit</button>
+										<button type="reset" class="btn btn-default">Reset</button>
+									</div>
+								</div>
+							</footer>
+
+						</section>
+							</form>
+						</div></div>
+
+				</section>
 			</div>
-		</div>
-	</main>
-	<!-- page-content" -->
-</div>
-<!-- page-wrapper -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-		crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-		crossorigin="anonymous"></script>
-<script src="//malihu.github.io/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js"></script>
-<script src="assets/js/custom.js"></script>
 
 
+		</section>
+
+		<!-- Vendor -->
+		<script src="assets/vendor/jquery/jquery.js"></script>
+		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
+		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
+		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Specific Page Vendor -->
+		<script src="assets/vendor/select2/select2.js"></script>
+		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
+		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
+		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
+		
+		<!-- Theme Base, Components and Settings -->
+		<script src="assets/javascripts/theme.js"></script>
+		
+		<!-- Theme Custom -->
+		<script src="assets/javascripts/theme.custom.js"></script>
+		
+		<!-- Theme Initialization Files -->
+		<script src="assets/javascripts/theme.init.js"></script>
 
 
-</body>
+		<!-- Examples -->
+		<script src="assets/javascripts/tables/examples.datatables.default.js"></script>
+		<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>
+		<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>
+	</body>
 </html>
