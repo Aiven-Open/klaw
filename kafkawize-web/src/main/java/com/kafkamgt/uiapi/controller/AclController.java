@@ -72,7 +72,7 @@ public class AclController {
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
+        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
@@ -219,7 +219,7 @@ public class AclController {
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
+        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
@@ -335,12 +335,12 @@ public class AclController {
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
+        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
 
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
 
-        if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")){}
+        if(authority.equals("ROLE_SUPERUSER")){}
         else{
             json = "{ \"name\": \"Not Authorized\" }";
             List<AclInfo> topicsList1 = new ArrayList();

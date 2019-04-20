@@ -21,7 +21,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "/getEnvs",
+                url: "getEnvs",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -36,7 +36,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
     $scope.getAuth = function() {
     	$http({
             method: "GET",
-            url: "/getAuth",
+            url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -65,7 +65,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -84,18 +84,25 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 	$scope.getTopics = function(pageNoSelected) {
 
         var serviceInput = {};
-		
+
+		if(!$scope.getTopics.envName)
+		    return;
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getTopics.envName.name;
+		var topicFilter = $scope.getTopics.topicnamesearch;
+		if(topicFilter && topicFilter.length>0 && topicFilter.length<3){
+		    alert("Please enter atleast 3 characters of the topic name.");
+		    return;
+		    }
 		//alert("---"+$scope.getTopics.envName.value);
-		if (!window.confirm("Are you sure, you would like to view the topics in Environment : " +
-				$scope.getTopics.envName.name + " ?")) {
-			return;
-		}
+//		if (!window.confirm("Are you sure, you would like to view the topics in Environment : " +
+//				$scope.getTopics.envName.name + " ?")) {
+//			return;
+//		}
 		
 		$http({
 			method: "GET",
-			url: "/getTopics",
+			url: "getTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getTopics.envName.name,
                 'pageNo' : pageNoSelected,
@@ -112,6 +119,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 			function(error) 
 			{
 				$scope.alert = error;
+				$scope.resultPages = null;
+				$scope.resultPageSelected = null;
 			}
 		);
 		

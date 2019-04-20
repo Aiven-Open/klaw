@@ -21,7 +21,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 
             $http({
                 method: "GET",
-                url: "/getEnvs",
+                url: "getEnvs",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -36,7 +36,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
     $scope.getAuth = function() {
     	$http({
             method: "GET",
-            url: "/getAuth",
+            url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -65,7 +65,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -84,24 +84,27 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 	$scope.getActivityLog = function(pageNoSelected) {
 
         var serviceInput = {};
+
+        if(!$scope.getActivityLog.envName)
+             return;
 		
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getActivityLog.envName.name;
 		//alert("---"+$scope.getTopics.envName.value);
-		if (!window.confirm("Are you sure, you would like to view the activity Log in Environment : " +
-				$scope.getActivityLog.envName.name + " ?")) {
-			return;
-		}
+//		if (!window.confirm("Are you sure, you would like to view the activity Log in Environment : " +
+//				$scope.getActivityLog.envName.name + " ?")) {
+//			return;
+//		}
 		
 		$http({
 			method: "GET",
-			url: "/activityLog",
+			url: "activityLog",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getActivityLog.envName.name,
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
-			if(output!=null){
+			if(output!=null && output.length>0){
                 $scope.resultPages = output[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
             }
@@ -109,6 +112,8 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 			function(error) 
 			{
 				$scope.alert = error;
+				$scope.resultPages = null;
+                $scope.resultPageSelected = null;
 			}
 		);
 		

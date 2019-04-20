@@ -21,7 +21,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
 	        $http({
                 method: "GET",
-                url: "/getEnvs",
+                url: "getEnvs",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -36,7 +36,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
     $scope.getAuth = function() {
     	$http({
             method: "GET",
-            url: "/getAuth",
+            url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.statusauth = output.status;
@@ -65,7 +65,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/logout"
+                url: "logout"
             }).success(function(output) {
 
                 $location.path('/');
@@ -87,6 +87,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
             var serviceInput = {};
 
+            if(!$scope.getTopics.envName)
+                   return;
+
             if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getTopics.envName.name)) {
                 $scope.updatedSyncStr="";
                 return;
@@ -94,7 +97,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
             $http({
                 method: "POST",
-                url: "/updateSyncTopics",
+                url: "updateSyncTopics",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'updatedSyncTopics' : $scope.updatedSyncStr ,
                          'envSelected': $scope.getTopics.envName.name
@@ -126,7 +129,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
 		$http({
 			method: "GET",
-			url: "/getSyncTopics",
+			url: "getSyncTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : $scope.getTopics.envName.name, 'topicnamesearch' : $scope.getTopics.topicnamesearch,
                 'pageNo' : pageNoSelected }
@@ -149,7 +152,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             //alert("onload");
             $http({
                 method: "GET",
-                url: "/getExecAuth",
+                url: "getExecAuth",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.statusauth = output.status;

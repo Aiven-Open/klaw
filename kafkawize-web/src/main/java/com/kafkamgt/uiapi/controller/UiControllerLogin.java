@@ -22,7 +22,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(ModelMap model) {
-        LOG.info("in login......");
+        //LOG.info("in login......");
         try {
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -31,25 +31,16 @@ public class UiControllerLogin {
                 return "index";
             }
         }catch (Exception e){
+            //LOG.info("Error logging in "+e.getMessage());
             return "newlogin.html";
         }
 
         return "newlogin.html";
     }
 
-    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
-    public String browseTopics(ModelMap model) {
-        return "browseTopics.html";
-    }
-
-    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
-    public String browseAcls(ModelMap model) {
-        return "browseAcls.html";
-    }
-
     @RequestMapping(value = "/addUsers", method = RequestMethod.GET)
     public String addUsers(ModelMap model) {
-        return "addUsers.html";
+        return "addUser.html";
     }
 
     @RequestMapping(value = "/envs", method = RequestMethod.GET)
@@ -74,7 +65,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
     public String myTopicRequests(ModelMap model) {
-        return "myTopicRequests.html";
+        return "myRequests.html";
     }
 
     @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)
@@ -84,7 +75,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/requestSchemaUpload", method = RequestMethod.GET)
     public String requestSchemaUpload(ModelMap model) {
-        return "requestSchemaUpload.html";
+        return "requestSchema.html";
     }
 
     @RequestMapping(value = "/requestTopics", method = RequestMethod.GET)
@@ -132,14 +123,24 @@ public class UiControllerLogin {
         return "addTeam.html";
     }
 
-    @RequestMapping(value = "/addNewEnv", method = RequestMethod.GET)
-    public String addNewEnv(ModelMap model) {
-        return "addNewEnv.html";
+    @RequestMapping(value = "/addEnv", method = RequestMethod.GET)
+    public String addEnv(ModelMap model) {
+        return "addEnv.html";
     }
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
     public String activityLog(ModelMap model) {
-        return "showActivityLog.html";
+        return "activityLog.html";
+    }
+
+    @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
+    public String tables(ModelMap model) {
+        return "browseTopics.html";
+    }
+
+    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
+    public String browseAcls(ModelMap model) {
+        return "browseAcls.html";
     }
 
 }
