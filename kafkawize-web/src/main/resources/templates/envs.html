@@ -52,7 +52,7 @@
 			<!-- start: header -->
 			<header class="header">
 				<div class="logo-container">
-					<a href="../" class="logo">
+					<a href="index" class="logo">
 						<img src="assets/images/logonew1.png" height="35" alt="Porto Admin" />
 					</a>
 					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
@@ -216,7 +216,7 @@
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
-												<a href="addNewEnv">
+												<a href="addEnv">
 													Add Cluster
 												</a>
 											</li>
@@ -408,7 +408,7 @@
 
 							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Well done.</strong> {{ alert }}.
+								 {{ alert }}.
 							</div>
 
 							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
@@ -474,7 +474,7 @@
 							</div>
 
 							<br>
-							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addUsers">Add Cluster</a></button>
+							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addEnv">Add Cluster</a></button>
 
 						</section>
 
