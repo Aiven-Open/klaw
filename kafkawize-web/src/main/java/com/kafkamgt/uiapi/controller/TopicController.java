@@ -36,19 +36,19 @@ public class TopicController {
     private static Logger LOG = LoggerFactory.getLogger(TopicController.class);
 
     @Autowired
-    ManageTopics createTopicHelper;
+    private ManageTopics createTopicHelper;
 
     @Value("${clusterapi.url}")
-    String clusterConnUrl;
+    private String clusterConnUrl;
 
     @Value("${clusterapi.username}")
-    String clusterApiUser;
+    private String clusterApiUser;
 
     @Value("${clusterapi.password}")
-    String clusterApiPwd;
+    private String clusterApiPwd;
 
     @Autowired
-    Environment springEnvProps;
+    private Environment springEnvProps;
 
     @PostMapping(value = "/createTopics")
     public ResponseEntity<String> createTopics(@RequestParam ("addTopicRequest") String addTopicReq) {
@@ -58,21 +58,28 @@ public class TopicController {
 
         TopicRequest topicRequestReq = gson.fromJson(addTopicReq, TopicRequest.class);
 
-        UserDetails userDetails =
-                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = getUserDetails();
 
         LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
         topicRequestReq.setUsername(userDetails.getUsername());
 
-        String execRes = null;
+        String execRes;
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
-        int topicPartitionsInt = 1;
+        int topicPartitionsInt;
         String envSelected = topicRequestReq.getEnvironment();
         String defPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.partitions");
         String defMaxPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.maxpartitions");
-
         String defaultRf = springEnvProps.getProperty("kafka." + envSelected + ".default.replicationfactor");
+
+        if(defPartns==null)
+            defPartns="1";
+
+        if(defMaxPartns==null)
+            defMaxPartns="1";
+
+        if(defaultRf==null)
+            defaultRf="1";
 
         try {
             int defMaxPartnsInt = Integer.parseInt(defMaxPartns);
@@ -87,7 +94,7 @@ public class TopicController {
 
             topicRequestReq.setReplicationfactor(defaultRf);
         }catch (Exception e){
-            LOG.error("Unable to set topic partitions, setting default.");
+            LOG.error("Unable to set topic partitions, setting default from properties.");
             topicRequestReq.setTopicpartitions(defPartns);
         }
 
@@ -101,10 +108,7 @@ public class TopicController {
     public ResponseEntity<String> updateSyncTopics(@RequestParam ("updatedSyncTopics") String updatedSyncTopics,
                                                    @RequestParam ("envSelected") String envSelected) {
 
-        UserDetails userDetails =
-                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
+        UserDetails userDetails = getUserDetails();
 
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
@@ -112,13 +116,13 @@ public class TopicController {
         if(authority.equals("ROLE_SUPERUSER")){}
         else{
             json = "{ \"result\": \"Not Authorized\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
+            return new ResponseEntity<>(json, HttpStatus.OK);
         }
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
         String topicSel=null,teamSelected=null,tmpToken=null;
-        List<Topic> listtopics = new ArrayList<>();
-        Topic t = null;
+        List<Topic> listTopics = new ArrayList<>();
+        Topic t;
         while(strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
 
@@ -138,38 +142,35 @@ public class TopicController {
                 t.setTeamname(teamSelected);
                 t.setTopicPK(topicPK);
 
-                listtopics.add(t);
+                listTopics.add(t);
             }
         }
-        String execRes = createTopicHelper.addToSynctopics(listtopics);
+        String execRes = createTopicHelper.addToSynctopics(listTopics);
 
         String topicaddResult = "{\"result\":\""+execRes+"\"}";
-        return new ResponseEntity<String>(topicaddResult, HttpStatus.OK);
+        return new ResponseEntity<>(topicaddResult, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicStreams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<PCStream>> getTopicStreams(@RequestParam ("env") String envSelected) {
 
-        List<PCStream> topicReqs = null;
+        List<PCStream> topicReqs;
         LOG.info("Env is :::"+envSelected);
 
         topicReqs = createTopicHelper.selectTopicStreams(envSelected);
-      //  LOG.info(topicReqs+"");
-       // topicReqs.stream().forEach(a->a.getConsumerTeams().forEach(b->LOG.info(b)));
-
-        return new ResponseEntity<List<PCStream>>(topicReqs, HttpStatus.OK);
+        return new ResponseEntity<>(topicReqs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getTopicRequests() {
 
-        List<TopicRequest> topicRequestReqs = null;
+        List<TopicRequest> topicRequestReqs;
 
         UserDetails userDetails =
                 (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         topicRequestReqs = createTopicHelper.getAllTopicRequests(userDetails.getUsername());
 
-        return new ResponseEntity<List<TopicRequest>>(topicRequestReqs, HttpStatus.OK);
+        return new ResponseEntity<>(topicRequestReqs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicTeam", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -177,7 +178,6 @@ public class TopicController {
                                                      @RequestParam("env") String env) {
 
        Topic topicRequest = createTopicHelper.getTopicTeam(topicName, env);
-      // LOG.info(env+"In get topicRequest team"+topicRequest + "---"+topicName);
 
        return new ResponseEntity<Topic>(topicRequest, HttpStatus.OK);
     }
@@ -185,14 +185,14 @@ public class TopicController {
     @RequestMapping(value = "/getCreatedTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getCreatedTopicRequests() {
 
-        List<TopicRequest> topicRequestReqs = null;
+        List<TopicRequest> topicRequestReqs;
 
             UserDetails userDetails =
                     (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             topicRequestReqs = createTopicHelper.getCreatedTopicRequests(userDetails.getUsername());
 
         LOG.info("*****getCreatedTopicRequests"+ topicRequestReqs);
-        return new ResponseEntity<List<TopicRequest>>(topicRequestReqs, HttpStatus.OK);
+        return new ResponseEntity<>(topicRequestReqs, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/deleteTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -202,11 +202,10 @@ public class TopicController {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        LOG.info("In delete req"+topicName);
         String deleteTopicReqStatus = createTopicHelper.deleteTopicRequest(topicName,env);
 
         deleteTopicReqStatus = "{\"result\":\""+deleteTopicReqStatus+"\"}";
-        return new ResponseEntity<String>(deleteTopicReqStatus, HttpStatus.OK);
+        return new ResponseEntity<>(deleteTopicReqStatus, HttpStatus.OK);
     }
 
 
@@ -226,7 +225,7 @@ public class TopicController {
         LOG.info(topicName+"URI is:"+uri+"------"+env);
         RestTemplate restTemplate = new RestTemplate();
 
-        MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
+        MultiValueMap<String, String> params= new LinkedMultiValueMap<>();
 
         Env envSelected= createTopicHelper.selectEnvDetails(topicRequest.getEnvironment());
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
@@ -241,7 +240,7 @@ public class TopicController {
         HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(params, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
         ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
 
@@ -251,29 +250,21 @@ public class TopicController {
          updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,userDetails.getUsername());
 
         updateTopicReqStatus = "{\"result\":\""+updateTopicReqStatus+"\"}";
-        return new ResponseEntity<String>(updateTopicReqStatus, HttpStatus.OK);
+        return new ResponseEntity<>(updateTopicReqStatus, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
                                                      @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
 
-        LOG.info(pageNo+" In get topics " + env);
-        String json = "{ \"name\": \"John\" }";
-
-        UserDetails userDetails =
-                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
-
+        UserDetails userDetails = getUserDetails();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
 
         if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")){}
         else{
-            json = "{ \"name\": \"Not Authorized\" }";
             List<TopicInfo> topicsList1 = new ArrayList();
-            return new ResponseEntity<List<TopicInfo>>(topicsList1, HttpStatus.OK);
+            return new ResponseEntity<>(topicsList1, HttpStatus.OK);
         }
 
         if(topicNameSearch != null)
@@ -289,7 +280,7 @@ public class TopicController {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<String>> entity = new HttpEntity<Set<String>>(headers);
+        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
 
         ResponseEntity<Set> s = restTemplate.exchange
                 (uri, HttpMethod.GET, entity, Set.class);
@@ -302,7 +293,6 @@ public class TopicController {
 
         List<String> topicFilteredList = topicsList;
         // Filter topics on topic name for search
-
         if(topicNameSearch!=null && topicNameSearch.length()>0){
             final String topicSearchFilter = topicNameSearch;
             topicFilteredList = topicsList.stream().filter(topic-> {
@@ -315,14 +305,88 @@ public class TopicController {
         }
 
         topicsList = topicFilteredList;
-
         Collections.sort(topicsList);
 
+        return new ResponseEntity<>(getTopicList(topicsList,topicsFromSOT,pageNo), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
+                        @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
+
+        UserDetails userDetails = getUserDetails();
+        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
+        String authority = ga.getAuthority();
+
+        if(authority.equals("ROLE_SUPERUSER")){}
+        else{
+            List<TopicRequest> topicsList1 = new ArrayList();
+            return new ResponseEntity<>(topicsList1, HttpStatus.OK);
+        }
+
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
+
+        Env envSelected= createTopicHelper.selectEnvDetails(env);
+        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
+
+        String uri = clusterConnUrl+"/topics/getTopics/"+bootstrapHost;
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
+        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Set> s = restTemplate.exchange
+                (uri, HttpMethod.GET, entity, Set.class);
+
+        topicCounter = 0;
+        List<String> topicsList = new ArrayList(s.getBody());
+
+        List<String> topicFilteredList = topicsList;
+        // Filter topics on topic name for search
+
+        if(topicNameSearch!=null && topicNameSearch.length()>0){
+            final String topicSearchFilter = topicNameSearch;
+            topicFilteredList = topicsList.stream().filter(topic-> {
+                        if(topic.contains(topicSearchFilter))
+                            return true;
+                        else
+                            return false;
+                    }
+            ).collect(Collectors.toList());
+        }
+
+        topicsList = topicFilteredList;
+        Collections.sort(topicsList);
+
+        return new ResponseEntity<>(getSyncTopicList(topicsList,userDetails,pageNo,env), HttpStatus.OK);
+    }
+
+    int topicCounter=0;
+    public int counterIncrement()
+    {
+        topicCounter++;
+        return topicCounter;
+    }
+
+    HttpHeaders createHeaders(String username, String password) {
+        return new HttpHeaders() {{
+            String auth = username + ":" + password;
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII")));
+            String authHeader = "Basic " + new String(encodedAuth);
+            set("Authorization", authHeader);
+        }};
+    }
+
+    public List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){
         int totalRecs = topicsList.size();
         int recsPerPage = 20;
 
         int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
-
         int requestPageNo = Integer.parseInt(pageNo);
 
         List<TopicInfo> topicsListMap = null;//new ArrayList<>();
@@ -370,70 +434,11 @@ public class TopicController {
             }
 
         }
-        return new ResponseEntity<List<TopicInfo>>(topicsListMap, HttpStatus.OK);
+
+        return topicsListMap;
     }
 
-    @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                        @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
-
-        LOG.info(pageNo+" In get sync topics " + env);
-        String json = "{ \"name\": \"\" }";
-
-        UserDetails userDetails =
-                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        //LOG.info("User is "+userDetails.getUsername()+ userDetails.getAuthorities());
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
-            json = "{ \"name\": \"Not Authorized\" }";
-            List<TopicRequest> topicsList1 = new ArrayList();
-            return new ResponseEntity<List<TopicRequest>>(topicsList1, HttpStatus.OK);
-        }
-
-        if(topicNameSearch != null)
-            topicNameSearch = topicNameSearch.trim();
-
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-
-        String uri = clusterConnUrl+"/topics/getTopics/"+bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<String>> entity = new HttpEntity<Set<String>>(headers);
-
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uri, HttpMethod.GET, entity, Set.class);
-
-        topicCounter = 0;
-        List<String> topicsList = new ArrayList(s.getBody());
-
-        List<String> topicFilteredList = topicsList;
-        // Filter topics on topic name for search
-
-        if(topicNameSearch!=null && topicNameSearch.length()>0){
-            final String topicSearchFilter = topicNameSearch;
-            topicFilteredList = topicsList.stream().filter(topic-> {
-                        if(topic.contains(topicSearchFilter))
-                            return true;
-                        else
-                            return false;
-                    }
-            ).collect(Collectors.toList());
-        }
-
-        topicsList = topicFilteredList;
-
-        Collections.sort(topicsList);
-
+    public List<TopicRequest> getSyncTopicList(List<String> topicsList, UserDetails userDetails, String pageNo, String env){
         int totalRecs = topicsList.size();
         int recsPerPage = 20;
 
@@ -502,25 +507,11 @@ public class TopicController {
             }
 
         }
-
-        return new ResponseEntity<List<TopicRequest>>(topicsListMap, HttpStatus.OK);
+        return topicsListMap;
     }
 
-    int topicCounter=0;
-    public int counterIncrement()
-    {
-        topicCounter++;
-        return topicCounter;
-    }
-
-    HttpHeaders createHeaders(String username, String password) {
-        return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
+    public UserDetails getUserDetails(){
+        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 
