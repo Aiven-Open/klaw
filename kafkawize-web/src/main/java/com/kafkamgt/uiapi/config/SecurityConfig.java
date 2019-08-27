@@ -2,7 +2,7 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.helpers.ManageTopics;
+import com.kafkamgt.uiapi.service.ManageTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

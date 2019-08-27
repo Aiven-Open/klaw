@@ -59,7 +59,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 url: "createTopics",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addTopicRequest' : serviceInput },
-                data: {'addTopicRequest' : serviceInput}
+                data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Topic Request : "+output.result;
             }).error(

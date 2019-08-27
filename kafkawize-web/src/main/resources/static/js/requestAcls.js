@@ -175,7 +175,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 url: "createAcl",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addAclRequest' : serviceInput },
-                data: {'addAclRequest' : serviceInput}
+                data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Acl Request : "+output.result;
             }).error(

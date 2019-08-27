@@ -6,7 +6,7 @@ import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.helpers.ManageTopics;
+import com.kafkamgt.uiapi.service.ManageTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
