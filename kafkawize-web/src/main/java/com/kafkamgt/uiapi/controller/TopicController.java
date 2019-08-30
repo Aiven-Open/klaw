@@ -41,8 +41,10 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopicStreams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<PCStream>> getTopicStreams(@RequestParam ("env") String envSelected) {
-        return new ResponseEntity<>(topicControllerService.getTopicStreams(envSelected), HttpStatus.OK);
+    public ResponseEntity<List<PCStream>> getTopicStreams(@RequestParam ("env") String envSelected,
+                                                          @RequestParam("pageNo") String pageNo,
+                                                          @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
+        return new ResponseEntity<>(topicControllerService.getTopicStreams(envSelected, pageNo, topicNameSearch), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -76,10 +78,17 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
+    public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env,
+                                                     @RequestParam("pageNo") String pageNo,
                                                      @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
 
         return new ResponseEntity<>(topicControllerService.getTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getTopicsOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getTopicsOnly(@RequestParam("env") String env) {
+
+        return new ResponseEntity<>(topicControllerService.getAllTopics(env), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

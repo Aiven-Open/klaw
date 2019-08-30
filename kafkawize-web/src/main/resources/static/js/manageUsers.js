@@ -99,6 +99,33 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         };
 
+    $scope.deleteUser = function(){
+
+        if (!window.confirm("Are you sure, you would like to delete the user : "
+                                +  $scope.deleteUser.idval
+                                )) {
+                                return;
+                            }
+
+                    $http({
+                                    method: "POST",
+                                    url: "deleteUserRequest",
+                                    headers : { 'Content-Type' : 'application/json' },
+                                    params: {'userId' : $scope.deleteUser.idval },
+                                    data: {'userId' : $scope.deleteUser.idval}
+                                }).success(function(output) {
+
+                                    $scope.alert = "Delete User Request : "+output.result;
+                                    $scope.showUsers();
+
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.alert = error;
+                                    }
+                                );
+    }
+
 	$scope.addNewUser = function() {
 
             var serviceInput = {};

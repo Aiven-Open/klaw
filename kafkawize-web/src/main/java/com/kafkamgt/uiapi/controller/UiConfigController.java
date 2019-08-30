@@ -95,6 +95,33 @@ public class UiConfigController {
         return new ResponseEntity<String>(envAddResult, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/deleteClusterRequest")
+    public ResponseEntity<String> deleteCluster(@RequestParam ("clusterId") String clusterId){
+
+
+        String execRes = manageTopics.deleteClusterRequest(clusterId);
+
+        String envAddResult = "{\"result\":\""+execRes+"\"}";
+        return new ResponseEntity<String>(envAddResult, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/deleteUserRequest")
+    public ResponseEntity<String> deleteUser(@RequestParam ("userId") String userId){
+
+        UserDetails userDetails =
+                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        String envAddResult = "{\"result\":\"User cannot be deleted\"}";
+
+        if(userId.equals("superuser") || userDetails.getUsername().equals(userId))
+            return new ResponseEntity<String>(envAddResult, HttpStatus.OK);
+
+        String execRes = manageTopics.deleteUserRequest(userId);
+        envAddResult = "{\"result\":\""+execRes+"\"}";
+
+        return new ResponseEntity<>(envAddResult, HttpStatus.OK);
+    }
+
     @PostMapping(value = "/addNewUser")
     public ResponseEntity<String> addNewUser(@RequestParam ("addNewUser") String addNewUser){
 

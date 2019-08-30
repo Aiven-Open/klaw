@@ -229,6 +229,15 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraDeleteHelper.deleteAclRequest(req_no);
     }
 
+    public String deleteClusterRequest(String clusterId){
+        return cassandraDeleteHelper.deleteClusterRequest(clusterId);
+    }
+
+    @Override
+    public String deleteUserRequest(String userId) {
+        return cassandraDeleteHelper.deleteUserRequest(userId);
+    }
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return cassandraDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }

@@ -194,6 +194,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcDeleteHelper.deleteAclRequest(req_no);
     }
 
+    @Override
+    public String deleteClusterRequest(String clusterId) {
+        return jdbcDeleteHelper.deleteClusterRequest(clusterId);
+    }
+
+    @Override
+    public String deleteUserRequest(String userId) {
+        return jdbcDeleteHelper.deleteUserRequest(userId);
+    }
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return jdbcDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }

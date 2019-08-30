@@ -142,8 +142,50 @@ public class TopicControllerService {
         return "{\"result\":\""+execRes+"\"}";
     }
 
-    public List<PCStream> getTopicStreams(String envSelected) {
-        return createTopicHelper.selectTopicStreams(envSelected);
+    public List<PCStream> getTopicStreams(String envSelected, String pageNo, String topicNameSearch) {
+        List<PCStream> pcList = createTopicHelper.selectTopicStreams(envSelected);
+
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
+
+        List<PCStream> pcListUpdated = pcList;
+        if(topicNameSearch!=null && topicNameSearch.length()>0) {
+            final String topicSearchFilter = topicNameSearch;
+            pcListUpdated = pcList.stream()
+                    .filter(pcStream -> pcStream.getTopicName().contains(topicSearchFilter))
+                    .collect(Collectors.toList());
+        }
+        return getPCStreamsPaginated(pageNo,pcListUpdated);
+    }
+
+    public List<PCStream> getPCStreamsPaginated(String pageNo, List<PCStream> aclListMap){
+        List<PCStream> aclListMapUpdated = new ArrayList<>();
+
+        int totalRecs = aclListMap.size();
+        int recsPerPage = 20;
+
+        int totalPages = aclListMap.size()/recsPerPage + (aclListMap.size()%recsPerPage > 0 ? 1 : 0);
+
+        int requestPageNo = Integer.parseInt(pageNo);
+        int startVar = (requestPageNo-1) * recsPerPage;
+        int lastVar = (requestPageNo) * (recsPerPage);
+        topicCounter = 0;
+        for(int i=0;i<totalRecs;i++) {
+            int counterInc = counterIncrement();
+            if(i>=startVar && i<lastVar) {
+                PCStream mp = aclListMap.get(i);
+                mp.setSequence(counterInc + "");
+
+                mp.setTotalNoPages(totalPages + "");
+                List<String> numList = new ArrayList<>();
+                for (int k = 1; k <= totalPages; k++) {
+                    numList.add("" + k);
+                }
+                mp.setAllPageNos(numList);
+                aclListMapUpdated.add(mp);
+            }
+        }
+        return aclListMapUpdated;
     }
 
     public List<TopicRequest> getTopicRequests() {
@@ -206,6 +248,47 @@ public class TopicControllerService {
             updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
+    }
+
+    public List<String> getAllTopics(String env) {
+
+        UserDetails userDetails = getUserDetails();
+        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
+        String authority = ga.getAuthority();
+
+        if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
+        } else {
+            List<String> topicsList1 = new ArrayList();
+            return topicsList1;
+        }
+
+        Env envSelected = createTopicHelper.selectEnvDetails(env);
+        String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+
+        String uriGetTopicsFull = clusterConnUrl + uriGetTopics + bootstrapHost;
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
+        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<Set> s = restTemplate.exchange
+                (uriGetTopicsFull, HttpMethod.GET, entity, Set.class);
+
+        List<String> topicsList = new ArrayList(s.getBody());
+
+        List<String> topicsListNew = new ArrayList();
+
+        int indexOfDots = 0;
+        for (String s1 : topicsList) {
+            indexOfDots = s1.indexOf(":::::");
+            if(indexOfDots>0)
+                topicsListNew.add(s1.substring(0,indexOfDots));
+        }
+
+        return topicsListNew;
     }
 
     public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) {

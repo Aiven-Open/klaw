@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //        }
         List<UserInfo> users;
         try {
-            manageTopics.loadDb();
+            //manageTopics.loadDb();
             users = manageTopics.selectAllUsersInfo();
         }catch(Exception e){
             throw new Exception("Please check if tables are created.");

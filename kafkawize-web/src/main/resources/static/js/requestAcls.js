@@ -80,6 +80,23 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 );
             }
 
+            $scope.getAllTopics = function() {
+
+                    $scope.alltopics = null;
+                            $http({
+                                method: "GET",
+                                url: "getTopicsOnly?env="+$scope.addAcl.envName.name,
+                                headers : { 'Content-Type' : 'application/json' }
+                            }).success(function(output) {
+                                $scope.alltopics = output;
+                            }).error(
+                                function(error)
+                                {
+                                    $scope.alert = error;
+                                }
+                            );
+                        }
+
     $scope.getExecAuth = function() {
     	//alert("onload");
         $http({
@@ -116,7 +133,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.topicDetails = output;
                 //alert($scope.topicDetails.teamname + "---");
                 if(!$scope.topicDetails.teamname){
-                        alert("There is NO team found for this topic : " +  topicName);
+                        alert("There is no team found for this topic : " +  topicName);
                         $scope.addAcl.team="";
                         addAcl.topicname.focus();
                             return;
@@ -148,7 +165,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             if(!$scope.addAcl.team || !$scope.addAcl.topicname )
             {
-                alert("Please enter a valid topic name to identify the team.");
+                alert("This topic is not owned by any team. Synchronize the metadata.");
                 return false;
             }
 

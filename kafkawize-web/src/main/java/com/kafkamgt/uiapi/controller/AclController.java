@@ -56,8 +56,9 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclInfo>> getAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
-        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo), HttpStatus.OK);
+    public ResponseEntity<List<AclInfo>> getAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
+                                                 @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
+        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

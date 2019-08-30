@@ -347,17 +347,17 @@
 					<!-- start: page -->
 						<section class="panel">
 
-							<div ng-show="userList == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="userList == null && alert != null && alert != ''" ng-init="" class="alert alert-primary">
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Alert : </strong> {{ alert }}.
 							</div>
 
-							<div ng-show="userList == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
@@ -367,6 +367,7 @@
 								<table class="table table-bordered table-striped mb-none"  ng-show="userList.length>0">
 									<thead>
 										<tr>
+											<th>Select</th>
 											<th>Username</th>
 											<th>Name</th>
 											<th>Team</th>
@@ -375,6 +376,7 @@
 									</thead>
 									<tbody>
 										<tr ng-repeat="userDetails in userList" class="gradeX">
+											<td><input type="radio" name="envGroup" ng-model="deleteUser.idval" value="{{userDetails.username}}"/></td>
 											<td>{{ userDetails.username }}</td>
 											<td>{{ userDetails.fullname }}</td>
 											<td>{{ userDetails.team }}</td>
@@ -387,6 +389,8 @@
 
 							</div>
 							<br>
+							<button ng-show="statusauthexectopics=='Authorized'" type="button" ng-click="deleteUser();" class="mb-xs mt-xs mr-xs btn btn-info">Delete User</button>
+
 							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addUsers">Add User</a></button>
 
 						</section>

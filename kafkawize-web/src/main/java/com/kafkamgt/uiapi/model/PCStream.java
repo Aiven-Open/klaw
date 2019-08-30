@@ -13,4 +13,8 @@ public class PCStream {
     String env;
     List<String> producerTeams;
     List<String> consumerTeams;
+    private String totalNoPages;
+    private List<String> allPageNos;
+    private List<String> possibleTeams;
+    private String sequence;
 }

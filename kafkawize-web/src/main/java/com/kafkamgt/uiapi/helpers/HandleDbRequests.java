@@ -87,6 +87,10 @@ public interface HandleDbRequests {
 
     public String deleteAclRequest(String req_no);
 
+    public String deleteClusterRequest(String clusterId);
+
+    public String deleteUserRequest(String userId);
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env);
 
     public String deletePrevAclRecs(List<Acl> aclReqs);

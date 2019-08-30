@@ -193,6 +193,14 @@ public class ManageTopics {
         return handleDbRequests.deleteAclRequest(req_no);
     }
 
+    public String deleteClusterRequest(String clusterId){
+        return handleDbRequests.deleteClusterRequest(clusterId);
+    }
+
+    public String deleteUserRequest(String userId){
+        return handleDbRequests.deleteUserRequest(userId);
+    }
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
     }

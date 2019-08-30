@@ -160,7 +160,7 @@ public class AclControllerService {
         return "{\"result\":\""+updateAclReqStatus+"\"}";
     }
 
-    public List<AclInfo> getAcls(String env, String pageNo) {
+    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch) {
 
         UserDetails userDetails = getUserDetails();
 
@@ -172,6 +172,9 @@ public class AclControllerService {
             List<AclInfo> topicsList1 = new ArrayList();
             return topicsList1;
         }
+
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
 
         Env envSelected= createTopicHelper.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
@@ -192,68 +195,93 @@ public class AclControllerService {
         // Get Sync acls
         List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
 
+        List<Acl> topicFilteredList = aclsFromSOT;
+        // Filter topics on topic name for search
+        if(topicNameSearch!=null && topicNameSearch.length()>0) {
+            final String topicSearchFilter = topicNameSearch;
+            topicFilteredList = aclsFromSOT.stream()
+                    .filter(acl -> acl.getTopicname().contains(topicSearchFilter)
+                    )
+                    .collect(Collectors.toList());
+        }
+
+        aclsFromSOT = topicFilteredList;
         topicCounter = 0;
 
-        return getAclsList(pageNo,env,aclList,aclsFromSOT);
+        return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT));
     }
 
-    public List<AclInfo> getAclsList(String pageNo, String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT){
+    public List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT){
 
-        int totalRecs = aclList.size();
-        int recsPerPage = 20;
-
-        int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
-
-        int requestPageNo = Integer.parseInt(pageNo);
-
-        List<AclInfo> aclListMap = new ArrayList<>();
-        int startVar = (requestPageNo-1) * recsPerPage;
-        int lastVar = (requestPageNo) * (recsPerPage);
-
-        //  LOG.info("------- aclList : "+aclList.size() + "  aclsFromSOT" +aclsFromSOT.size());
-
-        for(int i=0;i<totalRecs;i++){
-            int counterInc = counterIncrement();
-            if(i>=startVar && i<lastVar) {
-                AclInfo mp = new AclInfo();
-                mp.setSequence(counterInc + "");
+        List<AclInfo> aclListMap = new ArrayList<>() ;
+        AclInfo mp = new AclInfo();
+        boolean addRecord;
+        for(HashMap<String,String> aclListItem : aclList)
+        {
+            addRecord = false;
+            for(Acl aclSotItem : aclsFromSOT)
+            {
+                mp = new AclInfo();
                 mp.setEnvironment(env);
-                HashMap<String,String> aclListItem = aclList.get(i);
-
                 String tmpPermType=aclListItem.get("operation");
 
-                //  LOG.info(aclListItem+"-------tmpPermType "+tmpPermType);
                 if(tmpPermType.equals("WRITE"))
                     mp.setTopictype("Producer");
                 else if(tmpPermType.equals("READ"))
                     mp.setTopictype("Consumer");
 
-                for(Acl aclSotItem : aclsFromSOT){
-                    String acl_ssl = aclSotItem.getAclssl();
-                    if(acl_ssl==null)
-                        acl_ssl="User:*";
+                String acl_ssl = aclSotItem.getAclssl();
+                if(acl_ssl==null)
+                    acl_ssl="User:*";
 
-                    String acl_host = aclSotItem.getAclip();
-                    if(acl_host==null)
-                        acl_host="*";
+                String acl_host = aclSotItem.getAclip();
+                if(acl_host==null)
+                    acl_host="*";
 
-                    if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
-                            aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
-                            aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
-                            aclSotItem.getTopictype().equals(mp.getTopictype()))
-                    {
-                        mp.setTeamname(aclSotItem.getTeamname());
-                        break;
-                    }
+                if( aclSotItem.getTopicname()!=null && (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
+                        aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
+                        aclListItem.get("host").equals(acl_host) &&
+                        aclListItem.get("principle").equals(acl_ssl) &&
+                        aclSotItem.getTopictype().equals(mp.getTopictype()))
+                {
+                    mp.setTeamname(aclSotItem.getTeamname());
+                    mp.setTopicname(aclSotItem.getTopicname());
+                    addRecord = true;
+                    break;
                 }
-
-                if(aclListItem.get("resourceType").toLowerCase().equals("group"))
+            }
+            if(addRecord)
+            {
+                if (aclListItem.get("resourceType").toLowerCase().equals("group")) {
                     mp.setConsumergroup(aclListItem.get("resourceName"));
-                else if(aclListItem.get("resourceType").toLowerCase().equals("topic"))
+                } else if (aclListItem.get("resourceType").toLowerCase().equals("topic"))
                     mp.setTopicname(aclListItem.get("resourceName"));
 
                 mp.setAcl_ip(aclListItem.get("host"));
                 mp.setAcl_ssl(aclListItem.get("principle"));
+                aclListMap.add(mp);
+            }
+        }
+
+        return aclListMap;
+    }
+
+    public List<AclInfo> getAclsList(String pageNo, List<AclInfo> aclListMap){
+        List<AclInfo> aclListMapUpdated = new ArrayList<>();
+
+        int totalRecs = aclListMap.size();
+        int recsPerPage = 20;
+
+        int totalPages = aclListMap.size()/recsPerPage + (aclListMap.size()%recsPerPage > 0 ? 1 : 0);
+
+        int requestPageNo = Integer.parseInt(pageNo);
+        int startVar = (requestPageNo-1) * recsPerPage;
+        int lastVar = (requestPageNo) * (recsPerPage);
+        for(int i=0;i<totalRecs;i++) {
+            int counterInc = counterIncrement();
+            if(i>=startVar && i<lastVar) {
+                AclInfo mp = aclListMap.get(i);
+                mp.setSequence(counterInc + "");
 
                 mp.setTotalNoPages(totalPages + "");
                 List<String> numList = new ArrayList<>();
@@ -261,12 +289,10 @@ public class AclControllerService {
                     numList.add("" + k);
                 }
                 mp.setAllPageNos(numList);
-                aclListMap.add(mp);
+                aclListMapUpdated.add(mp);
             }
-
         }
-
-        return aclListMap;
+        return aclListMapUpdated;
     }
 
     public List<AclInfo> getSyncAcls(String env, String pageNo) {

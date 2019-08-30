@@ -378,19 +378,27 @@
 									<div class="form-group">
 										<label class="col-md-3 control-label">Select Cluster</label>
 										<div class="col-md-6">
-											<select class="form-control mb-md" ng-model="addAcl.envName" ng-options="env as env.name for env in allenvs">
+											<select class="form-control mb-md" ng-blur="getAllTopics()"  ng-model="addAcl.envName" ng-options="env as env.name for env in allenvs">
 
 											</select>
 										</div>
 									</div>
 
-
 								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Name</label>
+									<label class="col-md-3 control-label">Select Topic</label>
 									<div class="col-md-6">
-										<input ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter an existing topic name">
+										<select class="form-control mb-md"  ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" ng-options="o as o for o in alltopics">
+
+										</select>
 									</div>
 								</div>
+
+								<!--<div class="form-group">-->
+									<!--<label class="col-md-3 control-label">Topic Name</label>-->
+									<!--<div class="col-md-6">-->
+										<!--<input ng-model="addAcl.topicname" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter an existing topic name">-->
+									<!--</div>-->
+								<!--</div>-->
 
 								<div class="form-group">
 									<label class="col-md-3 control-label">ACL Type</label>
