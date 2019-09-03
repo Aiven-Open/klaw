@@ -20,6 +20,10 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
             var serviceInput = {};
 
+            if($scope.addTopic.topicpartitions ==null && $scope.addTopic.topicpartitions.length<0){
+                alert("Please fill in topic partitions");
+                return;
+            }
             if(($scope.addTopic.acl_ip !=null && $scope.addTopic.acl_ip.length>0) ||
              ($scope.addTopic.acl_ssl !=null && $scope.addTopic.acl_ssl.length>0)){}
              else
@@ -43,7 +47,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['acl_ip'] = $scope.addTopic.acl_ip;
             serviceInput['acl_ssl'] = $scope.addTopic.acl_ssl;
 
-            if (!window.confirm("Are you sure, you would like to create the topic : "
+            if (!window.confirm("Are you sure, you would like to request the topic : "
                 +  $scope.addTopic.topicname  +
                 "\nPartitions : " + $scope.addTopic.topicpartitions +
                 "\nEnv : " + $scope.addTopic.envName.name +

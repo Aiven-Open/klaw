@@ -149,7 +149,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 url: "addNewUser",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addNewUser' : serviceInput },
-                data: {'addNewUser' : serviceInput}
+                data: serviceInput
             }).success(function(output) {
                 $scope.alert = "New User Request : "+output.result;
             }).error(
@@ -190,7 +190,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         url: "addNewTeam",
                         headers : { 'Content-Type' : 'application/json' },
                         params: {'addNewTeam' : serviceInput },
-                        data: {'addNewTeam' : serviceInput}
+                        data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "New User Team : "+output.result;
                     }).error(

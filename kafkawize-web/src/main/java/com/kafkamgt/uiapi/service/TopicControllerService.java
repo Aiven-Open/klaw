@@ -12,22 +12,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.*;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 @Service
 public class TopicControllerService {
     private static Logger LOG = LoggerFactory.getLogger(TopicControllerService.class);
+
+    @Autowired
+    ClusterApiService clusterApiService;
 
     @Value("${clusterapi.url}")
     private String clusterConnUrl;
@@ -37,8 +41,6 @@ public class TopicControllerService {
 
     @Value("${clusterapi.password}")
     private String clusterApiPwd;
-
-    String uriCreateTopics = "/topics/createTopics";
 
     String uriGetTopics = "/topics/getTopics/";
 
@@ -221,26 +223,7 @@ public class TopicControllerService {
 
         TopicRequest topicRequest = createTopicHelper.selectTopicRequestsForTopic(topicName, env);
 
-        RestTemplate restTemplate = new RestTemplate();
-
-        MultiValueMap<String, String> params= new LinkedMultiValueMap<>();
-
-        Env envSelected= createTopicHelper.selectEnvDetails(topicRequest.getEnvironment());
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-        params.add("env",bootstrapHost);
-
-        params.add("topicName",topicName);
-        params.add("partitions", topicRequest.getTopicpartitions());
-        params.add("rf", topicRequest.getReplicationfactor());
-        params.add("acl_ip", topicRequest.getAcl_ip());
-        params.add("acl_ssl", topicRequest.getAcl_ssl());
-
-        HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity( clusterConnUrl+uriCreateTopics, request , String.class );
+        ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
 
         String updateTopicReqStatus = response.getBody();
 
@@ -265,19 +248,7 @@ public class TopicControllerService {
         Env envSelected = createTopicHelper.selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
-        String uriGetTopicsFull = clusterConnUrl + uriGetTopics + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uriGetTopicsFull, HttpMethod.GET, entity, Set.class);
-
-        List<String> topicsList = new ArrayList(s.getBody());
+        List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         List<String> topicsListNew = new ArrayList();
 
@@ -287,7 +258,6 @@ public class TopicControllerService {
             if(indexOfDots>0)
                 topicsListNew.add(s1.substring(0,indexOfDots));
         }
-
         return topicsListNew;
     }
 
@@ -309,23 +279,12 @@ public class TopicControllerService {
         Env envSelected= createTopicHelper.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
-        String uriGetTopicsFull = clusterConnUrl + uriGetTopics + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uriGetTopicsFull, HttpMethod.GET, entity, Set.class);
+        List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         // Get Sync topics
         List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
 
         topicCounter = 0;
-        List<String> topicsList = new ArrayList(s.getBody());
 
         List<String> topicFilteredList = topicsList;
         // Filter topics on topic name for search
@@ -364,20 +323,9 @@ public class TopicControllerService {
         Env envSelected= createTopicHelper.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
-        String uri = clusterConnUrl + uriGetTopics + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uri, HttpMethod.GET, entity, Set.class);
+        List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         topicCounter = 0;
-        List<String> topicsList = new ArrayList(s.getBody());
 
         List<String> topicFilteredList = topicsList;
         // Filter topics on topic name for search

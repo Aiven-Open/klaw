@@ -82,7 +82,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     url: "addNewEnv",
                     headers : { 'Content-Type' : 'application/json' },
                     params: {'addNewEnv' : serviceInput },
-                    data: {'addNewEnv' : serviceInput}
+                    data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New Environment : "+output.result;
                 }).error(

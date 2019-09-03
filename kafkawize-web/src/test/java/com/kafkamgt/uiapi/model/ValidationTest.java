@@ -1,11 +1,8 @@
-package model;
-
+package com.kafkamgt.uiapi.model;
 
 import com.kafkamgt.uiapi.dao.*;
 import org.junit.Test;
-
 import java.util.ArrayList;
-
 import static org.junit.Assert.assertNotNull;
 
 public class ValidationTest {

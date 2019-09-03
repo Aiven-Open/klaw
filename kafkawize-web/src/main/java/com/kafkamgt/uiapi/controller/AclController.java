@@ -24,6 +24,10 @@ public class AclController {
     @Autowired
     AclControllerService aclControllerService;
 
+    public AclController(AclControllerService aclControllerService){
+        this.aclControllerService=aclControllerService;
+    }
+
     @PostMapping(value = "/createAcl")
     public ResponseEntity<String> createAcl(@RequestBody AclRequests addAclRequest) {
         return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
@@ -58,11 +62,11 @@ public class AclController {
     @RequestMapping(value = "/getAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<AclInfo>> getAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
                                                  @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
-        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch), HttpStatus.OK);
+        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch, false), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
-        return new ResponseEntity<>(aclControllerService.getSyncAcls(env, pageNo), HttpStatus.OK);
+        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, null, true), HttpStatus.OK);
     }
 }

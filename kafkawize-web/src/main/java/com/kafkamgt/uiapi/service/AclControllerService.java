@@ -1,27 +1,23 @@
 package com.kafkamgt.uiapi.service;
 
 
-import com.google.gson.Gson;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.model.AclInfo;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 
@@ -30,21 +26,11 @@ public class AclControllerService {
 
     private static Logger LOG = LoggerFactory.getLogger(AclControllerService.class);
 
-    private String uriCreateAcls = "/topics/createAcls";
-
-    private String uriGetAcls = "/topics/getAcls/";
-
     @Autowired
     ManageTopics createTopicHelper;
 
-    @Value("${clusterapi.url}")
-    String clusterConnUrl;
-
-    @Value("${clusterapi.username}")
-    String clusterApiUser;
-
-    @Value("${clusterapi.password}")
-    String clusterApiPwd;
+    @Autowired
+    ClusterApiService clusterApiService;
 
     private String getUserName(){
         UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -129,28 +115,8 @@ public class AclControllerService {
     public String approveAclRequests(String req_no) {
 
         AclRequests aclReq = createTopicHelper.selectAcl(req_no);
-        String env = aclReq.getEnvironment();
 
-        String uri = clusterConnUrl + uriCreateAcls;
-        RestTemplate restTemplate = new RestTemplate();
-
-        MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
-
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-        params.add("env",bootstrapHost);
-        params.add("topicName",aclReq.getTopicname());
-        params.add("consumerGroup",aclReq.getConsumergroup());
-        params.add("aclType",aclReq.getTopictype());
-        params.add("acl_ip",aclReq.getAcl_ip());
-        params.add("acl_ssl",aclReq.getAcl_ssl());
-
-        HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(params, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
+        ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
 
         String updateAclReqStatus = response.getBody();
 
@@ -160,7 +126,7 @@ public class AclControllerService {
         return "{\"result\":\""+updateAclReqStatus+"\"}";
     }
 
-    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch) {
+    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) {
 
         UserDetails userDetails = getUserDetails();
 
@@ -179,18 +145,14 @@ public class AclControllerService {
         Env envSelected= createTopicHelper.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
-        String uri = clusterConnUrl + uriGetAcls + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
+        List<HashMap<String,String>> aclList ;
 
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<HashMap<String,String>>> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uri, HttpMethod.GET, entity, Set.class);
-        List<HashMap<String,String>> aclList = new ArrayList(s.getBody());
+        if(isSyncAcls)
+            aclList = clusterApiService.getAcls(bootstrapHost).stream()
+                .filter(aclItem->aclItem.get("operation").equals("READ") && aclItem.get("resourceType").equals("GROUP"))
+                .collect(Collectors.toList());
+        else
+            aclList =clusterApiService.getAcls(bootstrapHost);
 
         // Get Sync acls
         List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
@@ -208,14 +170,22 @@ public class AclControllerService {
         aclsFromSOT = topicFilteredList;
         topicCounter = 0;
 
-        return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT));
+        return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls));
     }
 
-    public List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT){
+    public List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){
 
         List<AclInfo> aclListMap = new ArrayList<>() ;
         AclInfo mp = new AclInfo();
         boolean addRecord;
+
+        List<String> teamList = new ArrayList<>();
+
+        if(isSyncAcls) {
+            createTopicHelper.selectAllTeamsOfUsers(getUserName())
+                    .forEach(teamS -> teamList.add(teamS.getTeamname()));
+        }
+
         for(HashMap<String,String> aclListItem : aclList)
         {
             addRecord = false;
@@ -223,11 +193,15 @@ public class AclControllerService {
             {
                 mp = new AclInfo();
                 mp.setEnvironment(env);
+                if(isSyncAcls) {
+                    mp.setPossibleTeams(teamList);
+                    mp.setTeamname("");
+                }
                 String tmpPermType=aclListItem.get("operation");
 
                 if(tmpPermType.equals("WRITE"))
                     mp.setTopictype("Producer");
-                else if(tmpPermType.equals("READ"))
+                else if(tmpPermType.equals("READ") && aclListItem.get("resourceType").equals("GROUP"))
                     mp.setTopictype("Consumer");
 
                 String acl_ssl = aclSotItem.getAclssl();
@@ -246,11 +220,14 @@ public class AclControllerService {
                 {
                     mp.setTeamname(aclSotItem.getTeamname());
                     mp.setTopicname(aclSotItem.getTopicname());
+                    if(isSyncAcls)
+                        mp.setReq_no(aclSotItem.getReq_no());
+
                     addRecord = true;
                     break;
                 }
             }
-            if(addRecord)
+            if(addRecord && !isSyncAcls)
             {
                 if (aclListItem.get("resourceType").toLowerCase().equals("group")) {
                     mp.setConsumergroup(aclListItem.get("resourceName"));
@@ -260,6 +237,17 @@ public class AclControllerService {
                 mp.setAcl_ip(aclListItem.get("host"));
                 mp.setAcl_ssl(aclListItem.get("principle"));
                 aclListMap.add(mp);
+            }
+            else if(isSyncAcls){
+                if (aclListItem.get("resourceType").toLowerCase().equals("group")) {
+                    mp.setConsumergroup(aclListItem.get("resourceName"));
+                } else if (aclListItem.get("resourceType").toLowerCase().equals("topic"))
+                    mp.setTopicname(aclListItem.get("resourceName"));
+
+                mp.setAcl_ip(aclListItem.get("host"));
+                mp.setAcl_ssl(aclListItem.get("principle"));
+                if(mp.getTopictype()!=null)
+                    aclListMap.add(mp);
             }
         }
 
@@ -295,127 +283,6 @@ public class AclControllerService {
         return aclListMapUpdated;
     }
 
-    public List<AclInfo> getSyncAcls(String env, String pageNo) {
-
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
-            List<AclInfo> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
-
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-
-        String uri = clusterConnUrl + uriGetAcls + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE.toString());
-        HttpEntity<Set<HashMap<String,String>>> entity = new HttpEntity<>(headers);
-
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uri, HttpMethod.GET, entity, Set.class);
-        List<HashMap<String,String>> aclListOriginal = new ArrayList(s.getBody());
-
-        List<HashMap<String,String>> aclList = aclListOriginal.stream()
-                .filter(aclItem->aclItem.get("operation").equals("READ"))
-                .collect(Collectors.toList());
-
-        // Get Sync acls
-        List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
-
-        topicCounter = 0;
-
-        return getSyncAclList(pageNo, env, aclList, aclsFromSOT);
-    }
-
-    public List<AclInfo> getSyncAclList(String pageNo, String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT){
-        int totalRecs = aclList.size();
-        int recsPerPage = 20;
-
-        int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
-
-        int requestPageNo = Integer.parseInt(pageNo);
-
-        List<AclInfo> aclListMap = new ArrayList<>();
-        int startVar = (requestPageNo-1) * recsPerPage;
-        int lastVar = (requestPageNo) * (recsPerPage);
-
-        List<String> teamList = new ArrayList<>();
-
-        createTopicHelper.selectAllTeamsOfUsers(getUserName())
-                .forEach(teamS->teamList.add(teamS.getTeamname()));
-
-        //LOG.info("------- aclList : "+aclList.size() + "  aclsFromSOT" +aclsFromSOT.size());
-
-        for(int i=0;i<totalRecs;i++){
-            int counterInc = counterIncrement();
-            if(i>=startVar && i<lastVar) {
-                AclInfo mp = new AclInfo();
-                mp.setSequence(counterInc + "");
-                HashMap<String,String> aclListItem = aclList.get(i);
-
-                String tmpPermType=aclListItem.get("operation");
-                mp.setPossibleTeams(teamList);
-                mp.setTeamname("");
-                mp.setEnvironment(env);
-
-                if(tmpPermType.equals("WRITE"))
-                    mp.setTopictype("Producer");
-                else if(tmpPermType.equals("READ"))
-                    mp.setTopictype("Consumer");
-
-                for(Acl aclSotItem : aclsFromSOT){
-                    String acl_ssl = aclSotItem.getAclssl();
-                    if(acl_ssl==null)
-                        acl_ssl="User:*";
-
-                    String acl_host = aclSotItem.getAclip();
-                    if(acl_host==null)
-                        acl_host="*";
-
-                    //  LOG.info("------- aclListItem"+aclListItem);
-                    // LOG.info("******* aclSotItem"+aclSotItem.getAclssl()+"--"+aclSotItem.getAclip()+"--"+aclSotItem.getTopicname()+"--"+aclSotItem.getConsumergroup());
-                    if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
-                            aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
-                            aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
-                            aclSotItem.getTopictype().equals(mp.getTopictype()))
-                    {
-                        mp.setTeamname(aclSotItem.getTeamname());
-                        mp.setReq_no(aclSotItem.getReq_no());
-                        break;
-                    }
-
-                }
-
-                if(aclListItem.get("resourceType").toLowerCase().equals("group"))
-                    mp.setConsumergroup(aclListItem.get("resourceName"));
-                else if(aclListItem.get("resourceType").toLowerCase().equals("topic"))
-                    mp.setTopicname(aclListItem.get("resourceName"));
-
-                mp.setAcl_ip(aclListItem.get("host"));
-                mp.setAcl_ssl(aclListItem.get("principle"));
-
-                mp.setTotalNoPages(totalPages + "");
-                List<String> numList = new ArrayList<>();
-                for (int k = 1; k <= totalPages; k++) {
-                    numList.add("" + k);
-                }
-                mp.setAllPageNos(numList);
-                aclListMap.add(mp);
-            }
-
-        }
-
-        return aclListMap;
-    }
-
     int topicCounter=0;
     public int counterIncrement()
     {
@@ -423,15 +290,7 @@ public class AclControllerService {
         return topicCounter;
     }
 
-    HttpHeaders createHeaders(String username, String password) {
-        return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
-    }
+
 
 
 }
