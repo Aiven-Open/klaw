@@ -1,13 +1,5 @@
-Kafkawize 2.0
+Kafkawize 3.1
 
 Kafkawize is a Kafka Topic management tool (A Web application) which automates the process of creating and browsing Kafka components, by introducing  roles/authorizations to users of various teams of an organization
 
-Changes include new feature Rdbms support for metastore, package restructuring, jpa/hibernate implementation, improved code quality and bug fixes.
-
-New features:
-1. Support for RDBMS store like MySql to store meta information. 1.0 only supports Apache Cassandra. It is one of the important feature which will support many customers who already have an SQL based solution.
-Changing property db.storetype=rdbms/cassandra will make the difference.
-
-Bug fixes:
-
-There are few bugs which are fixed in Topic requests, acls and schema registry modules.
+Changes include search features in almost all screens, bug fixes and code improvements.

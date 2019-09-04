@@ -233,7 +233,7 @@ public class TopicControllerService {
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
-    public List<String> getAllTopics(String env) {
+    public List<String> getAllTopics(String env) throws Exception {
 
         UserDetails userDetails = getUserDetails();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
@@ -261,7 +261,7 @@ public class TopicControllerService {
         return topicsListNew;
     }
 
-    public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) {
+    public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
         UserDetails userDetails = getUserDetails();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
@@ -305,7 +305,7 @@ public class TopicControllerService {
         return getTopicList(topicsList,topicsFromSOT,pageNo);
     }
 
-    public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) {
+    public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
         UserDetails userDetails = getUserDetails();
         GrantedAuthority ga = userDetails.getAuthorities().iterator().next();

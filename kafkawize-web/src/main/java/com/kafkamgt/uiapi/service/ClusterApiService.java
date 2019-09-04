@@ -4,6 +4,7 @@ import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,20 +61,25 @@ public class ClusterApiService {
         return aclListOriginal;
     }
 
-    public List<String> getAllTopics(String bootstrapHost){
-        String uriGetTopicsFull = clusterConnUrl + uriGetTopics + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
+    public List<String> getAllTopics(String bootstrapHost) throws Exception{
+        List<String> topicsList = null;
+        try {
+            String uriGetTopicsFull = clusterConnUrl + uriGetTopics + bootstrapHost;
+            RestTemplate restTemplate = new RestTemplate();
 
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
+            headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<Set<String>> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<Set> s = restTemplate.exchange
-                (uriGetTopicsFull, HttpMethod.GET, entity, Set.class);
+            ResponseEntity<Set> s = restTemplate.exchange
+                    (uriGetTopicsFull, HttpMethod.GET, entity, Set.class);
 
-        List<String> topicsList = new ArrayList(s.getBody());
+            topicsList = new ArrayList(s.getBody());
+        }catch(Exception e){
+            throw new KafkawizeException("Could not load topics. Check Cluster Api connection. "+e.toString());
+        }
 
         return topicsList;
     }

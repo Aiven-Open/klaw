@@ -26,30 +26,30 @@ import java.util.*;
 @RequestMapping("/")
 public class UiConfigController {
 
-    private static Logger LOG = LoggerFactory.getLogger(UiConfigController.class);
+    //private static Logger LOG = LoggerFactory.getLogger(UiConfigController.class);
 
     @Autowired
-    ManageTopics manageTopics;
+    private ManageTopics manageTopics;
 
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {
-        return new ResponseEntity<List<Env>>(manageTopics.selectAllKafkaEnvs(), HttpStatus.OK);
+        return new ResponseEntity<>(manageTopics.selectAllKafkaEnvs(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSchemaRegEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getSchemaRegEnvs() {
-        return new ResponseEntity<List<Env>>(manageTopics.selectAllSchemaRegEnvs(), HttpStatus.OK);
+        return new ResponseEntity<>(manageTopics.selectAllSchemaRegEnvs(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAllTeams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Team>> getAllTeams() {
-        return new ResponseEntity<List<Team>>(manageTopics.selectAllTeamsOfUsers(getUserName()), HttpStatus.OK);
+        return new ResponseEntity<>(manageTopics.selectAllTeamsOfUsers(getUserName()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAllTeamsSU", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Team>> getAllTeamsSU() {
 
-        return new ResponseEntity<List<Team>>(manageTopics.selectAllTeams(), HttpStatus.OK);
+        return new ResponseEntity<>(manageTopics.selectAllTeams(), HttpStatus.OK);
     }
 
     private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
@@ -90,7 +90,7 @@ public class UiConfigController {
         String execRes = manageTopics.deleteClusterRequest(clusterId);
 
         String envAddResult = "{\"result\":\""+execRes+"\"}";
-        return new ResponseEntity<String>(envAddResult, HttpStatus.OK);
+        return new ResponseEntity<>(envAddResult, HttpStatus.OK);
     }
 
     @PostMapping(value = "/deleteUserRequest")
@@ -99,7 +99,7 @@ public class UiConfigController {
         String envAddResult = "{\"result\":\"User cannot be deleted\"}";
 
         if(userId.equals("superuser") || getUserName().equals(userId))
-            return new ResponseEntity<String>(envAddResult, HttpStatus.OK);
+            return new ResponseEntity<>(envAddResult, HttpStatus.OK);
 
         String execRes = manageTopics.deleteUserRequest(userId);
         envAddResult = "{\"result\":\""+execRes+"\"}";
@@ -118,7 +118,7 @@ public class UiConfigController {
         String execRes = manageTopics.addNewUser(newUser);
 
         String userAddResult = "{\"result\":\""+execRes+"\"}";
-        return new ResponseEntity<String>(userAddResult, HttpStatus.OK);
+        return new ResponseEntity<>(userAddResult, HttpStatus.OK);
     }
 
     @PostMapping(value = "/addNewTeam")
@@ -132,13 +132,13 @@ public class UiConfigController {
         if(authority.equals("ROLE_SUPERUSER")){}
         else{
             json = "{ \"result\": \"Not Authorized\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
+            return new ResponseEntity<>(json, HttpStatus.OK);
         }
 
         String execRes = manageTopics.addNewTeam(newTeam);
 
         String teamAddResult = "{\"result\":\""+execRes+"\"}";
-        return new ResponseEntity<String>(teamAddResult, HttpStatus.OK);
+        return new ResponseEntity<>(teamAddResult, HttpStatus.OK);
     }
 
     @PostMapping(value = "/chPwd")
@@ -195,7 +195,7 @@ public class UiConfigController {
         String execRes = manageTopics.updatePassword(userDetails.getUsername(),pwdChange);
 
         String pwdChResult = "{\"result\":\""+execRes+"\"}";
-        return new ResponseEntity<String>(pwdChResult, HttpStatus.OK);
+        return new ResponseEntity<>(pwdChResult, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/showUserList", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

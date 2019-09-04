@@ -1,5 +1,5 @@
 
-Download the full bundle from https://kafkawize.com/download-kafkawize/ and follow the instructions.
+Download the full bundle Kafkawize 3.1 from https://kafkawize.com/download-kafkawize/ and follow the instructions.
 
 <b>Kafkawize</b> : A Web application which automates the process of creating and browsing Kafka topics, acls, schemas, by introducing  roles/authorizations to users of various teams of an organization
 
@@ -110,3 +110,5 @@ Download the full bundle from https://kafkawize.com/download-kafkawize/ and foll
 ![ImageFig4](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddUser.JPG)
 
 ![ImageFig17](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ActivityLog.JPG)
+
+![ImageFig18](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewUsers.JPG)

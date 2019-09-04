@@ -80,20 +80,20 @@ public class TopicController {
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env,
                                                      @RequestParam("pageNo") String pageNo,
-                                                     @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
+                                                     @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
 
         return new ResponseEntity<>(topicControllerService.getTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicsOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<String>> getTopicsOnly(@RequestParam("env") String env) {
+    public ResponseEntity<List<String>> getTopicsOnly(@RequestParam("env") String env) throws Exception {
 
         return new ResponseEntity<>(topicControllerService.getAllTopics(env), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                        @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
+                        @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
 
         return new ResponseEntity<>(topicControllerService.getSyncTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
     }
