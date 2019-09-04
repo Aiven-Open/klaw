@@ -347,7 +347,7 @@
 
 							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Well done.</strong> {{ alert }}.
+								<strong>Alert : </strong> {{ alert }}.
 							</div>
 
 							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
@@ -362,20 +362,20 @@
 								<table class="table table-bordered table-striped mb-none"  ng-show="aclRequests.length >0">
 									<thead>
 										<tr>
-											<th></th>
+											<th>Select</th>
 											<th>TopicName</th>
 											<th>AclType</th>
 											<th>ConsumerGroup</th>
 											<th>Cluster</th>
 											<th>Requestor</th>
-											<th>Acl_IP</th>
-											<th>Acl_SSL</th>
-											<th>Application</th>
+											<th>Acl IP</th>
+											<th>Acl SSL</th>
+											<!--<th>Application</th>-->
 											<th>Requesting Team</th>
-											<th>Remarks</th>
-											<th>Status</th>
-											<th>Requested Time</th>
-											<th>Approving Time</th>
+											<!--<th>Remarks</th>-->
+											<!--<th>Status</th>-->
+											<!--<th>Requested Time</th>-->
+											<!--<th>Approving Time</th>-->
 										</tr>
 									</thead>
 									<tbody>
@@ -388,12 +388,12 @@
 											<td>{{ aclRequest.username }}</td>
 											<td>{{ aclRequest.acl_ip }}</td>
 											<td>{{ aclRequest.acl_ssl }}</td>
-											<td>{{ aclRequest.appname }}</td>
+											<!--<td>{{ aclRequest.appname }}</td>-->
 											<td>{{ aclRequest.requestingteam }}</td>
-											<td>{{ aclRequest.remarks }}</td>
-											<td>{{ aclRequest.aclstatus }}</td>
-											<td>{{ aclRequest.requesttime }}</td>
-											<td>{{ aclRequest.approvingtime }}</td>
+											<!--<td>{{ aclRequest.remarks }}</td>-->
+											<!--<td>{{ aclRequest.aclstatus }}</td>-->
+											<!--<td>{{ aclRequest.requesttime }}</td>-->
+											<!--<td>{{ aclRequest.approvingtime }}</td>-->
 										</tr>
 										
 									</tbody>
@@ -442,8 +442,8 @@
 
 
 		<!-- Examples -->
-		<script src="assets/javascripts/tables/examples.datatables.default.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>
+		<!--<script src="assets/javascripts/tables/examples.datatables.default.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>-->
 	</body>
 </html>

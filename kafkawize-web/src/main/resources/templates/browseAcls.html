@@ -354,7 +354,7 @@
 
 							<div ng-show="resultPages == null && alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Well done.</strong> {{ alert }}.
+								<strong>Alert : </strong> {{ alert }}.
 							</div>
 
 							<div ng-show="resultPages == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
@@ -373,15 +373,15 @@
 
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-12">
+									<div class="col-md-5">
 										<select ng-change="getAcls(1);" ng-model="getAcls.envName"
 												ng-options="env as env.name for env in allenvs" class="form-control populate">
 											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
-									<!--<div class="col-md-7">-->
-										<!--<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">-->
-									<!--</div>-->
+									<div class="col-md-7">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getAcls(1);" ng-model="getAcls.topicnamesearch">
+									</div>
 								</div>
 
 								<br>
@@ -468,8 +468,8 @@
 
 
 		<!-- Examples -->
-		<script src="assets/javascripts/tables/examples.datatables.default.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>
+		<!--<script src="assets/javascripts/tables/examples.datatables.default.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>-->
 	</body>
 </html>

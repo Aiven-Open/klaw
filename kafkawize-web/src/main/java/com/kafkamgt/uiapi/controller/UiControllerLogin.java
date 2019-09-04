@@ -143,4 +143,8 @@ public class UiControllerLogin {
         return "browseAcls.html";
     }
 
+    @RequestMapping(value = "/notFound", method = RequestMethod.GET)
+    public String notFound(ModelMap model) {
+        return "index.html";
+    }
 }

@@ -2,7 +2,7 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.helpers.ManageTopics;
+import com.kafkamgt.uiapi.service.ManageTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,8 +58,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //            System.exit(0);
 //            throw new Exception("Invalid License !!");
 //        }
+        List<UserInfo> users;
+        try {
+            //manageTopics.loadDb();
+            users = manageTopics.selectAllUsersInfo();
+        }catch(Exception e){
+            throw new Exception("Please check if tables are created.");
+        }
+        if(users.size()==0)
+            throw new Exception("Please check if insert scripts are executed.");
 
-        List<UserInfo> users = manageTopics.selectAllUsersInfo();
         Iterator<UserInfo> iter = users.iterator();
         UserDetailsManagerConfigurer<AuthenticationManagerBuilder, InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder>>.UserDetailsBuilder userDetailsBuilder = null;
 

@@ -94,7 +94,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 url: "uploadSchema",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'addSchemaRequest' : serviceInput },
-                data: {'addSchemaRequest' : serviceInput}
+                data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Schema Upload Request : "+output.result;
             }).error(

@@ -5,8 +5,9 @@
     <parent>
         <artifactId>kafkawize</artifactId>
         <groupId>com.kafkamgt.uiapi</groupId>
-        <version>3.0</version>
+        <version>3.1</version>
     </parent>
+    <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>kafkawize-web</artifactId>
@@ -43,11 +44,6 @@
             <version>8.0.15</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -91,7 +87,7 @@
         <dependency>
             <groupId>com.datastax.cassandra</groupId>
             <artifactId>cassandra-driver-extras</artifactId>
-            <version>RELEASE</version>
+            <version>3.7.2</version>
         </dependency>
 
         <dependency>

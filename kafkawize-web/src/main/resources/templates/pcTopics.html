@@ -316,62 +316,7 @@
 
 								</ul>
 							</nav>
-				
-							<!--<hr class="separator" />-->
-				<!---->
-							<!--<div class="sidebar-widget widget-tasks">-->
-								<!--<div class="widget-header">-->
-									<!--<h6>Projects</h6>-->
-									<!--<div class="widget-toggle">+</div>-->
-								<!--</div>-->
-								<!--<div class="widget-content">-->
-									<!--<ul class="list-unstyled m-none">-->
-										<!--<li><a href="#">Porto HTML5 Template</a></li>-->
-										<!--<li><a href="#">Tucson Template</a></li>-->
-										<!--<li><a href="#">Porto Admin</a></li>-->
-									<!--</ul>-->
-								<!--</div>-->
-							<!--</div>-->
-				<!---->
-							<!--<hr class="separator" />-->
-				
-							<!--<div class="sidebar-widget widget-stats">-->
-								<!--<div class="widget-header">-->
-									<!--<h6>Company Stats</h6>-->
-									<!--<div class="widget-toggle">+</div>-->
-								<!--</div>-->
-								<!--<div class="widget-content">-->
-									<!--<ul>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 1</span>-->
-											<!--<span class="stats-complete">85%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%;">-->
-													<!--<span class="sr-only">85% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 2</span>-->
-											<!--<span class="stats-complete">70%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%;">-->
-													<!--<span class="sr-only">70% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 3</span>-->
-											<!--<span class="stats-complete">2%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">-->
-													<!--<span class="sr-only">2% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-									<!--</ul>-->
-								<!--</div>-->
-							<!--</div>-->
+
 						</div>
 				
 					</div>
@@ -408,7 +353,7 @@
 
 							<div ng-show="topicstreams == null && alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Well done.</strong> {{ alert }}.
+								<strong>Alert : </strong> {{ alert }}.
 							</div>
 
 							<div ng-show="topicstreams == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
@@ -427,10 +372,13 @@
 
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-12">
-										<select ng-change="getTopicStreams();" ng-model="getTopicStreams.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
+									<div class="col-md-5">
+										<select ng-change="getTopicStreams(1);" ng-model="getTopicStreams.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
 											<option value="" selected="selected">Select Cluster</option>
 										</select>
+									</div>
+									<div class="col-md-7">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopicStreams(1);" ng-model="getTopicStreams.topicnamesearch">
 									</div>
 
 								</div>
@@ -468,6 +416,31 @@
 								</table>
 
 							</div>
+
+
+							<div class="alert alert-info" ng-show="topicstreams.length==0">
+								No Producers Consumers found !!
+							</div>
+
+							<div class="row"  ng-show="resultPageSelected != null">
+								<div class="col-sm-12 col-md-6">
+
+								</div>
+								<div class="col-sm-12 col-md-6" align="right">
+									<ul class="pagination">
+										<li class="prev disabled">
+											<span class="fa fa-chevron-left"></span>
+										</li>
+										<li ng-repeat="allPages in resultPages">
+											<a href="#" ng-click="getTopicStreams(allPages)">{{allPages}}</a>
+										</li>
+										<li class="next disabled">
+											<span class="fa fa-chevron-right"></span>
+										</li>
+									</ul>
+								</div>
+							</div>
+
 						</section>
 						
 
@@ -503,8 +476,8 @@
 
 
 		<!-- Examples -->
-		<script src="assets/javascripts/tables/examples.datatables.default.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>
+		<!--<script src="assets/javascripts/tables/examples.datatables.default.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>-->
 	</body>
 </html>

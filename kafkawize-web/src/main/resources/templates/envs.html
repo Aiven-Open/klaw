@@ -424,10 +424,11 @@
 								<!--<h2 class="panel-title">Basic</h2>-->
 							<!--</header>-->
 							<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();getSchemaRegEnvs();">
-
+								<b>Kafka Environments</b><br>
 								<table class="table table-bordered table-striped mb-none">
 									<thead>
 										<tr>
+											<th>Select</th>
 											<th>Cluster</th>
 											<th>Host</th>
 											<th>Port</th>
@@ -437,6 +438,7 @@
 									</thead>
 									<tbody>
 										<tr ng-repeat="allenv in allenvs" class="gradeX">
+											<td><input type="radio" name="envGroup" ng-model="deleteEnv.idval" value="{{allenv.name}}"/></td>
 											<td>{{ allenv.name }}</td>
 											<td>{{ allenv.host }}</td>
 											<td>{{ allenv.port }}</td>
@@ -452,6 +454,7 @@
 								<table class="table table-bordered table-striped mb-none">
 									<thead>
 									<tr>
+										<th>Select</th>
 										<th>Cluster</th>
 										<th>Host</th>
 										<th>Port</th>
@@ -461,6 +464,7 @@
 									</thead>
 									<tbody>
 									<tr ng-repeat="allenv in allschenvs" class="gradeX">
+										<td><input type="radio" name="envGroup" ng-model="deleteEnv.idval" value="{{allenv.name}}"/></td>
 										<td>{{ allenv.name }}</td>
 										<td>{{ allenv.host }}</td>
 										<td>{{ allenv.port }}</td>
@@ -474,6 +478,7 @@
 							</div>
 
 							<br>
+							<button ng-show="statusauthexectopics=='Authorized'" type="button" ng-click="deleteEnv();" class="mb-xs mt-xs mr-xs btn btn-info">Delete Cluster (from metadata only)</button>
 							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addEnv">Add Cluster</a></button>
 
 						</section>
@@ -510,8 +515,8 @@
 
 
 		<!-- Examples -->
-		<script src="assets/javascripts/tables/examples.datatables.default.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>
-		<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>
+		<!--<script src="assets/javascripts/tables/examples.datatables.default.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>-->
 	</body>
 </html>

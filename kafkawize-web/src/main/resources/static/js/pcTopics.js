@@ -50,7 +50,7 @@ app.controller("pcTopicsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.getTopicStreams = function() {
+        $scope.getTopicStreams = function(pageNoSelected) {
 
             if(!$scope.getTopicStreams.envName)
                 return;
@@ -59,9 +59,13 @@ app.controller("pcTopicsCtrl", function($scope, $http, $location, $window) {
                 method: "GET",
                 url: "getTopicStreams",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'env' : $scope.getTopicStreams.envName.name}
+                params: {'env' : $scope.getTopicStreams.envName.name,
+                'pageNo' : pageNoSelected,
+                'topicnamesearch' : $scope.getTopicStreams.topicnamesearch}
             }).success(function(output) {
                 $scope.topicstreams = output;
+                $scope.resultPages = output[0].allPageNos;
+                $scope.resultPageSelected = pageNoSelected;
             }).error(
                 function(error)
                 {

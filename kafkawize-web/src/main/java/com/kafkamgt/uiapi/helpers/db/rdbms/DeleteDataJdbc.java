@@ -2,10 +2,7 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.repository.AclRepo;
-import com.kafkamgt.uiapi.repository.AclRequestsRepo;
-import com.kafkamgt.uiapi.repository.SchemaRequestRepo;
-import com.kafkamgt.uiapi.repository.TopicRequestsRepo;
+import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +22,17 @@ public class DeleteDataJdbc {
     @Autowired(required=false)
     SchemaRequestRepo schemaRequestRepo;
 
+    @Autowired(required = false)
+    EnvRepo envRepo;
+
     @Autowired(required=false)
     AclRequestsRepo aclRequestsRepo;
 
     @Autowired(required=false)
     AclRepo aclRepo;
+
+    @Autowired(required = false)
+    UserInfoRepo userInfoRepo;
 
     public String deleteTopicRequest(String topicName, String env){
         TopicRequest topicRequest = new TopicRequest();
@@ -65,6 +68,20 @@ public class DeleteDataJdbc {
         aclRequests.setReq_no(req_no);
         aclRequestsRepo.delete(aclRequests);
 
+        return "success";
+    }
+
+    public String deleteClusterRequest(String clusterId){
+        Env env = new Env();
+        env.setName(clusterId);
+        envRepo.delete(env);
+        return "success";
+    }
+
+    public String deleteUserRequest(String userId){
+        UserInfo user = new UserInfo();
+        user.setUsername(userId);
+        userInfoRepo.delete(user);
         return "success";
     }
 
