@@ -1,5 +1,8 @@
-Documentation : https://kafkawize.readthedocs.io Or 
-          Pdf : https://buildmedia.readthedocs.org/media/pdf/kafkawize/latest/kafkawize.pdf
+Documentation : https://kafkawize.readthedocs.io 
+
+Or 
+
+Pdf : https://buildmedia.readthedocs.org/media/pdf/kafkawize/latest/kafkawize.pdf
 
 Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.html#download-kafkawize-3-1
 
