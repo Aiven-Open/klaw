@@ -48,21 +48,15 @@ public class TopicControllerService {
     private ManageTopics createTopicHelper;
 
     @Autowired
+    private UtilService utilService;
+
+    @Autowired
     private Environment springEnvProps;
-
-    private String getUserName(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
-    }
-
-    private UserDetails getUserDetails(){
-        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
 
     public String createTopics(TopicRequest topicRequestReq) {
 
         LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
-        topicRequestReq.setUsername(getUserName());
+        topicRequestReq.setUsername(utilService.getUserName());
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
         int topicPartitionsInt;
@@ -105,12 +99,7 @@ public class TopicControllerService {
 
     public String updateSyncTopics(String updatedSyncTopics, String envSelected) {
 
-        UserDetails userDetails = getUserDetails();
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else
+        if(!utilService.checkAuthorizedSU())
             return "{ \"result\": \"Not Authorized\" }";
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
@@ -192,7 +181,7 @@ public class TopicControllerService {
 
     public List<TopicRequest> getTopicRequests() {
 
-        return createTopicHelper.getAllTopicRequests(getUserName());
+        return createTopicHelper.getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
@@ -201,7 +190,7 @@ public class TopicControllerService {
     }
 
     public List<TopicRequest> getCreatedTopicRequests() {
-       return createTopicHelper.getCreatedTopicRequests(getUserName());
+       return createTopicHelper.getCreatedTopicRequests(utilService.getUserName());
     }
 
     public String deleteTopicRequests(String topicName) {
@@ -228,22 +217,12 @@ public class TopicControllerService {
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,getUserName());
+            updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,utilService.getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
-
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
-        } else {
-            List<String> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
 
         Env envSelected = createTopicHelper.selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
@@ -262,16 +241,6 @@ public class TopicControllerService {
     }
 
     public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
-
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")){}
-        else {
-            List<TopicInfo> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -307,15 +276,7 @@ public class TopicControllerService {
 
     public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
-            List<TopicRequest> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
+        UserDetails userDetails = utilService.getUserDetails();
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -352,16 +313,6 @@ public class TopicControllerService {
     {
         topicCounter++;
         return topicCounter;
-    }
-
-    HttpHeaders createHeaders(String username, String password) {
-        return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
     }
 
     public List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){

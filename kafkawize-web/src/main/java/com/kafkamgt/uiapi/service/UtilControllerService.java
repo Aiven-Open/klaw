@@ -47,37 +47,37 @@ public class UtilControllerService {
         if(userDetails!=null) {
         //LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
 
-        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
+            String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
+            GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
+            String authority = ga.getAuthority();
 
-        //LOG.info("auth is " + authority);
-        String statusAuth = null;
-        String statusAuthExecTopics = null;
-        String licenseValidity=null;
+            //LOG.info("auth is " + authority);
+            String statusAuth = null;
+            String statusAuthExecTopics = null;
+            String licenseValidity=null;
 
-        int outstanding = createTopicHelper.getAllRequestsToBeApproved(userDetails.getUsername());
-        String outstandingReqs = "";
-        if(outstanding>0)
-            outstandingReqs = outstanding+"";
+            int outstanding = createTopicHelper.getAllRequestsToBeApproved(userDetails.getUsername());
+            String outstandingReqs = "";
+            if(outstanding>0)
+                outstandingReqs = outstanding+"";
 
-        if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
-            statusAuth = "Authorized";
-        } else {
-            statusAuth = "NotAuthorized";
-        }
+            if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
+                statusAuth = "Authorized";
+            } else {
+                statusAuth = "NotAuthorized";
+            }
 
-        if (authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
-            statusAuthExecTopics = "Authorized";
-        else
-            statusAuthExecTopics = "NotAuthorized";
+            if (authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
+                statusAuthExecTopics = "Authorized";
+            else
+                statusAuthExecTopics = "NotAuthorized";
 
-        return "{ \"status\": \"" + statusAuth + "\" ," +
-                " \"username\":\"" + userDetails.getUsername() + "\"," +
-                " \"teamname\": \"" + teamName + "\"," +
-                " \"companyinfo\": \"" + companyInfo + "\"," +
-                " \"notifications\": \"" + outstandingReqs + "\"," +
-                " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
+            return "{ \"status\": \"" + statusAuth + "\" ," +
+                    " \"username\":\"" + userDetails.getUsername() + "\"," +
+                    " \"teamname\": \"" + teamName + "\"," +
+                    " \"companyinfo\": \"" + companyInfo + "\"," +
+                    " \"notifications\": \"" + outstandingReqs + "\"," +
+                    " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
         }
         else return null;
     }

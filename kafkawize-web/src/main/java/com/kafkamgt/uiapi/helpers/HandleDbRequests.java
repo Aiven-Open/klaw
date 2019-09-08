@@ -91,6 +91,8 @@ public interface HandleDbRequests {
 
     public String deleteUserRequest(String userId);
 
+    public String deleteTeamRequest(String teamId);
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env);
 
     public String deletePrevAclRecs(List<Acl> aclReqs);

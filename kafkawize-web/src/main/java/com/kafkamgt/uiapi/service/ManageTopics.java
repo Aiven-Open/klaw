@@ -198,6 +198,10 @@ public class ManageTopics {
         return handleDbRequests.deleteUserRequest(userId);
     }
 
+    public String deleteTeamRequest(String teamId){
+        return handleDbRequests.deleteTeamRequest(teamId);
+    }
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
     }

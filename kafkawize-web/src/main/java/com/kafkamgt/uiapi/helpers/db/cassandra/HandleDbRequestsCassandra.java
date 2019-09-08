@@ -238,6 +238,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraDeleteHelper.deleteUserRequest(userId);
     }
 
+    @Override
+    public String deleteTeamRequest(String teamId) {
+        return cassandraDeleteHelper.deleteTeamRequest(teamId);
+    }
+
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return cassandraDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }

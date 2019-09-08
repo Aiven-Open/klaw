@@ -5,6 +5,7 @@ import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.service.ManageTopics;
+import com.kafkamgt.uiapi.service.UtilService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class UiConfigController {
     //private static Logger LOG = LoggerFactory.getLogger(UiConfigController.class);
 
     @Autowired
+    private UtilService utilService;
+
+    @Autowired
     private ManageTopics manageTopics;
 
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -43,7 +47,7 @@ public class UiConfigController {
 
     @RequestMapping(value = "/getAllTeams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Team>> getAllTeams() {
-        return new ResponseEntity<>(manageTopics.selectAllTeamsOfUsers(getUserName()), HttpStatus.OK);
+        return new ResponseEntity<>(manageTopics.selectAllTeamsOfUsers(utilService.getUserName()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAllTeamsSU", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -62,16 +66,8 @@ public class UiConfigController {
     @PostMapping(value = "/addNewEnv")
     public ResponseEntity<String> addNewEnv(@RequestBody Env newEnv){
 
-        UserDetails userDetails = getUserDetails();
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        String json = "";
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
-            json = "{ \"result\": \"Not Authorized\" }";
-            return new ResponseEntity<String>(json, HttpStatus.OK);
-        }
+        if(!utilService.checkAuthorizedSU())
+            return new ResponseEntity<>("{ \"result\": \"Not Authorized\" }", HttpStatus.OK);
 
         newEnv.setTrustStorePwd("");
         newEnv.setKeyPwd("");
@@ -81,11 +77,14 @@ public class UiConfigController {
         String execRes = manageTopics.addNewEnv(newEnv);
 
         String envAddResult = "{\"result\":\""+execRes+"\"}";
-        return new ResponseEntity<String>(envAddResult, HttpStatus.OK);
+        return new ResponseEntity<>(envAddResult, HttpStatus.OK);
     }
 
     @PostMapping(value = "/deleteClusterRequest")
     public ResponseEntity<String> deleteCluster(@RequestParam ("clusterId") String clusterId){
+
+        if(!utilService.checkAuthorizedSU())
+            return new ResponseEntity<>("{ \"result\": \"Not Authorized\" }", HttpStatus.OK);
 
         String execRes = manageTopics.deleteClusterRequest(clusterId);
 
@@ -93,12 +92,32 @@ public class UiConfigController {
         return new ResponseEntity<>(envAddResult, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/deleteTeamRequest")
+    public ResponseEntity<String> deleteTeam(@RequestParam ("teamId") String teamId){
+
+        if(!utilService.checkAuthorizedSU())
+            return new ResponseEntity<>("{ \"result\": \"Not Authorized\" }", HttpStatus.OK);
+
+        String envAddResult = "{\"result\":\"Your team cannot be deleted. Try deleting other team.\"}";
+
+        if(manageTopics.getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
+            return new ResponseEntity<>(envAddResult, HttpStatus.OK);
+
+        String execRes = manageTopics.deleteTeamRequest(teamId);
+        envAddResult = "{\"result\":\""+execRes+"\"}";
+
+        return new ResponseEntity<>(envAddResult, HttpStatus.OK);
+    }
+
     @PostMapping(value = "/deleteUserRequest")
     public ResponseEntity<String> deleteUser(@RequestParam ("userId") String userId){
 
+        if(!utilService.checkAuthorizedSU())
+            return new ResponseEntity<>("{ \"result\": \"Not Authorized\" }", HttpStatus.OK);
+
         String envAddResult = "{\"result\":\"User cannot be deleted\"}";
 
-        if(userId.equals("superuser") || getUserName().equals(userId))
+        if(userId.equals("superuser") || utilService.getUserName().equals(userId))
             return new ResponseEntity<>(envAddResult, HttpStatus.OK);
 
         String execRes = manageTopics.deleteUserRequest(userId);
@@ -109,6 +128,9 @@ public class UiConfigController {
 
     @PostMapping(value = "/addNewUser")
     public ResponseEntity<String> addNewUser(@RequestBody UserInfo newUser){
+
+        if(!utilService.checkAuthorizedSU())
+            return new ResponseEntity<>("{ \"result\": \"Not Authorized\" }", HttpStatus.OK);
 
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -124,16 +146,8 @@ public class UiConfigController {
     @PostMapping(value = "/addNewTeam")
     public ResponseEntity<String> addNewTeam(@RequestBody Team newTeam){
 
-        UserDetails userDetails = getUserDetails();
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        String json = "";
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
-            json = "{ \"result\": \"Not Authorized\" }";
-            return new ResponseEntity<>(json, HttpStatus.OK);
-        }
+        if(!utilService.checkAuthorizedSU())
+            return new ResponseEntity<>("{ \"result\": \"Not Authorized\" }", HttpStatus.OK);
 
         String execRes = manageTopics.addNewTeam(newTeam);
 
@@ -144,7 +158,7 @@ public class UiConfigController {
     @PostMapping(value = "/chPwd")
     public ResponseEntity<String> changePwd(@RequestParam ("changePwd") String changePwd){
 
-        UserDetails userDetails = getUserDetails();
+        UserDetails userDetails = utilService.getUserDetails();
 
         GsonJsonParser jsonParser = new GsonJsonParser();
         Map<String, Object> pwdMap  = jsonParser.parseMap(changePwd);
@@ -209,7 +223,7 @@ public class UiConfigController {
     @RequestMapping(value = "/getMyProfileInfo", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<UserInfo> getMyProfileInfo(){
 
-        UserInfo userList = manageTopics.getUsersInfo(getUserName());
+        UserInfo userList = manageTopics.getUsersInfo(utilService.getUserName());
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
@@ -217,7 +231,7 @@ public class UiConfigController {
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<ActivityLog>> showActivityLog(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo){
 
-        List<ActivityLog> origActivityList = manageTopics.selectActivityLog(getUserName(), env);
+        List<ActivityLog> origActivityList = manageTopics.selectActivityLog(utilService.getUserName(), env);
 
         int totalRecs = origActivityList.size();
         int recsPerPage = 20;
@@ -246,12 +260,5 @@ public class UiConfigController {
         return new ResponseEntity<>(newList, HttpStatus.OK);
     }
 
-    private String getUserName(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
-    }
 
-    private UserDetails getUserDetails(){
-        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
 }

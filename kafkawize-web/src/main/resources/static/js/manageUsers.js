@@ -99,6 +99,33 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         };
 
+        $scope.deleteTeam = function(){
+
+                if (!window.confirm("Are you sure, you would like to delete the team : "
+                                        +  $scope.deleteTeam.idval
+                                        )) {
+                                        return;
+                                    }
+
+                            $http({
+                                            method: "POST",
+                                            url: "deleteTeamRequest",
+                                            headers : { 'Content-Type' : 'application/json' },
+                                            params: {'teamId' : $scope.deleteTeam.idval },
+                                            data: {'teamId' : $scope.deleteTeam.idval}
+                                        }).success(function(output) {
+
+                                            $scope.alert = "Delete Team Request : "+output.result;
+                                            $scope.loadTeamsSU();
+
+                                        }).error(
+                                            function(error)
+                                            {
+                                                $scope.alert = error;
+                                            }
+                                        );
+            }
+
     $scope.deleteUser = function(){
 
         if (!window.confirm("Are you sure, you would like to delete the user : "
