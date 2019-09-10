@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.kafkamgt.uiapi.dao.AclRequests;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
 import com.kafkamgt.uiapi.service.AclControllerService;
 import org.slf4j.Logger;
@@ -55,18 +56,18 @@ public class AclController {
     }
 
     @PostMapping(value = "/execAclRequest")
-    public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no) {
+    public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no) throws KafkawizeException {
         return new ResponseEntity<String>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<AclInfo>> getAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                                                 @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
+                                                 @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws KafkawizeException {
         return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch, false), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) {
+    public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) throws KafkawizeException {
         return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, null, true), HttpStatus.OK);
     }
 }

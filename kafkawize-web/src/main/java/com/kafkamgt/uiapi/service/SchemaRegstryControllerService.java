@@ -1,12 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.dao.SchemaRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public class SchemaRegstryControllerService {
         return createTopicHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String execSchemaRequests(String topicName) {
+    public String execSchemaRequests(String topicName) throws KafkawizeException {
 
         StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
         topicName = strTkr.nextToken();

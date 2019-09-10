@@ -4,22 +4,18 @@ import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicPK;
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.model.TopicInfo;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -204,7 +200,7 @@ public class TopicControllerService {
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
-    public String approveTopicRequests(String topicName) {
+    public String approveTopicRequests(String topicName) throws KafkawizeException {
 
         StringTokenizer strTkr = new StringTokenizer(topicName,",");
         topicName = strTkr.nextToken();

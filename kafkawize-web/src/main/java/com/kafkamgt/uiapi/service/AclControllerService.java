@@ -4,6 +4,7 @@ package com.kafkamgt.uiapi.service;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +99,7 @@ public class AclControllerService {
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
-    public String approveAclRequests(String req_no) {
+    public String approveAclRequests(String req_no) throws KafkawizeException {
 
         AclRequests aclReq = createTopicHelper.selectAcl(req_no);
 
@@ -112,7 +113,7 @@ public class AclControllerService {
         return "{\"result\":\""+updateAclReqStatus+"\"}";
     }
 
-    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) {
+    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) throws KafkawizeException {
 
         UserDetails userDetails = utilService.getUserDetails();
 

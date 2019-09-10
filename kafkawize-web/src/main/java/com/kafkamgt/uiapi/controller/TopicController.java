@@ -3,6 +3,7 @@ package com.kafkamgt.uiapi.controller;
 
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.service.TopicControllerService;
@@ -72,7 +73,7 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/execTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) {
+    public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
 
         return new ResponseEntity<>(topicControllerService.approveTopicRequests(topicName), HttpStatus.OK);
     }
