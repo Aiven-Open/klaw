@@ -41,7 +41,7 @@ public class TopicControllerService {
     String uriGetTopics = "/topics/getTopics/";
 
     @Autowired
-    private ManageTopics createTopicHelper;
+    private ManageTopics manageTopics;
 
     @Autowired
     private UtilService utilService;
@@ -60,6 +60,21 @@ public class TopicControllerService {
         String defPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.partitions");
         String defMaxPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.maxpartitions");
         String defaultRf = springEnvProps.getProperty("kafka." + envSelected + ".default.replicationfactor");
+//        String ipAddress = topicRequestReq.getAcl_ip();
+//
+//        if(ipAddress!=null && ipAddress.length()>0) {
+//            String IPADDRESS_PATTERN =
+//                    "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+//                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+//                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+//                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+//
+//            Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+//            Matcher matcher = pattern.matcher(ipAddress);
+//            if (!matcher.matches()) {
+//                return "{\"result\":\"Error : Invalid IP Address in the request.\"}";
+//            }
+//        }
 
         if(defPartns==null)
             defPartns="1";
@@ -87,7 +102,7 @@ public class TopicControllerService {
             topicRequestReq.setTopicpartitions(defPartns);
         }
 
-        String execRes = createTopicHelper.requestForTopic(topicRequestReq);
+        String execRes = manageTopics.requestForTopic(topicRequestReq);
 
         String topicaddResult = "{\"result\":\""+execRes+"\"}";
         return topicaddResult;
@@ -124,13 +139,13 @@ public class TopicControllerService {
                 listTopics.add(t);
             }
         }
-        String execRes = createTopicHelper.addToSynctopics(listTopics);
+        String execRes = manageTopics.addToSynctopics(listTopics);
 
         return "{\"result\":\""+execRes+"\"}";
     }
 
     public List<PCStream> getTopicStreams(String envSelected, String pageNo, String topicNameSearch) {
-        List<PCStream> pcList = createTopicHelper.selectTopicStreams(envSelected);
+        List<PCStream> pcList = manageTopics.selectTopicStreams(envSelected);
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -177,16 +192,16 @@ public class TopicControllerService {
 
     public List<TopicRequest> getTopicRequests() {
 
-        return createTopicHelper.getAllTopicRequests(utilService.getUserName());
+        return manageTopics.getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
 
-        return createTopicHelper.getTopicTeam(topicName, env);
+        return manageTopics.getTopicTeam(topicName, env);
     }
 
     public List<TopicRequest> getCreatedTopicRequests() {
-       return createTopicHelper.getCreatedTopicRequests(utilService.getUserName());
+       return manageTopics.getCreatedTopicRequests(utilService.getUserName());
     }
 
     public String deleteTopicRequests(String topicName) {
@@ -195,7 +210,7 @@ public class TopicControllerService {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        String deleteTopicReqStatus = createTopicHelper.deleteTopicRequest(topicName,env);
+        String deleteTopicReqStatus = manageTopics.deleteTopicRequest(topicName,env);
 
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
@@ -206,21 +221,21 @@ public class TopicControllerService {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        TopicRequest topicRequest = createTopicHelper.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
 
         ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
 
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,utilService.getUserName());
+            updateTopicReqStatus = manageTopics.updateTopicRequest(topicRequest,utilService.getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
 
-        Env envSelected = createTopicHelper.selectEnvDetails(env);
+        Env envSelected = manageTopics.selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -233,7 +248,14 @@ public class TopicControllerService {
             if(indexOfDots>0)
                 topicsListNew.add(s1.substring(0,indexOfDots));
         }
-        return topicsListNew;
+
+        List<Topic> topicsMetadata = manageTopics.getSyncTopics(env);
+
+        topicsMetadata.forEach(topic->topicsListNew.add(topic.getTopicname()));
+
+        List<String> uniqueList = topicsListNew.stream().distinct().sorted().collect(Collectors.toList());
+
+        return uniqueList;
     }
 
     public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
@@ -241,13 +263,13 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
+        Env envSelected= manageTopics.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
 
         topicCounter = 0;
 
@@ -277,7 +299,7 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
+        Env envSelected= manageTopics.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -376,7 +398,7 @@ public class TopicControllerService {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
 
         List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;
@@ -386,7 +408,7 @@ public class TopicControllerService {
 
         List<String> teamList = new ArrayList<>();
 
-        createTopicHelper.selectAllTeamsOfUsers(userDetails.getUsername())
+        manageTopics.selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
         //String tmpTopicName = null;
         for(int i=0;i<totalRecs;i++){

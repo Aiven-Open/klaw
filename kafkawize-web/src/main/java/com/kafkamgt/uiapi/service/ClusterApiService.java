@@ -103,8 +103,8 @@ public class ClusterApiService {
             params.add("topicName", topicName);
             params.add("partitions", topicRequest.getTopicpartitions());
             params.add("rf", topicRequest.getReplicationfactor());
-            params.add("acl_ip", topicRequest.getAcl_ip());
-            params.add("acl_ssl", topicRequest.getAcl_ssl());
+//            params.add("acl_ip", topicRequest.getAcl_ip());
+//            params.add("acl_ssl", topicRequest.getAcl_ssl());
 
             HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

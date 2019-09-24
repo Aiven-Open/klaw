@@ -46,12 +46,12 @@ public class InsertData {
             tableName = "topic_requests";
             topicReqType = "Producer";
             insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname,partitions,replicationfactor,env,teamname,appname,topictype,requestor," +
-                    "requesttime, acl_ip, acl_ssl, remarks, topicstatus) " +
-                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                    "requesttime,  remarks, topicstatus) " +
+                    "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
             PreparedStatement statement = session.prepare(insertstat);
             BoundStatement boundStatement = new BoundStatement(statement);
             session.execute(boundStatement.bind(topicRequest.getTopicname(), topicRequest.getTopicpartitions(), topicRequest.getReplicationfactor(), topicRequest.getEnvironment(), topicRequest.getTeamname(), topicRequest.getAppname(),
-                    topicReqType, topicRequest.getUsername(), new Date(), topicRequest.getAcl_ip(), topicRequest.getAcl_ssl(), topicRequest.getRemarks(), "created"));
+                    topicReqType, topicRequest.getUsername(), new Date(), topicRequest.getRemarks(), "created"));
 
             // Activity log
         insertIntoActivityLogTopic(topicRequest);

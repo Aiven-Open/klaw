@@ -376,7 +376,7 @@
 							<div class="panel-body" ng-init="getAuth();getEnvs();loadTeams();">
 
 									<div class="form-group">
-										<label class="col-md-3 control-label">Select Cluster</label>
+										<label class="col-md-3 control-label">Select Cluster *</label>
 										<div class="col-md-6">
 											<select class="form-control mb-md" ng-model="addTopic.envName" ng-options="env as env.name for env in allenvs">
 
@@ -386,35 +386,35 @@
 
 
 								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Name</label>
+									<label class="col-md-3 control-label">Topic Name *</label>
 									<div class="col-md-6">
 										<input ng-model="addTopic.topicname" required type="text" placeholder="application-functionality-topic" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the topic name">
 									</div>
 								</div>
 
 								<div class="form-group">
-									<label class="col-md-3 control-label">Topic Partitions</label>
+									<label class="col-md-3 control-label">Topic Partitions *</label>
 									<div class="col-md-6">
 										<input ng-model="addTopic.topicpartitions" required type="text" placeholder="2" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter a number for topic partitions">
 									</div>
 								</div>
 
-								<div class="form-group">
-									<label class="col-md-3 control-label">ACLs IP Addresses (Producer)</label>
-									<div class="col-md-6">
-										<textarea placeholder="192.168.12.104" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the IP Addresses of Producers" ng-model="addTopic.acl_ip" rows="3"></textarea>
-									</div>
-								</div>
+								<!--<div class="form-group">-->
+									<!--<label class="col-md-3 control-label">ACLs IP Addresses (Producer)</label>-->
+									<!--<div class="col-md-6">-->
+										<!--<textarea placeholder="192.168.12.104" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the IP Addresses of Producers" ng-model="addTopic.acl_ip" rows="3"></textarea>-->
+									<!--</div>-->
+								<!--</div>-->
+
+								<!--<div class="form-group">-->
+									<!--<label class="col-md-3 control-label">ACLs Ssl DN (Producer)</label>-->
+									<!--<div class="col-md-6">-->
+										<!--<textarea placeholder="CN=cnname,OU=IS,OU=OU,OU=Services,O=Org" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the Ssl-CN certificate entry" ng-model="addTopic.acl_ssl" rows="3"></textarea>-->
+									<!--</div>-->
+								<!--</div>-->
 
 								<div class="form-group">
-									<label class="col-md-3 control-label">ACLs SSL username</label>
-									<div class="col-md-6">
-										<textarea placeholder="CN=cnname,OU=IS,OU=OU,OU=Services,O=Org" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter the Ssl-CN certificate entry" ng-model="addTopic.acl_ssl" rows="3"></textarea>
-									</div>
-								</div>
-
-								<div class="form-group">
-									<label class="col-md-3 control-label">Select Your Team</label>
+									<label class="col-md-3 control-label">Select Your Team *</label>
 									<div class="col-md-6">
 										<select class="form-control mb-md" ng-model="addTopic.team" ng-options="team as team.teamname for team in allTeams">
 
@@ -425,7 +425,7 @@
 								<div class="form-group">
 									<label class="col-md-3 control-label">Application Name</label>
 									<div class="col-md-6">
-										<input ng-model="addTopic.app" required type="text" placeholder="applicationname" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter application name">
+										<input ng-model="addTopic.app" type="text" placeholder="applicationname" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Enter application name">
 									</div>
 								</div>
 

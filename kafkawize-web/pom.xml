@@ -5,7 +5,7 @@
     <parent>
         <artifactId>kafkawize</artifactId>
         <groupId>com.kafkamgt.uiapi</groupId>
-        <version>3.1</version>
+        <version>3.2</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
