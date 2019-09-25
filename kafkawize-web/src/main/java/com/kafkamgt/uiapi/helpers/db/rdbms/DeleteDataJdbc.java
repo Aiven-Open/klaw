@@ -26,6 +26,9 @@ public class DeleteDataJdbc {
     EnvRepo envRepo;
 
     @Autowired(required=false)
+    TeamRepo teamRepo;
+
+    @Autowired(required=false)
     AclRequestsRepo aclRequestsRepo;
 
     @Autowired(required=false)
@@ -82,6 +85,13 @@ public class DeleteDataJdbc {
         UserInfo user = new UserInfo();
         user.setUsername(userId);
         userInfoRepo.delete(user);
+        return "success";
+    }
+
+    public String deleteTeamRequest(String teamId){
+        Team team = new Team();
+        team.setTeamname(teamId);
+        teamRepo.delete(team);
         return "success";
     }
 

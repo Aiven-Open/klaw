@@ -4,13 +4,12 @@ package com.kafkamgt.uiapi.service;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -30,20 +29,14 @@ public class AclControllerService {
     ManageTopics createTopicHelper;
 
     @Autowired
+    private UtilService utilService;
+
+    @Autowired
     ClusterApiService clusterApiService;
-
-    private String getUserName(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
-    }
-
-    private UserDetails getUserDetails(){
-        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
 
     public String createAcl(AclRequests aclReq) {
 
-        aclReq.setUsername(getUserName());
+        aclReq.setUsername(utilService.getUserName());
 
         String execRes = createTopicHelper.requestForAcl(aclReq);
         return "{\"result\":\""+execRes+"\"}";
@@ -51,14 +44,8 @@ public class AclControllerService {
 
     public String updateSyncAcls(String updateSyncAcls, String envSelected) {
 
-        UserDetails userDetails = getUserDetails();
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
+        if(!utilService.checkAuthorizedSU())
             return "{ \"result\": \"Not Authorized\" }";
-        }
 
         StringTokenizer strTkr = new StringTokenizer(updateSyncAcls,"\n");
         String topicSel=null,teamSelected=null,consumerGroup=null,aclIp=null,aclSsl=null,aclType=null,tmpToken=null;
@@ -100,11 +87,11 @@ public class AclControllerService {
     }
 
     public List<AclRequests> getAclRequests() {
-        return createTopicHelper.getAllAclRequests(getUserName());
+        return createTopicHelper.getAllAclRequests(utilService.getUserName());
     }
 
     public List<AclRequests> getCreatedAclRequests() {
-        return createTopicHelper.getCreatedAclRequests(getUserName());
+        return createTopicHelper.getCreatedAclRequests(utilService.getUserName());
     }
 
     public String deleteAclRequests(String req_no) {
@@ -112,7 +99,7 @@ public class AclControllerService {
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
-    public String approveAclRequests(String req_no) {
+    public String approveAclRequests(String req_no) throws KafkawizeException {
 
         AclRequests aclReq = createTopicHelper.selectAcl(req_no);
 
@@ -121,23 +108,14 @@ public class AclControllerService {
         String updateAclReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateAclReqStatus = createTopicHelper.updateAclRequest(aclReq,getUserName());
+            updateAclReqStatus = createTopicHelper.updateAclRequest(aclReq,utilService.getUserName());
 
         return "{\"result\":\""+updateAclReqStatus+"\"}";
     }
 
-    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) {
+    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) throws KafkawizeException {
 
-        UserDetails userDetails = getUserDetails();
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")){}
-        else{
-            List<AclInfo> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
+        UserDetails userDetails = utilService.getUserDetails();
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -182,7 +160,7 @@ public class AclControllerService {
         List<String> teamList = new ArrayList<>();
 
         if(isSyncAcls) {
-            createTopicHelper.selectAllTeamsOfUsers(getUserName())
+            createTopicHelper.selectAllTeamsOfUsers(utilService.getUserName())
                     .forEach(teamS -> teamList.add(teamS.getTeamname()));
         }
 
@@ -289,8 +267,4 @@ public class AclControllerService {
         topicCounter++;
         return topicCounter;
     }
-
-
-
-
 }

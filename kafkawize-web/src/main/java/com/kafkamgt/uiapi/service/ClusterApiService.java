@@ -45,19 +45,24 @@ public class ClusterApiService {
 
     String uriPostSchema = "/topics/postSchema";
 
-    public List<HashMap<String,String>> getAcls(String bootstrapHost){
-        String uri = clusterConnUrl + uriGetAcls + bootstrapHost;
-        RestTemplate restTemplate = new RestTemplate();
+    public List<HashMap<String,String>> getAcls(String bootstrapHost) throws KafkawizeException {
+        List<HashMap<String, String>> aclListOriginal = null;
+        try {
+            String uri = clusterConnUrl + uriGetAcls + bootstrapHost;
+            RestTemplate restTemplate = new RestTemplate();
 
-        HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-        headers.setContentType(MediaType.APPLICATION_JSON);
+            HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<Set<HashMap<String,String>>> entity = new HttpEntity<>(headers);
+            headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<Set<HashMap<String, String>>> entity = new HttpEntity<>(headers);
 
-        ResponseEntity<Set> resultBody = restTemplate.exchange
-                (uri, HttpMethod.GET, entity, Set.class);
-        List<HashMap<String,String>> aclListOriginal = new ArrayList(resultBody.getBody());
+            ResponseEntity<Set> resultBody = restTemplate.exchange
+                    (uri, HttpMethod.GET, entity, Set.class);
+            aclListOriginal = new ArrayList(resultBody.getBody());
+        }catch(Exception e){
+            throw new KafkawizeException("Could not load acls. Check Cluster Api connection. "+e.toString());
+        }
         return aclListOriginal;
     }
 
@@ -84,78 +89,90 @@ public class ClusterApiService {
         return topicsList;
     }
 
-    public ResponseEntity<String> approveTopicRequests(String topicName, TopicRequest topicRequest){
+    public ResponseEntity<String> approveTopicRequests(String topicName, TopicRequest topicRequest) throws KafkawizeException {
+        ResponseEntity<String> response;
+        try {
+            RestTemplate restTemplate = new RestTemplate();
 
-        RestTemplate restTemplate = new RestTemplate();
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-        MultiValueMap<String, String> params= new LinkedMultiValueMap<>();
+            Env envSelected = createTopicHelper.selectEnvDetails(topicRequest.getEnvironment());
+            String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+            params.add("env", bootstrapHost);
 
-        Env envSelected= createTopicHelper.selectEnvDetails(topicRequest.getEnvironment());
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-        params.add("env",bootstrapHost);
+            params.add("topicName", topicName);
+            params.add("partitions", topicRequest.getTopicpartitions());
+            params.add("rf", topicRequest.getReplicationfactor());
+//            params.add("acl_ip", topicRequest.getAcl_ip());
+//            params.add("acl_ssl", topicRequest.getAcl_ssl());
 
-        params.add("topicName",topicName);
-        params.add("partitions", topicRequest.getTopicpartitions());
-        params.add("rf", topicRequest.getReplicationfactor());
-        params.add("acl_ip", topicRequest.getAcl_ip());
-        params.add("acl_ssl", topicRequest.getAcl_ssl());
+            HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-
-        ResponseEntity<String> response = restTemplate.postForEntity( clusterConnUrl + uriCreateTopics, request , String.class );
-
+            response = restTemplate.postForEntity(clusterConnUrl + uriCreateTopics, request, String.class);
+        }catch(Exception e){
+            throw new KafkawizeException("Could not approve topic request. Check Cluster Api connection. "+e.toString());
+        }
         return response;
     }
 
-    public ResponseEntity<String> approveAclRequests(AclRequests aclReq){
-        String env = aclReq.getEnvironment();
-        String uri = clusterConnUrl + uriCreateAcls;
-        RestTemplate restTemplate = new RestTemplate();
+    public ResponseEntity<String> approveAclRequests(AclRequests aclReq) throws KafkawizeException {
+        ResponseEntity<String> response;
+        try {
+            String env = aclReq.getEnvironment();
+            String uri = clusterConnUrl + uriCreateAcls;
+            RestTemplate restTemplate = new RestTemplate();
 
-        MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-        params.add("env",bootstrapHost);
-        params.add("topicName",aclReq.getTopicname());
-        params.add("consumerGroup",aclReq.getConsumergroup());
-        params.add("aclType",aclReq.getTopictype());
-        params.add("acl_ip",aclReq.getAcl_ip());
-        params.add("acl_ssl",aclReq.getAcl_ssl());
+            Env envSelected = createTopicHelper.selectEnvDetails(env);
+            String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+            params.add("env", bootstrapHost);
+            params.add("topicName", aclReq.getTopicname());
+            params.add("consumerGroup", aclReq.getConsumergroup());
+            params.add("aclType", aclReq.getTopictype());
+            params.add("acl_ip", aclReq.getAcl_ip());
+            params.add("acl_ssl", aclReq.getAcl_ssl());
 
-        HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
-
+            response = restTemplate.postForEntity(uri, request, String.class);
+        }catch(Exception e){
+            throw new KafkawizeException("Could not approve acl request. Check Cluster Api connection. "+e.toString());
+        }
         return response;
     }
 
-    public ResponseEntity<String> postSchema(SchemaRequest schemaRequest, String env, String topicName){
-        String uri = clusterConnUrl + uriPostSchema;
+    public ResponseEntity<String> postSchema(SchemaRequest schemaRequest, String env, String topicName) throws KafkawizeException {
+        ResponseEntity<String> response;
+        try {
+            String uri = clusterConnUrl + uriPostSchema;
 
-        RestTemplate restTemplate = new RestTemplate();
+            RestTemplate restTemplate = new RestTemplate();
 
-        MultiValueMap<String, String> params= new LinkedMultiValueMap<String, String>();
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-        params.add("env",bootstrapHost);
+            Env envSelected = createTopicHelper.selectEnvDetails(env);
+            String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+            params.add("env", bootstrapHost);
 
-        params.add("topicName",topicName);
-        params.add("fullSchema",schemaRequest.getSchemafull());
+            params.add("topicName", topicName);
+            params.add("fullSchema", schemaRequest.getSchemafull());
 
-        HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+            HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity( uri, request , String.class );
+            response = restTemplate.postForEntity(uri, request, String.class);
+        }catch(Exception e){
+            throw new KafkawizeException("Could not post schema. Check Cluster Api connection. "+e.toString());
+        }
         return response;
     }
 

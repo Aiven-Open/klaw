@@ -4,22 +4,18 @@ import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicPK;
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.model.TopicInfo;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,24 +41,18 @@ public class TopicControllerService {
     String uriGetTopics = "/topics/getTopics/";
 
     @Autowired
-    private ManageTopics createTopicHelper;
+    private ManageTopics manageTopics;
+
+    @Autowired
+    private UtilService utilService;
 
     @Autowired
     private Environment springEnvProps;
 
-    private String getUserName(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
-    }
-
-    private UserDetails getUserDetails(){
-        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
-
     public String createTopics(TopicRequest topicRequestReq) {
 
         LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
-        topicRequestReq.setUsername(getUserName());
+        topicRequestReq.setUsername(utilService.getUserName());
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
         int topicPartitionsInt;
@@ -70,6 +60,21 @@ public class TopicControllerService {
         String defPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.partitions");
         String defMaxPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.maxpartitions");
         String defaultRf = springEnvProps.getProperty("kafka." + envSelected + ".default.replicationfactor");
+//        String ipAddress = topicRequestReq.getAcl_ip();
+//
+//        if(ipAddress!=null && ipAddress.length()>0) {
+//            String IPADDRESS_PATTERN =
+//                    "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+//                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+//                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." +
+//                            "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+//
+//            Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+//            Matcher matcher = pattern.matcher(ipAddress);
+//            if (!matcher.matches()) {
+//                return "{\"result\":\"Error : Invalid IP Address in the request.\"}";
+//            }
+//        }
 
         if(defPartns==null)
             defPartns="1";
@@ -97,7 +102,7 @@ public class TopicControllerService {
             topicRequestReq.setTopicpartitions(defPartns);
         }
 
-        String execRes = createTopicHelper.requestForTopic(topicRequestReq);
+        String execRes = manageTopics.requestForTopic(topicRequestReq);
 
         String topicaddResult = "{\"result\":\""+execRes+"\"}";
         return topicaddResult;
@@ -105,12 +110,7 @@ public class TopicControllerService {
 
     public String updateSyncTopics(String updatedSyncTopics, String envSelected) {
 
-        UserDetails userDetails = getUserDetails();
-
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else
+        if(!utilService.checkAuthorizedSU())
             return "{ \"result\": \"Not Authorized\" }";
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
@@ -139,13 +139,13 @@ public class TopicControllerService {
                 listTopics.add(t);
             }
         }
-        String execRes = createTopicHelper.addToSynctopics(listTopics);
+        String execRes = manageTopics.addToSynctopics(listTopics);
 
         return "{\"result\":\""+execRes+"\"}";
     }
 
     public List<PCStream> getTopicStreams(String envSelected, String pageNo, String topicNameSearch) {
-        List<PCStream> pcList = createTopicHelper.selectTopicStreams(envSelected);
+        List<PCStream> pcList = manageTopics.selectTopicStreams(envSelected);
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -192,16 +192,16 @@ public class TopicControllerService {
 
     public List<TopicRequest> getTopicRequests() {
 
-        return createTopicHelper.getAllTopicRequests(getUserName());
+        return manageTopics.getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
 
-        return createTopicHelper.getTopicTeam(topicName, env);
+        return manageTopics.getTopicTeam(topicName, env);
     }
 
     public List<TopicRequest> getCreatedTopicRequests() {
-       return createTopicHelper.getCreatedTopicRequests(getUserName());
+       return manageTopics.getCreatedTopicRequests(utilService.getUserName());
     }
 
     public String deleteTopicRequests(String topicName) {
@@ -210,42 +210,32 @@ public class TopicControllerService {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        String deleteTopicReqStatus = createTopicHelper.deleteTopicRequest(topicName,env);
+        String deleteTopicReqStatus = manageTopics.deleteTopicRequest(topicName,env);
 
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
-    public String approveTopicRequests(String topicName) {
+    public String approveTopicRequests(String topicName) throws KafkawizeException {
 
         StringTokenizer strTkr = new StringTokenizer(topicName,",");
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        TopicRequest topicRequest = createTopicHelper.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
 
         ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
 
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = createTopicHelper.updateTopicRequest(topicRequest,getUserName());
+            updateTopicReqStatus = manageTopics.updateTopicRequest(topicRequest,utilService.getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
 
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
-        } else {
-            List<String> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
-
-        Env envSelected = createTopicHelper.selectEnvDetails(env);
+        Env envSelected = manageTopics.selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -258,31 +248,24 @@ public class TopicControllerService {
             if(indexOfDots>0)
                 topicsListNew.add(s1.substring(0,indexOfDots));
         }
-        return topicsListNew;
+
+        List<String> uniqueList = topicsListNew.stream().distinct().sorted().collect(Collectors.toList());
+
+        return uniqueList;
     }
 
     public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")){}
-        else {
-            List<TopicInfo> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
-
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
+        Env envSelected= manageTopics.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
 
         topicCounter = 0;
 
@@ -307,20 +290,12 @@ public class TopicControllerService {
 
     public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
-        UserDetails userDetails = getUserDetails();
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-
-        if(authority.equals("ROLE_SUPERUSER")){}
-        else{
-            List<TopicRequest> topicsList1 = new ArrayList();
-            return topicsList1;
-        }
+        UserDetails userDetails = utilService.getUserDetails();
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
+        Env envSelected= manageTopics.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -352,16 +327,6 @@ public class TopicControllerService {
     {
         topicCounter++;
         return topicCounter;
-    }
-
-    HttpHeaders createHeaders(String username, String password) {
-        return new HttpHeaders() {{
-            String auth = username + ":" + password;
-            byte[] encodedAuth = Base64.encodeBase64(
-                    auth.getBytes(Charset.forName("US-ASCII")));
-            String authHeader = "Basic " + new String(encodedAuth);
-            set("Authorization", authHeader);
-        }};
     }
 
     public List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){
@@ -429,7 +394,7 @@ public class TopicControllerService {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = createTopicHelper.getSyncTopics(env);
+        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
 
         List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;
@@ -439,7 +404,7 @@ public class TopicControllerService {
 
         List<String> teamList = new ArrayList<>();
 
-        createTopicHelper.selectAllTeamsOfUsers(userDetails.getUsername())
+        manageTopics.selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
         //String tmpTopicName = null;
         for(int i=0;i<totalRecs;i++){

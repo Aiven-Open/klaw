@@ -1,12 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.dao.SchemaRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,22 +22,16 @@ public class SchemaRegstryControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    private String getUserName(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
-    }
-
-    private UserDetails getUserDetails(){
-        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    }
+    @Autowired
+    private UtilService utilService;
 
     public List<SchemaRequest> getSchemaRequests() {
-        return createTopicHelper.getAllSchemaRequests(getUserName());
+        return createTopicHelper.getAllSchemaRequests(utilService.getUserName());
     }
 
     public List<SchemaRequest> getCreatedSchemaRequests() {
 
-        return createTopicHelper.getCreatedSchemaRequests(getUserName());
+        return createTopicHelper.getCreatedSchemaRequests(utilService.getUserName());
     }
 
      public String deleteSchemaRequests(String topicName) {
@@ -51,7 +44,7 @@ public class SchemaRegstryControllerService {
         return createTopicHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
 
-    public String execSchemaRequests(String topicName) {
+    public String execSchemaRequests(String topicName) throws KafkawizeException {
 
         StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
         topicName = strTkr.nextToken();
@@ -63,7 +56,7 @@ public class SchemaRegstryControllerService {
         ResponseEntity<String> response = clusterApiService.postSchema(schemaRequest, env, topicName);
 
         if(response.getBody().contains("id\":")) {
-            return createTopicHelper.updateSchemaRequest(schemaRequest, getUserName());
+            return createTopicHelper.updateSchemaRequest(schemaRequest, utilService.getUserName());
         }
         else {
             return "Failure in uploading schema" ;
@@ -75,7 +68,7 @@ public class SchemaRegstryControllerService {
         LOG.info(schemaRequest.getTopicname()+ "---" + schemaRequest.getTeamname()+"---"+schemaRequest.getEnvironment() +
                 "---"+schemaRequest.getAppname()+"---"+
                 schemaRequest.getTeamname());
-        schemaRequest.setUsername(getUserName());
+        schemaRequest.setUsername(utilService.getUserName());
 
         return createTopicHelper.requestForSchema(schemaRequest);
     }

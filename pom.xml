@@ -5,7 +5,7 @@
 
     <groupId>com.kafkamgt.uiapi</groupId>
     <artifactId>kafkawize</artifactId>
-    <version>3.1</version>
+    <version>3.2</version>
     <modules>
         <module>kafkawize-conf</module>
         <module>kafkawize-web</module>

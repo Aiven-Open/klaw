@@ -24,13 +24,19 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 alert("Please fill in topic partitions");
                 return;
             }
-            if(($scope.addTopic.acl_ip !=null && $scope.addTopic.acl_ip.length>0) ||
-             ($scope.addTopic.acl_ssl !=null && $scope.addTopic.acl_ssl.length>0)){}
-             else
-             {
-                alert("Please fill in a valid IP address or SSL-CN Name of the Producer client");
+
+            if(isNaN($scope.addTopic.topicpartitions)){
+                alert("Please fill in a valid number for partitions for topic");
                 return;
-             }
+            }
+
+//            if(($scope.addTopic.acl_ip !=null && $scope.addTopic.acl_ip.length>0) ||
+//             ($scope.addTopic.acl_ssl !=null && $scope.addTopic.acl_ssl.length>0)){}
+//             else
+//             {
+//                alert("Please fill in a valid IP address or SSL-CN Name of the Producer client");
+//                return;
+//             }
 
              if(!$scope.addTopic.team)
               {
@@ -44,16 +50,13 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['teamname'] = $scope.addTopic.team.teamname;
             serviceInput['appname'] = $scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
-            serviceInput['acl_ip'] = $scope.addTopic.acl_ip;
-            serviceInput['acl_ssl'] = $scope.addTopic.acl_ssl;
 
-            if (!window.confirm("Are you sure, you would like to request the topic : "
-                +  $scope.addTopic.topicname  +
+            if (!window.confirm("Are you sure, you would like to request a topic ?"+
+                "\nTopic : " +  $scope.addTopic.topicname  +
                 "\nPartitions : " + $scope.addTopic.topicpartitions +
                 "\nEnv : " + $scope.addTopic.envName.name +
-                "\nTeam :" + $scope.addTopic.team.teamname +
-                "\nApp :" + $scope.addTopic.app +
-                "\nAcl :" + $scope.addTopic.acl_ip +" \nAcl SSL:"+ $scope.addTopic.acl_ssl
+                "\nTeam : " + $scope.addTopic.team.teamname +
+                "\nApp : " + $scope.addTopic.app
                 )) {
                 return;
             }
@@ -75,6 +78,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             );
 
         };
+
 
         $scope.getEnvs = function() {
 

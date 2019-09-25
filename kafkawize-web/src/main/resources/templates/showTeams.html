@@ -367,6 +367,7 @@
 								<table class="table table-bordered table-striped mb-none"  ng-show="allTeams.length>0">
 									<thead>
 										<tr>
+											<th>Select</th>
 											<th>TeamName</th>
 											<th>Team Mail</th>
 											<th>Team Phone</th>
@@ -376,6 +377,7 @@
 									</thead>
 									<tbody>
 										<tr ng-repeat="teamDetails in allTeams" class="gradeX">
+											<td><input type="radio" name="teamGroup" ng-model="deleteTeam.idval" value="{{teamDetails.teamname}}"/></td>
 											<td>{{ teamDetails.teamname }}</td>
 											<td>{{ teamDetails.teammail }}</td>
 											<td>{{ teamDetails.teamphone }}</td>
@@ -389,6 +391,8 @@
 
 							</div>
 							<br>
+							<button ng-show="statusauthexectopics=='Authorized'" type="button" ng-click="deleteTeam();" class="mb-xs mt-xs mr-xs btn btn-info">Delete Team</button>
+
 							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addUsers">Add Team</a></button>
 
 						</section>

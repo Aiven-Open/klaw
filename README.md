@@ -4,7 +4,7 @@ Or
 
 Pdf : https://buildmedia.readthedocs.org/media/pdf/kafkawize/latest/kafkawize.pdf
 
-Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.html#download-kafkawize-3-1
+Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.html#download-kafkawize
 
 
 <b>Screenshots</b>
@@ -42,3 +42,5 @@ Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.ht
 ![ImageFig17](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ActivityLog.JPG)
 
 ![ImageFig18](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewUsers.JPG)
+
+![ImageFig20](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewTeams.JPG)

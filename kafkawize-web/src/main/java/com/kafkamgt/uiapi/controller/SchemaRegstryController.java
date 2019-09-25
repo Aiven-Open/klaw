@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.controller;
 
 
 import com.kafkamgt.uiapi.dao.SchemaRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.service.SchemaRegstryControllerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,7 @@ public class SchemaRegstryController {
     }
 
     @RequestMapping(value = "/execSchemaRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> execSchemaRequests(@RequestParam("topicName") String topicName) {
+    public ResponseEntity<String> execSchemaRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
 
         String updateTopicReqStatus = "{\"result\":\"" + schemaRegstryControllerService.execSchemaRequests(topicName) + "\"}";
         return new ResponseEntity<>(updateTopicReqStatus, HttpStatus.OK);
