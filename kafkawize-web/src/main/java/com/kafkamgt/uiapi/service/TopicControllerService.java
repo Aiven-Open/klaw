@@ -249,10 +249,6 @@ public class TopicControllerService {
                 topicsListNew.add(s1.substring(0,indexOfDots));
         }
 
-        List<Topic> topicsMetadata = manageTopics.getSyncTopics(env);
-
-        topicsMetadata.forEach(topic->topicsListNew.add(topic.getTopicname()));
-
         List<String> uniqueList = topicsListNew.stream().distinct().sorted().collect(Collectors.toList());
 
         return uniqueList;
