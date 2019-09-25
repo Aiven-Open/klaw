@@ -1,4 +1,4 @@
-Kafkawize 3.1
+Kafkawize 3.2
 
 Kafkawize is a Kafka Topic management tool (A Web application) which automates the process of creating and browsing Kafka components, by introducing  roles/authorizations to users of various teams of an organization
 
