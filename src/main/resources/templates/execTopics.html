@@ -1,0 +1,446 @@
+<!doctype html>
+<html class="fixed">
+
+<html ng-app="execTopicsApp" ng-controller="execTopicsCtrl">
+
+	<head>
+
+		<!-- Basic -->
+		<meta charset="UTF-8">
+
+		<title>Approve Topics | Kafka Self-service Topic Management Portal</title>
+		<meta name="keywords" content="HTML5 Admin Template" />
+		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
+		<meta name="author" content="okler.net">
+
+		<!-- Mobile Metas -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<!-- Web Fonts  -->
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+		<!-- Vendor CSS -->
+		<link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="assets/vendor/magnific-popup/magnific-popup.css" />
+		<link rel="stylesheet" href="assets/vendor/bootstrap-datepicker/css/datepicker3.css" />
+
+		<!-- Specific Page Vendor CSS -->
+		<link rel="stylesheet" href="assets/vendor/select2/select2.css" />
+
+		<!-- Theme CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
+
+		<!-- Skin CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/skins/default.css" />
+
+		<!-- Theme Custom CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
+
+		<link rel="shortcut icon" type="image/png" href="assets/images/favicon.png" />
+
+		<!-- Head Libs -->
+		<script src="assets/vendor/modernizr/modernizr.js"></script>
+		<script src="lib/angular.min.js"></script>
+		<script src="lib/angular-route.min.js"></script>
+		<script src="js/execTopics.js"></script>
+
+	</head>
+	<body>
+		<section class="body" ng-init="getAuth()">
+
+			<!-- start: header -->
+			<header class="header">
+				<div class="logo-container">
+					<a href="index" class="logo">
+						<img src="assets/images/logonew1.png" height="35" alt="Porto Admin" />
+					</a>
+					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+					</div>
+				</div>
+			
+				<!-- start: search & user box -->
+				<div class="header-right">
+			
+					<!--<form action="pages-search-results.html" class="search nav-form">-->
+						<!--<div class="input-group input-search">-->
+							<!--<input type="text" class="form-control" name="q" id="q" placeholder="Search...">-->
+							<!--<span class="input-group-btn">-->
+								<!--<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>-->
+							<!--</span>-->
+						<!--</div>-->
+					<!--</form>-->
+			<!---->
+					<!--<span class="separator"></span>-->
+
+					<ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
+
+						<li>
+							<a href="execTopics" class="dropdown-toggle notification-icon">
+								<i class="fa fa-bell"></i>
+								<span class="badge">{{ notifications }}</span>
+							</a>
+
+
+						</li>
+					</ul>
+			
+					<span class="separator"></span>
+			
+					<div id="userbox" class="userbox">
+						<a href="#" data-toggle="dropdown">
+							<figure class="profile-picture">
+								<img src="assets/images/logged-user.png" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/logged-user.png" />
+							</figure>
+							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
+								<span class="name">{{userlogged}}</span>
+								<span class="role">{{teamname}}</span>
+							</div>
+			
+							<i class="fa custom-caret"></i>
+						</a>
+			
+						<div class="dropdown-menu">
+							<ul class="list-unstyled">
+								<li class="divider"></li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="myProfile"><i class="fa fa-user"></i> My Profile</a>
+								</li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="changePwd"><i class="fa fa-lock"></i> Change Password</a>
+								</li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="#"  ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- end: search & user box -->
+			</header>
+			<!-- end: header -->
+
+			<div class="inner-wrapper">
+				<!-- start: sidebar -->
+				<aside id="sidebar-left" class="sidebar-left">
+				
+					<div class="sidebar-header">
+						<div class="sidebar-title">
+							Navigation
+						</div>
+						<div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+							<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+						</div>
+					</div>
+				
+					<div class="nano">
+						<div class="nano-content">
+							<nav id="menu" class="nav-main" role="navigation">
+								<ul class="nav nav-main">
+									<li>
+										<a href="index">
+											<i class="fa fa-home" aria-hidden="true"></i>
+											<span>Dashboard</span>
+										</a>
+									</li>
+									<!--<li>-->
+										<!--<a href="mailbox-folder.html">-->
+											<!--<span class="pull-right label label-primary">182</span>-->
+											<!--<i class="fa fa-envelope" aria-hidden="true"></i>-->
+											<!--<span>Mailbox</span>-->
+										<!--</a>-->
+									<!--</li>-->
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-copy" aria-hidden="true"></i>
+											<span>Browse</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="browseTopics">
+													Topics
+												</a>
+											</li>
+											<li>
+												<a href="browseAcls">
+													Acls
+												</a>
+											</li>
+											<li>
+												<a href="pcTopics">
+													Producers-Consumers
+												</a>
+											</li>
+
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-tasks" aria-hidden="true"></i>
+											<span>Requests</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="requestTopics">
+													Request Topic
+												</a>
+											</li>
+											<li>
+												<a href="requestAcls">
+													Request ACL
+												</a>
+											</li>
+											<li>
+												<a href="requestSchemaUpload">
+													Request Avro Schema
+												</a>
+											</li>
+
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-list-alt" aria-hidden="true"></i>
+											<span>Clusters</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="envs">
+													Kafka
+												</a>
+											</li>
+											<li>
+												<a href="envs">
+													Schema Registry
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="addEnv">
+													Add Cluster
+												</a>
+											</li>
+
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-table" aria-hidden="true"></i>
+											<span>Audit</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="myTopicRequests">
+													My Requests
+												</a>
+											</li>
+											<li>
+												<a href="activityLog">
+													Activity Log
+												</a>
+											</li>
+
+										</ul>
+									</li>
+
+									<li class="nav-parent nav-expanded nav-active">
+										<a>
+											<i class="fa fa-map-marker" aria-hidden="true"></i>
+											<span>Approve - Execute</span>
+										</a>
+										<ul class="nav nav-children">
+											<li class="nav-active" ng-if="statusauthexectopics==='Authorized'">
+												<a href="execTopics">
+													Topics
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="execAcls">
+													Acls
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="execSchemas">
+													Schemas
+												</a>
+											</li>
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-columns" aria-hidden="true"></i>
+											<span>Users - Teams</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="showUsers">
+													View Users
+												</a>
+											</li>
+											<li>
+												<a href="showTeams">
+													View Teams
+												</a>
+											</li>
+											<li>
+												<a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
+													Add Users
+												</a>
+											</li>
+											<li>
+												<a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
+													Add Teams
+												</a>
+											</li>
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-align-left" aria-hidden="true"></i>
+											<span>Synchronize Metadata</span>
+										</a>
+										<ul class="nav nav-children">
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="synchronizeTopics">
+													Topics
+												</a>
+											</li>
+											<li  ng-if="statusauthexectopics==='Authorized'">
+												<a href="synchronizeAcls">
+													Acls
+												</a>
+											</li>
+
+										</ul>
+									</li>
+
+								</ul>
+							</nav>
+				
+
+						</div>
+				
+					</div>
+				
+				</aside>
+				<!-- end: sidebar -->
+
+				<section role="main" class="content-body">
+					<header class="page-header">
+						<h2>Approve Topics</h2>
+					
+						<div class="right-wrapper pull-right">
+							<ol class="breadcrumbs">
+								<li>
+									<a href="index">
+										<i class="fa fa-home"></i>
+									</a>
+								</li>
+								<li><span>Approve</span></li>
+								<li><span>Topics</span></li>
+							</ol>
+
+							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
+						</div>
+					</header>
+
+					<!-- start: page -->
+						<section class="panel">
+
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<strong>Ah snap!!</strong> {{ alerttop }}.
+							</div>
+
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<strong>Alert : </strong> {{ alert }}.
+							</div>
+
+							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+								<strong>Ah snap!!</strong> {{ errorMessage }}.
+							</div>
+							<!--<header class="panel-heading">-->
+								<!--<h2 class="panel-title">Basic</h2>-->
+							<!--</header>-->
+							<div  id="getTopics" class="panel-body"  ng-init="getExecAuth();getMyTopicRequests()">
+								<div ng-if="statusauthexectopics=='Authorized'">
+
+								<table class="table table-bordered table-striped mb-none"  ng-show="topicRequests.length >0">
+									<thead>
+										<tr>
+											<th>Select</th>
+											<th>TopicName</th>
+											<th>Partitions</th>
+											<th>Replication Factor</th>
+											<th>Cluster</th>
+											<th>Requestor</th>
+											<th>Team</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr ng-repeat="topicRequest in topicRequests" class="gradeX">
+											<td><input type="radio" name="topicGrp" ng-model="execTopicRequest.topicname" value="{{topicRequest.topicname}},{{topicRequest.environment}}"/></td>
+											<td>{{ topicRequest.topicname }}</td>
+											<td>{{ topicRequest.topicpartitions }}</td>
+											<td>{{ topicRequest.replicationfactor }}</td>
+											<td>{{ topicRequest.environment }}</td>
+											<td>{{ topicRequest.username }}</td>
+											<td>{{ topicRequest.teamname }}</td>
+										</tr>
+										
+									</tbody>
+								</table>
+
+								<br>
+
+									<button ng-show="topicRequests.length > 0" type="button" ng-click="execTopicRequest();" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+
+									<button ng-show="topicRequests.length > 0" type="button" ng-click="execTopicRequestReject();" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+
+								<div class="alert alert-info" ng-show="topicRequests.length==0">
+									No requests found !!
+								</div>
+								</div>
+							</div>
+						</section>
+						
+
+				</section>
+			</div>
+
+
+		</section>
+
+		<!-- Vendor -->
+		<script src="assets/vendor/jquery/jquery.js"></script>
+		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
+		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
+		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Specific Page Vendor -->
+		<script src="assets/vendor/select2/select2.js"></script>
+		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
+		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
+		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
+		
+		<!-- Theme Base, Components and Settings -->
+		<script src="assets/javascripts/theme.js"></script>
+		
+		<!-- Theme Custom -->
+		<script src="assets/javascripts/theme.custom.js"></script>
+		
+		<!-- Theme Initialization Files -->
+		<script src="assets/javascripts/theme.init.js"></script>
+
+
+		<!-- Examples -->
+		<!--<script src="assets/javascripts/tables/examples.datatables.default.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>-->
+		<!--<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>-->
+	</body>
+</html>
