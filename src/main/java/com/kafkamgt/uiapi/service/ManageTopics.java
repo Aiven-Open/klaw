@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
 
 @Configuration
@@ -82,7 +83,7 @@ public class ManageTopics {
 
     /*--------------------Select */
 
-    public int getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
 
         return handleDbRequests.getAllRequestsToBeApproved(requestor);
     }

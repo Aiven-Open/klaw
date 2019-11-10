@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 @Service
 public class UtilControllerService {
@@ -56,10 +57,17 @@ public class UtilControllerService {
             String statusAuthExecTopics = null;
             String licenseValidity=null;
 
-            int outstanding = createTopicHelper.getAllRequestsToBeApproved(userDetails.getUsername());
-            String outstandingReqs = "";
-            if(outstanding>0)
-                outstandingReqs = outstanding+"";
+            HashMap<String, String> outstanding = createTopicHelper.getAllRequestsToBeApproved(userDetails.getUsername());
+            String outstandingTopicReqs = outstanding.get("topics");
+            int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
+            String outstandingAclReqs = outstanding.get("acls");
+            int outstandingAclReqsInt = Integer.parseInt(outstandingAclReqs);
+
+            if(outstandingTopicReqsInt<=0)
+                outstandingTopicReqs = "";
+
+            if(outstandingAclReqsInt<=0)
+                outstandingAclReqs = "";
 
             if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
                 statusAuth = "Authorized";
@@ -76,7 +84,8 @@ public class UtilControllerService {
                     " \"username\":\"" + userDetails.getUsername() + "\"," +
                     " \"teamname\": \"" + teamName + "\"," +
                     " \"companyinfo\": \"" + companyInfo + "\"," +
-                    " \"notifications\": \"" + outstandingReqs + "\"," +
+                    " \"notifications\": \"" + outstandingTopicReqs + "\"," +
+                    " \"notificationsAcls\": \"" + outstandingAclReqs + "\"," +
                     " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
         }
         else return null;

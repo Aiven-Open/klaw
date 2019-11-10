@@ -5,6 +5,7 @@ import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.dao.UserInfo;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -32,7 +33,7 @@ public interface HandleDbRequests {
 
     /*--------------------Select */
 
-    public int getAllRequestsToBeApproved(String requestor);
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor);
 
     public List<TopicRequest> getAllTopicRequests(String requestor);
     public List<TopicRequest> getCreatedTopicRequests(String requestor);

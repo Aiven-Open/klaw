@@ -42,6 +42,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
                     $scope.notifications = output.notifications;
+                    $scope.notificationsAcls = output.notificationsAcls;
                    $scope.statusauthexectopics = output.statusauthexectopics;
                    $scope.alerttop = output.alertmessage;
                    if(output.companyinfo == null){
@@ -146,7 +147,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                          data: {'req_no' : $scope.execAclRequest.req_no}
                      }).success(function(output) {
 
-                         $scope.alert = "Acl Approve Request : "+output.result;
+                         $scope.alert = "Acl Decline Request : "+output.result;
                          $scope.getMyAclRequests();
 
                      }).error(

@@ -26,15 +26,20 @@ public class SelectData{
     String keyspace;
 
 
-    public int getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
 
+        HashMap<String, String> countList = new HashMap<>();
         List<AclRequests> allAclReqs = selectAclRequests(true,requestor);
         List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true,requestor);
         List<TopicRequest> allTopicRequestReqs = selectTopicRequests(true,requestor);
 
-        int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicRequestReqs.size();
+        countList.put("topics",allTopicRequestReqs.size()+"");
+        countList.put("acls",allAclReqs.size()+"");
+        countList.put("schemas",allSchemaReqs.size()+"");
 
-        return allOutstanding;
+        //int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicRequestReqs.size();
+
+        return countList;
     }
 
     public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){

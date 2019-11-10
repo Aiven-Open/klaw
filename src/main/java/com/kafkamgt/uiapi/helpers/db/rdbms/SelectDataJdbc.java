@@ -46,15 +46,20 @@ public class SelectDataJdbc {
     @Autowired(required=false)
     SchemaRequestRepo schemaRequestRepo;
 
-    public int getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
 
+        HashMap<String, String> countList = new HashMap<>();
         List<AclRequests> allAclReqs = selectAclRequests(true,requestor);
         List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true,requestor);
         List<TopicRequest> allTopicReqs = selectTopicRequests(true,requestor);
 
-        int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicReqs.size();
+        countList.put("topics",allTopicReqs.size()+"");
+        countList.put("acls",allAclReqs.size()+"");
+        countList.put("schemas",allSchemaReqs.size()+"");
 
-        return allOutstanding;
+        //int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicReqs.size();
+
+        return countList;
     }
 
     public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){

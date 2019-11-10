@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Configuration
@@ -86,7 +87,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     /*--------------------Select */
 
-    public int getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
 
         return jdbcSelectHelper.getAllRequestsToBeApproved(requestor);
     }

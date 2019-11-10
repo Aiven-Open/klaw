@@ -43,6 +43,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
              $scope.notifications = output.notifications;
+            $scope.notificationsAcls = output.notificationsAcls;
             $scope.statusauthexectopics = output.statusauthexectopics;
             $scope.alerttop = output.alertmessage;
             if(output.companyinfo == null){
