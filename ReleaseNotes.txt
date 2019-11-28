@@ -1,8 +1,8 @@
-Kafkawize 3.3
+Kafkawize 3.4
 
 Kafkawize is a Kafka Topic management tool (A Web application) which automates the process of creating and browsing Kafka components, by introducing  roles/authorizations to users of various teams of an organization
 
 Changes include
-1. Decline Topic requests
-2. Decline Acl requests
-3. Bug fix in creating topic request
+1. New page (Admin-ServerConfig) to display server configuration - application properties
+2. Default replication factor, default partitions and default max partitions can be configured from Clusters page.
+3. Couple of minor bug fixes

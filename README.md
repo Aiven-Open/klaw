@@ -44,3 +44,5 @@ Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.ht
 ![ImageFig18](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewUsers.JPG)
 
 ![ImageFig20](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewTeams.JPG)
+
+![ImageFig21](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ServerConfig.JPG)

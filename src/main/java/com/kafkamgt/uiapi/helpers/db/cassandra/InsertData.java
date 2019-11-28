@@ -1,18 +1,18 @@
 package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
-import com.datastax.driver.core.*;
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.Session;
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.dao.Topic;
-import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-
-import static org.springframework.beans.BeanUtils.copyProperties;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @Component
 public class InsertData {
@@ -21,7 +21,7 @@ public class InsertData {
 
     Session session;
 
-    @Value("${cassandradb.keyspace:@null}")
+    @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
     SelectData cassandraSelectHelper;
@@ -247,13 +247,13 @@ public class InsertData {
     public String insertIntoEnvs(Env env){
         String tableName = "env";
         String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(name, host, port, protocol, type," +
-                " keystorelocation, truststorelocation, keystorepwd, keypwd, truststorepwd ) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?);";
+                " keystorelocation, truststorelocation, keystorepwd, keypwd, truststorepwd, other_params ) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
         PreparedStatement statement = session.prepare(insertstat);
         BoundStatement boundStatement = new BoundStatement(statement);
         session.execute(boundStatement.bind(env.getName(),env.getHost(),env.getPort(),env.getProtocol(),env.getType()
         ,env.getKeyStoreLocation(),env.getTrustStoreLocation(),env.getKeyStorePwd(),
-                env.getKeyPwd(),env.getTrustStorePwd()));
+                env.getKeyPwd(),env.getTrustStorePwd(), env.getOtherParams()));
         return "success";
     }
 

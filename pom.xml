@@ -5,7 +5,7 @@
 
     <groupId>com.kafkamgt.uiapi</groupId>
     <artifactId>kafkawize</artifactId>
-    <version>3.3</version>
+    <version>3.4</version>
 
     <packaging>jar</packaging>
 
@@ -102,7 +102,12 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.10</version>
-            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.8</version>
         </dependency>
 
     </dependencies>

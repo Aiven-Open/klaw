@@ -61,6 +61,23 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
         $scope.addNewEnv = function() {
 
+
+                if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
+                {
+                    alert("Default partitions should not be empty and should be greater than 0");
+                    return;
+                }
+
+                if($scope.addNewEnv.defmaxparts.length<=0 || $scope.addNewEnv.defmaxparts<=0)
+                {
+                    alert("Maximum partitions should not be empty and should be greater than 0");
+                    return;
+                }
+                if($scope.addNewEnv.defrepfctr.length<=0 || $scope.addNewEnv.defrepfctr<=0)
+                {
+                    alert("Default replication factor should not be empty and should be greater than 0");
+                    return;
+                }
                 var serviceInput = {};
 
                 serviceInput['name'] = $scope.addNewEnv.envname;
@@ -69,10 +86,13 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['protocol'] = $scope.addNewEnv.protocol;
                 serviceInput['type'] = $scope.addNewEnv.type;
 
+                serviceInput['otherParams'] = "default.paritions=" + $scope.addNewEnv.defparts
+                 + ",max.partitions=" + $scope.addNewEnv.defmaxparts + ",replication.factor=" + $scope.addNewEnv.defrepfctr;
+
                 if (!window.confirm("Are you sure, you would like to add Env : "
                     +  $scope.addNewEnv.envname + ": " +
                     "\nHost : " + $scope.addNewEnv.host +
-                    "\nPort :" + $scope.addNewEnv.port
+                    "\nPort : " + $scope.addNewEnv.port
                     )) {
                     return;
                 }

@@ -2,8 +2,6 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
@@ -11,7 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -265,7 +266,6 @@ public class SelectDataJdbc {
 
         return activityList;
     }
-
 
     public List<Team> selectTeamsOfUsers(String username){
 

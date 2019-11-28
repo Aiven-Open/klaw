@@ -56,7 +56,7 @@ public class TopicController {
 
     @RequestMapping(value = "/getTopicTeam", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<Topic> getTopicTeam(@RequestParam("topicName") String topicName,
-                                                     @RequestParam("env") String env) {
+                                              @RequestParam("env") String env) {
        return new ResponseEntity<>(topicControllerService.getTopicTeam(topicName, env), HttpStatus.OK);
     }
 
@@ -100,7 +100,7 @@ public class TopicController {
 
     @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                        @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
+                                                            @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
 
         return new ResponseEntity<>(topicControllerService.getSyncTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
     }

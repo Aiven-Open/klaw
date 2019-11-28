@@ -1,18 +1,24 @@
 package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
-import com.datastax.driver.core.*;
-import com.datastax.driver.core.querybuilder.*;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Clause;
+import com.datastax.driver.core.querybuilder.Ordering;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -22,7 +28,7 @@ public class SelectData{
 
     Session session;
 
-    @Value("${cassandradb.keyspace:@null}")
+    @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
 
@@ -527,6 +533,7 @@ public class SelectData{
             env.setKeyStorePwd(row.getString("keystorepwd"));
             env.setKeyPwd(row.getString("keypwd"));
             env.setTrustStorePwd(row.getString("truststorepwd"));
+            env.setOtherParams(row.getString("other_params"));
 
             if(row.getString("type").equals(type))
                 envList.add(env);
@@ -557,7 +564,7 @@ public class SelectData{
             env.setKeyStorePwd(row.getString("keystorepwd"));
             env.setKeyPwd(row.getString("keypwd"));
             env.setTrustStorePwd(row.getString("truststorepwd"));
-
+            env.setOtherParams(row.getString("other_params"));
         }
         return env;
     }
