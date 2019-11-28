@@ -29,13 +29,13 @@ public class TopicControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    @Value("${clusterapi.url}")
+    @Value("${custom.clusterapi.url}")
     private String clusterConnUrl;
 
-    @Value("${clusterapi.username}")
+    @Value("${custom.clusterapi.username}")
     private String clusterApiUser;
 
-    @Value("${clusterapi.password}")
+    @Value("${custom.clusterapi.password}")
     private String clusterApiPwd;
 
     String uriGetTopics = "/topics/getTopics/";
@@ -57,10 +57,25 @@ public class TopicControllerService {
         String topicPartitions = topicRequestReq.getTopicpartitions();
         int topicPartitionsInt;
         String envSelected = topicRequestReq.getEnvironment();
-        String defPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.partitions");
-        String defMaxPartns = springEnvProps.getProperty("kafka." + envSelected + ".default.maxpartitions");
-        String defaultRf = springEnvProps.getProperty("kafka." + envSelected + ".default.replicationfactor");
 
+        Env env = manageTopics.selectEnvDetails(envSelected);
+        String otherParams = env.getOtherParams();
+        String params[] ;
+        String defPartns = null, defMaxPartns = null, defaultRf = null;
+
+        try{
+            if(otherParams!=null) {
+                params = otherParams.split(",");
+
+                if(params!=null && params.length==3) {
+                     defPartns = (params[0]).split("=")[1];
+                     defMaxPartns = (params[1]).split("=")[1];
+                     defaultRf = (params[2]).split("=")[1];
+                }
+            }
+        }catch (Exception e){
+            LOG.error("Unable to set topic partitions, setting default from properties.");
+        }
 
         if(defPartns==null)
             defPartns="1";

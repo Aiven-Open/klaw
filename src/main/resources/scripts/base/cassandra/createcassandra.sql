@@ -18,7 +18,7 @@ Create table if not exists kafkamanagementapi.teams(team text,app text,teammail 
 
 Create table if not exists kafkamanagementapi.users(userid text,pwd text,team text,roleid text,fullname text,PRIMARY KEY(userid));
 
-Create table if not exists kafkamanagementapi.env(name text,host text,port text,protocol text,type text,keystorelocation text,truststorelocation text,keystorepwd text,keypwd text,truststorepwd text,PRIMARY KEY(name));
+Create table if not exists kafkamanagementapi.env(name text,host text,port text,protocol text,type text,keystorelocation text,truststorelocation text,keystorepwd text,keypwd text,truststorepwd text, other_params text, PRIMARY KEY(name));
 
 Create table if not exists kafkamanagementapi.productdetails(name text,version text,PRIMARY KEY(name));
 

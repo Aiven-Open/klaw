@@ -19,7 +19,7 @@ import java.util.List;
 @Configuration
 public class ManageTopics {
 
-    @Value("${db.storetype}")
+    @Value("${custom.db.storetype}")
     String dbStore;
 
     HandleDbRequests handleDbRequests;

@@ -319,6 +319,21 @@
 										</ul>
 									</li>
 
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-codepen" aria-hidden="true"></i>
+											<span>Admin</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="serverConfig">
+													Server Config
+												</a>
+											</li>
+
+										</ul>
+									</li>
+
 								</ul>
 							</nav>
 				
@@ -406,7 +421,31 @@
 									<label class="col-md-3 control-label">Protocol</label>
 									<div class="col-md-6">
 										<input ng-model="addNewEnv.protocol" id="addNewEnv.protocol"
-											   ng-init="addNewEnv.protocol = 'plain'" disabled type="text" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Only cluster with PLAIN protocol supported for Admin client access">
+											   ng-init="addNewEnv.protocol = 'plain'" disabled type="text" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Default number of partitions of a topic, used when creating a topic">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Default Partitions</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.defparts" id="addNewEnv.defparts"
+											   ng-init="addNewEnv.defparts = '2'" type="text" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Default number of partitions of a topic, used when creating a topic">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Default Max Partitions</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.defmaxparts" id="addNewEnv.defmaxparts"
+											   ng-init="addNewEnv.defmaxparts = '4'"  type="text" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Default maximum number of partitions of a topic, used when creating a topic">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-md-3 control-label">Default Replication factor</label>
+									<div class="col-md-6">
+										<input ng-model="addNewEnv.defrepfctr" id="addNewEnv.defrepfctr"
+											   ng-init="addNewEnv.defrepfctr = '1'"  type="text" title="" data-toggle="tooltip" data-trigger="hover" class="form-control" data-original-title="Default replication factor of a topic, used when creating a topic">
 									</div>
 								</div>
 
@@ -461,9 +500,6 @@
 		
 		<!-- Specific Page Vendor -->
 		<script src="assets/vendor/select2/select2.js"></script>
-		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
-		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
-		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
 		
 		<!-- Theme Base, Components and Settings -->
 		<script src="assets/javascripts/theme.js"></script>

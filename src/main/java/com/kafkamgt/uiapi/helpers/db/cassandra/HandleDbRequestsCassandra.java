@@ -6,10 +6,8 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.PCStream;
-import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +41,13 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     Cluster cluster;
     Session session;
 
-    @Value("${cassandradb.url:@null}")
+    @Value("${custom.cassandradb.url:@null}")
     String clusterConnHost;
 
-    @Value("${cassandradb.port:9042}")
+    @Value("${custom.cassandradb.port:9042}")
     int clusterConnPort;
 
-    @Value("${cassandradb.keyspace:@null}")
+    @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
     public void connectToDb() {

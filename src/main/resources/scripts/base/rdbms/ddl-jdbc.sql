@@ -112,6 +112,7 @@ Create table if not exists kafkametadb.env(
 	keystorepwd varchar(25),
 	keypwd varchar(25),
 	truststorepwd varchar(25),
+	other_params varchar(250),
 	PRIMARY KEY(name)
 );
 

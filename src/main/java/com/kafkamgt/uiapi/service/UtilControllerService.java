@@ -24,16 +24,16 @@ public class UtilControllerService {
     @Autowired
     ManageTopics createTopicHelper;
 
-    @Value("${clusterapi.url}")
+    @Value("${custom.clusterapi.url}")
     String clusterConnUrl;
 
-    @Value("${clusterapi.username}")
+    @Value("${custom.clusterapi.username}")
     String clusterApiUser;
 
-    @Value("${clusterapi.password}")
+    @Value("${custom.clusterapi.password}")
     String clusterApiPwd;
 
-    @Value("${app.company.name}")
+    @Value("${custom.app.company.name}")
     String companyInfo;
 
 

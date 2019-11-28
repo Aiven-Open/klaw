@@ -13,7 +13,7 @@ public class JdbcDataSourceCondition implements Condition {
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
 
         Environment defaultEnv = conditionContext.getEnvironment();
-        if(defaultEnv.getProperty("db.storetype").equals("rdbms"))
+        if(defaultEnv.getProperty("custom.db.storetype").equals("rdbms"))
             return true;
         else
             return false;

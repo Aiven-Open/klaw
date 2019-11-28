@@ -5,7 +5,6 @@ import com.kafkamgt.uiapi.repository.AclRequestsRepo;
 import com.kafkamgt.uiapi.repository.SchemaRequestRepo;
 import com.kafkamgt.uiapi.repository.TopicRequestsRepo;
 import com.kafkamgt.uiapi.repository.UserInfoRepo;
-import com.kafkamgt.uiapi.dao.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

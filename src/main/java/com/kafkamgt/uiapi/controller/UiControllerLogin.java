@@ -138,6 +138,11 @@ public class UiControllerLogin {
         return "browseAcls.html";
     }
 
+    @RequestMapping(value = "/serverConfig", method = RequestMethod.GET)
+    public String serverConfig(ModelMap model) {
+        return "serverConfig.html";
+    }
+
     @RequestMapping(value = "/notFound", method = RequestMethod.GET)
     public String notFound(ModelMap model) {
         return "index.html";

@@ -1,8 +1,6 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.dao.Topic;
-import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

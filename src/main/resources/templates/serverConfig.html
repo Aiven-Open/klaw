@@ -1,14 +1,14 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="manageUsersApp" ng-controller="manageUsersCtrl">
+<html ng-app="serverConfigApp" ng-controller="serverConfigCtrl">
 
 	<head>
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Teams | Kafka Self-service Topic Management Portal</title>
+		<title>Server Config | Kafka Self-service Topic Management Portal</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -43,7 +43,7 @@
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="lib/angular.min.js"></script>
 		<script src="lib/angular-route.min.js"></script>
-		<script src="js/manageUsers.js"></script>
+		<script src="js/serverConfig.js"></script>
 
 	</head>
 	<body>
@@ -272,7 +272,7 @@
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-columns" aria-hidden="true"></i>
 											<span>Users - Teams</span>
@@ -283,7 +283,7 @@
 													View Users
 												</a>
 											</li>
-											<li class="nav-active">
+											<li>
 												<a href="showTeams">
 													View Teams
 												</a>
@@ -320,13 +320,13 @@
 										</ul>
 									</li>
 
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-codepen" aria-hidden="true"></i>
 											<span>Admin</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
+											<li class="nav-active">
 												<a href="serverConfig">
 													Server Config
 												</a>
@@ -348,7 +348,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Teams</h2>
+						<h2>Server Config</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -357,8 +357,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Users-Teams</span></li>
-								<li><span>Teams</span></li>
+								<li><span>Admin-Panel</span></li>
+								<li><span>Server Config</span></li>
 							</ol>
 
 							<a class="sidebar-right-toggle"><i class="fa fa-chevron-left"></i></a>
@@ -368,56 +368,50 @@
 					<!-- start: page -->
 						<section class="panel">
 
-							<div ng-show="allTeams == null && alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ alerttop }}.
 							</div>
 
-							<div ng-show="allTeams == null && alert != null && alert != ''" ng-init="" class="alert alert-primary">
+							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Alert : </strong> {{ alert }}.
 							</div>
 
-							<div ng-show="allTeams == null && errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
+							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
 
-							<div  id="getTopics" class="panel-body"  ng-init="getAuth();loadTeamsSU();">
+							<div  id="getProps" class="panel-body"  ng-init="getAuth();getAllServerProperties();">
 
-								<table class="table table-bordered table-striped mb-none"  ng-show="allTeams.length>0">
+
+								<header class="panel-heading">
+									<h2 class="panel-title">Server Properties</h2>
+								</header>
+
+								<table class="table table-bordered table-striped mb-none"  ng-show="allProps.length>0">
 									<thead>
 										<tr>
-											<th>Select</th>
-											<th>TeamName</th>
-											<th>Team Mail</th>
-											<th>Team Phone</th>
-											<th>Team Contact Person</th>
-											<th>Team Application</th>
+											<th>Key</th>
+											<th>Value</th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr ng-repeat="teamDetails in allTeams" class="gradeX">
-											<td><input type="radio" name="teamGroup" ng-model="deleteTeam.idval" value="{{teamDetails.teamname}}"/></td>
-											<td>{{ teamDetails.teamname }}</td>
-											<td>{{ teamDetails.teammail }}</td>
-											<td>{{ teamDetails.teamphone }}</td>
-											<td>{{ teamDetails.contactperson }}</td>
-											<td>{{ teamDetails.app }}</td>
+										<tr ng-repeat="oneProp in allProps" class="gradeX">
+											<td>{{ oneProp.key }}</td>
+											<td>{{ oneProp.value }}</td>
 										</tr>
 										
 									</tbody>
 								</table>
 
 
-							</div>
-							<br>
-							<button ng-show="statusauthexectopics=='Authorized'" type="button" ng-click="deleteTeam();" class="mb-xs mt-xs mr-xs btn btn-info">Delete Team</button>
 
-							<button ng-show="statusauthexectopics=='Authorized'" type="button" class="mb-xs mt-xs mr-xs btn btn-info"><a style="color: white" href="addUsers">Add Team</a></button>
+
+							</div>
 
 						</section>
-						
 
 				</section>
 			</div>
@@ -436,10 +430,7 @@
 		
 		<!-- Specific Page Vendor -->
 		<script src="assets/vendor/select2/select2.js"></script>
-		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
-		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
-		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
-		
+
 		<!-- Theme Base, Components and Settings -->
 		<script src="assets/javascripts/theme.js"></script>
 		

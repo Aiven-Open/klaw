@@ -1,8 +1,10 @@
 package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
-import com.datastax.driver.core.*;
-import com.datastax.driver.core.querybuilder.*;
+import com.datastax.driver.core.Session;
+import com.datastax.driver.core.querybuilder.Clause;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Update;
 import com.kafkamgt.uiapi.dao.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -21,7 +25,7 @@ public class UpdateData {
 
     Session session;
 
-    @Value("${cassandradb.keyspace:@null}")
+    @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
     @Autowired

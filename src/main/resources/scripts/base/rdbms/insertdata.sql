@@ -22,11 +22,11 @@ Insert into kafkametadb.teams(team,app,teammail,teamphone) values('Team3','App1'
 
 /* Insert env */
 
-Insert into kafkametadb.env(name,host,port,protocol,type) values ('DEV','localhost','9092','PLAIN','kafka');
+Insert into kafkametadb.env(name,host,port,protocol,type,other_params) values ('DEV','localhost','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
-Insert into kafkametadb.env(name,host,port,protocol,type) values ('TST','tesstserver','9092','PLAIN','kafka');
+Insert into kafkametadb.env(name,host,port,protocol,type,other_params) values ('TST','tesstserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
-Insert into kafkametadb.env(name,host,port,protocol,type) values ('TST_SSL','tesstserver','9093','SSL','kafka');
+Insert into kafkametadb.env(name,host,port,protocol,type,other_params) values ('TST_SSL','tesstserver','9093','SSL','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
 Insert into kafkametadb.env(name,host,port,protocol,type) values ('DEV_SCHEMAREGISTRY','localhost','8081','PLAIN','schemaregistry');
 

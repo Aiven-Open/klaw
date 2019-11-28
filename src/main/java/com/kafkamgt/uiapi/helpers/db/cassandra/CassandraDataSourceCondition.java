@@ -13,7 +13,7 @@ public class CassandraDataSourceCondition implements Condition {
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
 
         Environment defaultEnv = conditionContext.getEnvironment();
-        if(defaultEnv.getProperty("db.storetype").equals("cassandra"))
+        if(defaultEnv.getProperty("custom.db.storetype").equals("cassandra"))
             return true;
         else
             return false;

@@ -4,7 +4,10 @@ package com.kafkamgt.uiapi.dao;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 @Getter
@@ -43,4 +46,9 @@ public class Env implements Serializable {
 
     @Column(name = "truststorepwd")
     private String trustStorePwd;
+
+    @Column(name = "other_params")
+    private String otherParams;
+
+
 }
