@@ -45,6 +45,78 @@ public class ClusterApiService {
 
     String uriPostSchema = "/topics/postSchema";
 
+    String uriEnvStatus = "/topics/getStatus/";
+
+    String uriClusterApiStatus = "/topics/getApiStatus";
+
+    String clusterApiStatus = "OFFLINE";
+
+    public String getClusterApiStatus() throws KafkawizeException {
+        String clusterStatus = null;
+        try {
+            String uri = clusterConnUrl + uriClusterApiStatus;
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> resultBody = restTemplate.exchange
+                    (uri, HttpMethod.GET, entity, String.class);
+            clusterStatus = resultBody.getBody();
+        }catch(Exception e){
+            this.clusterApiStatus = "OFFLINE";
+            return "OFFLINE";
+        }
+        this.clusterApiStatus = clusterStatus;
+        return clusterStatus;
+    }
+
+    public String getSchemaClusterStatus(String host) {
+        String clusterStatus = null;
+        try {
+            String uri = host+"/subjects";
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> resultBody = restTemplate.exchange
+                    (uri, HttpMethod.GET, entity, String.class);
+            clusterStatus = resultBody.getBody();
+        }catch(Exception e){
+            return "OFFLINE";
+        }
+        return clusterStatus;
+    }
+
+    public String getKafkaClusterStatus(String bootstrapHost) throws KafkawizeException {
+        String clusterStatus = null;
+
+        try {
+            String uri = clusterConnUrl + uriEnvStatus + bootstrapHost;
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            ResponseEntity<String> resultBody = restTemplate.exchange
+                    (uri, HttpMethod.GET, entity, String.class);
+            clusterStatus = resultBody.getBody();
+        }catch(Exception e){
+            return "NOT_KNOWN";
+        }
+        return clusterStatus;
+    }
+
     public List<HashMap<String,String>> getAcls(String bootstrapHost) throws KafkawizeException {
         List<HashMap<String, String>> aclListOriginal = null;
         try {

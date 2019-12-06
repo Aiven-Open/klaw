@@ -29,12 +29,27 @@ public class UiConfigController {
 
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {
-        return new ResponseEntity<>(uiConfigControllerService.getEnvs(), HttpStatus.OK);
+        return new ResponseEntity<>(uiConfigControllerService.getEnvs(true), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Env>> getEnvsStatus() {
+        return new ResponseEntity<>(uiConfigControllerService.getEnvs(false), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getClusterApiStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Env> getClusterApiStatus() {
+        return new ResponseEntity<>(uiConfigControllerService.getClusterApiStatus(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSchemaRegEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getSchemaRegEnvs() {
         return new ResponseEntity<>(uiConfigControllerService.getSchemaRegEnvs(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getSchemaRegEnvsStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Env>> getSchemaRegEnvsStatus() {
+        return new ResponseEntity<>(uiConfigControllerService.getSchemaRegEnvsStatus(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAllTeams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

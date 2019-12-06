@@ -1,7 +1,7 @@
 <!doctype html>
 <html class="fixed">
 
-<html ng-app="browseTopicsApp" ng-controller="browseTopicsCtrl">
+<html ng-app="indexApp" ng-controller="indexCtrl">
 
 <head>
 
@@ -43,7 +43,7 @@
     <script src="assets/vendor/modernizr/modernizr.js"></script>
     <script src="lib/angular.min.js"></script>
     <script src="lib/angular-route.min.js"></script>
-    <script src="js/browseTopics.js"></script>
+    <script src="js/index.js"></script>
 
 </head>
 <body>
@@ -63,6 +63,16 @@
         <!-- start: search & user box -->
         <div class="header-right">
 
+            <!--<form action="pages-search-results.html" class="search nav-form">-->
+            <!--<div class="input-group input-search">-->
+            <!--<input type="text" class="form-control" name="q" id="q" placeholder="Search...">-->
+            <!--<span class="input-group-btn">-->
+            <!--<button class="btn btn-default" type="submit"><i class="fa fa-search"></i></button>-->
+            <!--</span>-->
+            <!--</div>-->
+            <!--</form>-->
+            <!---->
+            <!--<span class="separator"></span>-->
             <ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
 
                 <li>
@@ -70,10 +80,9 @@
                         <i class="fa fa-bell"></i>
                         <span class="badge">{{ notifications }}</span>
                     </a>
-
                 </li>
                 <li>
-                    <a href="execAcls" class="dropdown-toggle notification-icon">
+                    <a href="execTopics" class="dropdown-toggle notification-icon">
                         <i class="fa fa-bell"></i>
                         <span class="badge">{{ notificationsAcls }}</span>
                     </a>
@@ -369,182 +378,270 @@
                                 <h2 class="panel-title">Welcome to KafkaWize !!</h2>
                             </header>
                             <div class="panel-body">
-                                Automate the process of creating and browsing Kafka topics, acls schemas, by introducing roles, teams and users.
+                                Automate the process of creating and browsing Kafka topics, acls, schemas, by introducing roles, teams and users.
                             </div>
                         </section>
 
                     </div>
                 </div>
+                <div  id="getTopics" class="panel-body"  ng-init="getAuth();getClusterApi();getEnvs();getSchemaRegEnvs();">
+                    <b>Cluster Api</b><br><br>
+                    <table class="table table-bordered table-striped mb-none">
+                        <thead>
+                        <tr>
+                            <th>Cluster</th>
+                            <th>Host</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="gradeX">
+                            <td>Cluster API</td>
+                            <td>{{ clusterapi.host }}</td>
 
+                            <td ng-if="clusterapi.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ clusterapi.envStatus }}</font></td>
 
+                            <td ng-if="clusterapi.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ clusterapi.envStatus }}</font></td>
 
-                <div class="row">
+                            <td ng-if="clusterapi.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ clusterapi.envStatus }}</font></td>
 
-                    <div class="col-md-2 col-lg-6 col-xl-4">
-                        <h5 class="text-semibold text-dark text-uppercase mb-md mt-lg">Features</h5>
+                        </tr>
 
+                        </tbody>
+                    </table>
 
-                        <section class="panel panel-featured-left panel-featured-primary">
-                            <div class="panel-body">
-                                <div class="widget-summary widget-summary-sm">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fa fa-search"></i>
-                                        </div>
-                                    </div>
-                                    <div class="widget-summary-col">
-                                        <div class="summary">
-                                            <h4 class="amount">Browse Kafka Topics, Acls and Schemas</h4>
-                                            <div class="info">
-                                                <h4 class="title">View all topics and acl details in configured clusters.</h4>
+                    <br><b>Kafka Environments</b><br><br>
+                    <table class="table table-bordered table-striped mb-none">
+                        <thead>
+                        <tr>
+                            <th>Cluster</th>
+                            <th>Host</th>
+                            <th>Port</th>
+                            <th>Protocol</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="allenv in allenvs" class="gradeX">
+                            <td>{{ allenv.name }}</td>
+                            <td>{{ allenv.host }}</td>
+                            <td>{{ allenv.port }}</td>
+                            <td>{{ allenv.protocol }}</td>
 
-                                            </div>
+                                <td ng-if="allenv.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ allenv.envStatus }}</font></td>
 
-                                        </div>
-                                        <div class="summary-footer">
-                                            <a class="text-muted text-uppercase">(view all)</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                        <section class="panel panel-featured-left panel-featured-primary">
-                            <div class="panel-body">
-                                <div class="widget-summary widget-summary-sm">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fa fa-asterisk"></i>
-                                        </div>
-                                    </div>
-                                    <div class="widget-summary-col">
-                                        <div class="summary">
-                                            <strong class="amount">Manage clusters</strong>
+                                <td ng-if="allenv.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ allenv.envStatus }}</font></td>
 
-                                            <div class="info">
-                                                <h4 class="title">View and add new clusters.</h4>
+                                <td ng-if="allenv.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ allenv.envStatus }}</font></td>
 
-                                            </div>
-                                        </div>
-                                        <div class="summary-footer">
-                                            <a class="text-muted text-uppercase">(view all)</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+                        </tr>
 
+                        </tbody>
+                    </table>
 
-                    </div>
-                    <div class="col-md-2 col-lg-6 col-xl-4">
-                        <h5 class="text-semibold text-dark text-uppercase mb-md mt-lg"> &nbsp;</h5>
-                        <section class="panel panel-featured-left panel-featured-primary">
-                            <div class="panel-body">
-                                <div class="widget-summary widget-summary-sm">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fa fa-refresh"></i>
-                                        </div>
-                                    </div>
-                                    <div class="widget-summary-col">
-                                        <div class="summary">
-                                            <strong class="amount">Synchronize with Source of Truth</strong>
+                    <br><b>Schema Registry Environments</b><br><br>
 
-                                            <div class="info">
-                                                <h4 class="title">Assign teams to topic owners, other producer and consumers.</h4>
+                    <table class="table table-bordered table-striped mb-none">
+                        <thead>
+                        <tr>
+                            <th>Cluster</th>
+                            <th>Host</th>
+                            <th>Port</th>
+                            <th>Protocol</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="allenv in allschenvs" class="gradeX">
+                            <td>{{ allenv.name }}</td>
+                            <td>{{ allenv.host }}</td>
+                            <td>{{ allenv.port }}</td>
+                            <td>{{ allenv.protocol }}</td>
 
-                                            </div>
-                                        </div>
-                                        <div class="summary-footer">
-                                            <a class="text-muted text-uppercase">(view all)</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
+                            <td ng-if="allenv.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ allenv.envStatus }}</font></td>
 
+                            <td ng-if="allenv.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ allenv.envStatus }}</font></td>
 
+                            <td ng-if="allenv.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ allenv.envStatus }}</font></td>
 
-                        <section class="panel panel-featured-left panel-featured-primary">
-                            <div class="panel-body">
-                                <div class="widget-summary widget-summary-sm">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fa fa-file"></i>
-                                        </div>
-                                    </div>
-                                    <div class="widget-summary-col">
-                                        <div class="summary">
-                                            <h4 class="title">Audit and Activity tracking</h4>
+                        </tr>
 
-                                            <div class="info">
-                                                <h4 class="title">View and monitor activity from all users.</h4>
+                        </tbody>
+                    </table>
 
-                                            </div>
-                                        </div>
-                                        <div class="summary-footer">
-                                            <a class="text-muted text-uppercase">(view all)</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    <div class="col-md-2 col-lg-6 col-xl-4">
-                        <h5 class="text-semibold text-dark text-uppercase mb-md mt-lg"> &nbsp;</h5>
-                        <section class="panel panel-featured-left panel-featured-primary">
-                            <div class="panel-body">
-                                <div class="widget-summary widget-summary-sm">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fa fa-bullseye"></i>
-                                        </div>
-                                    </div>
-                                    <div class="widget-summary-col">
-                                        <div class="summary">
-                                            <h4 class="amount">Request and Approve - 4 eye principle</h4>
-
-                                            <div class="info">
-                                                <h4 class="title">Topics, Acls and Schemas can be requested and approved.</h4>
-
-                                            </div>
-                                        </div>
-                                        <div class="summary-footer">
-                                            <a class="text-muted text-uppercase">(view all)</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-
-                        <section class="panel panel-featured-left panel-featured-primary">
-                            <div class="panel-body">
-                                <div class="widget-summary widget-summary-sm">
-                                    <div class="widget-summary-col widget-summary-col-icon">
-                                        <div class="summary-icon bg-primary">
-                                            <i class="fa fa-cog"></i>
-                                        </div>
-                                    </div>
-                                    <div class="widget-summary-col">
-                                        <div class="summary">
-                                            <strong class="amount">Manage Users & Teams</strong>
-
-                                            <div class="info">
-                                                <h4 class="title">View and add Users, Teams</h4>
-
-                                            </div>
-                                        </div>
-                                        <div class="summary-footer">
-                                            <a class="text-muted text-uppercase">(view all)</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-
-                    </div>
                 </div>
+
+
+
+
+
+                <!--<div class="row">-->
+
+                <!--<div class="col-md-2 col-lg-6 col-xl-4">-->
+                <!--<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg">Features</h5>-->
+
+
+                <!--<section class="panel panel-featured-left panel-featured-primary">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="widget-summary widget-summary-sm">-->
+                <!--<div class="widget-summary-col widget-summary-col-icon">-->
+                <!--<div class="summary-icon bg-primary">-->
+                <!--<i class="fa fa-search"></i>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="widget-summary-col">-->
+                <!--<div class="summary">-->
+                <!--<h4 class="amount">Browse Kafka Topics, Acls and Schemas</h4>-->
+                <!--<div class="info">-->
+                <!--<h4 class="title">View all topics and acl details in configured clusters.</h4>-->
+
+                <!--</div>-->
+
+                <!--</div>-->
+                <!--<div class="summary-footer">-->
+                <!--<a class="text-muted text-uppercase">(view all)</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</section>-->
+                <!--<section class="panel panel-featured-left panel-featured-primary">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="widget-summary widget-summary-sm">-->
+                <!--<div class="widget-summary-col widget-summary-col-icon">-->
+                <!--<div class="summary-icon bg-primary">-->
+                <!--<i class="fa fa-asterisk"></i>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="widget-summary-col">-->
+                <!--<div class="summary">-->
+                <!--<strong class="amount">Manage clusters</strong>-->
+
+                <!--<div class="info">-->
+                <!--<h4 class="title">View and add new clusters.</h4>-->
+
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="summary-footer">-->
+                <!--<a class="text-muted text-uppercase">(view all)</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</section>-->
+
+
+                <!--</div>-->
+                <!--<div class="col-md-2 col-lg-6 col-xl-4">-->
+                <!--<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg"> &nbsp;</h5>-->
+                <!--<section class="panel panel-featured-left panel-featured-primary">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="widget-summary widget-summary-sm">-->
+                <!--<div class="widget-summary-col widget-summary-col-icon">-->
+                <!--<div class="summary-icon bg-primary">-->
+                <!--<i class="fa fa-refresh"></i>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="widget-summary-col">-->
+                <!--<div class="summary">-->
+                <!--<strong class="amount">Synchronize with Source of Truth</strong>-->
+
+                <!--<div class="info">-->
+                <!--<h4 class="title">Assign teams to topic owners, other producer and consumers.</h4>-->
+
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="summary-footer">-->
+                <!--<a class="text-muted text-uppercase">(view all)</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</section>-->
+
+
+
+                <!--<section class="panel panel-featured-left panel-featured-primary">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="widget-summary widget-summary-sm">-->
+                <!--<div class="widget-summary-col widget-summary-col-icon">-->
+                <!--<div class="summary-icon bg-primary">-->
+                <!--<i class="fa fa-file"></i>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="widget-summary-col">-->
+                <!--<div class="summary">-->
+                <!--<h4 class="title">Audit and Activity tracking</h4>-->
+
+                <!--<div class="info">-->
+                <!--<h4 class="title">View and monitor activity from all users.</h4>-->
+
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="summary-footer">-->
+                <!--<a class="text-muted text-uppercase">(view all)</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</section>-->
+                <!--</div>-->
+                <!--<div class="col-md-2 col-lg-6 col-xl-4">-->
+                <!--<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg"> &nbsp;</h5>-->
+                <!--<section class="panel panel-featured-left panel-featured-primary">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="widget-summary widget-summary-sm">-->
+                <!--<div class="widget-summary-col widget-summary-col-icon">-->
+                <!--<div class="summary-icon bg-primary">-->
+                <!--<i class="fa fa-bullseye"></i>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="widget-summary-col">-->
+                <!--<div class="summary">-->
+                <!--<h4 class="amount">Request and Approve - 4 eye principle</h4>-->
+
+                <!--<div class="info">-->
+                <!--<h4 class="title">Topics, Acls and Schemas can be requested and approved.</h4>-->
+
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="summary-footer">-->
+                <!--<a class="text-muted text-uppercase">(view all)</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</section>-->
+
+
+                <!--<section class="panel panel-featured-left panel-featured-primary">-->
+                <!--<div class="panel-body">-->
+                <!--<div class="widget-summary widget-summary-sm">-->
+                <!--<div class="widget-summary-col widget-summary-col-icon">-->
+                <!--<div class="summary-icon bg-primary">-->
+                <!--<i class="fa fa-cog"></i>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="widget-summary-col">-->
+                <!--<div class="summary">-->
+                <!--<strong class="amount">Manage Users & Teams</strong>-->
+
+                <!--<div class="info">-->
+                <!--<h4 class="title">View and add Users, Teams</h4>-->
+
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="summary-footer">-->
+                <!--<a class="text-muted text-uppercase">(view all)</a>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</section>-->
+
+
+                <!--</div>-->
+                <!--</div>-->
 
 
                 <div class="row">
@@ -658,11 +755,11 @@
 <script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
 <script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
 
-<!-- Specific Page Vendor -->
-<script src="assets/vendor/select2/select2.js"></script>
-<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
-<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
-<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
+<!--&lt;!&ndash; Specific Page Vendor &ndash;&gt;-->
+<!--<script src="assets/vendor/select2/select2.js"></script>-->
+<!--<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>-->
+<!--<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>-->
+<!--<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>-->
 
 <!-- Theme Base, Components and Settings -->
 <script src="assets/javascripts/theme.js"></script>

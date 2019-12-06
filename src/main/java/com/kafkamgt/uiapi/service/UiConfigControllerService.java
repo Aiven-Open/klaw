@@ -4,6 +4,7 @@ import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,12 +31,64 @@ public class UiConfigControllerService {
     @Autowired
     private ManageTopics manageTopics;
 
-    public List<Env> getEnvs() {
-        return manageTopics.selectAllKafkaEnvs();
+    @Autowired
+    private ClusterApiService clusterApiService;
+
+    public Env getClusterApiStatus(){
+        Env env = new Env();
+        env.setHost(clusterApiService.clusterConnUrl);
+        try {
+            env.setEnvStatus(clusterApiService.getClusterApiStatus());
+        } catch (KafkawizeException e) {
+            e.printStackTrace();
+            env.setEnvStatus("OFFLINE");
+        }
+        return env;
+    }
+
+    public List<Env> getEnvs(boolean envStatus) {
+
+        if(envStatus)
+            return manageTopics.selectAllKafkaEnvs();
+
+        List<Env> listEnvs = manageTopics.selectAllKafkaEnvs();
+        List<Env> newListEnvs = new ArrayList<>();
+        for(Env oneEnv: listEnvs){
+            String status = null;
+            try {
+                if(oneEnv.getProtocol().equalsIgnoreCase("plain"))
+                    status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort());
+                else
+                    status = "NOT_KNOWN";
+            } catch (KafkawizeException e) {
+                e.printStackTrace();
+                return newListEnvs;
+            }
+            oneEnv.setEnvStatus(status);
+            newListEnvs.add(oneEnv);
+        }
+
+        return newListEnvs;
     }
 
     public List<Env> getSchemaRegEnvs() {
         return manageTopics.selectAllSchemaRegEnvs();
+    }
+
+    public List<Env> getSchemaRegEnvsStatus() {
+        List<Env> listEnvs = manageTopics.selectAllSchemaRegEnvs();
+        List<Env> newListEnvs = new ArrayList<>();
+        for(Env oneEnv: listEnvs){
+            String status = null;
+            if(oneEnv.getProtocol().equalsIgnoreCase("plain"))
+                status = clusterApiService.getSchemaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort());
+            else
+                status = "NOT_KNOWN";
+            oneEnv.setEnvStatus(status);
+            newListEnvs.add(oneEnv);
+        }
+
+        return newListEnvs;
     }
 
     public List<Team> getAllTeams() {
