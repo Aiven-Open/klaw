@@ -148,13 +148,7 @@
                                     <span>Dashboard</span>
                                 </a>
                             </li>
-                            <!--<li>-->
-                            <!--<a href="mailbox-folder.html">-->
-                            <!--<span class="pull-right label label-primary">182</span>-->
-                            <!--<i class="fa fa-envelope" aria-hidden="true"></i>-->
-                            <!--<span>Mailbox</span>-->
-                            <!--</a>-->
-                            <!--</li>-->
+
                             <li class="nav-parent">
                                 <a>
                                     <i class="fa fa-copy" aria-hidden="true"></i>
@@ -163,17 +157,20 @@
                                 <ul class="nav nav-children">
                                     <li>
                                         <a href="browseTopics">
-                                            Topics
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Topics</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="browseAcls">
-                                            Acls
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Acls</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="pcTopics">
-                                            Producers-Consumers
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Producers-Consumers</span>
                                         </a>
                                     </li>
 
@@ -187,17 +184,20 @@
                                 <ul class="nav nav-children">
                                     <li>
                                         <a href="requestTopics">
-                                            Request Topic
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Request Topic</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="requestAcls">
-                                            Request ACL
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Request ACL</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="requestSchemaUpload">
-                                            Request Avro Schema
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Request Avro Schema</span>
                                         </a>
                                     </li>
 
@@ -211,17 +211,20 @@
                                 <ul class="nav nav-children">
                                     <li>
                                         <a href="envs">
-                                            Kafka
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Kafka</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="envs">
-                                            Schema Registry
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Schema Registry</span>
                                         </a>
                                     </li>
                                     <li  ng-if="statusauthexectopics==='Authorized'">
                                         <a href="addEnv">
-                                            Add Cluster
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Add Cluster</span>
                                         </a>
                                     </li>
 
@@ -235,12 +238,14 @@
                                 <ul class="nav nav-children">
                                     <li>
                                         <a href="myTopicRequests">
-                                            My Requests
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>My Requests</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="activityLog">
-                                            Activity Log
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Activity Log</span>
                                         </a>
                                     </li>
 
@@ -255,17 +260,20 @@
                                 <ul class="nav nav-children">
                                     <li  ng-if="statusauthexectopics==='Authorized'">
                                         <a href="execTopics">
-                                            Topics
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Topics</span>
                                         </a>
                                     </li>
                                     <li  ng-if="statusauthexectopics==='Authorized'">
                                         <a href="execAcls">
-                                            Acls
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Acls</span>
                                         </a>
                                     </li>
                                     <li  ng-if="statusauthexectopics==='Authorized'">
                                         <a href="execSchemas">
-                                            Schemas
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Schemas</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -278,22 +286,26 @@
                                 <ul class="nav nav-children">
                                     <li>
                                         <a href="showUsers">
-                                            View Users
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>View Users</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="showTeams">
-                                            View Teams
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>View Teams</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
-                                            Add Users
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Add Users</span>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
-                                            Add Teams
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Add Teams</span>
                                         </a>
                                     </li>
                                 </ul>
@@ -306,12 +318,14 @@
                                 <ul class="nav nav-children">
                                     <li  ng-if="statusauthexectopics==='Authorized'">
                                         <a href="synchronizeTopics">
-                                            Topics
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Topics</span>
                                         </a>
                                     </li>
                                     <li  ng-if="statusauthexectopics==='Authorized'">
                                         <a href="synchronizeAcls">
-                                            Acls
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Acls</span>
                                         </a>
                                     </li>
 
@@ -326,7 +340,8 @@
                                 <ul class="nav nav-children">
                                     <li>
                                         <a href="serverConfig">
-                                            Server Config
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                            <span>Server Config</span>
                                         </a>
                                     </li>
 
@@ -428,11 +443,11 @@
                             <td>{{ allenv.port }}</td>
                             <td>{{ allenv.protocol }}</td>
 
-                                <td ng-if="allenv.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ allenv.envStatus }}</font></td>
+                            <td ng-if="allenv.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ allenv.envStatus }}</font></td>
 
-                                <td ng-if="allenv.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ allenv.envStatus }}</font></td>
+                            <td ng-if="allenv.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ allenv.envStatus }}</font></td>
 
-                                <td ng-if="allenv.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ allenv.envStatus }}</font></td>
+                            <td ng-if="allenv.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ allenv.envStatus }}</font></td>
 
                         </tr>
 
@@ -469,271 +484,6 @@
                         </tbody>
                     </table>
 
-                </div>
-
-
-
-
-
-                <!--<div class="row">-->
-
-                <!--<div class="col-md-2 col-lg-6 col-xl-4">-->
-                <!--<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg">Features</h5>-->
-
-
-                <!--<section class="panel panel-featured-left panel-featured-primary">-->
-                <!--<div class="panel-body">-->
-                <!--<div class="widget-summary widget-summary-sm">-->
-                <!--<div class="widget-summary-col widget-summary-col-icon">-->
-                <!--<div class="summary-icon bg-primary">-->
-                <!--<i class="fa fa-search"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="widget-summary-col">-->
-                <!--<div class="summary">-->
-                <!--<h4 class="amount">Browse Kafka Topics, Acls and Schemas</h4>-->
-                <!--<div class="info">-->
-                <!--<h4 class="title">View all topics and acl details in configured clusters.</h4>-->
-
-                <!--</div>-->
-
-                <!--</div>-->
-                <!--<div class="summary-footer">-->
-                <!--<a class="text-muted text-uppercase">(view all)</a>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</section>-->
-                <!--<section class="panel panel-featured-left panel-featured-primary">-->
-                <!--<div class="panel-body">-->
-                <!--<div class="widget-summary widget-summary-sm">-->
-                <!--<div class="widget-summary-col widget-summary-col-icon">-->
-                <!--<div class="summary-icon bg-primary">-->
-                <!--<i class="fa fa-asterisk"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="widget-summary-col">-->
-                <!--<div class="summary">-->
-                <!--<strong class="amount">Manage clusters</strong>-->
-
-                <!--<div class="info">-->
-                <!--<h4 class="title">View and add new clusters.</h4>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="summary-footer">-->
-                <!--<a class="text-muted text-uppercase">(view all)</a>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</section>-->
-
-
-                <!--</div>-->
-                <!--<div class="col-md-2 col-lg-6 col-xl-4">-->
-                <!--<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg"> &nbsp;</h5>-->
-                <!--<section class="panel panel-featured-left panel-featured-primary">-->
-                <!--<div class="panel-body">-->
-                <!--<div class="widget-summary widget-summary-sm">-->
-                <!--<div class="widget-summary-col widget-summary-col-icon">-->
-                <!--<div class="summary-icon bg-primary">-->
-                <!--<i class="fa fa-refresh"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="widget-summary-col">-->
-                <!--<div class="summary">-->
-                <!--<strong class="amount">Synchronize with Source of Truth</strong>-->
-
-                <!--<div class="info">-->
-                <!--<h4 class="title">Assign teams to topic owners, other producer and consumers.</h4>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="summary-footer">-->
-                <!--<a class="text-muted text-uppercase">(view all)</a>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</section>-->
-
-
-
-                <!--<section class="panel panel-featured-left panel-featured-primary">-->
-                <!--<div class="panel-body">-->
-                <!--<div class="widget-summary widget-summary-sm">-->
-                <!--<div class="widget-summary-col widget-summary-col-icon">-->
-                <!--<div class="summary-icon bg-primary">-->
-                <!--<i class="fa fa-file"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="widget-summary-col">-->
-                <!--<div class="summary">-->
-                <!--<h4 class="title">Audit and Activity tracking</h4>-->
-
-                <!--<div class="info">-->
-                <!--<h4 class="title">View and monitor activity from all users.</h4>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="summary-footer">-->
-                <!--<a class="text-muted text-uppercase">(view all)</a>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</section>-->
-                <!--</div>-->
-                <!--<div class="col-md-2 col-lg-6 col-xl-4">-->
-                <!--<h5 class="text-semibold text-dark text-uppercase mb-md mt-lg"> &nbsp;</h5>-->
-                <!--<section class="panel panel-featured-left panel-featured-primary">-->
-                <!--<div class="panel-body">-->
-                <!--<div class="widget-summary widget-summary-sm">-->
-                <!--<div class="widget-summary-col widget-summary-col-icon">-->
-                <!--<div class="summary-icon bg-primary">-->
-                <!--<i class="fa fa-bullseye"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="widget-summary-col">-->
-                <!--<div class="summary">-->
-                <!--<h4 class="amount">Request and Approve - 4 eye principle</h4>-->
-
-                <!--<div class="info">-->
-                <!--<h4 class="title">Topics, Acls and Schemas can be requested and approved.</h4>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="summary-footer">-->
-                <!--<a class="text-muted text-uppercase">(view all)</a>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</section>-->
-
-
-                <!--<section class="panel panel-featured-left panel-featured-primary">-->
-                <!--<div class="panel-body">-->
-                <!--<div class="widget-summary widget-summary-sm">-->
-                <!--<div class="widget-summary-col widget-summary-col-icon">-->
-                <!--<div class="summary-icon bg-primary">-->
-                <!--<i class="fa fa-cog"></i>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="widget-summary-col">-->
-                <!--<div class="summary">-->
-                <!--<strong class="amount">Manage Users & Teams</strong>-->
-
-                <!--<div class="info">-->
-                <!--<h4 class="title">View and add Users, Teams</h4>-->
-
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="summary-footer">-->
-                <!--<a class="text-muted text-uppercase">(view all)</a>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</section>-->
-
-
-                <!--</div>-->
-                <!--</div>-->
-
-
-                <div class="row">
-                    <div class="col-xs-12">
-                        <section class="panel">
-                            <header class="panel-heading">
-
-
-                                <h2 class="panel-title">Architecture</h2>
-                            </header>
-                            <div class="panel-body">
-                                <div align="center" style="width: 100%;">
-                                    <img width="60%" height="60%" align="center" src="assets/images/arch.png">
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-4" data-plugin-portlet id="portlet-1">
-                        <section class="panel panel-primary" id="panel-1" data-portlet-item>
-                            <header class="panel-heading portlet-handler">
-
-
-                                <h2 class="panel-title">Front End</h2>
-                            </header>
-                            <div class="panel-body">
-                                Front end is built with AngularJs, Bootstrap 4, HTML, CSS, and Java script. FE interacts with User interface Rest Api.
-                            </div>
-                        </section>
-                        <section class="panel panel-success" id="panel-5" data-portlet-item>
-                            <header class="panel-heading portlet-handler">
-
-
-                                <h2 class="panel-title">Frameworks</h2>
-                            </header>
-                            <div class="panel-body">
-                                Spring boot, Spring Security, Spring Data, Hibernate, Kafka AdminClient Api, Datastax, Angular Js, HTML, CSS, Java script
-                            </div>
-                        </section>
-
-                    </div>
-                    <div class="col-md-4" data-plugin-portlet id="portlet-2">
-
-                        <section class="panel panel-secondary" id="panel-2" data-portlet-item>
-                            <header class="panel-heading portlet-handler">
-
-
-                                <h2 class="panel-title">User Interface Api</h2>
-                            </header>
-                            <div class="panel-body">
-                                Built with Spring boot, spring security frameworks, interacts with Front end, Cluster API and Metastore. Plays a major role in Kafkawize.
-                            </div>
-                        </section>
-
-                        <section class="panel panel-quartenary" id="panel-4" data-portlet-item>
-                            <header class="panel-heading portlet-handler">
-
-                                <h2 class="panel-title">Metastore</h2>
-                            </header>
-                            <div class="panel-body">
-                                Apache Cassandra or RDBMS datastore stores all users, teams, topicRequests, request and execution data from all the users..
-                            </div>
-                        </section>
-
-                    </div>
-
-                    <div class="col-md-4" data-plugin-portlet id="portlet-3">
-
-
-                        <section class="panel panel-tertiary" id="panel-3" data-portlet-item>
-                            <header class="panel-heading portlet-handler">
-
-
-                                <h2 class="panel-title">Cluster Api</h2>
-                            </header>
-                            <div class="panel-body">
-                                Built with Spring boot, spring security frameworks, interacts with User Interface Api. Kafka AdminClient Api to interact with Clusters.
-                            </div>
-                        </section>
-                        <section class="panel panel-warning" id="panel-6" data-portlet-item>
-                            <header class="panel-heading portlet-handler">
-
-
-                                <h2 class="panel-title">Roles & Authorizations</h2>
-                            </header>
-                            <div class="panel-body">
-                                Users with USER role can request for components and users with ADMIN role can approve. SUPERUSER role have full access including Synchronizing Metadata.
-                            </div>
-                        </section>
-                    </div>
                 </div>
 
 
