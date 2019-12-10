@@ -7,6 +7,7 @@ import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
 import com.kafkamgt.uiapi.model.PCStream;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -24,8 +25,26 @@ public class ManageTopics {
 
     HandleDbRequests handleDbRequests;
 
+    @Autowired
+    UtilService utils;
+
+    @Value("${custom.license.key}")
+    String licenseKey;
+
+    @Value("${custom.org.name}")
+    String orgName;
+
     @PostConstruct
     public void loadDb() throws Exception {
+
+        if(orgName.equals("Your company name."))
+        {
+            System.exit(0);
+        }
+        if(!utils.validateLicense(licenseKey, orgName)) {
+            System.exit(0);
+        }
+
         if(dbStore !=null && dbStore.equals("rdbms")){
             handleDbRequests = handleJdbc();
         }else

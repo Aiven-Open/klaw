@@ -33,7 +33,7 @@ public class UtilControllerService {
     @Value("${custom.clusterapi.password}")
     String clusterApiPwd;
 
-    @Value("${custom.app.company.name}")
+    @Value("${custom.org.name}")
     String companyInfo;
 
 
