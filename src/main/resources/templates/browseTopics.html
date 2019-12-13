@@ -394,14 +394,7 @@
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
-							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
-								<!--<h2 class="panel-title">Basic</h2>-->
-							<!--</header>-->
+
 							<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();">
 
 								<div class="row" align="center">
@@ -417,7 +410,9 @@
 									</div>
 								</div>
 
-								<br>
+							</div>
+							<br>
+
 
 								<div class="alert alert-info" ng-show="resultBrowse.length==0">
 									No topics found !!
@@ -428,45 +423,63 @@
 									<div class="col-md-4">
 										<section class="panel panel-info" data-portlet-item>
 											<header class="panel-heading portlet-handler">
-												<h2 class="panel-title">{{ resultBrowset[0].topicName}}</h2>
-											</header>
-											<div class="panel-body">
-												<table width="100%">
+												<h2 class="panel-title">{{ resultBrowset[0].topicName}}</h2><br>
+												<div class="well info"><table width="100%">
 													<tr><td>Partitions</td><td>{{ resultBrowset[0].noOfPartitions}}</td></tr>
 													<tr><td>Replica factor</td><td>{{ resultBrowset[0].noOfReplcias}}</td></tr>
 													<tr><td>Owned by</td><td>{{ resultBrowset[0].teamname}}</td></tr>
-												</table>
-											</div>
+												</table></div>
+											</header>
+											<!--<div class="panel-body">-->
+
+											<!--</div>-->
 										</section>
 									</div>
 									<div class="col-md-4" ng-show="resultBrowset[1].topicName != null">
 										<section class="panel panel-info" data-portlet-item>
 											<header class="panel-heading portlet-handler">
-												<h2 class="panel-title">{{ resultBrowset[1].topicName}}</h2>
-											</header>
-											<div class="panel-body">
-												<table width="100%">
+												<h2 class="panel-title">{{ resultBrowset[1].topicName}}</h2><br>
+												<div class="well info"><table width="100%">
 													<tr><td>Partitions</td><td>{{ resultBrowset[1].noOfPartitions}}</td></tr>
 													<tr><td>Replica factor</td><td>{{ resultBrowset[1].noOfReplcias}}</td></tr>
 													<tr><td>Owned by</td><td>{{ resultBrowset[1].teamname}}</td></tr>
-												</table>
-											</div>
+												</table></div>
+											</header>
+											<!--<div class="panel-body">-->
+
+											<!--</div>-->
 										</section>
 									</div>
 									<div class="col-md-4" ng-show="resultBrowset[2].topicName != null">
 										<section class="panel panel-info" data-portlet-item>
 											<header class="panel-heading portlet-handler">
-												<h2 class="panel-title">{{ resultBrowset[2].topicName}}</h2>
+												<h2 class="panel-title">{{ resultBrowset[2].topicName}}</h2><br>
+												<div class="well info">
+													<table width="100%">
+														<tr><td>Partitions</td><td>{{ resultBrowset[2].noOfPartitions}}</td></tr>
+														<tr><td>Replica factor</td><td>{{ resultBrowset[2].noOfReplcias}}</td></tr>
+														<tr><td>Owned by</td><td>{{ resultBrowset[2].teamname}}</td></tr>
+													</table></div>
 											</header>
-											<div class="panel-body">
-												<table width="100%">
-													<tr><td>Partitions</td><td>{{ resultBrowset[2].noOfPartitions}}</td></tr>
-													<tr><td>Replica factor</td><td>{{ resultBrowset[2].noOfReplcias}}</td></tr>
-													<tr><td>Owned by</td><td>{{ resultBrowset[2].teamname}}</td></tr>
-												</table>
-											</div>
+											<!--<div class="panel-body">-->
+
+											<!--</div>-->
 										</section>
 									</div>
+
+									<!--<div class="col-md-3" ng-show="resultBrowset[3].topicName != null">-->
+										<!--<section class="panel panel-info" data-portlet-item>-->
+											<!--<header class="panel-heading portlet-handler">-->
+												<!--<h2 class="panel-title">{{ resultBrowset[3].topicName}}</h2><br>-->
+												<!--<div class="well info">-->
+													<!--<table width="100%">-->
+														<!--<tr><td>Partitions</td><td>{{ resultBrowset[3].noOfPartitions}}</td></tr>-->
+														<!--<tr><td>Replica factor</td><td>{{ resultBrowset[3].noOfReplcias}}</td></tr>-->
+														<!--<tr><td>Owned by</td><td>{{ resultBrowset[3].teamname}}</td></tr>-->
+													<!--</table></div>-->
+											<!--</header>-->
+										<!--</section>-->
+									<!--</div>-->
 								</div>
 
 								<div class="row"  ng-show="resultPageSelected != null && resultBrowse.length>0">
@@ -487,8 +500,8 @@
 										</ul>
 									</div>
 								</div>
-							</div>
-							<button  id="myBtn" class="btn btn-primary float:right">
+
+							<button  id="myBtn" class="btn btn-danger float:right">
 								<a href="requestTopics" style="color: white">Add Topic</a>
 							</button>
 						</section>
@@ -497,73 +510,7 @@
 				</section>
 			</div>
 
-			<!--<aside id="sidebar-right" class="sidebar-right">-->
-				<!--<div class="nano">-->
-					<!--<div class="nano-content">-->
-						<!--<a href="#" class="mobile-close visible-xs">-->
-							<!--Collapse <i class="fa fa-chevron-right"></i>-->
-						<!--</a>-->
-			<!---->
-						<!--<div class="sidebar-right-wrapper">-->
-			<!---->
-							<!--<div class="sidebar-widget widget-calendar">-->
-								<!--<h6>Upcoming Tasks</h6>-->
-								<!--<div data-plugin-datepicker data-plugin-skin="dark" ></div>-->
-			<!---->
-								<!--<ul>-->
-									<!--<li>-->
-										<!--<time datetime="2014-04-19T00:00+00:00">04/19/2014</time>-->
-										<!--<span>Company Meeting</span>-->
-									<!--</li>-->
-								<!--</ul>-->
-							<!--</div>-->
-			<!---->
-							<!--<div class="sidebar-widget widget-friends">-->
-								<!--<h6>Friends</h6>-->
-								<!--<ul>-->
-									<!--<li class="status-online">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-online">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-offline">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-offline">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-								<!--</ul>-->
-							<!--</div>-->
-			<!---->
-						<!--</div>-->
-					<!--</div>-->
-				<!--</div>-->
-			<!--</aside>-->
+
 		</section>
 
 		<!-- Vendor -->

@@ -391,7 +391,7 @@
 								<table class="table table-bordered table-striped mb-none"  ng-show="topicRequests.length >0">
 									<thead>
 										<tr>
-											<th>Select</th>
+											<th align="center">Select</th>
 											<th>TopicName</th>
 											<th>Partitions</th>
 											<th>Replication Factor</th>
@@ -402,7 +402,9 @@
 									</thead>
 									<tbody>
 										<tr ng-repeat="topicRequest in topicRequests" class="gradeX">
-											<td><input type="radio" name="topicGrp" ng-model="execTopicRequest.topicname" value="{{topicRequest.topicname}},{{topicRequest.environment}}"/></td>
+											<td align="center">
+													<input class="radio-custom radio-primary" type="radio" name="topicGrp" ng-model="execTopicRequest.topicname" value="{{topicRequest.topicname}},{{topicRequest.environment}}"/>
+											</td>
 											<td>{{ topicRequest.topicname }}</td>
 											<td>{{ topicRequest.topicpartitions }}</td>
 											<td>{{ topicRequest.replicationfactor }}</td>

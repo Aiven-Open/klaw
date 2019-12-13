@@ -312,12 +312,13 @@ public class TopicControllerService {
 
         List<List<TopicInfo>> newList = new ArrayList<>();
         List<TopicInfo> innerList = new ArrayList<>();
+        int modulusFactor = 3;
         int i=0;
         for(TopicInfo topicInfo : topicsList){
 
             innerList.add(topicInfo);
 
-            if(i%3 == 2) {
+            if(i%modulusFactor == (modulusFactor-1)) {
                 newList.add(innerList);
                 innerList = new ArrayList<>();
             }
