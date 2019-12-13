@@ -85,7 +85,7 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env,
+    public ResponseEntity<List<List<TopicInfo>>> getTopics(@RequestParam("env") String env,
                                                      @RequestParam("pageNo") String pageNo,
                                                      @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
 

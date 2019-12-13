@@ -390,7 +390,8 @@
 
                     </div>
                 </div>
-                <div  id="getTopics" class="panel-body"  ng-init="getAuth();getClusterApi();getEnvs();getSchemaRegEnvs();">
+
+                <div  id="getTopics" class="panel-body"  ng-init="getAuth();getClusterApi();">
                     <b>Cluster Api</b><br><br>
                     <table class="table table-bordered table-striped mb-none">
                         <thead>
@@ -416,34 +417,49 @@
                         </tbody>
                     </table>
 
-                    <br><b>Kafka Environments</b><br><br>
-                    <table class="table table-bordered table-striped mb-none">
-                        <thead>
-                        <tr>
-                            <th>Cluster</th>
-                            <th>Host</th>
-                            <th>Port</th>
-                            <th>Protocol</th>
-                            <th>Status</th>
+                    <br>
+                    <table width="100%">
+                        <tr><td><b>Kafka Environments</b></td>
+                        <td><button align="right" type="button" ng-click="onShowServerStatus();" class="mb-xs mt-xs mr-xs btn btn-primary">Show Servers & Status</button></td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="allenv in allenvs" class="gradeX">
-                            <td>{{ allenv.name }}</td>
-                            <td>{{ allenv.host }}</td>
-                            <td>{{ allenv.port }}</td>
-                            <td>{{ allenv.protocol }}</td>
-
-                            <td ng-if="allenv.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ allenv.envStatus }}</font></td>
-
-                            <td ng-if="allenv.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ allenv.envStatus }}</font></td>
-
-                            <td ng-if="allenv.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ allenv.envStatus }}</font></td>
-
-                        </tr>
-
-                        </tbody>
                     </table>
+
+                    <div ng-if="showProgressBar === 'true'" class="progress progress-striped light active m-md">
+                        <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+                            60%
+                        </div>
+                    </div>
+
+                    <br><br>
+                    <div ng-if="showServerStatus === 'true'" ng-init="getEnvs();getSchemaRegEnvs();">
+
+                        <table class="table table-bordered table-striped mb-none">
+                            <thead>
+                            <tr>
+                                <th>Cluster</th>
+                                <th>Host</th>
+                                <th>Port</th>
+                                <th>Protocol</th>
+                                <th>Status</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="allenv in allenvs" class="gradeX">
+                                <td>{{ allenv.name }}</td>
+                                <td>{{ allenv.host }}</td>
+                                <td>{{ allenv.port }}</td>
+                                <td>{{ allenv.protocol }}</td>
+
+                                <td ng-if="allenv.envStatus === 'ONLINE'" bgcolor="GREEN"><font color="white">{{ allenv.envStatus }}</font></td>
+
+                                <td ng-if="allenv.envStatus === 'OFFLINE'" bgcolor="RED"><font color="white">{{ allenv.envStatus }}</font></td>
+
+                                <td ng-if="allenv.envStatus === 'NOT_KNOWN'" bgcolor="ORANGE"><font color="white">{{ allenv.envStatus }}</font></td>
+
+                            </tr>
+
+                            </tbody>
+                        </table>
 
                     <br><b>Schema Registry Environments</b><br><br>
 
@@ -474,6 +490,7 @@
 
                         </tbody>
                     </table>
+                    </div>
 
                 </div>
 

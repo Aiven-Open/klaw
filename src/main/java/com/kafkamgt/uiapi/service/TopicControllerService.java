@@ -270,7 +270,7 @@ public class TopicControllerService {
         return uniqueList;
     }
 
-    public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
+    public List<List<TopicInfo>> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -301,7 +301,33 @@ public class TopicControllerService {
         topicsList = topicFilteredList;
         Collections.sort(topicsList);
 
-        return getTopicList(topicsList,topicsFromSOT,pageNo);
+        List<TopicInfo> topicListUpdated = getTopicList(topicsList,topicsFromSOT,pageNo);
+
+        List<List<TopicInfo>> newList = getNewList(topicListUpdated);
+
+        return newList;
+    }
+
+    private List<List<TopicInfo>> getNewList(List<TopicInfo> topicsList){
+
+        List<List<TopicInfo>> newList = new ArrayList<>();
+        List<TopicInfo> innerList = new ArrayList<>();
+        int i=0;
+        for(TopicInfo topicInfo : topicsList){
+
+            innerList.add(topicInfo);
+
+            if(i%3 == 2) {
+                newList.add(innerList);
+                innerList = new ArrayList<>();
+            }
+            i++;
+        }
+
+        if(innerList.size()>0)
+            newList.add(innerList);
+
+        return newList;
     }
 
     public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
@@ -347,7 +373,7 @@ public class TopicControllerService {
 
     public List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){
         int totalRecs = topicsList.size();
-        int recsPerPage = 20;
+        int recsPerPage = 21;
 
         int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
         int requestPageNo = Integer.parseInt(pageNo);

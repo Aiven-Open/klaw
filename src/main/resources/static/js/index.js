@@ -15,6 +15,7 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
+	$scope.showServerStatus = "false";
 
         $scope.getClusterApi = function() {
 
@@ -33,6 +34,8 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
         };
 
         $scope.getEnvs = function() {
+            if($scope.showServerStatus == "false")
+                return;
 
             $http({
                 method: "GET",
@@ -40,6 +43,7 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
+                $scope.showProgressBar = "false";
             }).error(
                 function(error)
                 {
@@ -48,89 +52,16 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
             );
         };
 
-        $scope.deleteEnv = function() {
 
-        if (!window.confirm("Are you sure, you would like to delete the cluster : "
-                        +  $scope.deleteEnv.idval
-                        )) {
-                        return;
-                    }
-
-            $http({
-                            method: "POST",
-                            url: "deleteClusterRequest",
-                            headers : { 'Content-Type' : 'application/json' },
-                            params: {'clusterId' : $scope.deleteEnv.idval },
-                            data: {'clusterId' : $scope.deleteEnv.idval}
-                        }).success(function(output) {
-
-                            $scope.alert = "Delete Cluster Request : "+output.result;
-                            $scope.getEnvs();
-
-                        }).error(
-                            function(error)
-                            {
-                                $scope.alert = error;
-                            }
-                        );
+        $scope.onShowServerStatus = function(){
+            $scope.showServerStatus = "true";
+            $scope.showProgressBar = "true";
         }
 
-        $scope.addNewEnv = function() {
-
-
-                if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
-                {
-                    alert("Default partitions should not be empty and should be greater than 0");
-                    return;
-                }
-
-                if($scope.addNewEnv.defmaxparts.length<=0 || $scope.addNewEnv.defmaxparts<=0)
-                {
-                    alert("Maximum partitions should not be empty and should be greater than 0");
-                    return;
-                }
-                if($scope.addNewEnv.defrepfctr.length<=0 || $scope.addNewEnv.defrepfctr<=0)
-                {
-                    alert("Default replication factor should not be empty and should be greater than 0");
-                    return;
-                }
-                var serviceInput = {};
-
-                serviceInput['name'] = $scope.addNewEnv.envname;
-                serviceInput['host'] = $scope.addNewEnv.host;
-                serviceInput['port'] = $scope.addNewEnv.port;
-                serviceInput['protocol'] = $scope.addNewEnv.protocol;
-                serviceInput['type'] = $scope.addNewEnv.type;
-
-                serviceInput['otherParams'] = "default.paritions=" + $scope.addNewEnv.defparts
-                 + ",max.partitions=" + $scope.addNewEnv.defmaxparts + ",replication.factor=" + $scope.addNewEnv.defrepfctr;
-
-                if (!window.confirm("Are you sure, you would like to add Env : "
-                    +  $scope.addNewEnv.envname + ": " +
-                    "\nHost : " + $scope.addNewEnv.host +
-                    "\nPort : " + $scope.addNewEnv.port
-                    )) {
-                    return;
-                }
-
-                $http({
-                    method: "POST",
-                    url: "addNewEnv",
-                    headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewEnv' : serviceInput },
-                    data: serviceInput
-                }).success(function(output) {
-                    $scope.alert = "New Environment : "+output.result;
-                }).error(
-                    function(error)
-                    {
-                     $scope.alert = error;
-                    }
-                );
-
-            };
-
         $scope.getSchemaRegEnvs = function() {
+
+        if($scope.showServerStatus == "false")
+            return;
 
             $http({
                 method: "GET",
@@ -144,7 +75,13 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
                     $scope.alert = error;
                 }
             );
-        }
+
+          }
+
+          $scope.onClickRefresh = function(){
+                $scope.showServerStatus = "false";
+                $scope.showProgressBar = "false";
+          }
 
            $scope.getAuth = function() {
            	$http({
