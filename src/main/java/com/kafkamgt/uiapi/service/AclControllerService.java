@@ -13,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -157,7 +154,12 @@ public class AclControllerService {
         aclsFromSOT = topicFilteredList;
         topicCounter = 0;
 
-        return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls));
+        List<AclInfo> groupedAclsPerTopic  = getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls))
+                .stream()
+                .collect(Collectors.groupingBy(w -> w.getTopicname()))
+                .get(topicNameSearch);
+
+        return groupedAclsPerTopic;
     }
 
     public List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){

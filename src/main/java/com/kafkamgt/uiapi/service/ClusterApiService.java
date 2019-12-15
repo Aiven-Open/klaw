@@ -133,7 +133,7 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, Set.class);
             aclListOriginal = new ArrayList(resultBody.getBody());
         }catch(Exception e){
-            throw new KafkawizeException("Could not load acls. Check Cluster Api connection. "+e.toString());
+            throw new KafkawizeException("Could not load topics/acls. Check Cluster Api connection. "+e.toString());
         }
         return aclListOriginal;
     }

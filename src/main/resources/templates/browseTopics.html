@@ -61,7 +61,7 @@
     }
 	</style>
 	<body>
-		<section class="body" ng-init="getAuth()">
+		<section class="body" ng-init="getAuth();getTopics(1,'false');">
 
 			<!-- start: header -->
 			<header class="header">
@@ -180,16 +180,8 @@
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
-											<li>
-												<a href="browseAcls">
-													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Acls</span>
-												</a>
-											</li>
-											<li>
-												<a href="pcTopics">
-													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Producers-Consumers</span>
-												</a>
-											</li>
+
+
 
 										</ul>
 									</li>
@@ -400,13 +392,13 @@
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
 									<div class="col-md-5">
-										<select  ng-change="getTopics(1);"
+										<select ng-change="getTopics(1,'true');"
 												ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
 											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
 									<div class="col-md-7">
-										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1,'true');" ng-model="getTopics.topicnamesearch">
 									</div>
 								</div>
 
@@ -420,6 +412,7 @@
 
 								<div ng-repeat="resultBrowset in resultBrowse" class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
+									<a href="browseAcls?envSelected={{envSelected}}&topicname={{ resultBrowset[0].topicName}}">
 									<div class="col-md-4">
 										<section class="panel panel-info" data-portlet-item>
 											<header class="panel-heading portlet-handler">
@@ -430,11 +423,10 @@
 													<tr><td>Owned by</td><td>{{ resultBrowset[0].teamname}}</td></tr>
 												</table></div>
 											</header>
-											<!--<div class="panel-body">-->
-
-											<!--</div>-->
 										</section>
 									</div>
+									</a>
+									<a href="browseAcls?envSelected={{envSelected}}&topicname={{ resultBrowset[1].topicName}}">
 									<div class="col-md-4" ng-show="resultBrowset[1].topicName != null">
 										<section class="panel panel-info" data-portlet-item>
 											<header class="panel-heading portlet-handler">
@@ -450,6 +442,8 @@
 											<!--</div>-->
 										</section>
 									</div>
+									</a>
+									<a href="browseAcls?envSelected={{envSelected}}&topicname={{ resultBrowset[2].topicName}}">
 									<div class="col-md-4" ng-show="resultBrowset[2].topicName != null">
 										<section class="panel panel-info" data-portlet-item>
 											<header class="panel-heading portlet-handler">
@@ -461,25 +455,11 @@
 														<tr><td>Owned by</td><td>{{ resultBrowset[2].teamname}}</td></tr>
 													</table></div>
 											</header>
-											<!--<div class="panel-body">-->
 
-											<!--</div>-->
 										</section>
 									</div>
+									</a>
 
-									<!--<div class="col-md-3" ng-show="resultBrowset[3].topicName != null">-->
-										<!--<section class="panel panel-info" data-portlet-item>-->
-											<!--<header class="panel-heading portlet-handler">-->
-												<!--<h2 class="panel-title">{{ resultBrowset[3].topicName}}</h2><br>-->
-												<!--<div class="well info">-->
-													<!--<table width="100%">-->
-														<!--<tr><td>Partitions</td><td>{{ resultBrowset[3].noOfPartitions}}</td></tr>-->
-														<!--<tr><td>Replica factor</td><td>{{ resultBrowset[3].noOfReplcias}}</td></tr>-->
-														<!--<tr><td>Owned by</td><td>{{ resultBrowset[3].teamname}}</td></tr>-->
-													<!--</table></div>-->
-											<!--</header>-->
-										<!--</section>-->
-									<!--</div>-->
 								</div>
 
 								<div class="row"  ng-show="resultPageSelected != null && resultBrowse.length>0">
@@ -492,7 +472,7 @@
 												<span class="fa fa-chevron-left"></span>
 											</li>
 											<li ng-repeat="allPages in resultPages">
-												<a href="#" ng-click="getTopics(allPages)">{{allPages}}</a>
+												<a href="#" ng-click="getTopics(allPages,'true')">{{allPages}}</a>
 											</li>
 											<li class="next disabled">
 												<span class="fa fa-chevron-right"></span>

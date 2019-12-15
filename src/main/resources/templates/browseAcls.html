@@ -47,7 +47,7 @@
 
 	</head>
 	<body>
-		<section class="body" ng-init="getAuth()">
+		<section class="body" ng-init="getAuth();getAcls(1);">
 
 			<!-- start: header -->
 			<header class="header">
@@ -168,16 +168,8 @@
 													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
-											<li class="nav-active">
-												<a href="browseAcls">
-													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Acls</span>
-												</a>
-											</li>
-											<li>
-												<a href="pcTopics">
-													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Producers-Consumers</span>
-												</a>
-											</li>
+
+
 
 										</ul>
 									</li>
@@ -382,78 +374,67 @@
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
-							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
-								<!--<h2 class="panel-title">Basic</h2>-->
-							<!--</header>-->
-							<div  id="getAcls" class="panel-body"  ng-init="getAuth();getEnvs();">
 
-								<div class="row" align="center">
-									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-5">
-										<select ng-change="getAcls(1);" ng-model="getAcls.envName"
-												ng-options="env as env.name for env in allenvs" class="form-control populate">
-											<option value="" selected="selected">Select Cluster</option>
-										</select>
-									</div>
-									<div class="col-md-7">
-										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getAcls(1);" ng-model="getAcls.topicnamesearch">
-									</div>
-								</div>
+							<a href="browseTopics?envSelected={{envSelectedParam}}">
+								<img width="3%" src="assets/images/backbutton.png">
+							</a> <br>
 
-								<br>
-
-								<table class="table table-bordered table-striped mb-none"  ng-show="resultPages != null">
-									<thead>
-										<tr>
-											<th>TopicName</th>
-											<th>ConsumerGroup</th>
-											<th>Hosts</th>
-											<th>Principle</th>
-											<th>AclType</th>
-											<th>Owned by</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="resultBrowset in resultBrowse" class="gradeX">
-											<td>{{ resultBrowset.topicname}}</td>
-											<td>{{ resultBrowset.consumergroup}}</td>
-											<td>{{ resultBrowset.acl_ip}}</td>
-											<td>{{ resultBrowset.acl_ssl}}</td>
-											<td>{{ resultBrowset.topictype}}</td>
-											<td>{{ resultBrowset.teamname}}</td>
-										</tr>
-										
-									</tbody>
-								</table>
+							<div  id="getAcls" class="panel-body" ng-show="resultBrowse.length==0">
 
 								<div class="alert alert-info" ng-show="resultBrowse.length==0">
 									No Acls found !!
 								</div>
 
-								<div class="row"  ng-show="resultPageSelected != null">
-									<div class="col-sm-12 col-md-6">
-
-									</div>
-									<div class="col-sm-12 col-md-6" align="right">
-										<ul class="pagination">
-											<li class="prev disabled">
-												<span class="fa fa-chevron-left"></span>
-											</li>
-											<li ng-repeat="allPages in resultPages">
-												<a href="#" ng-click="getAcls(allPages)">{{allPages}}</a>
-											</li>
-											<li class="next disabled">
-												<span class="fa fa-chevron-right"></span>
-											</li>
-										</ul>
-									</div>
-								</div>
 							</div>
+							<br>
+
+								<div class="col-md-12" ng-show="resultBrowse!=null && resultBrowse.length!=0">
+									<section class="panel panel-info" data-portlet-item>
+										<header class="panel-heading portlet-handler">
+											<h2 align="center" class="panel-title">{{ resultBrowse[0].topicname}}</h2><br>
+											<div ng-repeat="resultBrowset in resultBrowse" class="well info">
+												<table width="100%">
+													<tr>
+														<th>Type</th>
+														<th>ConsumerGroup</th>
+														<th>Hosts</th>
+														<th>Principle</th>
+														<th>Owned by</th>
+													</tr>
+													<tr>
+														<td>{{ resultBrowset.topictype}}</td>
+														<td>{{ resultBrowset.consumergroup}}</td>
+														<td>{{ resultBrowset.acl_ip}}</td>
+														<td>{{ resultBrowset.acl_ssl}}</td>
+														<td>{{ resultBrowset.teamname}}</td>
+													</tr>
+												</table>
+											</div>
+										</header>
+										<!--<div class="panel-body">-->
+
+										<!--</div>-->
+									</section>
+								</div>
+
+								<!--<div class="row"  ng-show="resultPageSelected != null">-->
+									<!--<div class="col-sm-12 col-md-6">-->
+
+									<!--</div>-->
+									<!--<div class="col-sm-12 col-md-6" align="right">-->
+										<!--<ul class="pagination">-->
+											<!--<li class="prev disabled">-->
+												<!--<span class="fa fa-chevron-left"></span>-->
+											<!--</li>-->
+											<!--<li ng-repeat="allPages in resultPages">-->
+												<!--<a href="#" ng-click="getAcls(allPages)">{{allPages}}</a>-->
+											<!--</li>-->
+											<!--<li class="next disabled">-->
+												<!--<span class="fa fa-chevron-right"></span>-->
+											<!--</li>-->
+										<!--</ul>-->
+									<!--</div>-->
+								<!--</div>-->
 						</section>
 						
 

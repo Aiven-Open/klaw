@@ -82,30 +82,49 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 	// We add the "time" query parameter to prevent IE
 	// from caching ajax results
 
-	$scope.getTopics = function(pageNoSelected) {
+	$scope.getTopics = function(pageNoSelected, fromSelect) {
 
         var serviceInput = {};
+        var envSelected;
 
-		if(!$scope.getTopics.envName)
-		    return;
-		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
-		serviceInput['env'] = $scope.getTopics.envName.name;
+        if(fromSelect == "false")
+        {
+            var str = window.location.search;
+            var envSelected;
+
+            if(str && str.length>10){
+                        var envSelectedIndex = str.indexOf("envSelected");
+
+                        if(envSelectedIndex > 0)
+                        {
+                            envSelected = str.substring(13);
+                            if(envSelected && envSelected.length>0) {
+                                serviceInput['env'] = envSelected;
+                                $scope.envSelected = envSelected;
+                            }else return;
+                        }
+                    }else return;
+        }else{
+             if(!$scope.getTopics.envName)
+        		    return;
+
+            envSelected = $scope.getTopics.envName.name;
+            serviceInput['env'] = envSelected;
+            $scope.envSelected = envSelected;
+        }
+
+
 		var topicFilter = $scope.getTopics.topicnamesearch;
 		if(topicFilter && topicFilter.length>0 && topicFilter.length<3){
 		    alert("Please enter atleast 3 characters of the topic name.");
 		    return;
 		    }
-		//alert("---"+$scope.getTopics.envName.value);
-//		if (!window.confirm("Are you sure, you would like to view the topics in Environment : " +
-//				$scope.getTopics.envName.name + " ?")) {
-//			return;
-//		}
 		
 		$http({
 			method: "GET",
 			url: "getTopics",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getTopics.envName.name,
+            params: {'env' : envSelected,
                 'pageNo' : pageNoSelected,
                  'topicnamesearch' : $scope.getTopics.topicnamesearch}
 		}).success(function(output) {
@@ -124,7 +143,6 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 				$scope.resultPageSelected = null;
 			}
 		);
-		
 	};
 
 
