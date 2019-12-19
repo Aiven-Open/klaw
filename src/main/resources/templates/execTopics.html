@@ -362,17 +362,17 @@
 
 							<div ng-show="alerttop != null && alerttop != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Ah snap!!</strong> {{ alerttop }}.
+								<strong>Ah snap!!</strong> {{ alerttop }}
 							</div>
 
 							<div ng-show="alert != null && alert != ''" ng-init="" class="alert alert-primary">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Alert : </strong> {{ alert }}.
+								<strong>Alert : </strong> {{ alert }}
 							</div>
 
 							<div ng-show="errorMessage != null && errorMessage != ''" ng-init="" class="alert alert-danger">
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-								<strong>Ah snap!!</strong> {{ errorMessage }}.
+								<strong>Ah snap!!</strong> {{ errorMessage }}
 							</div>
 							<!--<header class="panel-heading">-->
 								<!--<h2 class="panel-title">Basic</h2>-->
@@ -380,43 +380,102 @@
 							<div  id="getTopics" class="panel-body"  ng-init="getExecAuth();getMyTopicRequests()">
 								<div ng-if="statusauthexectopics=='Authorized'">
 
-								<table class="table table-bordered table-striped mb-none"  ng-show="topicRequests.length >0">
-									<thead>
-										<tr>
-											<th align="center">Select</th>
-											<th>TopicName</th>
-											<th>Partitions</th>
-											<th>Replication Factor</th>
-											<th>Cluster</th>
-											<th>Requestor</th>
-											<th>Team</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="topicRequest in topicRequests" class="gradeX">
-											<td align="center">
-													<input class="radio-custom radio-primary" type="radio" name="topicGrp" ng-model="execTopicRequest.topicname" value="{{topicRequest.topicname}},{{topicRequest.environment}}"/>
-											</td>
-											<td>{{ topicRequest.topicname }}</td>
-											<td>{{ topicRequest.topicpartitions }}</td>
-											<td>{{ topicRequest.replicationfactor }}</td>
-											<td>{{ topicRequest.environment }}</td>
-											<td>{{ topicRequest.username }}</td>
-											<td>{{ topicRequest.teamname }}</td>
-										</tr>
-										
-									</tbody>
-								</table>
-
-								<br>
-
-									<button ng-show="topicRequests.length > 0" type="button" ng-click="execTopicRequest();" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
-
-									<button ng-show="topicRequests.length > 0" type="button" ng-click="execTopicRequestReject();" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
 
 								<div class="alert alert-info" ng-show="topicRequests.length==0">
 									No requests found !!
 								</div>
+
+								<div ng-repeat="topicRequest in topicRequests" class="row" ng-show="topicRequests.length >0" align="center">
+									<!--<label class="col-md-3 control-label">Select Environment</label>-->
+										<div class="col-md-4" ng-show="topicRequest[0].topicname != null">
+											<section class="panel panel-info" data-portlet-item>
+												<header class="panel-heading portlet-handler">
+													<h2 class="panel-title">{{ topicRequest[0].topicname }}</h2><br>
+													<div class="well info"><table width="100%">
+														<tr><th>Type</th><td>Create</td></tr>
+														<tr><th>Partitions</th><td>{{ topicRequest[0].topicpartitions }}</td></tr>
+														<tr><th>Replica factor</th><td>{{ topicRequest[0].replicationfactor }}</td></tr>
+														<tr><th>Cluster</th><td>{{ topicRequest[0].environment }}</td></tr>
+														<tr><th>Requestor</th><td>{{ topicRequest[0].username }}</td></tr>
+														<tr><th>Team</th><td>{{ topicRequest[0].teamname }}</td></tr>
+													</table>
+													</div>
+													<!--<div class="panel-body">-->
+														<table width="70%" align="center">
+														<tr>
+															<td>
+																<button type="button" ng-click="execTopicRequestUp(topicRequest[0].topicname,topicRequest[0].environment);" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+															</td>
+															<td>
+																<button type="button" ng-click="execTopicRequestReject(topicRequest[0].topicname,topicRequest[0].environment);" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+															</td>
+														</tr>
+														</table>
+												</header>
+
+											</section>
+										</div>
+										<div class="col-md-4" ng-show="topicRequest[1].topicname != null">
+											<section class="panel panel-info" data-portlet-item>
+												<header class="panel-heading portlet-handler">
+													<h2 class="panel-title">{{ topicRequest[1].topicname }}</h2><br>
+													<div class="well info"><table width="100%">
+														<tr><th>Type</th><td>Create</td></tr>
+														<tr><th>Partitions</th><td>{{ topicRequest[1].topicpartitions }}</td></tr>
+														<tr><th>Replica factor</th><td>{{ topicRequest[1].replicationfactor }}</td></tr>
+														<tr><th>Cluster</th><td>{{ topicRequest[1].environment }}</td></tr>
+														<tr><th>Requestor</th><td>{{ topicRequest[1].username }}</td></tr>
+														<tr><th>Team</th><td>{{ topicRequest[1].teamname }}</td></tr>
+													</table>
+													</div>
+													<!--<div class="panel-body">-->
+														<table width="70%" align="center">
+														<tr>
+															<td>
+																<button type="button" ng-click="execTopicRequestUp(topicRequest[1].topicname,topicRequest[1].environment);" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+															</td>
+															<td>
+																<button type="button" ng-click="execTopicRequestReject(topicRequest[1].topicname,topicRequest[1].environment);" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+															</td>
+														</tr>
+													</table>
+
+												</header>
+
+											</section>
+										</div>
+									<div class="col-md-4" ng-show="topicRequest[2].topicname != null">
+										<section class="panel panel-info" data-portlet-item>
+											<header class="panel-heading portlet-handler">
+												<h2 class="panel-title">{{ topicRequest[2].topicname }}</h2><br>
+												<div class="well info"><table width="100%">
+													<tr><th>Type</th><td>Create</td></tr>
+													<tr><th>Partitions</th><td>{{ topicRequest[2].topicpartitions }}</td></tr>
+													<tr><th>Replica factor</th><td>{{ topicRequest[2].replicationfactor }}</td></tr>
+													<tr><th>Cluster</th><td>{{ topicRequest[2].environment }}</td></tr>
+													<tr><th>Requestor</th><td>{{ topicRequest[2].username }}</td></tr>
+													<tr><th>Team</th><td>{{ topicRequest[2].teamname }}</td></tr>
+												</table>
+												<!--</div>-->
+												<!--<div class="panel-body">-->
+
+												</div>
+												<table width="70%" align="center">
+													<tr>
+														<td>
+															<button type="button" ng-click="execTopicRequestUp(topicRequest[2].topicname,topicRequest[2].environment);" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+														</td>
+														<td>
+															<button type="button" ng-click="execTopicRequestReject(topicRequest[2].topicname,topicRequest[2].environment);" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+														</td>
+													</tr>
+												</table>
+											</header>
+
+										</section>
+									</div>
+								</div>
+
 								</div>
 							</div>
 						</section>

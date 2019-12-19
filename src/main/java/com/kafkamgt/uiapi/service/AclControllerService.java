@@ -4,6 +4,7 @@ package com.kafkamgt.uiapi.service;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
 import org.slf4j.Logger;
@@ -87,8 +88,34 @@ public class AclControllerService {
         return createTopicHelper.getAllAclRequests(utilService.getUserName());
     }
 
-    public List<AclRequests> getCreatedAclRequests() {
-        return createTopicHelper.getCreatedAclRequests(utilService.getUserName());
+    public List<List<AclRequests>> getCreatedAclRequests() {
+
+        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(createTopicHelper.getCreatedAclRequests(utilService.getUserName()));
+
+        return updatedAclReqs;
+    }
+
+    private List<List<AclRequests>> updateCreatAclReqsList(List<AclRequests> topicsList){
+
+        List<List<AclRequests>> newList = new ArrayList<>();
+        List<AclRequests> innerList = new ArrayList<>();
+        int modulusFactor = 3;
+        int i=0;
+        for(AclRequests topicInfo : topicsList){
+
+            innerList.add(topicInfo);
+
+            if(i%modulusFactor == (modulusFactor-1)) {
+                newList.add(innerList);
+                innerList = new ArrayList<>();
+            }
+            i++;
+        }
+
+        if(innerList.size()>0)
+            newList.add(innerList);
+
+        return newList;
     }
 
     public String deleteAclRequests(String req_no) {

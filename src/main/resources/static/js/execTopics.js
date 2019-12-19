@@ -33,35 +33,36 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.execTopicRequest = function() {
-
+        $scope.execTopicRequestUp = function(topicName, env){
             $http({
-                method: "GET",
-                url: "execTopicRequests",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'topicName' : $scope.execTopicRequest.topicname },
-                data: {'topicName' : $scope.execTopicRequest.topicname}
-            }).success(function(output) {
+                            method: "GET",
+                            url: "execTopicRequests",
+                            headers : { 'Content-Type' : 'application/json' },
+                            params: {'topicName' : topicName,
+                                     'env' : env},
+                            data: {'topicName' : topicName, 'env' : env}
+                        }).success(function(output) {
 
-                $scope.alert = "Topic Approve Request : "+output.result;
-                $scope.getMyTopicRequests();
+                            $scope.alert = "Topic Approve Request : "+output.result;
+                            $scope.getMyTopicRequests();
 
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
+                        }).error(
+                            function(error)
+                            {
+                                $scope.alert = error;
+                            }
+                        );
         }
 
-        $scope.execTopicRequestReject = function() {
+        $scope.execTopicRequestReject = function(topicName, env) {
 
                     $http({
                         method: "GET",
                         url: "execTopicRequestsDecline",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'topicName' : $scope.execTopicRequest.topicname },
-                        data: {'topicName' : $scope.execTopicRequest.topicname}
+                        params: {'topicName' : topicName,
+                         'env' : env },
+                        data: {'topicName' : topicName, 'env' : env}
                     }).success(function(output) {
 
                         $scope.alert = "Topic Approve Request : "+output.result;

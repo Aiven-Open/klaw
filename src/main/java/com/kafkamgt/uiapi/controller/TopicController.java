@@ -61,7 +61,7 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getCreatedTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicRequest>> getCreatedTopicRequests() {
+    public ResponseEntity<List<List<TopicRequest>>> getCreatedTopicRequests() {
 
         return new ResponseEntity<>(topicControllerService.getCreatedTopicRequests(), HttpStatus.OK);
     }
@@ -73,15 +73,17 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/execTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
+    public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName,
+                                                       @RequestParam("env") String env) throws KafkawizeException {
 
-        return new ResponseEntity<>(topicControllerService.approveTopicRequests(topicName), HttpStatus.OK);
+        return new ResponseEntity<>(topicControllerService.approveTopicRequests(topicName,env), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/execTopicRequestsDecline", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> declineTopicRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
+    public ResponseEntity<String> declineTopicRequests(@RequestParam("topicName") String topicName,
+                                                       @RequestParam("env") String env) throws KafkawizeException {
 
-        return new ResponseEntity<>(topicControllerService.declineTopicRequests(topicName), HttpStatus.OK);
+        return new ResponseEntity<>(topicControllerService.declineTopicRequests(topicName, env), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -203,8 +203,33 @@ public class TopicControllerService {
         return manageTopics.getTopicTeam(topicName, env);
     }
 
-    public List<TopicRequest> getCreatedTopicRequests() {
-       return manageTopics.getCreatedTopicRequests(utilService.getUserName());
+    public List<List<TopicRequest>> getCreatedTopicRequests() {
+
+        List<List<TopicRequest>> updatedList = updateCreatTopicReqsList(manageTopics.getCreatedTopicRequests(utilService.getUserName()));
+       return updatedList;
+    }
+
+    private List<List<TopicRequest>> updateCreatTopicReqsList(List<TopicRequest> topicsList){
+
+        List<List<TopicRequest>> newList = new ArrayList<>();
+        List<TopicRequest> innerList = new ArrayList<>();
+        int modulusFactor = 3;
+        int i=0;
+        for(TopicRequest topicInfo : topicsList){
+
+            innerList.add(topicInfo);
+
+            if(i%modulusFactor == (modulusFactor-1)) {
+                newList.add(innerList);
+                innerList = new ArrayList<>();
+            }
+            i++;
+        }
+
+        if(innerList.size()>0)
+            newList.add(innerList);
+
+        return newList;
     }
 
     public String deleteTopicRequests(String topicName) {
@@ -218,11 +243,7 @@ public class TopicControllerService {
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
-    public String approveTopicRequests(String topicName) throws KafkawizeException {
-
-        StringTokenizer strTkr = new StringTokenizer(topicName,",");
-        topicName = strTkr.nextToken();
-        String env = strTkr.nextToken();
+    public String approveTopicRequests(String topicName, String env) throws KafkawizeException {
 
         TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
 
@@ -236,17 +257,13 @@ public class TopicControllerService {
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
-    public String declineTopicRequests(String topicName) throws KafkawizeException {
-
-        StringTokenizer strTkr = new StringTokenizer(topicName,",");
-        topicName = strTkr.nextToken();
-        String env = strTkr.nextToken();
+    public String declineTopicRequests(String topicName, String env) throws KafkawizeException {
 
         TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
 
         manageTopics.declineTopicRequest(topicRequest,utilService.getUserName());
 
-        return "{\"result\":\""+ "Request declined. " +"\"}";
+        return "{\"result\":\""+ "Request declined." +"\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {

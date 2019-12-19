@@ -372,55 +372,111 @@
 							<!--</header>-->
 							<div  id="getTopics" class="panel-body"  ng-init="getExecAuth();getMyAclRequests()">
 								<div ng-if="statusauthexectopics=='Authorized'">
-								<table class="table table-bordered table-striped mb-none"  ng-show="aclRequests.length >0">
-									<thead>
-										<tr>
-											<th>Select</th>
-											<th>TopicName</th>
-											<th>AclType</th>
-											<th>ConsumerGroup</th>
-											<th>Cluster</th>
-											<th>Requestor</th>
-											<th>Acl IP</th>
-											<th>Acl SSL</th>
-											<!--<th>Application</th>-->
-											<th>Requesting Team</th>
-											<!--<th>Remarks</th>-->
-											<!--<th>Status</th>-->
-											<!--<th>Requested Time</th>-->
-											<!--<th>Approving Time</th>-->
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="aclRequest in aclRequests" class="gradeX">
-											<td><input type="radio" name="topicGrp" ng-model="execAclRequest.req_no" value="{{aclRequest.req_no}}"/></td>
-											<td>{{ aclRequest.topicname }}</td>
-											<td>{{ aclRequest.topictype }}</td>
-											<td>{{ aclRequest.consumergroup }}</td>
-											<td>{{ aclRequest.environment }}</td>
-											<td>{{ aclRequest.username }}</td>
-											<td>{{ aclRequest.acl_ip }}</td>
-											<td>{{ aclRequest.acl_ssl }}</td>
-											<!--<td>{{ aclRequest.appname }}</td>-->
-											<td>{{ aclRequest.requestingteam }}</td>
-											<!--<td>{{ aclRequest.remarks }}</td>-->
-											<!--<td>{{ aclRequest.aclstatus }}</td>-->
-											<!--<td>{{ aclRequest.requesttime }}</td>-->
-											<!--<td>{{ aclRequest.approvingtime }}</td>-->
-										</tr>
-										
-									</tbody>
-								</table>
 
-								<br>
+									<div class="alert alert-info" ng-show="aclRequests.length==0">
+										No requests found !!
+									</div>
 
-									<button ng-show="aclRequests.length > 0" type="button" ng-click="execAclRequest();" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+									<div ng-repeat="aclRequest in aclRequests" class="row" ng-show="aclRequests.length >0" align="center">
+										<!--<label class="col-md-3 control-label">Select Environment</label>-->
+										<div class="col-md-4" ng-show="aclRequest[0].topicname != null">
+											<section class="panel panel-info" data-portlet-item>
+												<header class="panel-heading portlet-handler">
+													<h2 class="panel-title">{{ aclRequest[0].topicname }}</h2><br>
+													<div class="well info"><table width="100%">
+														<tr><th>Type</th><td>Create</td></tr>
+														<tr><th>TopicName</th><td>{{ aclRequest[0].topicname }}</td></tr>
+														<tr><th>AclType</th><td>{{ aclRequest[0].topictype }}</td></tr>
+														<tr><th>ConsumerGroup</th><td>{{ aclRequest[0].consumergroup }}</td></tr>
+														<tr><th>Cluster</th><td>{{ aclRequest[0].environment }}</td></tr>
 
-									<button ng-show="aclRequests.length > 0" type="button" ng-click="execAclRequestDecline();" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+														<tr><th>Acl IP</th><td>{{ aclRequest[0].acl_ip }}</td></tr>
+														<tr><th>Acl SSL</th><td>{{ aclRequest[0].acl_ssl }}</td></tr>
+														<tr><th>Requestor</th><td>{{ aclRequest[0].username }}</td></tr>
+														<tr><th>Requesting Team</th><td>{{ aclRequest[0].requestingteam }}</td></tr>
 
-								<div class="alert alert-info" ng-show="aclRequests.length==0">
-									No requests found !!
-								</div>
+													</table>
+													</div>
+													<table width="70%" align="center">
+														<tr>
+															<td>
+																<button type="button" ng-click="execAclRequest(aclRequest[0].req_no);" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+															</td>
+															<td>
+																<button type="button" ng-click="execAclRequestDecline(aclRequest[0].req_no);" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+															</td>
+														</tr>
+													</table>
+												</header>
+
+											</section>
+										</div>
+										<div class="col-md-4" ng-show="aclRequest[1].topicname != null">
+											<section class="panel panel-info" data-portlet-item>
+												<header class="panel-heading portlet-handler">
+													<h2 class="panel-title">{{ aclRequest[1].topicname }}</h2><br>
+													<div class="well info"><table width="100%">
+														<tr><th>Type</th><td>Create</td></tr>
+														<tr><th>TopicName</th><td>{{ aclRequest[1].topicname }}</td></tr>
+														<tr><th>AclType</th><td>{{ aclRequest[1].topictype }}</td></tr>
+														<tr><th>ConsumerGroup</th><td>{{ aclRequest[1].consumergroup }}</td></tr>
+														<tr><th>Cluster</th><td>{{ aclRequest[1].environment }}</td></tr>
+
+														<tr><th>Acl IP</th><td>{{ aclRequest[1].acl_ip }}</td></tr>
+														<tr><th>Acl SSL</th><td>{{ aclRequest[1].acl_ssl }}</td></tr>
+														<tr><th>Requestor</th><td>{{ aclRequest[1].username }}</td></tr>
+														<tr><th>Requesting Team</th><td>{{ aclRequest[1].requestingteam }}</td></tr>
+
+													</table>
+													</div>
+													<table width="70%" align="center">
+														<tr>
+															<td>
+																<button type="button" ng-click="execAclRequest(aclRequest[1].req_no);" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+															</td>
+															<td>
+																<button type="button" ng-click="execAclRequestDecline(aclRequest[1].req_no);" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+															</td>
+														</tr>
+													</table>
+												</header>
+
+											</section>
+										</div>
+										<div class="col-md-4" ng-show="aclRequest[2].topicname != null">
+											<section class="panel panel-info" data-portlet-item>
+												<header class="panel-heading portlet-handler">
+													<h2 class="panel-title">{{ aclRequest[2].topicname }}</h2><br>
+													<div class="well info"><table width="100%">
+														<tr><th>Type</th><td>Create</td></tr>
+														<tr><th>TopicName</th><td>{{ aclRequest[2].topicname }}</td></tr>
+														<tr><th>AclType</th><td>{{ aclRequest[2].topictype }}</td></tr>
+														<tr><th>ConsumerGroup</th><td>{{ aclRequest[2].consumergroup }}</td></tr>
+														<tr><th>Cluster</th><td>{{ aclRequest[2].environment }}</td></tr>
+
+														<tr><th>Acl IP</th><td>{{ aclRequest[2].acl_ip }}</td></tr>
+														<tr><th>Acl SSL</th><td>{{ aclRequest[2].acl_ssl }}</td></tr>
+														<tr><th>Requestor</th><td>{{ aclRequest[2].username }}</td></tr>
+														<tr><th>Requesting Team</th><td>{{ aclRequest[2].requestingteam }}</td></tr>
+
+													</table>
+													</div>
+													<table width="70%" align="center">
+														<tr>
+															<td>
+																<button type="button" ng-click="execAclRequest(aclRequest[2].req_no);" class="mb-xs mt-xs mr-xs btn btn-primary">Approve</button>
+															</td>
+															<td>
+																<button type="button" ng-click="execAclRequestDecline(aclRequest[2].req_no);" class="mb-xs mt-xs mr-xs btn btn-danger">Decline</button>
+															</td>
+														</tr>
+													</table>
+												</header>
+
+											</section>
+										</div>
+									</div>
+
 								</div>
 							</div>
 						</section>
@@ -443,9 +499,6 @@
 		
 		<!-- Specific Page Vendor -->
 		<script src="assets/vendor/select2/select2.js"></script>
-		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
-		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
-		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
 		
 		<!-- Theme Base, Components and Settings -->
 		<script src="assets/javascripts/theme.js"></script>
@@ -457,9 +510,5 @@
 		<script src="assets/javascripts/theme.init.js"></script>
 
 
-		<!-- Examples -->
-		<!--<script src="assets/javascripts/tables/examples.datatables.default.js"></script>-->
-		<!--<script src="assets/javascripts/tables/examples.datatables.row.with.details.js"></script>-->
-		<!--<script src="assets/javascripts/tables/examples.datatables.tabletools.js"></script>-->
 	</body>
 </html>
