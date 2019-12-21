@@ -1,6 +1,7 @@
 package com.kafkamgt.uiapi.controller;
 
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.service.TopicControllerService;
 import org.junit.After;
 import org.junit.Before;
@@ -31,7 +32,7 @@ public class TopicControllerTest {
     }
 
     @Test
-    public void createTopics() {
+    public void createTopics() throws KafkawizeException {
         TopicRequest topicRequest = new TopicRequest();
         ResponseEntity<String> response = topicController.createTopics(topicRequest);
         assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());

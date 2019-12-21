@@ -46,45 +46,49 @@ public class TopicControllerService {
     @Autowired
     private UtilService utilService;
 
-    @Autowired
-    private Environment springEnvProps;
+    public TopicControllerService(ClusterApiService clusterApiService, ManageTopics manageTopics, UtilService utilService){
+        this.clusterApiService = clusterApiService;
+        this.manageTopics = manageTopics;
+        this.utilService = utilService;
+    }
 
-    public String createTopics(TopicRequest topicRequestReq) {
+    public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {
 
         LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
         topicRequestReq.setUsername(utilService.getUserName());
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
-        int topicPartitionsInt;
+
         String envSelected = topicRequestReq.getEnvironment();
 
         Env env = manageTopics.selectEnvDetails(envSelected);
+
+        if(validateParameters(topicRequestReq, env, topicPartitions)){
+            return "{\"result\":\""+manageTopics.requestForTopic(topicRequestReq)+"\"}";
+        }
+
+        return "{\"result\":\"failure\"}";
+    }
+
+    private boolean validateParameters(TopicRequest topicRequestReq, Env env, String topicPartitions) throws KafkawizeException {
         String otherParams = env.getOtherParams();
         String params[] ;
         String defPartns = null, defMaxPartns = null, defaultRf = null;
+        int topicPartitionsInt;
 
         try{
             if(otherParams!=null) {
                 params = otherParams.split(",");
 
                 if(params!=null && params.length==3) {
-                     defPartns = (params[0]).split("=")[1];
-                     defMaxPartns = (params[1]).split("=")[1];
-                     defaultRf = (params[2]).split("=")[1];
+                    defPartns = (params[0]).split("=")[1];
+                    defMaxPartns = (params[1]).split("=")[1];
+                    defaultRf = (params[2]).split("=")[1];
                 }
             }
         }catch (Exception e){
             LOG.error("Unable to set topic partitions, setting default from properties.");
         }
-
-        if(defPartns==null)
-            defPartns="1";
-
-        if(defMaxPartns==null)
-            defMaxPartns="1";
-
-        if(defaultRf==null)
-            defaultRf="1";
 
         try {
             int defMaxPartnsInt = Integer.parseInt(defMaxPartns);
@@ -94,21 +98,24 @@ public class TopicControllerService {
 
                 if (topicPartitionsInt > defMaxPartnsInt)
                     topicRequestReq.setTopicpartitions(defMaxPartns);
-                else
+                else if(topicPartitionsInt > 0)
                     topicRequestReq.setTopicpartitions(topicPartitions);
+                else
+                    topicRequestReq.setTopicpartitions(defPartns);
             } else
                 topicRequestReq.setTopicpartitions(defPartns);
 
             topicRequestReq.setReplicationfactor(defaultRf);
         }catch (Exception e){
             LOG.error("Unable to set topic partitions, setting default from properties.");
-            topicRequestReq.setTopicpartitions(defPartns);
+            try{
+                Integer.parseInt(defPartns);
+                topicRequestReq.setTopicpartitions(defPartns);
+            }catch(Exception e1){
+                throw new KafkawizeException("Cluster default parameters config missing/incorrect.");
+            }
         }
-
-        String execRes = manageTopics.requestForTopic(topicRequestReq);
-
-        String topicaddResult = "{\"result\":\""+execRes+"\"}";
-        return topicaddResult;
+        return true;
     }
 
     public String updateSyncTopics(String updatedSyncTopics, String envSelected) {

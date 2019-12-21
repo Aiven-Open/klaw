@@ -29,7 +29,7 @@ public class TopicController {
     }
 
     @PostMapping(value = "/createTopics")
-    public ResponseEntity<String> createTopics(@RequestBody TopicRequest addTopicRequest) {
+    public ResponseEntity<String> createTopics(@RequestBody TopicRequest addTopicRequest) throws KafkawizeException {
         String result = topicControllerService.createTopics(addTopicRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
