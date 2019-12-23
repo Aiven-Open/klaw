@@ -29,17 +29,6 @@ public class TopicControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    @Value("${custom.clusterapi.url}")
-    private String clusterConnUrl;
-
-    @Value("${custom.clusterapi.username}")
-    private String clusterApiUser;
-
-    @Value("${custom.clusterapi.password}")
-    private String clusterApiPwd;
-
-    String uriGetTopics = "/topics/getTopics/";
-
     @Autowired
     private ManageTopics manageTopics;
 
@@ -121,10 +110,10 @@ public class TopicControllerService {
     public String updateSyncTopics(String updatedSyncTopics, String envSelected) {
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
-        String topicSel=null,teamSelected=null,tmpToken=null;
+        String topicSel, teamSelected, tmpToken;
         List<Topic> listTopics = new ArrayList<>();
         Topic t;
         while(strTkr.hasMoreTokens()){
@@ -149,74 +138,26 @@ public class TopicControllerService {
                 listTopics.add(t);
             }
         }
-        String execRes = manageTopics.addToSynctopics(listTopics);
-
-        return "{\"result\":\""+execRes+"\"}";
-    }
-
-    public List<PCStream> getTopicStreams(String envSelected, String pageNo, String topicNameSearch) {
-        List<PCStream> pcList = manageTopics.selectTopicStreams(envSelected);
-
-        if(topicNameSearch != null)
-            topicNameSearch = topicNameSearch.trim();
-
-        List<PCStream> pcListUpdated = pcList;
-        if(topicNameSearch!=null && topicNameSearch.length()>0) {
-            final String topicSearchFilter = topicNameSearch;
-            pcListUpdated = pcList.stream()
-                    .filter(pcStream -> pcStream.getTopicName().contains(topicSearchFilter))
-                    .collect(Collectors.toList());
+        if(listTopics.size()>0){
+            return "{\"result\":\""+manageTopics.addToSynctopics(listTopics)+"\"}";
         }
-        return getPCStreamsPaginated(pageNo,pcListUpdated);
-    }
-
-    public List<PCStream> getPCStreamsPaginated(String pageNo, List<PCStream> aclListMap){
-        List<PCStream> aclListMapUpdated = new ArrayList<>();
-
-        int totalRecs = aclListMap.size();
-        int recsPerPage = 20;
-
-        int totalPages = aclListMap.size()/recsPerPage + (aclListMap.size()%recsPerPage > 0 ? 1 : 0);
-
-        int requestPageNo = Integer.parseInt(pageNo);
-        int startVar = (requestPageNo-1) * recsPerPage;
-        int lastVar = (requestPageNo) * (recsPerPage);
-        topicCounter = 0;
-        for(int i=0;i<totalRecs;i++) {
-            int counterInc = counterIncrement();
-            if(i>=startVar && i<lastVar) {
-                PCStream mp = aclListMap.get(i);
-                mp.setSequence(counterInc + "");
-
-                mp.setTotalNoPages(totalPages + "");
-                List<String> numList = new ArrayList<>();
-                for (int k = 1; k <= totalPages; k++) {
-                    numList.add("" + k);
-                }
-                mp.setAllPageNos(numList);
-                aclListMapUpdated.add(mp);
-            }
-        }
-        return aclListMapUpdated;
+        else
+            return "{\"result\":\"No record updated.\"}";
     }
 
     public List<TopicRequest> getTopicRequests() {
-
         return manageTopics.getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
-
         return manageTopics.getTopicTeam(topicName, env);
     }
 
     public List<List<TopicRequest>> getCreatedTopicRequests() {
-
-        List<List<TopicRequest>> updatedList = updateCreatTopicReqsList(manageTopics.getCreatedTopicRequests(utilService.getUserName()));
-       return updatedList;
+        return updateCreateTopicReqsList(manageTopics.getCreatedTopicRequests(utilService.getUserName()));
     }
 
-    private List<List<TopicRequest>> updateCreatTopicReqsList(List<TopicRequest> topicsList){
+    private List<List<TopicRequest>> updateCreateTopicReqsList(List<TopicRequest> topicsList){
 
         List<List<TopicRequest>> newList = new ArrayList<>();
         List<TopicRequest> innerList = new ArrayList<>();
@@ -268,9 +209,9 @@ public class TopicControllerService {
 
         TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
 
-        manageTopics.declineTopicRequest(topicRequest,utilService.getUserName());
+        String result = manageTopics.declineTopicRequest(topicRequest, utilService.getUserName());
 
-        return "{\"result\":\""+ "Request declined." +"\"}";
+        return "{\"result\":\""+ "Request declined. " + result + "\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
@@ -280,7 +221,7 @@ public class TopicControllerService {
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
-        List<String> topicsListNew = new ArrayList();
+        List<String> topicsListNew = new ArrayList<>();
 
         int indexOfDots = 0;
         for (String s1 : topicsList) {
@@ -327,9 +268,10 @@ public class TopicControllerService {
 
         List<TopicInfo> topicListUpdated = getTopicList(topicsList,topicsFromSOT,pageNo);
 
-        List<List<TopicInfo>> newList = getNewList(topicListUpdated);
+        if(topicListUpdated!=null && topicListUpdated.size() > 0)
+            return getNewList(topicListUpdated);
 
-        return newList;
+        return null;
     }
 
     private List<List<TopicInfo>> getNewList(List<TopicInfo> topicsList){

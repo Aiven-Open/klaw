@@ -31,8 +31,8 @@ public class DeleteData {
         Clause eqclause = QueryBuilder.eq("topicname",topicName);
         Clause eqclause2 = QueryBuilder.eq("env",env);
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"topic_requests")
-                .where(eqclause);
-               // .and(eqclause2);
+                .where(eqclause)
+                .and(eqclause2);
         session.execute(deleteQuery);
         return "success";
     }

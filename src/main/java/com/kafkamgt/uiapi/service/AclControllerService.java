@@ -181,12 +181,16 @@ public class AclControllerService {
         aclsFromSOT = topicFilteredList;
         topicCounter = 0;
 
-        List<AclInfo> groupedAclsPerTopic  = getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls))
+        if(!isSyncAcls){
+            List<AclInfo> groupedAclsPerTopic  = getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls))
                 .stream()
                 .collect(Collectors.groupingBy(w -> w.getTopicname()))
                 .get(topicNameSearch);
 
-        return groupedAclsPerTopic;
+            return groupedAclsPerTopic;
+        }else{
+            return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls));
+        }
     }
 
     public List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){

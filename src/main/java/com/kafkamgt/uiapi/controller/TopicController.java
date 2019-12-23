@@ -41,13 +41,6 @@ public class TopicController {
         return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getTopicStreams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<PCStream>> getTopicStreams(@RequestParam ("env") String envSelected,
-                                                          @RequestParam("pageNo") String pageNo,
-                                                          @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
-        return new ResponseEntity<>(topicControllerService.getTopicStreams(envSelected, pageNo, topicNameSearch), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getTopicRequests() {
 
