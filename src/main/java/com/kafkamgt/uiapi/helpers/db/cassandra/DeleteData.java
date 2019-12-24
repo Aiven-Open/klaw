@@ -91,11 +91,6 @@ public class DeleteData {
 
     public String deletePrevAclRecs(List<Acl> aclReqs){
 
-        //if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
-             //   aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
-              //  aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
-            //    aclSotItem.getTopictype().equals(mp.getTopictype()))
-
         for(Acl aclReq:aclReqs){
             String aclType = aclReq.getTopictype();
             String host = aclReq.getAclip();
@@ -127,9 +122,6 @@ public class DeleteData {
                         .where(eqclause6);
                 session.execute(delQuery);
             }
-
-
-
         }
 
         return "success";

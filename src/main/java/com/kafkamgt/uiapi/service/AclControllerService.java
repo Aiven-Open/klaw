@@ -4,7 +4,6 @@ package com.kafkamgt.uiapi.service;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
 import org.slf4j.Logger;
@@ -24,7 +23,7 @@ public class AclControllerService {
     private static Logger LOG = LoggerFactory.getLogger(AclControllerService.class);
 
     @Autowired
-    ManageTopics createTopicHelper;
+    ManageTopics manageTopics;
 
     @Autowired
     private UtilService utilService;
@@ -32,26 +31,35 @@ public class AclControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
+    public AclControllerService(ClusterApiService clusterApiService, ManageTopics manageTopics, UtilService utilService){
+        this.clusterApiService = clusterApiService;
+        this.manageTopics = manageTopics;
+        this.utilService = utilService;
+    }
+
     public String createAcl(AclRequests aclReq) {
 
         aclReq.setUsername(utilService.getUserName());
 
-        String execRes = createTopicHelper.requestForAcl(aclReq);
+        String execRes = manageTopics.requestForAcl(aclReq);
         return "{\"result\":\""+execRes+"\"}";
     }
 
     public String updateSyncAcls(String updateSyncAcls, String envSelected) {
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
-        StringTokenizer strTkr = new StringTokenizer(updateSyncAcls,"\n");
-        String topicSel=null,teamSelected=null,consumerGroup=null,aclIp=null,aclSsl=null,aclType=null,tmpToken=null;
-        List<Acl> listtopics = new ArrayList<>();
+        StringTokenizer strTkr = null;
+        if(updateSyncAcls != null)
+            strTkr = new StringTokenizer(updateSyncAcls,"\n");
+
+        String topicSel, teamSelected, consumerGroup, aclIp, aclSsl, aclType, tmpToken;
+        List<Acl> listTopics = new ArrayList<>();
         Acl t;
 
-        StringTokenizer strTkrIn = null;
-        while(strTkr.hasMoreTokens()){
+        StringTokenizer strTkrIn ;
+        while(strTkr != null && strTkr.hasMoreTokens()){
             tmpToken = strTkr.nextToken().trim();
             strTkrIn = new StringTokenizer(tmpToken,"-----");
             while(strTkrIn.hasMoreTokens()){
@@ -72,25 +80,33 @@ public class AclControllerService {
                 t.setEnvironment(envSelected);
                 t.setTopictype(aclType);
 
-                listtopics.add(t);
+                listTopics.add(t);
             }
-
         }
 
-        createTopicHelper.deletePrevAclRecs(listtopics);
+        try{
+            if(listTopics.size()>0){
+                String deleteResult = manageTopics.deletePrevAclRecs(listTopics);
 
-        String execRes = createTopicHelper.addToSyncacls(listtopics);
-
-        return "{\"result\":\""+execRes+"\"}";
+                if(deleteResult.equals("success")) {
+                    return "{\"result\":\""+manageTopics.addToSyncacls(listTopics)+"\"}";
+                }
+            }
+            else
+                return "{\"result\":\"No records to update\"}";
+        }catch(Exception e){
+            return "{\"result\":\"failure "+e.toString()+"\"}";
+        }
+        return "{\"result\":\"failure\"}";
     }
 
     public List<AclRequests> getAclRequests() {
-        return createTopicHelper.getAllAclRequests(utilService.getUserName());
+        return manageTopics.getAllAclRequests(utilService.getUserName());
     }
 
     public List<List<AclRequests>> getCreatedAclRequests() {
 
-        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(createTopicHelper.getCreatedAclRequests(utilService.getUserName()));
+        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(manageTopics.getCreatedAclRequests(utilService.getUserName()));
 
         return updatedAclReqs;
     }
@@ -119,54 +135,65 @@ public class AclControllerService {
     }
 
     public String deleteAclRequests(String req_no) {
-        String deleteTopicReqStatus = createTopicHelper.deleteAclRequest(req_no);
-        return "{\"result\":\""+deleteTopicReqStatus+"\"}";
+        try {
+            return "{\"result\":\""+manageTopics.deleteAclRequest(req_no)+"\"}";
+        }catch(Exception e){
+            return "{\"result\":\"failure "+e.toString()+"\"}";
+        }
     }
 
     public String approveAclRequests(String req_no) throws KafkawizeException {
 
-        AclRequests aclReq = createTopicHelper.selectAcl(req_no);
+        AclRequests aclReq = manageTopics.selectAcl(req_no);
+        if(aclReq.getReq_no() != null){
+            ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
 
-        ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
+            String updateAclReqStatus ;
 
-        String updateAclReqStatus = response.getBody();
-
-        if(response.getBody().equals("success"))
-            updateAclReqStatus = createTopicHelper.updateAclRequest(aclReq,utilService.getUserName());
-
-        return "{\"result\":\""+updateAclReqStatus+"\"}";
+            try {
+                if (response.getBody().equals("success"))
+                    updateAclReqStatus = manageTopics.updateAclRequest(aclReq, utilService.getUserName());
+                else
+                    return "{\"result\":\"failure\"}";
+            }catch(Exception e){
+                return "{\"result\":\"failure "+e.toString()+"\"}";
+            }
+            return "{\"result\":\""+updateAclReqStatus+"\"}";
+        }
+        else
+            return "{\"result\":\"Record not found !\"}";
     }
 
-    public String declineAclRequests(String req_no) throws KafkawizeException {
+    public String declineAclRequests(String req_no) {
 
-        AclRequests aclReq = createTopicHelper.selectAcl(req_no);
+        AclRequests aclReq = manageTopics.selectAcl(req_no);
+        String updateAclReqStatus ;
 
-        String updateAclReqStatus = createTopicHelper.declineAclRequest(aclReq,utilService.getUserName());
-
-        return "{\"result\":\""+updateAclReqStatus+"\"}";
+        if(aclReq.getReq_no() != null){
+            try {
+                 updateAclReqStatus = manageTopics.declineAclRequest(aclReq, utilService.getUserName());
+                 return "{\"result\":\""+updateAclReqStatus+"\"}";
+            }catch(Exception e){
+                 return "{\"result\":\"failure "+e.toString()+"\"}";
+            }
+        }else
+            return "{\"result\":\"Record not found !\"}";
     }
 
-    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) throws KafkawizeException {
-
-        UserDetails userDetails = utilService.getUserDetails();
-
-        if(topicNameSearch != null)
-            topicNameSearch = topicNameSearch.trim();
-
-        Env envSelected= createTopicHelper.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-
-        List<HashMap<String,String>> aclList ;
-
+    private List<HashMap<String, String>> getAclListFromCluster(String bootstrapHost, boolean isSyncAcls) throws KafkawizeException {
+        List<HashMap<String, String>> aclList ;
         if(isSyncAcls)
             aclList = clusterApiService.getAcls(bootstrapHost).stream()
-                .filter(aclItem->aclItem.get("operation").equals("READ") && aclItem.get("resourceType").equals("GROUP"))
-                .collect(Collectors.toList());
+                    .filter(aclItem->aclItem.get("operation").equals("READ") && aclItem.get("resourceType").equals("GROUP"))
+                    .collect(Collectors.toList());
         else
-            aclList =clusterApiService.getAcls(bootstrapHost);
+            aclList = clusterApiService.getAcls(bootstrapHost);
 
-        // Get Sync acls
-        List<Acl> aclsFromSOT = createTopicHelper.getSyncAcls(env);
+        return aclList;
+    }
+
+    private List<Acl> getAclsFromSOT(String env, String topicNameSearch){
+        List<Acl> aclsFromSOT = manageTopics.getSyncAcls(env);
 
         List<Acl> topicFilteredList = aclsFromSOT;
         // Filter topics on topic name for search
@@ -179,6 +206,21 @@ public class AclControllerService {
         }
 
         aclsFromSOT = topicFilteredList;
+
+        return aclsFromSOT;
+    }
+
+    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) throws KafkawizeException {
+
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
+
+        Env envSelected= manageTopics.selectEnvDetails(env);
+        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
+
+        List<HashMap<String,String>> aclList = getAclListFromCluster(bootstrapHost, isSyncAcls);
+        List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch);
+
         topicCounter = 0;
 
         if(!isSyncAcls){
@@ -193,7 +235,7 @@ public class AclControllerService {
         }
     }
 
-    public List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){
+    private List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){
 
         List<AclInfo> aclListMap = new ArrayList<>() ;
         AclInfo mp = new AclInfo();
@@ -202,7 +244,7 @@ public class AclControllerService {
         List<String> teamList = new ArrayList<>();
 
         if(isSyncAcls) {
-            createTopicHelper.selectAllTeamsOfUsers(utilService.getUserName())
+            manageTopics.selectAllTeamsOfUsers(utilService.getUserName())
                     .forEach(teamS -> teamList.add(teamS.getTeamname()));
         }
 
@@ -274,7 +316,7 @@ public class AclControllerService {
         return aclListMap;
     }
 
-    public List<AclInfo> getAclsList(String pageNo, List<AclInfo> aclListMap){
+    private List<AclInfo> getAclsList(String pageNo, List<AclInfo> aclListMap){
         List<AclInfo> aclListMapUpdated = new ArrayList<>();
 
         int totalRecs = aclListMap.size();
@@ -304,7 +346,7 @@ public class AclControllerService {
     }
 
     int topicCounter=0;
-    public int counterIncrement()
+    private int counterIncrement()
     {
         topicCounter++;
         return topicCounter;

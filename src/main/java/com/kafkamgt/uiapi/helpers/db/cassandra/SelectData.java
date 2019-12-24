@@ -452,7 +452,7 @@ public class SelectData{
     public AclRequests selectAcl(String req_no){
         AclRequests aclReq = new AclRequests();
         Clause eqclause = QueryBuilder.eq("req_no",req_no);
-        ResultSet results = null;
+        ResultSet results ;
         Select.Where selectQuery = QueryBuilder.select().from(keyspace,"acl_requests").where(eqclause);
         results = session.execute(selectQuery);
 
