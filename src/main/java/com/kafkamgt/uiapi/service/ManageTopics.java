@@ -7,6 +7,7 @@ import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
 import com.kafkamgt.uiapi.model.PCStream;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Configuration
+@Slf4j
 public class ManageTopics {
 
     @Value("${custom.db.storetype}")
@@ -42,6 +44,7 @@ public class ManageTopics {
             System.exit(0);
         }
         if(!utils.validateLicense(licenseKey, orgName)) {
+            log.info("Invalid License !! Please contact info@kafkawize.com for FREE license key.");
             System.exit(0);
         }
 

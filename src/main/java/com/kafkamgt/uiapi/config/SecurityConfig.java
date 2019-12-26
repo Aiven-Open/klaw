@@ -71,9 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             throw new Exception("Invalid organization configured !!");
         }
         if(!utils.validateLicense(licenseKey, orgName)) {
-            LOG.error("Invalid License, exiting...");
+            LOG.error("Invalid License, exiting...Please contact info@kafkawize.com for FREE license key");
             System.exit(0);
-            throw new Exception("Invalid License !!");
+            throw new Exception("Invalid License !! Please contact info@kafkawize.com for FREE license key");
         }
         List<UserInfo> users;
         try {
@@ -98,7 +98,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             userDetailsBuilder
                     .and()
                     .withUser(userInfo.getUsername()).password(encoder.encode(userInfo.getPwd())).roles(userInfo.getRole());
-
         }
 
         auth.userDetailsService(inMemoryUserDetailsManager());
@@ -109,7 +108,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final Properties globalUsers = new Properties();
         List<UserInfo> users = manageTopics.selectAllUsersInfo();
         Iterator<UserInfo> iter = users.iterator();
-        UserInfo userInfo = null;
+        UserInfo userInfo;
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
         while(iter.hasNext()){

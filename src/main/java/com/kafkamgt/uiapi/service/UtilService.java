@@ -1,6 +1,10 @@
 package com.kafkamgt.uiapi.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -18,11 +22,24 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 
 @Service
+@Slf4j
 public class UtilService {
-    public boolean checkAuthorizedSU(){
-        UserDetails userDetails = getUserDetails();
 
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
+    private UserDetails userDetails;
+
+    @Value("${custom.license.key}")
+    String licenseKey;
+
+    @Value("${custom.org.name}")
+    String orgName;
+
+    public String getAuthority(UserDetails userDetails){
+        GrantedAuthority ga = this.userDetails.getAuthorities().iterator().next();
+        return ga.getAuthority();
+    }
+
+    public boolean checkAuthorizedSU(){
+        GrantedAuthority ga = this.userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
         if(!authority.equals("ROLE_SUPERUSER"))
             return false;
@@ -31,12 +48,20 @@ public class UtilService {
     }
 
     public String getUserName(){
-        UserDetails userDetails = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUsername();
+        return this.userDetails.getUsername();
     }
 
     public UserDetails getUserDetails(){
-        return (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        validateLicense(licenseKey, orgName);
+        if(this.userDetails == null){
+            log.error("Users not loaded .. exiting");
+            System.exit(0);
+        }
+        return this.userDetails;
+    }
+
+    public Authentication getAuthentication(){
+        return SecurityContextHolder.getContext().getAuthentication();
     }
 
     public boolean validateLicense(String licenseKey, String organization){
@@ -56,6 +81,19 @@ public class UtilService {
 
         decryptLicense(licenseKey, createSecretKey(SALT_STR.toCharArray(),
                 salt, iterationCount, keyLength));
+        try{
+            this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
+        }
+        catch(Exception e){
+            log.error("Bootstrap error : user is not loaded !!");
+        }
+    }
+
+    private SecurityContext getContext(String licenseKey){
+        if(licenseKey!=null && licenseKey.length() > 0)
+            return SecurityContextHolder.getContext();
+        else
+            return null;
     }
 
     private static SecretKeySpec createSecretKey(char[] password, byte[] salt, int iterationCount, int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {

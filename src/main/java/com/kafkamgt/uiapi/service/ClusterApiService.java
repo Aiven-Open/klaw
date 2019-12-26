@@ -27,31 +27,35 @@ public class ClusterApiService {
     ManageTopics createTopicHelper;
 
     @Value("${custom.clusterapi.url}")
-    String clusterConnUrl;
+    private String clusterConnUrl;
 
     @Value("${custom.clusterapi.username}")
-    String clusterApiUser;
+    private String clusterApiUser;
 
     @Value("${custom.clusterapi.password}")
-    String clusterApiPwd;
+    private String clusterApiPwd;
 
     private String uriCreateAcls = "/topics/createAcls";
 
     private String uriGetAcls = "/topics/getAcls/";
 
-    String uriCreateTopics = "/topics/createTopics";
+    private String uriCreateTopics = "/topics/createTopics";
 
-    String uriGetTopics = "/topics/getTopics/";
+    private String uriGetTopics = "/topics/getTopics/";
 
-    String uriPostSchema = "/topics/postSchema";
+    private String uriPostSchema = "/topics/postSchema";
 
-    String uriEnvStatus = "/topics/getStatus/";
+    private String uriEnvStatus = "/topics/getStatus/";
 
-    String uriClusterApiStatus = "/topics/getApiStatus";
+    private String uriClusterApiStatus = "/topics/getApiStatus";
 
-    String clusterApiStatus = "OFFLINE";
+    private String clusterApiStatus = "OFFLINE";
 
-    public String getClusterApiStatus() throws KafkawizeException {
+    public String getClusterApiUrl(){
+        return this.clusterConnUrl;
+    }
+
+    public String getClusterApiStatus() {
         String clusterStatus = null;
         try {
             String uri = clusterConnUrl + uriClusterApiStatus;

@@ -5,13 +5,9 @@ import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicPK;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.model.TopicInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,8 +19,8 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class TopicControllerService {
-    private static Logger LOG = LoggerFactory.getLogger(TopicControllerService.class);
 
     @Autowired
     ClusterApiService clusterApiService;
@@ -43,7 +39,7 @@ public class TopicControllerService {
 
     public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {
 
-        LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
+        log.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
         topicRequestReq.setUsername(utilService.getUserName());
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
@@ -76,7 +72,7 @@ public class TopicControllerService {
                 }
             }
         }catch (Exception e){
-            LOG.error("Unable to set topic partitions, setting default from properties.");
+            log.error("Unable to set topic partitions, setting default from properties.");
         }
 
         try {
@@ -96,7 +92,7 @@ public class TopicControllerService {
 
             topicRequestReq.setReplicationfactor(defaultRf);
         }catch (Exception e){
-            LOG.error("Unable to set topic partitions, setting default from properties.");
+            log.error("Unable to set topic partitions, setting default from properties.");
             try{
                 Integer.parseInt(defPartns);
                 topicRequestReq.setTopicpartitions(defPartns);

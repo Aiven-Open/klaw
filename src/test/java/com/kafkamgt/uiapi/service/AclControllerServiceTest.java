@@ -6,6 +6,7 @@ import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -113,7 +114,7 @@ public class AclControllerServiceTest {
         when(manageTopics.deletePrevAclRecs(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertEquals("{\"result\":\"failure java.lang.RuntimeException: Error\"}",result);
+        assertThat(result, CoreMatchers.containsString("failure"));
     }
 
     @Test
@@ -141,7 +142,7 @@ public class AclControllerServiceTest {
         when(manageTopics.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertEquals("{\"result\":\"failure java.lang.RuntimeException: Error\"}",result);
+        assertThat(result, CoreMatchers.containsString("failure"));
     }
 
     @Test
@@ -216,7 +217,7 @@ public class AclControllerServiceTest {
         when(manageTopics.updateAclRequest(any(), any())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.approveAclRequests(req_no);
-        assertEquals("{\"result\":\"failure java.lang.RuntimeException: Error\"}", result);
+        assertThat(result, CoreMatchers.containsString("failure"));
     }
 
     @Test

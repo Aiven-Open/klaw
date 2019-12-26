@@ -22,42 +22,32 @@ public class UtilControllerService {
     private static Logger LOG = LoggerFactory.getLogger(UtilControllerService.class);
 
     @Autowired
-    ManageTopics createTopicHelper;
+    ManageTopics manageTopics;
 
-    @Value("${custom.clusterapi.url}")
-    String clusterConnUrl;
-
-    @Value("${custom.clusterapi.username}")
-    String clusterApiUser;
-
-    @Value("${custom.clusterapi.password}")
-    String clusterApiPwd;
+    @Autowired
+    UtilService utilService;
 
     @Value("${custom.org.name}")
     String companyInfo;
 
+    public UtilControllerService(ManageTopics manageTopics, UtilService utilService){
+        this.manageTopics = manageTopics;
+        this.utilService = utilService;
+    }
 
     public String getAuth() {
 
-        UserDetails userDetails = null;
-        try {
-             userDetails =
-                    (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        }catch (Exception e){}
-        String json = null;
+        UserDetails userDetails = utilService.getUserDetails();
+
         if(userDetails!=null) {
-        //LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
 
-            String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
-            GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-            String authority = ga.getAuthority();
+            String teamName = manageTopics.getUsersInfo(userDetails.getUsername()).getTeam();
+            String authority = utilService.getAuthority(userDetails);
 
-            //LOG.info("auth is " + authority);
             String statusAuth = null;
             String statusAuthExecTopics = null;
-            String licenseValidity=null;
 
-            HashMap<String, String> outstanding = createTopicHelper.getAllRequestsToBeApproved(userDetails.getUsername());
+            HashMap<String, String> outstanding = manageTopics.getAllRequestsToBeApproved(userDetails.getUsername());
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
             String outstandingAclReqs = outstanding.get("acls");
@@ -93,36 +83,29 @@ public class UtilControllerService {
 
     public String getExecAuth() {
 
-        UserDetails userDetails =
-                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = utilService.getUserDetails();
+        String teamName = manageTopics.getUsersInfo(userDetails.getUsername()).getTeam();
 
-        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
+        String authority = utilService.getAuthority(userDetails);
 
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        String json = null;
-        String statusAuth = null;
+        String statusAuth ;
 
         if(authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
-            //statusAuth = userDetails.getUsername() +"-"+"Authorized";
             statusAuth = "Authorized";
         else
-            //statusAuth = userDetails.getUsername() +"-"+"Not Authorized";
             statusAuth = "NotAuthorized";
 
         return "{ \"status\": \""+statusAuth+"\" , " +
                 " \"companyinfo\": \"" + companyInfo + "\"," +
                 " \"teamname\": \"" + teamName + "\"," +
                 "\"username\":\""+userDetails.getUsername()+"\" }";
-
     }
 
     public void getLogoutPage(HttpServletRequest request, HttpServletResponse response){
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = utilService.getAuthentication();
         if (authentication != null)
             new SecurityContextLogoutHandler().logout(request, response, authentication);
-        LOG.info("in logout..");
     }
 
 }
