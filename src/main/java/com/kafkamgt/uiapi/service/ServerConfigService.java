@@ -1,6 +1,7 @@
 package com.kafkamgt.uiapi.service;
 
 
+import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.ServerConfigProperties;
 import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
@@ -22,12 +23,16 @@ public class ServerConfigService {
     private static Logger LOG = LoggerFactory.getLogger(ServerConfigService.class);
 
     @Autowired
-    Environment env;
+    private Environment env;
 
     private static List<ServerConfigProperties> listProps;
 
+    public ServerConfigService(Environment env){
+        this.env = env;
+    }
+
     @PostConstruct
-    private void getAllProperties() {
+    public void getAllProperties() {
         LOG.info("All server properties loaded");
 
         List<ServerConfigProperties> listProps = new ArrayList<>();
@@ -57,21 +62,6 @@ public class ServerConfigService {
 
     public List<ServerConfigProperties> getAllProps(){
         return this.listProps;
-    }
-
-    public String updateProperty(ServerConfigProperties serverProps){
-        String execRes = "success";
-        String key = null, value = null;
-
-        for(ServerConfigProperties serverProp: listProps){
-            if(serverProps.getId().equals(serverProps.getId()))
-            {
-                key = serverProp.getKey();
-                value = serverProps.getValue();
-            }
-        }
-
-        return "{\"result\":\""+execRes+"\"}";
     }
 
     private boolean checkPropertyExists(List<ServerConfigProperties> props, String key){

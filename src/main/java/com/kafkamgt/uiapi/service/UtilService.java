@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -32,6 +33,18 @@ public class UtilService {
 
     @Value("${custom.org.name}")
     String orgName;
+
+//    public UtilService(UserDetails userDetails){
+//        this.userDetails = userDetails;
+//    }
+
+    public void setUserDetails(UserDetails userDetails){
+        this.userDetails = userDetails;
+    }
+
+    public RestTemplate getRestTemplate(){
+        return new RestTemplate();
+    }
 
     public String getAuthority(UserDetails userDetails){
         GrantedAuthority ga = this.userDetails.getAuthorities().iterator().next();

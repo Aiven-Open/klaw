@@ -1,16 +1,15 @@
 package com.kafkamgt.uiapi.service;
 
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,10 +19,10 @@ import java.util.stream.Collectors;
 @Service
 public class AclControllerService {
 
-    private static Logger LOG = LoggerFactory.getLogger(AclControllerService.class);
-
     @Autowired
-    ManageTopics manageTopics;
+    ManageDatabase manageTopics;
+
+    private HandleDbRequests handleDbRequests ;
 
     @Autowired
     private UtilService utilService;
@@ -31,17 +30,18 @@ public class AclControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    public AclControllerService(ClusterApiService clusterApiService, ManageTopics manageTopics, UtilService utilService){
+    public AclControllerService(ClusterApiService clusterApiService, ManageDatabase manageTopics, UtilService utilService){
         this.clusterApiService = clusterApiService;
         this.manageTopics = manageTopics;
         this.utilService = utilService;
+        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String createAcl(AclRequests aclReq) {
 
         aclReq.setUsername(utilService.getUserName());
 
-        String execRes = manageTopics.requestForAcl(aclReq);
+        String execRes = handleDbRequests.requestForAcl(aclReq);
         return "{\"result\":\""+execRes+"\"}";
     }
 
@@ -86,10 +86,10 @@ public class AclControllerService {
 
         try{
             if(listTopics.size()>0){
-                String deleteResult = manageTopics.deletePrevAclRecs(listTopics);
+                String deleteResult = handleDbRequests.deletePrevAclRecs(listTopics);
 
                 if(deleteResult.equals("success")) {
-                    return "{\"result\":\""+manageTopics.addToSyncacls(listTopics)+"\"}";
+                    return "{\"result\":\""+handleDbRequests.addToSyncacls(listTopics)+"\"}";
                 }
             }
             else
@@ -101,12 +101,12 @@ public class AclControllerService {
     }
 
     public List<AclRequests> getAclRequests() {
-        return manageTopics.getAllAclRequests(utilService.getUserName());
+        return handleDbRequests.getAllAclRequests(utilService.getUserName());
     }
 
     public List<List<AclRequests>> getCreatedAclRequests() {
 
-        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(manageTopics.getCreatedAclRequests(utilService.getUserName()));
+        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(handleDbRequests.getCreatedAclRequests(utilService.getUserName()));
 
         return updatedAclReqs;
     }
@@ -136,7 +136,7 @@ public class AclControllerService {
 
     public String deleteAclRequests(String req_no) {
         try {
-            return "{\"result\":\""+manageTopics.deleteAclRequest(req_no)+"\"}";
+            return "{\"result\":\""+handleDbRequests.deleteAclRequest(req_no)+"\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
@@ -144,7 +144,7 @@ public class AclControllerService {
 
     public String approveAclRequests(String req_no) throws KafkawizeException {
 
-        AclRequests aclReq = manageTopics.selectAcl(req_no);
+        AclRequests aclReq = handleDbRequests.selectAcl(req_no);
         if(aclReq.getReq_no() != null){
             ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
 
@@ -152,7 +152,7 @@ public class AclControllerService {
 
             try {
                 if (response.getBody().equals("success"))
-                    updateAclReqStatus = manageTopics.updateAclRequest(aclReq, utilService.getUserName());
+                    updateAclReqStatus = handleDbRequests.updateAclRequest(aclReq, utilService.getUserName());
                 else
                     return "{\"result\":\"failure\"}";
             }catch(Exception e){
@@ -166,12 +166,12 @@ public class AclControllerService {
 
     public String declineAclRequests(String req_no) {
 
-        AclRequests aclReq = manageTopics.selectAcl(req_no);
+        AclRequests aclReq = handleDbRequests.selectAcl(req_no);
         String updateAclReqStatus ;
 
         if(aclReq.getReq_no() != null){
             try {
-                 updateAclReqStatus = manageTopics.declineAclRequest(aclReq, utilService.getUserName());
+                 updateAclReqStatus = handleDbRequests.declineAclRequest(aclReq, utilService.getUserName());
                  return "{\"result\":\""+updateAclReqStatus+"\"}";
             }catch(Exception e){
                  return "{\"result\":\"failure "+e.toString()+"\"}";
@@ -193,7 +193,7 @@ public class AclControllerService {
     }
 
     private List<Acl> getAclsFromSOT(String env, String topicNameSearch){
-        List<Acl> aclsFromSOT = manageTopics.getSyncAcls(env);
+        List<Acl> aclsFromSOT = handleDbRequests.getSyncAcls(env);
 
         List<Acl> topicFilteredList = aclsFromSOT;
         // Filter topics on topic name for search
@@ -215,7 +215,7 @@ public class AclControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= manageTopics.selectEnvDetails(env);
+        Env envSelected= handleDbRequests.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<HashMap<String,String>> aclList = getAclListFromCluster(bootstrapHost, isSyncAcls);
@@ -244,7 +244,7 @@ public class AclControllerService {
         List<String> teamList = new ArrayList<>();
 
         if(isSyncAcls) {
-            manageTopics.selectAllTeamsOfUsers(utilService.getUserName())
+            handleDbRequests.selectAllTeamsOfUsers(utilService.getUserName())
                     .forEach(teamS -> teamList.add(teamS.getTeamname()));
         }
 

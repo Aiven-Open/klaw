@@ -4,7 +4,6 @@ import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.service.ManageTopics;
 import com.kafkamgt.uiapi.service.UiConfigControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,13 +18,8 @@ import java.util.List;
 @RequestMapping("/")
 public class UiConfigController {
 
-    //private static Logger LOG = LoggerFactory.getLogger(UiConfigController.class);
-
     @Autowired
     private UiConfigControllerService uiConfigControllerService;
-
-    @Autowired
-    private ManageTopics manageTopics;
 
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {

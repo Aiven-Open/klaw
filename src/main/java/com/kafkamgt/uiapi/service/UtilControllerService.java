@@ -1,13 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
@@ -19,10 +17,10 @@ import java.util.HashMap;
 @Service
 public class UtilControllerService {
 
-    private static Logger LOG = LoggerFactory.getLogger(UtilControllerService.class);
-
     @Autowired
-    ManageTopics manageTopics;
+    ManageDatabase manageTopics;
+
+    private HandleDbRequests handleDbRequests ;
 
     @Autowired
     UtilService utilService;
@@ -30,9 +28,10 @@ public class UtilControllerService {
     @Value("${custom.org.name}")
     String companyInfo;
 
-    public UtilControllerService(ManageTopics manageTopics, UtilService utilService){
+    public UtilControllerService(ManageDatabase manageTopics, UtilService utilService){
         this.manageTopics = manageTopics;
         this.utilService = utilService;
+        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String getAuth() {
@@ -41,13 +40,13 @@ public class UtilControllerService {
 
         if(userDetails!=null) {
 
-            String teamName = manageTopics.getUsersInfo(userDetails.getUsername()).getTeam();
+            String teamName = handleDbRequests.getUsersInfo(userDetails.getUsername()).getTeam();
             String authority = utilService.getAuthority(userDetails);
 
             String statusAuth = null;
             String statusAuthExecTopics = null;
 
-            HashMap<String, String> outstanding = manageTopics.getAllRequestsToBeApproved(userDetails.getUsername());
+            HashMap<String, String> outstanding = handleDbRequests.getAllRequestsToBeApproved(userDetails.getUsername());
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
             String outstandingAclReqs = outstanding.get("acls");
@@ -84,7 +83,7 @@ public class UtilControllerService {
     public String getExecAuth() {
 
         UserDetails userDetails = utilService.getUserDetails();
-        String teamName = manageTopics.getUsersInfo(userDetails.getUsername()).getTeam();
+        String teamName = handleDbRequests.getUsersInfo(userDetails.getUsername()).getTeam();
 
         String authority = utilService.getAuthority(userDetails);
 

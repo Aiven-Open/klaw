@@ -1,10 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,7 +28,9 @@ public class UiConfigControllerService {
     private UtilService utilService;
 
     @Autowired
-    private ManageTopics manageTopics;
+    private ManageDatabase manageTopics;
+
+    private HandleDbRequests handleDbRequests ;
 
     @Autowired
     private ClusterApiService clusterApiService;
@@ -39,10 +42,12 @@ public class UiConfigControllerService {
         this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
     }
 
-    public void setServices(ClusterApiService clusterApiService, ManageTopics manageTopics, UtilService utilService){
+    @Autowired
+    public void setServices(ClusterApiService clusterApiService, ManageDatabase manageTopics, UtilService utilService){
         this.clusterApiService = clusterApiService;
         this.manageTopics = manageTopics;
         this.utilService = utilService;
+        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public Env getClusterApiStatus(){
@@ -55,21 +60,16 @@ public class UiConfigControllerService {
     public List<Env> getEnvs(boolean envStatus) {
 
         if(envStatus)
-            return manageTopics.selectAllKafkaEnvs();
+            return handleDbRequests.selectAllKafkaEnvs();
 
-        List<Env> listEnvs = manageTopics.selectAllKafkaEnvs();
+        List<Env> listEnvs = handleDbRequests.selectAllKafkaEnvs();
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
-            String status = null;
-            try {
-                if(oneEnv.getProtocol().equalsIgnoreCase("plain"))
-                    status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort());
-                else
-                    status = "NOT_KNOWN";
-            } catch (KafkawizeException e) {
-                e.printStackTrace();
+            String status;
+            if(oneEnv.getProtocol().equalsIgnoreCase("plain"))
+                status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort());
+            else
                 status = "NOT_KNOWN";
-            }
             oneEnv.setEnvStatus(status);
             newListEnvs.add(oneEnv);
         }
@@ -78,11 +78,11 @@ public class UiConfigControllerService {
     }
 
     public List<Env> getSchemaRegEnvs() {
-        return manageTopics.selectAllSchemaRegEnvs();
+        return handleDbRequests.selectAllSchemaRegEnvs();
     }
 
     public List<Env> getSchemaRegEnvsStatus() {
-        List<Env> listEnvs = manageTopics.selectAllSchemaRegEnvs();
+        List<Env> listEnvs = handleDbRequests.selectAllSchemaRegEnvs();
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status = null;
@@ -98,11 +98,11 @@ public class UiConfigControllerService {
     }
 
     public List<Team> getAllTeams() {
-        return manageTopics.selectAllTeamsOfUsers(utilService.getUserName());
+        return handleDbRequests.selectAllTeamsOfUsers(utilService.getUserName());
     }
 
     public List<Team> getAllTeamsSU() {
-        return manageTopics.selectAllTeams();
+        return handleDbRequests.selectAllTeams();
     }
 
     public String addNewEnv(Env newEnv){
@@ -116,7 +116,7 @@ public class UiConfigControllerService {
         newEnv.setTrustStoreLocation("");
         newEnv.setKeyStoreLocation("");
         try {
-            return "{\"result\":\""+manageTopics.addNewEnv(newEnv)+"\"}";
+            return "{\"result\":\""+handleDbRequests.addNewEnv(newEnv)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -128,7 +128,7 @@ public class UiConfigControllerService {
             return "{\"result\":\"Not Authorized\"}";
 
         try {
-            return "{\"result\":\""+manageTopics.deleteClusterRequest(clusterId)+"\"}";
+            return "{\"result\":\""+handleDbRequests.deleteClusterRequest(clusterId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -141,11 +141,11 @@ public class UiConfigControllerService {
 
         String envAddResult = "{\"result\":\"Your team cannot be deleted. Try deleting other team.\"}";
 
-        if(manageTopics.getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
+        if(handleDbRequests.getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
             return envAddResult;
 
         try {
-            return "{\"result\":\""+manageTopics.deleteTeamRequest(teamId)+"\"}";
+            return "{\"result\":\""+handleDbRequests.deleteTeamRequest(teamId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -162,7 +162,7 @@ public class UiConfigControllerService {
             return envAddResult;
 
         try {
-            return "{\"result\":\""+manageTopics.deleteUserRequest(userId)+"\"}";
+            return "{\"result\":\""+handleDbRequests.deleteUserRequest(userId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -180,7 +180,7 @@ public class UiConfigControllerService {
             inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername()).password(encoder.encode(newUser.getPwd()))
                     .roles(newUser.getRole()).build());
 
-           return "{\"result\":\""+manageTopics.addNewUser(newUser)+"\"}";
+           return "{\"result\":\""+handleDbRequests.addNewUser(newUser)+"\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -192,7 +192,7 @@ public class UiConfigControllerService {
             return "{\"result\":\"Not Authorized\"}";
 
         try {
-            return "{\"result\":\"" + manageTopics.addNewTeam(newTeam) + "\"}";
+            return "{\"result\":\"" + handleDbRequests.addNewTeam(newTeam) + "\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -213,7 +213,7 @@ public class UiConfigControllerService {
                     pwdChange);
             inMemoryUserDetailsManager.updateUser(userDetailsUpdated);
 
-            return "{\"result\":\"" + manageTopics.updatePassword(userDetails.getUsername(), pwdChange) + "\"}";
+            return "{\"result\":\"" + handleDbRequests.updatePassword(userDetails.getUsername(), pwdChange) + "\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -221,17 +221,17 @@ public class UiConfigControllerService {
 
     public List<UserInfo> showUsers(){
 
-        return manageTopics.selectAllUsersInfo();
+        return handleDbRequests.selectAllUsersInfo();
     }
 
     public UserInfo getMyProfileInfo(){
 
-        return manageTopics.getUsersInfo(utilService.getUserName());
+        return handleDbRequests.getUsersInfo(utilService.getUserName());
     }
 
     public List<ActivityLog> showActivityLog(String env, String pageNo){
 
-        List<ActivityLog> origActivityList = manageTopics.selectActivityLog(utilService.getUserName(), env);
+        List<ActivityLog> origActivityList = handleDbRequests.selectActivityLog(utilService.getUserName(), env);
         List<ActivityLog> newList = new ArrayList<>();
 
         if(origActivityList!=null && origActivityList.size() > 0) {

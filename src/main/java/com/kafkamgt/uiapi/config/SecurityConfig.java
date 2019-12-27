@@ -2,7 +2,6 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.service.ManageTopics;
 import com.kafkamgt.uiapi.service.UtilService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static Logger LOG = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
-    ManageTopics manageTopics;
+    ManageDatabase manageTopics;
 
     @Autowired
     UtilService utils;

@@ -1,10 +1,12 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicPK;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +28,18 @@ public class TopicControllerService {
     ClusterApiService clusterApiService;
 
     @Autowired
-    private ManageTopics manageTopics;
+    private ManageDatabase manageTopics;
+
+    private HandleDbRequests handleDbRequests ;
 
     @Autowired
     private UtilService utilService;
 
-    public TopicControllerService(ClusterApiService clusterApiService, ManageTopics manageTopics, UtilService utilService){
+    public TopicControllerService(ClusterApiService clusterApiService, ManageDatabase manageTopics, UtilService utilService){
         this.clusterApiService = clusterApiService;
         this.manageTopics = manageTopics;
         this.utilService = utilService;
+        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {
@@ -46,10 +51,10 @@ public class TopicControllerService {
 
         String envSelected = topicRequestReq.getEnvironment();
 
-        Env env = manageTopics.selectEnvDetails(envSelected);
+        Env env = handleDbRequests.selectEnvDetails(envSelected);
 
         if(validateParameters(topicRequestReq, env, topicPartitions)){
-            return "{\"result\":\""+manageTopics.requestForTopic(topicRequestReq)+"\"}";
+            return "{\"result\":\""+handleDbRequests.requestForTopic(topicRequestReq)+"\"}";
         }
 
         return "{\"result\":\"failure\"}";
@@ -135,22 +140,22 @@ public class TopicControllerService {
             }
         }
         if(listTopics.size()>0){
-            return "{\"result\":\""+manageTopics.addToSynctopics(listTopics)+"\"}";
+            return "{\"result\":\""+handleDbRequests.addToSynctopics(listTopics)+"\"}";
         }
         else
             return "{\"result\":\"No record updated.\"}";
     }
 
     public List<TopicRequest> getTopicRequests() {
-        return manageTopics.getAllTopicRequests(utilService.getUserName());
+        return handleDbRequests.getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
-        return manageTopics.getTopicTeam(topicName, env);
+        return handleDbRequests.getTopicTeam(topicName, env);
     }
 
     public List<List<TopicRequest>> getCreatedTopicRequests() {
-        return updateCreateTopicReqsList(manageTopics.getCreatedTopicRequests(utilService.getUserName()));
+        return updateCreateTopicReqsList(handleDbRequests.getCreatedTopicRequests(utilService.getUserName()));
     }
 
     private List<List<TopicRequest>> updateCreateTopicReqsList(List<TopicRequest> topicsList){
@@ -182,37 +187,37 @@ public class TopicControllerService {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        String deleteTopicReqStatus = manageTopics.deleteTopicRequest(topicName,env);
+        String deleteTopicReqStatus = handleDbRequests.deleteTopicRequest(topicName,env);
 
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
     public String approveTopicRequests(String topicName, String env) throws KafkawizeException {
 
-        TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
 
         ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
 
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = manageTopics.updateTopicRequest(topicRequest,utilService.getUserName());
+            updateTopicReqStatus = handleDbRequests.updateTopicRequest(topicRequest,utilService.getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
     public String declineTopicRequests(String topicName, String env) throws KafkawizeException {
 
-        TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
 
-        String result = manageTopics.declineTopicRequest(topicRequest, utilService.getUserName());
+        String result = handleDbRequests.declineTopicRequest(topicRequest, utilService.getUserName());
 
         return "{\"result\":\""+ "Request declined. " + result + "\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
 
-        Env envSelected = manageTopics.selectEnvDetails(env);
+        Env envSelected = handleDbRequests.selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -236,13 +241,13 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= manageTopics.selectEnvDetails(env);
+        Env envSelected= handleDbRequests.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
+        List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env);
 
         topicCounter = 0;
 
@@ -300,7 +305,7 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= manageTopics.selectEnvDetails(env);
+        Env envSelected= handleDbRequests.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -399,7 +404,7 @@ public class TopicControllerService {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
+        List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env);
 
         List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;
@@ -409,7 +414,7 @@ public class TopicControllerService {
 
         List<String> teamList = new ArrayList<>();
 
-        manageTopics.selectAllTeamsOfUsers(userDetails.getUsername())
+        handleDbRequests.selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
         //String tmpTopicName = null;
         for(int i=0;i<totalRecs;i++){

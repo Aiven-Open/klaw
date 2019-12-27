@@ -1,15 +1,17 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,8 +33,11 @@ public class TopicControllerServiceTest {
     @Mock
     UserDetails userDetails;
 
+    @InjectMocks
+    ManageDatabase manageTopics;
+
     @Mock
-    ManageTopics manageTopics;
+    HandleDbRequests handleDbRequests;
 
     @Mock
     UtilService utilService;
@@ -60,8 +65,8 @@ public class TopicControllerServiceTest {
     public void createTopicsSuccess() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(anyString())).thenReturn(env);
-        when(manageTopics.requestForTopic(any())).thenReturn("success");
+        when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
+        when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
         String result = topicControllerService.createTopics(getCorrectTopic());
 
@@ -72,8 +77,8 @@ public class TopicControllerServiceTest {
     public void createTopicsSuccess1() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(anyString())).thenReturn(env);
-        when(manageTopics.requestForTopic(any())).thenReturn("success");
+        when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
+        when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
         String result = topicControllerService.createTopics(getFailureTopic());
 
@@ -84,8 +89,8 @@ public class TopicControllerServiceTest {
     public void createTopicsSuccess2() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(anyString())).thenReturn(env);
-        when(manageTopics.requestForTopic(any())).thenReturn("success");
+        when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
+        when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
         String result = topicControllerService.createTopics(getFailureTopic1());
 
@@ -96,7 +101,7 @@ public class TopicControllerServiceTest {
     public void createTopicsFailure1() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=abc,max.partitions=4,replication.factor=1");
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(anyString())).thenReturn(env);
+        when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
         String result = topicControllerService.createTopics(getFailureTopic());
 
@@ -106,7 +111,7 @@ public class TopicControllerServiceTest {
     @Test(expected = KafkawizeException.class)
     public void createTopicsFailure2() throws KafkawizeException {
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(anyString())).thenReturn(env);
+        when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
         String result = topicControllerService.createTopics(getFailureTopic());
 
@@ -117,7 +122,7 @@ public class TopicControllerServiceTest {
     public void createTopicsFailure3() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=abc,max.partitions=4");
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(anyString())).thenReturn(env);
+        when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
         String result = topicControllerService.createTopics(getFailureTopic());
 
@@ -131,7 +136,7 @@ public class TopicControllerServiceTest {
         String syncTopicsStr = "demotopic101" + "-----" + teamSelected;
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addToSynctopics(any())).thenReturn("success");
+        when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
 
         String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
 
@@ -169,7 +174,7 @@ public class TopicControllerServiceTest {
         listTopicReqs.add(getCorrectTopic());
         listTopicReqs.add(getFailureTopic());
 
-        when(manageTopics.getCreatedTopicRequests(any())).thenReturn(listTopicReqs);
+        when(handleDbRequests.getCreatedTopicRequests(any())).thenReturn(listTopicReqs);
 
         List<List<TopicRequest>> topicList = topicControllerService.getCreatedTopicRequests();
 
@@ -186,7 +191,7 @@ public class TopicControllerServiceTest {
         listTopicReqs.add(getTopicRequest("topic4"));
         listTopicReqs.add(getTopicRequest("topic5"));
 
-        when(manageTopics.getCreatedTopicRequests(any())).thenReturn(listTopicReqs);
+        when(handleDbRequests.getCreatedTopicRequests(any())).thenReturn(listTopicReqs);
 
         List<List<TopicRequest>> topicList = topicControllerService.getCreatedTopicRequests();
 
@@ -199,7 +204,7 @@ public class TopicControllerServiceTest {
 
     @Test
     public void deleteTopicRequests() {
-        when(manageTopics.deleteTopicRequest("topic1","DEV")).thenReturn("success");
+        when(handleDbRequests.deleteTopicRequest("topic1","DEV")).thenReturn("success");
         String result = topicControllerService.deleteTopicRequests("topic1,DEV");
         assertEquals("{\"result\":\"success\"}",result);
     }
@@ -210,8 +215,8 @@ public class TopicControllerServiceTest {
         TopicRequest topicRequest = getTopicRequest(topicName);
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectTopicRequestsForTopic(topicName, "DEV")).thenReturn(topicRequest);
-        when(manageTopics.updateTopicRequest(topicRequest, "uiuser1")).thenReturn("success");
+        when(handleDbRequests.selectTopicRequestsForTopic(topicName, "DEV")).thenReturn(topicRequest);
+        when(handleDbRequests.updateTopicRequest(topicRequest, "uiuser1")).thenReturn("success");
         when(clusterApiService.approveTopicRequests(topicName, topicRequest)).thenReturn(new ResponseEntity<String>("success",HttpStatus.OK));
 
         String result = topicControllerService.approveTopicRequests(topicName, "DEV");
@@ -224,7 +229,7 @@ public class TopicControllerServiceTest {
         String topicName = "topic1", env = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(manageTopics.selectTopicRequestsForTopic(topicName, env)).thenReturn(topicRequest);
+        when(handleDbRequests.selectTopicRequestsForTopic(topicName, env)).thenReturn(topicRequest);
         when(clusterApiService.approveTopicRequests(topicName, topicRequest))
                 .thenReturn(new ResponseEntity<String>("failure error",HttpStatus.OK));
 
@@ -237,7 +242,7 @@ public class TopicControllerServiceTest {
     public void getAllTopics() throws Exception {
         String envSel = "DEV";
 
-        when(manageTopics.selectEnvDetails(envSel)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(any()))
                 .thenReturn(getClusterApiTopics("topic",10));
 
@@ -251,10 +256,10 @@ public class TopicControllerServiceTest {
     public void getTopicsSuccess1() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
-        when(manageTopics.selectEnvDetails(envSel)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
                 .thenReturn(getClusterApiTopics("topic",10));
-        when(manageTopics.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
+        when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
 
@@ -265,10 +270,10 @@ public class TopicControllerServiceTest {
     public void getTopicsSuccess2() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
-        when(manageTopics.selectEnvDetails(envSel)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
                 .thenReturn(getClusterApiTopics("topic",30));
-        when(manageTopics.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",12));
+        when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",12));
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
 
@@ -284,10 +289,10 @@ public class TopicControllerServiceTest {
     public void getTopicsSearchFailure() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "demo";
 
-        when(manageTopics.selectEnvDetails(envSel)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
                 .thenReturn(getClusterApiTopics("topic",10));
-        when(manageTopics.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
+        when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
 
@@ -299,10 +304,10 @@ public class TopicControllerServiceTest {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.selectEnvDetails(envSel)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
                 .thenReturn(getClusterApiTopics("topic",10));
-        when(manageTopics.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
+        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
 
         List<TopicRequest> topicRequests = topicControllerService.getSyncTopics(envSel, pageNo, topicNameSearch);
         assertEquals(topicRequests.size(),10);
@@ -314,8 +319,8 @@ public class TopicControllerServiceTest {
         TopicRequest topicRequest = getTopicRequest(topicName);
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectTopicRequestsForTopic(topicName, envSel)).thenReturn(topicRequest);
-        when(manageTopics.declineTopicRequest(topicRequest,"uiuser1")).thenReturn("success");
+        when(handleDbRequests.selectTopicRequestsForTopic(topicName, envSel)).thenReturn(topicRequest);
+        when(handleDbRequests.declineTopicRequest(topicRequest,"uiuser1")).thenReturn("success");
         String result = topicControllerService.declineTopicRequests(topicName, envSel);
 
         assertEquals("{\"result\":\""+ "Request declined. " + "success" + "\"}", result);
@@ -325,7 +330,7 @@ public class TopicControllerServiceTest {
     public void getTopicRequests(){
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getAllTopicRequests(anyString())).thenReturn(getListTopicRequests());
+        when(handleDbRequests.getAllTopicRequests(anyString())).thenReturn(getListTopicRequests());
         List<TopicRequest> listTopicRqs = topicControllerService.getTopicRequests();
         assertEquals(listTopicRqs.size(), 2);
     }
@@ -333,7 +338,7 @@ public class TopicControllerServiceTest {
     @Test
     public void getTopicTeam(){
         String topicName = "testtopic", envSel = "DEV";
-        when(manageTopics.getTopicTeam(topicName,envSel)).thenReturn(getTopic(topicName));
+        when(handleDbRequests.getTopicTeam(topicName,envSel)).thenReturn(getTopic(topicName));
 
         Topic topicTeam = topicControllerService.getTopicTeam(topicName, envSel);
         assertEquals(topicTeam.getTeamname(), "Team1");

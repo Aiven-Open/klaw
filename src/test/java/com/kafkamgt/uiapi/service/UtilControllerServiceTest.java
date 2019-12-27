@@ -1,9 +1,12 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
@@ -20,8 +23,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class UtilControllerServiceTest {
 
+    @InjectMocks
+    ManageDatabase manageTopics;
+
     @Mock
-    ManageTopics manageTopics;
+    HandleDbRequests handleDbRequests;
 
     @Mock
     UtilService utilService;
@@ -52,11 +58,11 @@ public class UtilControllerServiceTest {
     public void getAuth1() {
 
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_USER");
         when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(manageTopics.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(true));
+        when(handleDbRequests.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(true));
 
         String actualResult = utilControllerService.getAuth();
         String expectedResult = "{ \"status\": \"Authorized\" ," +
@@ -74,11 +80,11 @@ public class UtilControllerServiceTest {
     public void getAuth2() {
 
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_ADMIN");
         when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(manageTopics.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(false));
+        when(handleDbRequests.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(false));
 
         String actualResult = utilControllerService.getAuth();
         String expectedResult = "{ \"status\": \"Authorized\" ," +
@@ -106,7 +112,7 @@ public class UtilControllerServiceTest {
     public void getExecAuth1() {
 
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_ADMIN");
@@ -123,7 +129,7 @@ public class UtilControllerServiceTest {
     public void getExecAuth2() {
 
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_USER");

@@ -1,20 +1,21 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
@@ -23,14 +24,16 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UiConfigControllerServiceTest {
 
+    @InjectMocks
+    ManageDatabase manageTopics;
+
     @Mock
-    ManageTopics manageTopics;
+    HandleDbRequests handleDbRequests;
 
     @Mock
     ClusterApiService clusterApiService;
@@ -89,7 +92,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getEnvs1() {
-        when(manageTopics.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
+        when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
         List<Env> envsList = uiConfigControllerService.getEnvs(true);
 
         assertEquals(3, envsList.size());
@@ -98,7 +101,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getEnvs2() throws KafkawizeException {
-        when(manageTopics.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
+        when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
         when(clusterApiService.getKafkaClusterStatus(any())).thenReturn("ONLINE");
         List<Env> envsList = uiConfigControllerService.getEnvs(false);
 
@@ -109,7 +112,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getEnvs3() throws KafkawizeException {
-        when(manageTopics.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
+        when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
         when(clusterApiService.getKafkaClusterStatus(any())).thenReturn("OFFLINE");
         List<Env> envsList = uiConfigControllerService.getEnvs(false);
 
@@ -120,7 +123,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getSchemaRegEnvs() {
-        when(manageTopics.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
+        when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
         List<Env> envsList = uiConfigControllerService.getSchemaRegEnvs();
 
         assertEquals(2, envsList.size());
@@ -129,7 +132,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getSchemaRegEnvsStatus1() {
-        when(manageTopics.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
+        when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
         when(clusterApiService.getSchemaClusterStatus(any())).thenReturn("ONLINE");
 
         List<Env> envsList = uiConfigControllerService.getSchemaRegEnvsStatus();
@@ -139,7 +142,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getSchemaRegEnvsStatus2() {
-        when(manageTopics.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
+        when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
         when(clusterApiService.getSchemaClusterStatus(any())).thenReturn("OFFLINE");
 
         List<Env> envsList = uiConfigControllerService.getSchemaRegEnvsStatus();
@@ -149,7 +152,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getAllTeams() {
-        when(manageTopics.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
+        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
         when(utilService.getUserName()).thenReturn("uiuser1");
 
         List<Team> teamsList = uiConfigControllerService.getAllTeams();
@@ -159,7 +162,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void getAllTeamsSU() {
-        when(manageTopics.selectAllTeams()).thenReturn(getAvailableTeamsSU());
+        when(handleDbRequests.selectAllTeams()).thenReturn(getAvailableTeamsSU());
         List<Team> teamsList = uiConfigControllerService.getAllTeamsSU();
         assertEquals(3, teamsList.size());
     }
@@ -174,7 +177,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void addNewEnv2() {
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addNewEnv(any())).thenReturn("success");
+        when(handleDbRequests.addNewEnv(any())).thenReturn("success");
         String result = uiConfigControllerService.addNewEnv(this.env);
         assertEquals("{\"result\":\"success\"}",result);
     }
@@ -182,7 +185,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void addNewEnv3() {
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addNewEnv(any())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.addNewEnv(any())).thenThrow(new RuntimeException("Error"));
         String result = uiConfigControllerService.addNewEnv(this.env);
         assertThat(result, CoreMatchers.containsString("failure"));
     }
@@ -197,7 +200,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteCluster2() {
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.deleteClusterRequest(any())).thenReturn("success");
+        when(handleDbRequests.deleteClusterRequest(any())).thenReturn("success");
         String result = uiConfigControllerService.deleteCluster("clusterId");
         assertEquals("{\"result\":\"success\"}",result);
     }
@@ -205,7 +208,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteCluster3() {
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.deleteClusterRequest(any())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.deleteClusterRequest(any())).thenThrow(new RuntimeException("Error"));
         String result = uiConfigControllerService.deleteCluster("clusterId");
         assertThat(result, CoreMatchers.containsString("failure"));
     }
@@ -224,7 +227,7 @@ public class UiConfigControllerServiceTest {
         String teamId = "Team1";
         when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn(teamId);
 
         String result = uiConfigControllerService.deleteTeam(teamId);
@@ -236,9 +239,9 @@ public class UiConfigControllerServiceTest {
         String teamId = "Team1";
         when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team2");
-        when(manageTopics.deleteTeamRequest(teamId)).thenReturn("success");
+        when(handleDbRequests.deleteTeamRequest(teamId)).thenReturn("success");
 
         String result = uiConfigControllerService.deleteTeam(teamId);
         assertEquals("{\"result\":\"success\"}",result);
@@ -249,9 +252,9 @@ public class UiConfigControllerServiceTest {
         String teamId = "Team1";
         when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getUsersInfo(any())).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team2");
-        when(manageTopics.deleteTeamRequest(teamId)).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.deleteTeamRequest(teamId)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.deleteTeam(teamId);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -281,7 +284,7 @@ public class UiConfigControllerServiceTest {
         String userId = "uiuser1";
         when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser3");
-        when(manageTopics.deleteUserRequest(userId)).thenReturn("success");
+        when(handleDbRequests.deleteUserRequest(userId)).thenReturn("success");
 
         String result = uiConfigControllerService.deleteUser(userId);
         assertEquals("{\"result\":\"success\"}",result);
@@ -301,7 +304,7 @@ public class UiConfigControllerServiceTest {
         String userId = "uiuser2";
         when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser3");
-        when(manageTopics.deleteUserRequest(userId)).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.deleteUserRequest(userId)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.deleteUser(userId);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -321,7 +324,7 @@ public class UiConfigControllerServiceTest {
         userInfo.setRole("USER");
         userInfo.setPwd("pwd");
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addNewUser(userInfo)).thenReturn("success");
+        when(handleDbRequests.addNewUser(userInfo)).thenReturn("success");
 
         String result = uiConfigControllerService.addNewUser(userInfo);
         assertEquals("{\"result\":\"success\"}", result);
@@ -334,7 +337,7 @@ public class UiConfigControllerServiceTest {
         userInfo.setRole("USER");
         userInfo.setPwd("pwd");
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addNewUser(userInfo)).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.addNewUser(userInfo)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.addNewUser(userInfo);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -357,7 +360,7 @@ public class UiConfigControllerServiceTest {
         team1.setTeamname("Team1");
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addNewTeam(team1)).thenReturn("success");
+        when(handleDbRequests.addNewTeam(team1)).thenReturn("success");
 
         String result = uiConfigControllerService.addNewTeam(team1);
         assertEquals("{\"result\":\"success\"}", result);
@@ -369,7 +372,7 @@ public class UiConfigControllerServiceTest {
         team1.setTeamname("Team1");
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.addNewTeam(team1)).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.addNewTeam(team1)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.addNewTeam(team1);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -380,7 +383,7 @@ public class UiConfigControllerServiceTest {
 
         String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenReturn("success");
+        when(handleDbRequests.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenReturn("success");
 
         String result = uiConfigControllerService.changePwd(pwdUpdate);
 
@@ -392,7 +395,7 @@ public class UiConfigControllerServiceTest {
 
         String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
         when(utilService.getUserDetails()).thenReturn(userDetails);
-        when(manageTopics.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.changePwd(pwdUpdate);
 
@@ -401,7 +404,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void showUsers() {
-        when(manageTopics.selectAllUsersInfo()).thenReturn(getUsernfoList());
+        when(handleDbRequests.selectAllUsersInfo()).thenReturn(getUsernfoList());
         List<UserInfo> userInfoList = uiConfigControllerService.showUsers();
         assertEquals(1,userInfoList.size());
     }
@@ -414,7 +417,7 @@ public class UiConfigControllerServiceTest {
         userInfo.setPwd("pwd");
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getUsersInfo("uiuser1")).thenReturn(userInfo);
+        when(handleDbRequests.getUsersInfo("uiuser1")).thenReturn(userInfo);
         UserInfo userInfoActual = uiConfigControllerService.getMyProfileInfo();
         assertEquals(userInfo.getUsername(), userInfoActual.getUsername());
     }
@@ -425,7 +428,7 @@ public class UiConfigControllerServiceTest {
         String pageNo = "1";
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(2));
+        when(handleDbRequests.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(2));
 
         List<ActivityLog> actList = uiConfigControllerService.showActivityLog(envSel, pageNo);
         assertEquals(2, actList.size());
@@ -438,7 +441,7 @@ public class UiConfigControllerServiceTest {
         String pageNo = "1";
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(0));
+        when(handleDbRequests.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(0));
 
         List<ActivityLog> actList = uiConfigControllerService.showActivityLog(envSel, pageNo);
         assertEquals(0, actList.size());

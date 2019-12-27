@@ -1,21 +1,23 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
@@ -32,11 +34,11 @@ public class AclControllerServiceTest {
     @Mock
     ClusterApiService clusterApiService;
 
-    @Mock
-    UserDetails userDetails;
+    @InjectMocks
+    ManageDatabase manageTopics;
 
     @Mock
-    ManageTopics manageTopics;
+    HandleDbRequests handleDbRequests;
 
     @Mock
     UtilService utilService;
@@ -63,7 +65,7 @@ public class AclControllerServiceTest {
         AclRequests aclRequests = getAclRequest();
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.requestForAcl(aclRequests)).thenReturn("success");
+        when(handleDbRequests.requestForAcl(aclRequests)).thenReturn("success");
 
         String result = aclControllerService.createAcl(aclRequests);
         assertEquals("{\"result\":\"success\"}",result);
@@ -79,8 +81,8 @@ public class AclControllerServiceTest {
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.deletePrevAclRecs(anyList())).thenReturn("success");
-        when(manageTopics.addToSyncacls(anyList())).thenReturn("success");
+        when(handleDbRequests.deletePrevAclRecs(anyList())).thenReturn("success");
+        when(handleDbRequests.addToSyncacls(anyList())).thenReturn("success");
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
         assertEquals("{\"result\":\"success\"}",result);
@@ -111,7 +113,7 @@ public class AclControllerServiceTest {
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.deletePrevAclRecs(anyList())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.deletePrevAclRecs(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -138,8 +140,8 @@ public class AclControllerServiceTest {
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(manageTopics.deletePrevAclRecs(anyList())).thenReturn("success");
-        when(manageTopics.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.deletePrevAclRecs(anyList())).thenReturn("success");
+        when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -148,7 +150,7 @@ public class AclControllerServiceTest {
     @Test
     public void getAclRequests() {
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getAllAclRequests(anyString())).thenReturn(getAclRequests("testtopic",5));
+        when(handleDbRequests.getAllAclRequests(anyString())).thenReturn(getAclRequests("testtopic",5));
         List<AclRequests> aclReqs =  aclControllerService.getAclRequests();
         assertEquals(aclReqs.size(),5);
     }
@@ -156,7 +158,7 @@ public class AclControllerServiceTest {
     @Test
     public void getCreatedAclRequests() {
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.getCreatedAclRequests(anyString())).thenReturn(getAclRequests("testtopic",16));
+        when(handleDbRequests.getCreatedAclRequests(anyString())).thenReturn(getAclRequests("testtopic",16));
         List<List<AclRequests>> listReqs = aclControllerService.getCreatedAclRequests();
 
         assertEquals(listReqs.size(),6);
@@ -167,7 +169,7 @@ public class AclControllerServiceTest {
     @Test
     public void deleteAclRequests() {
         String req_no = "d32fodFqD";
-        when(manageTopics.deleteAclRequest(req_no)).thenReturn("success");
+        when(handleDbRequests.deleteAclRequest(req_no)).thenReturn("success");
         String result = aclControllerService.deleteAclRequests(req_no);
         assertEquals("{\"result\":\"success\"}", result);
     }
@@ -175,7 +177,7 @@ public class AclControllerServiceTest {
     @Test
     public void deleteAclRequestsFailure() {
         String req_no = "d32fodFqD";
-        when(manageTopics.deleteAclRequest(req_no)).thenReturn("failure");
+        when(handleDbRequests.deleteAclRequest(req_no)).thenReturn("failure");
         String result = aclControllerService.deleteAclRequests(req_no);
         assertEquals("{\"result\":\"failure\"}", result);
     }
@@ -186,9 +188,9 @@ public class AclControllerServiceTest {
         AclRequests aclReq = getAclRequest();
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectAcl(req_no)).thenReturn(aclReq);
+        when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
-        when(manageTopics.updateAclRequest(any(), any())).thenReturn("success");
+        when(handleDbRequests.updateAclRequest(any(), any())).thenReturn("success");
 
         String result = aclControllerService.approveAclRequests(req_no);
         assertEquals("{\"result\":\"success\"}", result);
@@ -199,7 +201,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(manageTopics.selectAcl(req_no)).thenReturn(aclReq);
+        when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("failure",HttpStatus.OK));
 
         String result = aclControllerService.approveAclRequests(req_no);
@@ -212,9 +214,9 @@ public class AclControllerServiceTest {
         AclRequests aclReq = getAclRequest();
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectAcl(req_no)).thenReturn(aclReq);
+        when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
-        when(manageTopics.updateAclRequest(any(), any())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.updateAclRequest(any(), any())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.approveAclRequests(req_no);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -225,7 +227,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
-        when(manageTopics.selectAcl(req_no)).thenReturn(aclReq);
+        when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.approveAclRequests(req_no);
         assertEquals("{\"result\":\"Record not found !\"}", result);
@@ -237,8 +239,8 @@ public class AclControllerServiceTest {
         AclRequests aclReq = getAclRequest();
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectAcl(req_no)).thenReturn(aclReq);
-        when(manageTopics.declineAclRequest(any(), any())).thenReturn("success");
+        when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
+        when(handleDbRequests.declineAclRequest(any(), any())).thenReturn("success");
 
         String result = aclControllerService.declineAclRequests(req_no);
         assertEquals("{\"result\":\"success\"}", result);
@@ -249,7 +251,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
-        when(manageTopics.selectAcl(req_no)).thenReturn(aclReq);
+        when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.declineAclRequests(req_no);
         assertEquals("{\"result\":\"Record not found !\"}", result);
@@ -260,10 +262,10 @@ public class AclControllerServiceTest {
         String envSelected = "DEV", pageNo = "1", topicNameSearch = "testtopic1";
         boolean isSyncAcls = false;
 
-        when(manageTopics.selectEnvDetails(envSelected)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(getClusterAcls());
-        when(manageTopics.getSyncAcls(envSelected)).thenReturn(getAclsSOT(topicNameSearch));
+        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT(topicNameSearch));
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
@@ -278,10 +280,10 @@ public class AclControllerServiceTest {
         String envSelected = "DEV", pageNo = "1", topicNameSearch = "testtopic";
         boolean isSyncAcls = false;
 
-        when(manageTopics.selectEnvDetails(envSelected)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(getClusterAcls());
-        when(manageTopics.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
+        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
@@ -294,11 +296,11 @@ public class AclControllerServiceTest {
         boolean isSyncAcls = true;
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(envSelected)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(getClusterAcls());
-        when(manageTopics.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-        when(manageTopics.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
+        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
+        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
@@ -311,11 +313,11 @@ public class AclControllerServiceTest {
         boolean isSyncAcls = true;
 
         when(utilService.getUserName()).thenReturn("uiuser1");
-        when(manageTopics.selectEnvDetails(envSelected)).thenReturn(this.env);
+        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(getClusterAcls());
-        when(manageTopics.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-        when(manageTopics.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
+        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
+        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
