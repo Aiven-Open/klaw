@@ -1,5 +1,9 @@
 package com.kafkamgt.uiapi.service;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.CodecRegistry;
+import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -44,6 +48,23 @@ public class UtilService {
 
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
+    }
+
+    public Cluster getCluster(String clusterConnHost, int clusterConnPort, CodecRegistry myCodecRegistry){
+        Cluster cluster = Cluster
+                .builder()
+                .addContactPoint(clusterConnHost)
+                .withPort(clusterConnPort)
+                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
+                .withCodecRegistry(myCodecRegistry)
+                .withoutJMXReporting()
+                .withoutMetrics()
+                .withSocketOptions(
+                        new SocketOptions()
+                                .setConnectTimeoutMillis(10000))
+                .build();
+
+        return cluster;
     }
 
     public String getAuthority(UserDetails userDetails){

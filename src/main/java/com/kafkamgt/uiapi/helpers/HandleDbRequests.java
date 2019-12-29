@@ -62,8 +62,6 @@ public interface HandleDbRequests {
 
     public Topic getTopicTeam(String topicName, String env);
 
-    public List<PCStream> selectTopicStreams(String envSelected);
-
     public List<Env> selectAllKafkaEnvs();
 
     public List<Env> selectAllSchemaRegEnvs();

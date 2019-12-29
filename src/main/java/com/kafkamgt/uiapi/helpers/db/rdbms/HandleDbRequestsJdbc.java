@@ -14,10 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 @Configuration
-@PropertySource(value= {"classpath:application.properties"})
 public class HandleDbRequestsJdbc implements HandleDbRequests {
-
-    private static Logger LOG = LoggerFactory.getLogger(HandleDbRequestsJdbc.class);
 
     @Autowired
     SelectDataJdbc jdbcSelectHelper;
@@ -31,22 +28,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Autowired
     DeleteDataJdbc jdbcDeleteHelper;
 
-    @Autowired
-    LoadDbJdbc loadDbJdbc;
-
-    @Value("${rdbms.host:#{null}}")
-    String jdbcConnHost;
-
-    @Value("${rdbms.port:#{0}}")
-    int jdbcConnPort;
-
-    @Value("${rdbms.username:#{null}}")
-    String jdbcUsername;
-
-    @Value("${rdbms.pwd:#{null}}")
-    String jdbcConnPwd;
-
-    public void connectToDb() throws Exception {
+    public void connectToDb() {
     }
 
     /*--------------------Insert */
@@ -149,10 +131,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     public Topic getTopicTeam(String topicName, String env){
         return jdbcSelectHelper.selectTopicDetails(topicName, env);
-    }
-
-    public List<PCStream> selectTopicStreams(String envSelected){
-        return jdbcSelectHelper.selectTopicStreams(envSelected);
     }
 
     public List<Env> selectAllKafkaEnvs(){

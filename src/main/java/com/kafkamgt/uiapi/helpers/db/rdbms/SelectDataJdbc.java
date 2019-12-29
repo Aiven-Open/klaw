@@ -2,7 +2,6 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,31 +20,45 @@ public class SelectDataJdbc {
     private static Logger LOG = LoggerFactory.getLogger(SelectDataJdbc.class);
 
     @Autowired(required=false)
-    UserInfoRepo userInfoRepo;
+    private UserInfoRepo userInfoRepo;
 
     @Autowired(required=false)
-    TeamRepo teamRepo;
+    private TeamRepo teamRepo;
 
     @Autowired(required=false)
-    EnvRepo envRepo;
+    private EnvRepo envRepo;
 
     @Autowired(required=false)
-    ActivityLogRepo activityLogRepo;
+    private ActivityLogRepo activityLogRepo;
 
     @Autowired(required=false)
-    AclRequestsRepo aclRequestsRepo;
+    private AclRequestsRepo aclRequestsRepo;
 
     @Autowired(required=false)
-    TopicRepo topicRepo;
+    private TopicRepo topicRepo;
 
     @Autowired(required=false)
-    AclRepo aclRepo;
+    private AclRepo aclRepo;
 
     @Autowired(required=false)
-    TopicRequestsRepo topicRequestsRepo;
+    private TopicRequestsRepo topicRequestsRepo;
 
     @Autowired(required=false)
-    SchemaRequestRepo schemaRequestRepo;
+    private SchemaRequestRepo schemaRequestRepo;
+
+    public SelectDataJdbc(UserInfoRepo userInfoRepo, TeamRepo teamRepo,
+                          EnvRepo envRepo, ActivityLogRepo activityLogRepo,
+                          TopicRepo topicRepo, AclRepo aclRepo,
+                          TopicRequestsRepo topicRequestsRepo, SchemaRequestRepo schemaRequestRepo){
+        this.userInfoRepo = userInfoRepo;
+        this.teamRepo = teamRepo;
+        this.envRepo = envRepo;
+        this.activityLogRepo = activityLogRepo;
+        this.topicRepo = topicRepo;
+        this.aclRepo = aclRepo;
+        this.topicRequestsRepo = topicRequestsRepo;
+        this.schemaRequestRepo = schemaRequestRepo;
+    }
 
     public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
 
@@ -58,15 +71,12 @@ public class SelectDataJdbc {
         countList.put("acls",allAclReqs.size()+"");
         countList.put("schemas",allSchemaReqs.size()+"");
 
-        //int allOutstanding = allAclReqs.size() + allSchemaReqs.size() + allTopicReqs.size();
-
         return countList;
     }
 
     public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){
-        AclRequests aclReq = null;
-        List<AclRequests> aclList = new ArrayList();
-        List<AclRequests> aclListSub = new ArrayList();
+        List<AclRequests> aclList = new ArrayList<>();
+        List<AclRequests> aclListSub ;
         if(allReqs) {
             aclListSub = aclRequestsRepo.findAllByAclstatus("created");
         }else{
@@ -91,8 +101,8 @@ public class SelectDataJdbc {
 
     public List<SchemaRequest> selectSchemaRequests(boolean allReqs, String requestor){
 
-        List<SchemaRequest> schemaList = new ArrayList();
-        List<SchemaRequest> schemaListSub = new ArrayList();
+        List<SchemaRequest> schemaList = new ArrayList<>();
+        List<SchemaRequest> schemaListSub ;
 
         if(allReqs) {
             schemaListSub = schemaRequestRepo.findAllByTopicstatus("created");
@@ -145,9 +155,9 @@ public class SelectDataJdbc {
 
     public List<TopicRequest> selectTopicRequests(boolean allReqs, String requestor){
         TopicRequest topicRequest = null;
-        List<TopicRequest> topicRequestList = new ArrayList();
+        List<TopicRequest> topicRequestList = new ArrayList<>();
 
-        List<TopicRequest> topicRequestListSub = new ArrayList();
+        List<TopicRequest> topicRequestListSub ;
 
         if(allReqs) {
             topicRequestListSub = topicRequestsRepo.findAllByTopicstatus("created");
@@ -174,59 +184,6 @@ public class SelectDataJdbc {
             return topicRequestsRepo.findByTopicRequestPKTopicnameAndTopicRequestPKEnvironment(topicName,env).get();
         else
             return null;
-    }
-
-    public List<PCStream> selectTopicStreams(String envSelected){
-        PCStream pcStream = null;
-        List<PCStream> pcStreams = new ArrayList();
-
-        List<Topic> topicList = topicRepo.findAllByTopicPKEnvironment(envSelected);
-        List<Acl> aclList = aclRepo.findAllByEnvironment(envSelected);
-
-        for (Topic row : topicList) {
-
-            String teamName = row.getTeamname();
-            String topicName = row.getTopicPK().getTopicname();
-
-            pcStream = new PCStream();
-            List<String> prodTeams = new ArrayList<>();
-            List<String> consumerTeams = new ArrayList<>();
-            pcStream.setTopicName(topicName);
-
-            prodTeams.add(teamName);
-           // LOG.info("-----------"+topicName);
-
-            for (Acl row1 : aclList) {
-                if(row1!=null) {
-                    String teamName1 = row1.getTeamname();
-
-                    String topicName1 = row1.getTopicname();
-                    String aclType = row1.getTopictype();
-                    //  LOG.info("***-----------"+topicName1);
-                    if (topicName.equals(topicName1)) {
-            //            LOG.info(topicName + "---" + aclType + "---" + teamName1 + "---" + teamName);
-                        if (aclType!=null && aclType.equals("Producer"))
-                            prodTeams.add(teamName1);
-                        else if (aclType!=null && aclType.equals("Consumer"))
-                            consumerTeams.add(teamName1);
-                    }
-                }
-            }
-
-            consumerTeams = consumerTeams.stream()
-                    .distinct()
-                    .collect(Collectors.toList());
-
-            prodTeams = prodTeams.stream()
-                    .distinct()
-                    .collect(Collectors.toList());
-
-            pcStream.setConsumerTeams(consumerTeams);
-            pcStream.setProducerTeams(prodTeams);
-            pcStreams.add(pcStream);
-        }
-
-        return pcStreams;
     }
 
     public List<Team> selectAllTeams(){
@@ -269,11 +226,11 @@ public class SelectDataJdbc {
 
     public List<Team> selectTeamsOfUsers(String username){
 
-        List<Team> teamList = new ArrayList();
+        List<Team> teamList = new ArrayList<>();
         List<UserInfo> userInfoList = Lists.newArrayList(userInfoRepo.findAll());
 
-        List<Team> teamListSU = new ArrayList();
-        List<String> superUserTeamListStr = new ArrayList();
+        List<Team> teamListSU = new ArrayList<>();
+        List<String> superUserTeamListStr = new ArrayList<>();
 
         Team team = null;
 

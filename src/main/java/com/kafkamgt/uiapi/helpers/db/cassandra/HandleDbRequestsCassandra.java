@@ -3,11 +3,13 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.service.UtilService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
-
 
 @Component
 public class HandleDbRequestsCassandra implements HandleDbRequests {
@@ -35,6 +36,9 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     @Autowired(required=false)
     DeleteData cassandraDeleteHelper;
 
+    @Autowired
+    UtilService utilService;
+
     @Autowired(required=false)
     LoadDb loadDb;
 
@@ -50,21 +54,32 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
-    public void connectToDb() {
+    public HandleDbRequestsCassandra(){
+
+    }
+
+    public HandleDbRequestsCassandra(SelectData cassandraSelectHelper, InsertData cassandraInsertHelper,
+                                     UpdateData cassandraUpdateHelper, DeleteData cassandraDeleteHelper,
+                                     LoadDb loadDb, Cluster cluster, UtilService utilService){
+        this.cassandraSelectHelper = cassandraSelectHelper;
+        this.cassandraInsertHelper = cassandraInsertHelper;
+        this.cassandraDeleteHelper = cassandraDeleteHelper;
+        this.cassandraUpdateHelper = cassandraUpdateHelper;
+        this.loadDb = loadDb;
+        this.cluster = cluster;
+        this.utilService = utilService;
+
+    }
+
+    public void connectToDb(){
         LOG.info("Establishing Connection to Cassandra.");
         CodecRegistry myCodecRegistry;
         myCodecRegistry = CodecRegistry.DEFAULT_INSTANCE;
         myCodecRegistry.register(InstantCodec.instance);
 
-        cluster = Cluster
-                .builder()
-                .addContactPoint(clusterConnHost)
-                .withPort(clusterConnPort)
-                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-                .withCodecRegistry(myCodecRegistry)
-                .withoutJMXReporting()
-                .build();
         try {
+            cluster = utilService.getCluster(clusterConnHost, clusterConnPort, myCodecRegistry);
+
             session = cluster.connect();
 
             loadDb.session = session;
@@ -72,12 +87,20 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
             loadDb.insertData();
             session = cluster.connect(keyspace);
 
-            cassandraSelectHelper.session = session;
-            cassandraInsertHelper.session = session;
-            cassandraUpdateHelper.session = session;
-            cassandraDeleteHelper.session = session;
+            Session.State sessionState = session.getState();
 
-            cassandraInsertHelper.cassandraSelectHelper=cassandraSelectHelper;
+            if(sessionState.getConnectedHosts().size() > 0 ){
+                cassandraSelectHelper.session = session;
+                cassandraInsertHelper.session = session;
+                cassandraUpdateHelper.session = session;
+                cassandraDeleteHelper.session = session;
+
+                cassandraInsertHelper.cassandraSelectHelper = cassandraSelectHelper;
+            }
+            else{
+                LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort);
+                System.exit(0);
+            }
         }catch (Exception e){
             LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort + " Error : " + e.getMessage());
             System.exit(0);
@@ -184,10 +207,6 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     public Topic getTopicTeam(String topicName, String env){
         return cassandraSelectHelper.selectTopicDetails(topicName, env);
-    }
-
-    public List<PCStream> selectTopicStreams(String envSelected){
-        return cassandraSelectHelper.selectTopicStreams(envSelected);
     }
 
     public List<Env> selectAllKafkaEnvs(){
