@@ -1,10 +1,9 @@
 package com.kafkamgt.uiapi.service;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.CodecRegistry;
-import com.datastax.driver.core.SocketOptions;
+import com.datastax.driver.core.*;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -50,6 +50,10 @@ public class UtilService {
         return new RestTemplate();
     }
 
+    public BoundStatement getBoundStatement(Session session, String query){
+        return new BoundStatement(session.prepare(query));
+    }
+
     public Cluster getCluster(String clusterConnHost, int clusterConnPort, CodecRegistry myCodecRegistry){
         Cluster cluster = Cluster
                 .builder()
@@ -82,11 +86,14 @@ public class UtilService {
     }
 
     public String getUserName(){
+
+        this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
         return this.userDetails.getUsername();
     }
 
     public UserDetails getUserDetails(){
         validateLicense(licenseKey, orgName);
+        this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
         if(this.userDetails == null){
             log.error("Users not loaded .. exiting");
             System.exit(0);
@@ -108,6 +115,7 @@ public class UtilService {
         return true;
     }
 
+
     public void loadLicenseUtil(String licenseKey, String SALT_STR) throws Exception {
         byte[] salt = SALT_STR.getBytes();
         int iterationCount = 40000;
@@ -115,12 +123,12 @@ public class UtilService {
 
         decryptLicense(licenseKey, createSecretKey(SALT_STR.toCharArray(),
                 salt, iterationCount, keyLength));
-        try{
-            this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
-        }
-        catch(Exception e){
-            log.error("Bootstrap error : user is not loaded !!");
-        }
+//        try{
+//            this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
+//        }
+//        catch(Exception e){
+//            log.error("Bootstrap error : user is not loaded !!");
+//        }
     }
 
     private SecurityContext getContext(String licenseKey){

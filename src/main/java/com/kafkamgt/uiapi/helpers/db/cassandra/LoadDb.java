@@ -19,6 +19,7 @@ public class LoadDb {
 
     public Session session;
 
+    public LoadDb(){}
     public LoadDb(Session session){
         this.session = session;
     }

@@ -3,7 +3,6 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.Statement;
 import com.datastax.driver.core.querybuilder.Select;
 import com.kafkamgt.uiapi.dao.*;
 import org.junit.Before;

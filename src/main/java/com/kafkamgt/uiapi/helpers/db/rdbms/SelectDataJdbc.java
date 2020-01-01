@@ -46,10 +46,12 @@ public class SelectDataJdbc {
     @Autowired(required=false)
     private SchemaRequestRepo schemaRequestRepo;
 
+    public SelectDataJdbc(){}
     public SelectDataJdbc(UserInfoRepo userInfoRepo, TeamRepo teamRepo,
                           EnvRepo envRepo, ActivityLogRepo activityLogRepo,
                           TopicRepo topicRepo, AclRepo aclRepo,
-                          TopicRequestsRepo topicRequestsRepo, SchemaRequestRepo schemaRequestRepo){
+                          TopicRequestsRepo topicRequestsRepo, SchemaRequestRepo schemaRequestRepo,
+                          AclRequestsRepo aclRequestsRepo){
         this.userInfoRepo = userInfoRepo;
         this.teamRepo = teamRepo;
         this.envRepo = envRepo;
@@ -58,6 +60,7 @@ public class SelectDataJdbc {
         this.aclRepo = aclRepo;
         this.topicRequestsRepo = topicRequestsRepo;
         this.schemaRequestRepo = schemaRequestRepo;
+        this.aclRequestsRepo = aclRequestsRepo;
     }
 
     public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
@@ -84,7 +87,7 @@ public class SelectDataJdbc {
         }
 
         for (AclRequests row : aclListSub) {
-            String teamName = null;
+            String teamName ;
             if(allReqs)
                 teamName = row.getTeamname();
             else
@@ -123,8 +126,6 @@ public class SelectDataJdbc {
     }
 
     public SchemaRequest selectSchemaRequest(String topicName, String schemaVersion, String env){
-        SchemaRequest schemaRequest = null;
-
         SchemaRequestPK schemaPK = new SchemaRequestPK();
         schemaPK.setEnvironment(env);
         schemaPK.setSchemaversion(schemaVersion);
@@ -154,7 +155,6 @@ public class SelectDataJdbc {
     }
 
     public List<TopicRequest> selectTopicRequests(boolean allReqs, String requestor){
-        TopicRequest topicRequest = null;
         List<TopicRequest> topicRequestList = new ArrayList<>();
 
         List<TopicRequest> topicRequestListSub ;
@@ -179,8 +179,8 @@ public class SelectDataJdbc {
     }
 
     public TopicRequest selectTopicRequestsForTopic(String topicName, String env){
-        //TopicRequest topicRequest = null;
-        if(topicRequestsRepo.findByTopicRequestPKTopicnameAndTopicRequestPKEnvironment(topicName,env).isPresent())
+        if(topicRequestsRepo.findByTopicRequestPKTopicnameAndTopicRequestPKEnvironment(topicName,
+                env).isPresent())
             return topicRequestsRepo.findByTopicRequestPKTopicnameAndTopicRequestPKEnvironment(topicName,env).get();
         else
             return null;
@@ -232,7 +232,7 @@ public class SelectDataJdbc {
         List<Team> teamListSU = new ArrayList<>();
         List<String> superUserTeamListStr = new ArrayList<>();
 
-        Team team = null;
+        Team team ;
 
         String teamName ;
         boolean isSuperUser = false;
@@ -272,7 +272,4 @@ public class SelectDataJdbc {
         else
             return teamList;
     }
-
-
-
 }

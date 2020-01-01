@@ -94,6 +94,7 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
                 cassandraInsertHelper.session = session;
                 cassandraUpdateHelper.session = session;
                 cassandraDeleteHelper.session = session;
+                cassandraInsertHelper.initializeBoundStatements();
 
                 cassandraInsertHelper.cassandraSelectHelper = cassandraSelectHelper;
             }

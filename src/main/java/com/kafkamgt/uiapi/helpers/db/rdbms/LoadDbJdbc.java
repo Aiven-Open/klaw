@@ -16,6 +16,7 @@ public class LoadDbJdbc {
 
     public Session session;
 
+    public LoadDbJdbc(){}
     public LoadDbJdbc(Session session){
         this.session = session;
     }

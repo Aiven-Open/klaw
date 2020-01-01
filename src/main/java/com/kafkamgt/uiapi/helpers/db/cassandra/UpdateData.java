@@ -29,7 +29,14 @@ public class UpdateData {
     String keyspace;
 
     @Autowired
-    InsertData insertDataHelper;
+    private InsertData insertDataHelper;
+
+    public UpdateData(){}
+
+    public UpdateData(Session session, InsertData insertDataHelper){
+        this.session = session;
+        this.insertDataHelper = insertDataHelper;
+    }
 
     public String declineTopicRequest(TopicRequest topicRequest, String approver){
         Clause eqclause = QueryBuilder.eq("topicname",topicRequest.getTopicname());
@@ -61,21 +68,23 @@ public class UpdateData {
         Topic topicObj = new Topic();
         copyProperties(topicRequest,topicObj);
         topics.add(topicObj);
-        insertDataHelper.insertIntoTopicSOT(topics,false);
 
-        Acl aclReq = new Acl();
-        aclReq.setTopictype("Producer");
-        aclReq.setEnvironment(topicRequest.getEnvironment());
-        aclReq.setTeamname(topicRequest.getTeamname());
-        aclReq.setAclssl(topicRequest.getAcl_ssl());
-        aclReq.setAclip(topicRequest.getAcl_ip());
-        aclReq.setTopicname(topicRequest.getTopicname());
+        if(insertDataHelper.insertIntoTopicSOT(topics,false).equals("success")){
+            Acl aclReq = new Acl();
+            aclReq.setTopictype("Producer");
+            aclReq.setEnvironment(topicRequest.getEnvironment());
+            aclReq.setTeamname(topicRequest.getTeamname());
+            aclReq.setAclssl(topicRequest.getAcl_ssl());
+            aclReq.setAclip(topicRequest.getAcl_ip());
+            aclReq.setTopicname(topicRequest.getTopicname());
 
-        List<Acl> acls = new ArrayList<>();
-        acls.add(aclReq);
-        insertDataHelper.insertIntoAclsSOT(acls,false);
+            List<Acl> acls = new ArrayList<>();
+            acls.add(aclReq);
+            insertDataHelper.insertIntoAclsSOT(acls,false);
 
-        return "success";
+            return "success";
+        }
+            return "failure";
     }
 
     public String updateAclRequest(AclRequests aclReq, String approver){
@@ -96,9 +105,9 @@ public class UpdateData {
         aclObj.setAclip(aclReq.getAcl_ip());
         aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
-        insertDataHelper.insertIntoAclsSOT(acls,false);
-
-        return "success";
+        if(insertDataHelper.insertIntoAclsSOT(acls,false).equals("success")){
+            return "success";
+        }else return "failure";
     }
 
     public String declineAclRequest(AclRequests aclReq, String approver){
@@ -140,9 +149,10 @@ public class UpdateData {
         MessageSchema schemaObj = new MessageSchema();
         copyProperties(schemaRequest,schemaObj);
         schemas.add(schemaObj);
-        insertDataHelper.insertIntoMessageSchemaSOT(schemas);
 
-        return "success";
+        if(insertDataHelper.insertIntoMessageSchemaSOT(schemas).equals("success"))
+            return "success";
+        else return "failure";
     }
 
 

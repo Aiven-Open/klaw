@@ -31,6 +31,8 @@ public class SelectData{
     @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
+    public SelectData(){}
+
     public SelectData(Session session){
         this.session = session;
     }
