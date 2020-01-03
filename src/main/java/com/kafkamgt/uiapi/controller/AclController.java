@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/")
 public class AclController {
@@ -24,10 +23,6 @@ public class AclController {
 
     @Autowired
     AclControllerService aclControllerService;
-
-    public AclController(AclControllerService aclControllerService){
-        this.aclControllerService=aclControllerService;
-    }
 
     @PostMapping(value = "/createAcl")
     public ResponseEntity<String> createAcl(@RequestBody AclRequests addAclRequest) {
@@ -57,17 +52,17 @@ public class AclController {
 
     @PostMapping(value = "/execAclRequest")
     public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no) throws KafkawizeException {
-        return new ResponseEntity<String>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
+        return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
     }
 
     @PostMapping(value = "/execAclRequestDecline")
-    public ResponseEntity<String> declineAclRequests(@RequestParam("req_no") String req_no) throws KafkawizeException {
-        return new ResponseEntity<String>(aclControllerService.declineAclRequests(req_no), HttpStatus.OK);
+    public ResponseEntity<String> declineAclRequests(@RequestParam("req_no") String req_no) {
+        return new ResponseEntity<>(aclControllerService.declineAclRequests(req_no), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<AclInfo>> getAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                                                 @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws KafkawizeException {
+                                                 @RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
         return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch, false), HttpStatus.OK);
     }
 

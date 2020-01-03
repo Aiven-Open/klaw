@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +24,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SchemaRegstryControllerServiceTest {
-
-    @InjectMocks
-    ManageDatabase manageTopics;
 
     @Mock
     HandleDbRequests handleDbRequests;
@@ -40,8 +38,8 @@ public class SchemaRegstryControllerServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        schemaRegstryControllerService = new SchemaRegstryControllerService(manageTopics,
-                clusterApiService, utilService);
+        schemaRegstryControllerService = new SchemaRegstryControllerService(clusterApiService, utilService);
+        ReflectionTestUtils.setField(schemaRegstryControllerService, "handleDbRequests", handleDbRequests);
     }
 
     @Test

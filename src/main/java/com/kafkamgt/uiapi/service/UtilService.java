@@ -38,10 +38,6 @@ public class UtilService {
     @Value("${custom.org.name}")
     String orgName;
 
-//    public UtilService(UserDetails userDetails){
-//        this.userDetails = userDetails;
-//    }
-
     public void setUserDetails(UserDetails userDetails){
         this.userDetails = userDetails;
     }

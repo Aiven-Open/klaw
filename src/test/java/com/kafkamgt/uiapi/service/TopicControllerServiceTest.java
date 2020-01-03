@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +34,6 @@ public class TopicControllerServiceTest {
     @Mock
     UserDetails userDetails;
 
-    @InjectMocks
-    ManageDatabase manageTopics;
-
     @Mock
     HandleDbRequests handleDbRequests;
 
@@ -48,13 +46,13 @@ public class TopicControllerServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        this.topicControllerService = new TopicControllerService(clusterApiService, manageTopics, utilService);
+        this.topicControllerService = new TopicControllerService(clusterApiService, utilService);
 
         this.env = new Env();
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
-
+        ReflectionTestUtils.setField(topicControllerService, "handleDbRequests", handleDbRequests);
     }
 
     @After

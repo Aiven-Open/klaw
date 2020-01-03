@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +29,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UiConfigControllerServiceTest {
-
-    @InjectMocks
-    ManageDatabase manageTopics;
 
     @Mock
     HandleDbRequests handleDbRequests;
@@ -48,9 +46,6 @@ public class UiConfigControllerServiceTest {
     UserDetails userDetails;
 
     @Mock
-    PasswordEncoder encoder;
-
-    @Mock
     InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
     Env env;
@@ -60,12 +55,13 @@ public class UiConfigControllerServiceTest {
     @Before
     public void setUp() throws Exception {
         uiConfigControllerService = new UiConfigControllerService(inMemoryUserDetailsManager);
-        uiConfigControllerService.setServices(clusterApiService, manageTopics, utilService);
+        uiConfigControllerService.setServices(clusterApiService, utilService);
 
         this.env = new Env();
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
+        ReflectionTestUtils.setField(uiConfigControllerService, "handleDbRequests", handleDbRequests);
     }
 
     @After

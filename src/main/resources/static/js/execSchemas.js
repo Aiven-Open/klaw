@@ -36,7 +36,7 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
         $scope.execSchemaRequest = function() {
 
             $http({
-                method: "GET",
+                method: "POST",
                 url: "execSchemaRequests",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : $scope.execSchemaRequest.topicName },

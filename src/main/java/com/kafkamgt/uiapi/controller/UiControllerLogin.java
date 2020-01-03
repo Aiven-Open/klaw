@@ -17,7 +17,6 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(ModelMap model) {
-        //LOG.info("in login......");
         try {
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

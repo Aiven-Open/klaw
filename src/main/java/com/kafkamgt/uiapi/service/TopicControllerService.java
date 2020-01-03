@@ -27,19 +27,14 @@ public class TopicControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    @Autowired
-    private ManageDatabase manageTopics;
-
-    private HandleDbRequests handleDbRequests ;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     private UtilService utilService;
 
-    public TopicControllerService(ClusterApiService clusterApiService, ManageDatabase manageTopics, UtilService utilService){
+    public TopicControllerService(ClusterApiService clusterApiService, UtilService utilService){
         this.clusterApiService = clusterApiService;
-        this.manageTopics = manageTopics;
         this.utilService = utilService;
-        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {

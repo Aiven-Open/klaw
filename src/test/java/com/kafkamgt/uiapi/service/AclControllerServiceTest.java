@@ -18,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -30,12 +31,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AclControllerServiceTest {
 
-
     @Mock
     ClusterApiService clusterApiService;
-
-    @InjectMocks
-    ManageDatabase manageTopics;
 
     @Mock
     HandleDbRequests handleDbRequests;
@@ -48,12 +45,13 @@ public class AclControllerServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        this.aclControllerService = new AclControllerService(clusterApiService, manageTopics, utilService);
+        this.aclControllerService = new AclControllerService(clusterApiService, utilService);
 
         this.env = new Env();
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
+        ReflectionTestUtils.setField(aclControllerService, "handleDbRequests", handleDbRequests);
     }
 
     @After

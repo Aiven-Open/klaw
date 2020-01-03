@@ -1,80 +1,238 @@
 package com.kafkamgt.uiapi.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kafkamgt.uiapi.UtilMethods;
+import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
-import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.service.TopicControllerService;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.*;
+import java.util.Arrays;
+import java.util.List;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 public class TopicControllerTest {
 
-    @Mock
+    @MockBean
     private TopicControllerService topicControllerService;
 
     private TopicController topicController;
 
+    private UtilMethods utilMethods;
+
+    private MockMvc mvc;
+
     @Before
     public void setUp() throws Exception {
-        topicController = new TopicController(topicControllerService);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @Test
-    public void createTopics() throws KafkawizeException {
-        TopicRequest topicRequest = new TopicRequest();
-        ResponseEntity<String> response = topicController.createTopics(topicRequest);
-        assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        topicController = new TopicController();
+        mvc = MockMvcBuilders
+                .standaloneSetup(topicController)
+                .dispatchOptions(true)
+                .build();
+        utilMethods = new UtilMethods();
+        ReflectionTestUtils.setField(topicController, "topicControllerService", topicControllerService);
     }
 
     @Test
-    public void updateSyncTopics() {
+    public void createTopics() throws Exception {
+        TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic");
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+        when(topicControllerService.createTopics(any())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/createTopics")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals("success", response);
     }
 
     @Test
-    public void getTopicStreams() {
+    public void updateSyncTopics() throws Exception {
+        when(topicControllerService.updateSyncTopics(anyString(), anyString())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/updateSyncTopics")
+                .param("updatedSyncTopics","update")
+                .param("envSelected","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals("success", response);
     }
 
     @Test
-    public void getTopicRequests() {
+    public void getTopicRequests() throws Exception {
+        List<TopicRequest> topicRequests = utilMethods.getTopicRequests();
+
+        when(topicControllerService.getTopicRequests()).thenReturn(topicRequests);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopicRequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
 
     @Test
-    public void getTopicTeam() {
+    public void getTopicTeam() throws Exception {
+        Topic topic = utilMethods.getTopic("testtopic");
+        when(topicControllerService.getTopicTeam(anyString(), anyString())).thenReturn(topic);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopicTeam")
+                .param("topicName","testtopic")
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        Topic response = new ObjectMapper().readValue(res, Topic.class);
+        assertEquals("Team1", response.getTeamname());
     }
 
     @Test
-    public void getCreatedTopicRequests() {
+    public void getCreatedTopicRequests() throws Exception {
+        List<List<TopicRequest>> topicReqs = utilMethods.getTopicRequestsList();
+        when(topicControllerService.getCreatedTopicRequests()).thenReturn(topicReqs);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getCreatedTopicRequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
 
     @Test
-    public void deleteTopicRequests() {
+    public void deleteTopicRequests() throws Exception {
+        when(topicControllerService.deleteTopicRequests(anyString())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .get("/deleteTopicRequests")
+                .param("topicName","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals("success", response);
     }
 
     @Test
-    public void approveTopicRequests() {
+    public void approveTopicRequests() throws Exception {
+        when(topicControllerService.approveTopicRequests(anyString(), anyString())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/execTopicRequests")
+                .param("topicName","testtopic")
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals("success", response);
     }
 
     @Test
-    public void getTopics() {
+    public void declineTopicRequests() throws Exception {
+        when(topicControllerService.declineTopicRequests(anyString(), anyString())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/execTopicRequestsDecline")
+                .param("topicName","testtopic")
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertEquals("success", response);
     }
 
     @Test
-    public void getTopicsOnly() {
+    public void getTopics() throws Exception {
+        List<List<TopicInfo>> topicList = utilMethods.getTopicInfoList();
+
+        when(topicControllerService.getTopics(anyString(), anyString(), anyString())).thenReturn(topicList);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopics")
+                .param("env","DEV")
+                .param("pageNo","1")
+                .param("topicnamesearch","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<List<TopicInfo>> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
 
     @Test
-    public void getSyncTopics() {
+    public void getTopicsOnly() throws Exception {
+        List<String> topicList = Arrays.asList("testtopic1", "testtopic2");
+        when(topicControllerService.getAllTopics(anyString())).thenReturn(topicList);
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopicsOnly")
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<String> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(2, response.size());
+    }
+
+    @Test
+    public void getSyncTopics() throws Exception {
+        List<TopicRequest> topicRequests = utilMethods.getTopicRequests();
+
+        when(topicControllerService.getSyncTopics(anyString(), anyString(), anyString())).thenReturn(topicRequests);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getSyncTopics")
+                .param("env","DEV")
+                .param("pageNo","1")
+                .param("topicnamesearch","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
 }

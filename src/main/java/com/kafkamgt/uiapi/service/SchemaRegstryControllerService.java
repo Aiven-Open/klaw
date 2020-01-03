@@ -16,10 +16,7 @@ import java.util.StringTokenizer;
 @Slf4j
 public class SchemaRegstryControllerService {
 
-    @Autowired
-    ManageDatabase manageTopics;
-
-    private HandleDbRequests handleDbRequests ;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     ClusterApiService clusterApiService;
@@ -27,13 +24,10 @@ public class SchemaRegstryControllerService {
     @Autowired
     private UtilService utilService;
 
-    public SchemaRegstryControllerService(ManageDatabase manageTopics, ClusterApiService clusterApiService,
+    public SchemaRegstryControllerService(ClusterApiService clusterApiService,
                                           UtilService utilService){
-        this.manageTopics = manageTopics;
         this.clusterApiService = clusterApiService;
         this.utilService = utilService;
-        handleDbRequests = manageTopics.getHandleDbRequests();
-
     }
 
     public List<SchemaRequest> getSchemaRequests() {

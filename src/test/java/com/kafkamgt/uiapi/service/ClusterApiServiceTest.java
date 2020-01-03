@@ -18,6 +18,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -28,9 +29,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClusterApiServiceTest {
-
-    @InjectMocks
-    ManageDatabase manageTopics;
 
     @Mock
     HandleDbRequests handleDbRequests;
@@ -48,13 +46,14 @@ public class ClusterApiServiceTest {
 
     @Before
     public void setUp() {
-        clusterApiService = new ClusterApiService(manageTopics, utilService);
+        clusterApiService = new ClusterApiService(utilService);
         response = new ResponseEntity<>("success", HttpStatus.OK);
 
         this.env = new Env();
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
+        ReflectionTestUtils.setField(clusterApiService, "handleDbRequests", handleDbRequests);
     }
 
     @After

@@ -1,55 +1,134 @@
 package com.kafkamgt.uiapi.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kafkamgt.uiapi.UtilMethods;
+import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.service.SchemaRegstryControllerService;
-import org.junit.After;
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.Assert.*;
+import java.util.List;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringJUnit4ClassRunner.class)
 public class SchemaRegstryControllerTest {
 
-    @Mock
+    @MockBean
     private SchemaRegstryControllerService schemaRegstryControllerService;
 
     private SchemaRegstryController schemaRegstryController;
 
+    private UtilMethods utilMethods;
+
+    private MockMvc mvc;
+
     @Before
     public void setUp() throws Exception {
-        schemaRegstryController = new SchemaRegstryController(schemaRegstryControllerService);
-    }
+        schemaRegstryController = new SchemaRegstryController();
+        mvc = MockMvcBuilders
+                .standaloneSetup(schemaRegstryController)
+                .dispatchOptions(true)
+                .build();
+        utilMethods = new UtilMethods();
+        ReflectionTestUtils.setField(schemaRegstryController, "schemaRegstryControllerService", schemaRegstryControllerService);
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
-    @Test
-    public void getSchemaRequests() {
-    }
-
-    @Test
-    public void getCreatedSchemaRequests() {
     }
 
     @Test
-    public void deleteSchemaRequests() {
+    public void getSchemaRequests() throws Exception {
+        List<SchemaRequest> schRequests = utilMethods.getSchemaRequests();
+
+        when(schemaRegstryControllerService.getSchemaRequests()).thenReturn(schRequests);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getSchemaRequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<SchemaRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
 
     @Test
-    public void execSchemaRequests() {
+    public void getCreatedSchemaRequests() throws Exception {
+        List<SchemaRequest> schRequests = utilMethods.getSchemaRequests();
+
+        when(schemaRegstryControllerService.getCreatedSchemaRequests()).thenReturn(schRequests);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getCreatedSchemaRequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<SchemaRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
 
     @Test
-    public void uploadSchema() {
-        SchemaRequest schemaRequest = new SchemaRequest();
-        ResponseEntity<String> response = schemaRegstryController.uploadSchema(schemaRequest);
-        assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+    public void deleteSchemaRequests() throws Exception {
+        when(schemaRegstryControllerService.deleteSchemaRequests(anyString())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/deleteSchemaRequests")
+                .param("topicName","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+    }
+
+    @Test
+    public void execSchemaRequests() throws Exception {
+        when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/execSchemaRequests")
+                .param("topicName","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+    }
+
+    @Test
+    public void uploadSchema() throws Exception {
+        SchemaRequest schemaRequest = utilMethods.getSchemaRequests().get(0);
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(schemaRequest);
+
+        when(schemaRegstryControllerService.uploadSchema(any())).thenReturn("success");
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/uploadSchema")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
     }
 }

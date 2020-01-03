@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,9 +23,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtilControllerServiceTest {
-
-    @InjectMocks
-    ManageDatabase manageTopics;
 
     @Mock
     HandleDbRequests handleDbRequests;
@@ -51,7 +49,8 @@ public class UtilControllerServiceTest {
 
     @Before
     public void setUp() {
-        this.utilControllerService = new UtilControllerService(manageTopics, utilService);
+        this.utilControllerService = new UtilControllerService(utilService);
+        ReflectionTestUtils.setField(utilControllerService, "handleDbRequests", handleDbRequests);
     }
 
     @Test

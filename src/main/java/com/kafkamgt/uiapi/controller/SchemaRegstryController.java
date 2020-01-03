@@ -24,10 +24,6 @@ public class SchemaRegstryController {
     @Autowired
     SchemaRegstryControllerService schemaRegstryControllerService;
 
-    public SchemaRegstryController(SchemaRegstryControllerService schemaRegstryControllerService){
-        this.schemaRegstryControllerService = schemaRegstryControllerService;
-    }
-
     @RequestMapping(value = "/getSchemaRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<SchemaRequest>> getSchemaRequests() {
         return new ResponseEntity<>(schemaRegstryControllerService.getSchemaRequests(), HttpStatus.OK);
@@ -35,11 +31,10 @@ public class SchemaRegstryController {
 
     @RequestMapping(value = "/getCreatedSchemaRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<SchemaRequest>> getCreatedSchemaRequests() {
-
         return new ResponseEntity<>(schemaRegstryControllerService.getCreatedSchemaRequests(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/deleteSchemaRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/deleteSchemaRequests", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> deleteSchemaRequests(@RequestParam("topicName") String topicName) {
 
         String deleteTopicReqStatus = schemaRegstryControllerService.deleteSchemaRequests(topicName);
@@ -48,7 +43,7 @@ public class SchemaRegstryController {
         return new ResponseEntity<>(deleteTopicReqStatus, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/execSchemaRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    @PostMapping(value = "/execSchemaRequests", produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> execSchemaRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
 
         String updateTopicReqStatus = "{\"result\":\"" + schemaRegstryControllerService.execSchemaRequests(topicName) + "\"}";

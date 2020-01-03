@@ -25,10 +25,7 @@ import java.util.Set;
 @Service
 public class ClusterApiService {
 
-    @Autowired
-    private ManageDatabase manageTopics;
-
-    private HandleDbRequests handleDbRequests ;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     private UtilService utilService;
@@ -58,10 +55,8 @@ public class ClusterApiService {
 
     private static String CLSTR_API_STATUS = "OFFLINE";
 
-    public ClusterApiService(ManageDatabase manageTopics, UtilService utilService){
-        this.manageTopics = manageTopics;
+    public ClusterApiService(UtilService utilService){
         this.utilService = utilService;
-        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String getClusterApiUrl(){

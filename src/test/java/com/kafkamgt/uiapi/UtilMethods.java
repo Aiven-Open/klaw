@@ -1,6 +1,8 @@
 package com.kafkamgt.uiapi;
 
 import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.model.TopicInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,7 @@ public class UtilMethods {
 
     public Topic getTopic(String topicName){
         Topic topic = new Topic();
+        topic.setTeamname("Team1");
         topic.setTopicname(topicName);
 
         return topic;
@@ -71,6 +74,15 @@ public class UtilMethods {
     public List<Acl> getAcls() {
         List<Acl> allTopicReqs = new ArrayList<>();
         Acl topicRequest = new Acl();
+        topicRequest.setTeamname("Team1");
+        topicRequest.setTopictype("Producer");
+        allTopicReqs.add(topicRequest);
+        return allTopicReqs;
+    }
+
+    public List<AclInfo> getAclInfoList() {
+        List<AclInfo> allTopicReqs = new ArrayList<>();
+        AclInfo topicRequest = new AclInfo();
         topicRequest.setTeamname("Team1");
         topicRequest.setTopictype("Producer");
         allTopicReqs.add(topicRequest);
@@ -110,6 +122,11 @@ public class UtilMethods {
     public List<Team> getTeams() {
         List<Team> allTopicReqs = new ArrayList<>();
         Team topicRequest = new Team();
+        TeamPK teamPk = new TeamPK();
+        teamPk.setTeamname("Team1");
+        teamPk.setApp("App");
+        topicRequest.setTeamPK(teamPk);
+
         topicRequest.setTeamname("Team1");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
@@ -143,8 +160,11 @@ public class UtilMethods {
     public List<SchemaRequest> getSchemaRequests() {
         List<SchemaRequest> schemaList = new ArrayList<>();
         SchemaRequest schemaRequest = new SchemaRequest();
+        SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
+        schemaRequestPK.setEnvironment("DEV");
         schemaRequest.setTeamname("Team1");
         schemaRequest.setUsername("uiuser1");
+        schemaRequest.setSchemaRequestPK(schemaRequestPK);
         schemaList.add(schemaRequest);
         return schemaList;
     }
@@ -156,5 +176,53 @@ public class UtilMethods {
         aclRequests1.setRequestingteam("Team1");
         aclRequests.add(aclRequests1);
         return aclRequests;
+    }
+
+    public List<List<AclRequests>> getAclRequestsList() {
+        List<List<AclRequests>> aclList = new ArrayList<>();
+
+        List<AclRequests> aclRequests = new ArrayList<>();
+        AclRequests aclRequests1 = new AclRequests();
+        aclRequests1.setTeamname("Team1");
+        aclRequests1.setRequestingteam("Team1");
+        aclRequests.add(aclRequests1);
+
+        aclList.add(aclRequests);
+
+        return aclList;
+    }
+
+    public List<List<TopicRequest>> getTopicRequestsList() {
+        List<List<TopicRequest>> topicReqs = new ArrayList<>();
+
+        List<TopicRequest> allTopicReqs = new ArrayList<>();
+        TopicRequest topicRequest = new TopicRequest();
+        topicRequest.setTeamname("Team1");
+        allTopicReqs.add(topicRequest);
+        topicReqs.add(allTopicReqs);
+
+        return topicReqs;
+    }
+
+    public List<List<TopicInfo>> getTopicInfoList() {
+        List<List<TopicInfo>> topicReqs = new ArrayList<>();
+
+        List<TopicInfo> allTopicReqs = new ArrayList<>();
+        TopicInfo topicRequest = new TopicInfo();
+        topicRequest.setTeamname("Team1");
+        allTopicReqs.add(topicRequest);
+        topicReqs.add(allTopicReqs);
+
+        return topicReqs;
+    }
+
+    public List<Env> getEnvList() {
+        List<Env> envList = new ArrayList<>();
+        Env env = new Env();
+        env.setName("DEV");
+        env.setHost("localhost");
+        env.setPort("9092");
+        envList.add(env);
+        return envList;
     }
 }

@@ -17,10 +17,7 @@ import java.util.HashMap;
 @Service
 public class UtilControllerService {
 
-    @Autowired
-    ManageDatabase manageTopics;
-
-    private HandleDbRequests handleDbRequests ;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     UtilService utilService;
@@ -28,10 +25,8 @@ public class UtilControllerService {
     @Value("${custom.org.name}")
     String companyInfo;
 
-    public UtilControllerService(ManageDatabase manageTopics, UtilService utilService){
-        this.manageTopics = manageTopics;
+    public UtilControllerService(UtilService utilService){
         this.utilService = utilService;
-        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String getAuth() {

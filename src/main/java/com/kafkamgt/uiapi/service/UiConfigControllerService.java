@@ -27,10 +27,7 @@ public class UiConfigControllerService {
     @Autowired
     private UtilService utilService;
 
-    @Autowired
-    private ManageDatabase manageTopics;
-
-    private HandleDbRequests handleDbRequests ;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     private ClusterApiService clusterApiService;
@@ -43,11 +40,9 @@ public class UiConfigControllerService {
     }
 
     @Autowired
-    public void setServices(ClusterApiService clusterApiService, ManageDatabase manageTopics, UtilService utilService){
+    public void setServices(ClusterApiService clusterApiService, UtilService utilService){
         this.clusterApiService = clusterApiService;
-        this.manageTopics = manageTopics;
         this.utilService = utilService;
-        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public Env getClusterApiStatus(){

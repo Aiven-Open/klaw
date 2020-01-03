@@ -19,10 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class AclControllerService {
 
-    @Autowired
-    ManageDatabase manageTopics;
-
-    private HandleDbRequests handleDbRequests ;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     private UtilService utilService;
@@ -30,11 +27,9 @@ public class AclControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    public AclControllerService(ClusterApiService clusterApiService, ManageDatabase manageTopics, UtilService utilService){
+    public AclControllerService(ClusterApiService clusterApiService, UtilService utilService){
         this.clusterApiService = clusterApiService;
-        this.manageTopics = manageTopics;
         this.utilService = utilService;
-        handleDbRequests = manageTopics.getHandleDbRequests();
     }
 
     public String createAcl(AclRequests aclReq) {

@@ -2,7 +2,6 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
-import org.hibernate.jpa.AvailableSettings;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

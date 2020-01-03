@@ -29,7 +29,6 @@ public class UtilController {
 
     @RequestMapping(value = "/getExecAuth", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> getExecAuth() {
-
         return new ResponseEntity<>(utilControllerService.getExecAuth(), HttpStatus.OK);
     }
 

@@ -35,7 +35,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 
         $scope.execTopicRequestUp = function(topicName, env){
             $http({
-                            method: "GET",
+                            method: "POST",
                             url: "execTopicRequests",
                             headers : { 'Content-Type' : 'application/json' },
                             params: {'topicName' : topicName,
@@ -57,7 +57,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.execTopicRequestReject = function(topicName, env) {
 
                     $http({
-                        method: "GET",
+                        method: "POST",
                         url: "execTopicRequestsDecline",
                         headers : { 'Content-Type' : 'application/json' },
                         params: {'topicName' : topicName,

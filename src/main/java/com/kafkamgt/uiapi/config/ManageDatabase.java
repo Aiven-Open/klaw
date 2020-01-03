@@ -1,12 +1,11 @@
 package com.kafkamgt.uiapi.config;
 
-import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.helpers.db.cassandra.CassandraDataSourceCondition;
 import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
-import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.service.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
 
 @Configuration
@@ -26,7 +24,7 @@ public class ManageDatabase {
     @Value("${custom.db.storetype}")
     String dbStore;
 
-    HandleDbRequests handleDbRequests;
+    public static HandleDbRequests handleDbRequests;
 
     @Autowired
     UtilService utils;
@@ -48,17 +46,14 @@ public class ManageDatabase {
             log.info("Invalid License !! Please contact info@kafkawize.com for FREE license key.");
             System.exit(0);
         }
+        else {
+            if (dbStore != null && dbStore.equals("rdbms")) {
+                handleDbRequests = handleJdbc();
+            } else
+                handleDbRequests = handleCassandra();
 
-        if(dbStore !=null && dbStore.equals("rdbms")){
-            handleDbRequests = handleJdbc();
-        }else
-            handleDbRequests = handleCassandra();
-
-        handleDbRequests.connectToDb();
-    }
-
-    public HandleDbRequests getHandleDbRequests(){
-        return this.handleDbRequests;
+            handleDbRequests.connectToDb();
+        }
     }
 
     @Bean()

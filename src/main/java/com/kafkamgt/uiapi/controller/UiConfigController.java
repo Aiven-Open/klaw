@@ -106,7 +106,7 @@ public class UiConfigController {
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<ActivityLog>> showActivityLog(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo){
-        return new ResponseEntity<>(uiConfigControllerService.showActivityLog(env,pageNo), HttpStatus.OK);
+        return new ResponseEntity<>(uiConfigControllerService.showActivityLog(env, pageNo), HttpStatus.OK);
     }
 
 
