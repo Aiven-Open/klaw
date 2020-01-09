@@ -145,7 +145,7 @@ public class InsertData {
     }
 
     private void getBoundStatementSchemas() {
-        String tableName = "schemas";
+        String tableName = "avroschemas";
         String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname, env, teamname, " +
                 " schemafull, versionschema) " +
                 "VALUES (?,?,?,?,?);";

@@ -3,11 +3,39 @@ package com.kafkamgt.uiapi;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.model.AclInfo;
 import com.kafkamgt.uiapi.model.TopicInfo;
+import org.apache.thrift.transport.TTransportException;
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UtilMethods {
+
+    public static void startEmbeddedCassandraServer(){
+        try {
+            EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
+            EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void startEmbeddedJdbcDatabase(){
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        EmbeddedDatabase db = builder
+                .setType(EmbeddedDatabaseType.H2) //.H2 or .DERBY
+//                .addScript("db/sql/create-db.sql")
+//                .addScript("db/sql/insert-data.sql")
+                .build();
+    }
 
     public List<MessageSchema> getMSchemas(){
         List<MessageSchema> listMSchemas = new ArrayList<>();

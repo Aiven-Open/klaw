@@ -19,6 +19,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,10 +70,15 @@ public class HandleDbRequestsCassandraTest {
     public void connectToDbSuccess() {
         List connectedHosts = new ArrayList<>(Arrays.asList("localhosttest"));
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "clusterConnHost", "localhosttest");
+        ReflectionTestUtils.setField(handleDbRequestsCassandra, "dbScriptsExecution", "auto");
+        ReflectionTestUtils.setField(handleDbRequestsCassandra, "dbScriptsDropAllRecreate", "true");
         when(utilService.getCluster(anyString(), anyInt(), any())).thenReturn(cluster);
         when(cluster.connect()).thenReturn(session);
         when(cluster.connect(any())).thenReturn(session);
         when(session.getState()).thenReturn(sessionState);
+        doNothing().when(loadDb).dropTables();
+        doNothing().when(loadDb).insertData();
+        doNothing().when(loadDb).createTables();
 
         when(sessionState.getConnectedHosts()).thenReturn(connectedHosts);
         handleDbRequestsCassandra.connectToDb();

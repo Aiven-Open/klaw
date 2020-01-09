@@ -17,6 +17,8 @@ public class LoadDb {
 
     private static String INSERT_SQL = "src/main/resources/scripts/base/cassandra/insertdata.sql";
 
+    private static String DROP_SQL = "src/main/resources/scripts/base/cassandra/dropcassandra.sql";
+
     public Session session;
 
     public LoadDb(){}
@@ -30,7 +32,7 @@ public class LoadDb {
             String tmpLine = "";
             while((tmpLine=in.readLine())!=null){
                 if(tmpLine.toLowerCase().startsWith("create"))
-                    session.execute(tmpLine);
+                    session.execute(tmpLine.trim());
             }
         }catch (Exception e){
             LOG.error("Exiting .. could not setup create database tables " + e.getMessage());
@@ -45,12 +47,27 @@ public class LoadDb {
             String tmpLine = "";
             while((tmpLine=in.readLine())!=null){
                 if(tmpLine.toLowerCase().startsWith("insert"))
-                    session.execute(tmpLine);
+                    session.execute(tmpLine.trim());
             }
         } catch (Exception e) {
             LOG.error("Exiting .. could not setup insert database tables " + e.getMessage());
             System.exit(0);
         }
         LOG.info("Cassandra Insert DB Tables setup done !! ");
+    }
+
+    public void dropTables(){
+
+        try (BufferedReader in = new BufferedReader(new FileReader(DROP_SQL))) {
+            String tmpLine = "";
+            while((tmpLine=in.readLine())!=null){
+                if(tmpLine.toLowerCase().startsWith("drop"))
+                    session.execute(tmpLine.trim());
+            }
+        } catch (Exception e) {
+            LOG.error("Exiting .. could not setup insert database tables " + e.getMessage());
+            System.exit(0);
+        }
+        LOG.info("Cassandra drop DB Tables setup done !! ");
     }
 }

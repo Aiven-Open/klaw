@@ -31,6 +31,12 @@ public class LoadDbTest {
 
     LoadDb loadDb;
 
+    private static String CREATE_SQL = "src/main/resources/scripts/base/cassandra/createcassandra.sql";
+
+    private static String INSERT_SQL = "src/main/resources/scripts/base/cassandra/insertdata.sql";
+
+    private static String DROP_SQL = "src/main/resources/scripts/base/cassandra/dropcassandra.sql";
+
     @Before
     public void setUp() throws Exception {
         loadDb = new LoadDb(session);
@@ -38,9 +44,7 @@ public class LoadDbTest {
 
     @Test
     public void createTablesSuccess() {
-        ReflectionTestUtils.setField(loadDb, "CREATE_SQL",
-                "src/main/resources/scripts/base/cassandra/createcassandra.sql");
-
+        ReflectionTestUtils.setField(loadDb, "CREATE_SQL", CREATE_SQL);
         loadDb.createTables();
     }
 
@@ -53,8 +57,7 @@ public class LoadDbTest {
 
     @Test
     public void insertDataSuccess() {
-        ReflectionTestUtils.setField(loadDb, "INSERT_SQL",
-                "src/main/resources/scripts/base/cassandra/insertdata.sql");
+        ReflectionTestUtils.setField(loadDb, "INSERT_SQL", INSERT_SQL);
         loadDb.insertData();
     }
 
@@ -63,5 +66,18 @@ public class LoadDbTest {
         ReflectionTestUtils.setField(loadDb, "INSERT_SQL", "testfile_notexists");
         exit.expectSystemExitWithStatus(0);
         loadDb.insertData();
+    }
+
+    @Test
+    public void dropTablesSuccess() {
+        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
+        loadDb.dropTables();
+    }
+
+    @Test
+    public void dropTablesFailure() {
+        ReflectionTestUtils.setField(loadDb, "DROP_SQL", "testfile_notexists");
+        exit.expectSystemExitWithStatus(0);
+        loadDb.dropTables();
     }
 }

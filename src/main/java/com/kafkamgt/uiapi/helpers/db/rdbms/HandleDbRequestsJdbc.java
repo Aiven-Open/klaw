@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.helpers.db.cassandra.LoadDb;
 import com.kafkamgt.uiapi.model.PCStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,12 @@ import java.util.List;
 @Configuration
 public class HandleDbRequestsJdbc implements HandleDbRequests {
 
+    @Value("${custom.dbscripts.execution:auto}")
+    String dbScriptsExecution;
+
+    @Value("${custom.dbscripts.dropall_recreate:false}")
+    String dbScriptsDropAllRecreate;
+
     @Autowired
     SelectDataJdbc jdbcSelectHelper;
 
@@ -28,7 +35,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Autowired
     DeleteDataJdbc jdbcDeleteHelper;
 
+    @Autowired
+    LoadDbJdbc loadDbJdbc;
+
     public void connectToDb() {
+        if(dbScriptsExecution.equals("auto")){
+            if(dbScriptsDropAllRecreate.equals("true"))
+                loadDbJdbc.dropTables();
+            loadDbJdbc.createTables();
+            loadDbJdbc.insertData();
+        }
     }
 
     /*--------------------Insert */

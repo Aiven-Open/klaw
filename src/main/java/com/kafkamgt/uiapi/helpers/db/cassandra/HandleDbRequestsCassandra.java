@@ -54,6 +54,12 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
+    @Value("${custom.dbscripts.execution:auto}")
+    String dbScriptsExecution;
+
+    @Value("${custom.dbscripts.dropall_recreate:false}")
+    String dbScriptsDropAllRecreate;
+
     public HandleDbRequestsCassandra(){
 
     }
@@ -82,9 +88,14 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
             session = cluster.connect();
 
-            loadDb.session = session;
-            loadDb.createTables();
-            loadDb.insertData();
+            if(dbScriptsExecution.equals("auto")){
+                loadDb.session = session;
+                if(dbScriptsDropAllRecreate.equals("true"))
+                    loadDb.dropTables();
+                loadDb.createTables();
+                loadDb.insertData();
+            }
+
             session = cluster.connect(keyspace);
 
             Session.State sessionState = session.getState();

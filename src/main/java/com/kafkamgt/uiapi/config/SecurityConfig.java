@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
@@ -37,6 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${custom.org.name}")
     String orgName;
 
+    @Autowired
+    Environment environment;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -62,25 +66,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
+        List<UserInfo> users = new ArrayList<>();
         if(orgName.equals("Your company name."))
         {
             LOG.error("Invalid organization configured !!");
             System.exit(0);
             throw new Exception("Invalid organization configured !!");
         }
-        if(!utils.validateLicense(licenseKey, orgName)) {
-            LOG.error("Invalid License, exiting...Please contact info@kafkawize.com for FREE license key");
-            System.exit(0);
-            throw new Exception("Invalid License !! Please contact info@kafkawize.com for FREE license key");
+        if(! (environment.getActiveProfiles().length >0
+                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+            if (!utils.validateLicense(licenseKey, orgName)) {
+                LOG.error("Invalid License, exiting...Please contact info@kafkawize.com for FREE license key");
+                System.exit(0);
+                throw new Exception("Invalid License !! Please contact info@kafkawize.com for FREE license key");
+            }
         }
-        List<UserInfo> users;
         try {
-            //manageTopics.loadDb();
             users = manageTopics.selectAllUsersInfo();
         }catch(Exception e){
             throw new Exception("Please check if tables are created.");
         }
+
         if(users.size()==0)
             throw new Exception("Please check if insert scripts are executed.");
 

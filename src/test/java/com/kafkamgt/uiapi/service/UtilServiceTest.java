@@ -36,13 +36,9 @@ public class UtilServiceTest {
     public void getUserDetails() {
         ReflectionTestUtils.setField(utilService, "licenseKey", "fjsda423h");
         ReflectionTestUtils.setField(utilService, "orgName", "organization");
-        Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getPrincipal()).thenReturn(userDetails);
         SecurityContextHolder.setContext(securityContext);
         UserDetails ud = utilService.getUserDetails();
         assertEquals(userDetails, ud);
     }
-
 }

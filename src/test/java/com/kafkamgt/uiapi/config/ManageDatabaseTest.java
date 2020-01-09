@@ -1,48 +1,30 @@
 package com.kafkamgt.uiapi.config;
 
+import org.apache.thrift.transport.TTransportException;
+import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+
+import java.io.IOException;
 
 @Configuration
 public class ManageDatabaseTest {
 
-    @Bean
-    @Primary
-    public ManageDatabase manageDatabase() {
-        return Mockito.mock(ManageDatabase.class);
-    }
-
-    @Bean
-    @Primary
-    public SecurityConfig securityConfig() {
-        return Mockito.mock(SecurityConfig.class);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-    }
-
-    @Test
-    public void loadDb() {
-    }
-
-    @Test
-    public void getHandleDbRequests() {
-    }
-
-    @Test
-    public void handleJdbc() {
-    }
-
-    @Test
-    public void handleCassandra() {
-    }
-
-    @Test
-    public void selectAllUsersInfo() {
+    public void startCassandra() {
+        try {
+            EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+        } catch (TTransportException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

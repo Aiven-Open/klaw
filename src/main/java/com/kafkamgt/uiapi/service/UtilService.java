@@ -3,7 +3,6 @@ package com.kafkamgt.uiapi.service;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,7 +12,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -37,6 +35,8 @@ public class UtilService {
 
     @Value("${custom.org.name}")
     String orgName;
+
+    public static boolean licenceLoaded = false;
 
     public void setUserDetails(UserDetails userDetails){
         this.userDetails = userDetails;
@@ -82,18 +82,19 @@ public class UtilService {
     }
 
     public String getUserName(){
-
-        this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
+        if(this.userDetails == null)
+            validateLicense(licenseKey, orgName);
         return this.userDetails.getUsername();
     }
 
     public UserDetails getUserDetails(){
         validateLicense(licenseKey, orgName);
-        this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
+
         if(this.userDetails == null){
             log.error("Users not loaded .. exiting");
             System.exit(0);
         }
+        licenceLoaded = true;
         return this.userDetails;
     }
 
@@ -102,10 +103,10 @@ public class UtilService {
     }
 
     public boolean validateLicense(String licenseKey, String organization){
-
         try {
             loadLicenseUtil(licenseKey, organization);
         } catch (Exception e) {
+            licenceLoaded = false;
             return false;
         }
         return true;
@@ -119,12 +120,9 @@ public class UtilService {
 
         decryptLicense(licenseKey, createSecretKey(SALT_STR.toCharArray(),
                 salt, iterationCount, keyLength));
-//        try{
-//            this.userDetails = (UserDetails)getContext(licenseKey).getAuthentication().getPrincipal();
-//        }
-//        catch(Exception e){
-//            log.error("Bootstrap error : user is not loaded !!");
-//        }
+        try {
+            this.userDetails = (UserDetails) getContext(licenseKey).getAuthentication().getPrincipal();
+        }catch (Exception e){}
     }
 
     private SecurityContext getContext(String licenseKey){
@@ -136,6 +134,7 @@ public class UtilService {
 
     private static SecretKeySpec createSecretKey(char[] password, byte[] salt, int iterationCount, int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKey keyTmps = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512").generateSecret(new PBEKeySpec(password, salt, iterationCount, keyLength));
+        licenceLoaded = true;
         return new SecretKeySpec(keyTmps.getEncoded(), "AES");
     }
 

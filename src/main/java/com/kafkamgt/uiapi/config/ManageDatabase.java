@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -35,6 +36,9 @@ public class ManageDatabase {
     @Value("${custom.org.name}")
     String orgName;
 
+    @Autowired
+    Environment environment;
+
     @PostConstruct
     public void loadDb() throws Exception {
 
@@ -42,18 +46,22 @@ public class ManageDatabase {
         {
             System.exit(0);
         }
-        if(!utils.validateLicense(licenseKey, orgName)) {
-            log.info("Invalid License !! Please contact info@kafkawize.com for FREE license key.");
-            System.exit(0);
-        }
-        else {
-            if (dbStore != null && dbStore.equals("rdbms")) {
-                handleDbRequests = handleJdbc();
-            } else
-                handleDbRequests = handleCassandra();
 
+        if(! (environment.getActiveProfiles().length >0
+                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+            if (!utils.validateLicense(licenseKey, orgName)) {
+                log.info("Invalid License !! Please contact info@kafkawize.com for FREE license key.");
+                System.exit(0);
+            }
+        }else UtilService.licenceLoaded = true;
+
+        if (dbStore != null && dbStore.equals("rdbms")) {
+            handleDbRequests = handleJdbc();
+        } else
+            handleDbRequests = handleCassandra();
+
+        if(UtilService.licenceLoaded)
             handleDbRequests.connectToDb();
-        }
     }
 
     @Bean()
