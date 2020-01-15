@@ -4,14 +4,16 @@ import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.model.AclInfo;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import org.apache.thrift.transport.TTransportException;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
+import org.springframework.http.HttpHeaders;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.util.*;
 
 public class UtilMethods {
 
@@ -28,13 +30,14 @@ public class UtilMethods {
         }
     }
 
-    public static void startEmbeddedJdbcDatabase(){
-        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-        EmbeddedDatabase db = builder
-                .setType(EmbeddedDatabaseType.H2) //.H2 or .DERBY
-//                .addScript("db/sql/create-db.sql")
-//                .addScript("db/sql/insert-data.sql")
-                .build();
+    public HttpHeaders createHeaders(String username, String password) {
+        return new HttpHeaders() {{
+            String auth = username + ":" + password;
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII")));
+            String authHeader = "Basic " + new String(encodedAuth);
+            set("Authorization", authHeader);
+        }};
     }
 
     public List<MessageSchema> getMSchemas(){
@@ -117,6 +120,53 @@ public class UtilMethods {
         return allTopicReqs;
     }
 
+    public List<HashMap<String, String>> getClusterAcls(){
+        Set<HashMap<String,String>> acls = new HashSet<>();
+
+        HashMap<String,String> aclbindingMap = new HashMap<>();
+
+        aclbindingMap.put("host","1.1.1.1");
+        aclbindingMap.put("principle", "User:*");
+        aclbindingMap.put("operation", "READ");
+        aclbindingMap.put("permissionType", "ALLOW");
+        aclbindingMap.put("resourceType", "GROUP");
+        aclbindingMap.put("resourceName", "myconsumergroup1");
+        acls.add(aclbindingMap);
+
+        aclbindingMap = new HashMap<>();
+        aclbindingMap.put("host","2.1.2.1");
+        aclbindingMap.put("principle", "User:*");
+        aclbindingMap.put("operation", "WRITE");
+        aclbindingMap.put("permissionType", "ALLOW");
+        aclbindingMap.put("resourceType", "TOPIC");
+        aclbindingMap.put("resourceName", "testtopic1");
+        acls.add(aclbindingMap);
+
+        aclbindingMap = new HashMap<>();
+        aclbindingMap.put("host","2.1.2.1");
+        aclbindingMap.put("principle", "User:*");
+        aclbindingMap.put("operation", "READ");
+        aclbindingMap.put("permissionType", "ALLOW");
+        aclbindingMap.put("resourceType", "GROUP");
+        aclbindingMap.put("resourceName", "mygrp1");
+        acls.add(aclbindingMap);
+
+        List<HashMap<String, String>> aclListOriginal = new ArrayList<>(acls);
+        return aclListOriginal;
+    }
+
+    public Set<HashMap<String, String>> getAclsMock(){
+        Set<HashMap<String, String>> listAcls = new HashSet<>();
+        HashMap<String, String> hsMp = new HashMap<>();
+        hsMp.put("key","val");
+        listAcls.add(hsMp);
+
+        hsMp = new HashMap<>();
+        hsMp.put("key","val");
+        listAcls.add(hsMp);
+        return listAcls;
+    }
+
     public List<Acl> getAclsForDelete() {
         List<Acl> allTopicReqs = new ArrayList<>();
         Acl topicRequest = new Acl();
@@ -178,11 +228,15 @@ public class UtilMethods {
     }
 
     public AclRequests getAclRequest(String topicName) {
-        AclRequests topicRequest = new AclRequests();
-        topicRequest.setTeamname("Team1");
-        topicRequest.setTopicname(topicName);
-        topicRequest.setUsername("uiuser1");
-        return topicRequest;
+        AclRequests aclRequest = new AclRequests();
+        aclRequest.setTeamname("Team1");
+        aclRequest.setEnvironment("DEV");
+        aclRequest.setTopicname(topicName);
+        aclRequest.setUsername("uiuser1");
+        aclRequest.setTopictype("Consumer");
+        aclRequest.setConsumergroup("congroup1");
+        aclRequest.setAcl_ip("10.11.112.113");
+        return aclRequest;
     }
 
     public List<SchemaRequest> getSchemaRequests() {
@@ -252,5 +306,18 @@ public class UtilMethods {
         env.setPort("9092");
         envList.add(env);
         return envList;
+    }
+
+    public AclRequests getAclRequest11(String testtopic1) {
+        AclRequests aclRequest = new AclRequests();
+        aclRequest.setTeamname("Team1");
+        aclRequest.setEnvironment("DEV");
+        aclRequest.setTopicname(testtopic1);
+        aclRequest.setUsername("uiuser1");
+        aclRequest.setTopictype("Consumer");
+        aclRequest.setConsumergroup("mygrp1");
+        aclRequest.setAcl_ip("2.1.2.1");
+        aclRequest.setAcl_ssl(null);
+        return aclRequest;
     }
 }

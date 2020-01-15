@@ -1,8 +1,10 @@
 package com.kafkamgt.uiapi.controller;
 
 
+import com.kafkamgt.uiapi.service.UtilService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class UiControllerLogin {
 
+    @Autowired
+    private UtilService utilService;
+
     private static Logger LOG = LoggerFactory.getLogger(UiControllerLogin.class);
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -22,6 +27,7 @@ public class UiControllerLogin {
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (userDetails != null) {
                 LOG.info("Authenticated..." + userDetails.getUsername());
+                utilService.setUserDetails(userDetails);
                 return "index";
             }
         }catch (Exception e){

@@ -1,11 +1,13 @@
 package com.kafkamgt.uiapi.controller;
 
+import com.kafkamgt.uiapi.service.UtilService;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -13,11 +15,14 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -25,6 +30,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UiControllerLoginTest {
 
     private UiControllerLogin uiControllerLogin;
+
+    @Mock
+    private UtilService utilService;
 
     @Mock
     UserDetails userDetails;
@@ -58,10 +66,13 @@ public class UiControllerLoginTest {
 
     @Test
     public void login2() throws Exception {
+        ReflectionTestUtils.setField(uiControllerLogin, "utilService", utilService);
+
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
+        doNothing().when(utilService).setUserDetails(any());
         SecurityContextHolder.setContext(securityContext);
 
         mvcPerformAndAssert("/login", "index");

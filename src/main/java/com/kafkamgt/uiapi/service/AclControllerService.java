@@ -139,6 +139,9 @@ public class AclControllerService {
 
     public String approveAclRequests(String req_no) throws KafkawizeException {
 
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
+
         AclRequests aclReq = handleDbRequests.selectAcl(req_no);
         if(aclReq.getReq_no() != null){
             ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
@@ -160,6 +163,9 @@ public class AclControllerService {
     }
 
     public String declineAclRequests(String req_no) {
+
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
 
         AclRequests aclReq = handleDbRequests.selectAcl(req_no);
         String updateAclReqStatus ;
@@ -219,7 +225,7 @@ public class AclControllerService {
         topicCounter = 0;
 
         if(!isSyncAcls){
-            List<AclInfo> groupedAclsPerTopic  = getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls))
+            List<AclInfo> groupedAclsPerTopic  = getAclsList(pageNo, applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls))
                 .stream()
                 .collect(Collectors.groupingBy(w -> w.getTopicname()))
                 .get(topicNameSearch);

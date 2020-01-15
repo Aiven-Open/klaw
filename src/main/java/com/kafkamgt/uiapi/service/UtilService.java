@@ -3,7 +3,9 @@ package com.kafkamgt.uiapi.service;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -35,6 +37,9 @@ public class UtilService {
 
     @Value("${custom.org.name}")
     String orgName;
+
+    @Autowired
+    Environment environment;
 
     public static boolean licenceLoaded = false;
 
@@ -81,9 +86,21 @@ public class UtilService {
             return true;
     }
 
+    public boolean checkAuthorizedAdmin(){
+        GrantedAuthority ga = this.userDetails.getAuthorities().iterator().next();
+        String authority = ga.getAuthority();
+        if(!authority.equals("ROLE_ADMIN"))
+            return false;
+        else
+            return true;
+    }
+
     public String getUserName(){
         if(this.userDetails == null)
             validateLicense(licenseKey, orgName);
+        if( (environment.getActiveProfiles().length >0
+                && environment.getActiveProfiles()[0].equals("integrationtest")))
+            this.userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return this.userDetails.getUsername();
     }
 

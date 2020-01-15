@@ -87,7 +87,7 @@ public class ClusterApiService {
     }
 
     public String getSchemaClusterStatus(String host) {
-        String clusterStatus = null;
+        String clusterStatus ;
         try {
             String uri = host+"/subjects";
             RestTemplate restTemplate = utilService.getRestTemplate();
@@ -130,7 +130,7 @@ public class ClusterApiService {
     }
 
     public List<HashMap<String,String>> getAcls(String bootstrapHost) throws KafkawizeException {
-        List<HashMap<String, String>> aclListOriginal = null;
+        List<HashMap<String, String>> aclListOriginal;
         try {
             String uri = clusterConnUrl + URI_GET_ACLS + bootstrapHost;
             RestTemplate restTemplate = utilService.getRestTemplate();

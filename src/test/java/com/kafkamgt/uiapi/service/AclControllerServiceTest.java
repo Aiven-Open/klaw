@@ -1,5 +1,6 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
@@ -31,6 +32,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class AclControllerServiceTest {
 
+    private UtilMethods utilMethods;
+
     @Mock
     ClusterApiService clusterApiService;
 
@@ -45,6 +48,7 @@ public class AclControllerServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        utilMethods = new UtilMethods();
         this.aclControllerService = new AclControllerService(clusterApiService, utilService);
 
         this.env = new Env();
@@ -72,10 +76,8 @@ public class AclControllerServiceTest {
     @Test
     public void updateSyncAcls() {
         String topicName = "testtopic";
-
         String updateSyncAcls = topicName + "-----" + "Team1" + "-----"
                 + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
-
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
@@ -185,6 +187,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
@@ -199,6 +202,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("failure",HttpStatus.OK));
 
@@ -211,6 +215,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
@@ -225,6 +230,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.approveAclRequests(req_no);
@@ -236,6 +242,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(handleDbRequests.declineAclRequest(any(), any())).thenReturn("success");
@@ -249,6 +256,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.declineAclRequests(req_no);
@@ -262,7 +270,7 @@ public class AclControllerServiceTest {
 
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
-                .thenReturn(getClusterAcls());
+                .thenReturn(utilMethods.getClusterAcls());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT(topicNameSearch));
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
@@ -280,7 +288,7 @@ public class AclControllerServiceTest {
 
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
-                .thenReturn(getClusterAcls());
+                .thenReturn(utilMethods.getClusterAcls());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
@@ -296,7 +304,7 @@ public class AclControllerServiceTest {
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
-                .thenReturn(getClusterAcls());
+                .thenReturn(utilMethods.getClusterAcls());
         when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
@@ -313,7 +321,7 @@ public class AclControllerServiceTest {
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
-                .thenReturn(getClusterAcls());
+                .thenReturn(utilMethods.getClusterAcls());
         when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
@@ -341,40 +349,7 @@ public class AclControllerServiceTest {
         return teamList;
     }
 
-    private List<HashMap<String, String>> getClusterAcls(){
-        Set<HashMap<String,String>> acls = new HashSet<>();
 
-        HashMap<String,String> aclbindingMap = new HashMap<>();
-
-        aclbindingMap.put("host","1.1.1.1");
-        aclbindingMap.put("principle", "User:*");
-        aclbindingMap.put("operation", "READ");
-        aclbindingMap.put("permissionType", "ALLOW");
-        aclbindingMap.put("resourceType", "GROUP");
-        aclbindingMap.put("resourceName", "myconsumergroup1");
-        acls.add(aclbindingMap);
-
-        aclbindingMap = new HashMap<>();
-        aclbindingMap.put("host","2.1.2.1");
-        aclbindingMap.put("principle", "User:*");
-        aclbindingMap.put("operation", "WRITE");
-        aclbindingMap.put("permissionType", "ALLOW");
-        aclbindingMap.put("resourceType", "TOPIC");
-        aclbindingMap.put("resourceName", "testtopic1");
-        acls.add(aclbindingMap);
-
-        aclbindingMap = new HashMap<>();
-        aclbindingMap.put("host","2.1.2.1");
-        aclbindingMap.put("principle", "User:*");
-        aclbindingMap.put("operation", "READ");
-        aclbindingMap.put("permissionType", "ALLOW");
-        aclbindingMap.put("resourceType", "GROUP");
-        aclbindingMap.put("resourceName", "mygrp1");
-        acls.add(aclbindingMap);
-
-        List<HashMap<String, String>> aclListOriginal = new ArrayList<>(acls);
-        return aclListOriginal;
-    }
 
     private List<Acl> getAclsSOT0(){
         List<Acl> aclList = new ArrayList();

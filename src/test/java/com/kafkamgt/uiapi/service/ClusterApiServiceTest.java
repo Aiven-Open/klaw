@@ -1,5 +1,6 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
@@ -30,6 +31,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ClusterApiServiceTest {
 
+    private UtilMethods utilMethods;
+
     @Mock
     HandleDbRequests handleDbRequests;
 
@@ -46,6 +49,7 @@ public class ClusterApiServiceTest {
 
     @Before
     public void setUp() {
+        utilMethods = new UtilMethods();
         clusterApiService = new ClusterApiService(utilService);
         response = new ResponseEntity<>("success", HttpStatus.OK);
 
@@ -101,7 +105,7 @@ public class ClusterApiServiceTest {
 
     @Test
     public void getAclsSuccess() throws KafkawizeException {
-        Set<HashMap<String, String>> aclListOriginal = getAclsMock();
+        Set<HashMap<String, String>> aclListOriginal = utilMethods.getAclsMock();
         when(utilService.getRestTemplate()).thenReturn(restTemplate);
 
         ResponseEntity<Set> response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
@@ -267,16 +271,6 @@ public class ClusterApiServiceTest {
         return topicsList;
     }
 
-    private Set<HashMap<String, String>> getAclsMock(){
-        Set<HashMap<String, String>> listAcls = new HashSet<>();
-        HashMap<String, String> hsMp = new HashMap<>();
-        hsMp.put("key","val");
-        listAcls.add(hsMp);
 
-        hsMp = new HashMap<>();
-        hsMp.put("key","val");
-        listAcls.add(hsMp);
-        return listAcls;
-    }
 
 }
