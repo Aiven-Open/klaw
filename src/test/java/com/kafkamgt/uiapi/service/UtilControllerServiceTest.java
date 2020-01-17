@@ -68,6 +68,7 @@ public class UtilControllerServiceTest {
                 " \"username\":\"uiuser1\"," +
                 " \"teamname\": \"Team1\"," +
                 " \"companyinfo\": \"null\"," +
+                " \"kafkawizeversion\": \"null\"," +
                 " \"notifications\": \"2\"," +
                 " \"notificationsAcls\": \"1\"," +
                 " \"statusauthexectopics\": \"NotAuthorized\" " +
@@ -90,6 +91,7 @@ public class UtilControllerServiceTest {
                 " \"username\":\"uiuser1\"," +
                 " \"teamname\": \"Team1\"," +
                 " \"companyinfo\": \"null\"," +
+                " \"kafkawizeversion\": \"null\"," +
                 " \"notifications\": \"\"," +
                 " \"notificationsAcls\": \"\"," +
                 " \"statusauthexectopics\": \"Authorized\" " +

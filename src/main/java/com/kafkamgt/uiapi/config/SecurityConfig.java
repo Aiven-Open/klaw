@@ -32,11 +32,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UtilService utils;
 
-    @Value("${custom.license.key}")
-    String licenseKey;
-
     @Value("${custom.org.name}")
     String orgName;
+
+    @Value("${custom.invalidkey.msg}")
+    String invalidKeyMessage;
 
     @Autowired
     Environment environment;
@@ -75,10 +75,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }
         if(! (environment.getActiveProfiles().length >0
                 && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-            if (!utils.validateLicense(licenseKey, orgName)) {
-                LOG.error("Invalid License, exiting...Please contact info@kafkawize.com for FREE license key");
+            HashMap<String, String> licenseMap = utils.validateLicense();
+            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+                LOG.error(invalidKeyMessage);
                 System.exit(0);
-                throw new Exception("Invalid License !! Please contact info@kafkawize.com for FREE license key");
+                throw new Exception(invalidKeyMessage);
             }
         }
         try {

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -26,19 +27,38 @@ public class LoadDbJdbc {
     @Autowired(required=false)
     private JdbcTemplate jdbcTemplate;
 
+    @Value("${custom.kafkawize.version:3.5}")
+    private String kafkawizeVersion;
+
     public void createTables(){
 
-        try (BufferedReader in = new BufferedReader(new FileReader(CREATE_SQL))) {
+        createTables("create");
+        LOG.info("Create DB Tables setup done !! ");
+        createTables("alter");
+        LOG.info("Alter DB Tables setup done !! ");
+    }
+
+    private void createTables(String sqlType){
+
+        String ALTER_SQL = "src/main/resources/scripts/base/rdbms/"+kafkawizeVersion+"_updates/alter.sql";
+        try{
+            FileReader fReader = null;
+            if(sqlType.equals("create"))
+                 fReader = new FileReader(CREATE_SQL);
+            else if(sqlType.equals("alter"))
+                fReader = new FileReader(ALTER_SQL);
+
+            BufferedReader in = new BufferedReader(fReader);
             String tmpLine = "";
             String execQuery = "";
             while((tmpLine=in.readLine())!=null){
-                if(tmpLine.toLowerCase().startsWith("create") && tmpLine.toLowerCase().endsWith(";")){
+                if(tmpLine.toLowerCase().startsWith(sqlType) && tmpLine.toLowerCase().endsWith(";")){
                     execQuery = tmpLine;
                     log.info("Executing query : "+ execQuery);
                     jdbcTemplate.execute(execQuery.trim());
                     execQuery = "";
                 }
-                else if(tmpLine.toLowerCase().startsWith("create"))
+                else if(tmpLine.toLowerCase().startsWith(sqlType))
                     execQuery = tmpLine;
                 else if(tmpLine.toLowerCase().endsWith(";"))
                 {
@@ -54,10 +74,10 @@ public class LoadDbJdbc {
             }
         }
         catch (Exception e){
-            LOG.error("Could not create database tables " + e.getMessage());
-            System.exit(0);
+            LOG.error("Could not create/alter database tables " + e.getMessage());
+            if(sqlType.equals("create"))
+                System.exit(0);
         }
-        LOG.info("Create DB Tables setup done !! ");
     }
 
     public void dropTables(){

@@ -92,6 +92,7 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.kafkawizeversion = output.kafkawizeversion;
                     $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                    $scope.statusauthexectopics = output.statusauthexectopics;

@@ -2,14 +2,10 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
-import com.kafkamgt.uiapi.helpers.db.cassandra.LoadDb;
-import com.kafkamgt.uiapi.model.PCStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,12 +34,28 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Autowired
     LoadDbJdbc loadDbJdbc;
 
-    public void connectToDb() {
+    @Value("${custom.org.name}")
+    String companyInfo;
+
+    @Value("${custom.kafkawize.version:3.5}")
+    String kafkawizeVersion;
+
+    @Autowired
+    Environment environment;
+
+    public void connectToDb(String licenseKey) throws Exception {
         if(dbScriptsExecution.equals("auto")){
             if(dbScriptsDropAllRecreate.equals("true"))
                 loadDbJdbc.dropTables();
             loadDbJdbc.createTables();
             loadDbJdbc.insertData();
+            if(! (environment.getActiveProfiles().length >0
+                    && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+                if (licenseKey != null && licenseKey.trim().length() > 0)
+                    jdbcInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
+                else
+                    throw new Exception("Invalid license");
+            }
         }
     }
 

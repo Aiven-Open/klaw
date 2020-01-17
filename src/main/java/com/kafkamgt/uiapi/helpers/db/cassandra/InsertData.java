@@ -308,4 +308,16 @@ public class InsertData {
         return "success";
     }
 
+    public String updateLicense(String org, String version, String licenseKey) throws Exception {
+        String tableName = "productdetails";
+        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(name, version, licensekey ) " +
+                "VALUES (?,?,?);";
+        BoundStatement bndProduct = new BoundStatement(session.prepare(insertstat));
+        if(licenseKey!=null && licenseKey.length()>0)
+            session.execute(bndProduct.bind(org, version, licenseKey));
+        else
+            throw new Exception("Invalid license");
+        return "success";
+    }
+
 }

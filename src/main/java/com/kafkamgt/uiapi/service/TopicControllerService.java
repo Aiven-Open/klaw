@@ -189,6 +189,9 @@ public class TopicControllerService {
 
     public String approveTopicRequests(String topicName, String env) throws KafkawizeException {
 
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
+
         TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
 
         ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
@@ -202,6 +205,9 @@ public class TopicControllerService {
     }
 
     public String declineTopicRequests(String topicName, String env) throws KafkawizeException {
+
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
 
         TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
 
@@ -236,8 +242,8 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= handleDbRequests.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
+        Env envSelected = handleDbRequests.selectEnvDetails(env);
+        String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 

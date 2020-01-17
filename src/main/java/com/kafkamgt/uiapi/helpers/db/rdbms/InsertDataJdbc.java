@@ -44,6 +44,9 @@ public class InsertDataJdbc {
     private MessageSchemaRepo messageSchemaRepo;
 
     @Autowired
+    private ProductDetailsRepo productDetailsRepo;
+
+    @Autowired
     private SelectDataJdbc jdbcSelectHelper;
 
     public InsertDataJdbc(){}
@@ -248,6 +251,25 @@ public class InsertDataJdbc {
 
     public String insertIntoEnvs(Env env){
         envRepo.save(env);
+        return "success";
+    }
+
+    public String updateLicense(String org, String version, String licenseKey) throws Exception{
+
+        ProductDetails product = new ProductDetails();
+        product.setName(org);
+
+        Optional<ProductDetails> pd = productDetailsRepo.findById(org);
+        if(pd.isPresent())
+            return "success";
+        product = new ProductDetails();
+        product.setName(org);
+        product.setVersion(version);
+        product.setLicensekey(licenseKey);
+        if(licenseKey!=null && licenseKey.length()>0)
+            productDetailsRepo.save(product);
+        else
+            throw new Exception("Invalid license");
         return "success";
     }
 

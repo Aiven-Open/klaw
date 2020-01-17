@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
 
 @Configuration
@@ -36,6 +37,9 @@ public class ManageDatabase {
     @Value("${custom.org.name}")
     String orgName;
 
+    @Value("${custom.invalidkey.msg}")
+    String invalidKeyMessage;
+
     @Autowired
     Environment environment;
 
@@ -47,13 +51,17 @@ public class ManageDatabase {
             System.exit(0);
         }
 
+        String licenseKey = "";
+        HashMap<String, String> licenseMap = utils.validateLicense();
         if(! (environment.getActiveProfiles().length >0
                 && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-            if (!utils.validateLicense(licenseKey, orgName)) {
-                log.info("Invalid License !! Please contact info@kafkawize.com for FREE license key.");
+            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+                log.info(invalidKeyMessage);
                 System.exit(0);
             }
-        }else UtilService.licenceLoaded = true;
+        }else{
+            UtilService.licenceLoaded = true;
+        }
 
         if (dbStore != null && dbStore.equals("rdbms")) {
             handleDbRequests = handleJdbc();
@@ -61,7 +69,8 @@ public class ManageDatabase {
             handleDbRequests = handleCassandra();
 
         if(UtilService.licenceLoaded)
-            handleDbRequests.connectToDb();
+            licenseKey = licenseMap.get("LICENSE_KEY");
+            handleDbRequests.connectToDb(licenseKey);
     }
 
     @Bean()

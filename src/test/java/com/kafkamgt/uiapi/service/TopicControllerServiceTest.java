@@ -1,5 +1,6 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -44,10 +46,12 @@ public class TopicControllerServiceTest {
 
     Env env;
 
+    UtilMethods utilMethods;
+
     @Before
     public void setUp() throws Exception {
         this.topicControllerService = new TopicControllerService(clusterApiService, utilService);
-
+        utilMethods = new UtilMethods();
         this.env = new Env();
         env.setHost("101.10.11.11");
         env.setPort("9092");
@@ -212,6 +216,7 @@ public class TopicControllerServiceTest {
         String topicName = "topic1";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, "DEV")).thenReturn(topicRequest);
         when(handleDbRequests.updateTopicRequest(topicRequest, "uiuser1")).thenReturn("success");
@@ -227,6 +232,7 @@ public class TopicControllerServiceTest {
         String topicName = "topic1", env = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, env)).thenReturn(topicRequest);
         when(clusterApiService.approveTopicRequests(topicName, topicRequest))
                 .thenReturn(new ResponseEntity<String>("failure error",HttpStatus.OK));
@@ -242,7 +248,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(any()))
-                .thenReturn(getClusterApiTopics("topic",10));
+                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
 
         List<String> result = topicControllerService.getAllTopics(envSel);
         assertEquals(result.size(),10);
@@ -256,7 +262,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(getClusterApiTopics("topic",10));
+                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
         when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
@@ -270,7 +276,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(getClusterApiTopics("topic",30));
+                .thenReturn(utilMethods.getClusterApiTopics("topic",30));
         when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",12));
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
@@ -289,7 +295,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(getClusterApiTopics("topic",10));
+                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
         when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
@@ -304,7 +310,7 @@ public class TopicControllerServiceTest {
         when(utilService.getUserDetails()).thenReturn(userDetails);
         when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(getClusterApiTopics("topic",10));
+                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
         when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
 
         List<TopicRequest> topicRequests = topicControllerService.getSyncTopics(envSel, pageNo, topicNameSearch);
@@ -316,6 +322,7 @@ public class TopicControllerServiceTest {
         String topicName = "testtopic", envSel = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
+        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, envSel)).thenReturn(topicRequest);
         when(handleDbRequests.declineTopicRequest(topicRequest,"uiuser1")).thenReturn("success");
@@ -393,14 +400,6 @@ public class TopicControllerServiceTest {
         listReqs.add(topicRequest1);
 
         return listReqs;
-    }
-
-    private List<String> getClusterApiTopics(String topicPrefix, int size){
-        List<String> listTopics = new ArrayList<>();
-        for(int i=0;i<size;i++) {
-            listTopics.add(topicPrefix +i+ ":::::" + "1" + ":::::" + "2");
-        }
-        return listTopics;
     }
 
     private List<Team> getAvailableTeams(){

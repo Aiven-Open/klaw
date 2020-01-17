@@ -25,6 +25,10 @@ public class UtilControllerService {
     @Value("${custom.org.name}")
     String companyInfo;
 
+    @Value("${custom.kafkawize.version:3.5}")
+    String kafkawizeVersion;
+
+
     public UtilControllerService(UtilService utilService){
         this.utilService = utilService;
     }
@@ -68,6 +72,7 @@ public class UtilControllerService {
                     " \"username\":\"" + userDetails.getUsername() + "\"," +
                     " \"teamname\": \"" + teamName + "\"," +
                     " \"companyinfo\": \"" + companyInfo + "\"," +
+                    " \"kafkawizeversion\": \"" + kafkawizeVersion + "\"," +
                     " \"notifications\": \"" + outstandingTopicReqs + "\"," +
                     " \"notificationsAcls\": \"" + outstandingAclReqs + "\"," +
                     " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";

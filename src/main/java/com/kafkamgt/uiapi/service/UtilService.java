@@ -25,6 +25,7 @@ import java.security.GeneralSecurityException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.HashMap;
 
 @Service
 @Slf4j
@@ -36,7 +37,7 @@ public class UtilService {
     String licenseKey;
 
     @Value("${custom.org.name}")
-    String orgName;
+    String organization;
 
     @Autowired
     Environment environment;
@@ -97,7 +98,7 @@ public class UtilService {
 
     public String getUserName(){
         if(this.userDetails == null)
-            validateLicense(licenseKey, orgName);
+            validateLicense();
         if( (environment.getActiveProfiles().length >0
                 && environment.getActiveProfiles()[0].equals("integrationtest")))
             this.userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -105,7 +106,7 @@ public class UtilService {
     }
 
     public UserDetails getUserDetails(){
-        validateLicense(licenseKey, orgName);
+        validateLicense();
 
         if(this.userDetails == null){
             log.error("Users not loaded .. exiting");
@@ -119,14 +120,19 @@ public class UtilService {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public boolean validateLicense(String licenseKey, String organization){
+    public HashMap<String,String> validateLicense(){
+        HashMap<String,String> hLicenseMap = new HashMap<>();
+
         try {
             loadLicenseUtil(licenseKey, organization);
+            hLicenseMap.put("LICENSE_STATUS", Boolean.TRUE.toString());
+            hLicenseMap.put("LICENSE_KEY", licenseKey);
+            return hLicenseMap;
         } catch (Exception e) {
             licenceLoaded = false;
-            return false;
+            hLicenseMap.put("LICENSE_STATUS", Boolean.FALSE.toString());
+            return hLicenseMap;
         }
-        return true;
     }
 
 

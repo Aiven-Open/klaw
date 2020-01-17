@@ -224,6 +224,9 @@ public class UtilMethods {
         topicRequest.setUsername("uiuser1");
         topicRequest.setTopicname(topicName);
         topicRequest.setAcl_ip("12.11.223.12");
+        topicRequest.setTopicpartitions("2");
+        topicRequest.setReplicationfactor("1");
+        topicRequest.setEnvironment("DEV");
         return topicRequest;
     }
 
@@ -319,5 +322,13 @@ public class UtilMethods {
         aclRequest.setAcl_ip("2.1.2.1");
         aclRequest.setAcl_ssl(null);
         return aclRequest;
+    }
+
+    public List<String> getClusterApiTopics(String topicPrefix, int size){
+        List<String> listTopics = new ArrayList<>();
+        for(int i=0;i<size;i++) {
+            listTopics.add(topicPrefix +i+ ":::::" + "1" + ":::::" + "2");
+        }
+        return listTopics;
     }
 }

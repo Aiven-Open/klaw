@@ -81,14 +81,14 @@ public class HandleDbRequestsCassandraTest {
         doNothing().when(loadDb).createTables();
 
         when(sessionState.getConnectedHosts()).thenReturn(connectedHosts);
-        handleDbRequestsCassandra.connectToDb();
+        handleDbRequestsCassandra.connectToDb("testlicensekey");
     }
 
     @Test
     public void connectToDbFailure() {
         exit.expectSystemExitWithStatus(0);
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "clusterConnHost", "localhosttest");
-        handleDbRequestsCassandra.connectToDb();
+        handleDbRequestsCassandra.connectToDb("testlicensekey");
     }
 
     @Test

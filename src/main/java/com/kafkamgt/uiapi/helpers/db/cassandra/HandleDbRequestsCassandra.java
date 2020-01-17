@@ -3,17 +3,15 @@ package com.kafkamgt.uiapi.helpers.db.cassandra;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.Session;
-import com.datastax.driver.core.SocketOptions;
-import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
-import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.service.UtilService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -25,40 +23,49 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     private static Logger LOG = LoggerFactory.getLogger(HandleDbRequestsCassandra.class);
 
     @Autowired(required=false)
-    SelectData cassandraSelectHelper;
+    private SelectData cassandraSelectHelper;
 
     @Autowired(required=false)
-    InsertData cassandraInsertHelper;
+    private InsertData cassandraInsertHelper;
 
     @Autowired(required=false)
-    UpdateData cassandraUpdateHelper;
+    private UpdateData cassandraUpdateHelper;
 
     @Autowired(required=false)
-    DeleteData cassandraDeleteHelper;
+    private DeleteData cassandraDeleteHelper;
 
     @Autowired
-    UtilService utilService;
+    private UtilService utilService;
 
     @Autowired(required=false)
-    LoadDb loadDb;
+    private LoadDb loadDb;
 
-    Cluster cluster;
-    Session session;
+    private Cluster cluster;
+    private Session session;
 
     @Value("${custom.cassandradb.url:@null}")
-    String clusterConnHost;
+    private String clusterConnHost;
 
     @Value("${custom.cassandradb.port:9042}")
-    int clusterConnPort;
+    private int clusterConnPort;
 
     @Value("${custom.cassandradb.keyspace:@null}")
-    String keyspace;
+    private String keyspace;
 
     @Value("${custom.dbscripts.execution:auto}")
-    String dbScriptsExecution;
+    private String dbScriptsExecution;
 
     @Value("${custom.dbscripts.dropall_recreate:false}")
-    String dbScriptsDropAllRecreate;
+    private String dbScriptsDropAllRecreate;
+
+    @Value("${custom.org.name}")
+    String companyInfo;
+
+    @Value("${custom.kafkawize.version:3.5}")
+    String kafkawizeVersion;
+
+    @Autowired
+    Environment environment;
 
     public HandleDbRequestsCassandra(){
 
@@ -77,7 +84,7 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     }
 
-    public void connectToDb(){
+    public void connectToDb(String licenseKey){
         LOG.info("Establishing Connection to Cassandra.");
         CodecRegistry myCodecRegistry;
         myCodecRegistry = CodecRegistry.DEFAULT_INSTANCE;
@@ -108,6 +115,13 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
                 cassandraInsertHelper.initializeBoundStatements();
 
                 cassandraInsertHelper.cassandraSelectHelper = cassandraSelectHelper;
+                if(! (environment.getActiveProfiles().length >0
+                        && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+                    if (licenseKey != null && licenseKey.trim().length() > 0)
+                        cassandraInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
+                    else
+                        throw new Exception("Invalid license");
+                }
             }
             else{
                 LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort);

@@ -63,7 +63,6 @@
         <!-- start: search & user box -->
         <div class="header-right">
 
-
             <ul ng-if="statusauthexectopics=='Authorized'" class="notifications">
 
                 <li>
@@ -371,7 +370,7 @@
                                     <a href="#" class="fa fa-times"></a>
                                 </div>
 
-                                <h2 class="panel-title">Welcome to KafkaWize !!</h2>
+                                <h2 class="panel-title">Welcome to KafkaWize {{ kafkawizeversion }} !!</h2>
                             </header>
                             <div class="panel-body">
                                 Automate the process of creating and browsing Kafka topics, acls, schemas, by introducing roles, teams and users.
@@ -421,8 +420,6 @@
 
                     <br><br>
                     <div ng-if="showServerStatus === 'true'" ng-init="getEnvs();getSchemaRegEnvs();">
-
-
 
                         <table class="table table-bordered table-striped mb-none">
                             <thead>
