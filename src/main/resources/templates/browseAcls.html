@@ -392,49 +392,28 @@
 									<section class="panel panel-info" data-portlet-item>
 										<header class="panel-heading portlet-handler">
 											<h2 align="center" class="panel-title">{{ resultBrowse[0].topicname}}</h2><br>
-											<div ng-repeat="resultBrowset in resultBrowse" class="well info">
-												<table width="100%">
-													<tr>
-														<th>Type</th>
-														<th>ConsumerGroup</th>
-														<th>Hosts</th>
-														<th>Principle</th>
-														<th>Owned by</th>
-													</tr>
-													<tr>
-														<td>{{ resultBrowset.topictype}}</td>
-														<td>{{ resultBrowset.consumergroup}}</td>
-														<td>{{ resultBrowset.acl_ip}}</td>
-														<td>{{ resultBrowset.acl_ssl}}</td>
-														<td>{{ resultBrowset.teamname}}</td>
+											<div class="table-responsive">
+												<table width="100%" class="table mb-none">
+													<thead>
+														<th width="10%">Type</th>
+														<th width="15%">Owned by</th>
+														<th width="15%">ConsumerGroup</th>
+														<th width="20%">Hosts</th>
+														<th width="40%">Principle</th>
+													</thead>
+													<tr ng-repeat="resultBrowset in resultBrowse">
+														<td width="10%"> <font color="white">{{ resultBrowset.topictype}}</font></td>
+														<td width="15%"><font color="white">{{ resultBrowset.teamname}}</font></td>
+														<td width="15%"><font color="white">{{ resultBrowset.consumergroup}}</font></td>
+														<td width="20%"><font color="white">{{ resultBrowset.acl_ip}}</font></td>
+														<td width="40%"><font color="white">{{ resultBrowset.acl_ssl}}</font></td>
 													</tr>
 												</table>
 											</div>
 										</header>
-										<!--<div class="panel-body">-->
-
-										<!--</div>-->
 									</section>
 								</div>
 
-								<!--<div class="row"  ng-show="resultPageSelected != null">-->
-									<!--<div class="col-sm-12 col-md-6">-->
-
-									<!--</div>-->
-									<!--<div class="col-sm-12 col-md-6" align="right">-->
-										<!--<ul class="pagination">-->
-											<!--<li class="prev disabled">-->
-												<!--<span class="fa fa-chevron-left"></span>-->
-											<!--</li>-->
-											<!--<li ng-repeat="allPages in resultPages">-->
-												<!--<a href="#" ng-click="getAcls(allPages)">{{allPages}}</a>-->
-											<!--</li>-->
-											<!--<li class="next disabled">-->
-												<!--<span class="fa fa-chevron-right"></span>-->
-											<!--</li>-->
-										<!--</ul>-->
-									<!--</div>-->
-								<!--</div>-->
 						</section>
 						
 
@@ -455,9 +434,9 @@
 		
 		<!-- Specific Page Vendor -->
 		<script src="assets/vendor/select2/select2.js"></script>
-		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
-		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
-		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
+		<!--<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>-->
+		<!--<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>-->
+		<!--<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>-->
 		
 		<!-- Theme Base, Components and Settings -->
 		<script src="assets/javascripts/theme.js"></script>

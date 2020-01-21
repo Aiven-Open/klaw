@@ -181,16 +181,52 @@ public class AclControllerService {
             return "{\"result\":\"Record not found !\"}";
     }
 
-    private List<HashMap<String, String>> getAclListFromCluster(String bootstrapHost, boolean isSyncAcls) throws KafkawizeException {
+    private List<HashMap<String, String>> getAclListFromCluster(String bootstrapHost, boolean isSyncAcls, String topicNameSearch) throws KafkawizeException {
         List<HashMap<String, String>> aclList ;
+        aclList = clusterApiService.getAcls(bootstrapHost);
         if(isSyncAcls)
-            aclList = clusterApiService.getAcls(bootstrapHost).stream()
-                    .filter(aclItem->aclItem.get("operation").equals("READ") && aclItem.get("resourceType").equals("GROUP"))
-                    .collect(Collectors.toList());
+            return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
         else
-            aclList = clusterApiService.getAcls(bootstrapHost);
+            return updateConsumerGroups(groupAcls(aclList, topicNameSearch, false), aclList);
+    }
 
-        return aclList;
+    private List<HashMap<String, String>> updateConsumerGroups(List<HashMap<String, String>> groupedList, List<HashMap<String, String>> clusterAclList){
+        List<HashMap<String, String>> updateList = new ArrayList<>(groupedList);
+
+        for(HashMap<String, String> hMapGroupItem : groupedList){
+            for(HashMap<String, String> hMapItem : clusterAclList){
+                if(hMapGroupItem.get("operation").equals("READ") && hMapItem.get("operation").equals("READ") &&
+                        hMapItem.get("resourceType").equals("GROUP")){
+                    if(hMapItem.get("host").equals(hMapGroupItem.get("host")) && hMapItem.get("principle").equals(hMapGroupItem.get("principle"))){
+                        HashMap<String, String> hashMap = new HashMap<>(hMapGroupItem);
+                        hashMap.put("consumerGroup",hMapItem.get("resourceName"));
+                        updateList.add(hashMap);
+                        break;
+                    }
+                }
+            }
+        }
+        return updateList;
+    }
+
+    private List<HashMap<String, String>> groupAcls(List<HashMap<String, String>> aclList, String topicNameSearch, boolean isSync){
+        List<HashMap<String, String>> filteredList = aclList.stream()
+                .filter(hItem->{
+                    if(isSync){
+                        if (hItem.get("resourceType").equals("TOPIC"))
+                            return true;
+                        else
+                            return false;
+                    }
+                    else {
+                        if (hItem.get("resourceName").equals(topicNameSearch))
+                            return true;
+                        else
+                            return false;
+                    }
+                }).collect(Collectors.toList());
+
+        return filteredList;
     }
 
     private List<Acl> getAclsFromSOT(String env, String topicNameSearch){
@@ -216,32 +252,32 @@ public class AclControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
+        if(isSyncAcls)
+            if(!utilService.checkAuthorizedSU())
+                return null;
+
         Env envSelected= handleDbRequests.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
-        List<HashMap<String,String>> aclList = getAclListFromCluster(bootstrapHost, isSyncAcls);
+        List<HashMap<String,String>> aclList = getAclListFromCluster(bootstrapHost, isSyncAcls, topicNameSearch);
         List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch);
 
         topicCounter = 0;
 
         if(!isSyncAcls){
-            List<AclInfo> groupedAclsPerTopic  = getAclsList(pageNo, applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls))
-                .stream()
-                .collect(Collectors.groupingBy(w -> w.getTopicname()))
-                .get(topicNameSearch);
-
-            return groupedAclsPerTopic;
+            return applyFiltersAcls(env, aclList, aclsFromSOT, false)
+                    .stream()
+                    .collect(Collectors.groupingBy(w -> w.getTopicname()))
+                    .get(topicNameSearch);
         }else{
-            return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, isSyncAcls));
+            return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, true));
         }
     }
 
     private List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){
 
         List<AclInfo> aclListMap = new ArrayList<>() ;
-        AclInfo mp = new AclInfo();
-        boolean addRecord;
-
+        AclInfo mp ;
         List<String> teamList = new ArrayList<>();
 
         if(isSyncAcls) {
@@ -251,22 +287,34 @@ public class AclControllerService {
 
         for(HashMap<String,String> aclListItem : aclList)
         {
-            addRecord = false;
+            mp = new AclInfo();
+            mp.setEnvironment(env);
+
+            if(isSyncAcls) {
+                mp.setPossibleTeams(teamList);
+                mp.setTeamname("");
+            }
+
+            String tmpPermType=aclListItem.get("operation");
+
+            if(tmpPermType.equals("WRITE"))
+                mp.setTopictype("Producer");
+            else if(tmpPermType.equals("READ")){
+                mp.setTopictype("Consumer");
+                if(aclListItem.get("consumerGroup")!=null)
+                    mp.setConsumergroup(aclListItem.get("consumerGroup"));
+                else
+                    continue;
+            }
+
+            if (aclListItem.get("resourceType").toLowerCase().equals("topic"))
+                mp.setTopicname(aclListItem.get("resourceName"));
+
+            mp.setAcl_ip(aclListItem.get("host"));
+            mp.setAcl_ssl(aclListItem.get("principle"));
+
             for(Acl aclSotItem : aclsFromSOT)
             {
-                mp = new AclInfo();
-                mp.setEnvironment(env);
-                if(isSyncAcls) {
-                    mp.setPossibleTeams(teamList);
-                    mp.setTeamname("");
-                }
-                String tmpPermType=aclListItem.get("operation");
-
-                if(tmpPermType.equals("WRITE"))
-                    mp.setTopictype("Producer");
-                else if(tmpPermType.equals("READ") && aclListItem.get("resourceType").equals("GROUP"))
-                    mp.setTopictype("Consumer");
-
                 String acl_ssl = aclSotItem.getAclssl();
                 if(acl_ssl==null)
                     acl_ssl="User:*";
@@ -275,45 +323,23 @@ public class AclControllerService {
                 if(acl_host==null)
                     acl_host="*";
 
-                if( aclSotItem.getTopicname()!=null && (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
-                        aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
+                if( aclSotItem.getTopicname()!=null &&
+                        aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) &&
                         aclListItem.get("host").equals(acl_host) &&
                         aclListItem.get("principle").equals(acl_ssl) &&
                         aclSotItem.getTopictype().equals(mp.getTopictype()))
                 {
                     mp.setTeamname(aclSotItem.getTeamname());
-                    mp.setTopicname(aclSotItem.getTopicname());
                     if(isSyncAcls)
                         mp.setReq_no(aclSotItem.getReq_no());
-
-                    addRecord = true;
                     break;
                 }
             }
-            if(addRecord && !isSyncAcls)
-            {
-                if (aclListItem.get("resourceType").toLowerCase().equals("group")) {
-                    mp.setConsumergroup(aclListItem.get("resourceName"));
-                } else if (aclListItem.get("resourceType").toLowerCase().equals("topic"))
-                    mp.setTopicname(aclListItem.get("resourceName"));
+            if(mp.getTeamname()==null)
+                mp.setTeamname("Unknown");
+            aclListMap.add(mp);
 
-                mp.setAcl_ip(aclListItem.get("host"));
-                mp.setAcl_ssl(aclListItem.get("principle"));
-                aclListMap.add(mp);
-            }
-            else if(isSyncAcls){
-                if (aclListItem.get("resourceType").toLowerCase().equals("group")) {
-                    mp.setConsumergroup(aclListItem.get("resourceName"));
-                } else if (aclListItem.get("resourceType").toLowerCase().equals("topic"))
-                    mp.setTopicname(aclListItem.get("resourceName"));
-
-                mp.setAcl_ip(aclListItem.get("host"));
-                mp.setAcl_ssl(aclListItem.get("principle"));
-                if(mp.getTopictype()!=null)
-                    aclListMap.add(mp);
-            }
         }
-
         return aclListMap;
     }
 

@@ -63,7 +63,7 @@ public class DataSourceConfig {
     @Bean(name="entityManagerFactory")
     @Conditional(JdbcDataSourceCondition.class)
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-            LOG.info("Into entityManagerFactoryBean config..");
+            //LOG.info("Into entityManagerFactoryBean config..");
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdaptor());
         try {

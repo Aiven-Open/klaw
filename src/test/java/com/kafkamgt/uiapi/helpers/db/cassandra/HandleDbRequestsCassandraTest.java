@@ -10,6 +10,7 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -52,6 +53,9 @@ public class HandleDbRequestsCassandraTest {
     @Mock
     Session.State sessionState;
 
+    @Mock
+    Environment environment;
+
     @Rule
     public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
@@ -64,6 +68,7 @@ public class HandleDbRequestsCassandraTest {
 
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "clusterConnPort", 9042);
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "keyspace", "kafkamanagementapi");
+        ReflectionTestUtils.setField(handleDbRequestsCassandra, "environment", environment);
     }
 
     @Test
@@ -76,6 +81,8 @@ public class HandleDbRequestsCassandraTest {
         when(cluster.connect()).thenReturn(session);
         when(cluster.connect(any())).thenReturn(session);
         when(session.getState()).thenReturn(sessionState);
+        String[] envArr = {"integrationtest"};
+        when(environment.getActiveProfiles()).thenReturn(envArr);
         doNothing().when(loadDb).dropTables();
         doNothing().when(loadDb).insertData();
         doNothing().when(loadDb).createTables();

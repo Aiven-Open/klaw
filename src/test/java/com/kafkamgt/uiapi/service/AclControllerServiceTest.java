@@ -269,16 +269,16 @@ public class AclControllerServiceTest {
         boolean isSyncAcls = false;
 
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
-        when(clusterApiService.getAcls(any()))
+        when(clusterApiService.getAcls(anyString()))
                 .thenReturn(utilMethods.getClusterAcls());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT(topicNameSearch));
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
-        assertEquals(aclList.size(), 1);
-        assertEquals(aclList.get(0).getTopicname(), "testtopic1");
-        assertEquals(aclList.get(0).getConsumergroup(),"mygrp1");
-        assertEquals(aclList.get(0).getAcl_ip(),"2.1.2.1");
+        assertEquals(1, aclList.size());
+        assertEquals("testtopic1",aclList.get(0).getTopicname());
+        assertEquals("mygrp1",aclList.get(0).getConsumergroup());
+        assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
     }
 
     @Test
@@ -302,6 +302,7 @@ public class AclControllerServiceTest {
         boolean isSyncAcls = true;
 
         when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(utilMethods.getClusterAcls());
@@ -310,7 +311,10 @@ public class AclControllerServiceTest {
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
-        assertEquals(aclList.size(), 2);
+        assertEquals(1, aclList.size());
+        assertEquals("testtopic1",aclList.get(0).getTopicname());
+        assertEquals("mygrp1",aclList.get(0).getConsumergroup());
+        assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
     }
 
     @Test
@@ -319,6 +323,7 @@ public class AclControllerServiceTest {
         boolean isSyncAcls = true;
 
         when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU()).thenReturn(true);
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(utilMethods.getClusterAcls());
@@ -327,7 +332,10 @@ public class AclControllerServiceTest {
 
         List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
 
-        assertEquals(aclList.size(), 0);
+        assertEquals(1, aclList.size());
+        assertEquals("testtopic1",aclList.get(0).getTopicname());
+        assertEquals("mygrp1",aclList.get(0).getConsumergroup());
+        assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
     }
 
     private List<Team> getAvailableTeams(){

@@ -43,7 +43,7 @@ public class InsertDataJdbc {
     @Autowired(required=false)
     private MessageSchemaRepo messageSchemaRepo;
 
-    @Autowired
+    @Autowired(required=false)
     private ProductDetailsRepo productDetailsRepo;
 
     @Autowired
@@ -178,17 +178,6 @@ public class InsertDataJdbc {
         acls.forEach(acl->{
             acl.setReq_no(getRandom());
             aclRepo.save(acl);
-
-            if(isSyncAcls && acl.getTopictype().equals("Producer")){
-                Topic topic = new Topic();
-                TopicPK topicPK = new TopicPK();
-                topicPK.setEnvironment(acl.getEnvironment());
-                topicPK.setTopicname(acl.getTopicname());
-                topic.setTopicPK(topicPK);
-                topic.setTeamname(acl.getTeamname());
-
-                topicRepo.save(topic);
-            }
         });
         return "success";
     }

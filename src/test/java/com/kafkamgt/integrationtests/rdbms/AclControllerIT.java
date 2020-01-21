@@ -308,8 +308,8 @@ public class AclControllerIT {
 
         when(clusterApiService.getAcls(anyString()))
                 .thenReturn(aclInfo);
-
-        String res = mvc.perform(get("/getSyncAcls").with(user("uiuser1").password("user"))
+        login("superuser","user", "SUPERUSER");
+        String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user"))
                 .param("env","DEV")
                 .param("pageNo","1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -318,7 +318,7 @@ public class AclControllerIT {
                 .andReturn().getResponse().getContentAsString();
 
         List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(2, response.size());
+        assertEquals(1, response.size());
     }
 
     private void login(String user, String pwd, String role) throws Exception {

@@ -20,12 +20,10 @@ public class UtilMethods {
     public static void startEmbeddedCassandraServer(){
         try {
             EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
-            EmbeddedCassandraServerHelper.startEmbeddedCassandra();
+            EmbeddedCassandraServerHelper.startEmbeddedCassandra(200000L);
         } catch (TTransportException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -136,7 +134,7 @@ public class UtilMethods {
         aclbindingMap = new HashMap<>();
         aclbindingMap.put("host","2.1.2.1");
         aclbindingMap.put("principle", "User:*");
-        aclbindingMap.put("operation", "WRITE");
+        aclbindingMap.put("operation", "READ");
         aclbindingMap.put("permissionType", "ALLOW");
         aclbindingMap.put("resourceType", "TOPIC");
         aclbindingMap.put("resourceName", "testtopic1");

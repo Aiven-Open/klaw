@@ -250,11 +250,6 @@ public class InsertData {
                     aclReq.getEnvironment(), aclReq.getTeamname(),
                     aclReq.getConsumergroup(), aclReq.getTopictype(),
                     aclReq.getAclip(),aclReq.getAclssl()));
-
-            if(isSyncAcls && aclReq.getTopictype() !=null && aclReq.getTopictype().equals("Producer")){
-                session.execute(boundStatementTopicsSOT.bind(aclReq.getTopicname(), aclReq.getEnvironment(),
-                        aclReq.getTeamname()));
-            }
         });
 
         return "success";
