@@ -4,7 +4,6 @@ import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.service.ManageTopics;
 import com.kafkamgt.uiapi.service.UiConfigControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,22 +18,32 @@ import java.util.List;
 @RequestMapping("/")
 public class UiConfigController {
 
-    //private static Logger LOG = LoggerFactory.getLogger(UiConfigController.class);
-
     @Autowired
     private UiConfigControllerService uiConfigControllerService;
 
-    @Autowired
-    private ManageTopics manageTopics;
-
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {
-        return new ResponseEntity<>(uiConfigControllerService.getEnvs(), HttpStatus.OK);
+        return new ResponseEntity<>(uiConfigControllerService.getEnvs(true), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Env>> getEnvsStatus() {
+        return new ResponseEntity<>(uiConfigControllerService.getEnvs(false), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getClusterApiStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<Env> getClusterApiStatus() {
+        return new ResponseEntity<>(uiConfigControllerService.getClusterApiStatus(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSchemaRegEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getSchemaRegEnvs() {
         return new ResponseEntity<>(uiConfigControllerService.getSchemaRegEnvs(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getSchemaRegEnvsStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Env>> getSchemaRegEnvsStatus() {
+        return new ResponseEntity<>(uiConfigControllerService.getSchemaRegEnvsStatus(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAllTeams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -97,7 +106,7 @@ public class UiConfigController {
 
     @RequestMapping(value = "/activityLog", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<ActivityLog>> showActivityLog(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo){
-        return new ResponseEntity<>(uiConfigControllerService.showActivityLog(env,pageNo), HttpStatus.OK);
+        return new ResponseEntity<>(uiConfigControllerService.showActivityLog(env, pageNo), HttpStatus.OK);
     }
 
 

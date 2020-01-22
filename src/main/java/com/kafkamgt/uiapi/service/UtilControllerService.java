@@ -1,13 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
@@ -19,45 +17,35 @@ import java.util.HashMap;
 @Service
 public class UtilControllerService {
 
-    private static Logger LOG = LoggerFactory.getLogger(UtilControllerService.class);
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
-    ManageTopics createTopicHelper;
+    UtilService utilService;
 
-    @Value("${custom.clusterapi.url}")
-    String clusterConnUrl;
-
-    @Value("${custom.clusterapi.username}")
-    String clusterApiUser;
-
-    @Value("${custom.clusterapi.password}")
-    String clusterApiPwd;
-
-    @Value("${custom.app.company.name}")
+    @Value("${custom.org.name}")
     String companyInfo;
 
+    @Value("${custom.kafkawize.version:3.5}")
+    String kafkawizeVersion;
+
+
+    public UtilControllerService(UtilService utilService){
+        this.utilService = utilService;
+    }
 
     public String getAuth() {
 
-        UserDetails userDetails = null;
-        try {
-             userDetails =
-                    (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        }catch (Exception e){}
-        String json = null;
+        UserDetails userDetails = utilService.getUserDetails();
+
         if(userDetails!=null) {
-        //LOG.info("User is " + userDetails.getUsername() + userDetails.getAuthorities());
 
-            String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
-            GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-            String authority = ga.getAuthority();
+            String teamName = handleDbRequests.getUsersInfo(userDetails.getUsername()).getTeam();
+            String authority = utilService.getAuthority(userDetails);
 
-            //LOG.info("auth is " + authority);
             String statusAuth = null;
             String statusAuthExecTopics = null;
-            String licenseValidity=null;
 
-            HashMap<String, String> outstanding = createTopicHelper.getAllRequestsToBeApproved(userDetails.getUsername());
+            HashMap<String, String> outstanding = handleDbRequests.getAllRequestsToBeApproved(userDetails.getUsername());
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
             String outstandingAclReqs = outstanding.get("acls");
@@ -84,6 +72,7 @@ public class UtilControllerService {
                     " \"username\":\"" + userDetails.getUsername() + "\"," +
                     " \"teamname\": \"" + teamName + "\"," +
                     " \"companyinfo\": \"" + companyInfo + "\"," +
+                    " \"kafkawizeversion\": \"" + kafkawizeVersion + "\"," +
                     " \"notifications\": \"" + outstandingTopicReqs + "\"," +
                     " \"notificationsAcls\": \"" + outstandingAclReqs + "\"," +
                     " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
@@ -93,36 +82,29 @@ public class UtilControllerService {
 
     public String getExecAuth() {
 
-        UserDetails userDetails =
-                (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails = utilService.getUserDetails();
+        String teamName = handleDbRequests.getUsersInfo(userDetails.getUsername()).getTeam();
 
-        String teamName = createTopicHelper.getUsersInfo(userDetails.getUsername()).getTeam();
+        String authority = utilService.getAuthority(userDetails);
 
-        GrantedAuthority ga = userDetails.getAuthorities().iterator().next();
-        String authority = ga.getAuthority();
-        String json = null;
-        String statusAuth = null;
+        String statusAuth ;
 
         if(authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
-            //statusAuth = userDetails.getUsername() +"-"+"Authorized";
             statusAuth = "Authorized";
         else
-            //statusAuth = userDetails.getUsername() +"-"+"Not Authorized";
             statusAuth = "NotAuthorized";
 
         return "{ \"status\": \""+statusAuth+"\" , " +
                 " \"companyinfo\": \"" + companyInfo + "\"," +
                 " \"teamname\": \"" + teamName + "\"," +
                 "\"username\":\""+userDetails.getUsername()+"\" }";
-
     }
 
     public void getLogoutPage(HttpServletRequest request, HttpServletResponse response){
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = utilService.getAuthentication();
         if (authentication != null)
             new SecurityContextLogoutHandler().logout(request, response, authentication);
-        LOG.info("in logout..");
     }
 
 }

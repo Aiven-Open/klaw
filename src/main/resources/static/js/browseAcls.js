@@ -15,7 +15,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	//$http.defaults.headers.common['Accept'] = 'application/json';
-	
+	$scope.envSelectedParam;
 
 	$scope.getEnvs = function() {
 
@@ -79,6 +79,23 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
+        $scope.getAllTopics = function() {
+
+                            $scope.alltopics = null;
+                                    $http({
+                                        method: "GET",
+                                        url: "getTopicsOnly?env="+$scope.getAcls.envName.name,
+                                        headers : { 'Content-Type' : 'application/json' }
+                                    }).success(function(output) {
+                                        $scope.alltopics = output;
+                                    }).error(
+                                        function(error)
+                                        {
+                                            $scope.alert = error;
+                                        }
+                                    );
+                                }
+
 	// We add the "time" query parameter to prevent IE
 	// from caching ajax results
 
@@ -86,18 +103,34 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
         var serviceInput = {};
 
-        if(!$scope.getAcls.envName)
-        		    return;
-		
-		serviceInput['env'] = $scope.getAcls.envName.name;
+        var str = window.location.search;
+        var envSelected, topicSelected;
+        if(str){
+            var envSelectedIndex = str.indexOf("envSelected");
+            var topicNameIndex = str.indexOf("topicname");
 
+            if(envSelectedIndex > 0 && topicNameIndex > 0)
+            {
+                envSelected = str.substring(13, topicNameIndex-1);
+                topicSelected = str.substring(topicNameIndex+10);
+            }
+        }
+
+        if(!envSelected)
+        	return;
+
+        if(!topicSelected)
+            return;
+
+		$scope.envSelectedParam = envSelected;
+		serviceInput['env'] = envSelected;
 		
 		$http({
 			method: "GET",
 			url: "getAcls",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getAcls.envName.name,
-                'pageNo' : pageNoSelected, 'topicnamesearch' : $scope.getAcls.topicnamesearch }
+            params: {'env' : envSelected,
+                'pageNo' : pageNoSelected, 'topicnamesearch' : topicSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
 			if(output!=null){

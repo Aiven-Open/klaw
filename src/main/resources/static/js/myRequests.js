@@ -161,7 +161,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         $scope.deleteSchemaRequest = function() {
 
             $http({
-                method: "GET",
+                method: "POST",
                 url: "deleteSchemaRequests",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : $scope.deleteSchemaRequest.topicname },

@@ -6,7 +6,7 @@ body {
 }
 
 html {
-	font-size: 10px;
+	font-size: 11px;
 }
 
 body {
@@ -14,7 +14,8 @@ body {
 	font-family: "Open Sans", Arial, sans-serif;
 	line-height: 22px;
 	margin: 0;
-	font-size: 13px;
+
+	: 15px;
 	overflow-x: hidden;
 	overflow-y: scroll;
 }
@@ -1534,7 +1535,7 @@ html.header-dark .header .input-search .input-group-btn .btn-default {
 .sidebar-left .sidebar-header .sidebar-title {
 	color: #465162;
 	padding: 15px;
-	font-size: 15px;
+	font-size: 17px;
 	font-size: 1.5rem;
 }
 

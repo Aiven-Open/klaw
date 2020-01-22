@@ -61,7 +61,7 @@
     }
 	</style>
 	<body>
-		<section class="body" ng-init="getAuth()">
+		<section class="body" ng-init="getAuth();getTopics(1,'false');">
 
 			<!-- start: header -->
 			<header class="header">
@@ -92,7 +92,7 @@
 
 						<li>
 							<a href="execTopics" class="dropdown-toggle notification-icon">
-								<i class="fa fa-bell"></i>
+								<i class="fa fa-envelope"></i>
 								<span class="badge">{{ notifications }}</span>
 							</a>
 						</li>
@@ -177,19 +177,11 @@
 										<ul class="nav nav-children">
 											<li class="nav-active">
 												<a href="browseTopics">
-													Topics
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
-											<li>
-												<a href="browseAcls">
-													Acls
-												</a>
-											</li>
-											<li>
-												<a href="pcTopics">
-													Producers-Consumers
-												</a>
-											</li>
+
+
 
 										</ul>
 									</li>
@@ -201,17 +193,17 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="requestTopics">
-													Request Topic
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Request Topic</span>
 												</a>
 											</li>
 											<li>
 												<a href="requestAcls">
-													Request ACL
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Request Acl</span>
 												</a>
 											</li>
 											<li>
 												<a href="requestSchemaUpload">
-													Request Avro Schema
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Request Avro Schema</span>
 												</a>
 											</li>
 
@@ -225,17 +217,17 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="envs">
-													Kafka
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Kafka</span>
 												</a>
 											</li>
 											<li>
 												<a href="envs">
-													Schema Registry
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Schema Registry</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="addEnv">
-													Add Cluster
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Add Cluster</span>
 												</a>
 											</li>
 
@@ -249,12 +241,12 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="myTopicRequests">
-													My Requests
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>My Requests</span>
 												</a>
 											</li>
 											<li>
 												<a href="activityLog">
-													Activity Log
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Activity Log</span>
 												</a>
 											</li>
 
@@ -269,17 +261,17 @@
 										<ul class="nav nav-children">
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execTopics">
-													Topics
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execAcls">
-													Acls
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Acls</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execSchemas">
-													Schemas
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Schemas</span>
 												</a>
 											</li>
 										</ul>
@@ -292,22 +284,22 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="showUsers">
-													View Users
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>View Users</span>
 												</a>
 											</li>
 											<li>
 												<a href="showTeams">
-													View Teams
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>View Teams</span>
 												</a>
 											</li>
 											<li>
 												<a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
-													Add Users
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Add Users</span>
 												</a>
 											</li>
 											<li>
 												<a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
-													Add Teams
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Add Teams</span>
 												</a>
 											</li>
 										</ul>
@@ -320,12 +312,12 @@
 										<ul class="nav nav-children">
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="synchronizeTopics">
-													Topics
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="synchronizeAcls">
-													Acls
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Acls</span>
 												</a>
 											</li>
 
@@ -340,7 +332,7 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="serverConfig">
-													Server Config
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Server Config</span>
 												</a>
 											</li>
 
@@ -350,61 +342,7 @@
 								</ul>
 							</nav>
 				
-							<!--<hr class="separator" />-->
-				<!---->
-							<!--<div class="sidebar-widget widget-tasks">-->
-								<!--<div class="widget-header">-->
-									<!--<h6>Projects</h6>-->
-									<!--<div class="widget-toggle">+</div>-->
-								<!--</div>-->
-								<!--<div class="widget-content">-->
-									<!--<ul class="list-unstyled m-none">-->
-										<!--<li><a href="#">Porto HTML5 Template</a></li>-->
-										<!--<li><a href="#">Tucson Template</a></li>-->
-										<!--<li><a href="#">Porto Admin</a></li>-->
-									<!--</ul>-->
-								<!--</div>-->
-							<!--</div>-->
-				<!---->
-							<!--<hr class="separator" />-->
-				
-							<!--<div class="sidebar-widget widget-stats">-->
-								<!--<div class="widget-header">-->
-									<!--<h6>Company Stats</h6>-->
-									<!--<div class="widget-toggle">+</div>-->
-								<!--</div>-->
-								<!--<div class="widget-content">-->
-									<!--<ul>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 1</span>-->
-											<!--<span class="stats-complete">85%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100" style="width: 85%;">-->
-													<!--<span class="sr-only">85% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 2</span>-->
-											<!--<span class="stats-complete">70%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%;">-->
-													<!--<span class="sr-only">70% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-										<!--<li>-->
-											<!--<span class="stats-title">Stat 3</span>-->
-											<!--<span class="stats-complete">2%</span>-->
-											<!--<div class="progress">-->
-												<!--<div class="progress-bar progress-bar-primary progress-without-number" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="width: 2%;">-->
-													<!--<span class="sr-only">2% Complete</span>-->
-												<!--</div>-->
-											<!--</div>-->
-										<!--</li>-->
-									<!--</ul>-->
-								<!--</div>-->
-							<!--</div>-->
+
 						</div>
 				
 					</div>
@@ -448,55 +386,80 @@
 								<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 								<strong>Ah snap!!</strong> {{ errorMessage }}.
 							</div>
-							<!--<header class="panel-heading">-->
-								<!--<div class="panel-actions">-->
-									<!--<a href="#" class="fa fa-caret-down"></a>-->
-									<!--<a href="#" class="fa fa-times"></a>-->
-								<!--</div>-->
-						<!---->
-								<!--<h2 class="panel-title">Basic</h2>-->
-							<!--</header>-->
+
 							<div  id="getTopics" class="panel-body"  ng-init="getAuth();getEnvs();">
 
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
 									<div class="col-md-5">
-										<select  ng-change="getTopics(1);"
+										<select ng-change="getTopics(1,'true');"
 												ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs" class="form-control populate">
 											<option value="" selected="selected">Select Cluster</option>
 										</select>
 									</div>
 									<div class="col-md-7">
-										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1);" ng-model="getTopics.topicnamesearch">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getTopics(1,'true');" ng-model="getTopics.topicnamesearch">
 									</div>
 								</div>
 
+							</div>
+							<br>
 
-								<br>
-
-								<table class="table table-bordered table-striped mb-none"  ng-show="resultPages != null">
-									<thead>
-										<tr>
-											<!--<th>Sequence</th>-->
-											<th>TopicName</th>
-											<th>Partitions</th>
-											<th class="hidden-phone">Replicas</th>
-											<th class="hidden-phone">Owned by</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr ng-repeat="resultBrowset in resultBrowse" class="gradeX">
-											<!--<td>{{ resultBrowset.sequence}}</td>-->
-											<td>{{ resultBrowset.topicName}}</td>
-											<td>{{ resultBrowset.noOfPartitions}}</td><td>{{ resultBrowset.noOfReplcias}}</td>
-											<td>{{ resultBrowset.teamname}}</td>
-										</tr>
-										
-									</tbody>
-								</table>
 
 								<div class="alert alert-info" ng-show="resultBrowse.length==0">
 									No topics found !!
+								</div>
+
+								<div ng-repeat="resultBrowset in resultBrowse" class="row" align="center">
+									<!--<label class="col-md-3 control-label">Select Environment</label>-->
+									<a href="browseAcls?envSelected={{envSelected}}&topicname={{ resultBrowset[0].topicName}}">
+									<div class="col-md-4">
+										<section class="panel panel-info" data-portlet-item>
+											<header class="panel-heading portlet-handler">
+												<h2 class="panel-title">{{ resultBrowset[0].topicName}}</h2><br>
+												<div class="well info"><table width="100%">
+													<tr><td>Partitions</td><td>{{ resultBrowset[0].noOfPartitions}}</td></tr>
+													<tr><td>Replica factor</td><td>{{ resultBrowset[0].noOfReplcias}}</td></tr>
+													<tr><td>Owned by</td><td>{{ resultBrowset[0].teamname}}</td></tr>
+												</table></div>
+											</header>
+										</section>
+									</div>
+									</a>
+									<a href="browseAcls?envSelected={{envSelected}}&topicname={{ resultBrowset[1].topicName}}">
+									<div class="col-md-4" ng-show="resultBrowset[1].topicName != null">
+										<section class="panel panel-info" data-portlet-item>
+											<header class="panel-heading portlet-handler">
+												<h2 class="panel-title">{{ resultBrowset[1].topicName}}</h2><br>
+												<div class="well info"><table width="100%">
+													<tr><td>Partitions</td><td>{{ resultBrowset[1].noOfPartitions}}</td></tr>
+													<tr><td>Replica factor</td><td>{{ resultBrowset[1].noOfReplcias}}</td></tr>
+													<tr><td>Owned by</td><td>{{ resultBrowset[1].teamname}}</td></tr>
+												</table></div>
+											</header>
+											<!--<div class="panel-body">-->
+
+											<!--</div>-->
+										</section>
+									</div>
+									</a>
+									<a href="browseAcls?envSelected={{envSelected}}&topicname={{ resultBrowset[2].topicName}}">
+									<div class="col-md-4" ng-show="resultBrowset[2].topicName != null">
+										<section class="panel panel-info" data-portlet-item>
+											<header class="panel-heading portlet-handler">
+												<h2 class="panel-title">{{ resultBrowset[2].topicName}}</h2><br>
+												<div class="well info">
+													<table width="100%">
+														<tr><td>Partitions</td><td>{{ resultBrowset[2].noOfPartitions}}</td></tr>
+														<tr><td>Replica factor</td><td>{{ resultBrowset[2].noOfReplcias}}</td></tr>
+														<tr><td>Owned by</td><td>{{ resultBrowset[2].teamname}}</td></tr>
+													</table></div>
+											</header>
+
+										</section>
+									</div>
+									</a>
+
 								</div>
 
 								<div class="row"  ng-show="resultPageSelected != null && resultBrowse.length>0">
@@ -509,7 +472,7 @@
 												<span class="fa fa-chevron-left"></span>
 											</li>
 											<li ng-repeat="allPages in resultPages">
-												<a href="#" ng-click="getTopics(allPages)">{{allPages}}</a>
+												<a href="#" ng-click="getTopics(allPages,'true')">{{allPages}}</a>
 											</li>
 											<li class="next disabled">
 												<span class="fa fa-chevron-right"></span>
@@ -517,8 +480,8 @@
 										</ul>
 									</div>
 								</div>
-							</div>
-							<button  id="myBtn" class="btn btn-primary float:right">
+
+							<button  id="myBtn" class="btn btn-danger float:right">
 								<a href="requestTopics" style="color: white">Add Topic</a>
 							</button>
 						</section>
@@ -527,73 +490,7 @@
 				</section>
 			</div>
 
-			<!--<aside id="sidebar-right" class="sidebar-right">-->
-				<!--<div class="nano">-->
-					<!--<div class="nano-content">-->
-						<!--<a href="#" class="mobile-close visible-xs">-->
-							<!--Collapse <i class="fa fa-chevron-right"></i>-->
-						<!--</a>-->
-			<!---->
-						<!--<div class="sidebar-right-wrapper">-->
-			<!---->
-							<!--<div class="sidebar-widget widget-calendar">-->
-								<!--<h6>Upcoming Tasks</h6>-->
-								<!--<div data-plugin-datepicker data-plugin-skin="dark" ></div>-->
-			<!---->
-								<!--<ul>-->
-									<!--<li>-->
-										<!--<time datetime="2014-04-19T00:00+00:00">04/19/2014</time>-->
-										<!--<span>Company Meeting</span>-->
-									<!--</li>-->
-								<!--</ul>-->
-							<!--</div>-->
-			<!---->
-							<!--<div class="sidebar-widget widget-friends">-->
-								<!--<h6>Friends</h6>-->
-								<!--<ul>-->
-									<!--<li class="status-online">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-online">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-offline">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-									<!--<li class="status-offline">-->
-										<!--<figure class="profile-picture">-->
-											<!--<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">-->
-										<!--</figure>-->
-										<!--<div class="profile-info">-->
-											<!--<span class="name">Joseph Doe Junior</span>-->
-											<!--<span class="title">Hey, how are you?</span>-->
-										<!--</div>-->
-									<!--</li>-->
-								<!--</ul>-->
-							<!--</div>-->
-			<!---->
-						<!--</div>-->
-					<!--</div>-->
-				<!--</div>-->
-			<!--</aside>-->
+
 		</section>
 
 		<!-- Vendor -->

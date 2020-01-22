@@ -2,11 +2,13 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.service.ManageTopics;
+import com.kafkamgt.uiapi.service.UtilService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
@@ -25,7 +27,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static Logger LOG = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
-    ManageTopics manageTopics;
+    ManageDatabase manageTopics;
+
+    @Autowired
+    UtilService utils;
+
+    @Value("${custom.org.name}")
+    String orgName;
+
+    @Value("${custom.invalidkey.msg}")
+    String invalidKeyMessage;
+
+    @Autowired
+    Environment environment;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -39,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(staticResources).permitAll()
                 .anyRequest().fullyAuthenticated()
-                .and()
+                .and().httpBasic().and()
                 .formLogin()
                 .loginPage("/login")
                 .permitAll()
@@ -52,19 +66,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-//        if(!utils.validateLicense()) {
-//            LOG.error("Invalid License, exiting...");
-//            System.exit(0);
-//            throw new Exception("Invalid License !!");
-//        }
-        List<UserInfo> users;
+        List<UserInfo> users = new ArrayList<>();
+        if(orgName.equals("Your company name."))
+        {
+            LOG.error("Invalid organization configured !!");
+            System.exit(0);
+            throw new Exception("Invalid organization configured !!");
+        }
+        if(! (environment.getActiveProfiles().length >0
+                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+            HashMap<String, String> licenseMap = utils.validateLicense();
+            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+                LOG.error(invalidKeyMessage);
+                System.exit(0);
+                throw new Exception(invalidKeyMessage);
+            }
+        }
         try {
-            //manageTopics.loadDb();
             users = manageTopics.selectAllUsersInfo();
         }catch(Exception e){
             throw new Exception("Please check if tables are created.");
         }
+
         if(users.size()==0)
             throw new Exception("Please check if insert scripts are executed.");
 
@@ -81,7 +104,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             userDetailsBuilder
                     .and()
                     .withUser(userInfo.getUsername()).password(encoder.encode(userInfo.getPwd())).roles(userInfo.getRole());
-
         }
 
         auth.userDetailsService(inMemoryUserDetailsManager());
@@ -92,7 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final Properties globalUsers = new Properties();
         List<UserInfo> users = manageTopics.selectAllUsersInfo();
         Iterator<UserInfo> iter = users.iterator();
-        UserInfo userInfo = null;
+        UserInfo userInfo;
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
         while(iter.hasNext()){

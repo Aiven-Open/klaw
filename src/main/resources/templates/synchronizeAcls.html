@@ -67,7 +67,7 @@
 
 						<li>
 							<a href="execTopics" class="dropdown-toggle notification-icon">
-								<i class="fa fa-bell"></i>
+								<i class="fa fa-envelope"></i>
 								<span class="badge">{{ notifications }}</span>
 							</a>
 
@@ -154,19 +154,11 @@
 										<ul class="nav nav-children">
 											<li class="nav-active">
 												<a href="browseTopics">
-													Topics
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
-											<li>
-												<a href="browseAcls">
-													Acls
-												</a>
-											</li>
-											<li>
-												<a href="pcTopics">
-													Producers-Consumers
-												</a>
-											</li>
+
+
 
 										</ul>
 									</li>
@@ -178,17 +170,17 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="requestTopics">
-													Request Topic
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Request Topic</span>
 												</a>
 											</li>
 											<li>
 												<a href="requestAcls">
-													Request ACL
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Request Acl</span>
 												</a>
 											</li>
 											<li>
 												<a href="requestSchemaUpload">
-													Request Avro Schema
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Request Avro Schema</span>
 												</a>
 											</li>
 
@@ -202,17 +194,17 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="envs">
-													Kafka
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Kafka</span>
 												</a>
 											</li>
 											<li>
 												<a href="envs">
-													Schema Registry
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Schema Registry</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="addEnv">
-													Add Cluster
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Add Cluster</span>
 												</a>
 											</li>
 
@@ -226,12 +218,12 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="myTopicRequests">
-													My Requests
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>My Requests</span>
 												</a>
 											</li>
 											<li>
 												<a href="activityLog">
-													Activity Log
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Activity Log</span>
 												</a>
 											</li>
 
@@ -246,17 +238,17 @@
 										<ul class="nav nav-children">
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execTopics">
-													Topics
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execAcls">
-													Acls
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Acls</span>
 												</a>
 											</li>
 											<li  ng-if="statusauthexectopics==='Authorized'">
 												<a href="execSchemas">
-													Schemas
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Schemas</span>
 												</a>
 											</li>
 										</ul>
@@ -269,22 +261,22 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="showUsers">
-													View Users
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>View Users</span>
 												</a>
 											</li>
 											<li>
 												<a href="showTeams">
-													View Teams
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>View Teams</span>
 												</a>
 											</li>
 											<li>
 												<a href="addUsers"   ng-if="statusauthexectopics==='Authorized'">
-													Add Users
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Add Users</span>
 												</a>
 											</li>
 											<li>
 												<a href="addTeam"   ng-if="statusauthexectopics==='Authorized'">
-													Add Teams
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Add Teams</span>
 												</a>
 											</li>
 										</ul>
@@ -297,12 +289,12 @@
 										<ul class="nav nav-children">
 											<li ng-if="statusauthexectopics==='Authorized'">
 												<a href="synchronizeTopics">
-													Topics
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Topics</span>
 												</a>
 											</li>
 											<li class="nav-active" ng-if="statusauthexectopics==='Authorized'">
 												<a href="synchronizeAcls">
-													Acls
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Acls</span>
 												</a>
 											</li>
 
@@ -317,7 +309,7 @@
 										<ul class="nav nav-children">
 											<li>
 												<a href="serverConfig">
-													Server Config
+													<i class="fa fa-ellipsis-h" aria-hidden="true"></i>                                             <span>Server Config</span>
 												</a>
 											</li>
 
@@ -383,11 +375,14 @@
 								<div ng-if="statusauthexectopics=='Authorized'">
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-12">
+									<div class="col-md-5">
 										<select ng-change="getAcls(1);" ng-model="getAcls.envName"
 												ng-options="env as env.name for env in allenvs" class="form-control populate">
 											<option value="" selected="selected">Select Cluster</option>
 										</select>
+									</div>
+									<div class="col-md-7">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getAcls(1);" ng-model="getAcls.topicnamesearch">
 									</div>
 
 								</div>
@@ -410,7 +405,7 @@
 										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
 											<!--<td>{{ resultBrowset.sequence}}</td>-->
 											<td>
-												<select class="form-control populate" ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicname,
+												<select class="form-control populate" ng-change="getDetails(resultBrowset.req_no, resultBrowset.teamname,resultBrowset.topicname,
 											resultBrowset.consumergroup,resultBrowset.acl_ip,resultBrowset.acl_ssl,resultBrowset.topictype)"
 														ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
@@ -478,9 +473,6 @@
 		
 		<!-- Specific Page Vendor -->
 		<script src="assets/vendor/select2/select2.js"></script>
-		<script src="assets/vendor/jquery-datatables/media/js/jquery.dataTables.js"></script>
-		<script src="assets/vendor/jquery-datatables/extras/TableTools/js/dataTables.tableTools.min.js"></script>
-		<script src="assets/vendor/jquery-datatables-bs3/assets/js/datatables.js"></script>
 		
 		<!-- Theme Base, Components and Settings -->
 		<script src="assets/javascripts/theme.js"></script>

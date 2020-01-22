@@ -1,9 +1,10 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,10 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 @Service
+@Slf4j
 public class SchemaRegstryControllerService {
 
-    private static Logger LOG = LoggerFactory.getLogger(SchemaRegstryControllerService.class);
-
-    @Autowired
-    ManageTopics createTopicHelper;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     ClusterApiService clusterApiService;
@@ -25,23 +24,33 @@ public class SchemaRegstryControllerService {
     @Autowired
     private UtilService utilService;
 
+    public SchemaRegstryControllerService(ClusterApiService clusterApiService,
+                                          UtilService utilService){
+        this.clusterApiService = clusterApiService;
+        this.utilService = utilService;
+    }
+
     public List<SchemaRequest> getSchemaRequests() {
-        return createTopicHelper.getAllSchemaRequests(utilService.getUserName());
+        return handleDbRequests.getAllSchemaRequests(utilService.getUserName());
     }
 
     public List<SchemaRequest> getCreatedSchemaRequests() {
 
-        return createTopicHelper.getCreatedSchemaRequests(utilService.getUserName());
+        return handleDbRequests.getCreatedSchemaRequests(utilService.getUserName());
     }
 
      public String deleteSchemaRequests(String topicName) {
 
+        try{
         StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
-        topicName = strTkr.nextToken();
-        String schemaVersion = strTkr.nextToken();
-        String env = strTkr.nextToken();
+            topicName = strTkr.nextToken();
+            String schemaVersion = strTkr.nextToken();
+            String env = strTkr.nextToken();
 
-        return createTopicHelper.deleteSchemaRequest(topicName,schemaVersion, env);
+            return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.toString()+"\"}";
+        }
     }
 
     public String execSchemaRequests(String topicName) throws KafkawizeException {
@@ -51,12 +60,16 @@ public class SchemaRegstryControllerService {
         String schemaversion = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        SchemaRequest schemaRequest = createTopicHelper.selectSchemaRequest(topicName,schemaversion,env);
+        SchemaRequest schemaRequest = handleDbRequests.selectSchemaRequest(topicName,schemaversion,env);
 
         ResponseEntity<String> response = clusterApiService.postSchema(schemaRequest, env, topicName);
 
         if(response.getBody().contains("id\":")) {
-            return createTopicHelper.updateSchemaRequest(schemaRequest, utilService.getUserName());
+            try {
+                return handleDbRequests.updateSchemaRequest(schemaRequest, utilService.getUserName());
+            }catch (Exception e){
+                return "{\"result\":\"failure "+e.toString()+"\"}";
+            }
         }
         else {
             return "Failure in uploading schema" ;
@@ -65,11 +78,11 @@ public class SchemaRegstryControllerService {
 
     public String uploadSchema(SchemaRequest schemaRequest){
 
-        LOG.info(schemaRequest.getTopicname()+ "---" + schemaRequest.getTeamname()+"---"+schemaRequest.getEnvironment() +
-                "---"+schemaRequest.getAppname()+"---"+
-                schemaRequest.getTeamname());
         schemaRequest.setUsername(utilService.getUserName());
-
-        return createTopicHelper.requestForSchema(schemaRequest);
+        try {
+            return handleDbRequests.requestForSchema(schemaRequest);
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.toString()+"\"}";
+        }
     }
 }

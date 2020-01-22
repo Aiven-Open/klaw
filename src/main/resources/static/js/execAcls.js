@@ -112,7 +112,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.execAclRequest = function() {
+        $scope.execAclRequest = function(reqNo) {
 
          //   alert("::in exec acl"+$scope.execAclRequest.req_no);
 
@@ -120,8 +120,8 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "execAclRequest",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'req_no' : $scope.execAclRequest.req_no },
-                data: {'req_no' : $scope.execAclRequest.req_no}
+                params: {'req_no' : reqNo },
+                data: {'req_no' : reqNo}
             }).success(function(output) {
 
                 $scope.alert = "Acl Approve Request : "+output.result;
@@ -135,7 +135,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.execAclRequestDecline = function() {
+        $scope.execAclRequestDecline = function(reqNo) {
 
                   //   alert("::in exec acl"+$scope.execAclRequest.req_no);
 
@@ -143,8 +143,8 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                          method: "POST",
                          url: "execAclRequestDecline",
                          headers : { 'Content-Type' : 'application/json' },
-                         params: {'req_no' : $scope.execAclRequest.req_no },
-                         data: {'req_no' : $scope.execAclRequest.req_no}
+                         params: {'req_no' : reqNo },
+                         data: {'req_no' : reqNo}
                      }).success(function(output) {
 
                          $scope.alert = "Acl Decline Request : "+output.result;

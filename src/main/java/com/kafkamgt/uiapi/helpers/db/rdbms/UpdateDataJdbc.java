@@ -22,22 +22,31 @@ public class UpdateDataJdbc {
     private static Logger LOG = LoggerFactory.getLogger(UpdateDataJdbc.class);
 
     @Autowired(required=false)
-    TopicRequestsRepo topicRequestsRepo;
+    private TopicRequestsRepo topicRequestsRepo;
 
     @Autowired(required=false)
-    AclRequestsRepo aclRequestsRepo;
+    private AclRequestsRepo aclRequestsRepo;
 
     @Autowired(required=false)
-    UserInfoRepo userInfoRepo;
+    private UserInfoRepo userInfoRepo;
 
     @Autowired(required=false)
-    SchemaRequestRepo schemaRequestRepo;
+    private SchemaRequestRepo schemaRequestRepo;
 
     @Autowired
-    InsertDataJdbc insertDataJdbcHelper;
+    private InsertDataJdbc insertDataJdbcHelper;
 
-    @Autowired
-    SelectDataJdbc selectDataJdbcHelper;
+    public UpdateDataJdbc(){}
+
+    public UpdateDataJdbc(TopicRequestsRepo topicRequestsRepo, AclRequestsRepo aclRequestsRepo,
+                          UserInfoRepo userInfoRepo, SchemaRequestRepo schemaRequestRepo,
+                          InsertDataJdbc insertDataJdbcHelper){
+        this.topicRequestsRepo = topicRequestsRepo;
+        this.aclRequestsRepo = aclRequestsRepo;
+        this.userInfoRepo = userInfoRepo;
+        this.schemaRequestRepo = schemaRequestRepo;
+        this.insertDataJdbcHelper = insertDataJdbcHelper;
+    }
 
     public String declineTopicRequest(TopicRequest topicRequest, String approver){
 
@@ -131,7 +140,6 @@ public class UpdateDataJdbc {
         schemaRequestRepo.save(schemaRequest);
 
         // Insert to SOT
-
         List<MessageSchema> schemas = new ArrayList<>();
         MessageSchema schemaObj = new MessageSchema();
         copyProperties(schemaRequest,schemaObj);

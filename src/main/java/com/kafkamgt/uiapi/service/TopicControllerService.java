@@ -1,17 +1,15 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicPK;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import com.kafkamgt.uiapi.model.PCStream;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.TopicInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -23,68 +21,59 @@ import java.util.StringTokenizer;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class TopicControllerService {
-    private static Logger LOG = LoggerFactory.getLogger(TopicControllerService.class);
 
     @Autowired
     ClusterApiService clusterApiService;
 
-    @Value("${custom.clusterapi.url}")
-    private String clusterConnUrl;
-
-    @Value("${custom.clusterapi.username}")
-    private String clusterApiUser;
-
-    @Value("${custom.clusterapi.password}")
-    private String clusterApiPwd;
-
-    String uriGetTopics = "/topics/getTopics/";
-
-    @Autowired
-    private ManageTopics manageTopics;
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
 
     @Autowired
     private UtilService utilService;
 
-    @Autowired
-    private Environment springEnvProps;
+    public TopicControllerService(ClusterApiService clusterApiService, UtilService utilService){
+        this.clusterApiService = clusterApiService;
+        this.utilService = utilService;
+    }
 
-    public String createTopics(TopicRequest topicRequestReq) {
+    public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {
 
-        LOG.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
+        log.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
         topicRequestReq.setUsername(utilService.getUserName());
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
-        int topicPartitionsInt;
+
         String envSelected = topicRequestReq.getEnvironment();
 
-        Env env = manageTopics.selectEnvDetails(envSelected);
+        Env env = handleDbRequests.selectEnvDetails(envSelected);
+
+        if(validateParameters(topicRequestReq, env, topicPartitions)){
+            return "{\"result\":\""+handleDbRequests.requestForTopic(topicRequestReq)+"\"}";
+        }
+
+        return "{\"result\":\"failure\"}";
+    }
+
+    private boolean validateParameters(TopicRequest topicRequestReq, Env env, String topicPartitions) throws KafkawizeException {
         String otherParams = env.getOtherParams();
         String params[] ;
         String defPartns = null, defMaxPartns = null, defaultRf = null;
+        int topicPartitionsInt;
 
         try{
             if(otherParams!=null) {
                 params = otherParams.split(",");
 
                 if(params!=null && params.length==3) {
-                     defPartns = (params[0]).split("=")[1];
-                     defMaxPartns = (params[1]).split("=")[1];
-                     defaultRf = (params[2]).split("=")[1];
+                    defPartns = (params[0]).split("=")[1];
+                    defMaxPartns = (params[1]).split("=")[1];
+                    defaultRf = (params[2]).split("=")[1];
                 }
             }
         }catch (Exception e){
-            LOG.error("Unable to set topic partitions, setting default from properties.");
+            log.error("Unable to set topic partitions, setting default from properties.");
         }
-
-        if(defPartns==null)
-            defPartns="1";
-
-        if(defMaxPartns==null)
-            defMaxPartns="1";
-
-        if(defaultRf==null)
-            defaultRf="1";
 
         try {
             int defMaxPartnsInt = Integer.parseInt(defMaxPartns);
@@ -94,30 +83,33 @@ public class TopicControllerService {
 
                 if (topicPartitionsInt > defMaxPartnsInt)
                     topicRequestReq.setTopicpartitions(defMaxPartns);
-                else
+                else if(topicPartitionsInt > 0)
                     topicRequestReq.setTopicpartitions(topicPartitions);
+                else
+                    topicRequestReq.setTopicpartitions(defPartns);
             } else
                 topicRequestReq.setTopicpartitions(defPartns);
 
             topicRequestReq.setReplicationfactor(defaultRf);
         }catch (Exception e){
-            LOG.error("Unable to set topic partitions, setting default from properties.");
-            topicRequestReq.setTopicpartitions(defPartns);
+            log.error("Unable to set topic partitions, setting default from properties.");
+            try{
+                Integer.parseInt(defPartns);
+                topicRequestReq.setTopicpartitions(defPartns);
+            }catch(Exception e1){
+                throw new KafkawizeException("Cluster default parameters config missing/incorrect.");
+            }
         }
-
-        String execRes = manageTopics.requestForTopic(topicRequestReq);
-
-        String topicaddResult = "{\"result\":\""+execRes+"\"}";
-        return topicaddResult;
+        return true;
     }
 
     public String updateSyncTopics(String updatedSyncTopics, String envSelected) {
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
-        String topicSel=null,teamSelected=null,tmpToken=null;
+        String topicSel, teamSelected, tmpToken;
         List<Topic> listTopics = new ArrayList<>();
         Topic t;
         while(strTkr.hasMoreTokens()){
@@ -142,69 +134,46 @@ public class TopicControllerService {
                 listTopics.add(t);
             }
         }
-        String execRes = manageTopics.addToSynctopics(listTopics);
-
-        return "{\"result\":\""+execRes+"\"}";
-    }
-
-    public List<PCStream> getTopicStreams(String envSelected, String pageNo, String topicNameSearch) {
-        List<PCStream> pcList = manageTopics.selectTopicStreams(envSelected);
-
-        if(topicNameSearch != null)
-            topicNameSearch = topicNameSearch.trim();
-
-        List<PCStream> pcListUpdated = pcList;
-        if(topicNameSearch!=null && topicNameSearch.length()>0) {
-            final String topicSearchFilter = topicNameSearch;
-            pcListUpdated = pcList.stream()
-                    .filter(pcStream -> pcStream.getTopicName().contains(topicSearchFilter))
-                    .collect(Collectors.toList());
+        if(listTopics.size()>0){
+            return "{\"result\":\""+handleDbRequests.addToSynctopics(listTopics)+"\"}";
         }
-        return getPCStreamsPaginated(pageNo,pcListUpdated);
-    }
-
-    public List<PCStream> getPCStreamsPaginated(String pageNo, List<PCStream> aclListMap){
-        List<PCStream> aclListMapUpdated = new ArrayList<>();
-
-        int totalRecs = aclListMap.size();
-        int recsPerPage = 20;
-
-        int totalPages = aclListMap.size()/recsPerPage + (aclListMap.size()%recsPerPage > 0 ? 1 : 0);
-
-        int requestPageNo = Integer.parseInt(pageNo);
-        int startVar = (requestPageNo-1) * recsPerPage;
-        int lastVar = (requestPageNo) * (recsPerPage);
-        topicCounter = 0;
-        for(int i=0;i<totalRecs;i++) {
-            int counterInc = counterIncrement();
-            if(i>=startVar && i<lastVar) {
-                PCStream mp = aclListMap.get(i);
-                mp.setSequence(counterInc + "");
-
-                mp.setTotalNoPages(totalPages + "");
-                List<String> numList = new ArrayList<>();
-                for (int k = 1; k <= totalPages; k++) {
-                    numList.add("" + k);
-                }
-                mp.setAllPageNos(numList);
-                aclListMapUpdated.add(mp);
-            }
-        }
-        return aclListMapUpdated;
+        else
+            return "{\"result\":\"No record updated.\"}";
     }
 
     public List<TopicRequest> getTopicRequests() {
-
-        return manageTopics.getAllTopicRequests(utilService.getUserName());
+        return handleDbRequests.getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
-
-        return manageTopics.getTopicTeam(topicName, env);
+        return handleDbRequests.getTopicTeam(topicName, env);
     }
 
-    public List<TopicRequest> getCreatedTopicRequests() {
-       return manageTopics.getCreatedTopicRequests(utilService.getUserName());
+    public List<List<TopicRequest>> getCreatedTopicRequests() {
+        return updateCreateTopicReqsList(handleDbRequests.getCreatedTopicRequests(utilService.getUserName()));
+    }
+
+    private List<List<TopicRequest>> updateCreateTopicReqsList(List<TopicRequest> topicsList){
+
+        List<List<TopicRequest>> newList = new ArrayList<>();
+        List<TopicRequest> innerList = new ArrayList<>();
+        int modulusFactor = 3;
+        int i=0;
+        for(TopicRequest topicInfo : topicsList){
+
+            innerList.add(topicInfo);
+
+            if(i%modulusFactor == (modulusFactor-1)) {
+                newList.add(innerList);
+                innerList = new ArrayList<>();
+            }
+            i++;
+        }
+
+        if(innerList.size()>0)
+            newList.add(innerList);
+
+        return newList;
     }
 
     public String deleteTopicRequests(String topicName) {
@@ -213,50 +182,48 @@ public class TopicControllerService {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        String deleteTopicReqStatus = manageTopics.deleteTopicRequest(topicName,env);
+        String deleteTopicReqStatus = handleDbRequests.deleteTopicRequest(topicName,env);
 
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
 
-    public String approveTopicRequests(String topicName) throws KafkawizeException {
+    public String approveTopicRequests(String topicName, String env) throws KafkawizeException {
 
-        StringTokenizer strTkr = new StringTokenizer(topicName,",");
-        topicName = strTkr.nextToken();
-        String env = strTkr.nextToken();
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
 
-        TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
 
         ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
 
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = manageTopics.updateTopicRequest(topicRequest,utilService.getUserName());
+            updateTopicReqStatus = handleDbRequests.updateTopicRequest(topicRequest,utilService.getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
-    public String declineTopicRequests(String topicName) throws KafkawizeException {
+    public String declineTopicRequests(String topicName, String env) throws KafkawizeException {
 
-        StringTokenizer strTkr = new StringTokenizer(topicName,",");
-        topicName = strTkr.nextToken();
-        String env = strTkr.nextToken();
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
 
-        TopicRequest topicRequest = manageTopics.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
 
-        manageTopics.declineTopicRequest(topicRequest,utilService.getUserName());
+        String result = handleDbRequests.declineTopicRequest(topicRequest, utilService.getUserName());
 
-        return "{\"result\":\""+ "Request declined. " +"\"}";
+        return "{\"result\":\""+ "Request declined. " + result + "\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
 
-        Env envSelected = manageTopics.selectEnvDetails(env);
+        Env envSelected = handleDbRequests.selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
-        List<String> topicsListNew = new ArrayList();
+        List<String> topicsListNew = new ArrayList<>();
 
         int indexOfDots = 0;
         for (String s1 : topicsList) {
@@ -270,18 +237,18 @@ public class TopicControllerService {
         return uniqueList;
     }
 
-    public List<TopicInfo> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
+    public List<List<TopicInfo>> getTopics(String env, String pageNo, String topicNameSearch) throws Exception {
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= manageTopics.selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
+        Env envSelected = handleDbRequests.selectEnvDetails(env);
+        String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
+        List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env);
 
         topicCounter = 0;
 
@@ -301,7 +268,35 @@ public class TopicControllerService {
         topicsList = topicFilteredList;
         Collections.sort(topicsList);
 
-        return getTopicList(topicsList,topicsFromSOT,pageNo);
+        List<TopicInfo> topicListUpdated = getTopicList(topicsList,topicsFromSOT,pageNo);
+
+        if(topicListUpdated!=null && topicListUpdated.size() > 0)
+            return getNewList(topicListUpdated);
+
+        return null;
+    }
+
+    private List<List<TopicInfo>> getNewList(List<TopicInfo> topicsList){
+
+        List<List<TopicInfo>> newList = new ArrayList<>();
+        List<TopicInfo> innerList = new ArrayList<>();
+        int modulusFactor = 3;
+        int i=0;
+        for(TopicInfo topicInfo : topicsList){
+
+            innerList.add(topicInfo);
+
+            if(i%modulusFactor == (modulusFactor-1)) {
+                newList.add(innerList);
+                innerList = new ArrayList<>();
+            }
+            i++;
+        }
+
+        if(innerList.size()>0)
+            newList.add(innerList);
+
+        return newList;
     }
 
     public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
@@ -311,7 +306,7 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= manageTopics.selectEnvDetails(env);
+        Env envSelected= handleDbRequests.selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -347,7 +342,7 @@ public class TopicControllerService {
 
     public List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){
         int totalRecs = topicsList.size();
-        int recsPerPage = 20;
+        int recsPerPage = 21;
 
         int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
         int requestPageNo = Integer.parseInt(pageNo);
@@ -410,7 +405,7 @@ public class TopicControllerService {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = manageTopics.getSyncTopics(env);
+        List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env);
 
         List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;
@@ -420,7 +415,7 @@ public class TopicControllerService {
 
         List<String> teamList = new ArrayList<>();
 
-        manageTopics.selectAllTeamsOfUsers(userDetails.getUsername())
+        handleDbRequests.selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
         //String tmpTopicName = null;
         for(int i=0;i<totalRecs;i++){

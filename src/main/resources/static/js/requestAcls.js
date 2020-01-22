@@ -188,27 +188,30 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             if(!$scope.addAcl.team || !$scope.addAcl.topicname )
             {
-                alert("This topic is not owned by any team. Synchronize the metadata.");
+                //alert("This topic is not owned by any team. Synchronize the metadata.");
+                $scope.alertnote = "This topic is not owned by any team. Synchronize the metadata.";
+                $scope.showAlertToast();
                 return false;
             }
 
             if(($scope.addAcl.acl_ip !=null && $scope.addAcl.acl_ip.length>0) ||
                          ($scope.addAcl.acl_ssl !=null && $scope.addAcl.acl_ssl.length>0)){}
-                         else
-                         {
-                            alert("Please fill in a valid IP address or SSL-CN Name of the Producer/Consumer client");
-                            return;
-                         }
-
-            if (!window.confirm("Are you sure, you would like to create the acl : "
-                +  $scope.addAcl.topicname +
-                "\nEnv : " + $scope.addAcl.envName.name +
-                "\nTeam :" + $scope.addAcl.team +
-                "\nApp :" + $scope.addAcl.app +
-                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \nAcl SSL: " + $scope.addAcl.acl_ssl
-            )) {
+             else
+             {
+                $scope.alertnote = "Please fill in a valid IP address or SSL-CN Name of the Producer/Consumer client";
+                $scope.showAlertToast();
                 return;
-            }
+             }
+
+//            if (!window.confirm("Are you sure, you would like to create the acl : "
+//                +  $scope.addAcl.topicname +
+//                "\nEnv : " + $scope.addAcl.envName.name +
+//                "\nTeam :" + $scope.addAcl.team +
+//                "\nApp :" + $scope.addAcl.app +
+//                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \nAcl SSL: " + $scope.addAcl.acl_ssl
+//            )) {
+//                return;
+//            }
 
             $http({
                 method: "POST",
@@ -218,11 +221,14 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Acl Request : "+output.result;
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
-                    alert("Error : "+error.value);
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
+                    //alert("Error : "+error.value);
                 }
             );
 
@@ -243,6 +249,18 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 }
             );
         }
+
+        $scope.showSuccessToast = function() {
+                  var x = document.getElementById("successbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
+        $scope.showAlertToast = function() {
+                  var x = document.getElementById("alertbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
 
 
 

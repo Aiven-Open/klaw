@@ -36,6 +36,20 @@ public class DeleteDataJdbc {
     @Autowired(required = false)
     UserInfoRepo userInfoRepo;
 
+    public DeleteDataJdbc(){}
+
+    public DeleteDataJdbc(TopicRequestsRepo topicRequestsRepo, SchemaRequestRepo schemaRequestRepo,
+                          EnvRepo envRepo, TeamRepo teamRepo, AclRequestsRepo aclRequestsRepo,
+                          AclRepo aclRepo, UserInfoRepo userInfoRepo){
+        this.topicRequestsRepo = topicRequestsRepo;
+        this.schemaRequestRepo = schemaRequestRepo;
+        this.envRepo = envRepo;
+        this.teamRepo = teamRepo;
+        this.aclRepo = aclRepo;
+        this.aclRequestsRepo = aclRequestsRepo;
+        this.userInfoRepo = userInfoRepo;
+    }
+
     public String deleteTopicRequest(String topicName, String env){
         TopicRequest topicRequest = new TopicRequest();
         TopicRequestPK topicRequestPK = new TopicRequestPK();
@@ -103,13 +117,18 @@ public class DeleteDataJdbc {
                 if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
                         aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
                         aclToBeDeleted.getConsumergroup().equals(allAcl.getConsumergroup()) &&
-                        aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment()) &&
-                        aclToBeDeleted.getAclip().equals(allAcl.getAclip()) &&
-                        aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))
+                        aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment())
+                        )
                 {
-                    LOG.info("acl to be deleted" + allAcl);
-                    aclRepo.delete(allAcl);
-                    break;
+                    if((aclToBeDeleted.getAclip()!=null && allAcl.getAclip()!=null &&
+                            aclToBeDeleted.getAclip().equals(allAcl.getAclip()) ) ||
+                            (aclToBeDeleted.getAclssl() !=null && allAcl.getAclssl()!=null &&
+                                    aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))){
+                        LOG.info("acl to be deleted" + allAcl);
+                        aclRepo.delete(allAcl);
+                        break;
+                    }
+
                 }
             }
         }

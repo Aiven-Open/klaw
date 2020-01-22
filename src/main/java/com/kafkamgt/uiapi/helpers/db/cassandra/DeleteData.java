@@ -26,13 +26,18 @@ public class DeleteData {
     @Value("${custom.cassandradb.keyspace:@null}")
     String keyspace;
 
+    public DeleteData(){}
+
+    public DeleteData(Session session){
+        this.session = session;
+    }
 
     public String deleteTopicRequest(String topicName, String env){
         Clause eqclause = QueryBuilder.eq("topicname",topicName);
         Clause eqclause2 = QueryBuilder.eq("env",env);
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"topic_requests")
-                .where(eqclause);
-               // .and(eqclause2);
+                .where(eqclause)
+                .and(eqclause2);
         session.execute(deleteQuery);
         return "success";
     }
@@ -51,20 +56,15 @@ public class DeleteData {
     }
 
     public String deleteAclRequest(String req_no){
-        LOG.info("In delete acl req "+req_no);
         Clause eqclause = QueryBuilder.eq("req_no",req_no);
-        //Clause eqclause2 = QueryBuilder.eq("topicstatus","created");
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"acl_requests")
                 .where(eqclause);
-                //.and(eqclause2);
         session.execute(deleteQuery);
         return "success";
     }
 
     public String deleteClusterRequest(String clusterId){
-        LOG.info("In delete cluster req "+clusterId);
         Clause eqclause = QueryBuilder.eq("name",clusterId);
-        //Clause eqclause2 = QueryBuilder.eq("topicstatus","created");
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"env")
                 .where(eqclause);
         session.execute(deleteQuery);
@@ -72,7 +72,6 @@ public class DeleteData {
     }
 
     public String deleteUserRequest(String userId){
-
         Clause eqclause = QueryBuilder.eq("userid",userId);
         Delete.Where deleteQuery = QueryBuilder.delete().all().from(keyspace,"users")
                 .where(eqclause);
@@ -90,11 +89,6 @@ public class DeleteData {
     }
 
     public String deletePrevAclRecs(List<Acl> aclReqs){
-
-        //if( (aclListItem.get("resourceName").equals(aclSotItem.getTopicname()) ||
-             //   aclListItem.get("resourceName").equals(aclSotItem.getConsumergroup())) &&
-              //  aclListItem.get("host").equals(acl_host) && aclListItem.get("principle").equals(acl_ssl) &&
-            //    aclSotItem.getTopictype().equals(mp.getTopictype()))
 
         for(Acl aclReq:aclReqs){
             String aclType = aclReq.getTopictype();
@@ -118,7 +112,6 @@ public class DeleteData {
 
             ResultSet res = session.execute(selQuery);
 
-
             for (Row row : res) {
                 String reqNo = row.getString("req_no");
                 LOG.info("SELECT Query done.."+reqNo);
@@ -127,9 +120,6 @@ public class DeleteData {
                         .where(eqclause6);
                 session.execute(delQuery);
             }
-
-
-
         }
 
         return "success";

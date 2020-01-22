@@ -80,9 +80,9 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
         }
 
         $scope.updatedSyncStr="";
-        $scope.getDetails = function(teamselected,topic,consumergroup,acl_ip,acl_ssl,acltype) {
+        $scope.getDetails = function(req_no, teamselected, topic, consumergroup, acl_ip, acl_ssl, acltype) {
 
-            $scope.updatedSyncStr  = $scope.updatedSyncStr + topic + "-----" + teamselected+"-----"
+            $scope.updatedSyncStr  = $scope.updatedSyncStr + req_no + "-----" + topic + "-----" + teamselected+"-----"
             +consumergroup+"-----"+acl_ip+"-----"+acl_ssl+"-----"+acltype+"\n";
            // alert("updatedSyncStr "+$scope.updatedSyncStr);
         }
@@ -133,7 +133,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 			method: "GET",
 			url: "getSyncAcls",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getAcls.envName.name,
+            params: {'env' : $scope.getAcls.envName.name, 'topicnamesearch' : $scope.getAcls.topicnamesearch,
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;

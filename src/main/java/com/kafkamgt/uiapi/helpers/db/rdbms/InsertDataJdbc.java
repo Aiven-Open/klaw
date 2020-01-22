@@ -2,8 +2,6 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.repository.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,42 +13,63 @@ import java.util.Random;
 @Component
 public class InsertDataJdbc {
 
-    private static Logger LOG = LoggerFactory.getLogger(InsertDataJdbc.class);
+    @Autowired(required=false)
+    private UserInfoRepo userInfoRepo;
 
     @Autowired(required=false)
-    UserInfoRepo userInfoRepo;
+    private TeamRepo teamRepo;
 
     @Autowired(required=false)
-    TeamRepo teamRepo;
+    private EnvRepo envRepo;
 
     @Autowired(required=false)
-    EnvRepo envRepo;
+    private ActivityLogRepo activityLogRepo;
 
     @Autowired(required=false)
-    ActivityLogRepo activityLogRepo;
+    private AclRequestsRepo aclRequestsRepo;
 
     @Autowired(required=false)
-    AclRequestsRepo aclRequestsRepo;
+    private TopicRepo topicRepo;
 
     @Autowired(required=false)
-    TopicRepo topicRepo;
+    private AclRepo aclRepo;
 
     @Autowired(required=false)
-    AclRepo aclRepo;
+    private TopicRequestsRepo topicRequestsRepo;
 
     @Autowired(required=false)
-    TopicRequestsRepo topicRequestsRepo;
+    private SchemaRequestRepo schemaRequestRepo;
 
     @Autowired(required=false)
-    SchemaRequestRepo schemaRequestRepo;
+    private MessageSchemaRepo messageSchemaRepo;
 
     @Autowired(required=false)
-    MessageSchemaRepo messageSchemaRepo;
+    private ProductDetailsRepo productDetailsRepo;
 
     @Autowired
-    SelectDataJdbc jdbcSelectHelper;
+    private SelectDataJdbc jdbcSelectHelper;
 
-    public String getRandom(){
+    public InsertDataJdbc(){}
+    public InsertDataJdbc(UserInfoRepo userInfoRepo, TeamRepo teamRepo,
+                          EnvRepo envRepo, ActivityLogRepo activityLogRepo,
+                          TopicRepo topicRepo, AclRepo aclRepo,
+                          TopicRequestsRepo topicRequestsRepo, SchemaRequestRepo schemaRequestRepo,
+                          AclRequestsRepo aclRequestsRepo, MessageSchemaRepo messageSchemaRepo,
+                          SelectDataJdbc jdbcSelectHelper){
+        this.userInfoRepo = userInfoRepo;
+        this.teamRepo = teamRepo;
+        this.envRepo = envRepo;
+        this.activityLogRepo = activityLogRepo;
+        this.topicRepo = topicRepo;
+        this.aclRepo = aclRepo;
+        this.topicRequestsRepo = topicRequestsRepo;
+        this.schemaRequestRepo = schemaRequestRepo;
+        this.aclRequestsRepo = aclRequestsRepo;
+        this.messageSchemaRepo = messageSchemaRepo;
+        this.jdbcSelectHelper = jdbcSelectHelper;
+    }
+
+    private String getRandom(){
         int length = 8;
         String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         Random random = new Random();
@@ -85,9 +104,10 @@ public class InsertDataJdbc {
         activityLog.setUser(topicRequest.getUsername());
         activityLog.setEnv(topicRequest.getEnvironment());
 
-        insertIntoActivityLog(activityLog);
-
-        return "success";
+        if(insertIntoActivityLog(activityLog).equals("success"))
+            return "success";
+        else
+            return "failure";
     }
 
     public String insertIntoTopicSOT(List<Topic> topics, boolean isSyncTopics){
@@ -113,7 +133,6 @@ public class InsertDataJdbc {
                             acl.setTeamname(topic.getTeamname());
 
                             aclRepo.save(acl);
-
                     }
                 }
         );
@@ -121,7 +140,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoActivityLog(ActivityLog activityLog){
+    private String insertIntoActivityLog(ActivityLog activityLog){
 
         activityLogRepo.save(activityLog);
 
@@ -157,19 +176,10 @@ public class InsertDataJdbc {
     public String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls){
 
         acls.forEach(acl->{
-            acl.setReq_no(getRandom());
+
+            if(acl.getReq_no() == null || acl.getReq_no().equals("null"))
+                acl.setReq_no(getRandom());
             aclRepo.save(acl);
-
-            if(isSyncAcls && acl.getTopictype().equals("Producer")){
-                Topic topic = new Topic();
-                TopicPK topicPK = new TopicPK();
-                topicPK.setEnvironment(acl.getEnvironment());
-                topicPK.setTopicname(acl.getTopicname());
-                topic.setTopicPK(topicPK);
-                topic.setTeamname(acl.getTeamname());
-
-                topicRepo.save(topic);
-            }
         });
         return "success";
     }
@@ -232,6 +242,25 @@ public class InsertDataJdbc {
 
     public String insertIntoEnvs(Env env){
         envRepo.save(env);
+        return "success";
+    }
+
+    public String updateLicense(String org, String version, String licenseKey) throws Exception{
+
+        ProductDetails product = new ProductDetails();
+        product.setName(org);
+
+        Optional<ProductDetails> pd = productDetailsRepo.findById(org);
+        if(pd.isPresent())
+            return "success";
+        product = new ProductDetails();
+        product.setName(org);
+        product.setVersion(version);
+        product.setLicensekey(licenseKey);
+        if(licenseKey!=null && licenseKey.length()>0)
+            productDetailsRepo.save(product);
+        else
+            throw new Exception("Invalid license");
         return "success";
     }
 

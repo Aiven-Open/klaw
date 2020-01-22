@@ -1,7 +1,6 @@
 package com.kafkamgt.uiapi.helpers;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.model.PCStream;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
 
 public interface HandleDbRequests {
 
-    public void connectToDb() throws Exception;
+    public void connectToDb(String licenseKey) throws Exception;
 
     /*--------------------Insert */
 
@@ -61,8 +60,6 @@ public interface HandleDbRequests {
     public AclRequests selectAcl(String req_no);
 
     public Topic getTopicTeam(String topicName, String env);
-
-    public List<PCStream> selectTopicStreams(String envSelected);
 
     public List<Env> selectAllKafkaEnvs();
 

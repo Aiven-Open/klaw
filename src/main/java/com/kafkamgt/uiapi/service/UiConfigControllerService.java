@@ -1,9 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.ActivityLog;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,30 +24,13 @@ import java.util.Map;
 @Service
 public class UiConfigControllerService {
 
-    //private static Logger LOG = LoggerFactory.getLogger(UiConfigController.class);
-
     @Autowired
     private UtilService utilService;
 
+    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+
     @Autowired
-    private ManageTopics manageTopics;
-
-    public List<Env> getEnvs() {
-        return manageTopics.selectAllKafkaEnvs();
-    }
-
-    public List<Env> getSchemaRegEnvs() {
-        return manageTopics.selectAllSchemaRegEnvs();
-    }
-
-    public List<Team> getAllTeams() {
-        return manageTopics.selectAllTeamsOfUsers(utilService.getUserName());
-    }
-
-    public List<Team> getAllTeamsSU() {
-
-        return manageTopics.selectAllTeams();
-    }
+    private ClusterApiService clusterApiService;
 
     private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
@@ -54,84 +39,158 @@ public class UiConfigControllerService {
         this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
     }
 
+    @Autowired
+    public void setServices(ClusterApiService clusterApiService, UtilService utilService){
+        this.clusterApiService = clusterApiService;
+        this.utilService = utilService;
+    }
+
+    public Env getClusterApiStatus(){
+        Env env = new Env();
+        env.setHost(clusterApiService.getClusterApiUrl());
+        env.setEnvStatus(clusterApiService.getClusterApiStatus());
+        return env;
+    }
+
+    public List<Env> getEnvs(boolean envStatus) {
+
+        if(envStatus)
+            return handleDbRequests.selectAllKafkaEnvs();
+
+        List<Env> listEnvs = handleDbRequests.selectAllKafkaEnvs();
+        List<Env> newListEnvs = new ArrayList<>();
+        for(Env oneEnv: listEnvs){
+            String status;
+            if(oneEnv.getProtocol().equalsIgnoreCase("plain"))
+                status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort());
+            else
+                status = "NOT_KNOWN";
+            oneEnv.setEnvStatus(status);
+            newListEnvs.add(oneEnv);
+        }
+
+        return newListEnvs;
+    }
+
+    public List<Env> getSchemaRegEnvs() {
+        return handleDbRequests.selectAllSchemaRegEnvs();
+    }
+
+    public List<Env> getSchemaRegEnvsStatus() {
+        List<Env> listEnvs = handleDbRequests.selectAllSchemaRegEnvs();
+        List<Env> newListEnvs = new ArrayList<>();
+        for(Env oneEnv: listEnvs){
+            String status = null;
+           if (oneEnv.getProtocol().equalsIgnoreCase("plain"))
+                status = clusterApiService.getSchemaClusterStatus(oneEnv.getHost() + ":" + oneEnv.getPort());
+            else
+                status = "NOT_KNOWN";
+            oneEnv.setEnvStatus(status);
+            newListEnvs.add(oneEnv);
+        }
+
+        return newListEnvs;
+    }
+
+    public List<Team> getAllTeams() {
+        return handleDbRequests.selectAllTeamsOfUsers(utilService.getUserName());
+    }
+
+    public List<Team> getAllTeamsSU() {
+        return handleDbRequests.selectAllTeams();
+    }
+
     public String addNewEnv(Env newEnv){
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
         newEnv.setTrustStorePwd("");
         newEnv.setKeyPwd("");
         newEnv.setKeyStorePwd("");
         newEnv.setTrustStoreLocation("");
         newEnv.setKeyStoreLocation("");
-        String execRes = manageTopics.addNewEnv(newEnv);
-
-        return "{\"result\":\""+execRes+"\"}";
+        try {
+            return "{\"result\":\""+handleDbRequests.addNewEnv(newEnv)+"\"}";
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
     }
 
     public String deleteCluster(String clusterId){
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
-        String execRes = manageTopics.deleteClusterRequest(clusterId);
-
-        return "{\"result\":\""+execRes+"\"}";
+        try {
+            return "{\"result\":\""+handleDbRequests.deleteClusterRequest(clusterId)+"\"}";
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
     }
 
     public String deleteTeam(String teamId){
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
         String envAddResult = "{\"result\":\"Your team cannot be deleted. Try deleting other team.\"}";
 
-        if(manageTopics.getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
+        if(handleDbRequests.getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
             return envAddResult;
 
-        String execRes = manageTopics.deleteTeamRequest(teamId);
-        envAddResult = "{\"result\":\""+execRes+"\"}";
-
-        return envAddResult;
+        try {
+            return "{\"result\":\""+handleDbRequests.deleteTeamRequest(teamId)+"\"}";
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
     }
 
     public String deleteUser(String userId){
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
         String envAddResult = "{\"result\":\"User cannot be deleted\"}";
 
         if(userId.equals("superuser") || utilService.getUserName().equals(userId))
             return envAddResult;
 
-        String execRes = manageTopics.deleteUserRequest(userId);
-        envAddResult = "{\"result\":\""+execRes+"\"}";
-
-        return envAddResult;
+        try {
+            return "{\"result\":\""+handleDbRequests.deleteUserRequest(userId)+"\"}";
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
     }
 
     public String addNewUser(UserInfo newUser){
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
-        PasswordEncoder encoder =
-                PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername()).password(encoder.encode(newUser.getPwd()))
-                .roles(newUser.getRole()).build());
+        try {
+            PasswordEncoder encoder =
+                    PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-        String execRes = manageTopics.addNewUser(newUser);
+            inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername()).password(encoder.encode(newUser.getPwd()))
+                    .roles(newUser.getRole()).build());
 
-        return "{\"result\":\""+execRes+"\"}";
+           return "{\"result\":\""+handleDbRequests.addNewUser(newUser)+"\"}";
+        }catch(Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
     }
 
     public String addNewTeam(Team newTeam){
 
         if(!utilService.checkAuthorizedSU())
-            return "{ \"result\": \"Not Authorized\" }";
+            return "{\"result\":\"Not Authorized\"}";
 
-        return "{\"result\":\""+manageTopics.addNewTeam(newTeam)+"\"}";
+        try {
+            return "{\"result\":\"" + handleDbRequests.addNewTeam(newTeam) + "\"}";
+        }catch (Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
     }
 
     public String changePwd(String changePwd){
@@ -143,9 +202,62 @@ public class UiConfigControllerService {
 
         String pwdChange = (String)pwdMap.get("pwd");
 
-        PasswordEncoder encoder =
-                PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        UserDetails ud = new UserDetails() {
+        try {
+            UserDetails userDetailsUpdated = getUserDetails(userDetails,
+                    PasswordEncoderFactories.createDelegatingPasswordEncoder(),
+                    pwdChange);
+            inMemoryUserDetailsManager.updateUser(userDetailsUpdated);
+
+            return "{\"result\":\"" + handleDbRequests.updatePassword(userDetails.getUsername(), pwdChange) + "\"}";
+        }catch(Exception e){
+            return "{\"result\":\"failure "+e.getMessage()+"\"}";
+        }
+    }
+
+    public List<UserInfo> showUsers(){
+
+        return handleDbRequests.selectAllUsersInfo();
+    }
+
+    public UserInfo getMyProfileInfo(){
+
+        return handleDbRequests.getUsersInfo(utilService.getUserName());
+    }
+
+    public List<ActivityLog> showActivityLog(String env, String pageNo){
+
+        List<ActivityLog> origActivityList = handleDbRequests.selectActivityLog(utilService.getUserName(), env);
+        List<ActivityLog> newList = new ArrayList<>();
+
+        if(origActivityList!=null && origActivityList.size() > 0) {
+            int totalRecs = origActivityList.size();
+            int recsPerPage = 20;
+
+            int requestPageNo = Integer.parseInt(pageNo);
+            int startVar = (requestPageNo - 1) * recsPerPage;
+            int lastVar = (requestPageNo) * (recsPerPage);
+
+            int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
+
+            List<String> numList = new ArrayList<>();
+            for (int k = 1; k <= totalPages; k++) {
+                numList.add("" + k);
+            }
+            for (int i = 0; i < totalRecs; i++) {
+                ActivityLog activityLog = origActivityList.get(i);
+                if (i >= startVar && i < lastVar) {
+                    activityLog.setAllPageNos(numList);
+                    activityLog.setTotalNoPages("" + totalPages);
+
+                    newList.add(activityLog);
+                }
+            }
+        }
+        return newList;
+    }
+
+    private UserDetails getUserDetails(UserDetails userDetails, PasswordEncoder encoder, String pwdChange){
+        return new UserDetails() {
             @Override
             public Collection<? extends GrantedAuthority> getAuthorities() {
                 return userDetails.getAuthorities();
@@ -181,54 +293,5 @@ public class UiConfigControllerService {
                 return userDetails.isEnabled();
             }
         };
-
-        inMemoryUserDetailsManager.updateUser(ud);
-
-        String execRes = manageTopics.updatePassword(userDetails.getUsername(),pwdChange);
-
-        return "{\"result\":\""+execRes+"\"}";
     }
-
-    public List<UserInfo> showUsers(){
-
-        return manageTopics.selectAllUsersInfo();
-    }
-
-    public UserInfo getMyProfileInfo(){
-
-        return manageTopics.getUsersInfo(utilService.getUserName());
-    }
-
-    public List<ActivityLog> showActivityLog(String env, String pageNo){
-
-        List<ActivityLog> origActivityList = manageTopics.selectActivityLog(utilService.getUserName(), env);
-
-        int totalRecs = origActivityList.size();
-        int recsPerPage = 20;
-
-        int requestPageNo = Integer.parseInt(pageNo);
-        int startVar = (requestPageNo-1) * recsPerPage;
-        int lastVar = (requestPageNo) * (recsPerPage);
-
-        int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
-
-        List<ActivityLog> newList = new ArrayList<>();
-
-        List<String> numList = new ArrayList<>();
-        for (int k = 1; k <= totalPages; k++) {
-            numList.add("" + k);
-        }
-         for(int i=0;i<totalRecs;i++){
-             ActivityLog activityLog = origActivityList.get(i);
-            if(i>=startVar && i<lastVar) {
-                activityLog.setAllPageNos(numList);
-                activityLog.setTotalNoPages("" + totalPages);
-
-                newList.add(activityLog);
-            }
-        }
-        return newList;
-    }
-
-
 }

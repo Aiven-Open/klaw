@@ -16,31 +16,41 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
+        $scope.showSuccessToast = function() {
+          var x = document.getElementById("successbar");
+          x.className = "show";
+          setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+        }
+
+        $scope.showAlertToast = function() {
+                  var x = document.getElementById("alertbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
         $scope.addTopic = function() {
 
             var serviceInput = {};
 
             if($scope.addTopic.topicpartitions ==null && $scope.addTopic.topicpartitions.length<0){
-                alert("Please fill in topic partitions");
+                //alert("Please fill in topic partitions");
+                $scope.alertnote = "Please fill in topic partitions.";
+                $scope.showAlertToast();
                 return;
             }
 
             if(isNaN($scope.addTopic.topicpartitions)){
-                alert("Please fill in a valid number for partitions for topic");
+                //alert("Please fill in a valid number for partitions for topic");
+                $scope.alertnote = "Please fill in a valid number for partitions for topic.";
+                $scope.showAlertToast();
                 return;
             }
 
-//            if(($scope.addTopic.acl_ip !=null && $scope.addTopic.acl_ip.length>0) ||
-//             ($scope.addTopic.acl_ssl !=null && $scope.addTopic.acl_ssl.length>0)){}
-//             else
-//             {
-//                alert("Please fill in a valid IP address or SSL-CN Name of the Producer client");
-//                return;
-//             }
-
              if(!$scope.addTopic.team)
               {
-                 alert("Please select your team.");
+                 //alert("Please select your team.");
+                 $scope.alertnote = "Please select your team.";
+                 $scope.showAlertToast();
                  return;
               }
 
@@ -51,15 +61,15 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['appname'] = $scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
 
-            if (!window.confirm("Are you sure, you would like to request a topic ?"+
-                "\nTopic : " +  $scope.addTopic.topicname  +
-                "\nPartitions : " + $scope.addTopic.topicpartitions +
-                "\nEnv : " + $scope.addTopic.envName.name +
-                "\nTeam : " + $scope.addTopic.team.teamname +
-                "\nApp : " + $scope.addTopic.app
-                )) {
-                return;
-            }
+//            if (!window.confirm("Are you sure, you would like to request a topic ?"+
+//                "\nTopic : " +  $scope.addTopic.topicname  +
+//                "\nPartitions : " + $scope.addTopic.topicpartitions +
+//                "\nEnv : " + $scope.addTopic.envName.name +
+//                "\nTeam : " + $scope.addTopic.team.teamname +
+//                "\nApp : " + $scope.addTopic.app
+//                )) {
+//                return;
+//            }
 
             $http({
                 method: "POST",
@@ -69,6 +79,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Topic Request : "+output.result;
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {

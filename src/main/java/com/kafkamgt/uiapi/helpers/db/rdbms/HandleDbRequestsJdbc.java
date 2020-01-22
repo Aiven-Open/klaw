@@ -2,22 +2,22 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
-import com.kafkamgt.uiapi.model.PCStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 import java.util.HashMap;
 import java.util.List;
 
 @Configuration
-@PropertySource(value= {"classpath:application.properties"})
 public class HandleDbRequestsJdbc implements HandleDbRequests {
 
-    private static Logger LOG = LoggerFactory.getLogger(HandleDbRequestsJdbc.class);
+    @Value("${custom.dbscripts.execution:auto}")
+    String dbScriptsExecution;
+
+    @Value("${custom.dbscripts.dropall_recreate:false}")
+    String dbScriptsDropAllRecreate;
 
     @Autowired
     SelectDataJdbc jdbcSelectHelper;
@@ -34,19 +34,29 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Autowired
     LoadDbJdbc loadDbJdbc;
 
-    @Value("${rdbms.host:#{null}}")
-    String jdbcConnHost;
+    @Value("${custom.org.name}")
+    String companyInfo;
 
-    @Value("${rdbms.port:#{0}}")
-    int jdbcConnPort;
+    @Value("${custom.kafkawize.version:3.5}")
+    String kafkawizeVersion;
 
-    @Value("${rdbms.username:#{null}}")
-    String jdbcUsername;
+    @Autowired
+    Environment environment;
 
-    @Value("${rdbms.pwd:#{null}}")
-    String jdbcConnPwd;
-
-    public void connectToDb() throws Exception {
+    public void connectToDb(String licenseKey) throws Exception {
+        if(dbScriptsExecution.equals("auto")){
+            if(dbScriptsDropAllRecreate.equals("true"))
+                loadDbJdbc.dropTables();
+            loadDbJdbc.createTables();
+            loadDbJdbc.insertData();
+            if(! (environment.getActiveProfiles().length >0
+                    && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+                if (licenseKey != null && licenseKey.trim().length() > 0)
+                    jdbcInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
+                else
+                    throw new Exception("Invalid license");
+            }
+        }
     }
 
     /*--------------------Insert */
@@ -149,10 +159,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     public Topic getTopicTeam(String topicName, String env){
         return jdbcSelectHelper.selectTopicDetails(topicName, env);
-    }
-
-    public List<PCStream> selectTopicStreams(String envSelected){
-        return jdbcSelectHelper.selectTopicStreams(envSelected);
     }
 
     public List<Env> selectAllKafkaEnvs(){

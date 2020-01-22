@@ -4,7 +4,6 @@ package com.kafkamgt.uiapi.controller;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import com.kafkamgt.uiapi.model.PCStream;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.service.TopicControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
 @RestController
 @RequestMapping("/")
 public class TopicController {
@@ -23,13 +21,8 @@ public class TopicController {
     @Autowired
     private TopicControllerService topicControllerService;
 
-    @Autowired
-    public TopicController(TopicControllerService topicControllerService){
-        this.topicControllerService = topicControllerService;
-    }
-
     @PostMapping(value = "/createTopics")
-    public ResponseEntity<String> createTopics(@RequestBody TopicRequest addTopicRequest) {
+    public ResponseEntity<String> createTopics(@RequestBody TopicRequest addTopicRequest) throws KafkawizeException {
         String result = topicControllerService.createTopics(addTopicRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -41,16 +34,8 @@ public class TopicController {
         return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getTopicStreams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<PCStream>> getTopicStreams(@RequestParam ("env") String envSelected,
-                                                          @RequestParam("pageNo") String pageNo,
-                                                          @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) {
-        return new ResponseEntity<>(topicControllerService.getTopicStreams(envSelected, pageNo, topicNameSearch), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getTopicRequests() {
-
         return new ResponseEntity<>(topicControllerService.getTopicRequests(), HttpStatus.OK);
     }
 
@@ -61,31 +46,31 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getCreatedTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicRequest>> getCreatedTopicRequests() {
+    public ResponseEntity<List<List<TopicRequest>>> getCreatedTopicRequests() {
 
         return new ResponseEntity<>(topicControllerService.getCreatedTopicRequests(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/deleteTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> deleteTopicRequests(@RequestParam("topicName") String topicName) {
-
         return new ResponseEntity<>(topicControllerService.deleteTopicRequests(topicName), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/execTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
-
-        return new ResponseEntity<>(topicControllerService.approveTopicRequests(topicName), HttpStatus.OK);
+    @PostMapping(value = "/execTopicRequests", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> approveTopicRequests(@RequestParam("topicName") String topicName,
+                                                       @RequestParam("env") String env) throws KafkawizeException {
+        return new ResponseEntity<>(topicControllerService.approveTopicRequests(topicName, env), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/execTopicRequestsDecline", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> declineTopicRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
+    @PostMapping(value = "/execTopicRequestsDecline", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> declineTopicRequests(@RequestParam("topicName") String topicName,
+                                                       @RequestParam("env") String env) throws KafkawizeException {
 
-        return new ResponseEntity<>(topicControllerService.declineTopicRequests(topicName), HttpStatus.OK);
+        return new ResponseEntity<>(topicControllerService.declineTopicRequests(topicName, env), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicInfo>> getTopics(@RequestParam("env") String env,
+    public ResponseEntity<List<List<TopicInfo>>> getTopics(@RequestParam("env") String env,
                                                      @RequestParam("pageNo") String pageNo,
                                                      @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
 
