@@ -375,11 +375,14 @@
 								<div ng-if="statusauthexectopics=='Authorized'">
 								<div class="row" align="center">
 									<!--<label class="col-md-3 control-label">Select Environment</label>-->
-									<div class="col-md-12">
+									<div class="col-md-5">
 										<select ng-change="getAcls(1);" ng-model="getAcls.envName"
 												ng-options="env as env.name for env in allenvs" class="form-control populate">
 											<option value="" selected="selected">Select Cluster</option>
 										</select>
+									</div>
+									<div class="col-md-7">
+										<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getAcls(1);" ng-model="getAcls.topicnamesearch">
 									</div>
 
 								</div>
@@ -402,7 +405,7 @@
 										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
 											<!--<td>{{ resultBrowset.sequence}}</td>-->
 											<td>
-												<select class="form-control populate" ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicname,
+												<select class="form-control populate" ng-change="getDetails(resultBrowset.req_no, resultBrowset.teamname,resultBrowset.topicname,
 											resultBrowset.consumergroup,resultBrowset.acl_ip,resultBrowset.acl_ssl,resultBrowset.topictype)"
 														ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">

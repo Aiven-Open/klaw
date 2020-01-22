@@ -76,12 +76,11 @@ public class AclControllerServiceTest {
     @Test
     public void updateSyncAcls() {
         String topicName = "testtopic";
-        String updateSyncAcls = topicName + "-----" + "Team1" + "-----"
+        String updateSyncAcls = "fdsDZD34"+ "-----" + topicName + "-----" + "Team1" + "-----"
                 + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(handleDbRequests.deletePrevAclRecs(anyList())).thenReturn("success");
         when(handleDbRequests.addToSyncacls(anyList())).thenReturn("success");
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
@@ -107,13 +106,13 @@ public class AclControllerServiceTest {
     public void updateSyncAclsFailure2() {
         String topicName = "testtopic";
 
-        String updateSyncAcls = topicName + "-----" + "Team1" + "-----"
+        String updateSyncAcls = "fdsDZD34"+ "-----" + topicName + "-----" + "Team1" + "-----"
                 + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
 
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(handleDbRequests.deletePrevAclRecs(anyList())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -134,13 +133,12 @@ public class AclControllerServiceTest {
     public void updateSyncAclsFailure4() {
         String topicName = "testtopic";
 
-        String updateSyncAcls = topicName + "-----" + "Team1" + "-----"
+        String updateSyncAcls = "fdsDZD34"+ "-----" + topicName + "-----" + "Team1" + "-----"
                 + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
 
         String envSelected = "DEV";
 
         when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(handleDbRequests.deletePrevAclRecs(anyList())).thenReturn("success");
         when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
@@ -319,7 +317,7 @@ public class AclControllerServiceTest {
 
     @Test
     public void getAclsSyncTrue2() throws KafkawizeException {
-        String envSelected = "DEV", pageNo = "1", topicNameSearch = "demo";
+        String envSelected = "DEV", pageNo = "1", topicNameSearch = "test";
         boolean isSyncAcls = true;
 
         when(utilService.getUserName()).thenReturn("uiuser1");

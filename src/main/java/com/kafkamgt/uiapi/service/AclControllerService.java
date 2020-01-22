@@ -49,7 +49,7 @@ public class AclControllerService {
         if(updateSyncAcls != null)
             strTkr = new StringTokenizer(updateSyncAcls,"\n");
 
-        String topicSel, teamSelected, consumerGroup, aclIp, aclSsl, aclType, tmpToken;
+        String reqNo, topicSel, teamSelected, consumerGroup, aclIp, aclSsl, aclType, tmpToken;
         List<Acl> listTopics = new ArrayList<>();
         Acl t;
 
@@ -60,6 +60,7 @@ public class AclControllerService {
             while(strTkrIn.hasMoreTokens()){
                 t = new Acl();
 
+                reqNo = strTkrIn.nextToken();
                 topicSel = strTkrIn.nextToken();
                 teamSelected = strTkrIn.nextToken();
                 consumerGroup = strTkrIn.nextToken();
@@ -67,6 +68,7 @@ public class AclControllerService {
                 aclSsl = strTkrIn.nextToken();
                 aclType = strTkrIn.nextToken();
 
+                t.setReq_no(reqNo);
                 t.setTopicname(topicSel);
                 t.setConsumergroup(consumerGroup);
                 t.setAclip(aclIp);
@@ -81,18 +83,13 @@ public class AclControllerService {
 
         try{
             if(listTopics.size()>0){
-                String deleteResult = handleDbRequests.deletePrevAclRecs(listTopics);
-
-                if(deleteResult.equals("success")) {
-                    return "{\"result\":\""+handleDbRequests.addToSyncacls(listTopics)+"\"}";
-                }
+                return "{\"result\":\""+handleDbRequests.addToSyncacls(listTopics)+"\"}";
             }
             else
                 return "{\"result\":\"No records to update\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
-        return "{\"result\":\"failure\"}";
     }
 
     public List<AclRequests> getAclRequests() {
@@ -213,7 +210,13 @@ public class AclControllerService {
         List<HashMap<String, String>> filteredList = aclList.stream()
                 .filter(hItem->{
                     if(isSync){
-                        if (hItem.get("resourceType").equals("TOPIC"))
+                        if(topicNameSearch!=null){
+                            if (hItem.get("resourceType").equals("TOPIC") && hItem.get("resourceName").contains(topicNameSearch))
+                                return true;
+                            else
+                                return false;
+                        }
+                        else if (hItem.get("resourceType").equals("TOPIC"))
                             return true;
                         else
                             return false;

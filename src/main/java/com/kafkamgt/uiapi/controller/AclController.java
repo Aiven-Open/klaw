@@ -67,7 +67,8 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo) throws KafkawizeException {
-        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, null, true), HttpStatus.OK);
+    public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
+                                                     @RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
+        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch, true), HttpStatus.OK);
     }
 }

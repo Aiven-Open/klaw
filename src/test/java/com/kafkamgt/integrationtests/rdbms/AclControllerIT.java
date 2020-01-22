@@ -261,7 +261,8 @@ public class AclControllerIT {
     public void test9() throws Exception {
 
         String topicName = "testtopic";
-        String updateSyncAcls = topicName + "-----" + "Team1" + "-----"
+        String updateSyncAcls = "fdsDZD34"+ "-----" +
+                topicName + "-----" + "Team1" + "-----"
                 + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
         String envSelected = "DEV";
 

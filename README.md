@@ -13,7 +13,7 @@ Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.ht
 
 ![ImageFig8](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseTopics.JPG)
 
-![ImageFig7](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseAcls.JPG)
+![ImageFig7](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewAcls.JPG)
 
 ![ImageFig12](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ProducersConsumers.JPG)
 

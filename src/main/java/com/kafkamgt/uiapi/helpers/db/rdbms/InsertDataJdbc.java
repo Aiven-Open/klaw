@@ -176,7 +176,9 @@ public class InsertDataJdbc {
     public String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls){
 
         acls.forEach(acl->{
-            acl.setReq_no(getRandom());
+
+            if(acl.getReq_no() == null || acl.getReq_no().equals("null"))
+                acl.setReq_no(getRandom());
             aclRepo.save(acl);
         });
         return "success";
