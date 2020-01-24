@@ -1,7 +1,7 @@
 /* Create */
 
 
-Create table if not exists kafkametadb.topic_requests(
+Create table if not exists topic_requests(
 	topicname varchar(150),
 	partitions varchar(3),
 	replicationfactor varchar(2),
@@ -20,7 +20,7 @@ Create table if not exists kafkametadb.topic_requests(
 	PRIMARY KEY(topicname,env)
 );
 
-Create table if not exists kafkametadb.topics(
+Create table if not exists topics(
 	topicname varchar(150),
 	env varchar(50),
 	teamname varchar(150),
@@ -28,7 +28,7 @@ Create table if not exists kafkametadb.topics(
 	PRIMARY KEY(topicname,env)
 );
 
-Create table if not exists kafkametadb.acl_requests(
+Create table if not exists acl_requests(
 	req_no varchar(20) PRIMARY KEY,
 	topicname varchar(150),
 	env varchar(50),
@@ -47,7 +47,7 @@ Create table if not exists kafkametadb.acl_requests(
 	exectime timestamp
 );
 
-Create table if not exists kafkametadb.acls(
+Create table if not exists acls(
 	req_no varchar(20) PRIMARY KEY,
 	topicname varchar(150),
 	env varchar(50),
@@ -58,7 +58,7 @@ Create table if not exists kafkametadb.acls(
 	acl_ssl varchar(200)
 );
 
-Create table if not exists kafkametadb.schema_requests(
+Create table if not exists schema_requests(
 	topicname varchar(150),
 	env varchar(50),
 	teamname varchar(150),
@@ -74,7 +74,7 @@ Create table if not exists kafkametadb.schema_requests(
 	PRIMARY KEY(topicname,versionschema,env)
 );
 
-Create table if not exists kafkametadb.avroschemas(
+Create table if not exists avroschemas(
 	topicname varchar(150),
 	env varchar(50),
 	teamname varchar(150),
@@ -83,7 +83,7 @@ Create table if not exists kafkametadb.avroschemas(
 	PRIMARY KEY(topicname,versionschema,env)
 );
 
-Create table if not exists kafkametadb.teams(
+Create table if not exists teams(
 	team varchar(150),
 	app varchar(150),
 	teammail varchar(50),
@@ -92,7 +92,7 @@ Create table if not exists kafkametadb.teams(
 	PRIMARY KEY(team,app)
 );
 
-Create table if not exists kafkametadb.users(
+Create table if not exists users(
 	userid varchar(20),
 	pwd varchar(50),
 	team varchar(150),
@@ -101,7 +101,7 @@ Create table if not exists kafkametadb.users(
 	PRIMARY KEY(userid)
 );
 
-Create table if not exists kafkametadb.env(
+Create table if not exists env(
 	name varchar(50),
 	host varchar(20),
 	port varchar(6),
@@ -116,13 +116,13 @@ Create table if not exists kafkametadb.env(
 	PRIMARY KEY(name)
 );
 
-Create table if not exists kafkametadb.productdetails(
+Create table if not exists productdetails(
 	name varchar(9),
 	version varchar(10),
 	PRIMARY KEY(name)
 );
 
-Create table if not exists kafkametadb.activitylog(
+Create table if not exists activitylog(
 	req_no varchar(20) PRIMARY KEY,
 	activityname varchar(25),
 	activitytype varchar(25),
@@ -132,3 +132,5 @@ Create table if not exists kafkametadb.activitylog(
 	team varchar(150),
 	env varchar(50)
 );
+
+commit;
