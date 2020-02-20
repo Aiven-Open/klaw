@@ -40,6 +40,9 @@ public class ClusterApiServiceTest {
     UtilService utilService;
 
     @Mock
+    ManageDatabase manageDatabase;
+
+    @Mock
     RestTemplate restTemplate;
 
     ClusterApiService clusterApiService;
@@ -57,7 +60,8 @@ public class ClusterApiServiceTest {
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
-        ReflectionTestUtils.setField(clusterApiService, "handleDbRequests", handleDbRequests);
+        ReflectionTestUtils.setField(clusterApiService, "manageDatabase", manageDatabase);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
     @After

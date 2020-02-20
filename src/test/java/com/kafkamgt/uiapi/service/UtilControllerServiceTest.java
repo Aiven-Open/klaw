@@ -43,6 +43,9 @@ public class UtilControllerServiceTest {
     HttpServletResponse httpServletResponse;
 
     @Mock
+    ManageDatabase manageDatabase;
+
+    @Mock
     Authentication authentication;
 
     UtilControllerService utilControllerService;
@@ -50,7 +53,8 @@ public class UtilControllerServiceTest {
     @Before
     public void setUp() {
         this.utilControllerService = new UtilControllerService(utilService);
-        ReflectionTestUtils.setField(utilControllerService, "handleDbRequests", handleDbRequests);
+        ReflectionTestUtils.setField(utilControllerService, "manageDatabase", manageDatabase);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
     @Test

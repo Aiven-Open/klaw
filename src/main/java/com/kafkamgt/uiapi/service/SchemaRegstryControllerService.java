@@ -16,7 +16,8 @@ import java.util.StringTokenizer;
 @Slf4j
 public class SchemaRegstryControllerService {
 
-    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+    @Autowired
+    ManageDatabase manageDatabase;
 
     @Autowired
     ClusterApiService clusterApiService;
@@ -31,12 +32,12 @@ public class SchemaRegstryControllerService {
     }
 
     public List<SchemaRequest> getSchemaRequests() {
-        return handleDbRequests.getAllSchemaRequests(utilService.getUserName());
+        return manageDatabase.getHandleDbRequests().getAllSchemaRequests(utilService.getUserName());
     }
 
     public List<SchemaRequest> getCreatedSchemaRequests() {
 
-        return handleDbRequests.getCreatedSchemaRequests(utilService.getUserName());
+        return manageDatabase.getHandleDbRequests().getCreatedSchemaRequests(utilService.getUserName());
     }
 
      public String deleteSchemaRequests(String topicName) {
@@ -47,7 +48,7 @@ public class SchemaRegstryControllerService {
             String schemaVersion = strTkr.nextToken();
             String env = strTkr.nextToken();
 
-            return handleDbRequests.deleteSchemaRequest(topicName,schemaVersion, env);
+            return manageDatabase.getHandleDbRequests().deleteSchemaRequest(topicName,schemaVersion, env);
         }catch (Exception e){
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
@@ -60,13 +61,13 @@ public class SchemaRegstryControllerService {
         String schemaversion = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        SchemaRequest schemaRequest = handleDbRequests.selectSchemaRequest(topicName,schemaversion,env);
+        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,schemaversion,env);
 
         ResponseEntity<String> response = clusterApiService.postSchema(schemaRequest, env, topicName);
 
         if(response.getBody().contains("id\":")) {
             try {
-                return handleDbRequests.updateSchemaRequest(schemaRequest, utilService.getUserName());
+                return manageDatabase.getHandleDbRequests().updateSchemaRequest(schemaRequest, utilService.getUserName());
             }catch (Exception e){
                 return "{\"result\":\"failure "+e.toString()+"\"}";
             }
@@ -80,7 +81,7 @@ public class SchemaRegstryControllerService {
 
         schemaRequest.setUsername(utilService.getUserName());
         try {
-            return handleDbRequests.requestForSchema(schemaRequest);
+            return manageDatabase.getHandleDbRequests().requestForSchema(schemaRequest);
         }catch (Exception e){
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }

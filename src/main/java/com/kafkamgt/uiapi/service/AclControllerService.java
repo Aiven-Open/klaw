@@ -19,8 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class AclControllerService {
 
-    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+    //private HandleDbRequests manageDatabase.getHandleDbRequests() = null;//ManageDatabase.manageDatabase.getHandleDbRequests();
 
+    @Autowired
+    ManageDatabase manageDatabase;
+    
     @Autowired
     private UtilService utilService;
 
@@ -36,7 +39,7 @@ public class AclControllerService {
 
         aclReq.setUsername(utilService.getUserName());
 
-        String execRes = handleDbRequests.requestForAcl(aclReq);
+        String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
         return "{\"result\":\""+execRes+"\"}";
     }
 
@@ -83,7 +86,7 @@ public class AclControllerService {
 
         try{
             if(listTopics.size()>0){
-                return "{\"result\":\""+handleDbRequests.addToSyncacls(listTopics)+"\"}";
+                return "{\"result\":\""+manageDatabase.getHandleDbRequests().addToSyncacls(listTopics)+"\"}";
             }
             else
                 return "{\"result\":\"No records to update\"}";
@@ -93,12 +96,12 @@ public class AclControllerService {
     }
 
     public List<AclRequests> getAclRequests() {
-        return handleDbRequests.getAllAclRequests(utilService.getUserName());
+        return manageDatabase.getHandleDbRequests().getAllAclRequests(utilService.getUserName());
     }
 
     public List<List<AclRequests>> getCreatedAclRequests() {
 
-        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(handleDbRequests.getCreatedAclRequests(utilService.getUserName()));
+        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(manageDatabase.getHandleDbRequests().getCreatedAclRequests(utilService.getUserName()));
 
         return updatedAclReqs;
     }
@@ -128,7 +131,7 @@ public class AclControllerService {
 
     public String deleteAclRequests(String req_no) {
         try {
-            return "{\"result\":\""+handleDbRequests.deleteAclRequest(req_no)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().deleteAclRequest(req_no)+"\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
@@ -139,7 +142,7 @@ public class AclControllerService {
         if(!utilService.checkAuthorizedAdmin())
             return "{\"result\":\"Not Authorized\"}";
 
-        AclRequests aclReq = handleDbRequests.selectAcl(req_no);
+        AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
         if(aclReq.getReq_no() != null){
             ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
 
@@ -147,7 +150,7 @@ public class AclControllerService {
 
             try {
                 if (response.getBody().equals("success"))
-                    updateAclReqStatus = handleDbRequests.updateAclRequest(aclReq, utilService.getUserName());
+                    updateAclReqStatus = manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, utilService.getUserName());
                 else
                     return "{\"result\":\"failure\"}";
             }catch(Exception e){
@@ -164,12 +167,12 @@ public class AclControllerService {
         if(!utilService.checkAuthorizedAdmin())
             return "{\"result\":\"Not Authorized\"}";
 
-        AclRequests aclReq = handleDbRequests.selectAcl(req_no);
+        AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
         String updateAclReqStatus ;
 
         if(aclReq.getReq_no() != null){
             try {
-                 updateAclReqStatus = handleDbRequests.declineAclRequest(aclReq, utilService.getUserName());
+                 updateAclReqStatus = manageDatabase.getHandleDbRequests().declineAclRequest(aclReq, utilService.getUserName());
                  return "{\"result\":\""+updateAclReqStatus+"\"}";
             }catch(Exception e){
                  return "{\"result\":\"failure "+e.toString()+"\"}";
@@ -233,7 +236,7 @@ public class AclControllerService {
     }
 
     private List<Acl> getAclsFromSOT(String env, String topicNameSearch){
-        List<Acl> aclsFromSOT = handleDbRequests.getSyncAcls(env);
+        List<Acl> aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env);
 
         List<Acl> topicFilteredList = aclsFromSOT;
         // Filter topics on topic name for search
@@ -259,7 +262,7 @@ public class AclControllerService {
             if(!utilService.checkAuthorizedSU())
                 return null;
 
-        Env envSelected= handleDbRequests.selectEnvDetails(env);
+        Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<HashMap<String,String>> aclList = getAclListFromCluster(bootstrapHost, isSyncAcls, topicNameSearch);
@@ -284,7 +287,7 @@ public class AclControllerService {
         List<String> teamList = new ArrayList<>();
 
         if(isSyncAcls) {
-            handleDbRequests.selectAllTeamsOfUsers(utilService.getUserName())
+            manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(utilService.getUserName())
                     .forEach(teamS -> teamList.add(teamS.getTeamname()));
         }
 

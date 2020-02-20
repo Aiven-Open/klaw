@@ -46,6 +46,9 @@ public class UiConfigControllerServiceTest {
     UserDetails userDetails;
 
     @Mock
+    ManageDatabase manageDatabase;
+
+    @Mock
     InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
     Env env;
@@ -61,7 +64,8 @@ public class UiConfigControllerServiceTest {
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
-        ReflectionTestUtils.setField(uiConfigControllerService, "handleDbRequests", handleDbRequests);
+        ReflectionTestUtils.setField(uiConfigControllerService, "manageDatabase", manageDatabase);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
     @After

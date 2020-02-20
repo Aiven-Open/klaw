@@ -26,7 +26,7 @@ public class ManageDatabase {
     @Value("${custom.db.storetype}")
     String dbStore;
 
-    public static HandleDbRequests handleDbRequests;
+    public HandleDbRequests handleDbRequests;
 
     @Autowired
     UtilService utils;
@@ -71,6 +71,10 @@ public class ManageDatabase {
         if(UtilService.licenceLoaded)
             licenseKey = licenseMap.get("LICENSE_KEY");
             handleDbRequests.connectToDb(licenseKey);
+    }
+
+    public HandleDbRequests getHandleDbRequests(){
+        return handleDbRequests;
     }
 
     @Bean()

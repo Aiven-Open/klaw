@@ -25,7 +25,10 @@ import java.util.Set;
 @Service
 public class ClusterApiService {
 
-    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+    //private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+
+    @Autowired
+    ManageDatabase manageDatabase;
 
     @Autowired
     private UtilService utilService;
@@ -180,7 +183,7 @@ public class ClusterApiService {
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-            Env envSelected = handleDbRequests.selectEnvDetails(topicRequest.getEnvironment());
+            Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicRequest.getEnvironment());
             String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
             params.add("env", bootstrapHost);
 
@@ -209,7 +212,7 @@ public class ClusterApiService {
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 
-            Env envSelected = handleDbRequests.selectEnvDetails(env);
+            Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
             String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
             params.add("env", bootstrapHost);
             params.add("topicName", aclReq.getTopicname());
@@ -239,7 +242,7 @@ public class ClusterApiService {
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 
-            Env envSelected = handleDbRequests.selectEnvDetails(env);
+            Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
             String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
             params.add("env", bootstrapHost);
 
