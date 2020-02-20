@@ -32,6 +32,9 @@ public class SchemaRegstryControllerServiceTest {
     private UtilService utilService;
 
     @Mock
+    ManageDatabase manageDatabase;
+
+    @Mock
     ClusterApiService clusterApiService;
 
     SchemaRegstryControllerService schemaRegstryControllerService;
@@ -39,7 +42,8 @@ public class SchemaRegstryControllerServiceTest {
     @Before
     public void setUp() throws Exception {
         schemaRegstryControllerService = new SchemaRegstryControllerService(clusterApiService, utilService);
-        ReflectionTestUtils.setField(schemaRegstryControllerService, "handleDbRequests", handleDbRequests);
+        ReflectionTestUtils.setField(schemaRegstryControllerService, "manageDatabase", manageDatabase);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
     @Test

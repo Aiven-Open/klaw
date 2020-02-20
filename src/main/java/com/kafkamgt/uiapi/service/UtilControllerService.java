@@ -5,6 +5,7 @@ import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -15,9 +16,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 @Service
+@DependsOn(value={"utilService"})
 public class UtilControllerService {
 
-    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+    //private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+
+    @Autowired
+    ManageDatabase manageDatabase;
 
     @Autowired
     UtilService utilService;
@@ -28,24 +33,22 @@ public class UtilControllerService {
     @Value("${custom.kafkawize.version:3.5}")
     String kafkawizeVersion;
 
-
     public UtilControllerService(UtilService utilService){
         this.utilService = utilService;
     }
 
     public String getAuth() {
-
         UserDetails userDetails = utilService.getUserDetails();
 
         if(userDetails!=null) {
 
-            String teamName = handleDbRequests.getUsersInfo(userDetails.getUsername()).getTeam();
+            String teamName = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername()).getTeam();
             String authority = utilService.getAuthority(userDetails);
 
             String statusAuth = null;
             String statusAuthExecTopics = null;
 
-            HashMap<String, String> outstanding = handleDbRequests.getAllRequestsToBeApproved(userDetails.getUsername());
+            HashMap<String, String> outstanding = manageDatabase.getHandleDbRequests().getAllRequestsToBeApproved(userDetails.getUsername());
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
             String outstandingAclReqs = outstanding.get("acls");
@@ -83,7 +86,7 @@ public class UtilControllerService {
     public String getExecAuth() {
 
         UserDetails userDetails = utilService.getUserDetails();
-        String teamName = handleDbRequests.getUsersInfo(userDetails.getUsername()).getTeam();
+        String teamName = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername()).getTeam();
 
         String authority = utilService.getAuthority(userDetails);
 

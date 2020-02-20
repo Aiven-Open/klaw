@@ -41,6 +41,9 @@ public class AclControllerServiceTest {
     HandleDbRequests handleDbRequests;
 
     @Mock
+    ManageDatabase manageDatabase;
+
+    @Mock
     UtilService utilService;
 
     AclControllerService aclControllerService;
@@ -55,7 +58,8 @@ public class AclControllerServiceTest {
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
-        ReflectionTestUtils.setField(aclControllerService, "handleDbRequests", handleDbRequests);
+        ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
     @After

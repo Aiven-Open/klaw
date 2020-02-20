@@ -37,6 +37,9 @@ public class TopicControllerServiceTest {
     UserDetails userDetails;
 
     @Mock
+    ManageDatabase manageDatabase;
+
+    @Mock
     HandleDbRequests handleDbRequests;
 
     @Mock
@@ -56,7 +59,8 @@ public class TopicControllerServiceTest {
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
-        ReflectionTestUtils.setField(topicControllerService, "handleDbRequests", handleDbRequests);
+        ReflectionTestUtils.setField(topicControllerService, "manageDatabase", manageDatabase);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
     @After

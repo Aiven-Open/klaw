@@ -27,7 +27,9 @@ public class TopicControllerService {
     @Autowired
     ClusterApiService clusterApiService;
 
-    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+
+    @Autowired
+    ManageDatabase manageDatabase;
 
     @Autowired
     private UtilService utilService;
@@ -46,10 +48,10 @@ public class TopicControllerService {
 
         String envSelected = topicRequestReq.getEnvironment();
 
-        Env env = handleDbRequests.selectEnvDetails(envSelected);
+        Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envSelected);
 
         if(validateParameters(topicRequestReq, env, topicPartitions)){
-            return "{\"result\":\""+handleDbRequests.requestForTopic(topicRequestReq)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq)+"\"}";
         }
 
         return "{\"result\":\"failure\"}";
@@ -135,22 +137,22 @@ public class TopicControllerService {
             }
         }
         if(listTopics.size()>0){
-            return "{\"result\":\""+handleDbRequests.addToSynctopics(listTopics)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().addToSynctopics(listTopics)+"\"}";
         }
         else
             return "{\"result\":\"No record updated.\"}";
     }
 
     public List<TopicRequest> getTopicRequests() {
-        return handleDbRequests.getAllTopicRequests(utilService.getUserName());
+        return manageDatabase.getHandleDbRequests().getAllTopicRequests(utilService.getUserName());
     }
 
     public Topic getTopicTeam(String topicName, String env) {
-        return handleDbRequests.getTopicTeam(topicName, env);
+        return manageDatabase.getHandleDbRequests().getTopicTeam(topicName, env);
     }
 
     public List<List<TopicRequest>> getCreatedTopicRequests() {
-        return updateCreateTopicReqsList(handleDbRequests.getCreatedTopicRequests(utilService.getUserName()));
+        return updateCreateTopicReqsList(manageDatabase.getHandleDbRequests().getCreatedTopicRequests(utilService.getUserName()));
     }
 
     private List<List<TopicRequest>> updateCreateTopicReqsList(List<TopicRequest> topicsList){
@@ -182,7 +184,7 @@ public class TopicControllerService {
         topicName = strTkr.nextToken();
         String env = strTkr.nextToken();
 
-        String deleteTopicReqStatus = handleDbRequests.deleteTopicRequest(topicName,env);
+        String deleteTopicReqStatus = manageDatabase.getHandleDbRequests().deleteTopicRequest(topicName,env);
 
         return "{\"result\":\""+deleteTopicReqStatus+"\"}";
     }
@@ -192,14 +194,14 @@ public class TopicControllerService {
         if(!utilService.checkAuthorizedAdmin())
             return "{\"result\":\"Not Authorized\"}";
 
-        TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = manageDatabase.getHandleDbRequests().selectTopicRequestsForTopic(topicName, env);
 
         ResponseEntity<String> response = clusterApiService.approveTopicRequests(topicName,topicRequest);
 
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = handleDbRequests.updateTopicRequest(topicRequest,utilService.getUserName());
+            updateTopicReqStatus = manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest,utilService.getUserName());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
@@ -209,16 +211,16 @@ public class TopicControllerService {
         if(!utilService.checkAuthorizedAdmin())
             return "{\"result\":\"Not Authorized\"}";
 
-        TopicRequest topicRequest = handleDbRequests.selectTopicRequestsForTopic(topicName, env);
+        TopicRequest topicRequest = manageDatabase.getHandleDbRequests().selectTopicRequestsForTopic(topicName, env);
 
-        String result = handleDbRequests.declineTopicRequest(topicRequest, utilService.getUserName());
+        String result = manageDatabase.getHandleDbRequests().declineTopicRequest(topicRequest, utilService.getUserName());
 
         return "{\"result\":\""+ "Request declined. " + result + "\"}";
     }
 
     public List<String> getAllTopics(String env) throws Exception {
 
-        Env envSelected = handleDbRequests.selectEnvDetails(env);
+        Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -242,13 +244,13 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected = handleDbRequests.selectEnvDetails(env);
+        Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
         String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env);
+        List<Topic> topicsFromSOT = manageDatabase.getHandleDbRequests().getSyncTopics(env);
 
         topicCounter = 0;
 
@@ -306,7 +308,7 @@ public class TopicControllerService {
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        Env envSelected= handleDbRequests.selectEnvDetails(env);
+        Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
         List<String> topicsList = clusterApiService.getAllTopics(bootstrapHost);
@@ -405,7 +407,7 @@ public class TopicControllerService {
         int requestPageNo = Integer.parseInt(pageNo);
 
         // Get Sync topics
-        List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env);
+        List<Topic> topicsFromSOT = manageDatabase.getHandleDbRequests().getSyncTopics(env);
 
         List<TopicRequest> topicsListMap = new ArrayList<>();
         int startVar = (requestPageNo-1) * recsPerPage;
@@ -415,7 +417,7 @@ public class TopicControllerService {
 
         List<String> teamList = new ArrayList<>();
 
-        handleDbRequests.selectAllTeamsOfUsers(userDetails.getUsername())
+        manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(userDetails.getUsername())
                 .forEach(teamS->teamList.add(teamS.getTeamname()));
         //String tmpTopicName = null;
         for(int i=0;i<totalRecs;i++){

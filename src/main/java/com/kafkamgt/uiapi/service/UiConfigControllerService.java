@@ -27,7 +27,10 @@ public class UiConfigControllerService {
     @Autowired
     private UtilService utilService;
 
-    private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
+    //private HandleDbRequests manageDatabase.getHandleDbRequests() = ManageDatabase.manageDatabase.getHandleDbRequests();
+
+    @Autowired
+    ManageDatabase manageDatabase;
 
     @Autowired
     private ClusterApiService clusterApiService;
@@ -55,9 +58,9 @@ public class UiConfigControllerService {
     public List<Env> getEnvs(boolean envStatus) {
 
         if(envStatus)
-            return handleDbRequests.selectAllKafkaEnvs();
+            return manageDatabase.getHandleDbRequests().selectAllKafkaEnvs();
 
-        List<Env> listEnvs = handleDbRequests.selectAllKafkaEnvs();
+        List<Env> listEnvs = manageDatabase.getHandleDbRequests().selectAllKafkaEnvs();
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status;
@@ -73,11 +76,11 @@ public class UiConfigControllerService {
     }
 
     public List<Env> getSchemaRegEnvs() {
-        return handleDbRequests.selectAllSchemaRegEnvs();
+        return manageDatabase.getHandleDbRequests().selectAllSchemaRegEnvs();
     }
 
     public List<Env> getSchemaRegEnvsStatus() {
-        List<Env> listEnvs = handleDbRequests.selectAllSchemaRegEnvs();
+        List<Env> listEnvs = manageDatabase.getHandleDbRequests().selectAllSchemaRegEnvs();
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status = null;
@@ -93,11 +96,11 @@ public class UiConfigControllerService {
     }
 
     public List<Team> getAllTeams() {
-        return handleDbRequests.selectAllTeamsOfUsers(utilService.getUserName());
+        return manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(utilService.getUserName());
     }
 
     public List<Team> getAllTeamsSU() {
-        return handleDbRequests.selectAllTeams();
+        return manageDatabase.getHandleDbRequests().selectAllTeams();
     }
 
     public String addNewEnv(Env newEnv){
@@ -111,7 +114,7 @@ public class UiConfigControllerService {
         newEnv.setTrustStoreLocation("");
         newEnv.setKeyStoreLocation("");
         try {
-            return "{\"result\":\""+handleDbRequests.addNewEnv(newEnv)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().addNewEnv(newEnv)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -123,7 +126,7 @@ public class UiConfigControllerService {
             return "{\"result\":\"Not Authorized\"}";
 
         try {
-            return "{\"result\":\""+handleDbRequests.deleteClusterRequest(clusterId)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().deleteClusterRequest(clusterId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -136,11 +139,11 @@ public class UiConfigControllerService {
 
         String envAddResult = "{\"result\":\"Your team cannot be deleted. Try deleting other team.\"}";
 
-        if(handleDbRequests.getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
+        if(manageDatabase.getHandleDbRequests().getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
             return envAddResult;
 
         try {
-            return "{\"result\":\""+handleDbRequests.deleteTeamRequest(teamId)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().deleteTeamRequest(teamId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -157,7 +160,7 @@ public class UiConfigControllerService {
             return envAddResult;
 
         try {
-            return "{\"result\":\""+handleDbRequests.deleteUserRequest(userId)+"\"}";
+            return "{\"result\":\""+manageDatabase.getHandleDbRequests().deleteUserRequest(userId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -175,7 +178,7 @@ public class UiConfigControllerService {
             inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername()).password(encoder.encode(newUser.getPwd()))
                     .roles(newUser.getRole()).build());
 
-           return "{\"result\":\""+handleDbRequests.addNewUser(newUser)+"\"}";
+           return "{\"result\":\""+manageDatabase.getHandleDbRequests().addNewUser(newUser)+"\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -187,7 +190,7 @@ public class UiConfigControllerService {
             return "{\"result\":\"Not Authorized\"}";
 
         try {
-            return "{\"result\":\"" + handleDbRequests.addNewTeam(newTeam) + "\"}";
+            return "{\"result\":\"" + manageDatabase.getHandleDbRequests().addNewTeam(newTeam) + "\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -208,7 +211,7 @@ public class UiConfigControllerService {
                     pwdChange);
             inMemoryUserDetailsManager.updateUser(userDetailsUpdated);
 
-            return "{\"result\":\"" + handleDbRequests.updatePassword(userDetails.getUsername(), pwdChange) + "\"}";
+            return "{\"result\":\"" + manageDatabase.getHandleDbRequests().updatePassword(userDetails.getUsername(), pwdChange) + "\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -216,17 +219,17 @@ public class UiConfigControllerService {
 
     public List<UserInfo> showUsers(){
 
-        return handleDbRequests.selectAllUsersInfo();
+        return manageDatabase.getHandleDbRequests().selectAllUsersInfo();
     }
 
     public UserInfo getMyProfileInfo(){
 
-        return handleDbRequests.getUsersInfo(utilService.getUserName());
+        return manageDatabase.getHandleDbRequests().getUsersInfo(utilService.getUserName());
     }
 
     public List<ActivityLog> showActivityLog(String env, String pageNo){
 
-        List<ActivityLog> origActivityList = handleDbRequests.selectActivityLog(utilService.getUserName(), env);
+        List<ActivityLog> origActivityList = manageDatabase.getHandleDbRequests().selectActivityLog(utilService.getUserName(), env);
         List<ActivityLog> newList = new ArrayList<>();
 
         if(origActivityList!=null && origActivityList.size() > 0) {
