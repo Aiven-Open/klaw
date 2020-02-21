@@ -1,6 +1,14 @@
-Documentation : https://kafkawize.readthedocs.io 
+Introduction:
 
-Or 
+[![Watch the Introduction](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)](https://youtu.be/KOjdpRtRhEY)
+
+
+Demo:
+
+[![Watch the demo](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseTopics.JPG)](https://youtu.be/6i7CzBsLH14)
+
+
+Online Documentation : https://kafkawize.readthedocs.io 
 
 Pdf : https://buildmedia.readthedocs.org/media/pdf/kafkawize/latest/kafkawize.pdf
 
