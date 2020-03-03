@@ -110,7 +110,6 @@ public class UtilService {
 
         if(this.userDetails == null){
             log.error("Users not loaded .. exiting");
-            System.exit(0);
         }
         licenceLoaded = true;
         return this.userDetails;

@@ -1,0 +1,757 @@
+/******************* 
+Global Styles 
+*******************/
+* {
+    outline: none;
+}
+
+body {
+    background: $sidebar;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+    background: $white;
+}
+
+a {
+    color: $themecolor;
+}
+a:hover, a:focus{
+    text-decoration: none;
+}
+a.link{
+    color:$headings-color;
+    &:hover, &:focus{
+        color:$themecolor;
+    }
+}
+
+html body .mdi:before, html body .mdi-set{
+    line-height: initial;
+}
+/*******************
+Headings
+*******************/
+h1 {
+    line-height: 40px;
+}
+
+h2 {
+    line-height: 36px;
+}
+
+h3 {
+    line-height: 30px;
+}
+
+h4 {
+    line-height: 22px;
+}
+
+h5 {
+    line-height: 18px;
+    font-weight: 400;
+}
+
+h6 {
+    line-height: 16px;
+    font-weight: 400;
+}
+
+.display-5{
+    font-size: 3rem;
+}
+.display-6{
+    font-size: 36px;
+}
+
+/*******************
+Blockquote
+*******************/
+
+html body blockquote {
+    border-left: 5px solid $themecolor;
+    border: 1px solid $border-color;
+    padding: 15px;
+}
+
+ol li{
+    margin: 5px 0;
+}
+
+/*******************
+Opacity
+*******************/
+.op-5{
+    opacity: 0.5;
+}
+
+.op-7{
+    opacity: 0.7;
+}
+
+/*******************
+font related class here
+*******************/
+html body {
+    .font-medium {
+        font-weight: 500;
+    }
+    .font-12 {
+        font-size: 12px;
+    }
+    .font-16 {
+        font-size: 16px;
+    }
+    .font-14 {
+        font-size: 14px;
+    }
+    .font-10 {
+        font-size: 10px;
+    }
+    .font-18 {
+        font-size: 18px;
+    }
+    .font-20 {
+        font-size: 20px;
+    }
+}
+
+/*******************
+Text Colors
+*******************/
+html body {
+    .text-themecolor {
+        color: $themecolor;
+    }
+}
+/*******************
+Background Colors
+*******************/
+html body {
+    .bg-theme {
+        background-color: $themecolor;
+    }
+    .bg-light-primary {
+        background-color: $light-primary;
+    }
+    .bg-light-success {
+        background-color: $light-success;
+    }
+    .bg-light-info {
+        background-color: $light-info;
+    }
+    .bg-light-extra {
+        background-color: $extra-light;
+    }
+    .bg-light-warning {
+        background-color: $light-warning;
+    }
+    .bg-light-danger {
+        background-color: $light-danger;
+    }
+    .bg-light-inverse {
+        background-color: $light-inverse;
+    }
+}
+
+/*******************
+Rounds
+*******************/
+.round{
+    line-height:48px;
+    width: 45px;
+    height: 45px;
+    img{
+        border-radius: 100%;
+    }
+}
+.round-lg{
+    line-height:65px;
+    width: 60px;
+    height: 60px;
+    font-size:30px;
+}
+
+/*******************
+Pagination
+*******************/
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+    border-bottom-left-radius: $radius;
+    border-top-left-radius: $radius;
+}
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+    border-bottom-right-radius: $radius;
+    border-top-right-radius: $radius;
+}
+.pagination > li > a,
+.pagination > li > span {
+    color: $dark;
+}
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+    background-color: $light;
+}
+.pagination-split li {
+    margin-left: 5px;
+    display: inline-block;
+    float: $lft;
+}
+.pagination-split li:first-child {
+    margin-left: 0;
+}
+.pagination-split li a {
+    -moz-border-radius: $radius;
+    -webkit-border-radius: $radius;
+    border-radius: $radius;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    background-color: $themecolor;
+    border-color: $themecolor;
+}
+.pager li > a,
+.pager li > span {
+    -moz-border-radius: $radius;
+    -webkit-border-radius: $radius;
+    border-radius: $radius;
+    color: $dark;
+}
+
+
+/*******************
+Table Cell
+*******************/
+.cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+.table thead th, .table th{
+    font-weight:500;
+}
+.jqstooltip {
+    width: auto !important;
+    height: auto !important;
+}
+
+/*******************
+Wave Effects
+*******************/
+.waves-effect {
+    position: relative;
+    cursor: pointer;
+    display: inline-block;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    vertical-align: middle;
+    z-index: 1;
+    will-change: opacity, transform;
+    -webkit-transition: all 0.1s ease-out;
+    -moz-transition: all 0.1s ease-out;
+    -o-transition: all 0.1s ease-out;
+    -ms-transition: all 0.1s ease-out;
+    transition: all 0.1s ease-out;
+    .waves-ripple {
+        position: absolute;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        margin-top: -10px;
+        margin-left: -10px;
+        opacity: 0;
+        background: rgba(0, 0, 0, 0.2);
+        -webkit-transition: all 0.7s ease-out;
+        -moz-transition: all 0.7s ease-out;
+        -o-transition: all 0.7s ease-out;
+        -ms-transition: all 0.7s ease-out;
+        transition: all 0.7s ease-out;
+        -webkit-transition-property: -webkit-transform, opacity;
+        -moz-transition-property: -moz-transform, opacity;
+        -o-transition-property: -o-transform, opacity;
+        transition-property: transform, opacity;
+        -webkit-transform: scale(0);
+        -moz-transform: scale(0);
+        -ms-transform: scale(0);
+        -o-transform: scale(0);
+        transform: scale(0);
+        pointer-events: none;
+    }
+}
+
+.waves-effect.waves-light {
+    .waves-ripple {
+        background-color: rgba(255, 255, 255, 0.45);
+    }
+}
+
+.waves-effect.waves-red {
+    .waves-ripple {
+        background-color: rgba(244, 67, 54, 0.7);
+    }
+}
+
+.waves-effect.waves-yellow {
+    .waves-ripple {
+        background-color: rgba(255, 235, 59, 0.7);
+    }
+}
+
+.waves-effect.waves-orange {
+    .waves-ripple {
+        background-color: rgba(255, 152, 0, 0.7);
+    }
+}
+
+.waves-effect.waves-purple {
+    .waves-ripple {
+        background-color: rgba(156, 39, 176, 0.7);
+    }
+}
+
+.waves-effect.waves-green {
+    .waves-ripple {
+        background-color: rgba(76, 175, 80, 0.7);
+    }
+}
+
+.waves-effect.waves-teal {
+    .waves-ripple {
+        background-color: rgba(0, 150, 136, 0.7);
+    }
+}
+
+html body .waves-notransition {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -o-transition: none;
+    -ms-transition: none;
+    transition: none;
+}
+
+.waves-circle {
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    text-align: center;
+    width: 2.5em;
+    height: 2.5em;
+    line-height: 2.5em;
+    border-radius: 50%;
+    -webkit-mask-image: none;
+}
+
+.waves-input-wrapper {
+    border-radius: 0.2em;
+    vertical-align: bottom;
+    .waves-button-input {
+        position: relative;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+}
+
+.waves-block {
+    display: block;
+}
+
+/*******************
+Buttons
+******************/
+.btn{
+    &.btn-warning {
+        color: $white;
+    }   
+}
+
+.btn-md{
+    padding:12px 55px;
+    font-size: 16px;
+}
+.btn-circle{
+    border-radius: 100%;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    &.btn-sm {
+        width: 35px;
+        height: 35px;
+        padding:8px 10px;
+        font-size:14px;
+    }
+    &.btn-lg{
+        width: 50px;
+        height: 50px;
+        font-size:18px;
+        padding:11px 15px!important;
+    }
+    &.btn-xl{
+        width: 70px;
+        height: 70px;
+        padding:14px 15px;
+        font-size:24px;
+    }
+}
+
+.btn-xs{
+    padding:.25rem .5rem;
+    font-size: 10px;
+}
+
+.button-list button, .button-list a {
+    margin: 5px 12px 5px 0;
+}
+
+.btn-rounded {
+    border-radius: 60px;
+    &.btn-xs{
+        padding:.25rem .5rem;
+        font-size:10px;
+    }
+    &.btn-md{
+        padding:12px 35px;
+        font-size: 16px;
+    }
+}
+
+.btn-facebook {
+    color: $white;
+    background-color: #3b5998;
+}
+
+.btn-twitter {
+    color: $white;
+    background-color: #55acee;
+}
+
+.btn-linkedin {
+    color: $white;
+    background-color: #007bb6;
+}
+
+.btn-dribbble {
+    color: $white;
+    background-color: #ea4c89;
+}
+
+.btn-googleplus {
+    color: $white;
+    background-color: #dd4b39;
+}
+
+.btn-instagram {
+    color: $white;
+    background-color: #3f729b;
+}
+
+.btn-pinterest {
+    color: $white;
+    background-color: #cb2027;
+}
+
+.btn-dropbox {
+    color: $white;
+    background-color: #007ee5;
+}
+
+.btn-flickr {
+    color: $white;
+    background-color: #ff0084;
+}
+
+.btn-tumblr {
+    color: $white;
+    background-color: #32506d;
+}
+
+.btn-skype {
+    color: $white;
+    background-color: #00aff0;
+}
+
+.btn-youtube {
+    color: $white;
+    background-color: #bb0000;
+}
+
+.btn-github {
+    color: $white;
+    background-color: #171515;
+}
+
+
+/*******************
+Notify
+*******************/
+
+.notify {
+    position: relative;
+    top: -25px;
+    right:-7px;
+    .heartbit {
+        position: absolute;
+        top: -20px;
+        right: -4px;
+        height: 25px;
+        width: 25px;
+        z-index: 10;
+        border: 5px solid $danger;
+        border-radius: 70px;
+        -moz-animation: heartbit 1s ease-out;
+        -moz-animation-iteration-count: infinite;
+        -o-animation: heartbit 1s ease-out;
+        -o-animation-iteration-count: infinite;
+        -webkit-animation: heartbit 1s ease-out;
+        -webkit-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+    }
+    .point {
+        width: 6px;
+        height: 6px;
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        border-radius: 30px;
+        background-color: $danger;
+        position: absolute;
+        right: 6px;
+        top: -10px;
+    }
+}
+
+@-moz-keyframes heartbit {
+    0% {
+        -moz-transform: scale(0);
+        opacity: 0.0;
+    }
+    25% {
+        -moz-transform: scale(0.1);
+        opacity: 0.1;
+    }
+    50% {
+        -moz-transform: scale(0.5);
+        opacity: 0.3;
+    }
+    75% {
+        -moz-transform: scale(0.8);
+        opacity: 0.5;
+    }
+    100% {
+        -moz-transform: scale(1);
+        opacity: 0.0;
+    }
+}
+
+@-webkit-keyframes heartbit {
+    0% {
+        -webkit-transform: scale(0);
+        opacity: 0.0;
+    }
+    25% {
+        -webkit-transform: scale(0.1);
+        opacity: 0.1;
+    }
+    50% {
+        -webkit-transform: scale(0.5);
+        opacity: 0.3;
+    }
+    75% {
+        -webkit-transform: scale(0.8);
+        opacity: 0.5;
+    }
+    100% {
+        -webkit-transform: scale(1);
+        opacity: 0.0;
+    }
+}
+
+
+
+/*******************
+File Upload 
+******************/
+
+.fileupload {
+    overflow: hidden;
+    position: relative;
+    input.upload {
+        cursor: pointer;
+        filter: alpha(opacity=0);
+        font-size: 20px;
+        margin: 0;
+        opacity: 0;
+        padding: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+}
+
+
+/*******************
+Megamenu
+******************/
+.mega-dropdown{
+    position: static;
+    width: 100%;
+    .dropdown-menu{
+        width: 100%;
+        padding: 30px;
+        margin-top: 0px;
+        
+    }
+    ul{ padding: 0px;
+        
+        li{
+            list-style: none;
+        }
+    }
+    .carousel-item .container{
+        padding: 0px;
+    }
+    .nav-accordion{
+        .card{margin-bottom: 1px;}
+        .card-header{
+            background: $white;
+            h5{
+                margin: 0px;
+                a{
+                    text-decoration: none;
+                    color:$body-color;
+                }
+            }
+        }
+    }
+}
+
+/*******************
+List-style-none
+******************/
+ul.list-style-none{
+    margin: 0px;
+    padding: 0px;
+    li{
+        list-style: none;
+        a{
+            color:$body-color;
+            padding: 8px 0px;
+            display: block;
+            text-decoration: none;
+            &:hover{
+                color:$themecolor;
+            }
+        }
+    }
+}
+
+/*******************
+Layouts
+******************/
+
+/*Card-noborders*/
+.card-no-border{
+    .card{
+        border-radius: $radius;
+        box-shadow: 0px 5px 20px rgba(0,0,0,0.05);
+    }
+    .sidebar-footer{
+        background:$sidebar-alt;
+    }
+    
+    .sidebar-nav>ul>li>a.active{
+        background:$white;
+    }
+}
+.card-no-border .shadow-none{
+    box-shadow: none;
+}
+.card-outline-danger, .card-outline-info, .card-outline-warning, .card-outline-success, .card-outline-primary{
+    background: $white;
+}
+.card-fullscreen{
+    position: fixed;
+    top:0px;
+    left:0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    overflow: auto;
+}
+.card .card-header{
+    background: $white;
+    border-bottom: 0px;
+}
+
+/*******************/
+/*widgets -app*/
+/*******************/
+.css-bar:after{
+    z-index:1;
+}
+.css-bar > i{
+    z-index:10;
+}
+
+/*******************/
+/*single column*/
+/*******************/
+@include media-breakpoint-up(md) {
+    .single-column{
+        .left-sidebar{
+            left: -240px;
+        }
+        .page-wrapper{
+            margin-left: 0px;
+        }
+        .sidebar-footer {
+            display: none;
+        }
+    }
+    .single-column.mini-sidebar .left-sidebar {
+        left: 0;
+    }
+}
+
+.fix-width{
+    width: 100%;
+    max-width: 1170px;
+    margin: 0 auto;
+}
+
+/***********************
+ 9/02/2018 (New Update)
+***********************/
+.progress{
+    height:auto;
+}
+
+.card-group{
+    margin-bottom: 30px;
+}
+
+// For Table Responsive Page
+.tablesaw, 
+.fixed-table-container {
+    [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: relative;
+        left: 0;
+        opacity: 1;
+    }
+}

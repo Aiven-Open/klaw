@@ -1,0 +1,165 @@
+// 
+// Form Control
+// 
+
+.bootstrap-touchspin {
+    .input-group-btn {
+        align-items: normal;
+    }
+}
+
+.form-control-line {
+    .form-control.form-control-success:focus {
+        border-bottom: 1px solid $success;
+    }
+    .form-control.form-control-warning:focus {
+        border-bottom: 1px solid $warning;
+    }
+    .form-control.form-control-danger:focus {
+        border-bottom: 1px solid $danger;
+    }
+}
+
+.form-control-danger,
+.form-control-success,
+.form-control-warning {
+    padding-right: 2.25rem;
+    background-repeat: no-repeat;
+    background-position: center right .5625rem;
+    -webkit-background-size: 1.125rem 1.125rem;
+    background-size: 1.125rem 1.125rem;
+}
+
+.has-success .col-form-label,
+.has-success .custom-control,
+.has-success .form-check-label,
+.has-success .form-control-feedback,
+.has-success .form-control-label {
+    color: $success;
+}
+
+.has-success .form-control-success {
+    background-image: url(../../assets/images/icon/success.svg);
+}
+
+.has-success .form-control {
+    border-color: $success;
+}
+
+.has-warning .col-form-label,
+.has-warning .custom-control,
+.has-warning .form-check-label,
+.has-warning .form-control-feedback,
+.has-warning .form-control-label {
+    color: $warning;
+}
+
+.has-warning .form-control-warning {
+    background-image: url(../../assets/images/icon/warning.svg);
+}
+
+.has-warning .form-control {
+    border-color: $warning;
+}
+
+.has-danger .col-form-label,
+.has-danger .custom-control,
+.has-danger .form-check-label,
+.has-danger .form-control-feedback,
+.has-danger .form-control-label {
+    color: $danger;
+}
+
+.has-danger .form-control-danger {
+    background-image: url(../../assets/images/icon/danger.svg);
+}
+
+.has-danger .form-control {
+    border-color: $danger;
+}
+
+.input-group-addon {
+    [type="radio"]:not(:checked),
+    [type="radio"]:checked,
+    [type="checkbox"]:not(:checked),
+    [type="checkbox"]:checked {
+        position: initial;
+        opacity: 1;
+    }
+}
+
+/*******************
+Custom-select
+******************/
+.custom-select{
+    background: url(../../assets/images/custom-select.png) right .75rem center no-repeat;
+    -webkit-appearance: none;
+}
+/*******************
+textarea
+******************/
+textarea{
+    resize: none; 
+}
+/*******************
+Form-control
+******************/
+.form-control{
+    min-height: 38px;
+    display: initial;
+}
+.form-control-sm{
+    min-height: 20px;
+}
+.form-control:disabled, .form-control[readonly]{
+    opacity: 0.7;
+}
+.custom-control-input:focus~.custom-control-indicator{
+    box-shadow: none;
+}
+.custom-control-input:checked~.custom-control-indicator{
+    background-color: $success;
+}
+form label{
+    font-weight: 400;
+}
+.form-group{
+    margin-bottom: 25px;
+}
+.form-horizontal label{
+    margin-bottom: 0px;
+}
+.form-control-static{
+    padding-top: 0px;
+}
+.form-bordered .form-group {
+    border-bottom: 1px solid $border-color;
+    padding-bottom: 20px;
+}
+
+// 
+// Card inverse font white
+// 
+.card-inverse {
+    .card-blockquote,
+    .card-footer,
+    .card-header,
+    .card-title {
+        color: $white;
+    }
+}
+
+// 
+// Form flot input
+// 
+.floating-labels .form-control {
+    box-shadow: none;
+}
+
+// 
+// table
+// 
+.no-wrap td,
+.no-wrap th {
+    white-space: nowrap;
+}
