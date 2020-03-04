@@ -167,9 +167,4 @@ public class UiControllerLogin {
         return checkAuth("dashboard.html");
     }
 
-    @RequestMapping(value = "/topics", method = RequestMethod.GET)
-    public String topics(ModelMap model) {
-        return checkAuth("topics.html");
-    }
-
 }

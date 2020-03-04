@@ -172,15 +172,21 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
         };
 
+        $scope.cancelRequest = function() {
+                    $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
+                }
+
         $scope.addAcl = function() {
 
+            $scope.alert = null;
+            $scope.alertnote = null;
             var serviceInput = {};
 
             serviceInput['environment'] = $scope.addAcl.envName.name;
             serviceInput['topicname'] = $scope.addAcl.topicname;
             serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
             serviceInput['teamname'] = $scope.addAcl.team;
-            serviceInput['appname'] = $scope.addAcl.app;
+            serviceInput['appname'] = "App";//$scope.addAcl.app;
             serviceInput['remarks'] = $scope.addAcl.remarks;
             serviceInput['acl_ip'] = $scope.addAcl.acl_ip;
             serviceInput['acl_ssl'] = $scope.addAcl.acl_ssl;
@@ -202,16 +208,6 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.showAlertToast();
                 return;
              }
-
-//            if (!window.confirm("Are you sure, you would like to create the acl : "
-//                +  $scope.addAcl.topicname +
-//                "\nEnv : " + $scope.addAcl.envName.name +
-//                "\nTeam :" + $scope.addAcl.team +
-//                "\nApp :" + $scope.addAcl.app +
-//                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \nAcl SSL: " + $scope.addAcl.acl_ssl
-//            )) {
-//                return;
-//            }
 
             $http({
                 method: "POST",

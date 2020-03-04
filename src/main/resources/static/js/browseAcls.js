@@ -123,6 +123,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             return;
 
 		$scope.envSelectedParam = envSelected;
+		$scope.topicSelectedParam = topicSelected;
 		serviceInput['env'] = envSelected;
 		
 		$http({

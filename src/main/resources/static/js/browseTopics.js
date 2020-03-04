@@ -86,6 +86,10 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
         var serviceInput = {};
         var envSelected;
+        $scope.resultBrowse = null;
+        $scope.resultPages = null;
+        $scope.alert = null;
+        $scope.resultPageSelected = null;
 
         if(fromSelect == "false")
         {
