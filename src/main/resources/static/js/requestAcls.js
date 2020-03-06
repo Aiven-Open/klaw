@@ -22,7 +22,25 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 	
     $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
 
+    $scope.loadFromUrl = function() {
+        var str = window.location.search;
+        var envSelected, topicSelected;
+        if(str){
+            var envSelectedIndex = str.indexOf("envSelected");
+            var topicNameIndex = str.indexOf("topicname");
+
+            if(envSelectedIndex > 0 && topicNameIndex > 0)
+            {
+                $scope.envSelectedFromUrl = str.substring(13, topicNameIndex-1);
+                $scope.topicSelectedFromUrl = str.substring(topicNameIndex+10);
+            }
+        }
+    }
+
             $scope.getAuth = function() {
+
+            $scope.loadFromUrl();
+
             	$http({
                     method: "GET",
                     url: "getAuth",

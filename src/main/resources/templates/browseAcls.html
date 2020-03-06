@@ -139,39 +139,7 @@
 					<!-- ============================================================== -->
 					<!-- Comment -->
 					<!-- ============================================================== -->
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-								class="mdi mdi-message"></i>
-							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
-						</a>
-						<div class="dropdown-menu dropdown-menu-right mailbox scale-up">
-							<ul>
-								<li>
-									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Topics Approval Requests</h5>
-								</li>
-								<li>
-									<div class="message-center position-relative">
-										<!-- Message -->
-										<a href="execTopics" class="border-bottom d-block text-decoration-none py-2 px-3">
-											<div class="btn btn-danger btn-circle mr-2"><i class="fa fa-link"></i>
-											</div>
-											<div class="mail-contnet d-inline-block align-middle">
-												<h5 class="my-1">Outstanding</h5> <span
-													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notifications }} requests</span>
-											</div>
-										</a>
-									</div>
-								</li>
 
-							</ul>
-						</div>
-					</li>
-					<!-- ============================================================== -->
-					<!-- End Comment -->
-					<!-- ============================================================== -->
-					<!-- ============================================================== -->
-					<!-- Messages -->
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
@@ -182,26 +150,37 @@
 						<div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
 							<ul>
 								<li>
-									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Acl Approval Requests</h5>
+									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
 								</li>
 								<li>
-									<div class="message-center">
+									<div class="message-center position-relative">
 										<!-- Message -->
+										<a href="execTopics" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-danger btn-circle mr-2"><i class="fa fa-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Topic Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notifications }}  requests</span>
+											</div>
+										</a>
 										<a href="execAcls" class="border-bottom d-block text-decoration-none py-2 px-3">
 											<div class="btn btn-success btn-circle mr-2"><i class="ti-calendar"></i>
 											</div>
 											<div class="mail-contnet d-inline-block align-middle">
-												<h5 class="my-1">Outstanding</h5> <span
-													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }} requests</span>
+												<h5 class="my-1">Acl Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
 
 											</div>
 										</a>
-										<!-- Message -->
+										<a href="execSchemas" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-success btn-circle mr-2"><i class="ti-pencil-alt"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Schema Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
 
-										<!-- Message -->
-
-										<!-- Message -->
-
+											</div>
+										</a>
 									</div>
 								</li>
 
@@ -280,18 +259,18 @@
 					<li class="three-column">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="ui-tooltip-stylish.html">Request Topic</a></li>
-							<li><a href="ui-sweetalert.html">Request Acl</a></li>
-							<li><a href="ui-cards.html">Request Schema</a></li>
-							<li><a href="ui-tooltip-stylish.html">Approve Topic Request</a></li>
-							<li><a href="ui-sweetalert.html">Approve Acl Request</a></li>
-							<li><a href="ui-cards.html">Approve Schema Request</a></li>
+							<li><a href="requestTopics">Request Topic</a></li>
+							<li><a href="requestAcls">Request Acl</a></li>
+							<li><a href="requestSchema">Request Schema</a></li>
+							<li><a href="execTopics">Approve Topic Request</a></li>
+							<li><a href="execTopics">Approve Acl Request</a></li>
+							<li><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
 					<li class="three-column">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-file"></i><span class="hide-menu">Clusters</span></a>
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="form-basic.html">Kafka</a></li>
 							<li><a href="form-layout.html">Schema Registry</a></li>

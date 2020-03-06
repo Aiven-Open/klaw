@@ -16,6 +16,18 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
+        $scope.showSuccessToast = function() {
+                  var x = document.getElementById("successbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
+        $scope.showAlertToast = function() {
+                  var x = document.getElementById("alertbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
 	 $scope.getEnvs = function() {
 
         $http({
@@ -67,27 +79,40 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
             };
 
+        $scope.getAllTopics = function() {
+
+            $scope.alltopics = null;
+                    $http({
+                        method: "GET",
+                        url: "getTopicsOnly?env="+$scope.addSchema.envName.name,
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $scope.alltopics = output;
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+                }
+
+        $scope.cancelRequest = function() {
+                            $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
+                        }
+
         $scope.addSchema = function() {
 
             var serviceInput = {};
+            $scope.alert = null;
+             $scope.alertnote = null;
 
             serviceInput['environment'] = $scope.addSchema.envName.name;
             serviceInput['topicname'] = $scope.addSchema.topicname;
-            serviceInput['teamname'] = $scope.addSchema.team.teamname;
-            serviceInput['appname'] = $scope.addSchema.app;
+            serviceInput['teamname'] = $scope.addSchema.team;
+            serviceInput['appname'] = "App";
             serviceInput['remarks'] = $scope.addSchema.remarks;
             serviceInput['schemafull'] = $scope.addSchema.schemafull;
-            serviceInput['schemaversion'] = $scope.addSchema.schemaversion;
-
-            if (!window.confirm("Are you sure, you would like to upload the schema : "
-                +  $scope.addSchema.topicname + ": " +
-                "\nEnv : " + $scope.addSchema.envName.name +
-                "\nTeam :" + $scope.addSchema.team.teamname +
-                "\nApp :" + $scope.addSchema.app +
-                "\nSchema :" + $scope.addSchema.schemafull
-                )) {
-                return;
-            }
+            serviceInput['schemaversion'] = "1.0";
 
             $http({
                 method: "POST",
@@ -97,11 +122,14 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Schema Upload Request : "+output.result;
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
-                    alert("Error : "+error.value);
+                    //alert("Error : "+error.value);
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<html ng-app="requestSchemaApp" ng-controller="requestSchemaCtrl">
+<html ng-app="envsApp" ng-controller="envsCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 	<meta name="author" content="">
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>Request Avro Schema | Kafka Self-service Topic Management Portal</title>
+	<title>Request Topic | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
@@ -23,8 +23,7 @@
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/requestAvroSchemaUpload.js"></script>
-	<link rel="stylesheet" href="assets/stylesheets/custom.css" />
+	<script src="js/envs.js"></script>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -140,20 +139,13 @@
 					<!-- ============================================================== -->
 					<!-- Comment -->
 					<!-- ============================================================== -->
-
-					<!-- ============================================================== -->
-					<!-- End Comment -->
-					<!-- ============================================================== -->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
+						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-								class="mdi mdi-email"></i>
+								class="mdi mdi-message"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+						<div class="dropdown-menu dropdown-menu-right mailbox scale-up">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -193,6 +185,13 @@
 							</ul>
 						</div>
 					</li>
+					<!-- ============================================================== -->
+					<!-- End Comment -->
+					<!-- ============================================================== -->
+					<!-- ============================================================== -->
+					<!-- Messages -->
+					<!-- ============================================================== -->
+
 					<!-- ============================================================== -->
 					<!-- End Messages -->
 					<!-- ============================================================== -->
@@ -381,7 +380,7 @@
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
 						<div class="card-header">
-							<h4 class="mb-0 text-white">Avro Schema Request Form</h4>
+							<h4 class="mb-0 text-white">Topic Request Form</h4>
 						</div>
 						<div class="card-body">
 							<form id="form">
@@ -389,7 +388,7 @@
 
 
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Avro Schema details</h3>
+										<td align="left"><h3 class="card-title">Topic details</h3>
 										</td>
 										<td align="right">
 											<a href="browseTopics">
@@ -407,7 +406,7 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label class="control-label">Select Cluster</label>
-												<select class="form-control custom-select" ng-blur="getAllTopics()"  ng-model="addSchema.envName" ng-options="env as env.name for env in allenvs">
+												<select class="form-control custom-select" ng-model="addTopic.envName" ng-options="env as env.name for env in allenvs">
 
 												</select>
 											</div>
@@ -415,37 +414,31 @@
 										<!--/span-->
 										<div class="col-md-6">
 											<div class="form-group has-success">
-												<label>Select Topic</label>
-												<select class="form-control custom-select"  ng-model="addSchema.topicname" ng-blur="getTopicTeam(addSchema.topicname)" ng-options="o as o for o in alltopics">
-
-												</select>
-												<small class="form-control-feedback"> Please select the topic on which schema has to be registered. </small>
+												<label>Topic name</label>
+												<input type="text" class="form-control" ng-model="addTopic.topicname" required placeholder="application-functionality-topic">
 											</div>
 										</div>
 										<!--/span-->
 									</div>
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group has-success">
-												<label class="control-label">Schema</label>
-												<textarea class="form-control" placeholder="{&quot;type&quot; : &quot;string&quot;}" title=""
-														  ng-model="addSchema.schemafull" rows="3"></textarea>
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group has-success">
-												<label>Topic Owner Team</label>
-												<input disabled ng-model="addSchema.team" type="text" placeholder="topicownerteam" class="form-control">
-												<small class="form-control-feedback"> On selecting a topic, this team field is filled automatically. </small>
+												<label class="control-label">Select Team</label>
+												<select class="form-control custom-select" ng-model="addTopic.team" ng-options="team as team.teamname for team in allTeams">
+
+												</select>
 											</div>
 										</div>
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group has-success">
+												<label>Topic Partitions</label>
+												<input type="text" class="form-control" ng-model="addTopic.topicpartitions" required placeholder="2">
+												<a href="envs"><small class="form-control-feedback"> Check default parameters </small></a>
 
+											</div>
+										</div>
 										<!--/span-->
 									</div>
 
@@ -454,7 +447,7 @@
 											<div class="form-group has-success">
 												<label class="control-label">Remarks</label>
 												<textarea class="form-control" placeholder="Any specific comments" title=""
-														  ng-model="addSchema.remarks" rows="3"></textarea>
+														  ng-model="addTopic.remarks" rows="3"></textarea>
 											</div>
 										</div>
 										<!--/span-->
@@ -466,7 +459,7 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addSchema();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addTopic();" class="btn btn-success"> <i class="fa fa-check"></i>
 										Save</button>
 									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
 								</div>
