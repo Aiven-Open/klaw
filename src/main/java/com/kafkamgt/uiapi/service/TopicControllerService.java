@@ -159,7 +159,7 @@ public class TopicControllerService {
 
         List<List<TopicRequest>> newList = new ArrayList<>();
         List<TopicRequest> innerList = new ArrayList<>();
-        int modulusFactor = 3;
+        int modulusFactor = 2;
         int i=0;
         for(TopicRequest topicInfo : topicsList){
 

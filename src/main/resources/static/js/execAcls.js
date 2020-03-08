@@ -15,6 +15,18 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
+
+	$scope.showSuccessToast = function() {
+                  var x = document.getElementById("successbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
+        $scope.showAlertToast = function() {
+                  var x = document.getElementById("alertbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
 	
   $scope.getExecAuth = function() {
             //alert("onload");
@@ -126,11 +138,14 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 
                 $scope.alert = "Acl Approve Request : "+output.result;
                 $scope.getMyAclRequests();
+                $scope.showSuccessToast();
 
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
         }
@@ -149,11 +164,14 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 
                          $scope.alert = "Acl Decline Request : "+output.result;
                          $scope.getMyAclRequests();
+                         $scope.showSuccessToast();
 
                      }).error(
                          function(error)
                          {
                              $scope.alert = error;
+                             $scope.alertnote = error;
+                             $scope.showAlertToast();
                          }
                      );
                  }

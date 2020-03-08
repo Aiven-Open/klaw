@@ -110,7 +110,7 @@ public class AclControllerService {
 
         List<List<AclRequests>> newList = new ArrayList<>();
         List<AclRequests> innerList = new ArrayList<>();
-        int modulusFactor = 3;
+        int modulusFactor = 1;
         int i=0;
         for(AclRequests topicInfo : topicsList){
 

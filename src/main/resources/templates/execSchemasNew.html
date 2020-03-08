@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<html ng-app="envsApp" ng-controller="envsCtrl">
+<html ng-app="execSchemasApp" ng-controller="execSchemasCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 	<meta name="author" content="">
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>Request Topic | Kafka Self-service Topic Management Portal</title>
+	<title>Approve Schemas | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
@@ -23,7 +23,8 @@
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/envs.js"></script>
+	<script src="js/execSchemas.js"></script>
+	<link rel="stylesheet" href="assets/stylesheets/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -33,6 +34,7 @@
 
 	<![endif]-->
 </head>
+
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
@@ -137,15 +139,13 @@
 				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
 					<!-- ============================================================== -->
-					<!-- Comment -->
-					<!-- ============================================================== -->
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
+					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-								class="mdi mdi-message"></i>
+								class="mdi mdi-email"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div class="dropdown-menu dropdown-menu-right mailbox scale-up">
+						<div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -185,13 +185,6 @@
 							</ul>
 						</div>
 					</li>
-					<!-- ============================================================== -->
-					<!-- End Comment -->
-					<!-- ============================================================== -->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
-
 					<!-- ============================================================== -->
 					<!-- End Messages -->
 					<!-- ============================================================== -->
@@ -259,7 +252,7 @@
 						</ul>
 					</li>
 					<li>
-						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
 					<li class="three-column active">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
@@ -268,7 +261,7 @@
 							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="execTopics">Approve Topic Request</a></li>
-							<li><a href="execTopics">Approve Acl Request</a></li>
+							<li><a href="execAcls">Approve Acl Request</a></li>
 							<li><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
 					</li>
@@ -329,32 +322,31 @@
 		<div class="container-fluid">
 			<div class="row page-titles">
 			</div>
-			<!-- ============================================================== -->
-			<!-- Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
-
-			<!-- ============================================================== -->
-			<!-- End Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
 
 
-			<!-- Row -->
-
-			<div class="row" ng-show="alerttop != null && alerttop != ''">
+			<div class="row" ng-show="statusauthexectopics!='Authorized'">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{alerttop}}</p>
+						<p class="ribbon-content">You are not authorized to access this page !!</p>
 					</div>
 				</div>
 			</div>
 
 			<!-- Row -->
 
-			<div class="row" ng-show="alert != null && alert != ''" ng-init="">
+			<div class="row" ng-show="resultPages == null && alerttop != null && alerttop != ''" ng-init="">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="ribbon-wrapper card">
+						<div class="ribbon ribbon-warning">Notification</div>
+						<p class="ribbon-content">{{ alerttop }}</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row -->
+
+			<div class="row" ng-show="resultPages == null && alert != null && alert != ''" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
@@ -365,7 +357,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="errorMessage != null && errorMessage != ''">
+			<div class="row" ng-show="resultPages == null && errorMessage != null && errorMessage != ''" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
@@ -374,101 +366,82 @@
 				</div>
 			</div>
 
-			<!-- Row -->
-
-			<div class="row" ng-init="getAuth();getEnvs();loadTeams();">
-				<div class="col-lg-12">
-					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Topic Request Form</h4>
-						</div>
-						<div class="card-body">
-							<form id="form">
-								<div class="form-body">
-
-
-									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Topic details</h3>
-										</td>
-										<td align="right">
-											<a href="browseTopics">
-												<i class="fas fa-arrow-alt-circle-left"></i>
-												<button type="button"
-														class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
-											</a>
-										</td></tr>
-									</table>
-
-									<hr>
-
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label class="control-label">Select Cluster</label>
-												<select class="form-control custom-select" ng-model="addTopic.envName" ng-options="env as env.name for env in allenvs">
-
-												</select>
-											</div>
-										</div>
-										<!--/span-->
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label>Topic name</label>
-												<input type="text" class="form-control" ng-model="addTopic.topicname" required placeholder="application-functionality-topic">
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label class="control-label">Select Team</label>
-												<select class="form-control custom-select" ng-model="addTopic.team" ng-options="team as team.teamname for team in allTeams">
-
-												</select>
-											</div>
-										</div>
-										<!--/span-->
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label>Topic Partitions</label>
-												<input type="text" class="form-control" ng-model="addTopic.topicpartitions" required placeholder="2">
-												<a href="envs"><small class="form-control-feedback"> Check default parameters </small></a>
-
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group has-success">
-												<label class="control-label">Remarks</label>
-												<textarea class="form-control" placeholder="Any specific comments" title=""
-														  ng-model="addTopic.remarks" rows="3"></textarea>
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-
-									<!--/row-->
-
-								</div>
-								<div id="successbar">{{ alert }}</div>
-								<div id="alertbar">{{ alertnote }}</div>
-								<div class="form-actions">
-									<button ng-click="addTopic();" class="btn btn-success"> <i class="fa fa-check"></i>
-										Save</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
-								</div>
-							</form>
-						</div>
+			<div class="row" ng-show="aclRequests.length == 0">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="ribbon-wrapper card">
+						<div class="ribbon ribbon-warning">Notification</div>
+						<p class="ribbon-content">No pending requests !! </p>
 					</div>
 				</div>
 			</div>
-			<!-- Row -->
+
+			<div align="center" ng-show="aclRequests.length >0" ng-init="getExecAuth();getMySchemaRequests()">
+
+				<div ng-repeat="schemaRequest in schemaRequests">
+
+					<div class="row" ng-show="schemaRequest.topicname != null">
+
+						<div class="col-md-12" ng-show="schemaRequest.topicname != null">
+							<div class="card">
+								<div class="card-body">
+									<div>
+										<table width="100%">
+											<tr>
+												<td align="left"><h3 class="card-title">Topic : {{ schemaRequest[0].topicname }}</h3></td>
+												<td align="right"><button type="button" ng-click="execAclRequest(aclRequest[0].req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
+												</button>
+													<button type="button" ng-click="execAclRequestDecline(aclRequest[0].req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
+													</button></td>
+											</tr>
+										</table>
+									</div>
+									<div class="progress">
+										<div class="progress-bar bg-info" role="progressbar"
+											 style="width: 100%; height: 2px;" aria-valuenow="25" aria-valuemin="0"
+											 aria-valuemax="100"></div>
+									</div>
+									<div class="d-flex flex-row">
+										<div class="p-2 pl-0 border-right">
+											<h6 class="font-light">AclType</h6><b>{{ aclRequest[0].topictype }}</b>
+										</div>
+										<div class="p-2 border-right" ng-show="aclRequest[0].topictype == 'Consumer'">
+											<h6 class="font-light">ConsumerGroup</h6><b>{{ aclRequest[0].consumergroup }}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="font-light">Cluster</h6><b>{{ aclRequest[0].environment }}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="font-light">Acl IP</h6><b>{{ aclRequest[0].acl_ip }}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="font-light">Acl SSL</h6><b>{{ aclRequest[0].acl_ssl }}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="font-light">Requestor</h6><b>{{ aclRequest[0].username }}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="font-light">Team</h6><b>{{ aclRequest[0].teamname }}</b>
+										</div>
+										<div class="p-2">
+											<h6 class="font-light">Type</h6><b>Create Acl</b>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+
+
+				</div>
+
+
+			</div>
+
+			<div id="successbar">{{ alert }}</div>
+			<div id="alertbar">{{ alertnote }}</div>
+
 
 			<!-- ============================================================== -->
 			<!-- End PAge Content -->

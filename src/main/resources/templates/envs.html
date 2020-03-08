@@ -33,6 +33,11 @@
 
 	<![endif]-->
 </head>
+<style>
+	.demo-checkbox label, .demo-radio-button label {
+  min-width: 15px;
+  margin-bottom: 20px; }
+</style>
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
@@ -141,13 +146,13 @@
 					<!-- ============================================================== -->
 
 					<!-- ============================================================== -->
-					<li class="nav-item dropdown">
+					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
 								class="mdi mdi-email"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+						<div  class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -366,10 +371,10 @@
 						<div class="card-body">
 							<h4 class="card-title">Kafka Clusters</h4>
 							<div>
-								<table class="table color-table success-table">
+								<table width="100%" class="table color-table success-table">
 									<thead><tr>
-										<th ng-show="statusauthexectopics=='Authorized'">Select</th>
-										<th ng-show="statusauthexectopics!='Authorized'">Cluster</th>
+										<th width="10%" ng-show="statusauthexectopics=='Authorized'">Select</th>
+										<th>Cluster</th>
 										<th>Host</th>
 										<th>Port</th>
 										<th>Protocol</th>
@@ -379,14 +384,14 @@
 									</thead>
 									<tbody>
 									<tr ng-repeat="allenv in allenvs">
-										<td ng-show="statusauthexectopics=='Authorized'">
+										<td width="10%" ng-show="statusauthexectopics=='Authorized'">
 											<div class="demo-radio-button">
 												<input class="radio-col-orange" ng-model="deleteEnv.idval"
 													   name="group1" type="radio" id="radio_{{allenv.name}}" value="{{allenv.name}}" />
-												<label for="radio_{{allenv.name}}">{{ allenv.name }}</label>
+												<label for="radio_{{allenv.name}}"></label>
 											</div>
 										</td>
-										<td ng-show="statusauthexectopics!='Authorized'">
+										<td width="10%">
 											{{ allenv.name }}
 										</td>
 										<td>{{ allenv.host }}</td>
@@ -415,8 +420,8 @@
 							<div>
 								<table class="table color-table success-table">
 									<thead><tr>
-										<th ng-show="statusauthexectopics=='Authorized'">Select</th>
-										<th ng-show="statusauthexectopics!='Authorized'">Cluster</th>
+										<th width="10%" ng-show="statusauthexectopics=='Authorized'">Select</th>
+										<th width="10%">Cluster</th>
 										<th>Host</th>
 										<th>Port</th>
 										<th>Protocol</th>
@@ -425,14 +430,14 @@
 									</thead>
 									<tbody>
 									<tr ng-repeat="allenv in allschenvs">
-										<td ng-show="statusauthexectopics=='Authorized'">
+										<td width="10%" ng-show="statusauthexectopics=='Authorized'">
 											<div class="demo-radio-button">
 												<input class="radio-col-orange" ng-model="deleteEnv.idval"
 													   name="group1" type="radio" id="radio_{{allenv.name}}" value="{{allenv.name}}" />
-												<label for="radio_{{allenv.name}}">{{ allenv.name }}</label>
+												<label for="radio_{{allenv.name}}"></label>
 											</div>
 										</td>
-										<td ng-show="statusauthexectopics!='Authorized'">
+										<td width="10%">
 											{{ allenv.name }}
 										</td>
 										<td>{{ allenv.host }}</td>

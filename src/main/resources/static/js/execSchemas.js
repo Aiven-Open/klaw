@@ -15,7 +15,18 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
+	$scope.showSuccessToast = function() {
+                      var x = document.getElementById("successbar");
+                      x.className = "show";
+                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                    }
+
+            $scope.showAlertToast = function() {
+                      var x = document.getElementById("alertbar");
+                      x.className = "show";
+                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                    }
 
         $scope.getMySchemaRequests = function() {
             $http({
@@ -45,14 +56,41 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 
                 $scope.alert = "Schema Approve Request : "+output.result;
                 $scope.getMySchemaRequests();
+                $scope.showSuccessToast();
 
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
         }
+
+        $scope.execSchemaRequestDecline = function() {
+
+                    $http({
+                        method: "POST",
+                        url: "execSchemaRequests",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'topicName' : $scope.execSchemaRequest.topicName },
+                        data: {'topicName' : $scope.execSchemaRequest.topicName}
+                    }).success(function(output) {
+
+                        $scope.alert = "Schema Decline Request : "+output.result;
+                        $scope.getMySchemaRequests();
+                        $scope.showSuccessToast();
+
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                            $scope.alertnote = error;
+                            $scope.showAlertToast();
+                        }
+                    );
+                }
 
     $scope.getExecAuth = function() {
     	//alert("onload");
