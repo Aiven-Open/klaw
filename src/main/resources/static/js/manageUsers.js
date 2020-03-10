@@ -15,7 +15,18 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
+	$scope.showSuccessToast = function() {
+                  var x = document.getElementById("successbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
+        $scope.showAlertToast = function() {
+                  var x = document.getElementById("alertbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
 
 	$scope.rolelist = [ { label: 'USER', value: 'USER' }, { label: 'ADMIN', value: 'ADMIN' }	];
 
@@ -73,7 +84,8 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             if(!$scope.chPwd.pwd || ($scope.chPwd.pwd!=$scope.chPwd.repeatpwd))
             {
-                alert("Passwords are not equal.");
+                $scope.alertnote = "Passwords are not equal.";
+                $scope.showAlertToast();
                 return;
             }
 
@@ -89,11 +101,14 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 data: {'changePwd' : serviceInput}
             }).success(function(output) {
                 $scope.alert = "Password changed : "+output.result;
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
-                    alert("Error : "+error.value);
+
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
 
@@ -101,29 +116,31 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         $scope.deleteTeam = function(){
 
-                if (!window.confirm("Are you sure, you would like to delete the team : "
-                                        +  $scope.deleteTeam.idval
-                                        )) {
-                                        return;
-                                    }
+        if (!window.confirm("Are you sure, you would like to delete the team : "
+                                +  $scope.deleteTeam.idval
+                                )) {
+                                return;
+                            }
 
-                            $http({
-                                            method: "POST",
-                                            url: "deleteTeamRequest",
-                                            headers : { 'Content-Type' : 'application/json' },
-                                            params: {'teamId' : $scope.deleteTeam.idval },
-                                            data: {'teamId' : $scope.deleteTeam.idval}
-                                        }).success(function(output) {
+            $http({
+                    method: "POST",
+                    url: "deleteTeamRequest",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'teamId' : $scope.deleteTeam.idval },
+                    data: {'teamId' : $scope.deleteTeam.idval}
+                }).success(function(output) {
 
-                                            $scope.alert = "Delete Team Request : "+output.result;
-                                            $scope.loadTeamsSU();
-
-                                        }).error(
-                                            function(error)
-                                            {
-                                                $scope.alert = error;
-                                            }
-                                        );
+                    $scope.alert = "Delete Team Request : "+output.result;
+                    $scope.showSuccessToast();
+                    $scope.loadTeamsSU();
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                        $scope.alertnote = error;
+                        $scope.showAlertToast();
+                    }
+                );
             }
 
     $scope.deleteUser = function(){
@@ -134,29 +151,37 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                                 return;
                             }
 
-                    $http({
-                                    method: "POST",
-                                    url: "deleteUserRequest",
-                                    headers : { 'Content-Type' : 'application/json' },
-                                    params: {'userId' : $scope.deleteUser.idval },
-                                    data: {'userId' : $scope.deleteUser.idval}
-                                }).success(function(output) {
+        $http({
+                method: "POST",
+                url: "deleteUserRequest",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'userId' : $scope.deleteUser.idval },
+                data: {'userId' : $scope.deleteUser.idval}
+            }).success(function(output) {
 
-                                    $scope.alert = "Delete User Request : "+output.result;
-                                    $scope.showUsers();
-
-                                }).error(
-                                    function(error)
-                                    {
-                                        $scope.alert = error;
-                                    }
-                                );
+                $scope.alert = "Delete User Request : "+output.result;
+                $scope.showSuccessToast();
+                $scope.showUsers();
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
+                }
+            );
     }
 
 	$scope.addNewUser = function() {
 
             var serviceInput = {};
 
+            if(!$scope.addNewUser.pwd || ($scope.addNewUser.pwd!=$scope.addNewUser.reppwd))
+            {
+                $scope.alertnote = "Passwords are not equal.";
+                $scope.showAlertToast();
+                return;
+            }
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['pwd'] = $scope.addNewUser.pwd;
@@ -166,7 +191,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             if (!window.confirm("Are you sure, you would like to add user : "
                 +  $scope.addNewUser.username + ": " +
                 "\nTeam : " + $scope.addNewUser.team.teamname +
-                "\nRole :" + $scope.addNewUser.role.value
+                "\nRole : " + $scope.addNewUser.role.value
                 )) {
                 return;
             }
@@ -179,35 +204,41 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "New User Request : "+output.result;
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
 
         };
 
+        $scope.cancelRequest = function() {
+                    $window.location.href = $window.location.origin + "/kafkawize/showTeams";
+                }
+
+        $scope.cancelUserRequest = function() {
+                            $window.location.href = $window.location.origin + "/kafkawize/showUsers";
+                        }
+
         $scope.addNewTeam = function() {
 
                     var serviceInput = {};
 
-                    if(!$scope.addNewTeam.app)
-                    {
-                        alert("Please fill in the application name.");
-                        return;
-                    }
                     serviceInput['teamname'] = $scope.addNewTeam.teamname;
                     serviceInput['teammail'] = $scope.addNewTeam.teammail;
                     serviceInput['teamphone'] = $scope.addNewTeam.teamphone;
                     serviceInput['contactperson'] = $scope.addNewTeam.contactperson;
-                    serviceInput['app'] = $scope.addNewTeam.app;
+                    serviceInput['app'] = "";
 
 
                     if (!window.confirm("Are you sure, you would like to add team : "
                         +  $scope.addNewTeam.teamname + ": " +
                         "\nTeammail : " + $scope.addNewTeam.teammail +
-                        "\nPhone :" + $scope.addNewTeam.teamphone
+                        "\nPhone : " + $scope.addNewTeam.teamphone
                         )) {
                         return;
                     }
@@ -220,10 +251,13 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "New User Team : "+output.result;
+                        $scope.showSuccessToast();
                     }).error(
                         function(error)
                         {
                             $scope.alert = error;
+                            $scope.alertnote = error;
+                            $scope.showAlertToast();
                         }
                     );
 

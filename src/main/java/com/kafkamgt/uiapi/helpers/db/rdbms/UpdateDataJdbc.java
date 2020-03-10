@@ -150,4 +150,13 @@ public class UpdateDataJdbc {
     }
 
 
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
+        schemaRequest.setApprover(approver);
+        schemaRequest.setTopicstatus("declined");
+        schemaRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+
+        schemaRequestRepo.save(schemaRequest);
+
+        return "success";
+    }
 }

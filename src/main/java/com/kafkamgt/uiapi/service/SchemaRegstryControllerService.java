@@ -54,14 +54,9 @@ public class SchemaRegstryControllerService {
         }
     }
 
-    public String execSchemaRequests(String topicName) throws KafkawizeException {
+    public String execSchemaRequests(String topicName, String env) throws KafkawizeException {
 
-        StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
-        topicName = strTkr.nextToken();
-        String schemaversion = strTkr.nextToken();
-        String env = strTkr.nextToken();
-
-        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,schemaversion,env);
+        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,"1.0", env);
 
         ResponseEntity<String> response = clusterApiService.postSchema(schemaRequest, env, topicName);
 
@@ -69,12 +64,23 @@ public class SchemaRegstryControllerService {
             try {
                 return manageDatabase.getHandleDbRequests().updateSchemaRequest(schemaRequest, utilService.getUserName());
             }catch (Exception e){
-                return "{\"result\":\"failure "+e.toString()+"\"}";
+                return e.getMessage();
             }
         }
         else {
             return "Failure in uploading schema" ;
         }
+    }
+
+    public String execSchemaRequestsDecline(String topicName, String env) {
+
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
+
+        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,"1.0", env);
+
+        return  manageDatabase.getHandleDbRequests().updateSchemaRequestDecline(schemaRequest, utilService.getUserName());
+
     }
 
     public String uploadSchema(SchemaRequest schemaRequest){
@@ -86,4 +92,6 @@ public class SchemaRegstryControllerService {
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
     }
+
+
 }

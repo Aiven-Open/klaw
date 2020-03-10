@@ -112,7 +112,7 @@ public class SchemaRegstryControllerServiceTest {
         when(handleDbRequests.updateSchemaRequest(schemaRequest, "uiuser1"))
                 .thenReturn("success");
 
-        String result = schemaRegstryControllerService.execSchemaRequests(input);
+        String result = schemaRegstryControllerService.execSchemaRequests(input, envSel);
         assertEquals(result,"success");
     }
 
@@ -133,7 +133,7 @@ public class SchemaRegstryControllerServiceTest {
         when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
                 .thenReturn(response);
 
-        String result = schemaRegstryControllerService.execSchemaRequests(input);
+        String result = schemaRegstryControllerService.execSchemaRequests(input, envSel);
         assertThat(result, CoreMatchers.containsString("Failure"));
     }
 
@@ -157,7 +157,7 @@ public class SchemaRegstryControllerServiceTest {
         when(handleDbRequests.updateSchemaRequest(schemaRequest, "uiuser1"))
                 .thenThrow(new RuntimeException("Error"));
 
-        String result = schemaRegstryControllerService.execSchemaRequests(input);
+        String result = schemaRegstryControllerService.execSchemaRequests(input, envSel);
         assertThat(result, CoreMatchers.containsString("failure"));
     }
 

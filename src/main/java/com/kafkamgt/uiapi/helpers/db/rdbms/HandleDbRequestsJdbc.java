@@ -195,6 +195,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
     }
 
+    @Override
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
+        return jdbcUpdateHelper.updateSchemaRequestDecline(schemaRequest,  approver);
+    }
+
     public String updatePassword(String username, String pwd){
         return jdbcUpdateHelper.updatePassword(username,pwd);
     }

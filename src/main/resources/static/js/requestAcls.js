@@ -200,6 +200,11 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.alertnote = null;
             var serviceInput = {};
 
+            if($scope.addAcl.acl_ip_ssl == 'IP')
+                $scope.addAcl.acl_ssl = "";
+             else if($scope.addAcl.acl_ip_ssl == 'SSL')
+                $scope.addAcl.acl_ip = "";
+
             serviceInput['environment'] = $scope.addAcl.envName.name;
             serviceInput['topicname'] = $scope.addAcl.topicname;
             serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
@@ -226,6 +231,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.showAlertToast();
                 return;
              }
+
 
             $http({
                 method: "POST",

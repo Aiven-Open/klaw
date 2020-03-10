@@ -44,9 +44,18 @@ public class SchemaRegstryController {
     }
 
     @PostMapping(value = "/execSchemaRequests", produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> execSchemaRequests(@RequestParam("topicName") String topicName) throws KafkawizeException {
+    public ResponseEntity<String> execSchemaRequests(@RequestParam("topicName") String topicName,
+                                                     @RequestParam("env") String env) throws KafkawizeException {
 
-        String updateTopicReqStatus = "{\"result\":\"" + schemaRegstryControllerService.execSchemaRequests(topicName) + "\"}";
+        String updateTopicReqStatus = "{\"result\":\"" + schemaRegstryControllerService.execSchemaRequests(topicName, env) + "\"}";
+        return new ResponseEntity<>(updateTopicReqStatus, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/execSchemaRequestsDecline", produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<String> execSchemaRequestsDecline(@RequestParam("topicName") String topicName,
+                                                     @RequestParam("env") String env) throws KafkawizeException {
+
+        String updateTopicReqStatus = "{\"result\":\"" + schemaRegstryControllerService.execSchemaRequestsDecline(topicName, env) + "\"}";
         return new ResponseEntity<>(updateTopicReqStatus, HttpStatus.OK);
     }
 

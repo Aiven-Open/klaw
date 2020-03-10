@@ -44,14 +44,15 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.execSchemaRequest = function() {
+        $scope.execSchemaRequest = function(topicName, env) {
 
             $http({
                 method: "POST",
                 url: "execSchemaRequests",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'topicName' : $scope.execSchemaRequest.topicName },
-                data: {'topicName' : $scope.execSchemaRequest.topicName}
+                params: {'topicName' : topicName,
+                    'env' : env},
+                    data: {'topicName' : topicName, 'env' : env}
             }).success(function(output) {
 
                 $scope.alert = "Schema Approve Request : "+output.result;
@@ -68,14 +69,15 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.execSchemaRequestDecline = function() {
+        $scope.execSchemaRequestDecline = function(topicName, env) {
 
                     $http({
                         method: "POST",
-                        url: "execSchemaRequests",
+                        url: "execSchemaRequestsDecline",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'topicName' : $scope.execSchemaRequest.topicName },
-                        data: {'topicName' : $scope.execSchemaRequest.topicName}
+                        params: {'topicName' : topicName,
+                            'env' : env},
+                            data: {'topicName' : topicName, 'env' : env}
                     }).success(function(output) {
 
                         $scope.alert = "Schema Decline Request : "+output.result;

@@ -268,6 +268,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
     }
 
+    @Override
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
+        return cassandraUpdateHelper.updateSchemaRequestDecline(schemaRequest,  approver);
+    }
+
     public String updatePassword(String username, String pwd){
         return cassandraUpdateHelper.updatePassword(username,pwd);
     }

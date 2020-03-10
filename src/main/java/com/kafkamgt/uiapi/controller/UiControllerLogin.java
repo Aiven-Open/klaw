@@ -47,7 +47,7 @@ public class UiControllerLogin {
         return checkAuth("dashboard");
     }
 
-    @RequestMapping(value = "/addUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "/addUser", method = RequestMethod.GET)
     public String addUsers(ModelMap model) {
         return checkAuth("addUser.html");
     }
@@ -82,7 +82,7 @@ public class UiControllerLogin {
         return checkAuth("requestAcls.html");
     }
 
-    @RequestMapping(value = "/requestSchemaUpload", method = RequestMethod.GET)
+    @RequestMapping(value = "/requestSchema", method = RequestMethod.GET)
     public String requestSchemaUpload(ModelMap model) {
         return checkAuth("requestSchema.html");
     }
@@ -95,11 +95,6 @@ public class UiControllerLogin {
     @RequestMapping(value = "/showUsers", method = RequestMethod.GET)
     public String showUsers(ModelMap model) {
         return checkAuth("showUsers.html");
-    }
-
-    @RequestMapping(value = "/pcTopics", method = RequestMethod.GET)
-    public String pcTopics(ModelMap model) {
-        return checkAuth("pcTopics.html");
     }
 
     @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
@@ -167,9 +162,9 @@ public class UiControllerLogin {
         return checkAuth("dashboard.html");
     }
 
-    @RequestMapping(value = "/execSchemasNew", method = RequestMethod.GET)
+    @RequestMapping(value = "/changePwdNew", method = RequestMethod.GET)
     public String addEnvNew(ModelMap model) {
-        return checkAuth("execSchemasNew.html");
+        return checkAuth("changePwdNew.html");
     }
 
 }

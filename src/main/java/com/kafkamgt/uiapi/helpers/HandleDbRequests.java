@@ -76,6 +76,8 @@ public interface HandleDbRequests {
 
     public String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
 
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
+
     public String declineTopicRequest(TopicRequest topicRequest, String approver);
 
     public String declineAclRequest(AclRequests aclRequests, String approver);

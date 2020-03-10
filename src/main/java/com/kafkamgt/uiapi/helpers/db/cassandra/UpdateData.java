@@ -155,5 +155,19 @@ public class UpdateData {
         else return "failure";
     }
 
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver){
+        Clause eqclause1 = QueryBuilder.eq("topicname",schemaRequest.getTopicname());
+        Clause eqclause2 = QueryBuilder.eq("versionschema",schemaRequest.getSchemaversion());
+        Clause eqclause3 = QueryBuilder.eq("env",schemaRequest.getEnvironment());
+        Update.Where updateQuery = QueryBuilder.update(keyspace,"schema_requests")
+                .with(QueryBuilder.set("topicstatus", "declined"))
+                .and(QueryBuilder.set("approver", approver))
+                .and(QueryBuilder.set("exectime", new Date()))
+                .where(eqclause1)
+                .and(eqclause2)
+                .and(eqclause3);
+        session.execute(updateQuery);
+        return "success";
+    }
 
 }
