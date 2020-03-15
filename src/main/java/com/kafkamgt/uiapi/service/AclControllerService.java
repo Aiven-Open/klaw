@@ -95,8 +95,46 @@ public class AclControllerService {
         }
     }
 
-    public List<AclRequests> getAclRequests() {
-        return manageDatabase.getHandleDbRequests().getAllAclRequests(utilService.getUserName());
+    public List<AclRequests> getAclRequests(String pageNo) {
+        List<AclRequests> aclReqs = manageDatabase.getHandleDbRequests().getAllAclRequests(utilService.getUserName());
+        aclReqs = aclReqs.stream()
+                .sorted(Collections.reverseOrder(Comparator.comparing(AclRequests::getRequesttime)))
+                .collect(Collectors.toList());
+
+        aclReqs = getAclRequestsPaged(aclReqs, pageNo);
+        return aclReqs;
+    }
+
+    public List<AclRequests> getAclRequestsPaged(List<AclRequests> origActivityList, String pageNo){
+
+        List<AclRequests> newList = new ArrayList<>();
+
+        if(origActivityList!=null && origActivityList.size() > 0) {
+            int totalRecs = origActivityList.size();
+            int recsPerPage = 10;
+
+            int requestPageNo = Integer.parseInt(pageNo);
+            int startVar = (requestPageNo - 1) * recsPerPage;
+            int lastVar = (requestPageNo) * (recsPerPage);
+
+            int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
+
+            List<String> numList = new ArrayList<>();
+            for (int k = 1; k <= totalPages; k++) {
+                numList.add("" + k);
+            }
+            for (int i = 0; i < totalRecs; i++) {
+                AclRequests activityLog = origActivityList.get(i);
+                if (i >= startVar && i < lastVar) {
+                    activityLog.setAllPageNos(numList);
+                    activityLog.setTotalNoPages("" + totalPages);
+
+                    newList.add(activityLog);
+                }
+            }
+        }
+
+        return newList;
     }
 
     public List<List<AclRequests>> getCreatedAclRequests() {
@@ -108,6 +146,7 @@ public class AclControllerService {
 
     private List<List<AclRequests>> updateCreatAclReqsList(List<AclRequests> topicsList){
 
+        topicsList = topicsList.stream().sorted(Comparator.comparing(AclRequests::getRequesttime)).collect(Collectors.toList());
         List<List<AclRequests>> newList = new ArrayList<>();
         List<AclRequests> innerList = new ArrayList<>();
         int modulusFactor = 1;

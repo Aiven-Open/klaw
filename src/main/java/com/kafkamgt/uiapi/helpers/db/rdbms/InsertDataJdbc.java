@@ -89,7 +89,7 @@ public class InsertDataJdbc {
         topicRequestPK.setEnvironment(topicRequest.getEnvironment());
         topicRequest.setTopicRequestPK(topicRequestPK);
         topicRequest.setTopicstatus("created");
-        topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())).toString());
+        topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
         topicRequestsRepo.save(topicRequest);
 
         UserInfo userInfo = jdbcSelectHelper.selectUserInfo(topicRequest.getUsername());

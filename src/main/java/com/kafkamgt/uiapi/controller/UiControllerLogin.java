@@ -92,7 +92,7 @@ public class UiControllerLogin {
         return checkAuth("requestTopics.html");
     }
 
-    @RequestMapping(value = "/showUsers", method = RequestMethod.GET)
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public String showUsers(ModelMap model) {
         return checkAuth("showUsers.html");
     }
@@ -160,11 +160,6 @@ public class UiControllerLogin {
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public String dashboard(ModelMap model) {
         return checkAuth("dashboard.html");
-    }
-
-    @RequestMapping(value = "/changePwdNew", method = RequestMethod.GET)
-    public String addEnvNew(ModelMap model) {
-        return checkAuth("changePwdNew.html");
     }
 
 }

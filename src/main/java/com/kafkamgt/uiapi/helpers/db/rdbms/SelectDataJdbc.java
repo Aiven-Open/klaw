@@ -1,5 +1,8 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.repository.*;
@@ -271,5 +274,16 @@ public class SelectDataJdbc {
         }
         else
             return teamList;
+    }
+
+    public HashMap<String, String> getDashboardInfo(){
+        HashMap<String, String> dashboardInfo = new HashMap<>();
+
+        dashboardInfo.put("teamsize", ""+teamRepo.count());
+        dashboardInfo.put("users_count", ""+userInfoRepo.count());
+        dashboardInfo.put("schema_clusters_count", ""+envRepo.findAllByType("schemaregistry").size());
+        dashboardInfo.put("kafka_clusters_count", ""+envRepo.findAllByType("kafka").size());
+
+        return dashboardInfo;
     }
 }

@@ -53,6 +53,8 @@ public interface HandleDbRequests {
 
     public List<Team> selectAllTeams();
 
+    public HashMap<String, String> getDashboardInfo();
+
     public List<UserInfo> selectAllUsersInfo();
 
     public UserInfo getUsersInfo(String username);

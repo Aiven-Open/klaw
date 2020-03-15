@@ -64,13 +64,18 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-    $scope.getMyTopicRequests = function() {
+    $scope.getMyTopicRequests = function(pageNoSelected) {
         $http({
             method: "GET",
             url: "getTopicRequests",
-            headers : { 'Content-Type' : 'application/json' }
+            headers : { 'Content-Type' : 'application/json' },
+            params: {'pageNo' : pageNoSelected }
         }).success(function(output) {
             $scope.topicRequests = output;
+            if(output!=null && output.length>0){
+                $scope.resultPages = output[0].allPageNos;
+                $scope.resultPageSelected = pageNoSelected;
+            }
 
         }).error(
             function(error)
@@ -81,14 +86,18 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         );
     }
 
-        $scope.getMyAclRequests = function() {
+        $scope.getMyAclRequests = function(pageNoSelected) {
             $http({
                 method: "GET",
                 url: "getAclRequests",
-                headers : { 'Content-Type' : 'application/json' }
+                headers : { 'Content-Type' : 'application/json' },
+                 params: {'pageNo' : pageNoSelected }
             }).success(function(output) {
                 $scope.aclRequests = output;
-
+                if(output!=null && output.length>0){
+                    $scope.resultPagesAcl = output[0].allPageNos;
+                    $scope.resultPageSelectedAcl = pageNoSelected;
+                }
             }).error(
                 function(error)
                 {

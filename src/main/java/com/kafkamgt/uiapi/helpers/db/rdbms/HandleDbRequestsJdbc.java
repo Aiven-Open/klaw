@@ -145,6 +145,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectAllTeams();
     }
 
+    @Override
+    public HashMap<String, String> getDashboardInfo() {
+        return jdbcSelectHelper.getDashboardInfo();
+    }
+
     public List<UserInfo> selectAllUsersInfo(){
         return jdbcSelectHelper.selectAllUsersInfo();
     }

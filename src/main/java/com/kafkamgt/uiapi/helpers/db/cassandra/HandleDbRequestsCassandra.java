@@ -219,6 +219,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
         return cassandraSelectHelper.selectAllTeams();
     }
 
+    @Override
+    public HashMap<String, String> getDashboardInfo() {
+        return cassandraSelectHelper.getDashboardInfo();
+    }
+
     public List<UserInfo> selectAllUsersInfo(){
         return cassandraSelectHelper.selectAllUsersInfo();
     }

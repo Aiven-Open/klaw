@@ -14,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -143,8 +140,46 @@ public class TopicControllerService {
             return "{\"result\":\"No record updated.\"}";
     }
 
-    public List<TopicRequest> getTopicRequests() {
-        return manageDatabase.getHandleDbRequests().getAllTopicRequests(utilService.getUserName());
+    public List<TopicRequest> getTopicRequests(String pageNo) {
+        List<TopicRequest> topicReqs = manageDatabase.getHandleDbRequests().getAllTopicRequests(utilService.getUserName());
+        topicReqs = topicReqs.stream()
+                .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
+                .collect(Collectors.toList());
+        topicReqs = getTopicRequestsPaged(topicReqs, pageNo);
+
+        return topicReqs;
+    }
+
+    public List<TopicRequest> getTopicRequestsPaged(List<TopicRequest> origActivityList, String pageNo){
+
+        List<TopicRequest> newList = new ArrayList<>();
+
+        if(origActivityList!=null && origActivityList.size() > 0) {
+            int totalRecs = origActivityList.size();
+            int recsPerPage = 10;
+
+            int requestPageNo = Integer.parseInt(pageNo);
+            int startVar = (requestPageNo - 1) * recsPerPage;
+            int lastVar = (requestPageNo) * (recsPerPage);
+
+            int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
+
+            List<String> numList = new ArrayList<>();
+            for (int k = 1; k <= totalPages; k++) {
+                numList.add("" + k);
+            }
+            for (int i = 0; i < totalRecs; i++) {
+                TopicRequest activityLog = origActivityList.get(i);
+                if (i >= startVar && i < lastVar) {
+                    activityLog.setAllPageNos(numList);
+                    activityLog.setTotalNoPages("" + totalPages);
+
+                    newList.add(activityLog);
+                }
+            }
+        }
+
+        return newList;
     }
 
     public Topic getTopicTeam(String topicName, String env) {
@@ -156,6 +191,8 @@ public class TopicControllerService {
     }
 
     private List<List<TopicRequest>> updateCreateTopicReqsList(List<TopicRequest> topicsList){
+
+        topicsList = topicsList.stream().sorted(Comparator.comparing(TopicRequest::getRequesttime)).collect(Collectors.toList());
 
         List<List<TopicRequest>> newList = new ArrayList<>();
         List<TopicRequest> innerList = new ArrayList<>();

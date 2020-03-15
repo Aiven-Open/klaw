@@ -153,7 +153,7 @@ public class AclControllerServiceTest {
     public void getAclRequests() {
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.getAllAclRequests(anyString())).thenReturn(getAclRequests("testtopic",5));
-        List<AclRequests> aclReqs =  aclControllerService.getAclRequests();
+        List<AclRequests> aclReqs =  aclControllerService.getAclRequests("1");
         assertEquals(aclReqs.size(),5);
     }
 

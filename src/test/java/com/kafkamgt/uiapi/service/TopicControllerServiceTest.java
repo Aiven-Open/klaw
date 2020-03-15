@@ -340,7 +340,7 @@ public class TopicControllerServiceTest {
 
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.getAllTopicRequests(anyString())).thenReturn(getListTopicRequests());
-        List<TopicRequest> listTopicRqs = topicControllerService.getTopicRequests();
+        List<TopicRequest> listTopicRqs = topicControllerService.getTopicRequests("1");
         assertEquals(listTopicRqs.size(), 2);
     }
 

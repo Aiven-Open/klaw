@@ -93,8 +93,11 @@ public class SelectData{
                 aclReq.setRemarks(row.getString("remarks"));
                 aclReq.setAclstatus(row.getString("topicstatus"));
                 try {
+                     aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
+                }catch (Exception e){}
+
+                try {
                     aclReq.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
-                    aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
                 }catch (Exception e){}
 
                 aclReq.setConsumergroup("" + row.getString("consumergroup"));
@@ -144,8 +147,11 @@ public class SelectData{
                 schemaRequest.setRemarks(row.getString("remarks"));
                 schemaRequest.setTopicstatus(row.getString("topicstatus"));
                 try {
-                    schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                     schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+                }catch (Exception e){}
+
+                try {
+                    schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 }catch (Exception e){}
 
                 schemaList.add(schemaRequest);
@@ -180,8 +186,11 @@ public class SelectData{
             schemaRequest.setRemarks(row.getString("remarks"));
             schemaRequest.setTopicstatus(row.getString("topicstatus"));
             try {
-                schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+            }catch (Exception e){}
+
+            try {
+                schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
             }catch (Exception e){}
         }
 
@@ -305,7 +314,9 @@ public class SelectData{
                 try {
                     topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 }catch (Exception e){}
-                topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
+                try {
+                    topicRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+                }catch (Exception e){}
 
                 topicRequestList.add(topicRequest);
             }
@@ -341,7 +352,9 @@ public class SelectData{
             try {
                 topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
             }catch (Exception e){}
-            topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
+            try {
+                topicRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+            }catch (Exception e){}
         }
 
         return topicRequest;
@@ -595,6 +608,30 @@ public class SelectData{
         }
         else
             return teamList;
+    }
+
+    public HashMap<String, String> getDashboardInfo(){
+        HashMap<String, String> dashboardInfo = new HashMap<>();
+
+        Select selectQuery = QueryBuilder.select().countAll().from(keyspace,"teams");
+        ResultSet results = session.execute(selectQuery);
+        dashboardInfo.put("teamsize", ""+results.one().getObject("count"));
+
+        selectQuery = QueryBuilder.select().countAll().from(keyspace,"users");
+        results = session.execute(selectQuery);
+        dashboardInfo.put("users_count", ""+results.one().getObject("count"));
+
+        Clause eqclause1 = QueryBuilder.eq("type","schemaregistry");
+        Clause eqclause2 = QueryBuilder.eq("type","kafka");
+        Select selectQuery1 = QueryBuilder.select().countAll().from(keyspace,"env").where(eqclause1).allowFiltering();
+        results = session.execute(selectQuery1);
+        dashboardInfo.put("schema_clusters_count", ""+results.one().getObject("count"));
+
+        selectQuery1 = QueryBuilder.select().countAll().from(keyspace,"env").where(eqclause2).allowFiltering();
+        results = session.execute(selectQuery1);
+        dashboardInfo.put("kafka_clusters_count", ""+results.one().getObject("count"));
+
+        return dashboardInfo;
     }
 
 }

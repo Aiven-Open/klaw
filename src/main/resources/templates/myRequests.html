@@ -365,7 +365,7 @@
 			</div>
 			<!-- Row -->
 
-			<div class="row"  ng-init="getMyTopicRequests();">
+			<div class="row"  ng-init="getMyTopicRequests(1);">
 				<div class="col-lg-12" ng-show="topicRequests.length > 0">
 					<div class="card">
 						<div class="card-body">
@@ -377,8 +377,8 @@
 										<th>TopicName</th>
 										<th>Cluster</th>
 										<th>Requestor</th>
-										<th>Acl_IP</th>
-										<th>Acl_SSL</th>
+										<!--<th>Acl_IP</th>-->
+										<!--<th>Acl_SSL</th>-->
 										<!--<th>Application</th>-->
 										<th>Team</th>
 										<th>Status</th>
@@ -399,13 +399,13 @@
 										<td>{{ topicRequest.topicname }}</td>
 										<td>{{ topicRequest.environment }}</td>
 										<td>{{ topicRequest.username }}</td>
-										<td>{{ topicRequest.acl_ip }}</td>
-										<td>{{ topicRequest.acl_ssl }}</td>
+										<!--<td>{{ topicRequest.acl_ip }}</td>-->
+										<!--<td>{{ topicRequest.acl_ssl }}</td>-->
 										<!--<td>{{ topicRequest.appname }}</td>-->
 										<td>{{ topicRequest.teamname }}</td>
 										<td>{{ topicRequest.topicstatus }}</td>
-										<!--<td>{{ topicRequest.requesttime }}</td>-->
-										<td>{{ topicRequest.approvingtime }}</td>
+										<td>{{ topicRequest.requesttime }}</td>
+										<!--<td>{{ topicRequest.approvingtime }}</td>-->
 									</tr>
 									</tbody>
 								</table>
@@ -413,6 +413,17 @@
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div class="dataTables_paginate paging_simple_numbers"  ng-show="topicRequests.length>0">
+				<ul class="pagination">
+					<li class="paginate_button page-item active" disabled>
+						<a href="#" class="page-link">Pages</a>
+					</li>
+					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
+						<a href="#" class="page-link" ng-click="getMyTopicRequests(allPages)">{{allPages}}</a>
+					</li>
+				</ul>
 			</div>
 
 			<div class="row">
@@ -425,7 +436,7 @@
 				</div>
 			</div>
 
-			<div class="row"  ng-init="getMyAclRequests();">
+			<div class="row"  ng-init="getMyAclRequests(1);">
 				<div class="col-lg-12" ng-show="aclRequests.length > 0">
 					<div class="card">
 						<div class="card-body">
@@ -445,7 +456,7 @@
 										<th>Topic Owner Team</th>
 										<th>Status</th>
 										<!--<th>Requested Time</th>-->
-										<th>Updated Time</th>
+										<th>Requested Time</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -468,8 +479,8 @@
 										<!--<td>{{ aclRequest.appname }}</td>-->
 										<td>{{ aclRequest.teamname }}</td>
 										<td>{{ aclRequest.aclstatus }}</td>
-										<!--<td>{{ aclRequest.requesttime }}</td>-->
-										<td>{{ aclRequest.approvingtime }}</td>
+										<td>{{ aclRequest.requesttime }}</td>
+										<!--<td>{{ aclRequest.approvingtime }}</td>-->
 									</tr>
 									</tbody>
 								</table>
@@ -477,6 +488,17 @@
 						</div>
 					</div>
 				</div>
+			</div>
+
+			<div class="dataTables_paginate paging_simple_numbers"  ng-show="aclRequests.length>0">
+				<ul class="pagination">
+					<li class="paginate_button page-item active" disabled>
+						<a href="#" class="page-link">Pages</a>
+					</li>
+					<li class="paginate_button page-item" ng-repeat="allPagesAcl in resultPagesAcl">
+						<a href="#" class="page-link" ng-click="getMyAclRequests(allPagesAcl)">{{allPagesAcl}}</a>
+					</li>
+				</ul>
 			</div>
 
 			<div class="row">

@@ -16,10 +16,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UiConfigControllerService {
@@ -256,8 +257,12 @@ public class UiConfigControllerService {
                 }
             }
         }
+        newList = newList.stream()
+                .sorted(Collections.reverseOrder(Comparator.comparing(ActivityLog::getActivityTime)))
+                .collect(Collectors.toList());
         return newList;
     }
+
 
     private UserDetails getUserDetails(UserDetails userDetails, PasswordEncoder encoder, String pwdChange){
         return new UserDetails() {

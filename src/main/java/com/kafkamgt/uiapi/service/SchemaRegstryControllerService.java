@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,7 +39,10 @@ public class SchemaRegstryControllerService {
 
     public List<SchemaRequest> getCreatedSchemaRequests() {
 
-        return manageDatabase.getHandleDbRequests().getCreatedSchemaRequests(utilService.getUserName());
+        List<SchemaRequest> schemaReqs = manageDatabase.getHandleDbRequests().getCreatedSchemaRequests(utilService.getUserName());
+
+        schemaReqs = schemaReqs.stream().sorted(Comparator.comparing(SchemaRequest::getRequesttime)).collect(Collectors.toList());
+        return schemaReqs;
     }
 
      public String deleteSchemaRequests(String topicName) {

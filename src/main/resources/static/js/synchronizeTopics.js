@@ -17,6 +17,18 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	
 
+   $scope.showSuccessToast = function() {
+             var x = document.getElementById("successbar");
+             x.className = "show";
+             setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+           }
+
+           $scope.showAlertToast = function() {
+                     var x = document.getElementById("alertbar");
+                     x.className = "show";
+                     setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                   }
+
 	$scope.getEnvs = function() {
 
 	        $http({
@@ -44,7 +56,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             $scope.teamname = output.teamname;
              $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
-            $scope.statusauthexectopics = output.statusauthexectopics;
+            $scope.statusauthexectopics = output.statusauthexectopics_su;
             $scope.alerttop = output.alertmessage;
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";
@@ -107,11 +119,13 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             }).success(function(output) {
                 $scope.alert = "Topic Sync Request : "+output.result;
                 $scope.updatedSyncStr="";
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
-                   // alert("Error : "+error.value);
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
 

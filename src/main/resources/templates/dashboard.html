@@ -177,7 +177,7 @@
                                                 </div>
                                                 <div class="mail-contnet d-inline-block align-middle">
                                                     <h5 class="my-1">Schema Requests</h5> <span
-                                                        class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
+                                                        class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{notificationsSchemas}}  requests</span>
 
                                                 </div>
                                             </a>
@@ -499,7 +499,7 @@
                 <!-- Row -->
                 <div class="row">
                     <!-- Column -->
-                    <div class="col-lg-4 col-md-12" ng-init="getAuth();getClusterApi();">
+                    <div class="col-lg-4 col-md-12" ng-init="getClusterApi();">
                         <div class="card card-inverse card-primary">
                             <div class="card-body">
                                 <div class="d-flex">
@@ -526,6 +526,7 @@
                     <!-- Column -->
                     <div class="col-lg-4 col-md-12">
                         <div class="card card-inverse card-success">
+                            <a href="users">
                             <div class="card-body">
                                 <div class="d-flex">
                                     <div class="mr-3 align-self-center">
@@ -533,24 +534,25 @@
                                     </div>
                                     <div>
                                         <h3 class="card-title">Teams & Users</h3>
-                                        <h6 class="card-subtitle">10 teams</h6>
+                                        <h6 class="card-subtitle">{{ teamsize }} teams</h6>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-4 align-self-center">
-                                        <h2 class="font-weight-light text-white text-nowrap text-truncate">20 Users</h2>
+                                        <h2 class="font-weight-light text-white text-nowrap text-truncate">{{ userscount }} users</h2>
                                     </div>
                                     <div class="col-8 pb-3 pt-2 text-right">
                                         <div class="spark-count" style="height:65px"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div></a>
                         </div>
                     </div>
                     <!-- Column -->
                     <!-- Column -->
                     <div class="col-lg-4 col-md-12">
                         <div class="card card-inverse card-info">
+                            <a href="envs">
                             <div class="card-body">
                                 <div class="d-flex">
                                     <div class="mr-3 align-self-center">
@@ -558,18 +560,18 @@
                                     </div>
                                     <div>
                                         <h3 class="card-title">Configured clusters</h3>
-                                        <h6 class="card-subtitle">2 Schema Registry Envs</h6>
+                                        <h6 class="card-subtitle">{{schema_clusters_count}} Schema Registry cluster</h6>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-4 align-self-center">
-                                        <h2 class="font-weight-light text-white text-nowrap text-truncate">5 Kafka clusters</h2>
+                                        <h2 class="font-weight-light text-white text-nowrap">{{kafka_clusters_count}} Kafka clusters</h2>
                                     </div>
                                     <div class="col-8 pb-3 pt-2 text-right">
                                         <div class="spark-count" style="height:65px"></div>
                                     </div>
                                 </div>
-                            </div>
+                            </div></a>
                         </div>
                     </div>
                     <!-- Column -->
@@ -581,7 +583,7 @@
                     <div class="col-md-6 col-lg-4 col-xlg-2">
                         <div class="card card-inverse card-dark">
                             <div class="p-2 rounded text-center">
-                                <h1 class="font-light text-white">2</h1>
+                                <h1 class="font-light text-white">{{ notifications }} </h1>
                                 <h6 class="text-white">Pending Topic Requests</h6>
                             </div>
                         </div>
@@ -590,7 +592,7 @@
                     <div class="col-md-6 col-lg-4 col-xlg-2">
                         <div class="card card-inverse card-megna">
                             <div class="p-2 rounded text-center">
-                                <h1 class="font-light text-white">3</h1>
+                                <h1 class="font-light text-white">{{ notificationsAcls }} </h1>
                                 <h6 class="text-white">Pending Acl Requests</h6>
                             </div>
                         </div>
@@ -599,7 +601,7 @@
                     <div class="col-md-6 col-lg-4 col-xlg-2">
                         <div class="card card-inverse card-warning">
                             <div class="p-2 rounded text-center">
-                                <h1 class="font-light text-white">2</h1>
+                                <h1 class="font-light text-white">{{ notificationsSchemas }}</h1>
                                 <h6 class="text-white">Pending Schema Requests</h6>
                             </div>
                         </div>

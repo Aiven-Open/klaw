@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 
 
 @RestController
@@ -23,7 +24,7 @@ public class UtilController {
     private UtilControllerService utilControllerService;
 
     @RequestMapping(value = "/getAuth", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<String> getAuth() {
+    public ResponseEntity<HashMap<String, String>> getAuth() {
         return new ResponseEntity<>(utilControllerService.getAuth(), HttpStatus.OK);
     }
 

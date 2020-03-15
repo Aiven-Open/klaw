@@ -93,9 +93,10 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
                    $scope.kafkawizeversion = output.kafkawizeversion;
-                    $scope.notifications = output.notifications;
-                    $scope.notificationsAcls = output.notificationsAcls;
+                   $scope.notifications = output.notifications;
+                   $scope.notificationsAcls = output.notificationsAcls;
                    $scope.statusauthexectopics = output.statusauthexectopics;
+                   $scope.notificationsSchemas = output.notificationsSchemas;
                    $scope.alerttop = output.alertmessage;
                    if(output.companyinfo == null){
                        $scope.companyinfo = "Company not defined!!";
@@ -105,6 +106,11 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
 
                    if($scope.userlogged != null)
                        $scope.loggedinuser = "true";
+
+                   $scope.teamsize = output.teamsize;
+                   $scope.userscount = output.users_count;
+                   $scope.schema_clusters_count = output.schema_clusters_count;
+                   $scope.kafka_clusters_count = output.kafka_clusters_count;
                }).error(
                    function(error)
                    {
