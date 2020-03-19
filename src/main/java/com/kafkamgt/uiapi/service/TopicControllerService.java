@@ -228,7 +228,7 @@ public class TopicControllerService {
 
     public String approveTopicRequests(String topicName, String env) throws KafkawizeException {
 
-        if(!utilService.checkAuthorizedAdmin())
+        if(!utilService.checkAuthorizedAdmin_SU())
             return "{\"result\":\"Not Authorized\"}";
 
         TopicRequest topicRequest = manageDatabase.getHandleDbRequests().selectTopicRequestsForTopic(topicName, env);
@@ -245,7 +245,7 @@ public class TopicControllerService {
 
     public String declineTopicRequests(String topicName, String env) throws KafkawizeException {
 
-        if(!utilService.checkAuthorizedAdmin())
+        if(!utilService.checkAuthorizedAdmin_SU())
             return "{\"result\":\"Not Authorized\"}";
 
         TopicRequest topicRequest = manageDatabase.getHandleDbRequests().selectTopicRequestsForTopic(topicName, env);

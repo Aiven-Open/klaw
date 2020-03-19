@@ -30,6 +30,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.statusauthexectopics = output.statusauthexectopics;
+                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                     $scope.alerttop = output.alertmessage;
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";
@@ -136,7 +137,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         }).success(function(output) {
 
             $scope.alert = "Topic Delete Request : "+output.result;
-            $scope.getMyTopicRequests();
+            $scope.getMyTopicRequests(1);
 
         }).error(
             function(error)
@@ -157,7 +158,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             }).success(function(output) {
 
                 $scope.alert = "Acl Delete Request : "+output.result;
-                $scope.getMyAclRequests();
+                $scope.getMyAclRequests(1);
 
             }).error(
                 function(error)

@@ -250,63 +250,65 @@
 			<nav class="sidebar-nav">
 				<ul id="sidebarnav">
 					<li class="nav-small-cap">PERSONAL</li>
-					<li>
-						<a class="has-arrow" href="dashboard" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
+					<li class="active">
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="dashboard">Home</a></li>
-							<li><a href="myRequests">My Requests</a></li>
+							<li><a href="index">Home</a></li>
 							<li><a href="activityLog">Activity Log</a></li>
+							<li><a href="serverConfig">Server Configuration</a></li>
 						</ul>
 					</li>
 					<li>
-						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li class="three-column">
+					<li class="two-column">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
 							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
-							<li><a href="execTopics">Approve Topic Request</a></li>
-							<li><a href="execTopics">Approve Acl Request</a></li>
-							<li><a href="execSchemas">Approve Schema Request</a></li>
+							<li><a href="myRequests">My Requests</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
-					<li class="three-column">
+					<li class="two-column">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="envs">Kafka</a></li>
 							<li><a href="envs">Schema Registry</a></li>
-							<li><a href="addEnv">Add Cluster</a></li>
+							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addEnv">Add Cluster</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
 
-					<li class="two-column active">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users Management</span></a>
+					<li class="two-column">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users - Teams</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="showUsers">View Users</a></li>
-							<li><a href="table-layout.html">View Teams</a></li>
-							<li><a href="table-basic.html">Add Users</a></li>
-							<li><a href="table-layout.html">Add Teams</a></li>
+							<li><a href="users">View Users</a></li>
+							<li><a href="teams">View Teams</a></li>
+							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addUser">Add Users</a></li>
+							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addTeam">Add Teams</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column">
+					<li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="table-basic.html">Topics</a></li>
-							<li><a href="table-layout.html">Acls</a></li>
+							<li><a href="synchronizeTopics">Topics</a></li>
+							<li><a href="synchronizeAcls">Acls</a></li>
 						</ul>
 					</li>
-					<li>
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Admin</span></a>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="table-basic.html">Server Properties</a></li>
+							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
+							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
+							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
 					</li>
 

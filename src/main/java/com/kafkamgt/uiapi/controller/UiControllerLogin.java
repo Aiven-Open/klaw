@@ -117,7 +117,7 @@ public class UiControllerLogin {
         return checkAuth("synchronizeAcls.html");
     }
 
-    @RequestMapping(value = "/showTeams", method = RequestMethod.GET)
+    @RequestMapping(value = "/teams", method = RequestMethod.GET)
     public String showTeams(ModelMap model) {
         return checkAuth("showTeams.html");
     }
@@ -156,10 +156,4 @@ public class UiControllerLogin {
     public String notFound(ModelMap model) {
         return checkAuth("index.html");
     }
-
-    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-    public String dashboard(ModelMap model) {
-        return checkAuth("dashboard.html");
-    }
-
 }

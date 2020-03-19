@@ -52,6 +52,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.statusauthexectopics = output.statusauthexectopics;
+                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                     $scope.alerttop = output.alertmessage;
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";
@@ -204,6 +205,13 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.addAcl.acl_ssl = "";
              else if($scope.addAcl.acl_ip_ssl == 'SSL')
                 $scope.addAcl.acl_ip = "";
+
+            if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
+            {
+                $scope.alertnote = "Consumer group is not filled."
+                $scope.showAlertToast();
+                return;
+            }
 
             serviceInput['environment'] = $scope.addAcl.envName.name;
             serviceInput['topicname'] = $scope.addAcl.topicname;

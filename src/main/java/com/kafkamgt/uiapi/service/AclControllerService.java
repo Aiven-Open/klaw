@@ -178,7 +178,7 @@ public class AclControllerService {
 
     public String approveAclRequests(String req_no) throws KafkawizeException {
 
-        if(!utilService.checkAuthorizedAdmin())
+        if(!utilService.checkAuthorizedAdmin_SU())
             return "{\"result\":\"Not Authorized\"}";
 
         AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
@@ -203,7 +203,7 @@ public class AclControllerService {
 
     public String declineAclRequests(String req_no) {
 
-        if(!utilService.checkAuthorizedAdmin())
+        if(!utilService.checkAuthorizedAdmin_SU())
             return "{\"result\":\"Not Authorized\"}";
 
         AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);

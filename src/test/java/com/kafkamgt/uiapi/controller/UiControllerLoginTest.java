@@ -61,7 +61,7 @@ public class UiControllerLoginTest {
 
     @Test
     public void login1() throws Exception {
-        mvcPerformAndAssert("/login", "newlogin.html");
+        mvcPerformAndAssert("/login", "loginnew.html");
     }
 
     @Test

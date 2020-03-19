@@ -78,6 +78,15 @@ public class UtilService {
         return ga.getAuthority();
     }
 
+    public boolean checkAuthorizedAdmin_SU(){
+        GrantedAuthority ga = this.userDetails.getAuthorities().iterator().next();
+        String authority = ga.getAuthority();
+        if(authority.equals("ROLE_SUPERUSER") || authority.equals("ADMIN"))
+            return true;
+        else
+            return false;
+    }
+
     public boolean checkAuthorizedSU(){
         GrantedAuthority ga = this.userDetails.getAuthorities().iterator().next();
         String authority = ga.getAuthority();
