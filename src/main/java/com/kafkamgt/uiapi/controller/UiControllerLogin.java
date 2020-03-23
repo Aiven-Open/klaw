@@ -44,7 +44,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(ModelMap model) {
-        return checkAuth("dashboard");
+        return checkAuth("index");
     }
 
     @RequestMapping(value = "/addUser", method = RequestMethod.GET)
@@ -72,9 +72,14 @@ public class UiControllerLogin {
         return checkAuth("execTopics.html");
     }
 
-    @RequestMapping(value = "/myRequests", method = RequestMethod.GET)
+    @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
     public String myTopicRequests(ModelMap model) {
-        return checkAuth("myRequests.html");
+        return checkAuth("myTopicRequests.html");
+    }
+
+    @RequestMapping(value = "/myAclRequests", method = RequestMethod.GET)
+    public String myAclRequests(ModelMap model) {
+        return checkAuth("myAclRequests.html");
     }
 
     @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)

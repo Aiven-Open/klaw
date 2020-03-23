@@ -115,7 +115,7 @@ public class UiControllerLoginTest {
 
     @Test
     public void requestSchemaUpload() throws Exception{
-        mvcPerformAndAssert("/requestSchemaUpload", "requestSchema.html");
+        mvcPerformAndAssert("/requestSchema", "requestSchema.html");
     }
 
     @Test
@@ -126,11 +126,6 @@ public class UiControllerLoginTest {
     @Test
     public void showUsers()throws Exception {
         mvcPerformAndAssert("/showUsers", "showUsers.html");
-    }
-
-    @Test
-    public void pcTopics() throws Exception{
-        mvcPerformAndAssert("/pcTopics", "pcTopics.html");
     }
 
     @Test

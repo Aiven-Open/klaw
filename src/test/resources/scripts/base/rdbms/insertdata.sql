@@ -32,6 +32,6 @@ Insert into env(name,host,port,protocol,type) values ('DEV_SCHEMAREGISTRY','loca
 
 /* Insert product and version */
 
-Insert into productdetails(name,version) values ('KafkaWize','3.5');
+Insert into productdetails(name,version) values ('KafkaWize','4.0');
 
 commit;

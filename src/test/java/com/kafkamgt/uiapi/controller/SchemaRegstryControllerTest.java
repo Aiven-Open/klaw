@@ -106,6 +106,7 @@ public class SchemaRegstryControllerTest {
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/execSchemaRequests")
                 .param("topicName","testtopic")
+                .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

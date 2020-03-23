@@ -48,10 +48,10 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             );
         };
 
-        $scope.deleteEnv = function() {
+        $scope.deleteEnv = function(idval) {
 
         if (!window.confirm("Are you sure, you would like to delete the cluster : "
-                        +  $scope.deleteEnv.idval
+                        +  idval
                         )) {
                         return;
                     }
@@ -60,8 +60,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             method: "POST",
                             url: "deleteClusterRequest",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'clusterId' : $scope.deleteEnv.idval },
-                            data: {'clusterId' : $scope.deleteEnv.idval}
+                            params: {'clusterId' : idval },
+                            data: {'clusterId' : idval}
                         }).success(function(output) {
 
                             $scope.alert = "Delete Cluster Request : "+output.result;

@@ -126,14 +126,15 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         }
 
 
-    $scope.deleteTopicRequest = function() {
+    $scope.deleteTopicRequest = function(topic_selected,env_selected) {
 
+        var topicname = topic_selected +","+ env_selected;
         $http({
             method: "GET",
             url: "deleteTopicRequests",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'topicName' : $scope.deleteTopicRequest.topicname },
-            data: {'topicName' : $scope.deleteTopicRequest.topicname}
+            params: {'topicName' : topicname },
+            data: {'topicName' : topicname}
         }).success(function(output) {
 
             $scope.alert = "Topic Delete Request : "+output.result;
@@ -147,14 +148,14 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         );
     }
 
-        $scope.deleteAclRequest = function() {
+        $scope.deleteAclRequest = function(req_no) {
 
             $http({
                 method: "GET",
                 url: "deleteAclRequests",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'req_no' : $scope.deleteAclRequest.req_no },
-                data: {'req_no' : $scope.deleteAclRequest.req_no}
+                params: {'req_no' : req_no },
+                data: {'req_no' : req_no}
             }).success(function(output) {
 
                 $scope.alert = "Acl Delete Request : "+output.result;

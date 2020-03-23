@@ -24,6 +24,13 @@
 <![endif]-->
 </head>
 
+<style>
+
+img.two {
+  width: 100%;
+}
+</style>
+
 <body>
     <!-- ============================================================== -->
     <!-- Preloader - style you can find in spinners.css -->
@@ -40,7 +47,14 @@
             <div class="login-box card">
                 <div class="card-body">
                     <form class="form-horizontal form-material" id="login" th:action="@{/login}" method="post">
-                        <h3 class="p-2 rounded-title mb-3">Sign In</h3>
+                        <table width="100%">
+                            <tr>
+                                <td width="50%" align="left"><h3 class="p-2 rounded-title mb-3">Sign In</h3></td>
+                                <td align="right"><img src="assets/images/logo-signin.png" class="two" /></td>
+                            </tr>
+
+                        </table>
+
                         <div class="form-group ">
                             <div class="col-xs-12">
                                 <input class="form-control" type="text" required="" name="username" placeholder="Username"> </div>
@@ -67,8 +81,9 @@
                         </div>
                     </form>
                     <div th:if="${param.error}">
-                        Invalid username and password.
+                        Invalid username and/or password.
                     </div>
+
                     <div th:if="${param.logout}">
                         You have been logged out.
                     </div>

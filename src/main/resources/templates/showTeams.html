@@ -64,9 +64,9 @@
 					<!-- Logo icon --><b>
 					<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
 					<!-- Dark Logo icon -->
-					<img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo" />
-					<!-- Light Logo icon -->
-					<img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />
+					<!--<img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo" />-->
+					<!--&lt;!&ndash; Light Logo icon &ndash;&gt;-->
+					<!--<img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />-->
 				</b>
 					<!--End Logo icon -->
 					<!-- Logo text --><span>
@@ -94,45 +94,46 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<li class="nav-item d-none d-md-block search-box"> <a
-							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
-							href="javascript:void(0)"><i class="ti-search"></i></a>
-						<form class="app-search">
-							<input type="text" class="form-control" placeholder="Search & enter"> <a
-								class="srh-btn"><i class="ti-close"></i></a> </form>
-					</li>
+					<img src="assets/images/logo_kw.png" width="20%" />
+					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
+							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
+							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
+						<!--<form class="app-search">-->
+							<!--<input type="text" class="form-control" placeholder="Search & enter"> <a-->
+								<!--class="srh-btn"><i class="ti-close"></i></a> </form>-->
+					<!--</li>-->
 					<!-- ============================================================== -->
 					<!-- Messages -->
 					<!-- ============================================================== -->
-					<li class="nav-item dropdown mega-dropdown"> <a
-							class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-							class="mdi mdi-view-grid"></i></a>
-						<div class="dropdown-menu scale-up-left">
-							<ul class="mega-dropdown-menu row">
+					<!--<li class="nav-item dropdown mega-dropdown"> <a-->
+							<!--class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
+							<!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i-->
+							<!--class="mdi mdi-view-grid"></i></a>-->
+						<!--<div class="dropdown-menu scale-up-left">-->
+							<!--<ul class="mega-dropdown-menu row">-->
 
 
-								<li class="col-lg-3  mb-4">
-									<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>
-									<!-- Contact -->
-									<form>
-										<div class="form-group">
-											<input type="text" class="form-control" id="exampleInputname1"
-												   placeholder="Enter Name"> </div>
-										<div class="form-group">
-											<input type="email" class="form-control" placeholder="Enter email">
-										</div>
-										<div class="form-group">
-                                                <textarea class="form-control" id="exampleTextarea" rows="3"
-														  placeholder="Message"></textarea>
-										</div>
-										<button type="submit" class="btn btn-info">Submit</button>
-									</form>
-								</li>
+								<!--<li class="col-lg-3  mb-4">-->
+									<!--<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>-->
+									<!--&lt;!&ndash; Contact &ndash;&gt;-->
+									<!--<form>-->
+										<!--<div class="form-group">-->
+											<!--<input type="text" class="form-control" id="exampleInputname1"-->
+												   <!--placeholder="Enter Name"> </div>-->
+										<!--<div class="form-group">-->
+											<!--<input type="email" class="form-control" placeholder="Enter email">-->
+										<!--</div>-->
+										<!--<div class="form-group">-->
+                                                <!--<textarea class="form-control" id="exampleTextarea" rows="3"-->
+														  <!--placeholder="Message"></textarea>-->
+										<!--</div>-->
+										<!--<button type="submit" class="btn btn-info">Submit</button>-->
+									<!--</form>-->
+								<!--</li>-->
 
-							</ul>
-						</div>
-					</li>
+							<!--</ul>-->
+						<!--</div>-->
+					<!--</li>-->
 					<!-- ============================================================== -->
 					<!-- End Messages -->
 					<!-- ============================================================== -->
@@ -182,7 +183,7 @@
 											</div>
 											<div class="mail-contnet d-inline-block align-middle">
 												<h5 class="my-1">Schema Requests</h5> <span
-													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsSchemas }}  requests</span>
 
 											</div>
 										</a>
@@ -200,8 +201,9 @@
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
-								src="assets/images/users/iconuser.png" alt="user" class="profile-pic" /></a>
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><button type="button" class="btn waves-effect waves-light btn-rounded btn-sm btn-success">
+							<i class="mdi mdi-account"></i>
+						</button></a>
 						<div class="dropdown-menu dropdown-menu-right scale-up">
 							<ul class="dropdown-user">
 								<li>
@@ -254,7 +256,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="index">Home</a></li>
-							<li><a href="myRequests">My Requests</a></li>
 							<li><a href="activityLog">Activity Log</a></li>
 							<li><a href="serverConfig">Server Configuration</a></li>
 						</ul>
@@ -262,37 +263,33 @@
 					<li>
 						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li class="three-column">
+					<li class="two-column">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
 							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
+							<li><a href="myTopicRequests">My Topic Requests</a></li>
+							<li><a href="myAclRequests">My Acl Requests</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
-					<li class="three-column">
+					<li class="two-column">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="envs">Kafka</a></li>
 							<li><a href="envs">Schema Registry</a></li>
-							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addEnv">Add Cluster</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
 
 					<li class="two-column active">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users Management</span></a>
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users - Teams</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="users">View Users</a></li>
-							<li><a href="teams">View Teams</a></li>
-							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addUser">Add Users</a></li>
-							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addTeam">Add Teams</a></li>
+							<li><a href="users">Users</a></li>
+							<li><a href="teams">Teams</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -306,7 +303,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -314,6 +311,7 @@
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
 					</li>
+
 				</ul>
 			</nav>
 			<!-- End Sidebar navigation -->
@@ -373,31 +371,42 @@
 				<div class="col-lg-12">
 					<div class="card">
 						<div class="card-body">
-							<h4 class="card-title">Kafkawize Teams</h4>
+
+							<table class="table color-table success-table" width="100%"><tr>
+								<td align="left"><h3 class="card-title">Teams</h3>
+								</td>
+								<td ng-show="statusauthexectopics_su=='Authorized'" align="right">
+									<a href="addTeam">
+										<i class="mdi mdi-library-plus"></i>
+										<button ng-show="statusauthexectopics=='Authorized'" type="button" class="btn btn-outline-info">
+											Add Team</button>
+									</a>
+								</td></tr>
+							</table>
+
 							<div ng-show="allTeams.length>0">
 								<table width="100%" class="table color-table success-table">
 									<thead><tr>
-										<th width="10%" ng-show="statusauthexectopics=='Authorized'">Select</th>
-
 										<th>TeamName</th>
 										<th>Team Mail</th>
 										<th>Team Phone</th>
 										<th>Team Contact Person</th>
+										<th ng-show="statusauthexectopics=='Authorized'">Delete</th>
 									</tr>
 									</thead>
 									<tbody>
 									<tr ng-repeat="teamDetails in allTeams">
-										<td width="10%" ng-show="statusauthexectopics=='Authorized'">
-											<div class="demo-radio-button">
-												<input class="radio-col-orange" ng-model="deleteTeam.idval" value="{{teamDetails.teamname}}"
-													   name="group1" type="radio" id="radio_{{teamDetails.teamname}}" />
-												<label for="radio_{{teamDetails.teamname}}"></label>
-											</div>
-										</td>
+
 										<td>{{ teamDetails.teamname }}</td>
 										<td>{{ teamDetails.teammail }}</td>
 										<td>{{ teamDetails.teamphone }}</td>
 										<td>{{ teamDetails.contactperson }}</td>
+										<td ng-show="statusauthexectopics=='Authorized'">
+											<button type="button" ng-click="deleteTeam(teamDetails.teamname)"
+													class="btn btn-secondary btn-circle">
+												<i class="fa fa-times"></i>
+											</button>
+										</td>
 									</tr>
 									</tbody>
 								</table>
@@ -408,16 +417,6 @@
 			</div>
 
 
-			<div class="row" ng-show="statusauthexectopics=='Authorized'">
-				<div class="card-body">
-					<div class="form-actions">
-						<button ng-click="deleteTeam();" class="btn btn-success"> <i class="fa fa-check"></i>
-							Delete Team</button>
-						<button type="button" class="btn btn-inverse">
-							<a style="color: white" href="addTeam">Add Team</a></button>
-					</div>
-				</div>
-			</div>
 
 
 			<!-- Row -->
@@ -429,78 +428,7 @@
 			<!-- Right sidebar -->
 			<!-- ============================================================== -->
 			<!-- .right-sidebar -->
-			<div class="right-sidebar">
-				<div class="slimscrollright">
-					<div class="rpanel-title"> Service Panel <span><i class="ti-close right-side-toggle"></i></span>
-					</div>
-					<div class="r-panel-body">
-						<ul id="themecolors" class="mt-3">
-							<li><b>With Light sidebar</b></li>
-							<li><a href="javascript:void(0)" data-theme="default" class="default-theme">1</a></li>
-							<li><a href="javascript:void(0)" data-theme="green" class="green-theme">2</a></li>
-							<li><a href="javascript:void(0)" data-theme="red" class="red-theme">3</a></li>
-							<li><a href="javascript:void(0)" data-theme="blue" class="blue-theme working">4</a></li>
-							<li><a href="javascript:void(0)" data-theme="purple" class="purple-theme">5</a></li>
-							<li><a href="javascript:void(0)" data-theme="megna" class="megna-theme">6</a></li>
-							<li class="d-block mt-4"><b>With Dark sidebar</b></li>
-							<li><a href="javascript:void(0)" data-theme="default-dark"
-								   class="default-dark-theme">7</a></li>
-							<li><a href="javascript:void(0)" data-theme="green-dark" class="green-dark-theme">8</a>
-							</li>
-							<li><a href="javascript:void(0)" data-theme="red-dark" class="red-dark-theme">9</a></li>
-							<li><a href="javascript:void(0)" data-theme="blue-dark" class="blue-dark-theme">10</a>
-							</li>
-							<li><a href="javascript:void(0)" data-theme="purple-dark"
-								   class="purple-dark-theme">11</a></li>
-							<li><a href="javascript:void(0)" data-theme="megna-dark"
-								   class="megna-dark-theme ">12</a></li>
-						</ul>
-						<ul class="mt-3 chatonline">
-							<li><b>Chat option</b></li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/1.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Varun Dhavan <small
-										class="text-success">online</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/2.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Genelia Deshmukh <small
-										class="text-warning">Away</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/3.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Ritesh Deshmukh <small
-										class="text-danger">Busy</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/4.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Arijit Sinh <small
-										class="text-muted">Offline</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/5.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Govinda Star <small
-										class="text-success">online</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/6.jpg" alt="user-img"
-																  class="rounded-circle"> <span>John Abraham<small
-										class="text-success">online</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/7.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Hritik Roshan<small
-										class="text-success">online</small></span></a>
-							</li>
-							<li>
-								<a href="javascript:void(0)"><img src="assets/images/users/8.jpg" alt="user-img"
-																  class="rounded-circle"> <span>Pwandeep rajan <small
-										class="text-success">online</small></span></a>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
+
 			<!-- ============================================================== -->
 			<!-- End Right sidebar -->
 			<!-- ============================================================== -->
@@ -512,7 +440,7 @@
 		<!-- footer -->
 		<!-- ============================================================== -->
 		<footer class="footer">
-			© 2020 Kafkawize by kafkawize.com
+			© 2020 Kafkawize by <a href="https://kafkawize.com">kafkawize.com</a>
 		</footer>
 		<!-- ============================================================== -->
 		<!-- End footer -->

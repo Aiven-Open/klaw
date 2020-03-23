@@ -85,17 +85,17 @@
 			<!-- ============================================================== -->
 			<div class="navbar-header">
 				<a class="navbar-brand" href="dashboard">
-					<!-- Logo icon --><b>
+					<!--&lt;!&ndash; Logo icon &ndash;&gt;<b>-->
 					<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
 					<!-- Dark Logo icon -->
-					<img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo" />
-					<!-- Light Logo icon -->
-					<img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />
-				</b>
+					<!--<img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo" />-->
+					<!--&lt;!&ndash; Light Logo icon &ndash;&gt;-->
+					<!--<img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />-->
+				<!--</b>-->
 					<!--End Logo icon -->
 					<!-- Logo text --><span>
                             <!-- dark Logo text -->
-                            <img src="assets/images/logo-dark.png" alt="homepage" class="dark-logo" />
+                            <!--<img src="assets/images/logo-dark.png" alt="homepage" class="dark-logo" />-->
 					<!-- Light Logo text -->
                             <img src="assets/images/logo-light.png" class="light-logo" alt="homepage" /></span>
 				</a>
@@ -118,45 +118,46 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<li class="nav-item d-none d-md-block search-box"> <a
-							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
-							href="javascript:void(0)"><i class="ti-search"></i></a>
-						<form class="app-search">
-							<input type="text" class="form-control" placeholder="Search & enter"> <a
-								class="srh-btn"><i class="ti-close"></i></a> </form>
-					</li>
+                    <img src="assets/images/logo_kw.png" width="20%" />
+					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
+							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
+							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
+						<!--<form class="app-search">-->
+							<!--<input type="text" class="form-control" placeholder="Search & enter"> <a-->
+								<!--class="srh-btn"><i class="ti-close"></i></a> </form>-->
+					<!--</li>-->
 					<!-- ============================================================== -->
 					<!-- Messages -->
 					<!-- ============================================================== -->
-					<li class="nav-item dropdown mega-dropdown"> <a
-							class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-							class="mdi mdi-view-grid"></i></a>
-						<div class="dropdown-menu scale-up-left">
-							<ul class="mega-dropdown-menu row">
+					<!--<li class="nav-item dropdown mega-dropdown"> <a-->
+							<!--class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
+							<!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i-->
+							<!--class="mdi mdi-view-grid"></i></a>-->
+						<!--<div class="dropdown-menu scale-up-left">-->
+							<!--<ul class="mega-dropdown-menu row">-->
 
 
-								<li class="col-lg-3  mb-4">
-									<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>
-									<!-- Contact -->
-									<form>
-										<div class="form-group">
-											<input type="text" class="form-control" id="exampleInputname1"
-												   placeholder="Enter Name"> </div>
-										<div class="form-group">
-											<input type="email" class="form-control" placeholder="Enter email">
-										</div>
-										<div class="form-group">
-                                                <textarea class="form-control" id="exampleTextarea" rows="3"
-														  placeholder="Message"></textarea>
-										</div>
-										<button type="submit" class="btn btn-info">Submit</button>
-									</form>
-								</li>
+								<!--<li class="col-lg-3  mb-4">-->
+									<!--<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>-->
+									<!--&lt;!&ndash; Contact &ndash;&gt;-->
+									<!--<form>-->
+										<!--<div class="form-group">-->
+											<!--<input type="text" class="form-control" id="exampleInputname1"-->
+												   <!--placeholder="Enter Name"> </div>-->
+										<!--<div class="form-group">-->
+											<!--<input type="email" class="form-control" placeholder="Enter email">-->
+										<!--</div>-->
+										<!--<div class="form-group">-->
+                                                <!--<textarea class="form-control" id="exampleTextarea" rows="3"-->
+														  <!--placeholder="Message"></textarea>-->
+										<!--</div>-->
+										<!--<button type="submit" class="btn btn-info">Submit</button>-->
+									<!--</form>-->
+								<!--</li>-->
 
-							</ul>
-						</div>
-					</li>
+							<!--</ul>-->
+						<!--</div>-->
+					<!--</li>-->
 					<!-- ============================================================== -->
 					<!-- End Messages -->
 					<!-- ============================================================== -->
@@ -202,7 +203,7 @@
 											</div>
 											<div class="mail-contnet d-inline-block align-middle">
 												<h5 class="my-1">Schema Requests</h5> <span
-													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsSchemas }}  requests</span>
 
 											</div>
 										</a>
@@ -219,29 +220,30 @@
 					<!-- Profile -->
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
-								src="assets/images/users/iconuser.png" alt="user" class="profile-pic" /></a>
-						<div class="dropdown-menu dropdown-menu-right scale-up">
-							<ul class="dropdown-user">
-								<li>
-									<div class="dw-user-box">
-										<div class="u-img"><img src="assets/images/logged-user.png" alt="user"></div>
-										<div class="u-text">
-											<h4>{{userlogged}}</h4>
-											<p class="text-muted">{{teamname}}</p><a href="myProfile"
-																					 class="btn btn-rounded btn-danger btn-sm">View
-											Profile</a>
-										</div>
-									</div>
-								</li>
-								<li role="separator" class="divider"></li>
-								<li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
-								<li><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
-								<li role="separator" class="divider"></li>
-								<li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
-							</ul>
-						</div>
+                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><button type="button" class="btn waves-effect waves-light btn-rounded btn-sm btn-success">
+                            <i class="mdi mdi-account"></i>
+                        </button></a>
+                        <div class="dropdown-menu dropdown-menu-right scale-up">
+                            <ul class="dropdown-user">
+                                <li>
+                                    <div class="dw-user-box">
+                                        <div class="u-img"><img src="assets/images/logged-user.png" alt="user"></div>
+                                        <div class="u-text">
+                                            <h4>{{userlogged}}</h4>
+                                            <p class="text-muted">{{teamname}}</p><a href="myProfile"
+                                                                                     class="btn btn-rounded btn-danger btn-sm">View
+                                            Profile</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
+                                <li><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
+                            </ul>
+                        </div>
 					</li>
 					<!-- ============================================================== -->
 					<!-- Language -->
@@ -268,71 +270,69 @@
 		<div class="scroll-sidebar">
 			<!-- Sidebar navigation-->
 			<nav class="sidebar-nav">
-				<ul id="sidebarnav">
-					<li class="nav-small-cap">PERSONAL</li>
-					<li>
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="index">Home</a></li>
-							<li><a href="activityLog">Activity Log</a></li>
-							<li><a href="serverConfig">Server Configuration</a></li>
-						</ul>
-					</li>
-					<li class="active">
-						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
-					</li>
-					<li class="two-column">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
-							<li><a href="requestSchema">Request Schema</a></li>
-							<li><a href="myRequests">My Requests</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
-					<li class="two-column">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="envs">Kafka</a></li>
-							<li><a href="envs">Schema Registry</a></li>
-							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addEnv">Add Cluster</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+                <ul id="sidebarnav">
+                    <li class="nav-small-cap">PERSONAL</li>
+                    <li>
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="index">Home</a></li>
+                            <li><a href="activityLog">Activity Log</a></li>
+                            <li><a href="serverConfig">Server Configuration</a></li>
+                        </ul>
+                    </li>
+                    <li class="active">
+                        <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+                    </li>
+                    <li class="two-column">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="requestTopics">Request Topic</a></li>
+                            <li><a href="requestAcls">Request Acl</a></li>
+                            <li><a href="requestSchema">Request Schema</a></li>
+                            <li><a href="myTopicRequests">My Topic Requests</a></li>
+                            <li><a href="myAclRequests">My Acl Requests</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-devider"></li>
+                    <li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
+                    <li class="two-column">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="envs">Kafka</a></li>
+                            <li><a href="envs">Schema Registry</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-devider"></li>
+                    <li class="nav-small-cap">EXTRA COMPONENTS</li>
 
-					<li class="two-column">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users - Teams</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="users">View Users</a></li>
-							<li><a href="teams">View Teams</a></li>
-							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addUser">Add Users</a></li>
-							<li ng-show="statusauthexectopics_su=='Authorized'"><a href="addTeam">Add Teams</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="synchronizeTopics">Topics</a></li>
-							<li><a href="synchronizeAcls">Acls</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
-						</ul>
-					</li>
+                    <li class="two-column">
+                        <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users - Teams</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="users">Users</a></li>
+                            <li><a href="teams">Teams</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-devider"></li>
+                    <li class="nav-small-cap">EXTRA COMPONENTS</li>
+                    <li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
+                        <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li><a href="synchronizeTopics">Topics</a></li>
+                            <li><a href="synchronizeAcls">Acls</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-devider"></li>
+                    <li class="nav-small-cap">EXTRA COMPONENTS</li>
+                    <li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+                        <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
+                        <ul aria-expanded="false" class="collapse">
+                            <li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
+                            <li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
+                            <li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
+                        </ul>
+                    </li>
 
-				</ul>
+                </ul>
 			</nav>
 			<!-- End Sidebar navigation -->
 		</div>

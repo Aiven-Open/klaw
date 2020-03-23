@@ -91,6 +91,7 @@ public class TopicControllerTest {
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopicRequests")
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

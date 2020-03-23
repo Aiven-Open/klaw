@@ -102,6 +102,7 @@ public class AclControllerIT {
         String res = mvc.perform(
                 get("/getAclRequests").with(user("uiuser1").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -161,6 +162,7 @@ public class AclControllerIT {
         String res = mvc.perform(
                 get("/getAclRequests").with(user("uiuser1").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -210,6 +212,7 @@ public class AclControllerIT {
         String res = mvc.perform(
                 get("/getAclRequests").with(user("uiuser1").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -237,6 +240,7 @@ public class AclControllerIT {
         String res = mvc.perform(
                 get("/getAclRequests").with(user("uiuser1").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
+                        .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

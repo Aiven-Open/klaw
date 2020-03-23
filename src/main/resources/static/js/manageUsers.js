@@ -114,10 +114,10 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         };
 
-        $scope.deleteTeam = function(){
+        $scope.deleteTeam = function(idval){
 
         if (!window.confirm("Are you sure, you would like to delete the team : "
-                                +  $scope.deleteTeam.idval
+                                +  idval
                                 )) {
                                 return;
                             }
@@ -126,8 +126,8 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     method: "POST",
                     url: "deleteTeamRequest",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'teamId' : $scope.deleteTeam.idval },
-                    data: {'teamId' : $scope.deleteTeam.idval}
+                    params: {'teamId' : idval },
+                    data: {'teamId' : idval}
                 }).success(function(output) {
 
                     $scope.alert = "Delete Team Request : "+output.result;
@@ -143,10 +143,10 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 );
             }
 
-    $scope.deleteUser = function(){
+    $scope.deleteUser = function(idval){
 
         if (!window.confirm("Are you sure, you would like to delete the user : "
-                                +  $scope.deleteUser.idval
+                                +  idval
                                 )) {
                                 return;
                             }
@@ -155,8 +155,8 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 method: "POST",
                 url: "deleteUserRequest",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'userId' : $scope.deleteUser.idval },
-                data: {'userId' : $scope.deleteUser.idval}
+                params: {'userId' : idval },
+                data: {'userId' : idval}
             }).success(function(output) {
 
                 $scope.alert = "Delete User Request : "+output.result;
@@ -307,6 +307,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     $scope.teamname = output.teamname;
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
+                    $scope.statusauthexectopics = output.statusauthexectopics;
                     $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                     $scope.alerttop = output.alertmessage;
                     if(output.companyinfo == null){

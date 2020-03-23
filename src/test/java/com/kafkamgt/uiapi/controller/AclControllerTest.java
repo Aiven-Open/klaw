@@ -92,6 +92,7 @@ public class AclControllerTest {
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getAclRequests")
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

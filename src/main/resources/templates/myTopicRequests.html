@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-<html ng-app="requestSchemaApp" ng-controller="requestSchemaCtrl">
+
+<html ng-app="myRequestsApp" ng-controller="myRequestsCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,7 +10,7 @@
 	<meta name="author" content="">
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>Request Avro Schema | Kafka Self-service Topic Management Portal</title>
+	<title>My Requests | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
@@ -23,8 +23,7 @@
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/requestAvroSchemaUpload.js"></script>
-	<link rel="stylesheet" href="assets/css/custom.css" />
+	<script src="js/myRequests.js"></script>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -34,6 +33,11 @@
 
 	<![endif]-->
 </head>
+<style>
+	.demo-checkbox label, .demo-radio-button label {
+  min-width: 15px;
+  margin-bottom: 20px; }
+</style>
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
@@ -143,18 +147,13 @@
 					<!-- ============================================================== -->
 
 					<!-- ============================================================== -->
-					<!-- End Comment -->
-					<!-- ============================================================== -->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
 								class="mdi mdi-email"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+						<div  class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -332,18 +331,8 @@
 		<div class="container-fluid">
 			<div class="row page-titles">
 			</div>
-			<!-- ============================================================== -->
-			<!-- Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
 
-			<!-- ============================================================== -->
-			<!-- End Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
-
-
+			<!-- Row -->
 			<!-- Row -->
 
 			<div class="row" ng-show="alerttop != null && alerttop != ''">
@@ -376,107 +365,78 @@
 					</div>
 				</div>
 			</div>
-
 			<!-- Row -->
 
-			<div class="row" ng-init="getAuth();getEnvs();loadTeams();">
-				<div class="col-lg-12">
-					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Avro Schema Request Form</h4>
-						</div>
+			<div class="row"  ng-init="getMyTopicRequests(1);">
+				<div class="col-lg-12" ng-show="topicRequests.length > 0">
+					<div class="card">
 						<div class="card-body">
-							<form id="form">
-								<div class="form-body">
+							<h4 class="card-title">Topic Requests</h4>
+							<div>
+								<table width="100%" class="table color-table success-table">
+									<thead><tr>
 
+										<th>TopicName</th>
+										<th>Cluster</th>
+										<th>Requestor</th>
+										<!--<th>Acl_IP</th>-->
+										<!--<th>Acl_SSL</th>-->
+										<!--<th>Application</th>-->
+										<th>Team</th>
+										<th>Status</th>
+										<!--<th>Requested Time</th>-->
+										<th>Updated Time</th>
+										<th></th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ng-repeat="topicRequest in topicRequests">
 
-									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Avro Schema details</h3>
+										<td>{{ topicRequest.topicname }}</td>
+										<td>{{ topicRequest.environment }}</td>
+										<td>{{ topicRequest.username }}</td>
+										<!--<td>{{ topicRequest.acl_ip }}</td>-->
+										<!--<td>{{ topicRequest.acl_ssl }}</td>-->
+										<!--<td>{{ topicRequest.appname }}</td>-->
+										<td>{{ topicRequest.teamname }}</td>
+
+										<td ng-show="topicRequest.topicstatus == 'created'" >
+											<span class="badge badge-info">created</span></td>
+
+										<td ng-show="topicRequest.topicstatus == 'declined'" >
+											<span class="badge badge-danger">declined</span></td>
+
+										<td ng-show="topicRequest.topicstatus == 'approved'" >
+											<span class="badge badge-success">approved</span></td>
+
+										<td>{{ topicRequest.requesttime }}</td>
+										<td ng-show="topicRequest.topicstatus == 'created'">
+											<button type="button" ng-click="deleteTopicRequest(topicRequest.topicname,topicRequest.environment)"
+													class="btn btn-secondary btn-circle">
+												<i class="fa fa-times"></i>
+											</button>
 										</td>
-										<td align="right">
-											<a href="browseTopics">
-												<i class="fas fa-arrow-alt-circle-left"></i>
-												<button type="button"
-														class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
-											</a>
-										</td></tr>
-									</table>
-
-									<hr>
-
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label class="control-label">Select Cluster</label>
-												<select class="form-control custom-select" ng-blur="getAllTopics()"  ng-model="addSchema.envName" ng-options="env as env.name for env in allenvs">
-
-												</select>
-											</div>
-										</div>
-										<!--/span-->
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label>Select Topic</label>
-												<select class="form-control custom-select"  ng-model="addSchema.topicname" ng-blur="getTopicTeam(addSchema.topicname)" ng-options="o as o for o in alltopics">
-
-												</select>
-												<small class="form-control-feedback"> Please select the topic on which schema has to be registered. </small>
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group has-success">
-												<label class="control-label">Schema</label>
-												<textarea class="form-control" placeholder="{&quot;type&quot; : &quot;string&quot;}" title=""
-														  ng-model="addSchema.schemafull" rows="3"></textarea>
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label>Topic Owner Team</label>
-												<input disabled ng-model="addSchema.team" type="text" placeholder="topicownerteam" class="form-control">
-												<small class="form-control-feedback"> On selecting a topic, this team field is filled automatically. </small>
-											</div>
-										</div>
-
-										<!--/span-->
-									</div>
-
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group has-success">
-												<label class="control-label">Remarks</label>
-												<textarea class="form-control" placeholder="Any specific comments" title=""
-														  ng-model="addSchema.remarks" rows="3"></textarea>
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-
-									<!--/row-->
-
-								</div>
-								<div id="successbar">{{ alert }}</div>
-								<div id="alertbar">{{ alertnote }}</div>
-								<div class="form-actions">
-									<button ng-click="addSchema();" class="btn btn-success"> <i class="fa fa-check"></i>
-										Save</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
-								</div>
-							</form>
+										<!--<td>{{ topicRequest.approvingtime }}</td>-->
+									</tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
+			<div class="dataTables_paginate paging_simple_numbers"  ng-show="topicRequests.length>0">
+				<ul class="pagination">
+					<li class="paginate_button page-item active" disabled>
+						<a href="#" class="page-link">Pages</a>
+					</li>
+					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
+						<a href="#" class="page-link" ng-click="getMyTopicRequests(allPages)">{{allPages}}</a>
+					</li>
+				</ul>
+			</div>
+
 			<!-- Row -->
 
 			<!-- ============================================================== -->
@@ -535,6 +495,7 @@
 <script src="assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
 <!-- Chart JS -->
+<script src="assets/plugins/gauge/gauge.min.js"></script>
 <script src="assets/js/widget-data.js"></script>
 <!-- ============================================================== -->
 <!-- Style switcher -->
