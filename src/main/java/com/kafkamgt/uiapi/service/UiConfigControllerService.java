@@ -257,7 +257,7 @@ public class UiConfigControllerService {
                 }
             }
         }
-        newList = newList.stream()
+       newList = newList.stream()
                 .sorted(Collections.reverseOrder(Comparator.comparing(ActivityLog::getActivityTime)))
                 .collect(Collectors.toList());
         return newList;

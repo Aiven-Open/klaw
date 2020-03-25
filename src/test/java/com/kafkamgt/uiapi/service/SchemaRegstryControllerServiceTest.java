@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class SchemaRegstryControllerServiceTest {
         when(handleDbRequests.updateSchemaRequest(schemaRequest, "uiuser1"))
                 .thenReturn("success");
 
-        String result = schemaRegstryControllerService.execSchemaRequests(input, envSel);
+        String result = schemaRegstryControllerService.execSchemaRequests(topicName, envSel);
         assertEquals(result,"success");
     }
 
@@ -126,14 +127,12 @@ public class SchemaRegstryControllerServiceTest {
         SchemaRequest schemaRequest = new SchemaRequest();
         schemaRequest.setSchemafull("schema..");
 
-        String input = topicName +"-----"+version+"-----"+envSel;
-
         when(handleDbRequests.selectSchemaRequest(topicName, version, envSel))
                 .thenReturn(schemaRequest);
         when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
                 .thenReturn(response);
 
-        String result = schemaRegstryControllerService.execSchemaRequests(input, envSel);
+        String result = schemaRegstryControllerService.execSchemaRequests(topicName, envSel);
         assertThat(result, CoreMatchers.containsString("Failure"));
     }
 
@@ -157,8 +156,8 @@ public class SchemaRegstryControllerServiceTest {
         when(handleDbRequests.updateSchemaRequest(schemaRequest, "uiuser1"))
                 .thenThrow(new RuntimeException("Error"));
 
-        String result = schemaRegstryControllerService.execSchemaRequests(input, envSel);
-        assertThat(result, CoreMatchers.containsString("failure"));
+        String result = schemaRegstryControllerService.execSchemaRequests(topicName, envSel);
+        assertThat(result, CoreMatchers.containsString("Error"));
     }
 
     @Test
@@ -189,10 +188,12 @@ public class SchemaRegstryControllerServiceTest {
         List<SchemaRequest> schList = new ArrayList<>();
         SchemaRequest schReq = new SchemaRequest();
         schReq.setSchemafull("<Schema>");
+        schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
         schList.add(schReq);
 
         schReq = new SchemaRequest();
         schReq.setSchemafull("<Schema1>");
+        schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
         schList.add(schReq);
 
         return schList;

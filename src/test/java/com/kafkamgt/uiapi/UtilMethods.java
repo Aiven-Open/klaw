@@ -44,6 +44,7 @@ public class UtilMethods {
         mSchema.setEnvironment("DEV");
         mSchema.setSchemaversion("1.0");
         mSchema.setTopicname("testtopic");
+        mSchema.setSchemafull("schema");
         listMSchemas.add(mSchema);
 
         return listMSchemas;
@@ -248,6 +249,7 @@ public class UtilMethods {
         schemaRequest.setTeamname("Team1");
         schemaRequest.setUsername("uiuser1");
         schemaRequest.setSchemaRequestPK(schemaRequestPK);
+        schemaRequest.setSchemafull("schema");
         schemaList.add(schemaRequest);
         return schemaList;
     }

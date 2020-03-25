@@ -59,6 +59,17 @@ public class UiControllerLoginTest {
         assertEquals(fwdedUrl, response);
     }
 
+    private void loginMock(){
+        ReflectionTestUtils.setField(uiControllerLogin, "utilService", utilService);
+
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        doNothing().when(utilService).setUserDetails(any());
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     @Test
     public void login1() throws Exception {
         mvcPerformAndAssert("/login", "loginnew.html");
@@ -80,106 +91,127 @@ public class UiControllerLoginTest {
 
     @Test
     public void addUsers()throws Exception {
-        mvcPerformAndAssert("/addUsers", "addUser.html");
+        loginMock();
+        mvcPerformAndAssert("/addUser", "addUser.html");
     }
 
     @Test
     public void envs() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/envs", "envs.html");
     }
 
     @Test
     public void execAcls()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/execAcls", "execAcls.html");
     }
 
     @Test
     public void execSchemas() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/execSchemas", "execSchemas.html");
     }
 
     @Test
     public void execTopics()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/execTopics", "execTopics.html");
     }
 
     @Test
     public void myTopicRequests()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/execTopics", "execTopics.html");
     }
 
     @Test
     public void requestAcls()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/requestAcls", "requestAcls.html");
     }
 
     @Test
     public void requestSchemaUpload() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/requestSchema", "requestSchema.html");
     }
 
     @Test
     public void requestTopics()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/requestTopics", "requestTopics.html");
     }
 
     @Test
     public void showUsers()throws Exception {
-        mvcPerformAndAssert("/showUsers", "showUsers.html");
+        loginMock();
+        mvcPerformAndAssert("/users", "showUsers.html");
     }
 
     @Test
     public void myProfile()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/myProfile", "myProfile.html");
     }
 
     @Test
     public void changePwd() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/changePwd", "changePwd.html");
     }
 
     @Test
     public void synchronizeTopics() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/synchronizeTopics", "synchronizeTopics.html");
     }
 
     @Test
     public void synchronizeAcls()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/synchronizeAcls", "synchronizeAcls.html");
     }
 
     @Test
     public void showTeams() throws Exception{
-        mvcPerformAndAssert("/showTeams", "showTeams.html");
+        loginMock();
+        mvcPerformAndAssert("/teams", "showTeams.html");
     }
 
     @Test
     public void addTeam() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/addTeam", "addTeam.html");
     }
 
     @Test
     public void addEnv()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/addEnv", "addEnv.html");
     }
 
     @Test
     public void activityLog()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/activityLog", "activityLog.html");
     }
 
     @Test
     public void browseAcls()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/browseAcls", "browseAcls.html");
     }
 
     @Test
     public void serverConfig() throws Exception{
+        loginMock();
         mvcPerformAndAssert("/serverConfig", "serverConfig.html");
     }
 
     @Test
     public void notFound()throws Exception {
+        loginMock();
         mvcPerformAndAssert("/notFound", "index.html");
     }
 }

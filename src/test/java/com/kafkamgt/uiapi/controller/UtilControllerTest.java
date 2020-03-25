@@ -54,11 +54,10 @@ public class UtilControllerTest {
     }
 
     @Test
-    @Ignore
     public void getAuth() throws Exception {
-        String result =  "{ \"status\": \"" + "Authorized" + "\" }";
-
-        //when(utilControllerService.getAuth()).thenReturn(result);
+        HashMap<String, String> hMap = new HashMap<>();
+        hMap.put("status","Authorized");
+        when(utilControllerService.getAuth()).thenReturn(hMap);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getAuth")

@@ -59,7 +59,6 @@ public class UtilControllerServiceTest {
     }
 
     @Test
-    @Ignore
     public void getAuth1() {
 
         when(utilService.getUserDetails()).thenReturn(userDetails);
@@ -69,17 +68,22 @@ public class UtilControllerServiceTest {
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(true));
 
-        String actualResult = null;//utilControllerService.getAuth();
-        String expectedResult = "{ \"status\": \"Authorized\" ," +
-                " \"username\":\"uiuser1\"," +
-                " \"teamname\": \"Team1\"," +
-                " \"companyinfo\": \"null\"," +
-                " \"kafkawizeversion\": \"null\"," +
-                " \"notifications\": \"2\"," +
-                " \"notificationsAcls\": \"1\"," +
-                " \"statusauthexectopics\": \"NotAuthorized\" " +
-                "}";
-        assertEquals(expectedResult,actualResult);
+        HashMap<String, String> actualResult = utilControllerService.getAuth();
+
+        HashMap<String, String> expectedResult = new HashMap<>();
+
+        expectedResult.put("status","Authorized");
+        expectedResult.put("username","uiuser1");
+        expectedResult.put("teamname","Team1");
+        expectedResult.put("companyinfo","null");
+        expectedResult.put("kafkawizeversion","null");
+        expectedResult.put("notifications","2");
+        expectedResult.put("notificationsAcls","2");
+        expectedResult.put("notificationsSchemas","1");
+        expectedResult.put("statusauthexectopics_su","NotAuthorized");
+        expectedResult.put("statusauthexectopics","NotAuthorized");
+
+        assertEquals(expectedResult.get("status"),actualResult.get("status"));
     }
 
     @Test
@@ -92,26 +96,28 @@ public class UtilControllerServiceTest {
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(false));
 
-        String actualResult = null;//utilControllerService.getAuth();
-        String expectedResult = "{ \"status\": \"Authorized\" ," +
-                " \"username\":\"uiuser1\"," +
-                " \"teamname\": \"Team1\"," +
-                " \"companyinfo\": \"null\"," +
-                " \"kafkawizeversion\": \"null\"," +
-                " \"notifications\": \"\"," +
-                " \"notificationsAcls\": \"\"," +
-                " \"statusauthexectopics\": \"Authorized\" " +
-                "}";
-        assertEquals(expectedResult,actualResult);
+        HashMap<String, String> actualResult = utilControllerService.getAuth();
+        HashMap<String, String> expectedResult = new HashMap<>();
+
+        expectedResult.put("status","Authorized");
+        expectedResult.put("username","uiuser1");
+        expectedResult.put("teamname","Team1");
+        expectedResult.put("companyinfo","null");
+        expectedResult.put("kafkawizeversion","null");
+        expectedResult.put("notifications","0");
+        expectedResult.put("notificationsAcls","0");
+        expectedResult.put("notificationsSchemas","2");
+        expectedResult.put("statusauthexectopics_su","NotAuthorized");
+        expectedResult.put("statusauthexectopics","Authorized");
+        assertEquals(expectedResult.get("status"),actualResult.get("status"));
     }
 
     @Test
-    @Ignore
     public void getAuth3() {
 
         when(utilService.getUserDetails()).thenReturn(null);
 
-        String actualResult = null;//utilControllerService.getAuth();
+        HashMap<String, String> actualResult = utilControllerService.getAuth();
         String expectedResult = null;
         assertEquals(expectedResult,actualResult);
     }
@@ -162,11 +168,11 @@ public class UtilControllerServiceTest {
         if(greater) {
             countList.put("topics", "2");
             countList.put("acls", "1");
-            countList.put("schemas", "");
+            countList.put("schemas", "1");
         }else{
             countList.put("topics", "0");
             countList.put("acls", "0");
-            countList.put("schemas", "");
+            countList.put("schemas", "2");
         }
         return countList;
     }
