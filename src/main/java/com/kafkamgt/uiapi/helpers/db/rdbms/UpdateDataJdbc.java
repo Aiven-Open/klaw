@@ -114,7 +114,7 @@ public class UpdateDataJdbc {
 
     public String declineAclRequest(AclRequests aclRequests, String approver){
         aclRequests.setApprover(approver);
-        aclRequests.setAclstatus("decline");
+        aclRequests.setAclstatus("declined");
         aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         aclRequestsRepo.save(aclRequests);
 

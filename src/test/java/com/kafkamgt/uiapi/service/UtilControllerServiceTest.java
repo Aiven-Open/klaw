@@ -20,6 +20,7 @@ import java.util.HashMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -66,7 +67,7 @@ public class UtilControllerServiceTest {
         when(userInfo.getTeam()).thenReturn("Team1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_USER");
         when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(true));
+        when(handleDbRequests.getAllRequestsToBeApproved(any(),anyString())).thenReturn(getCounts(true));
 
         HashMap<String, String> actualResult = utilControllerService.getAuth();
 
@@ -94,7 +95,7 @@ public class UtilControllerServiceTest {
         when(userInfo.getTeam()).thenReturn("Team1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_ADMIN");
         when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getAllRequestsToBeApproved((any()))).thenReturn(getCounts(false));
+        when(handleDbRequests.getAllRequestsToBeApproved(any(), anyString())).thenReturn(getCounts(false));
 
         HashMap<String, String> actualResult = utilControllerService.getAuth();
         HashMap<String, String> expectedResult = new HashMap<>();

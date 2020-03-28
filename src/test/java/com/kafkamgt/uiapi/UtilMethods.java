@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class UtilMethods {
@@ -72,6 +73,7 @@ public class UtilMethods {
     public List<ActivityLog> getLogs(){
         List<ActivityLog> activityLogs = new ArrayList<>();
         ActivityLog activityLog = new ActivityLog();
+        activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
         activityLogs.add(activityLog);
         return activityLogs;
     }

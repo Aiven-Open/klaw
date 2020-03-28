@@ -169,9 +169,9 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role){
 
-        return cassandraSelectHelper.getAllRequestsToBeApproved(requestor);
+        return cassandraSelectHelper.getAllRequestsToBeApproved(requestor, role);
     }
 
     public List<TopicRequest> getAllTopicRequests(String requestor){
@@ -194,10 +194,10 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     }
 
     public List<AclRequests> getAllAclRequests(String requestor){
-        return cassandraSelectHelper.selectAclRequests(false,requestor);
+        return cassandraSelectHelper.selectAclRequests(false,requestor,"");
     }
     public List<AclRequests> getCreatedAclRequests(String requestor){
-        return cassandraSelectHelper.selectAclRequests(true,requestor);
+        return cassandraSelectHelper.selectAclRequests(true,requestor,"");
     }
 
     public List<SchemaRequest> getAllSchemaRequests(String requestor){

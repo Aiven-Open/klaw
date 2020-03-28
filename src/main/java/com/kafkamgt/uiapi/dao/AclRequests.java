@@ -45,6 +45,9 @@ public class AclRequests implements Serializable {
     @Column(name = "requesttime")
     private Timestamp requesttime;
 
+    @Transient
+    private String requesttimestring;
+
     @Column(name = "topicstatus")
     private String aclstatus;
 

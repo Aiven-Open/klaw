@@ -42,6 +42,11 @@ public class UiControllerLogin {
         return checkAuth("index");
     }
 
+    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
+    public String dashboard(ModelMap model) {
+        return checkAuth("dashboard");
+    }
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(ModelMap model) {
         return checkAuth("index");

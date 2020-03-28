@@ -53,7 +53,7 @@ public class SelectDataTest {
         when(row.getTimestamp("exectime")).thenReturn(new Date(), new Date());
         when(row.getTimestamp("requesttime")).thenReturn(new Date(), new Date());
 
-        HashMap<String, String> hashMap = selectData.getAllRequestsToBeApproved(requestor);
+        HashMap<String, String> hashMap = selectData.getAllRequestsToBeApproved(requestor,"");
 
         assertEquals("1", hashMap.get("acls"));
         assertEquals("1", hashMap.get("schemas") );
@@ -77,7 +77,7 @@ public class SelectDataTest {
         when(row.getTimestamp("exectime")).thenReturn(new Date(), new Date());
         when(row.getTimestamp("requesttime")).thenReturn(new Date(), new Date());
 
-        List<AclRequests> listReqs = selectData.selectAclRequests(false, requestor);
+        List<AclRequests> listReqs = selectData.selectAclRequests(false, requestor,"");
         assertEquals(2, listReqs.size());
     }
 

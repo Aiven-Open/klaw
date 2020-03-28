@@ -48,7 +48,9 @@ public class UtilControllerService {
             String statusAuth = null;
             String statusAuthExecTopics, statusAuthExecTopicsSU;
 
-            HashMap<String, String> outstanding = manageDatabase.getHandleDbRequests().getAllRequestsToBeApproved(userDetails.getUsername());
+            HashMap<String, String> outstanding = manageDatabase.getHandleDbRequests()
+                    .getAllRequestsToBeApproved(userDetails.getUsername(), authority);
+
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
             String outstandingAclReqs = outstanding.get("acls");

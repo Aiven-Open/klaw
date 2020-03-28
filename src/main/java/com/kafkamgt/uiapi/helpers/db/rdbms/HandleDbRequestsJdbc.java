@@ -95,9 +95,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role){
 
-        return jdbcSelectHelper.getAllRequestsToBeApproved(requestor);
+        return jdbcSelectHelper.getAllRequestsToBeApproved(requestor, role);
     }
 
     public List<TopicRequest> getAllTopicRequests(String requestor){
@@ -120,10 +120,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     public List<AclRequests> getAllAclRequests(String requestor){
-        return jdbcSelectHelper.selectAclRequests(false,requestor);
+        return jdbcSelectHelper.selectAclRequests(false, requestor, "");
     }
     public List<AclRequests> getCreatedAclRequests(String requestor){
-        return jdbcSelectHelper.selectAclRequests(true,requestor);
+        return jdbcSelectHelper.selectAclRequests(true, requestor, "");
     }
 
     public List<SchemaRequest> getAllSchemaRequests(String requestor){

@@ -94,7 +94,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<img src="assets/images/logo_kw.png" width="20%" />
+					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -230,10 +230,10 @@
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-								class="wi wi-hurricane-warning"></i></a>
-						<div class="dropdown-menu dropdown-menu-right scale-up"> <a class="dropdown-item"
-																					href="#">English</a>  </div>
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="mdi mdi-help-circle"></i></a>
+						<div class="dropdown-menu dropdown-menu-right scale-up">
+							<a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">Help</a>  </div>
 					</li>
 				</ul>
 			</div>
@@ -412,8 +412,8 @@
 										<td ng-show="aclRequest.aclstatus == 'approved'" >
 											<span class="badge badge-success">approved</span></td>
 
-										<td>{{ aclRequest.requesttime }}</td>
-										<td ng-show="topicRequest.topicstatus == 'created'">
+										<td>{{ aclRequest.requesttimestring }}</td>
+										<td ng-show="aclRequest.aclstatus == 'created'">
 											<button type="button" ng-click="deleteAclRequest(aclRequest.req_no)"
 													class="btn btn-secondary btn-circle">
 												<i class="fa fa-times"></i>

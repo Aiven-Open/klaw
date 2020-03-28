@@ -1,56 +1,72 @@
-Watch the Introduction:
+# Kafkawize
+
+Kafkawize is a Self service Apache Kafka Topic Management tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, schemas by introducing roles/authorizations to users of various teams of an organization.
+
+## Getting Started
+
+To get Kafkwize running on your local machine or server, please follow the instructions mentioned in [GettingStarted - ReadTheDocs](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
+
+### Prerequisites
+
+```
+Intellij/Eclipse/Netbeans
+Kafkawize metastore (Rdbms or Cassandra)
+Free licence key
+others..
+```
+
+Detailed in page [Prerequisites](https://kafkawize.readthedocs.io/en/latest/getting_started.html#prerequisites)
+
+### Installing
+
+```
+Install Cassandra/Rdbms
+Install license key
+Update configuration and mvn install kafkawize and kafkawizeclusterapi
+Start Kafka,Zookeeper
+Access Kafkawize
+```
+
+A step by step guide is explained in this page [DetailedInstallation](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
+
+## Running the tests
+
+Unit and Integration tests are available in [kafkawize](https://github.com/muralibasani/kafkawize) and [kafkawizeclusterapi](https://github.com/muralibasani/kafkawizeclusterapi)
+
+Run a clean install with mvn clean install
+
+
+## Deployment
+
+```
+Install Cassandra/Rdbms
+Install license key
+Update configuration and mvn install kafkawize and kafkawizeclusterapi
+Start Kafka,Zookeeper
+Access Kafkawize
+Make sure the applications are running without any network/firewall issues
+```
+
+## Built With
+
+* Bootstrap UI, Angular, Javascript, HTML, CSS - The web framework used
+* [Maven](https://maven.apache.org/) - Dependency Management
+* Java, Spring boot, Spring security, SQL, CSQL, Kafka Admin client - The backend development used
+
+## Versioning
+
+For the versions available, see the [tags on this repository](https://github.com/muralibasani/kafkawize/tags). 
+
+## Authors
+
+* **Muralidhar Basani** - [muralibasani](https://github.com/muralibasani)
+
+## License
+
+This project is licensed under the Apache License 2.0  - see the [LICENSE.md](LICENSE.md) file for details
+
+## Watch the Introduction:
 
 [![Watch the Introduction](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)](https://youtu.be/KOjdpRtRhEY)
 
 
-Watch the Demo:
-
-[![Watch the demo](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseTopics.JPG)](https://youtu.be/6i7CzBsLH14)
-
-
-Online Documentation : https://kafkawize.readthedocs.io 
-
-Pdf : https://buildmedia.readthedocs.org/media/pdf/kafkawize/latest/kafkawize.pdf
-
-Download options : https://kafkawize.readthedocs.io/en/latest/getting_started.html#download-kafkawize
-
-
-<b>Screenshots</b>
-
-![ImageFig10](https://github.com/kafkawize/kafkawize/blob/master/screenshots/login.JPG)
-
-![ImageFig8](https://github.com/kafkawize/kafkawize/blob/master/screenshots/BrowseTopics.JPG)
-
-![ImageFig7](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewAcls.JPG)
-
-![ImageFig12](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ProducersConsumers.JPG)
-
-![ImageFig14](https://github.com/kafkawize/kafkawize/blob/master/screenshots/RequestTopic.JPG)
-
-![ImageFig13](https://github.com/kafkawize/kafkawize/blob/master/screenshots/RequestACL.JPG)
-
-![ImageFig11](https://github.com/kafkawize/kafkawize/blob/master/screenshots/MyRequests.JPG)
-
-![ImageFig6](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ApproveTopics.JPG)
-
-![ImageFig5](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ApproveACL.JPG)
-
-![ImageFig15](https://github.com/kafkawize/kafkawize/blob/master/screenshots/SynchronizeAcls.JPG)
-
-![ImageFig16](https://github.com/kafkawize/kafkawize/blob/master/screenshots/SynchronizeTopics.JPG)
-
-![ImageFig2](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddCluster.JPG)
-
-![ImageFig9](https://github.com/kafkawize/kafkawize/blob/master/screenshots/Environments.JPG)
-
-![ImageFig3](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddTeam.JPG)
-
-![ImageFig4](https://github.com/kafkawize/kafkawize/blob/master/screenshots/AddUser.JPG)
-
-![ImageFig17](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ActivityLog.JPG)
-
-![ImageFig18](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewUsers.JPG)
-
-![ImageFig20](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ViewTeams.JPG)
-
-![ImageFig21](https://github.com/kafkawize/kafkawize/blob/master/screenshots/ServerConfig.JPG)

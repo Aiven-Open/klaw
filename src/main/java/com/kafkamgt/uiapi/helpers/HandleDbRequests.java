@@ -30,7 +30,7 @@ public interface HandleDbRequests {
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor);
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role);
 
     public List<TopicRequest> getAllTopicRequests(String requestor);
     public List<TopicRequest> getCreatedTopicRequests(String requestor);

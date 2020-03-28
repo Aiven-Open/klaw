@@ -91,7 +91,7 @@
                     <!-- ============================================================== -->
                     <!-- Search -->
                     <!-- ============================================================== -->
-                    <img src="assets/images/logo_kw.png" width="20%" />
+                    <a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
                     <!--<li class="nav-item d-none d-md-block search-box"> <a-->
                             <!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
                             <!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -232,10 +232,10 @@
                     <!-- ============================================================== -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-                                class="wi wi-hurricane-warning"></i></a>
-                        <div class="dropdown-menu dropdown-menu-right scale-up"> <a class="dropdown-item"
-                                                                                    href="#">English</a>  </div>
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="mdi mdi-help-circle"></i></a>
+                        <div class="dropdown-menu dropdown-menu-right scale-up">
+                            <a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">Help</a>  </div>
                     </li>
                 </ul>
             </div>
@@ -432,7 +432,7 @@
                             </div>
                         </div>
                     </a>
-                    <a href="myRequests" ng-show="statusauthexectopics!='Authorized'">
+                    <a href="myTopicRequests" ng-show="statusauthexectopics!='Authorized'">
                         <div class="card card-inverse card-dark">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notifications }} </h1>
@@ -451,7 +451,7 @@
                             </div>
                         </div>
                     </a>
-                    <a href="myRequests" ng-show="statusauthexectopics!='Authorized'">
+                    <a href="myAclRequests" ng-show="statusauthexectopics!='Authorized'">
                         <div class="card card-inverse card-megna">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notificationsAcls }} </h1>
@@ -483,7 +483,14 @@
                             </div>
                             <div class="align-self-center ml-3">
                                 <h3 class="mb-0 text-info">{{ allenvs[0].name }}</h3>
-                                <h5 class="text-muted mb-0">{{ allenvs[0].envStatus }}</h5>
+
+                                <h5 ng-show="allenvs[0].envStatus == 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-info">ONLINE</span>
+                                </h5>
+                                <h5 ng-show="allenvs[0].envStatus != 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-warning">allenvs[0].envStatus}}</span>
+                                </h5>
+
                             </div>
                         </div>
                     </div>
@@ -498,7 +505,12 @@
                             </div>
                             <div class="align-self-center ml-3">
                                 <h3 class="mb-0 text-success">{{ allenvs[1].name }}</h3>
-                                <h5 class="text-muted mb-0">{{ allenvs[1].envStatus }}</h5>
+                                <h5 ng-show="allenvs[1].envStatus == 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-info">ONLINE</span>
+                                </h5>
+                                <h5 ng-show="allenvs[1].envStatus != 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-warning">allenvs[1].envStatus}}</span>
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -513,7 +525,12 @@
                             </div>
                             <div class="align-self-center ml-3">
                                 <h3 class="mb-0">{{ allenvs[2].name }}</h3>
-                                <h5 class="text-muted mb-0">{{ allenvs[2].envStatus }}</h5>
+                                <h5 ng-show="allenvs[2].envStatus == 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-info">ONLINE</span>
+                                </h5>
+                                <h5 ng-show="allenvs[2].envStatus != 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-warning">allenvs[2].envStatus}}</span>
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -528,7 +545,12 @@
                             </div>
                             <div class="align-self-center ml-3">
                                 <h3 class="mb-0 text-primary">{{ allenvs[3].name }}</h3>
-                                <h5 class="text-muted mb-0">{{ allenvs[3].envStatus }}</h5>
+                                <h5 ng-show="allenvs[3].envStatus == 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-info">ONLINE</span>
+                                </h5>
+                                <h5 ng-show="allenvs[3].envStatus != 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-warning">allenvs[3].envStatus}}</span>
+                                </h5>
                             </div>
                         </div>
                     </div>
