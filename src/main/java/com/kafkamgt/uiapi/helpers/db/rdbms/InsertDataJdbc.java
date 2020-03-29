@@ -89,7 +89,7 @@ public class InsertDataJdbc {
         topicRequestPK.setEnvironment(topicRequest.getEnvironment());
         topicRequest.setTopicRequestPK(topicRequestPK);
         topicRequest.setTopicstatus("created");
-        topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())).toString());
+        topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
         topicRequestsRepo.save(topicRequest);
 
         UserInfo userInfo = jdbcSelectHelper.selectUserInfo(topicRequest.getUsername());
@@ -192,6 +192,8 @@ public class InsertDataJdbc {
         schemaRequestPK.setTopicname(schemaRequest.getTopicname());
         schemaRequest.setSchemaRequestPK(schemaRequestPK);
 
+        schemaRequest.setSchemafull(schemaRequest.getSchemafull().trim());
+
         schemaRequest.setTopicstatus("created");
         schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         schemaRequest.setTeamname(jdbcSelectHelper.selectUserInfo(schemaRequest.getUsername()).getTeam());
@@ -223,6 +225,7 @@ public class InsertDataJdbc {
             messageSchemaPK.setEnvironment(mSchema.getEnvironment());
             messageSchemaPK.setSchemaversion(mSchema.getSchemaversion());
             messageSchemaPK.setTopicname(mSchema.getTopicname());
+
 
             mSchema.setMessageSchemaPK(messageSchemaPK);
             messageSchemaRepo.save(mSchema);

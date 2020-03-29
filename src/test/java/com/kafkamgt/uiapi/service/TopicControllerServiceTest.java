@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -201,11 +202,11 @@ public class TopicControllerServiceTest {
 
         List<List<TopicRequest>> topicList = topicControllerService.getCreatedTopicRequests();
 
-        assertEquals(topicList.size(),2);
-        assertEquals(topicList.get(0).size(),3);
+        assertEquals(topicList.size(),3);
+        assertEquals(topicList.get(0).size(),2);
         assertEquals(topicList.get(1).size(),2);
-        assertEquals(topicList.get(0).get(2).getTopicname(),"topic3");
-        assertEquals(topicList.get(1).get(1).getTopicname(),"topic5");
+        assertEquals(topicList.get(0).get(1).getTopicname(),"topic2");
+        assertEquals(topicList.get(1).get(1).getTopicname(),"topic4");
     }
 
     @Test
@@ -220,7 +221,7 @@ public class TopicControllerServiceTest {
         String topicName = "topic1";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, "DEV")).thenReturn(topicRequest);
         when(handleDbRequests.updateTopicRequest(topicRequest, "uiuser1")).thenReturn("success");
@@ -236,7 +237,7 @@ public class TopicControllerServiceTest {
         String topicName = "topic1", env = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, env)).thenReturn(topicRequest);
         when(clusterApiService.approveTopicRequests(topicName, topicRequest))
                 .thenReturn(new ResponseEntity<String>("failure error",HttpStatus.OK));
@@ -326,7 +327,7 @@ public class TopicControllerServiceTest {
         String topicName = "testtopic", envSel = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, envSel)).thenReturn(topicRequest);
         when(handleDbRequests.declineTopicRequest(topicRequest,"uiuser1")).thenReturn("success");
@@ -340,7 +341,7 @@ public class TopicControllerServiceTest {
 
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.getAllTopicRequests(anyString())).thenReturn(getListTopicRequests());
-        List<TopicRequest> listTopicRqs = topicControllerService.getTopicRequests();
+        List<TopicRequest> listTopicRqs = topicControllerService.getTopicRequests("1");
         assertEquals(listTopicRqs.size(), 2);
     }
 
@@ -358,6 +359,7 @@ public class TopicControllerServiceTest {
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setEnvironment(env.getHost());
         topicRequest.setTopicpartitions("2");
+        topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
     }
 
@@ -366,6 +368,7 @@ public class TopicControllerServiceTest {
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setEnvironment(env.getHost());
         topicRequest.setTopicpartitions("abc");
+        topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
     }
 
@@ -374,6 +377,7 @@ public class TopicControllerServiceTest {
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setEnvironment(env.getHost());
         topicRequest.setTopicpartitions("-1");
+        topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
     }
 
@@ -383,6 +387,7 @@ public class TopicControllerServiceTest {
         topicRequest.setTopicname(name);
         topicRequest.setEnvironment(env.getHost());
         topicRequest.setTopicpartitions("2");
+        topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
     }
 
@@ -392,6 +397,7 @@ public class TopicControllerServiceTest {
         topicRequest.setTopicname("testtopic1");
         topicRequest.setEnvironment(env.getHost());
         topicRequest.setTopicpartitions("2");
+        topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
 
         List<TopicRequest> listReqs = new ArrayList<>();
         listReqs.add(topicRequest);
@@ -400,6 +406,7 @@ public class TopicControllerServiceTest {
         topicRequest1.setTopicname("testtopic12");
         topicRequest1.setEnvironment(env.getHost());
         topicRequest1.setTopicpartitions("2");
+        topicRequest1.setRequesttime(new Timestamp(System.currentTimeMillis()));
 
         listReqs.add(topicRequest1);
 

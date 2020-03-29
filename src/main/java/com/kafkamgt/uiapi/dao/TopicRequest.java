@@ -65,7 +65,10 @@ public class TopicRequest implements Serializable {
     private String requestor;
 
     @Column(name = "requesttime")
-    private String requesttime;
+    private Timestamp requesttime;
+
+    @Transient
+    private String requesttimestring;
 
     @Column(name = "topicstatus")
     private String topicstatus;

@@ -7,15 +7,19 @@
 var app = angular.module('synchronizeAclsApp',[]);
 
 app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window) {
-	
-	// Set http service defaults
-	// We force the "Accept" header to be only "application/json"
-	// otherwise we risk the Accept header being set by default to:
-	// "application/json; text/plain" and this can result in us
-	// getting a "text/plain" response which is not able to be
-	// parsed. 
-	//$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
+
+	$scope.showSuccessToast = function() {
+                 var x = document.getElementById("successbar");
+                 x.className = "show";
+                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+               }
+
+       $scope.showAlertToast = function() {
+                 var x = document.getElementById("alertbar");
+                 x.className = "show";
+                 setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+               }
 
 	$scope.getEnvs = function() {
 
@@ -45,6 +49,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
              $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.statusauthexectopics = output.statusauthexectopics;
+            $scope.statusauthexectopics_su = output.statusauthexectopics_su;
             $scope.alerttop = output.alertmessage;
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";
@@ -94,7 +99,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             if(!$scope.getAcls.envName)
                 return;
 
-            if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getAcls.envName.name)) {
+            if (!window.confirm("Are you sure, you would like to Synchronize this info on "+$scope.getAcls.envName.name+ " ?")) {
                 $scope.updatedSyncStr="";
                 return;
             }
@@ -108,11 +113,13 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             }).success(function(output) {
                 $scope.alert = "Acl Sync Request : "+output.result;
                 $scope.updatedSyncStr="";
+                $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
-                    alert("Error : "+error.value);
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
 

@@ -22,7 +22,25 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 	
     $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
 
+    $scope.loadFromUrl = function() {
+        var str = window.location.search;
+        var envSelected, topicSelected;
+        if(str){
+            var envSelectedIndex = str.indexOf("envSelected");
+            var topicNameIndex = str.indexOf("topicname");
+
+            if(envSelectedIndex > 0 && topicNameIndex > 0)
+            {
+                $scope.envSelectedFromUrl = str.substring(13, topicNameIndex-1);
+                $scope.topicSelectedFromUrl = str.substring(topicNameIndex+10);
+            }
+        }
+    }
+
             $scope.getAuth = function() {
+
+            $scope.loadFromUrl();
+
             	$http({
                     method: "GET",
                     url: "getAuth",
@@ -34,6 +52,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.statusauthexectopics = output.statusauthexectopics;
+                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                     $scope.alerttop = output.alertmessage;
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";
@@ -172,15 +191,33 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
         };
 
+        $scope.cancelRequest = function() {
+                    $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
+                }
+
         $scope.addAcl = function() {
 
+            $scope.alert = null;
+            $scope.alertnote = null;
             var serviceInput = {};
+
+//            if($scope.addAcl.acl_ip_ssl == 'IP')
+//                $scope.addAcl.acl_ssl = "";
+//             else if($scope.addAcl.acl_ip_ssl == 'SSL')
+//                $scope.addAcl.acl_ip = "";
+
+            if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
+            {
+                $scope.alertnote = "Consumer group is not filled."
+                $scope.showAlertToast();
+                return;
+            }
 
             serviceInput['environment'] = $scope.addAcl.envName.name;
             serviceInput['topicname'] = $scope.addAcl.topicname;
             serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
             serviceInput['teamname'] = $scope.addAcl.team;
-            serviceInput['appname'] = $scope.addAcl.app;
+            serviceInput['appname'] = "App";//$scope.addAcl.app;
             serviceInput['remarks'] = $scope.addAcl.remarks;
             serviceInput['acl_ip'] = $scope.addAcl.acl_ip;
             serviceInput['acl_ssl'] = $scope.addAcl.acl_ssl;
@@ -203,15 +240,6 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 return;
              }
 
-//            if (!window.confirm("Are you sure, you would like to create the acl : "
-//                +  $scope.addAcl.topicname +
-//                "\nEnv : " + $scope.addAcl.envName.name +
-//                "\nTeam :" + $scope.addAcl.team +
-//                "\nApp :" + $scope.addAcl.app +
-//                "\nAcls : IP:" + $scope.addAcl.acl_ip + ",  \nAcl SSL: " + $scope.addAcl.acl_ssl
-//            )) {
-//                return;
-//            }
 
             $http({
                 method: "POST",

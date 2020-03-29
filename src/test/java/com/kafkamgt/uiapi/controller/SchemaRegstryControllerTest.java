@@ -101,11 +101,12 @@ public class SchemaRegstryControllerTest {
 
     @Test
     public void execSchemaRequests() throws Exception {
-        when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn("success");
+        when(schemaRegstryControllerService.execSchemaRequests(anyString(), anyString())).thenReturn("success");
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/execSchemaRequests")
                 .param("topicName","testtopic")
+                .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

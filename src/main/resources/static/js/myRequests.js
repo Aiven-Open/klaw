@@ -30,6 +30,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.statusauthexectopics = output.statusauthexectopics;
+                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                     $scope.alerttop = output.alertmessage;
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";
@@ -64,13 +65,18 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-    $scope.getMyTopicRequests = function() {
+    $scope.getMyTopicRequests = function(pageNoSelected) {
         $http({
             method: "GET",
             url: "getTopicRequests",
-            headers : { 'Content-Type' : 'application/json' }
+            headers : { 'Content-Type' : 'application/json' },
+            params: {'pageNo' : pageNoSelected }
         }).success(function(output) {
             $scope.topicRequests = output;
+            if(output!=null && output.length>0){
+                $scope.resultPages = output[0].allPageNos;
+                $scope.resultPageSelected = pageNoSelected;
+            }
 
         }).error(
             function(error)
@@ -81,14 +87,18 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         );
     }
 
-        $scope.getMyAclRequests = function() {
+        $scope.getMyAclRequests = function(pageNoSelected) {
             $http({
                 method: "GET",
                 url: "getAclRequests",
-                headers : { 'Content-Type' : 'application/json' }
+                headers : { 'Content-Type' : 'application/json' },
+                 params: {'pageNo' : pageNoSelected }
             }).success(function(output) {
                 $scope.aclRequests = output;
-
+                if(output!=null && output.length>0){
+                    $scope.resultPagesAcl = output[0].allPageNos;
+                    $scope.resultPageSelectedAcl = pageNoSelected;
+                }
             }).error(
                 function(error)
                 {
@@ -116,18 +126,19 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         }
 
 
-    $scope.deleteTopicRequest = function() {
+    $scope.deleteTopicRequest = function(topic_selected,env_selected) {
 
+        var topicname = topic_selected +","+ env_selected;
         $http({
             method: "GET",
             url: "deleteTopicRequests",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'topicName' : $scope.deleteTopicRequest.topicname },
-            data: {'topicName' : $scope.deleteTopicRequest.topicname}
+            params: {'topicName' : topicname },
+            data: {'topicName' : topicname}
         }).success(function(output) {
 
             $scope.alert = "Topic Delete Request : "+output.result;
-            $scope.getMyTopicRequests();
+            $scope.getMyTopicRequests(1);
 
         }).error(
             function(error)
@@ -137,18 +148,18 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         );
     }
 
-        $scope.deleteAclRequest = function() {
+        $scope.deleteAclRequest = function(req_no) {
 
             $http({
                 method: "GET",
                 url: "deleteAclRequests",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'req_no' : $scope.deleteAclRequest.req_no },
-                data: {'req_no' : $scope.deleteAclRequest.req_no}
+                params: {'req_no' : req_no },
+                data: {'req_no' : req_no}
             }).success(function(output) {
 
                 $scope.alert = "Acl Delete Request : "+output.result;
-                $scope.getMyAclRequests();
+                $scope.getMyAclRequests(1);
 
             }).error(
                 function(error)

@@ -95,9 +95,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role){
 
-        return jdbcSelectHelper.getAllRequestsToBeApproved(requestor);
+        return jdbcSelectHelper.getAllRequestsToBeApproved(requestor, role);
     }
 
     public List<TopicRequest> getAllTopicRequests(String requestor){
@@ -120,10 +120,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     public List<AclRequests> getAllAclRequests(String requestor){
-        return jdbcSelectHelper.selectAclRequests(false,requestor);
+        return jdbcSelectHelper.selectAclRequests(false, requestor, "");
     }
     public List<AclRequests> getCreatedAclRequests(String requestor){
-        return jdbcSelectHelper.selectAclRequests(true,requestor);
+        return jdbcSelectHelper.selectAclRequests(true, requestor, "");
     }
 
     public List<SchemaRequest> getAllSchemaRequests(String requestor){
@@ -143,6 +143,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     public List<Team> selectAllTeams(){
         return jdbcSelectHelper.selectAllTeams();
+    }
+
+    @Override
+    public HashMap<String, String> getDashboardInfo() {
+        return jdbcSelectHelper.getDashboardInfo();
     }
 
     public List<UserInfo> selectAllUsersInfo(){
@@ -193,6 +198,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
         return jdbcUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
+    }
+
+    @Override
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
+        return jdbcUpdateHelper.updateSchemaRequestDecline(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){

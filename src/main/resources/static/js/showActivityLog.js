@@ -45,6 +45,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
              $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.statusauthexectopics = output.statusauthexectopics;
+            $scope.statusauthexectopics_su = output.statusauthexectopics_su;
             $scope.alerttop = output.alertmessage;
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";

@@ -32,6 +32,9 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
             var serviceInput = {};
 
+            $scope.alert = null;
+            $scope.alertnote = null;
+
             if($scope.addTopic.topicpartitions ==null && $scope.addTopic.topicpartitions.length<0){
                 //alert("Please fill in topic partitions");
                 $scope.alertnote = "Please fill in topic partitions.";
@@ -58,18 +61,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = $scope.addTopic.topicpartitions;
             serviceInput['teamname'] = $scope.addTopic.team.teamname;
-            serviceInput['appname'] = $scope.addTopic.app;
+            serviceInput['appname'] = "App";//$scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
-
-//            if (!window.confirm("Are you sure, you would like to request a topic ?"+
-//                "\nTopic : " +  $scope.addTopic.topicname  +
-//                "\nPartitions : " + $scope.addTopic.topicpartitions +
-//                "\nEnv : " + $scope.addTopic.envName.name +
-//                "\nTeam : " + $scope.addTopic.team.teamname +
-//                "\nApp : " + $scope.addTopic.app
-//                )) {
-//                return;
-//            }
 
             $http({
                 method: "POST",
@@ -80,16 +73,22 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             }).success(function(output) {
                 $scope.alert = "Topic Request : "+output.result;
                 $scope.showSuccessToast();
+               // $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
-                    alert("Error : "+error.value);
+                    $scope.alertnote = error;
+                   // alert("Error : "+error.value);
+                    $scope.showAlertToast();
                 }
             );
 
         };
 
+        $scope.cancelRequest = function() {
+            $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
+        }
 
         $scope.getEnvs = function() {
 
@@ -136,6 +135,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                    $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                    $scope.statusauthexectopics = output.statusauthexectopics;
+                   $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                    $scope.alerttop = output.alertmessage;
                    if(output.companyinfo == null){
                        $scope.companyinfo = "Company not defined!!";

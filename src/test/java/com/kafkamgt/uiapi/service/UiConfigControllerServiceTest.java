@@ -20,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -454,10 +455,12 @@ public class UiConfigControllerServiceTest {
 
             ActivityLog actLog1 = new ActivityLog();
             actLog1.setEnv("DEV");
+            actLog1.setActivityTime(new Timestamp(System.currentTimeMillis()));
             actList.add(actLog1);
 
             ActivityLog actLog2 = new ActivityLog();
-            actLog1.setEnv("DEV");
+            actLog2.setEnv("DEV");
+            actLog2.setActivityTime(new Timestamp(System.currentTimeMillis()));
             actList.add(actLog2);
         }
         return actList;

@@ -15,7 +15,18 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
+	$scope.showSuccessToast = function() {
+              var x = document.getElementById("successbar");
+              x.className = "show";
+              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+            }
+
+    $scope.showAlertToast = function() {
+              var x = document.getElementById("alertbar");
+              x.className = "show";
+              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+            }
 
         $scope.getMyTopicRequests = function() {
             $http({
@@ -45,11 +56,14 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 
                             $scope.alert = "Topic Approve Request : "+output.result;
                             $scope.getMyTopicRequests();
+                            $scope.showSuccessToast();
 
                         }).error(
                             function(error)
                             {
                                 $scope.alert = error;
+                                $scope.alertnote = error;
+                                $scope.showAlertToast();
                             }
                         );
         }
@@ -67,11 +81,14 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 
                         $scope.alert = "Topic Approve Request : "+output.result;
                         $scope.getMyTopicRequests();
+                        $scope.showSuccessToast();
 
                     }).error(
                         function(error)
                         {
                             $scope.alert = error;
+                            $scope.alertnote = error;
+                            $scope.showAlertToast();
                         }
                     );
                 }
@@ -106,6 +123,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.statusauthexectopics = output.statusauthexectopics;
+                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                     $scope.alerttop = output.alertmessage;
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";

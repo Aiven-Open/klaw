@@ -1,0 +1,241 @@
+/*
+Template Name: Material Pro Admin
+Author: Themedesigner
+Email: niravjoshi87@gmail.com
+File: scss
+*/
+// Variables
+@import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700');
+
+
+// 
+// Theme Colors
+// 
+
+$topbar: #2196f3;
+$sidebar: #fff;
+$sidebar-white: #e5edef;
+$sidebar-alt:#f2f6f8;
+
+$sidebar-text: #607d8b;
+$sidebar-icons: #99abb4 ;
+
+$light-text: #a6b7bf;
+$themecolor: #009efb;
+$themecolor-alt: #26c6da;
+$themecolor-dark: #028ee1;
+
+$white: #fff !default;
+$black: #000 !default;
+$blue: #1e88e5 !default;
+$purple: #7460ee !default;
+$red: #fc4b6c !default;
+$orange: #fb8c00 !default;
+$yellow: #ffb22b !default;
+$green: #21c1d6 !default;
+$inverse: #2f3d4a !default;
+$extra-light: #ebf3f5; 
+$megna: #00897b !default;
+$purple: #7460ee !default;
+
+$colors: (blue: $blue,
+    purple: $purple,
+    red: $red,
+    yellow: $yellow,
+    green: $green,
+    white: $white,
+    inverse: $inverse,
+    megna: $megna);
+
+$primary: $purple !default;
+$secondary: #727b84 !default;
+$success: $green !default;
+$info: $blue !default;
+$warning: $yellow !default;
+$danger: $red !default;
+$light: #f2f4f8 !default;
+$dark: #212529 !default;
+
+// 
+// Light Colors
+// 
+$light-danger: #f9e7eb;
+$light-success: #e8fdeb;
+$light-warning: #fff8ec;
+$light-primary: #f1effd;
+$light-info: #cfecfe;
+$light-inverse: #f6f6f6;
+$light-megna: #e0f2f4; 
+
+// 
+// Dark Colors
+// 
+$danger-dark: #e6294b;
+$success-dark: #1eacbe;
+$warning-dark: #e9ab2e;
+$primary-dark: #6352ce;
+$info-dark: #028ee1;
+$red-dark: #d61f1f;
+$inverse-dark: #232a37;
+$dark-transparent:rgba(0, 0, 0, 0.05);
+
+$theme-colors: () !default;
+
+$theme-colors: map-merge(("primary": $primary,
+        "secondary": $secondary,
+        "success": $success,
+        "info": $info,
+        "warning": $warning,
+        "danger": $danger,
+        "light": $light,
+        "dark": $dark,
+        "inverse": $inverse,
+        "megna": $megna,
+        "purple": $purple,
+        "light-danger": $light-danger,
+        "light-success": $light-success,
+        "light-warning": $light-warning,
+        "light-primary": $light-primary,
+        "light-info": $light-info,
+        "light-inverse": $light-inverse,
+        "light-megna": $light-megna,
+        ),
+    $theme-colors);
+
+$text-muted: #99abb4 !default;
+
+// 
+// Extra Variables
+// 
+$rgt: right;
+$lft: left;
+$dark-text: #848a96;
+
+// 
+// Border
+// 
+$border-color: rgba(120, 130, 140, 0.13);
+$radius: 4px;
+
+// 
+// Preloader
+// 
+.preloader{
+    width: 100%;
+    height: 100%;
+    top:0px;
+    position: fixed;
+    z-index: 99999;
+    background: #fff;
+    .cssload-speeding-wheel{
+        position: absolute;
+        top: calc(50% - 3.5px);
+        left: calc(50% - 3.5px);
+    }
+}
+
+// 
+// Font weight Settings Here
+// 
+$font-weight-light: 300 !default;
+$font-weight-normal: 400 !default;
+$font-weight-bold: 700 !default;
+$font-size-base: 0.875rem !default;
+$font-weight-base: 300 !default;
+
+// 
+// Card
+// 
+$card-border-width: 0px !default;
+
+// 
+// Global font setting
+// 
+$font-family-sans-serif: 'Poppins',
+sans-serif !default;
+$body-color: #67757c !default;
+
+$headings-color: #455a64 !default;
+$headings-font-weight: 400 !default;
+$body-bg: #eef5f9 !default;
+
+// 
+// Font size
+// 
+$h1-font-size: 36px !default;
+$h2-font-size: 24px !default;
+$h3-font-size: 21px !default;
+$h4-font-size: 18px !default;
+$h5-font-size: 16px !default;
+$h6-font-size: 14px !default;
+
+
+// 
+// Button Shadow & Hover
+// 
+$enable-shadows: true !default;
+$btn-box-shadow:  0 1px 0 rgba($white, .15) !default;
+
+@each $color, $value in $theme-colors {
+  .btn-#{$color},
+  .btn-outline-#{$color} {
+   box-shadow: 0 2px 2px rgba($value, 0.05);
+   &:hover {
+       box-shadow: 0 8px 15px rgba($value, 0.3);
+   }
+  }
+}
+
+// 
+// Table
+// 
+$table-border-color: #f3f1f1 !default;
+$table-hover-bg: $light !default;
+
+//
+// Badge
+//
+$badge-font-weight: 400 !default;
+$badge-padding-y : 3px !default;
+$badge-padding-x : 10px !default;
+$badge-font-size: 12px !default;
+
+// 
+// Button
+// 
+$btn-padding-y: 7px !default;
+$btn-padding-x: 12px !default;
+$btn-padding-y-lg: .75rem !default;
+$btn-padding-x-lg: 1.5rem !default;
+$btn-padding-y-sm: .25rem !default;
+$btn-padding-x-sm: .5rem !default;
+
+// 
+// Dropdown
+// 
+$dropdown-item-padding-y : 8px !default;
+$dropdown-item-padding-x : 1rem !default;
+$dropdown-link-color: $body-color !default;
+
+// 
+// Form
+// 
+$input-border-color: #d9d9d9 !default;
+$input-color: $body-color !default;
+$input-font-size: 1rem !default;
+$input-box-shadow:   none  !default;
+$input-focus-box-shadow: 0 0 0 1px rgba($info, .25) !default;
+$custom-select-focus-box-shadow: transparent !default;
+
+// Grid breakpoints
+//
+// Define the minimum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries.
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1400px
+) !default;

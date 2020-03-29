@@ -37,7 +37,7 @@ public class UtilControllerService {
         this.utilService = utilService;
     }
 
-    public String getAuth() {
+    public HashMap<String, String> getAuth() {
         UserDetails userDetails = utilService.getUserDetails();
 
         if(userDetails!=null) {
@@ -46,19 +46,28 @@ public class UtilControllerService {
             String authority = utilService.getAuthority(userDetails);
 
             String statusAuth = null;
-            String statusAuthExecTopics = null;
+            String statusAuthExecTopics, statusAuthExecTopicsSU;
 
-            HashMap<String, String> outstanding = manageDatabase.getHandleDbRequests().getAllRequestsToBeApproved(userDetails.getUsername());
+            HashMap<String, String> outstanding = manageDatabase.getHandleDbRequests()
+                    .getAllRequestsToBeApproved(userDetails.getUsername(), authority);
+
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
             String outstandingAclReqs = outstanding.get("acls");
             int outstandingAclReqsInt = Integer.parseInt(outstandingAclReqs);
 
+            String outstandingSchemasReqs = outstanding.get("schemas");
+            int outstandingSchemasReqsInt = Integer.parseInt(outstandingSchemasReqs);
+
+
             if(outstandingTopicReqsInt<=0)
-                outstandingTopicReqs = "";
+                outstandingTopicReqs = "0";
 
             if(outstandingAclReqsInt<=0)
-                outstandingAclReqs = "";
+                outstandingAclReqs = "0";
+
+            if(outstandingSchemasReqsInt<=0)
+                outstandingSchemasReqs = "0";
 
             if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
                 statusAuth = "Authorized";
@@ -71,14 +80,25 @@ public class UtilControllerService {
             else
                 statusAuthExecTopics = "NotAuthorized";
 
-            return "{ \"status\": \"" + statusAuth + "\" ," +
-                    " \"username\":\"" + userDetails.getUsername() + "\"," +
-                    " \"teamname\": \"" + teamName + "\"," +
-                    " \"companyinfo\": \"" + companyInfo + "\"," +
-                    " \"kafkawizeversion\": \"" + kafkawizeVersion + "\"," +
-                    " \"notifications\": \"" + outstandingTopicReqs + "\"," +
-                    " \"notificationsAcls\": \"" + outstandingAclReqs + "\"," +
-                    " \"statusauthexectopics\": \"" + statusAuthExecTopics + "\" }";
+            if (authority.equals("ROLE_SUPERUSER"))
+                statusAuthExecTopicsSU = "Authorized";
+            else
+                statusAuthExecTopicsSU = "NotAuthorized";
+
+            HashMap<String, String> dashboardData = manageDatabase.getHandleDbRequests().getDashboardInfo();
+
+            dashboardData.put("status",statusAuth);
+            dashboardData.put("username",userDetails.getUsername());
+            dashboardData.put("teamname",teamName);
+            dashboardData.put("companyinfo",companyInfo);
+            dashboardData.put("kafkawizeversion",kafkawizeVersion);
+            dashboardData.put("notifications",outstandingTopicReqs);
+            dashboardData.put("notificationsAcls",outstandingAclReqs);
+            dashboardData.put("notificationsSchemas",outstandingSchemasReqs);
+            dashboardData.put("statusauthexectopics_su",statusAuthExecTopicsSU);
+            dashboardData.put("statusauthexectopics",statusAuthExecTopics);
+
+            return dashboardData;
         }
         else return null;
     }

@@ -27,39 +27,42 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static Logger LOG = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Autowired
-    ManageDatabase manageTopics;
+    private ManageDatabase manageTopics;
 
     @Autowired
-    UtilService utils;
+    private UtilService utils;
 
     @Value("${custom.org.name}")
-    String orgName;
+    private String orgName;
 
     @Value("${custom.invalidkey.msg}")
-    String invalidKeyMessage;
+    private String invalidKeyMessage;
 
     @Autowired
-    Environment environment;
+    private Environment environment;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        String[] staticResources  =  {
-                "/images/**"
+        String[] staticResources = {
+                "/pages-login.html", "/images/**", "/static/**",
+                "/kafkawize/**", "/*.js", "/**",
+                "/public/**",
+                "/.svg", "/.ico", "/.eot", "/.woff2",
+                "/.ttf", "/.woff", "/.html", "/.js"
         };
 
-        http.csrf().disable().authorizeRequests().anyRequest().permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers(staticResources).permitAll()
-                .anyRequest().fullyAuthenticated()
-                .and().httpBasic().and()
-                .formLogin()
-                .loginPage("/login")
-                .permitAll()
-        ;
-        }
-
+        http
+            .authorizeRequests()
+            .antMatchers(staticResources).permitAll()
+            .anyRequest()
+            .fullyAuthenticated().and().formLogin()
+            .loginPage("/login")
+            .permitAll().and()
+            .csrf().disable().authorizeRequests().anyRequest().permitAll()
+            .and()
+            .logout().logoutSuccessUrl("/login");
+    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

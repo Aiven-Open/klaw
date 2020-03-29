@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,7 +39,10 @@ public class SchemaRegstryControllerService {
 
     public List<SchemaRequest> getCreatedSchemaRequests() {
 
-        return manageDatabase.getHandleDbRequests().getCreatedSchemaRequests(utilService.getUserName());
+        List<SchemaRequest> schemaReqs = manageDatabase.getHandleDbRequests().getCreatedSchemaRequests(utilService.getUserName());
+
+        schemaReqs = schemaReqs.stream().sorted(Comparator.comparing(SchemaRequest::getRequesttime)).collect(Collectors.toList());
+        return schemaReqs;
     }
 
      public String deleteSchemaRequests(String topicName) {
@@ -54,14 +59,9 @@ public class SchemaRegstryControllerService {
         }
     }
 
-    public String execSchemaRequests(String topicName) throws KafkawizeException {
+    public String execSchemaRequests(String topicName, String env) throws KafkawizeException {
 
-        StringTokenizer strTkr = new StringTokenizer(topicName,"-----");
-        topicName = strTkr.nextToken();
-        String schemaversion = strTkr.nextToken();
-        String env = strTkr.nextToken();
-
-        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,schemaversion,env);
+        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,"1.0", env);
 
         ResponseEntity<String> response = clusterApiService.postSchema(schemaRequest, env, topicName);
 
@@ -69,12 +69,23 @@ public class SchemaRegstryControllerService {
             try {
                 return manageDatabase.getHandleDbRequests().updateSchemaRequest(schemaRequest, utilService.getUserName());
             }catch (Exception e){
-                return "{\"result\":\"failure "+e.toString()+"\"}";
+                return e.getMessage();
             }
         }
         else {
             return "Failure in uploading schema" ;
         }
+    }
+
+    public String execSchemaRequestsDecline(String topicName, String env) {
+
+        if(!utilService.checkAuthorizedAdmin())
+            return "{\"result\":\"Not Authorized\"}";
+
+        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,"1.0", env);
+
+        return  manageDatabase.getHandleDbRequests().updateSchemaRequestDecline(schemaRequest, utilService.getUserName());
+
     }
 
     public String uploadSchema(SchemaRequest schemaRequest){
@@ -86,4 +97,6 @@ public class SchemaRegstryControllerService {
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
     }
+
+
 }

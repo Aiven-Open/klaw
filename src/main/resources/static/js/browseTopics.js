@@ -45,6 +45,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.statusauthexectopics = output.statusauthexectopics;
+            $scope.statusauthexectopics_su = output.statusauthexectopics_su;
             $scope.alerttop = output.alertmessage;
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";
@@ -86,6 +87,10 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
         var serviceInput = {};
         var envSelected;
+        $scope.resultBrowse = null;
+        $scope.resultPages = null;
+        $scope.alert = null;
+        $scope.resultPageSelected = null;
 
         if(fromSelect == "false")
         {

@@ -75,7 +75,7 @@ public class SelectDataJdbcTest {
         when(schemaRequestRepo.findAllByTopicstatus("created")).thenReturn(schemaList);
         when(topicRequestsRepo.findAllByTopicstatus("created")).thenReturn(allTopicReqs);
 
-        HashMap<String, String> hashMap = selectData.getAllRequestsToBeApproved(requestor);
+        HashMap<String, String> hashMap = selectData.getAllRequestsToBeApproved(requestor,"");
 
         assertEquals("1", hashMap.get("acls"));
         assertEquals("1", hashMap.get("schemas") );
@@ -93,7 +93,7 @@ public class SelectDataJdbcTest {
         when(aclRequestsRepo.findAll()).thenReturn(aclRequests);
         when(userInfoRepo.findByUsername(requestor)).thenReturn(java.util.Optional.of(userInfo));
 
-        List<AclRequests> aclRequestsActual = selectData.selectAclRequests(false, requestor);
+        List<AclRequests> aclRequestsActual = selectData.selectAclRequests(false, requestor,"");
         assertEquals(1, aclRequestsActual.size());
     }
 

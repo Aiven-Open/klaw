@@ -125,6 +125,7 @@ public class InsertDataTest {
     @Test
     public void insertIntoRequestSchema() {
         SchemaRequest schemaRequest = new SchemaRequest();
+        schemaRequest.setSchemafull("schema");
         ReflectionTestUtils.setField(insertData, "boundStatementSchemaReqs",
                 boundStatement);
 

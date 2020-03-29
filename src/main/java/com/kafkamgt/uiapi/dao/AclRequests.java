@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,6 +45,9 @@ public class AclRequests implements Serializable {
     @Column(name = "requesttime")
     private Timestamp requesttime;
 
+    @Transient
+    private String requesttimestring;
+
     @Column(name = "topicstatus")
     private String aclstatus;
 
@@ -61,5 +65,11 @@ public class AclRequests implements Serializable {
 
     @Column(name = "exectime")
     private Timestamp approvingtime;
+
+    @Transient
+    private String totalNoPages;
+
+    @Transient
+    private List<String> allPageNos;
 
 }

@@ -270,7 +270,7 @@ public class InsertData {
     public String insertIntoRequestSchema(SchemaRequest schemaRequest){
         session.execute(boundStatementSchemaReqs.bind(schemaRequest.getTopicname(), schemaRequest.getEnvironment(),
                 schemaRequest.getTeamname(), schemaRequest.getAppname(),
-                schemaRequest.getUsername(), new Date(), schemaRequest.getSchemafull(), schemaRequest.getRemarks(), "created",
+                schemaRequest.getUsername(), new Date(), schemaRequest.getSchemafull().trim(), schemaRequest.getRemarks(), "created",
                 schemaRequest.getSchemaversion()));
         return "success";
     }
@@ -278,7 +278,7 @@ public class InsertData {
     public String insertIntoMessageSchemaSOT(List<MessageSchema> messageSchemas){
         messageSchemas.forEach(messageSchema ->
             session.execute(boundStatementSchemas.bind(messageSchema.getTopicname(),messageSchema.getEnvironment(),
-                messageSchema.getTeamname(), messageSchema.getSchemafull(),
+                messageSchema.getTeamname(), messageSchema.getSchemafull().trim(),
                 messageSchema.getSchemaversion())));
         return "success";
     }

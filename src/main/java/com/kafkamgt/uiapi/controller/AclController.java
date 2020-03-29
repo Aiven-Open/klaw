@@ -36,8 +36,8 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclRequests>> getAclRequests() {
-        return new ResponseEntity<>(aclControllerService.getAclRequests(), HttpStatus.OK);
+    public ResponseEntity<List<AclRequests>> getAclRequests(@RequestParam("pageNo") String pageNo) {
+        return new ResponseEntity<>(aclControllerService.getAclRequests(pageNo), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getCreatedAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

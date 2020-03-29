@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.service.UtilControllerService;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -54,9 +55,9 @@ public class UtilControllerTest {
 
     @Test
     public void getAuth() throws Exception {
-        String result =  "{ \"status\": \"" + "Authorized" + "\" }";
-
-        when(utilControllerService.getAuth()).thenReturn(result);
+        HashMap<String, String> hMap = new HashMap<>();
+        hMap.put("status","Authorized");
+        when(utilControllerService.getAuth()).thenReturn(hMap);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getAuth")

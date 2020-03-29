@@ -35,8 +35,8 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicRequest>> getTopicRequests() {
-        return new ResponseEntity<>(topicControllerService.getTopicRequests(), HttpStatus.OK);
+    public ResponseEntity<List<TopicRequest>> getTopicRequests(@RequestParam("pageNo") String pageNo) {
+        return new ResponseEntity<>(topicControllerService.getTopicRequests(pageNo), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicTeam", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

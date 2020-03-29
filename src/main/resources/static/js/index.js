@@ -4,16 +4,16 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('indexApp',[]);
+var app = angular.module('dashboardApp',[]);
 
-app.controller("indexCtrl", function($scope, $http, $location, $window) {
-	
+app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
 	$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.showServerStatus = "false";
 
@@ -34,8 +34,6 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
         };
 
         $scope.getEnvs = function() {
-            if($scope.showServerStatus == "false")
-                return;
 
             $http({
                 method: "GET",
@@ -60,8 +58,6 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
 
         $scope.getSchemaRegEnvs = function() {
 
-        if($scope.showServerStatus == "false")
-            return;
 
             $http({
                 method: "GET",
@@ -93,9 +89,11 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
                    $scope.kafkawizeversion = output.kafkawizeversion;
-                    $scope.notifications = output.notifications;
-                    $scope.notificationsAcls = output.notificationsAcls;
+                   $scope.notifications = output.notifications;
+                   $scope.notificationsAcls = output.notificationsAcls;
                    $scope.statusauthexectopics = output.statusauthexectopics;
+                   $scope.statusauthexectopics_su = output.statusauthexectopics_su;
+                   $scope.notificationsSchemas = output.notificationsSchemas;
                    $scope.alerttop = output.alertmessage;
                    if(output.companyinfo == null){
                        $scope.companyinfo = "Company not defined!!";
@@ -105,6 +103,11 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
 
                    if($scope.userlogged != null)
                        $scope.loggedinuser = "true";
+
+                   $scope.teamsize = output.teamsize;
+                   $scope.userscount = output.users_count;
+                   $scope.schema_clusters_count = output.schema_clusters_count;
+                   $scope.kafka_clusters_count = output.kafka_clusters_count;
                }).error(
                    function(error)
                    {

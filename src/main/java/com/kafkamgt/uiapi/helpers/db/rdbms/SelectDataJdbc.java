@@ -1,5 +1,8 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.querybuilder.QueryBuilder;
+import com.datastax.driver.core.querybuilder.Select;
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.repository.*;
@@ -8,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,10 +67,10 @@ public class SelectDataJdbc {
         this.aclRequestsRepo = aclRequestsRepo;
     }
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role){
 
         HashMap<String, String> countList = new HashMap<>();
-        List<AclRequests> allAclReqs = selectAclRequests(true,requestor);
+        List<AclRequests> allAclReqs = selectAclRequests(true,requestor, role);
         List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true,requestor);
         List<TopicRequest> allTopicReqs = selectTopicRequests(true,requestor);
 
@@ -77,7 +81,7 @@ public class SelectDataJdbc {
         return countList;
     }
 
-    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){
+    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor, String role){
         List<AclRequests> aclList = new ArrayList<>();
         List<AclRequests> aclListSub ;
         if(allReqs) {
@@ -88,8 +92,12 @@ public class SelectDataJdbc {
 
         for (AclRequests row : aclListSub) {
             String teamName ;
-            if(allReqs)
-                teamName = row.getTeamname();
+            if(allReqs) {
+                if(role.equals("ROLE_USER"))
+                    teamName = row.getRequestingteam();
+                else
+                    teamName = row.getTeamname();
+            }
             else
                 teamName = row.getRequestingteam();
 
@@ -97,6 +105,11 @@ public class SelectDataJdbc {
 
             if (teamSelected != null && teamSelected.equals(teamName))
                 aclList.add(row);
+
+            try {
+                row.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                        .format((row.getRequesttime()).getTime()));
+            }catch(Exception e){}
         }
 
         return aclList;
@@ -173,6 +186,11 @@ public class SelectDataJdbc {
             if(teamSelected!=null && teamSelected.equals(teamName)) {
                 topicRequestList.add(row);
             }
+
+            try {
+                row.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                        .format((row.getRequesttime()).getTime()));
+            }catch (Exception e){}
         }
 
         return topicRequestList;
@@ -219,6 +237,11 @@ public class SelectDataJdbc {
         }
         else{
             activityList = activityLogRepo.findAllByEnvAndTeam(env,userInfo.getTeam());
+        }
+
+        for (ActivityLog row : activityList) {
+            row.setActivityTimeString(((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                    .format((row.getActivityTime()).getTime())));
         }
 
         return activityList;
@@ -271,5 +294,16 @@ public class SelectDataJdbc {
         }
         else
             return teamList;
+    }
+
+    public HashMap<String, String> getDashboardInfo(){
+        HashMap<String, String> dashboardInfo = new HashMap<>();
+
+        dashboardInfo.put("teamsize", ""+teamRepo.count());
+        dashboardInfo.put("users_count", ""+userInfoRepo.count());
+        dashboardInfo.put("schema_clusters_count", ""+envRepo.findAllByType("schemaregistry").size());
+        dashboardInfo.put("kafka_clusters_count", ""+envRepo.findAllByType("kafka").size());
+
+        return dashboardInfo;
     }
 }

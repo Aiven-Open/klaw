@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,12 +37,12 @@ public class SelectData{
         this.session = session;
     }
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role){
 
         HashMap<String, String> countList = new HashMap<>();
-        List<AclRequests> allAclReqs = selectAclRequests(true,requestor);
-        List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true,requestor);
-        List<TopicRequest> allTopicRequestReqs = selectTopicRequests(true,requestor);
+        List<AclRequests> allAclReqs = selectAclRequests(true, requestor, role);
+        List<SchemaRequest> allSchemaReqs = selectSchemaRequests(true, requestor);
+        List<TopicRequest> allTopicRequestReqs = selectTopicRequests(true, requestor);
 
         countList.put("topics",allTopicRequestReqs.size()+"");
         countList.put("acls",allAclReqs.size()+"");
@@ -50,7 +51,7 @@ public class SelectData{
         return countList;
     }
 
-    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor){
+    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor, String role){
         AclRequests aclReq ;
         List<AclRequests> aclList = new ArrayList();
         ResultSet results ;
@@ -65,8 +66,12 @@ public class SelectData{
 
         for (Row row : results) {
             String teamName = null;
-            if(allReqs)
-                teamName = row.getString("teamname");
+            if(allReqs) {
+                if(role.equals("ROLE_USER"))
+                    teamName = row.getString("requestingteam");
+                else
+                    teamName = row.getString("teamname");
+            }
             else
                 teamName = row.getString("requestingteam");
 
@@ -93,8 +98,13 @@ public class SelectData{
                 aclReq.setRemarks(row.getString("remarks"));
                 aclReq.setAclstatus(row.getString("topicstatus"));
                 try {
+                     aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
+                     aclReq.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                            .format((row.getTimestamp("requesttime")).getTime()));
+                }catch (Exception e){}
+
+                try {
                     aclReq.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
-                    aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
                 }catch (Exception e){}
 
                 aclReq.setConsumergroup("" + row.getString("consumergroup"));
@@ -144,8 +154,11 @@ public class SelectData{
                 schemaRequest.setRemarks(row.getString("remarks"));
                 schemaRequest.setTopicstatus(row.getString("topicstatus"));
                 try {
-                    schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                     schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+                }catch (Exception e){}
+
+                try {
+                    schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 }catch (Exception e){}
 
                 schemaList.add(schemaRequest);
@@ -180,8 +193,11 @@ public class SelectData{
             schemaRequest.setRemarks(row.getString("remarks"));
             schemaRequest.setTopicstatus(row.getString("topicstatus"));
             try {
-                schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 schemaRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+            }catch (Exception e){}
+
+            try {
+                schemaRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
             }catch (Exception e){}
         }
 
@@ -305,7 +321,11 @@ public class SelectData{
                 try {
                     topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
                 }catch (Exception e){}
-                topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
+                try {
+                    topicRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+                    topicRequest.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                            .format((row.getTimestamp("requesttime")).getTime()));
+                }catch (Exception e){}
 
                 topicRequestList.add(topicRequest);
             }
@@ -341,7 +361,11 @@ public class SelectData{
             try {
                 topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
             }catch (Exception e){}
-            topicRequest.setRequesttime("" + row.getTimestamp("requesttime"));
+            try {
+                topicRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
+                topicRequest.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                        .format((row.getTimestamp("requesttime")).getTime()));
+            }catch (Exception e){}
         }
 
         return topicRequest;
@@ -534,6 +558,8 @@ public class SelectData{
             activityLog.setActivityType(row.getString("activitytype"));
             try {
                 activityLog.setActivityTime(new java.sql.Timestamp((row.getTimestamp("activitytime")).getTime()));
+                activityLog.setActivityTimeString((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
+                        .format((row.getTimestamp("activitytime")).getTime()));
             }catch (Exception e){}
             activityLog.setDetails(row.getString("details"));
             activityLog.setUser(row.getString("user"));
@@ -595,6 +621,30 @@ public class SelectData{
         }
         else
             return teamList;
+    }
+
+    public HashMap<String, String> getDashboardInfo(){
+        HashMap<String, String> dashboardInfo = new HashMap<>();
+
+        Select selectQuery = QueryBuilder.select().countAll().from(keyspace,"teams");
+        ResultSet results = session.execute(selectQuery);
+        dashboardInfo.put("teamsize", ""+results.one().getObject("count"));
+
+        selectQuery = QueryBuilder.select().countAll().from(keyspace,"users");
+        results = session.execute(selectQuery);
+        dashboardInfo.put("users_count", ""+results.one().getObject("count"));
+
+        Clause eqclause1 = QueryBuilder.eq("type","schemaregistry");
+        Clause eqclause2 = QueryBuilder.eq("type","kafka");
+        Select selectQuery1 = QueryBuilder.select().countAll().from(keyspace,"env").where(eqclause1).allowFiltering();
+        results = session.execute(selectQuery1);
+        dashboardInfo.put("schema_clusters_count", ""+results.one().getObject("count"));
+
+        selectQuery1 = QueryBuilder.select().countAll().from(keyspace,"env").where(eqclause2).allowFiltering();
+        results = session.execute(selectQuery1);
+        dashboardInfo.put("kafka_clusters_count", ""+results.one().getObject("count"));
+
+        return dashboardInfo;
     }
 
 }

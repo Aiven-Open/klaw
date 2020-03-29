@@ -30,7 +30,7 @@ public interface HandleDbRequests {
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor);
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role);
 
     public List<TopicRequest> getAllTopicRequests(String requestor);
     public List<TopicRequest> getCreatedTopicRequests(String requestor);
@@ -52,6 +52,8 @@ public interface HandleDbRequests {
     public List<Team> selectAllTeamsOfUsers(String username);
 
     public List<Team> selectAllTeams();
+
+    public HashMap<String, String> getDashboardInfo();
 
     public List<UserInfo> selectAllUsersInfo();
 
@@ -75,6 +77,8 @@ public interface HandleDbRequests {
     public String updateAclRequest(AclRequests aclRequests, String approver);
 
     public String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
+
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
 
     public String declineTopicRequest(TopicRequest topicRequest, String approver);
 

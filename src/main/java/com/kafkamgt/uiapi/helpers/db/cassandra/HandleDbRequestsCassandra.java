@@ -169,9 +169,9 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor){
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role){
 
-        return cassandraSelectHelper.getAllRequestsToBeApproved(requestor);
+        return cassandraSelectHelper.getAllRequestsToBeApproved(requestor, role);
     }
 
     public List<TopicRequest> getAllTopicRequests(String requestor){
@@ -194,10 +194,10 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     }
 
     public List<AclRequests> getAllAclRequests(String requestor){
-        return cassandraSelectHelper.selectAclRequests(false,requestor);
+        return cassandraSelectHelper.selectAclRequests(false,requestor,"");
     }
     public List<AclRequests> getCreatedAclRequests(String requestor){
-        return cassandraSelectHelper.selectAclRequests(true,requestor);
+        return cassandraSelectHelper.selectAclRequests(true,requestor,"");
     }
 
     public List<SchemaRequest> getAllSchemaRequests(String requestor){
@@ -217,6 +217,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     public List<Team> selectAllTeams(){
         return cassandraSelectHelper.selectAllTeams();
+    }
+
+    @Override
+    public HashMap<String, String> getDashboardInfo() {
+        return cassandraSelectHelper.getDashboardInfo();
     }
 
     public List<UserInfo> selectAllUsersInfo(){
@@ -266,6 +271,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     public String updateSchemaRequest(SchemaRequest schemaRequest, String approver){
         return cassandraUpdateHelper.updateSchemaRequest(schemaRequest,  approver);
+    }
+
+    @Override
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
+        return cassandraUpdateHelper.updateSchemaRequestDecline(schemaRequest,  approver);
     }
 
     public String updatePassword(String username, String pwd){

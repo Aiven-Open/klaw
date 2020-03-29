@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -153,7 +154,7 @@ public class AclControllerServiceTest {
     public void getAclRequests() {
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.getAllAclRequests(anyString())).thenReturn(getAclRequests("testtopic",5));
-        List<AclRequests> aclReqs =  aclControllerService.getAclRequests();
+        List<AclRequests> aclReqs =  aclControllerService.getAclRequests("1");
         assertEquals(aclReqs.size(),5);
     }
 
@@ -163,8 +164,8 @@ public class AclControllerServiceTest {
         when(handleDbRequests.getCreatedAclRequests(anyString())).thenReturn(getAclRequests("testtopic",16));
         List<List<AclRequests>> listReqs = aclControllerService.getCreatedAclRequests();
 
-        assertEquals(listReqs.size(),6);
-        assertEquals(listReqs.get(1).size(),3);
+        assertEquals(16, listReqs.size());
+        assertEquals(listReqs.get(1).size(),1);
         assertEquals(listReqs.get(5).size(),1);
     }
 
@@ -189,7 +190,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
@@ -204,7 +205,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("failure",HttpStatus.OK));
 
@@ -217,7 +218,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
@@ -232,7 +233,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.approveAclRequests(req_no);
@@ -244,7 +245,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(handleDbRequests.declineAclRequest(any(), any())).thenReturn("success");
@@ -258,7 +259,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
-        when(utilService.checkAuthorizedAdmin()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.declineAclRequests(req_no);
@@ -414,6 +415,7 @@ public class AclControllerServiceTest {
             aclReq.setTopictype("producer");
             aclReq.setRequestingteam("Team1");
             aclReq.setReq_no("100"+i);
+            aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
             listReqs.add(aclReq);
         }
         return listReqs;

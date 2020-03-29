@@ -16,6 +16,22 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
+        $scope.showSuccessToast = function() {
+                  var x = document.getElementById("successbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                }
+
+        $scope.showAlertToast = function() {
+                                   var x = document.getElementById("alertbar");
+                                   x.className = "show";
+                                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                                 }
+
+        $scope.cancelRequest = function() {
+            $window.location.href = $window.location.origin + "/kafkawize/envs";
+        }
+
         $scope.getEnvs = function() {
 
             $http({
@@ -32,10 +48,10 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             );
         };
 
-        $scope.deleteEnv = function() {
+        $scope.deleteEnv = function(idval) {
 
         if (!window.confirm("Are you sure, you would like to delete the cluster : "
-                        +  $scope.deleteEnv.idval
+                        +  idval
                         )) {
                         return;
                     }
@@ -44,8 +60,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             method: "POST",
                             url: "deleteClusterRequest",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'clusterId' : $scope.deleteEnv.idval },
-                            data: {'clusterId' : $scope.deleteEnv.idval}
+                            params: {'clusterId' : idval },
+                            data: {'clusterId' : idval}
                         }).success(function(output) {
 
                             $scope.alert = "Delete Cluster Request : "+output.result;
@@ -64,20 +80,45 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                 if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
                 {
-                    alert("Default partitions should not be empty and should be greater than 0");
+                    $scope.alertnote = "Default partitions should not be empty and should be greater than 0";
+                    $scope.showAlertToast();
                     return;
                 }
 
                 if($scope.addNewEnv.defmaxparts.length<=0 || $scope.addNewEnv.defmaxparts<=0)
                 {
-                    alert("Maximum partitions should not be empty and should be greater than 0");
+                    $scope.alertnote = "Maximum partitions should not be empty and should be greater than 0";
+                    $scope.showAlertToast();
                     return;
                 }
                 if($scope.addNewEnv.defrepfctr.length<=0 || $scope.addNewEnv.defrepfctr<=0)
                 {
-                    alert("Default replication factor should not be empty and should be greater than 0");
+                    $scope.alertnote = "Default replication factor should not be empty and should be greater than 0";
+                    $scope.showAlertToast();
                     return;
                 }
+
+                if($scope.addNewEnv.type == undefined)
+                    {
+                        $scope.alertnote = "Please select the cluster type";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                if($scope.addNewEnv.host == undefined)
+                    {
+                        $scope.alertnote = "Please fill in host";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                if($scope.addNewEnv.envname == undefined)
+                {
+                    $scope.alertnote = "Please fill in a name for cluster";
+                    $scope.showAlertToast();
+                    return;
+                }
+
                 var serviceInput = {};
 
                 serviceInput['name'] = $scope.addNewEnv.envname;
@@ -89,14 +130,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['otherParams'] = "default.paritions=" + $scope.addNewEnv.defparts
                  + ",max.partitions=" + $scope.addNewEnv.defmaxparts + ",replication.factor=" + $scope.addNewEnv.defrepfctr;
 
-                if (!window.confirm("Are you sure, you would like to add Env : "
-                    +  $scope.addNewEnv.envname + ": " +
-                    "\nHost : " + $scope.addNewEnv.host +
-                    "\nPort : " + $scope.addNewEnv.port
-                    )) {
-                    return;
-                }
-
                 $http({
                     method: "POST",
                     url: "addNewEnv",
@@ -104,11 +137,14 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "New Environment : "+output.result;
+                    $scope.alert = "New cluster added: "+output.result;
+                    $scope.showSuccessToast();
                 }).error(
                     function(error)
                     {
                      $scope.alert = error;
+                     $scope.alertnote = error;
+                     $scope.showAlertToast();
                     }
                 );
 
@@ -142,6 +178,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                    $scope.statusauthexectopics = output.statusauthexectopics;
+                   $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                    $scope.alerttop = output.alertmessage;
                    if(output.companyinfo == null){
                        $scope.companyinfo = "Company not defined!!";

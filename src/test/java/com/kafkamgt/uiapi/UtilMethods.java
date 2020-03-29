@@ -13,6 +13,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.util.*;
 
 public class UtilMethods {
@@ -44,6 +45,7 @@ public class UtilMethods {
         mSchema.setEnvironment("DEV");
         mSchema.setSchemaversion("1.0");
         mSchema.setTopicname("testtopic");
+        mSchema.setSchemafull("schema");
         listMSchemas.add(mSchema);
 
         return listMSchemas;
@@ -71,6 +73,7 @@ public class UtilMethods {
     public List<ActivityLog> getLogs(){
         List<ActivityLog> activityLogs = new ArrayList<>();
         ActivityLog activityLog = new ActivityLog();
+        activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
         activityLogs.add(activityLog);
         return activityLogs;
     }
@@ -248,6 +251,7 @@ public class UtilMethods {
         schemaRequest.setTeamname("Team1");
         schemaRequest.setUsername("uiuser1");
         schemaRequest.setSchemaRequestPK(schemaRequestPK);
+        schemaRequest.setSchemafull("schema");
         schemaList.add(schemaRequest);
         return schemaList;
     }

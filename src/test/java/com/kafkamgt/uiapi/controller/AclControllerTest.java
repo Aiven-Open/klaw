@@ -87,11 +87,12 @@ public class AclControllerTest {
 
         List<AclRequests> aclRequests = utilMethods.getAclRequests();
 
-        when(aclControllerService.getAclRequests()).thenReturn(aclRequests);
+        when(aclControllerService.getAclRequests("1")).thenReturn(aclRequests);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getAclRequests")
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

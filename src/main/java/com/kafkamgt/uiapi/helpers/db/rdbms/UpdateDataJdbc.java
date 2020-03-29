@@ -114,7 +114,7 @@ public class UpdateDataJdbc {
 
     public String declineAclRequest(AclRequests aclRequests, String approver){
         aclRequests.setApprover(approver);
-        aclRequests.setAclstatus("decline");
+        aclRequests.setAclstatus("declined");
         aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         aclRequestsRepo.save(aclRequests);
 
@@ -150,4 +150,13 @@ public class UpdateDataJdbc {
     }
 
 
+    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
+        schemaRequest.setApprover(approver);
+        schemaRequest.setTopicstatus("declined");
+        schemaRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+
+        schemaRequestRepo.save(schemaRequest);
+
+        return "success";
+    }
 }

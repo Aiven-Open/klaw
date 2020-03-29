@@ -28,6 +28,9 @@ public class ActivityLog implements Serializable {
     @Column(name = "activitytime")
     private Timestamp activityTime;
 
+    @Transient
+    private String activityTimeString;
+
     @Column(name = "details")
     private String details;
 

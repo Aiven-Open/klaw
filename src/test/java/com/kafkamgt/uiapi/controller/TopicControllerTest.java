@@ -86,11 +86,12 @@ public class TopicControllerTest {
     public void getTopicRequests() throws Exception {
         List<TopicRequest> topicRequests = utilMethods.getTopicRequests();
 
-        when(topicControllerService.getTopicRequests()).thenReturn(topicRequests);
+        when(topicControllerService.getTopicRequests("1")).thenReturn(topicRequests);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopicRequests")
                 .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo","1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

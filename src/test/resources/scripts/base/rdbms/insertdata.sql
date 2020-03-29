@@ -26,12 +26,14 @@ Insert into env(name,host,port,protocol,type,other_params) values ('DEV','localh
 
 Insert into env(name,host,port,protocol,type,other_params) values ('TST','tesstserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
-Insert into env(name,host,port,protocol,type,other_params) values ('TST_SSL','tesstserver','9093','SSL','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
+Insert into env(name,host,port,protocol,type,other_params) values ('ACC','accserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=2');
+
+Insert into env(name,host,port,protocol,type,other_params) values ('PRD','prdserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=16,replication.factor=4');
 
 Insert into env(name,host,port,protocol,type) values ('DEV_SCHEMAREGISTRY','localhost','8081','PLAIN','schemaregistry');
 
 /* Insert product and version */
 
-Insert into productdetails(name,version) values ('KafkaWize','3.5');
+Insert into productdetails(name,version) values ('KafkaWize','4.0');
 
 commit;
