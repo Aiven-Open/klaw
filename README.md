@@ -69,4 +69,7 @@ This project is licensed under the Apache License 2.0  - see the [LICENSE.md](LI
 
 [![Watch the Introduction](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)](https://youtu.be/KOjdpRtRhEY)
 
+## A glimpse of Kafkawize 4.0 :
+
+[![Kafkawize 4.0](https://github.com/muralibasani/kafkawize/blob/master/screenshots/login.JPG)](https://youtu.be/nUnJJC6pDTQ)
 
