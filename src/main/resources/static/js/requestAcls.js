@@ -201,10 +201,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.alertnote = null;
             var serviceInput = {};
 
-            if($scope.addAcl.acl_ip_ssl == 'IP')
-                $scope.addAcl.acl_ssl = "";
-             else if($scope.addAcl.acl_ip_ssl == 'SSL')
-                $scope.addAcl.acl_ip = "";
+//            if($scope.addAcl.acl_ip_ssl == 'IP')
+//                $scope.addAcl.acl_ssl = "";
+//             else if($scope.addAcl.acl_ip_ssl == 'SSL')
+//                $scope.addAcl.acl_ip = "";
 
             if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
             {
