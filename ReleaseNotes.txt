@@ -1,8 +1,6 @@
-Kafkawize 4.0
+Kafkawize 4.1
 
 Kafkawize is a Kafka Topic management tool (A Web application) which automates the process of creating and browsing Kafka components, by introducing  roles/authorizations to users of various teams of an organization
 
 Changes include
-1. New Bootstrap 4 User interface with new appealing look and feel
-2. New UI/UX - for great user experience
-3. Few bug fixes
+1. Critical bug fix - concurrent user access

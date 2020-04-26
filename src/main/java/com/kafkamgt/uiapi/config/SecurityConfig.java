@@ -70,21 +70,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
         List<UserInfo> users = new ArrayList<>();
-        if(orgName.equals("Your company name."))
-        {
-            LOG.error("Invalid organization configured !!");
-            System.exit(0);
-            throw new Exception("Invalid organization configured !!");
-        }
-        if(! (environment.getActiveProfiles().length >0
-                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-            HashMap<String, String> licenseMap = utils.validateLicense();
-            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
-                LOG.error(invalidKeyMessage);
-                System.exit(0);
-                throw new Exception(invalidKeyMessage);
-            }
-        }
+//        if(orgName.equals("Your company name."))
+//        {
+//            LOG.error("Invalid organization configured !!");
+//            System.exit(0);
+//            throw new Exception("Invalid organization configured !!");
+//        }
+//        if(! (environment.getActiveProfiles().length >0
+//                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+//            HashMap<String, String> licenseMap = utils.validateLicense();
+//            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+//                LOG.error(invalidKeyMessage);
+//                System.exit(0);
+//                throw new Exception(invalidKeyMessage);
+//            }
+//        }
         try {
             users = manageTopics.selectAllUsersInfo();
         }catch(Exception e){

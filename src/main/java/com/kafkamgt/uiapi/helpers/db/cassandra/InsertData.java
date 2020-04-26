@@ -180,8 +180,10 @@ public class InsertData {
         String  topicReqType;
 
         topicReqType = "Producer";
-        session.execute(boundStatementInsertIntoRequestTopic.bind(topicRequest.getTopicname(), topicRequest.getTopicpartitions(),
-                topicRequest.getReplicationfactor(), topicRequest.getEnvironment(), topicRequest.getTeamname(),
+        session.execute(boundStatementInsertIntoRequestTopic.bind(topicRequest.getTopicname(),
+                topicRequest.getTopicpartitions(),
+                topicRequest.getReplicationfactor(),
+                topicRequest.getEnvironment(), topicRequest.getTeamname(),
                 topicRequest.getAppname(),
                 topicReqType, topicRequest.getUsername(), new Date(), topicRequest.getRemarks(), "created"));
 

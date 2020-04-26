@@ -21,7 +21,7 @@ public class LoadDb {
 
     private static String DROP_SQL = "scripts/base/cassandra/dropcassandra.sql";
 
-    @Value("${custom.kafkawize.version:3.5}")
+    @Value("${custom.kafkawize.version:4.1}")
     private String kafkawizeVersion;
 
     @Autowired

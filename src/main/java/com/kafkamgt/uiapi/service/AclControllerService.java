@@ -10,6 +10,8 @@ import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -37,7 +39,9 @@ public class AclControllerService {
 
     public String createAcl(AclRequests aclReq) {
 
-        aclReq.setUsername(utilService.getUserName());
+        UserDetails userDetails = getUserDetails();
+
+        aclReq.setUsername(userDetails.getUsername());
 
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
         return "{\"result\":\""+execRes+"\"}";
@@ -45,7 +49,8 @@ public class AclControllerService {
 
     public String updateSyncAcls(String updateSyncAcls, String envSelected) {
 
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         StringTokenizer strTkr = null;
@@ -96,7 +101,10 @@ public class AclControllerService {
     }
 
     public List<AclRequests> getAclRequests(String pageNo) {
-        List<AclRequests> aclReqs = manageDatabase.getHandleDbRequests().getAllAclRequests(utilService.getUserName());
+
+        UserDetails userDetails = getUserDetails();
+
+        List<AclRequests> aclReqs = manageDatabase.getHandleDbRequests().getAllAclRequests(userDetails.getUsername());
         aclReqs = aclReqs.stream()
                 .sorted(Collections.reverseOrder(Comparator.comparing(AclRequests::getRequesttime)))
                 .collect(Collectors.toList());
@@ -138,8 +146,10 @@ public class AclControllerService {
     }
 
     public List<List<AclRequests>> getCreatedAclRequests() {
+        UserDetails userDetails = getUserDetails();
 
-        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(manageDatabase.getHandleDbRequests().getCreatedAclRequests(utilService.getUserName()));
+        List<List<AclRequests>> updatedAclReqs = updateCreatAclReqsList(manageDatabase.getHandleDbRequests()
+                .getCreatedAclRequests(userDetails.getUsername()));
 
         return updatedAclReqs;
     }
@@ -177,8 +187,8 @@ public class AclControllerService {
     }
 
     public String approveAclRequests(String req_no) throws KafkawizeException {
-
-        if(!utilService.checkAuthorizedAdmin_SU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedAdmin_SU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
@@ -188,8 +198,8 @@ public class AclControllerService {
             String updateAclReqStatus ;
 
             try {
-                if (response.getBody().equals("success"))
-                    updateAclReqStatus = manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, utilService.getUserName());
+                if (response!=null && response.getBody().equals("success"))
+                    updateAclReqStatus = manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, userDetails.getUsername());
                 else
                     return "{\"result\":\"failure\"}";
             }catch(Exception e){
@@ -202,8 +212,8 @@ public class AclControllerService {
     }
 
     public String declineAclRequests(String req_no) {
-
-        if(!utilService.checkAuthorizedAdmin_SU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedAdmin_SU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
@@ -211,7 +221,7 @@ public class AclControllerService {
 
         if(aclReq.getReq_no() != null){
             try {
-                 updateAclReqStatus = manageDatabase.getHandleDbRequests().declineAclRequest(aclReq, utilService.getUserName());
+                 updateAclReqStatus = manageDatabase.getHandleDbRequests().declineAclRequest(aclReq, userDetails.getUsername());
                  return "{\"result\":\""+updateAclReqStatus+"\"}";
             }catch(Exception e){
                  return "{\"result\":\"failure "+e.toString()+"\"}";
@@ -253,21 +263,12 @@ public class AclControllerService {
                 .filter(hItem->{
                     if(isSync){
                         if(topicNameSearch!=null){
-                            if (hItem.get("resourceType").equals("TOPIC") && hItem.get("resourceName").contains(topicNameSearch))
-                                return true;
-                            else
-                                return false;
+                            return hItem.get("resourceType").equals("TOPIC") && hItem.get("resourceName").contains(topicNameSearch);
                         }
-                        else if (hItem.get("resourceType").equals("TOPIC"))
-                            return true;
-                        else
-                            return false;
+                        else return hItem.get("resourceType").equals("TOPIC");
                     }
                     else {
-                        if (hItem.get("resourceName").equals(topicNameSearch))
-                            return true;
-                        else
-                            return false;
+                        return hItem.get("resourceName").equals(topicNameSearch);
                     }
                 }).collect(Collectors.toList());
 
@@ -293,12 +294,12 @@ public class AclControllerService {
     }
 
     public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) throws KafkawizeException {
-
+        UserDetails userDetails = getUserDetails();
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
         if(isSyncAcls)
-            if(!utilService.checkAuthorizedSU())
+            if(!utilService.checkAuthorizedSU(userDetails))
                 return null;
 
         Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
@@ -312,7 +313,7 @@ public class AclControllerService {
         if(!isSyncAcls){
             return applyFiltersAcls(env, aclList, aclsFromSOT, false)
                     .stream()
-                    .collect(Collectors.groupingBy(w -> w.getTopicname()))
+                    .collect(Collectors.groupingBy(AclInfo::getTopicname))
                     .get(topicNameSearch);
         }else{
             return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, true));
@@ -321,12 +322,14 @@ public class AclControllerService {
 
     private List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){
 
+        UserDetails userDetails = getUserDetails();
+
         List<AclInfo> aclListMap = new ArrayList<>() ;
         AclInfo mp ;
         List<String> teamList = new ArrayList<>();
 
         if(isSyncAcls) {
-            manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(utilService.getUserName())
+            manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(userDetails.getUsername())
                     .forEach(teamS -> teamList.add(teamS.getTeamname()));
         }
 
@@ -417,10 +420,14 @@ public class AclControllerService {
         return aclListMapUpdated;
     }
 
-    int topicCounter=0;
+    private int topicCounter=0;
     private int counterIncrement()
     {
         topicCounter++;
         return topicCounter;
+    }
+
+    private UserDetails getUserDetails(){
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

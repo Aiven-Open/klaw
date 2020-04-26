@@ -310,13 +310,12 @@ public class AclControllerIT {
     // get acls to be synced - retrieve from Source of truth
     @Test
     public void test13() throws Exception {
-        List<HashMap<String,String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls());
+        List<HashMap<String,String>> aclInfo = utilMethods.getClusterAcls();
 
         when(clusterApiService.getAcls(anyString()))
                 .thenReturn(aclInfo);
 
-        login("superuser","user", "SUPERUSER");
-        String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user"))
+        String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user").roles("SUPERUSER"))
                 .param("env","DEV")
                 .param("pageNo","1")
                 .contentType(MediaType.APPLICATION_JSON)

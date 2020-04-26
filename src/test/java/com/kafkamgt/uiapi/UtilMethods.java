@@ -152,8 +152,7 @@ public class UtilMethods {
         aclbindingMap.put("resourceName", "mygrp1");
         acls.add(aclbindingMap);
 
-        List<HashMap<String, String>> aclListOriginal = new ArrayList<>(acls);
-        return aclListOriginal;
+        return new ArrayList<>(acls);
     }
 
     public Set<HashMap<String, String>> getAclsMock(){

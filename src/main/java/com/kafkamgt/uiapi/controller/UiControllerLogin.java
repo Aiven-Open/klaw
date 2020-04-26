@@ -15,12 +15,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class UiControllerLogin {
 
-    @Autowired
-    private UtilService utilService;
-
     private static Logger LOG = LoggerFactory.getLogger(UiControllerLogin.class);
 
-    String defaultPage = "loginnew.html";
+    private static final String defaultPage = "loginnew.html";
 
     private String checkAuth(String uri){
         try {
@@ -28,7 +25,6 @@ public class UiControllerLogin {
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (userDetails != null) {
                 LOG.info("Authenticated..." + userDetails.getUsername());
-                utilService.setUserDetails(userDetails);
                 return uri;
             }
             return defaultPage;

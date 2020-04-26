@@ -61,7 +61,7 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     @Value("${custom.org.name}")
     String companyInfo;
 
-    @Value("${custom.kafkawize.version:3.5}")
+    @Value("${custom.kafkawize.version:4.1}")
     String kafkawizeVersion;
 
     @Autowired
@@ -115,13 +115,13 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
                 cassandraInsertHelper.initializeBoundStatements();
 
                 cassandraInsertHelper.cassandraSelectHelper = cassandraSelectHelper;
-                if(! (environment.getActiveProfiles().length >0
-                        && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-                    if (licenseKey != null && licenseKey.trim().length() > 0)
-                        cassandraInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
-                    else
-                        throw new Exception("Invalid license");
-                }
+//                if(! (environment.getActiveProfiles().length >0
+//                        && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+//                    if (licenseKey != null && licenseKey.trim().length() > 0)
+//                        cassandraInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
+//                    else
+//                        throw new Exception("Invalid license");
+//                }
             }
             else{
                 LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort);

@@ -9,8 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -27,30 +30,38 @@ import static org.mockito.Mockito.when;
 public class UtilControllerServiceTest {
 
     @Mock
+    private
     HandleDbRequests handleDbRequests;
 
     @Mock
+    private
     UtilService utilService;
 
     @Mock
+    private
     UserDetails userDetails;
 
     @Mock
+    private
     UserInfo userInfo;
 
     @Mock
+    private
     HttpServletRequest httpServletRequest;
 
     @Mock
+    private
     HttpServletResponse httpServletResponse;
 
     @Mock
+    private
     ManageDatabase manageDatabase;
 
     @Mock
+    private
     Authentication authentication;
 
-    UtilControllerService utilControllerService;
+    private UtilControllerService utilControllerService;
 
     @Before
     public void setUp() {
@@ -59,10 +70,17 @@ public class UtilControllerServiceTest {
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     }
 
+    private void loginMock(){
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     @Test
     public void getAuth1() {
-
-        when(utilService.getUserDetails()).thenReturn(userDetails);
+        loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_USER");
@@ -89,8 +107,7 @@ public class UtilControllerServiceTest {
 
     @Test
     public void getAuth2() {
-
-        when(utilService.getUserDetails()).thenReturn(userDetails);
+        loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_ADMIN");
@@ -115,18 +132,20 @@ public class UtilControllerServiceTest {
 
     @Test
     public void getAuth3() {
-
-        when(utilService.getUserDetails()).thenReturn(null);
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(null);
+        SecurityContextHolder.setContext(securityContext);
 
         HashMap<String, String> actualResult = utilControllerService.getAuth();
-        String expectedResult = null;
-        assertEquals(expectedResult,actualResult);
+        assertEquals(null,actualResult);
     }
 
     @Test
     public void getExecAuth1() {
 
-        when(utilService.getUserDetails()).thenReturn(userDetails);
+        loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
@@ -142,8 +161,7 @@ public class UtilControllerServiceTest {
 
     @Test
     public void getExecAuth2() {
-
-        when(utilService.getUserDetails()).thenReturn(userDetails);
+        loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team1");
         when(userDetails.getUsername()).thenReturn("uiuser1");

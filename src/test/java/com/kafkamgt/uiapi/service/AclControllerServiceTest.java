@@ -16,9 +16,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
@@ -36,19 +41,27 @@ public class AclControllerServiceTest {
     private UtilMethods utilMethods;
 
     @Mock
+    private
+    UserDetails userDetails;
+
+    @Mock
+    private
     ClusterApiService clusterApiService;
 
     @Mock
+    private
     HandleDbRequests handleDbRequests;
 
     @Mock
+    private
     ManageDatabase manageDatabase;
 
     @Mock
+    private
     UtilService utilService;
 
-    AclControllerService aclControllerService;
-    Env env;
+    private AclControllerService aclControllerService;
+    private Env env;
 
     @Before
     public void setUp() throws Exception {
@@ -61,17 +74,24 @@ public class AclControllerServiceTest {
         env.setName("DEV");
         ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+        loginMock();
     }
 
     @After
     public void tearDown() throws Exception {
     }
 
+    private void loginMock(){
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     @Test
     public void createAcl() {
         AclRequests aclRequests = getAclRequest();
-
-        when(utilService.getUserName()).thenReturn("uiuser1");
         when(handleDbRequests.requestForAcl(aclRequests)).thenReturn("success");
 
         String result = aclControllerService.createAcl(aclRequests);
@@ -85,7 +105,7 @@ public class AclControllerServiceTest {
                 + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
         String envSelected = "DEV";
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSyncacls(anyList())).thenReturn("success");
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
@@ -101,7 +121,7 @@ public class AclControllerServiceTest {
 
         String envSelected = "DEV";
 
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
         assertEquals("{\"result\":\"Not Authorized\"}",result);
@@ -116,7 +136,7 @@ public class AclControllerServiceTest {
 
         String envSelected = "DEV";
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
@@ -128,7 +148,7 @@ public class AclControllerServiceTest {
         String updateSyncAcls = null;
         String envSelected = "DEV";
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
         assertEquals("{\"result\":\"No records to update\"}",result);
@@ -143,7 +163,7 @@ public class AclControllerServiceTest {
 
         String envSelected = "DEV";
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
@@ -152,7 +172,7 @@ public class AclControllerServiceTest {
 
     @Test
     public void getAclRequests() {
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllAclRequests(anyString())).thenReturn(getAclRequests("testtopic",5));
         List<AclRequests> aclReqs =  aclControllerService.getAclRequests("1");
         assertEquals(aclReqs.size(),5);
@@ -160,7 +180,7 @@ public class AclControllerServiceTest {
 
     @Test
     public void getCreatedAclRequests() {
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getCreatedAclRequests(anyString())).thenReturn(getAclRequests("testtopic",16));
         List<List<AclRequests>> listReqs = aclControllerService.getCreatedAclRequests();
 
@@ -190,8 +210,8 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
         when(handleDbRequests.updateAclRequest(any(), any())).thenReturn("success");
@@ -205,7 +225,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("failure",HttpStatus.OK));
 
@@ -218,8 +238,8 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
         when(handleDbRequests.updateAclRequest(any(), any())).thenThrow(new RuntimeException("Error"));
@@ -233,7 +253,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.approveAclRequests(req_no);
@@ -245,8 +265,8 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = getAclRequest();
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
         when(handleDbRequests.declineAclRequest(any(), any())).thenReturn("success");
 
@@ -259,7 +279,7 @@ public class AclControllerServiceTest {
         String req_no = "d32fodFqD";
         AclRequests aclReq = new AclRequests();
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
         when(handleDbRequests.selectAcl(req_no)).thenReturn(aclReq);
 
         String result = aclControllerService.declineAclRequests(req_no);
@@ -304,8 +324,8 @@ public class AclControllerServiceTest {
         String envSelected = "DEV", pageNo = "1", topicNameSearch = "testtopic1";
         boolean isSyncAcls = true;
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(utilMethods.getClusterAcls());
@@ -325,8 +345,8 @@ public class AclControllerServiceTest {
         String envSelected = "DEV", pageNo = "1", topicNameSearch = "test";
         boolean isSyncAcls = true;
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
         when(clusterApiService.getAcls(any()))
                 .thenReturn(utilMethods.getClusterAcls());

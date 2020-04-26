@@ -25,8 +25,6 @@ import java.util.Set;
 @Service
 public class ClusterApiService {
 
-    //private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
-
     @Autowired
     ManageDatabase manageDatabase;
 
@@ -62,11 +60,11 @@ public class ClusterApiService {
         this.utilService = utilService;
     }
 
-    public String getClusterApiUrl(){
+    String getClusterApiUrl(){
         return this.clusterConnUrl;
     }
 
-    public String getClusterApiStatus() {
+    String getClusterApiStatus() {
         String clusterStatus;
         try {
             String uri = clusterConnUrl + URI_CLSTR_API_STAUTS;
@@ -82,14 +80,14 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, String.class);
             clusterStatus = resultBody.getBody();
         }catch(Exception e){
-            this.CLSTR_API_STATUS = "OFFLINE";
+            CLSTR_API_STATUS = "OFFLINE";
             return "OFFLINE";
         }
-        this.CLSTR_API_STATUS = clusterStatus;
+        CLSTR_API_STATUS = clusterStatus;
         return clusterStatus;
     }
 
-    public String getSchemaClusterStatus(String host) {
+    String getSchemaClusterStatus(String host) {
         String clusterStatus ;
         try {
             String uri = host+"/subjects";
@@ -110,7 +108,7 @@ public class ClusterApiService {
         return clusterStatus;
     }
 
-    public String getKafkaClusterStatus(String bootstrapHost) {
+    String getKafkaClusterStatus(String bootstrapHost) {
         String clusterStatus ;
 
         try {
@@ -233,7 +231,7 @@ public class ClusterApiService {
         return response;
     }
 
-    public ResponseEntity<String> postSchema(SchemaRequest schemaRequest, String env, String topicName) throws KafkawizeException {
+    ResponseEntity<String> postSchema(SchemaRequest schemaRequest, String env, String topicName) throws KafkawizeException {
         ResponseEntity<String> response;
         try {
             String uri = clusterConnUrl + URI_POST_SCHEMA;

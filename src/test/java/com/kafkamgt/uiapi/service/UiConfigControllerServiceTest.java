@@ -14,7 +14,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -32,29 +36,36 @@ import static org.mockito.Mockito.when;
 public class UiConfigControllerServiceTest {
 
     @Mock
+    private
     HandleDbRequests handleDbRequests;
 
     @Mock
+    private
     ClusterApiService clusterApiService;
 
     @Mock
+    private
     UtilService utilService;
 
     @Mock
+    private
     UserInfo userInfo;
 
     @Mock
+    private
     UserDetails userDetails;
 
     @Mock
+    private
     ManageDatabase manageDatabase;
 
     @Mock
+    private
     InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
-    Env env;
+    private Env env;
 
-    UiConfigControllerService uiConfigControllerService;
+    private UiConfigControllerService uiConfigControllerService;
 
     @Before
     public void setUp() throws Exception {
@@ -67,10 +78,19 @@ public class UiConfigControllerServiceTest {
         env.setName("DEV");
         ReflectionTestUtils.setField(uiConfigControllerService, "manageDatabase", manageDatabase);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+        loginMock();
     }
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    private void loginMock(){
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
@@ -154,7 +174,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void getAllTeams() {
         when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
 
         List<Team> teamsList = uiConfigControllerService.getAllTeams();
 
@@ -170,14 +190,14 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void addNewEnv1() {
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
         String result = uiConfigControllerService.addNewEnv(this.env);
         assertEquals("{\"result\":\"Not Authorized\"}",result);
     }
 
     @Test
     public void addNewEnv2() {
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addNewEnv(any())).thenReturn("success");
         String result = uiConfigControllerService.addNewEnv(this.env);
         assertEquals("{\"result\":\"success\"}",result);
@@ -185,7 +205,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void addNewEnv3() {
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addNewEnv(any())).thenThrow(new RuntimeException("Error"));
         String result = uiConfigControllerService.addNewEnv(this.env);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -193,14 +213,14 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void deleteCluster1() {
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
         String result = uiConfigControllerService.deleteCluster("clusterId");
         assertEquals("{\"result\":\"Not Authorized\"}", result);
     }
 
     @Test
     public void deleteCluster2() {
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.deleteClusterRequest(any())).thenReturn("success");
         String result = uiConfigControllerService.deleteCluster("clusterId");
         assertEquals("{\"result\":\"success\"}",result);
@@ -208,7 +228,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void deleteCluster3() {
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.deleteClusterRequest(any())).thenThrow(new RuntimeException("Error"));
         String result = uiConfigControllerService.deleteCluster("clusterId");
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -217,7 +237,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteTeam1() {
         String teamId = "Team1";
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = uiConfigControllerService.deleteTeam(teamId);
         assertEquals("{\"result\":\"Not Authorized\"}", result);
@@ -226,8 +246,8 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteTeam2() {
         String teamId = "Team1";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn(teamId);
 
@@ -238,8 +258,8 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteTeam3() {
         String teamId = "Team1";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team2");
         when(handleDbRequests.deleteTeamRequest(teamId)).thenReturn("success");
@@ -251,8 +271,8 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteTeam4() {
         String teamId = "Team1";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
         when(userInfo.getTeam()).thenReturn("Team2");
         when(handleDbRequests.deleteTeamRequest(teamId)).thenThrow(new RuntimeException("Error"));
@@ -264,7 +284,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteUser1() {
         String userId = "Team1";
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = uiConfigControllerService.deleteUser(userId);
         assertEquals("{\"result\":\"Not Authorized\"}", result);
@@ -273,8 +293,8 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteUser2() {
         String userId = "uiuser1";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn(userId);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn(userId);
 
         String result = uiConfigControllerService.deleteUser(userId);
         assertThat(result, CoreMatchers.containsString("User cannot be deleted"));
@@ -283,8 +303,8 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteUser3() {
         String userId = "uiuser1";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser3");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser3");
         when(handleDbRequests.deleteUserRequest(userId)).thenReturn("success");
 
         String result = uiConfigControllerService.deleteUser(userId);
@@ -294,7 +314,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteUser4() {
         String userId = "superuser";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
 
         String result = uiConfigControllerService.deleteUser(userId);
         assertThat(result, CoreMatchers.containsString("User cannot be deleted"));
@@ -303,8 +323,8 @@ public class UiConfigControllerServiceTest {
     @Test
     public void deleteUser5() {
         String userId = "uiuser2";
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser3");
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser3");
         when(handleDbRequests.deleteUserRequest(userId)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.deleteUser(userId);
@@ -313,7 +333,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void addNewUser1() {
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
         String result = uiConfigControllerService.addNewUser(userInfo);
         assertEquals("{\"result\":\"Not Authorized\"}", result);
     }
@@ -324,7 +344,7 @@ public class UiConfigControllerServiceTest {
         userInfo.setUsername("uiuser1");
         userInfo.setRole("USER");
         userInfo.setPwd("pwd");
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addNewUser(userInfo)).thenReturn("success");
 
         String result = uiConfigControllerService.addNewUser(userInfo);
@@ -337,7 +357,7 @@ public class UiConfigControllerServiceTest {
         userInfo.setUsername("uiuser1");
         userInfo.setRole("USER");
         userInfo.setPwd("pwd");
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addNewUser(userInfo)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.addNewUser(userInfo);
@@ -349,7 +369,7 @@ public class UiConfigControllerServiceTest {
         Team team1 = new Team();
         team1.setTeamname("Team1");
 
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = uiConfigControllerService.addNewTeam(team1);
         assertEquals("{\"result\":\"Not Authorized\"}", result);
@@ -360,7 +380,7 @@ public class UiConfigControllerServiceTest {
         Team team1 = new Team();
         team1.setTeamname("Team1");
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addNewTeam(team1)).thenReturn("success");
 
         String result = uiConfigControllerService.addNewTeam(team1);
@@ -372,7 +392,7 @@ public class UiConfigControllerServiceTest {
         Team team1 = new Team();
         team1.setTeamname("Team1");
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addNewTeam(team1)).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.addNewTeam(team1);
@@ -383,7 +403,6 @@ public class UiConfigControllerServiceTest {
     public void changePwd1() {
 
         String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
-        when(utilService.getUserDetails()).thenReturn(userDetails);
         when(handleDbRequests.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenReturn("success");
 
         String result = uiConfigControllerService.changePwd(pwdUpdate);
@@ -395,7 +414,6 @@ public class UiConfigControllerServiceTest {
     public void changePwd2() {
 
         String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
-        when(utilService.getUserDetails()).thenReturn(userDetails);
         when(handleDbRequests.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.changePwd(pwdUpdate);
@@ -417,7 +435,7 @@ public class UiConfigControllerServiceTest {
         userInfo.setRole("USER");
         userInfo.setPwd("pwd");
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo("uiuser1")).thenReturn(userInfo);
         UserInfo userInfoActual = uiConfigControllerService.getMyProfileInfo();
         assertEquals(userInfo.getUsername(), userInfoActual.getUsername());
@@ -428,7 +446,7 @@ public class UiConfigControllerServiceTest {
         String envSel = "DEV";
         String pageNo = "1";
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(2));
 
         List<ActivityLog> actList = uiConfigControllerService.showActivityLog(envSel, pageNo);
@@ -441,7 +459,7 @@ public class UiConfigControllerServiceTest {
         String envSel = "DEV";
         String pageNo = "1";
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(0));
 
         List<ActivityLog> actList = uiConfigControllerService.showActivityLog(envSel, pageNo);

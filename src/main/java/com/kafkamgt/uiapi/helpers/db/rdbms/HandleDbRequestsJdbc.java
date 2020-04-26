@@ -37,7 +37,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Value("${custom.org.name}")
     String companyInfo;
 
-    @Value("${custom.kafkawize.version:3.5}")
+    @Value("${custom.kafkawize.version:4.1}")
     String kafkawizeVersion;
 
     @Autowired
@@ -49,13 +49,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
                 loadDbJdbc.dropTables();
             loadDbJdbc.createTables();
             loadDbJdbc.insertData();
-            if(! (environment.getActiveProfiles().length >0
-                    && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-                if (licenseKey != null && licenseKey.trim().length() > 0)
-                    jdbcInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
-                else
-                    throw new Exception("Invalid license");
-            }
+//            if(! (environment.getActiveProfiles().length >0
+//                    && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+//                if (licenseKey != null && licenseKey.trim().length() > 0)
+//                    jdbcInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
+//                else
+//                    throw new Exception("Invalid license");
+//            }
         }
     }
 
