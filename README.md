@@ -11,7 +11,6 @@ To get Kafkwize running on your local machine or server, please follow the instr
 ```
 Intellij/Eclipse/Netbeans
 Kafkawize metastore (Rdbms or Cassandra)
-Free licence key
 others..
 ```
 
@@ -21,7 +20,6 @@ Detailed in page [Prerequisites](https://kafkawize.readthedocs.io/en/latest/gett
 
 ```
 Install Cassandra/Rdbms
-Install license key
 Update configuration and mvn install kafkawize and kafkawizeclusterapi
 Start Kafka,Zookeeper
 Access Kafkawize
@@ -40,7 +38,6 @@ Run a clean install with mvn clean install
 
 ```
 Install Cassandra/Rdbms
-Install license key
 Update configuration and mvn install kafkawize and kafkawizeclusterapi
 Start Kafka,Zookeeper
 Access Kafkawize
