@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class UtilControllerService {
     @Value("${custom.org.name}")
     String companyInfo;
 
-    @Value("${custom.kafkawize.version:3.5}")
+    @Value("${custom.kafkawize.version:4.1}")
     String kafkawizeVersion;
 
     public UtilControllerService(UtilService utilService){
@@ -38,7 +39,8 @@ public class UtilControllerService {
     }
 
     public HashMap<String, String> getAuth() {
-        UserDetails userDetails = utilService.getUserDetails();
+        UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if(userDetails!=null) {
 
@@ -105,7 +107,8 @@ public class UtilControllerService {
 
     public String getExecAuth() {
 
-        UserDetails userDetails = utilService.getUserDetails();
+        UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String teamName = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername()).getTeam();
 
         String authority = utilService.getAuthority(userDetails);

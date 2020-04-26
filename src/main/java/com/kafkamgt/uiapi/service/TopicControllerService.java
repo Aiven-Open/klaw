@@ -11,6 +11,7 @@ import com.kafkamgt.uiapi.model.TopicInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +38,11 @@ public class TopicControllerService {
     }
 
     public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {
-
-        log.info(topicRequestReq.getTopicname()+ "---" + topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() + "---"+ topicRequestReq.getAppname());
-        topicRequestReq.setUsername(utilService.getUserName());
+        UserDetails userDetails = getUserDetails();
+        log.info(topicRequestReq.getTopicname()+ "---" +
+                topicRequestReq.getTeamname()+"---"+ topicRequestReq.getEnvironment() +
+                "---"+ topicRequestReq.getAppname());
+        topicRequestReq.setUsername(userDetails.getUsername());
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
 
@@ -103,8 +106,8 @@ public class TopicControllerService {
     }
 
     public String updateSyncTopics(String updatedSyncTopics, String envSelected) {
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         StringTokenizer strTkr = new StringTokenizer(updatedSyncTopics,"\n");
@@ -141,7 +144,8 @@ public class TopicControllerService {
     }
 
     public List<TopicRequest> getTopicRequests(String pageNo) {
-        List<TopicRequest> topicReqs = manageDatabase.getHandleDbRequests().getAllTopicRequests(utilService.getUserName());
+        UserDetails userDetails = getUserDetails();
+        List<TopicRequest> topicReqs = manageDatabase.getHandleDbRequests().getAllTopicRequests(userDetails.getUsername());
         topicReqs = topicReqs.stream()
                 .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
                 .collect(Collectors.toList());
@@ -187,7 +191,8 @@ public class TopicControllerService {
     }
 
     public List<List<TopicRequest>> getCreatedTopicRequests() {
-        return updateCreateTopicReqsList(manageDatabase.getHandleDbRequests().getCreatedTopicRequests(utilService.getUserName()));
+        UserDetails userDetails = getUserDetails();
+        return updateCreateTopicReqsList(manageDatabase.getHandleDbRequests().getCreatedTopicRequests(userDetails.getUsername()));
     }
 
     private List<List<TopicRequest>> updateCreateTopicReqsList(List<TopicRequest> topicsList){
@@ -227,8 +232,8 @@ public class TopicControllerService {
     }
 
     public String approveTopicRequests(String topicName, String env) throws KafkawizeException {
-
-        if(!utilService.checkAuthorizedAdmin_SU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedAdmin_SU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         TopicRequest topicRequest = manageDatabase.getHandleDbRequests().selectTopicRequestsForTopic(topicName, env);
@@ -238,19 +243,19 @@ public class TopicControllerService {
         String updateTopicReqStatus = response.getBody();
 
         if(response.getBody().equals("success"))
-            updateTopicReqStatus = manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest,utilService.getUserName());
+            updateTopicReqStatus = manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest, userDetails.getUsername());
 
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
     public String declineTopicRequests(String topicName, String env) throws KafkawizeException {
-
-        if(!utilService.checkAuthorizedAdmin_SU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedAdmin_SU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         TopicRequest topicRequest = manageDatabase.getHandleDbRequests().selectTopicRequestsForTopic(topicName, env);
 
-        String result = manageDatabase.getHandleDbRequests().declineTopicRequest(topicRequest, utilService.getUserName());
+        String result = manageDatabase.getHandleDbRequests().declineTopicRequest(topicRequest, userDetails.getUsername());
 
         return "{\"result\":\""+ "Request declined. " + result + "\"}";
     }
@@ -339,8 +344,7 @@ public class TopicControllerService {
     }
 
     public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
-
-        UserDetails userDetails = utilService.getUserDetails();
+        UserDetails userDetails = getUserDetails();
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
@@ -372,14 +376,14 @@ public class TopicControllerService {
         return getSyncTopicList(topicsList,userDetails,pageNo,env);
     }
 
-    int topicCounter=0;
-    public int counterIncrement()
+    private int topicCounter=0;
+    private int counterIncrement()
     {
         topicCounter++;
         return topicCounter;
     }
 
-    public List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){
+    private List<TopicInfo> getTopicList(List<String> topicsList, List<Topic> topicsFromSOT, String pageNo){
         int totalRecs = topicsList.size();
         int recsPerPage = 21;
 
@@ -408,12 +412,9 @@ public class TopicControllerService {
                     String teamUpdated = null;
                     try {
                         teamUpdated = topicsFromSOT.stream().filter(a -> {
-                            if (a.getTopicPK().getTopicname().equals(tmpTopicName))
-                                return true;
-                            else
-                                return false;
+                            return a.getTopicPK().getTopicname().equals(tmpTopicName);
                         }).findFirst().get().getTeamname();
-                    }catch (Exception e){}
+                    }catch (Exception ignored){}
 
                     if(teamUpdated!=null && !teamUpdated.equals("undefined")){
                         mp.setTeamname(teamUpdated);
@@ -435,7 +436,7 @@ public class TopicControllerService {
         return topicsListMap;
     }
 
-    public List<TopicRequest> getSyncTopicList(List<String> topicsList, UserDetails userDetails, String pageNo, String env){
+    private List<TopicRequest> getSyncTopicList(List<String> topicsList, UserDetails userDetails, String pageNo, String env){
         int totalRecs = topicsList.size();
         int recsPerPage = 20;
 
@@ -471,16 +472,13 @@ public class TopicControllerService {
                     String teamUpdated = null;
                     try {
                         teamUpdated = topicsFromSOT.stream().filter(a -> {
-                            if (a.getTopicPK().getTopicname().equals(tmpTopicName))
-                                return true;
-                            else
-                                return false;
+                            return a.getTopicPK().getTopicname().equals(tmpTopicName);
                         }).findFirst().get().getTeamname();
-                    }catch (Exception e){}
+                    }catch (Exception ignored){}
 
                     if(teamUpdated!=null && !teamUpdated.equals("undefined")){
-                        List<String> tmpList = new ArrayList<String>();
-                        tmpList.add(teamUpdated);
+//                        List<String> tmpList = new ArrayList<String>();
+//                        tmpList.add(teamUpdated);
                         mp.setPossibleTeams(teamList);
                         mp.setTeamname(teamUpdated);
                     }
@@ -507,5 +505,8 @@ public class TopicControllerService {
         return topicsListMap;
     }
 
+    private UserDetails getUserDetails(){
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
 }

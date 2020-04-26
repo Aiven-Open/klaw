@@ -10,12 +10,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -23,7 +25,8 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -32,25 +35,30 @@ import static org.mockito.Mockito.when;
 public class TopicControllerServiceTest {
 
     @Mock
+    private
     ClusterApiService clusterApiService;
 
     @Mock
+    private
     UserDetails userDetails;
 
     @Mock
+    private
     ManageDatabase manageDatabase;
 
     @Mock
+    private
     HandleDbRequests handleDbRequests;
 
     @Mock
+    private
     UtilService utilService;
 
-    TopicControllerService topicControllerService;
+    private TopicControllerService topicControllerService;
 
-    Env env;
+    private Env env;
 
-    UtilMethods utilMethods;
+    private UtilMethods utilMethods;
 
     @Before
     public void setUp() throws Exception {
@@ -62,16 +70,25 @@ public class TopicControllerServiceTest {
         env.setName("DEV");
         ReflectionTestUtils.setField(topicControllerService, "manageDatabase", manageDatabase);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+        loginMock();
     }
 
     @After
     public void tearDown() throws Exception {
     }
 
+    private void loginMock(){
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.setContext(securityContext);
+    }
+
     @Test
     public void createTopicsSuccess() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
         when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
@@ -83,7 +100,7 @@ public class TopicControllerServiceTest {
     @Test
     public void createTopicsSuccess1() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
         when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
@@ -95,7 +112,7 @@ public class TopicControllerServiceTest {
     @Test
     public void createTopicsSuccess2() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
         when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
@@ -107,7 +124,7 @@ public class TopicControllerServiceTest {
     @Test(expected = KafkawizeException.class)
     public void createTopicsFailure1() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=abc,max.partitions=4,replication.factor=1");
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
         String result = topicControllerService.createTopics(getFailureTopic());
@@ -117,7 +134,7 @@ public class TopicControllerServiceTest {
 
     @Test(expected = KafkawizeException.class)
     public void createTopicsFailure2() throws KafkawizeException {
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
         String result = topicControllerService.createTopics(getFailureTopic());
@@ -128,7 +145,7 @@ public class TopicControllerServiceTest {
     @Test(expected = KafkawizeException.class)
     public void createTopicsFailure3() throws KafkawizeException {
         this.env.setOtherParams("default.paritions=abc,max.partitions=4");
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
         String result = topicControllerService.createTopics(getFailureTopic());
@@ -142,7 +159,7 @@ public class TopicControllerServiceTest {
         String teamSelected = "Team1";
         String syncTopicsStr = "demotopic101" + "-----" + teamSelected;
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
 
         String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
@@ -155,7 +172,7 @@ public class TopicControllerServiceTest {
         String env = "DEV";
         String syncTopicsStr = "";
 
-        when(utilService.checkAuthorizedSU()).thenReturn(true);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
 
         String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
 
@@ -168,7 +185,7 @@ public class TopicControllerServiceTest {
         String teamSelected = "Team1";
         String syncTopicsStr = "demotopic101" + "-----" + teamSelected;
 
-        when(utilService.checkAuthorizedSU()).thenReturn(false);
+        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
 
@@ -221,8 +238,8 @@ public class TopicControllerServiceTest {
         String topicName = "topic1";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, "DEV")).thenReturn(topicRequest);
         when(handleDbRequests.updateTopicRequest(topicRequest, "uiuser1")).thenReturn("success");
         when(clusterApiService.approveTopicRequests(topicName, topicRequest)).thenReturn(new ResponseEntity<String>("success",HttpStatus.OK));
@@ -237,7 +254,7 @@ public class TopicControllerServiceTest {
         String topicName = "topic1", env = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, env)).thenReturn(topicRequest);
         when(clusterApiService.approveTopicRequests(topicName, topicRequest))
                 .thenReturn(new ResponseEntity<String>("failure error",HttpStatus.OK));
@@ -305,14 +322,13 @@ public class TopicControllerServiceTest {
 
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
 
-        assertEquals(topicsList,null);
+        assertNull(topicsList);
     }
 
     @Test
     public void getSyncTopics() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
-        when(utilService.getUserDetails()).thenReturn(userDetails);
         when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
         when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
                 .thenReturn(utilMethods.getClusterApiTopics("topic",10));
@@ -327,8 +343,8 @@ public class TopicControllerServiceTest {
         String topicName = "testtopic", envSel = "DEV";
         TopicRequest topicRequest = getTopicRequest(topicName);
 
-        when(utilService.checkAuthorizedAdmin_SU()).thenReturn(true);
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(utilService.checkAuthorizedAdmin_SU(userDetails)).thenReturn(true);
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectTopicRequestsForTopic(topicName, envSel)).thenReturn(topicRequest);
         when(handleDbRequests.declineTopicRequest(topicRequest,"uiuser1")).thenReturn("success");
         String result = topicControllerService.declineTopicRequests(topicName, envSel);
@@ -339,7 +355,7 @@ public class TopicControllerServiceTest {
     @Test
     public void getTopicRequests(){
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllTopicRequests(anyString())).thenReturn(getListTopicRequests());
         List<TopicRequest> listTopicRqs = topicControllerService.getTopicRequests("1");
         assertEquals(listTopicRqs.size(), 2);

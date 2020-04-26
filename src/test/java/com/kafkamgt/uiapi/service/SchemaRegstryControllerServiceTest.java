@@ -10,9 +10,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
@@ -27,29 +32,45 @@ import static org.mockito.Mockito.when;
 public class SchemaRegstryControllerServiceTest {
 
     @Mock
+    private
+    UserDetails userDetails;
+
+    @Mock
+    private
     HandleDbRequests handleDbRequests;
 
     @Mock
     private UtilService utilService;
 
     @Mock
+    private
     ManageDatabase manageDatabase;
 
     @Mock
+    private
     ClusterApiService clusterApiService;
 
-    SchemaRegstryControllerService schemaRegstryControllerService;
+    private SchemaRegstryControllerService schemaRegstryControllerService;
 
     @Before
     public void setUp() throws Exception {
         schemaRegstryControllerService = new SchemaRegstryControllerService(clusterApiService, utilService);
         ReflectionTestUtils.setField(schemaRegstryControllerService, "manageDatabase", manageDatabase);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+        loginMock();
+    }
+
+    private void loginMock(){
+        Authentication authentication = Mockito.mock(Authentication.class);
+        SecurityContext securityContext = Mockito.mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+        SecurityContextHolder.setContext(securityContext);
     }
 
     @Test
     public void getSchemaRequests() {
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllSchemaRequests(anyString())).thenReturn(getSchemasReqs());
 
         List<SchemaRequest> listReqs = schemaRegstryControllerService.getSchemaRequests();
@@ -58,7 +79,7 @@ public class SchemaRegstryControllerServiceTest {
 
     @Test
     public void getCreatedSchemaRequests() {
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getCreatedSchemaRequests(anyString())).thenReturn(getSchemasReqs());
 
         List<SchemaRequest> listReqs = schemaRegstryControllerService.getCreatedSchemaRequests();
@@ -105,7 +126,7 @@ public class SchemaRegstryControllerServiceTest {
 
         String input = topicName +"-----"+version+"-----"+envSel;
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectSchemaRequest(topicName, version, envSel))
                 .thenReturn(schemaRequest);
         when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
@@ -148,7 +169,7 @@ public class SchemaRegstryControllerServiceTest {
 
         String input = topicName +"-----"+version+"-----"+envSel;
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectSchemaRequest(topicName, version, envSel))
                 .thenReturn(schemaRequest);
         when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
@@ -165,7 +186,7 @@ public class SchemaRegstryControllerServiceTest {
         SchemaRequest schemaRequest = new SchemaRequest();
         schemaRequest.setSchemafull("");
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.requestForSchema(schemaRequest)).thenReturn("success");
 
         String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
@@ -177,7 +198,7 @@ public class SchemaRegstryControllerServiceTest {
         SchemaRequest schemaRequest = new SchemaRequest();
         schemaRequest.setSchemafull("");
 
-        when(utilService.getUserName()).thenReturn("uiuser1");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.requestForSchema(schemaRequest)).thenThrow(new RuntimeException("Error"));
 
         String result = schemaRegstryControllerService.uploadSchema(schemaRequest);

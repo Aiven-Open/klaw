@@ -77,9 +77,9 @@ public class TopicControllerIT {
     public void test01() throws Exception {
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-
+        login("uiuser1","user", "USER");
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createTopics").with(user("uiuser1").password("user"))
+                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -126,10 +126,8 @@ public class TopicControllerIT {
         when(clusterApiService.approveTopicRequests(anyString(), any()))
                 .thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
 
-        login("uiuser4","user", "ADMIN");
-
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/execTopicRequests").with(user("uiuser4").password("user"))
+                .post("/execTopicRequests").with(user("uiuser4").password("user").roles("ADMIN"))
                 .param("topicName","testtopic")
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -146,9 +144,9 @@ public class TopicControllerIT {
 
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic1");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-
+        login("uiuser1","user", "USER");
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createTopics").with(user("uiuser1").password("user"))
+                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -160,7 +158,7 @@ public class TopicControllerIT {
         login("uiuser4","user", "ADMIN");
 
         response = mvc.perform(MockMvcRequestBuilders
-                .post("/execTopicRequestsDecline").with(user("uiuser4").password("user"))
+                .post("/execTopicRequestsDecline").with(user("uiuser4").password("user").roles("ADMIN"))
                 .param("topicName","testtopic1")
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -194,11 +192,9 @@ public class TopicControllerIT {
         String env = "DEV";
         String teamSelected = "Team2";
         String syncTopicsStr = "testtopic" + "-----" + teamSelected;
-
         login("superuser","user", "SUPERUSER");
-
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/updateSyncTopics").with(user("superuser").password("user"))
+                .post("/updateSyncTopics").with(user("superuser").password("user").roles("SUPERUSER"))
                 .param("updatedSyncTopics",syncTopicsStr)
                 .param("envSelected",env)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -215,9 +211,9 @@ public class TopicControllerIT {
 
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic2");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-
+        login("uiuser1","user", "USER");
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createTopics").with(user("uiuser1").password("user"))
+                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

@@ -9,6 +9,7 @@ import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -97,7 +98,8 @@ public class UiConfigControllerService {
     }
 
     public List<Team> getAllTeams() {
-        return manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(utilService.getUserName());
+        UserDetails userDetails = getUserDetails();
+        return manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(userDetails.getUsername());
     }
 
     public List<Team> getAllTeamsSU() {
@@ -105,8 +107,8 @@ public class UiConfigControllerService {
     }
 
     public String addNewEnv(Env newEnv){
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         newEnv.setTrustStorePwd("");
@@ -122,8 +124,8 @@ public class UiConfigControllerService {
     }
 
     public String deleteCluster(String clusterId){
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         try {
@@ -134,13 +136,13 @@ public class UiConfigControllerService {
     }
 
     public String deleteTeam(String teamId){
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         String envAddResult = "{\"result\":\"Your team cannot be deleted. Try deleting other team.\"}";
 
-        if(manageDatabase.getHandleDbRequests().getUsersInfo(utilService.getUserName()).getTeam().equals(teamId))
+        if(manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername()).getTeam().equals(teamId))
             return envAddResult;
 
         try {
@@ -151,13 +153,13 @@ public class UiConfigControllerService {
     }
 
     public String deleteUser(String userId){
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         String envAddResult = "{\"result\":\"User cannot be deleted\"}";
 
-        if(userId.equals("superuser") || utilService.getUserName().equals(userId))
+        if(userId.equals("superuser") || userDetails.getUsername().equals(userId))
             return envAddResult;
 
         try {
@@ -168,8 +170,8 @@ public class UiConfigControllerService {
     }
 
     public String addNewUser(UserInfo newUser){
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         try {
@@ -186,8 +188,8 @@ public class UiConfigControllerService {
     }
 
     public String addNewTeam(Team newTeam){
-
-        if(!utilService.checkAuthorizedSU())
+        UserDetails userDetails = getUserDetails();
+        if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
         try {
@@ -198,8 +200,7 @@ public class UiConfigControllerService {
     }
 
     public String changePwd(String changePwd){
-
-        UserDetails userDetails = utilService.getUserDetails();
+        UserDetails userDetails = getUserDetails();
 
         GsonJsonParser jsonParser = new GsonJsonParser();
         Map<String, Object> pwdMap  = jsonParser.parseMap(changePwd);
@@ -224,13 +225,13 @@ public class UiConfigControllerService {
     }
 
     public UserInfo getMyProfileInfo(){
-
-        return manageDatabase.getHandleDbRequests().getUsersInfo(utilService.getUserName());
+        UserDetails userDetails = getUserDetails();
+        return manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername());
     }
 
     public List<ActivityLog> showActivityLog(String env, String pageNo){
-
-        List<ActivityLog> origActivityList = manageDatabase.getHandleDbRequests().selectActivityLog(utilService.getUserName(), env);
+        UserDetails userDetails = getUserDetails();
+        List<ActivityLog> origActivityList = manageDatabase.getHandleDbRequests().selectActivityLog(userDetails.getUsername(), env);
         List<ActivityLog> newList = new ArrayList<>();
 
         if(origActivityList!=null && origActivityList.size() > 0) {
@@ -301,5 +302,9 @@ public class UiConfigControllerService {
                 return userDetails.isEnabled();
             }
         };
+    }
+
+    private UserDetails getUserDetails(){
+        return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 }

@@ -28,7 +28,7 @@ public class LoadDbJdbc {
     @Autowired(required=false)
     private JdbcTemplate jdbcTemplate;
 
-    @Value("${custom.kafkawize.version:3.5}")
+    @Value("${custom.kafkawize.version:4.1}")
     private String kafkawizeVersion;
 
     @Autowired

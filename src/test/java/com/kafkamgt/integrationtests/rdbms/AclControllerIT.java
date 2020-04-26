@@ -314,7 +314,7 @@ public class AclControllerIT {
         when(clusterApiService.getAcls(anyString()))
                 .thenReturn(aclInfo);
         login("superuser","user", "SUPERUSER");
-        String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user"))
+        String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user").roles("SUPERUSER"))
                 .param("env","DEV")
                 .param("pageNo","1")
                 .contentType(MediaType.APPLICATION_JSON)

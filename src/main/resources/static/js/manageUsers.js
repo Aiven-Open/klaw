@@ -217,11 +217,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         };
 
         $scope.cancelRequest = function() {
-                    $window.location.href = $window.location.origin + "/kafkawize/showTeams";
+                    $window.location.href = $window.location.origin + "/kafkawize/teams";
                 }
 
         $scope.cancelUserRequest = function() {
-                            $window.location.href = $window.location.origin + "/kafkawize/showUsers";
+                            $window.location.href = $window.location.origin + "/kafkawize/users";
                         }
 
         $scope.addNewTeam = function() {

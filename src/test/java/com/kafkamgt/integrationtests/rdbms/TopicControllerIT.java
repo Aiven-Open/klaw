@@ -127,7 +127,7 @@ public class TopicControllerIT {
         login("uiuser4","user", "ADMIN");
 
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/execTopicRequests").with(user("uiuser4").password("user"))
+                .post("/execTopicRequests").with(user("uiuser4").password("user").roles("ADMIN"))
                 .param("topicName","testtopic")
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -158,7 +158,7 @@ public class TopicControllerIT {
         login("uiuser4","user", "ADMIN");
 
         response = mvc.perform(MockMvcRequestBuilders
-                .post("/execTopicRequestsDecline").with(user("uiuser4").password("user"))
+                .post("/execTopicRequestsDecline").with(user("uiuser4").password("user").roles("ADMIN"))
                 .param("topicName","testtopic1")
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -196,7 +196,7 @@ public class TopicControllerIT {
         login("superuser","user", "SUPERUSER");
 
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/updateSyncTopics").with(user("superuser").password("user"))
+                .post("/updateSyncTopics").with(user("superuser").password("user").roles("SUPERUSER"))
                 .param("updatedSyncTopics",syncTopicsStr)
                 .param("envSelected",env)
                 .contentType(MediaType.APPLICATION_JSON)

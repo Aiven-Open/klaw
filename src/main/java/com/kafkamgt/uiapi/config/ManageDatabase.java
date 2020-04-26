@@ -46,30 +46,30 @@ public class ManageDatabase {
     @PostConstruct
     public void loadDb() throws Exception {
 
-        if(orgName.equals("Your company name."))
-        {
-            System.exit(0);
-        }
+//        if(orgName.equals("Your company name."))
+//        {
+//            System.exit(0);
+//        }
 
-        String licenseKey = "";
-        HashMap<String, String> licenseMap = utils.validateLicense();
-        if(! (environment.getActiveProfiles().length >0
-                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
-                log.info(invalidKeyMessage);
-                System.exit(0);
-            }
-        }else{
-            UtilService.licenceLoaded = true;
-        }
+//        String licenseKey = "";
+//        HashMap<String, String> licenseMap = utils.validateLicense();
+//        if(! (environment.getActiveProfiles().length >0
+//                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+//            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+//                log.info(invalidKeyMessage);
+//                System.exit(0);
+//            }
+//        }else{
+//            UtilService.licenceLoaded = true;
+//        }
 
         if (dbStore != null && dbStore.equals("rdbms")) {
             handleDbRequests = handleJdbc();
         } else
             handleDbRequests = handleCassandra();
 
-        if(UtilService.licenceLoaded)
-            licenseKey = licenseMap.get("LICENSE_KEY");
+//        if(UtilService.licenceLoaded)
+//            licenseKey = licenseMap.get("LICENSE_KEY");
             handleDbRequests.connectToDb(licenseKey);
     }
 

@@ -35,6 +35,7 @@ public class UiControllerLoginTest {
     private UtilService utilService;
 
     @Mock
+    private
     UserDetails userDetails;
 
     private MockMvc mvc;
@@ -60,13 +61,10 @@ public class UiControllerLoginTest {
     }
 
     private void loginMock(){
-        ReflectionTestUtils.setField(uiControllerLogin, "utilService", utilService);
-
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
-        doNothing().when(utilService).setUserDetails(any());
         SecurityContextHolder.setContext(securityContext);
     }
 
@@ -77,13 +75,11 @@ public class UiControllerLoginTest {
 
     @Test
     public void login2() throws Exception {
-        ReflectionTestUtils.setField(uiControllerLogin, "utilService", utilService);
 
         Authentication authentication = Mockito.mock(Authentication.class);
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
-        doNothing().when(utilService).setUserDetails(any());
         SecurityContextHolder.setContext(securityContext);
 
         mvcPerformAndAssert("/login", "index");
