@@ -28,6 +28,10 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
               setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
             }
 
+    $scope.refreshPage = function(){
+        $window.location.reload();
+    }
+
         $scope.getMyTopicRequests = function() {
             $http({
                 method: "GET",
@@ -110,6 +114,10 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
             }
         );
 	}
+
+	$scope.refreshPage = function(){
+            $window.location.reload();
+        }
 
             $scope.getAuth = function() {
             	$http({

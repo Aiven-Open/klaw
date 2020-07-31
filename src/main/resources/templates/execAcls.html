@@ -140,6 +140,10 @@
 				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -260,7 +264,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -296,7 +299,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column active" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column active" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -311,12 +314,7 @@
 		</div>
 		<!-- End Sidebar scroll-->
 	</aside>
-	<!-- ============================================================== -->
-	<!-- End Left Sidebar - style you can find in sidebar.scss  -->
-	<!-- ============================================================== -->
-	<!-- ============================================================== -->
-	<!-- Page wrapper  -->
-	<!-- ============================================================== -->
+
 	<div class="page-wrapper">
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
@@ -405,35 +403,41 @@
 									<div class="d-flex flex-row">
 
 										<div ng-show="aclRequest[0].topictype == 'Producer'" style="width:10%" class="p-2 pl-0 border-right">
-											<h6 class="font-light">AclType</h6><b>
+											<h6 class="text-primary">AclType</h6><b>
 											<span class="badge badge-info">{{ aclRequest[0].topictype }}</span></b>
 										</div>
 
 										<div ng-show="aclRequest[0].topictype == 'Consumer'" style="width:10%" class="p-2 pl-0 border-right">
-											<h6 class="font-light">AclType</h6><b>
+											<h6 class="text-primary">AclType</h6><b>
 											<span class="badge badge-primary">{{ aclRequest[0].topictype }}</span></b>
 										</div>
 
+
+										<div class="p-2 border-right" style="width:10%">
+											<h6 class="text-primary">Cluster</h6><b>
+											<span class="badge badge-warning">{{ aclRequest[0].environment }}</span>
+										</b>
+										</div>
 										<div  style="width:10%" class="p-2 border-right" ng-show="aclRequest[0].topictype == 'Consumer'">
-											<h6 class="font-light">ConsumerGroup</h6><b>{{ aclRequest[0].consumergroup }}</b>
+											<h6 class="text-primary">Consumer Group</h6><b>{{ aclRequest[0].consumergroup }}</b>
+										</div>
+										<div ng-show="aclRequest[0].acl_ip != null" class="p-2 border-right" style="width:10%">
+											<h6 class="text-primary">IP Address</h6><b>{{ aclRequest[0].acl_ip }}</b>
+										</div>
+										<div ng-show="aclRequest[0].acl_ssl != null" class="p-2 border-right" style="width:15%">
+											<h6 class="text-primary">SSL</h6><b>{{ aclRequest[0].acl_ssl }}</b>
 										</div>
 										<div class="p-2 border-right" style="width:15%">
-											<h6 class="font-light">Cluster</h6><b>{{ aclRequest[0].environment }}</b>
-										</div>
-										<div class="p-2 border-right" style="width:10%">
-											<h6 class="font-light">Acl IP</h6><b>{{ aclRequest[0].acl_ip }}</b>
-										</div>
-										<div class="p-2 border-right" style="width:20%">
-											<h6 class="font-light">Acl SSL</h6><b>{{ aclRequest[0].acl_ssl }}</b>
-										</div>
-										<div class="p-2 border-right" style="width:10%">
-											<h6 class="font-light">Requestor</h6><b>{{ aclRequest[0].username }}</b>
+											<h6 class="text-primary">Requestor</h6><b>{{ aclRequest[0].username }}</b>
 										</div>
 										<div class="p-2 border-right" style="width:15%">
-											<h6 class="font-light">Team</h6><b>{{ aclRequest[0].teamname }}</b>
+											<h6 class="text-primary">Team</h6><b>{{ aclRequest[0].requestingteam }}</b>
 										</div>
-										<div class="p-2" style="width:10%">
-											<h6 class="font-light">Type</h6><b>Create Acl</b>
+										<div class="p-2 border-right" style="width:10%">
+											<h6 class="text-primary">Request Type</h6><b>{{ aclRequest[0].aclType }} Acl</b>
+										</div>
+										<div class="p-2" style="width:15%">
+											<h6 class="text-primary">Date Requested</h6><b>{{ aclRequest[0].requesttimestring }}</b>
 										</div>
 									</div>
 

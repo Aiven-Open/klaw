@@ -1,13 +1,15 @@
-package com.kafkamgt.integrationtests.rdbms;
+package com.kafkamgt.integrationtests.cassandra;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UiapiApplication;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.dao.AclRequests;
-import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.model.*;
 import com.kafkamgt.uiapi.service.ClusterApiService;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,23 +37,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, classes=UiapiApplication.class)
 @ActiveProfiles("integrationtest")
-@TestPropertySource(locations="classpath:test-application-rdbms.properties")
+@TestPropertySource(locations="classpath:test-application-cassandra.properties")
 @DirtiesContext
 @EnableAsync
-public class AclControllerIT {
+public class TopicAclControllerIT {
 
     private UtilMethods utilMethods;
 
@@ -63,7 +61,12 @@ public class AclControllerIT {
     private WebApplicationContext context;
 
     @MockBean
-    ClusterApiService clusterApiService;
+    private ClusterApiService clusterApiService;
+
+    @BeforeClass
+    public static void init(){
+        UtilMethods.startEmbeddedCassandraServer();
+    }
 
     @Before
     public void setup() throws Exception {
@@ -74,26 +77,219 @@ public class AclControllerIT {
                 .build();
     }
 
+    // Create topic requests
     @Test
-    public void getClusterApiStatus() throws Exception {
-//        this.testRestTemplate = new TestRestTemplate("uiuser1","user");
-//        ResponseEntity<String> t = testRestTemplate.getForEntity("http://localhost:"+port+"/kafkawize" +
-//                "/getClusterApiStatus", String.class);
-//        Env jsonReq = new ObjectMapper().readValue(t.getBody(), Env.class);
-//        assertEquals("OFFLINE", jsonReq.getEnvStatus());
+    public void test001() throws Exception {
+        TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic");
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+        login("uiuser1","user", "USER");
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
     }
 
+    // Query topic requests in created state
     @Test
-    public void getEnvsStatus() throws Exception {
-//        String response = mvc.perform(get("/getClusterApiStatus")
-//                .with(user("uiuser1").password("user")))
-//                .andReturn()
-//                .getResponse()
-//                .getContentAsString();
-//
-//        Env jsonReq = new ObjectMapper().readValue(response, Env.class);
-//        assertEquals("OFFLINE", jsonReq.getEnvStatus());
+    public void test002() throws Exception {
+        List<List<TopicRequest>> topicReqs = utilMethods.getTopicRequestsList();
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getCreatedTopicRequests").with(user("uiuser1").password("user"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
     }
+
+    // Query topic requests in created and approved state
+    @Test
+    public void test003() throws Exception {
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopicRequests").with(user("uiuser1").password("user"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo","1")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
+    }
+
+    // approve topic - creates topic in cluster
+    @Test
+    public void test004() throws Exception {
+        when(clusterApiService.approveTopicRequests(anyString(), any()))
+                .thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/execTopicRequests").with(user("uiuser4").password("user").roles("ADMIN"))
+                .param("topicName","testtopic")
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+    }
+
+    // decline topic - topic in cluster
+    @Test
+    public void test005() throws Exception {
+
+        TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic1");
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+        login("uiuser1","user", "USER");
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+
+        login("uiuser4","user", "ADMIN");
+
+        response = mvc.perform(MockMvcRequestBuilders
+                .post("/execTopicRequestsDecline").with(user("uiuser4").password("user").roles("ADMIN"))
+                .param("topicName","testtopic1")
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+    }
+
+    // get team of topic
+    @Test
+    public void test006() throws Exception {
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopicTeam").with(user("uiuser1").password("user"))
+                .param("topicName","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(res, CoreMatchers.containsString("Team1"));
+    }
+
+    // Update team of a topic
+    @Test
+    public void test007() throws Exception {
+        List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncTopicUpdates);
+
+        login("superuser","user", "SUPERUSER");
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/updateSyncTopics").with(user("superuser").password("user").roles("SUPERUSER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+    }
+
+    // delete a topic request of his own
+    @Test
+    public void test008() throws Exception {
+
+        TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic2");
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+        login("uiuser1","user", "USER");
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+
+        response = mvc.perform(MockMvcRequestBuilders
+                .get("/deleteTopicRequests")
+                .param("topicName","testtopic2,DEV").with(user("uiuser1").password("user"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        assertThat(response, CoreMatchers.containsString("success"));
+    }
+
+    // get topics from cluster
+    @Test
+    public void test009() throws Exception {
+        when(clusterApiService.getAllTopics(anyString())).thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopics").with(user("uiuser1").password("user"))
+                .param("env","DEV")
+                .param("pageNo","1")
+                .param("topicnamesearch","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<List<TopicInfo>> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
+        assertEquals(1, response.get(0).size());
+    }
+
+    //get only topic names
+    @Test
+    public void test010() throws Exception {
+        when(clusterApiService.getAllTopics(anyString())).thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getTopicsOnly").with(user("uiuser1").password("user"))
+                .param("env","DEV")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<String> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
+    }
+
+    // get all topics which can be updated with new team ids
+    @Test
+    public void test011() throws Exception {
+        when(clusterApiService.getAllTopics(anyString())).thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getSyncTopics").with(user("uiuser1").password("user"))
+                .param("env","DEV")
+                .param("pageNo","1")
+                .param("topicnamesearch","testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(10, response.size());
+    }
+
 
     // Get Acl requests before creating one
     @Test
@@ -121,14 +317,14 @@ public class AclControllerIT {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List response = new ObjectMapper().readValue(res, List.class);
+        List<List<AclRequests>> response = new ObjectMapper().readValue(res, List.class);
         assertEquals(0, response.size());
     }
 
     // Request for a acl
     @Test
     public void test03() throws Exception {
-        AclRequests addAclRequest = utilMethods.getAclRequest11("testtopic1");
+        AclRequests addAclRequest = utilMethods.getAclRequest11("testtopic");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
 
         String response = mvc.perform(MockMvcRequestBuilders
@@ -192,7 +388,7 @@ public class AclControllerIT {
     // Request for a acl
     @Test
     public void test06() throws Exception {
-        AclRequests addAclRequest = utilMethods.getAclRequest("testtopic");
+        AclRequests addAclRequest = utilMethods.getAclRequest("testtopic1");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
 
         String response = mvc.perform(MockMvcRequestBuilders
@@ -217,7 +413,7 @@ public class AclControllerIT {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<AclRequests> response = new ObjectMapper().readValue(res, List.class);
+        List response = new ObjectMapper().readValue(res, List.class);
         Object obj = response.get(0);
         LinkedHashMap<String, String> hMap = (LinkedHashMap)obj;
         this.reqId = hMap.get("req_no");
@@ -236,7 +432,7 @@ public class AclControllerIT {
 
     // delete acl requests
     @Test
-    public void test8() throws Exception {
+    public void test08() throws Exception {
         String res = mvc.perform(
                 get("/getAclRequests").with(user("uiuser1").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
@@ -262,20 +458,17 @@ public class AclControllerIT {
 
     // update acls with team - sync
     @Test
-    public void test9() throws Exception {
+    public void test09() throws Exception {
 
-        String topicName = "testtopic";
-        String updateSyncAcls = "fdsDZD34"+ "-----" +
-                topicName + "-----" + "Team1" + "-----"
-                + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
-        String envSelected = "DEV";
+        List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
+
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
 
         login("superuser","user", "SUPERUSER");
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/updateSyncAcls").with(user("superuser").password("user").roles("SUPERUSER"))
-                .param("updatedSyncAcls",updateSyncAcls)
-                .param("envSelected",envSelected)
+                .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -288,32 +481,30 @@ public class AclControllerIT {
     @Test
     public void test11() throws Exception {
 
-        List<HashMap<String,String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls());
+        List<HashMap<String,String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
 
         when(clusterApiService.getAcls(anyString()))
                 .thenReturn(aclInfo);
 
         String res = mvc.perform(get("/getAcls").with(user("uiuser1").password("user"))
-                .param("env","DEV")
-                .param("pageNo","1")
-                .param("topicnamesearch","testtopic1")
+                .param("topicnamesearch","testtopic")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(1, response.size());
+        TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
+        assertEquals(1, response.getAclInfoList().size());
     }
 
     // get acls to be synced - retrieve from Source of truth
     @Test
     public void test13() throws Exception {
-        List<HashMap<String,String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls());
+        List<HashMap<String,String>> aclInfo = utilMethods.getClusterAcls();
 
         when(clusterApiService.getAcls(anyString()))
                 .thenReturn(aclInfo);
-        login("superuser","user", "SUPERUSER");
+
         String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user").roles("SUPERUSER"))
                 .param("env","DEV")
                 .param("pageNo","1")

@@ -3,9 +3,6 @@ package com.kafkamgt.uiapi.service;
 import com.datastax.driver.core.*;
 import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,37 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.util.Base64;
-import java.util.HashMap;
-
 @Service
 @Slf4j
 public class UtilService {
-
-    //private UserDetails userDetails;
-
-    @Value("${custom.license.key}")
-    private
-    String licenseKey;
-
-    @Value("${custom.org.name}")
-    private
-    String organization;
-
-    @Autowired
-    Environment environment;
-
-    //public static boolean licenceLoaded = false;
 
     RestTemplate getRestTemplate(){
         return new RestTemplate();
@@ -96,46 +65,45 @@ public class UtilService {
         return SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public HashMap<String,String> validateLicense(){
-        HashMap<String,String> hLicenseMap = new HashMap<>();
+//    public HashMap<String,String> validateLicense(){
+//        HashMap<String,String> hLicenseMap = new HashMap<>();
+//
+//        try {
+//            loadLicenseUtil(licenseKey, organization);
+//            hLicenseMap.put("LICENSE_STATUS", Boolean.TRUE.toString());
+//            hLicenseMap.put("LICENSE_KEY", licenseKey);
+//            return hLicenseMap;
+//        } catch (Exception e) {
+//            hLicenseMap.put("LICENSE_STATUS", Boolean.FALSE.toString());
+//            return hLicenseMap;
+//        }
+//    }
 
-        try {
-            loadLicenseUtil(licenseKey, organization);
-            hLicenseMap.put("LICENSE_STATUS", Boolean.TRUE.toString());
-            hLicenseMap.put("LICENSE_KEY", licenseKey);
-            return hLicenseMap;
-        } catch (Exception e) {
-            //licenceLoaded = false;
-            hLicenseMap.put("LICENSE_STATUS", Boolean.FALSE.toString());
-            return hLicenseMap;
-        }
-    }
 
+//    private void loadLicenseUtil(String licenseKey, String SALT_STR) throws Exception {
+//        byte[] salt = SALT_STR.getBytes();
+//        int iterationCount = 40000;
+//        int keyLength = 128;
+//
+//        decryptLicense(licenseKey, createSecretKey(SALT_STR.toCharArray(),
+//                salt, iterationCount, keyLength));
+//    }
+//
+//    private static SecretKeySpec createSecretKey(char[] password, byte[] salt, int iterationCount, int keyLength)
+//            throws NoSuchAlgorithmException, InvalidKeySpecException {
+//        SecretKey keyTmps = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
+//                .generateSecret(new PBEKeySpec(password, salt, iterationCount, keyLength));
+//        return new SecretKeySpec(keyTmps.getEncoded(), "AES");
+//    }
+//
+//    private static void decryptLicense(String string, SecretKeySpec key) throws GeneralSecurityException, IOException {
+//        Cipher cInstance = Cipher.getInstance("AES/CBC/PKCS5Padding");
+//        cInstance.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(base64Decode(string.split(":")[0])));
+//        cInstance.doFinal(base64Decode(string.split(":")[1]));
+//    }
+//
+//    private static byte[] base64Decode(String property) throws IOException {
+//        return Base64.getDecoder().decode(property);
+//    }
 
-    private void loadLicenseUtil(String licenseKey, String SALT_STR) throws Exception {
-        byte[] salt = SALT_STR.getBytes();
-        int iterationCount = 40000;
-        int keyLength = 128;
-
-        decryptLicense(licenseKey, createSecretKey(SALT_STR.toCharArray(),
-                salt, iterationCount, keyLength));
-    }
-
-    private static SecretKeySpec createSecretKey(char[] password, byte[] salt, int iterationCount, int keyLength)
-            throws NoSuchAlgorithmException, InvalidKeySpecException {
-        SecretKey keyTmps = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512")
-                .generateSecret(new PBEKeySpec(password, salt, iterationCount, keyLength));
-       // licenceLoaded = true;
-        return new SecretKeySpec(keyTmps.getEncoded(), "AES");
-    }
-
-    private static void decryptLicense(String string, SecretKeySpec key) throws GeneralSecurityException, IOException {
-        Cipher cInstance = Cipher.getInstance("AES/CBC/PKCS5Padding");
-        cInstance.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(base64Decode(string.split(":")[0])));
-        cInstance.doFinal(base64Decode(string.split(":")[1]));
-    }
-
-    private static byte[] base64Decode(String property) throws IOException {
-        return Base64.getDecoder().decode(property);
-    }
 }

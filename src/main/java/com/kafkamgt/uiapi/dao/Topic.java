@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,7 +17,16 @@ public class Topic implements Serializable {
     private String topicname;
 
     @Transient
+    private List<String> environmentsList;
+
+    @Transient
     private String environment;
+
+    @Column(name = "partitions")
+    private String noOfPartitions;
+
+    @Column(name = "replicationfactor")
+    private String noOfReplcias;
 
     @EmbeddedId
     private TopicPK topicPK;

@@ -1,0 +1,12 @@
+package com.kafkamgt.uiapi.dao;
+
+public enum MailType {
+    TOPIC_REQUESTED,
+    TOPIC_REQUEST_APPROVED,
+    TOPIC_REQUEST_DENIED,
+    ACL_REQUESTED,
+    ACL_DELETE_REQUESTED,
+    ACL_REQUEST_APPROVED,
+    ACL_REQUEST_DENIED,
+    NEw_USER_ADDED;
+}

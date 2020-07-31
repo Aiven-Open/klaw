@@ -142,6 +142,10 @@
 					<!-- ============================================================== -->
 					<!-- Comment -->
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -259,7 +263,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -295,7 +298,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -370,7 +373,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="getAuth();getEnvs();loadTeams();">
+			<div class="row" ng-init="getAuth();getEnvs();loadParams();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
 						<div class="card-header">
@@ -400,7 +403,7 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label class="control-label">Select Cluster</label>
-												<select class="form-control custom-select" ng-blur="getAllTopics()"  ng-model="addAcl.envName" ng-options="env as env.name for env in allenvs">
+												<select class="form-control custom-select" ng-model="addAcl.envName" ng-options="env as env for env in allenvs">
 
 												</select>
 											</div>
@@ -409,7 +412,7 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label>Select Topic</label>
-												<select class="form-control custom-select"  ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" ng-options="o as o for o in alltopics">
+												<select class="form-control custom-select"  ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" ng-options="topic as topic for topic in alltopics">
 
 												</select>
 												<small class="form-control-feedback"> Please select the topic. </small>
@@ -432,7 +435,7 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label>Consumer Group (Only for consumers)</label>
-												<input ng-disabled="disable_consumergrp" ng-model="addAcl.consumergroup" type="text" placeholder="applicationconsumergroup"
+												<input ng-disabled="disable_consumergrp" ng-model="addAcl.consumergroup" type="text"
 													   class="form-control">
 												<small class="form-control-feedback"> Enabled for ACL Type as Consumer </small>
 											</div>
@@ -510,7 +513,7 @@
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
 									<button ng-click="addAcl();" class="btn btn-success"> <i class="fa fa-check"></i>
-										Save</button>
+										Submit</button>
 									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
 								</div>
 							</form>

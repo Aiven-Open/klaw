@@ -64,7 +64,7 @@
 
 	</style>
 
-<body class="fix-header card-no-border logo-center" ng-init="getAuth();getTopics(1,'false');">
+<body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
 <!-- Preloader - style you can find in spinners.css -->
 <!-- ============================================================== -->
@@ -168,6 +168,10 @@
 				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -288,7 +292,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -324,7 +327,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -358,7 +361,7 @@
 					<div class="form-group has-success">
 						<label class="text-success">Kafka Cluster</label>
 						<select class="form-control custom-select" ng-change="getTopics(1,'true');"
-								ng-model="getTopics.envName" ng-options="env as env.name for env in allenvs">
+								ng-model="getTopics.envName.name" ng-options="env as env.name for env in allenvs">
 							<option value="" selected="selected">
 								Select Cluster</option>
 						</select>
@@ -427,17 +430,19 @@
 
 			<div class="row" align="center" ng-show="resultBrowse.length>0 && statusauthexectopics==='Authorized'">
 				<div class="col-lg-12">
-					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Synchronize Topics - Owners</h4>
-						</div>
+					<div class="card">
 						<div class="card-body">
-
-							<table class="table color-table warning-table"  ng-show="resultPages != null">
+							<table width="100%"><tr>
+								<td align="left"><h4 class="card-title">Synchronize Topics - Owners</h4></td>
+							</tr>
+							</table>
+							<table class="table color-table success-table"  ng-show="resultPages != null">
 								<thead>
 								<tr>
 									<!--<th>Sequence</th>-->
 									<th>TopicName</th>
+									<th>Partitions</th>
+									<th>Replication Factor</th>
 									<th>Team</th>
 								</tr>
 								</thead>
@@ -445,8 +450,11 @@
 								<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
 									<!--<td>{{ resultBrowset.sequence}}</td>-->
 									<td>{{ resultBrowset.topicname}}</td>
+									<td>{{ resultBrowset.topicpartitions}}</td>
+									<td>{{ resultBrowset.replicationfactor}}</td>
 									<td>
-										<select class="form-control custom-select" ng-change="getDetails(resultBrowset.teamname,resultBrowset.topicname)"
+										<select class="form-control custom-select" ng-change="updateTopicDetails(resultBrowset.sequence, resultBrowset.teamname, resultBrowset.topicname,
+										 resultBrowset.topicpartitions, resultBrowset.replicationfactor)"
 												ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 												ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 										</select>
@@ -461,15 +469,16 @@
 			</div>
 			<!-- Row -->
 
-
-
 			<div class="dataTables_paginate paging_simple_numbers"  ng-show="resultPageSelected != null && resultBrowse.length>0">
 				<ul class="pagination">
 					<li class="paginate_button page-item active" disabled>
 						<a href="#" class="page-link">Pages</a>
 					</li>
 					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
-						<a href="#" class="page-link" ng-click="getTopics(allPages,'true')">{{allPages}}</a>
+						<a ng-show="resultPageSelected == allPages" href="#" class="page-link text-success" ng-click="getTopics(allPages,'true')">
+							<b>{{allPages}}</b></a>
+						<a ng-show="resultPageSelected != allPages" href="#" class="page-link" ng-click="getTopics(allPages,'true')">
+							{{allPages}}</a>
 					</li>
 				</ul>
 			</div>

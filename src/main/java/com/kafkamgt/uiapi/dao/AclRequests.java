@@ -66,6 +66,10 @@ public class AclRequests implements Serializable {
     @Column(name = "exectime")
     private Timestamp approvingtime;
 
+    // create or delete
+    @Column(name = "acltype")
+    private String aclType;
+
     @Transient
     private String totalNoPages;
 

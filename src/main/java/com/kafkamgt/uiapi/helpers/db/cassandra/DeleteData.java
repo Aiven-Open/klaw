@@ -90,39 +90,26 @@ public class DeleteData {
 
     public String deletePrevAclRecs(List<Acl> aclReqs){
 
-        for(Acl aclReq:aclReqs){
-            String aclType = aclReq.getTopictype();
-            String host = aclReq.getAclip();
-            String principle = aclReq.getAclssl();
-            String consumergroup = aclReq.getConsumergroup();
-            String topicName = aclReq.getTopicname();
-
-
-            Clause eqclause = QueryBuilder.eq("topictype",aclType);
-            Clause eqclause2 = QueryBuilder.eq("acl_ip",host);
-            Clause eqclause3 = QueryBuilder.eq("consumergroup",consumergroup);
-            Clause eqclause4 = QueryBuilder.eq("acl_ssl",principle);
-            Clause eqclause5 = QueryBuilder.eq("topicname",topicName);
-            Select selQuery = QueryBuilder.select("req_no").from(keyspace,"acls")
-                    .where(eqclause)
-                    .and(eqclause2)
-                    .and(eqclause3)
-                    .and(eqclause4)
-                    .and(eqclause5).allowFiltering();
-
-            ResultSet res = session.execute(selQuery);
-
-            for (Row row : res) {
-                String reqNo = row.getString("req_no");
+        for(Acl aclReq: aclReqs){
+                String reqNo = aclReq.getReq_no();
                 LOG.info("SELECT Query done.."+reqNo);
-                Clause eqclause6 = QueryBuilder.eq("req_no",reqNo);
+                Clause eqclause6 = QueryBuilder.eq("req_no", reqNo);
                 Delete.Where delQuery = QueryBuilder.delete().all().from(keyspace,"acls")
                         .where(eqclause6);
                 session.execute(delQuery);
             }
-        }
+
 
         return "success";
     }
 
+    String deleteAclSubscriptionRequest(String req_no) {
+
+        Clause eqclause = QueryBuilder.eq("req_no",req_no);
+        Delete.Where delQuery = QueryBuilder.delete().all().from(keyspace,"acls")
+                .where(eqclause);
+        session.execute(delQuery);
+
+        return "success";
+    }
 }

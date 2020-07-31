@@ -17,6 +17,18 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.envSelectedParam;
 
+	$scope.showSuccessToast = function() {
+                      var x = document.getElementById("successbar");
+                      x.className = "show";
+                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                    }
+
+            $scope.showAlertToast = function() {
+                      var x = document.getElementById("alertbar");
+                      x.className = "show";
+                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                    }
+
 	$scope.getEnvs = function() {
 
             $http({
@@ -32,6 +44,10 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }
             );
         }
+
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
 
     $scope.getAuth = function() {
     	$http({
@@ -107,36 +123,29 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         var str = window.location.search;
         var envSelected, topicSelected;
         if(str){
-            var envSelectedIndex = str.indexOf("envSelected");
             var topicNameIndex = str.indexOf("topicname");
 
-            if(envSelectedIndex > 0 && topicNameIndex > 0)
+            if(topicNameIndex > 0)
             {
-                envSelected = str.substring(13, topicNameIndex-1);
                 topicSelected = str.substring(topicNameIndex+10);
             }
         }
 
-        if(!envSelected)
-        	return;
-
         if(!topicSelected)
             return;
 
-		$scope.envSelectedParam = envSelected;
 		$scope.topicSelectedParam = topicSelected;
-		serviceInput['env'] = envSelected;
-		
+
 		$http({
 			method: "GET",
 			url: "getAcls",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : envSelected,
-                'pageNo' : pageNoSelected, 'topicnamesearch' : topicSelected }
+            params: {'topicnamesearch' : topicSelected }
 		}).success(function(output) {
-			$scope.resultBrowse = output;
-			if(output!=null){
-                $scope.resultPages = output[0].allPageNos;
+			$scope.resultBrowse = output.aclInfoList;
+			$scope.topicOverview = output.topicInfoList;
+			if(output.aclInfoList != null){
+                $scope.resultPages = output.aclInfoList[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
             }
 		}).error(

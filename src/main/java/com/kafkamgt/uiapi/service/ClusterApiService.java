@@ -6,7 +6,6 @@ import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +28,7 @@ public class ClusterApiService {
     ManageDatabase manageDatabase;
 
     @Autowired
-    private UtilService utilService;
+    private final UtilService utilService;
 
     @Value("${custom.clusterapi.url}")
     private String clusterConnUrl;
@@ -39,22 +38,6 @@ public class ClusterApiService {
 
     @Value("${custom.clusterapi.password}")
     private String clusterApiPwd;
-
-    private static String URI_CREATE_ACLS = "/topics/createAcls";
-
-    private static String URI_GET_ACLS = "/topics/getAcls/";
-
-    private static String URI_CREATE_TOPICS = "/topics/createTopics";
-
-    private static String URI_GET_TOPICS = "/topics/getTopics/";
-
-    private static String URI_POST_SCHEMA = "/topics/postSchema";
-
-    private static String URI_ENV_STATUS = "/topics/getStatus/";
-
-    private static String URI_CLSTR_API_STAUTS = "/topics/getApiStatus";
-
-    private static String CLSTR_API_STATUS = "OFFLINE";
 
     public ClusterApiService(UtilService utilService){
         this.utilService = utilService;
@@ -67,6 +50,7 @@ public class ClusterApiService {
     String getClusterApiStatus() {
         String clusterStatus;
         try {
+            String URI_CLSTR_API_STAUTS = "/topics/getApiStatus";
             String uri = clusterConnUrl + URI_CLSTR_API_STAUTS;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
@@ -80,10 +64,8 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, String.class);
             clusterStatus = resultBody.getBody();
         }catch(Exception e){
-            CLSTR_API_STATUS = "OFFLINE";
             return "OFFLINE";
         }
-        CLSTR_API_STATUS = clusterStatus;
         return clusterStatus;
     }
 
@@ -112,6 +94,7 @@ public class ClusterApiService {
         String clusterStatus ;
 
         try {
+            String URI_ENV_STATUS = "/topics/getStatus/";
             String uri = clusterConnUrl + URI_ENV_STATUS + bootstrapHost;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
@@ -133,6 +116,7 @@ public class ClusterApiService {
     public List<HashMap<String,String>> getAcls(String bootstrapHost) throws KafkawizeException {
         List<HashMap<String, String>> aclListOriginal;
         try {
+            String URI_GET_ACLS = "/topics/getAcls/";
             String uri = clusterConnUrl + URI_GET_ACLS + bootstrapHost;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
@@ -154,6 +138,7 @@ public class ClusterApiService {
     public List<String> getAllTopics(String bootstrapHost) throws Exception{
         List<String> topicsList ;
         try {
+            String URI_GET_TOPICS = "/topics/getTopics/";
             String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS + bootstrapHost;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
@@ -194,6 +179,7 @@ public class ClusterApiService {
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
+            String URI_CREATE_TOPICS = "/topics/createTopics";
             response = restTemplate.postForEntity(clusterConnUrl + URI_CREATE_TOPICS, request, String.class);
         }catch(Exception e){
             throw new KafkawizeException("Could not approve topic request. Check Cluster Api connection. "+e.toString());
@@ -205,7 +191,11 @@ public class ClusterApiService {
         ResponseEntity<String> response;
         try {
             String env = aclReq.getEnvironment();
-            String uri = clusterConnUrl + URI_CREATE_ACLS;
+            String uri;
+
+            String URI_CREATE_ACLS = "/topics/createAcls";
+            uri = clusterConnUrl + URI_CREATE_ACLS;
+
             RestTemplate restTemplate = utilService.getRestTemplate();
 
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
@@ -234,6 +224,7 @@ public class ClusterApiService {
     ResponseEntity<String> postSchema(SchemaRequest schemaRequest, String env, String topicName) throws KafkawizeException {
         ResponseEntity<String> response;
         try {
+            String URI_POST_SCHEMA = "/topics/postSchema";
             String uri = clusterConnUrl + URI_POST_SCHEMA;
 
             RestTemplate restTemplate = utilService.getRestTemplate();

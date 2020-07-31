@@ -4,6 +4,8 @@ package com.kafkamgt.uiapi.controller;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.model.SyncAclUpdates;
+import com.kafkamgt.uiapi.model.SyncTopicUpdates;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.service.TopicControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -28,9 +31,8 @@ public class TopicController {
     }
 
     @PostMapping(value = "/updateSyncTopics")
-    public ResponseEntity<String> updateSyncTopics(@RequestParam ("updatedSyncTopics") String updatedSyncTopics,
-                                                   @RequestParam ("envSelected") String envSelected) {
-        String updateSyncTopicsResult = topicControllerService.updateSyncTopics(updatedSyncTopics, envSelected);
+    public ResponseEntity<HashMap<String, String>> updateSyncTopics(@RequestBody List<SyncTopicUpdates> syncTopicUpdates) {
+        HashMap<String, String> updateSyncTopicsResult = topicControllerService.updateSyncTopics(syncTopicUpdates);
         return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
     }
 
@@ -40,9 +42,8 @@ public class TopicController {
     }
 
     @RequestMapping(value = "/getTopicTeam", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Topic> getTopicTeam(@RequestParam("topicName") String topicName,
-                                              @RequestParam("env") String env) {
-       return new ResponseEntity<>(topicControllerService.getTopicTeam(topicName, env), HttpStatus.OK);
+    public ResponseEntity<String> getTopicTeam(@RequestParam("topicName") String topicName) {
+       return new ResponseEntity<>(topicControllerService.getTopicTeamOnly(topicName), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getCreatedTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -72,15 +73,17 @@ public class TopicController {
     @RequestMapping(value = "/getTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<List<TopicInfo>>> getTopics(@RequestParam("env") String env,
                                                      @RequestParam("pageNo") String pageNo,
-                                                     @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
+                                                     @RequestParam(value="topicnamesearch",required=false) String topicNameSearch,
+                                                           @RequestParam(value="teamName",required=false) String teamName
+                                                           ) throws Exception {
 
-        return new ResponseEntity<>(topicControllerService.getTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
+        return new ResponseEntity<>(topicControllerService.getTopics(env, pageNo, topicNameSearch, teamName), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicsOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<String>> getTopicsOnly(@RequestParam("env") String env) throws Exception {
+    public ResponseEntity<List<String>> getTopicsOnly() throws Exception {
 
-        return new ResponseEntity<>(topicControllerService.getAllTopics(env), HttpStatus.OK);
+        return new ResponseEntity<>(topicControllerService.getAllTopics(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

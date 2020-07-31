@@ -15,11 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class SelectData{
@@ -51,7 +49,7 @@ public class SelectData{
         return countList;
     }
 
-    public List<AclRequests> selectAclRequests(boolean allReqs, String requestor, String role){
+    List<AclRequests> selectAclRequests(boolean allReqs, String requestor, String role){
         AclRequests aclReq ;
         List<AclRequests> aclList = new ArrayList();
         ResultSet results ;
@@ -65,15 +63,22 @@ public class SelectData{
         }
 
         for (Row row : results) {
-            String teamName = null;
+            String teamName;
+            String aclType = row.getString("acltype"); // Create / Delete
+            String requestingTeam = row.getString("requestingteam");
+            String topicOwnerTeam = row.getString("teamname");
+
             if(allReqs) {
                 if(role.equals("ROLE_USER"))
-                    teamName = row.getString("requestingteam");
+                    teamName = requestingTeam;
                 else
-                    teamName = row.getString("teamname");
+                    teamName = topicOwnerTeam;
+
+                if(aclType.equals("Delete"))
+                    teamName = requestingTeam;
             }
             else
-                teamName = row.getString("requestingteam");
+                teamName = requestingTeam;
 
             String teamSelected = null;
 
@@ -93,19 +98,20 @@ public class SelectData{
                 aclReq.setTopicname(row.getString("topicname"));
                 aclReq.setAppname(row.getString("appname"));
                 aclReq.setEnvironment(row.getString("env"));
-                aclReq.setTeamname(row.getString("teamname"));
-                aclReq.setRequestingteam(row.getString("requestingteam"));
+                aclReq.setTeamname(topicOwnerTeam);
+                aclReq.setRequestingteam(requestingTeam);
                 aclReq.setRemarks(row.getString("remarks"));
                 aclReq.setAclstatus(row.getString("topicstatus"));
+                aclReq.setAclType(aclType);
                 try {
                      aclReq.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime").getTime())));
                      aclReq.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
                             .format((row.getTimestamp("requesttime")).getTime()));
-                }catch (Exception e){}
+                }catch (Exception ignored){}
 
                 try {
                     aclReq.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
-                }catch (Exception e){}
+                }catch (Exception ignored){}
 
                 aclReq.setConsumergroup("" + row.getString("consumergroup"));
                 aclReq.setTopictype("" + row.getString("topictype"));
@@ -204,60 +210,95 @@ public class SelectData{
         return schemaRequest;
     }
 
-    public Topic selectTopicDetails(String topic, String env){
+    public List<Topic> selectTopicDetails(String topic){
+        List<Topic> topicList = new ArrayList<>();
         Topic topicObj = null;
 
         ResultSet results = null;
         Clause eqclause1 = QueryBuilder.eq("topicname", topic);
-        Clause eqclause2 = QueryBuilder.eq("env", env);
         Select selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause1)
-                .and(eqclause2)
                 .allowFiltering();
         results = session.execute(selectQuery);
 
         for (Row row : results) {
+                String teamName = row.getString("teamname");
+                String env = row.getString("env");
 
-            String teamName = row.getString("teamname");
-
-            topicObj = new Topic();
-            topicObj.setTeamname(teamName);
+                topicObj = new Topic();
+                TopicPK topicPK = new TopicPK();
+                topicPK.setTopicname(topic);
+                topicPK.setEnvironment(env);
+                topicObj.setEnvironment(env);
+                topicObj.setTopicPK(topicPK);
+                topicObj.setTeamname(teamName);
+            topicList.add(topicObj);
             }
 
-        return topicObj;
+        if(topicList.size()>0)
+            return topicList;
+        else return null;
     }
 
-    public List<Topic> selectSyncTopics(String env){
+    public List<Topic> selectSyncTopics(String env, String teamNameSearch){
         Topic topicRequest = null;
-        List<Topic> topicRequestList = new ArrayList();
+        List<Topic> topicRequestList = new ArrayList<>();
         ResultSet results = null;
-        Clause eqclause = QueryBuilder.eq("env", env);
-        Select selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
+        Select selectQuery;
+        if(env !=null && !env.equals("ALL")){
+            Clause eqclause = QueryBuilder.eq("env", env);
+            selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
+        }else
+            selectQuery = QueryBuilder.select().from(keyspace,"topics");
+
         results = session.execute(selectQuery);
 
         TopicPK topicPK ;
+        String teamName;
 
         for (Row row : results) {
             topicRequest = new Topic();
             topicPK = new TopicPK();
+            teamName = row.getString("teamname");
             topicPK.setTopicname(row.getString("topicname"));
-            topicPK.setEnvironment(env);
+            topicPK.setEnvironment(row.getString("env"));
 
             topicRequest.setTopicPK(topicPK);
             topicRequest.setTopicname(row.getString("topicname"));
+            topicRequest.setNoOfPartitions(row.getString("partitions"));
+            topicRequest.setNoOfReplcias(row.getString("replicationfactor"));
             topicRequest.setAppname(row.getString("appname"));
-            topicRequest.setTeamname(row.getString("teamname"));
+            topicRequest.setTeamname(teamName);
 
-            topicRequestList.add(topicRequest);
+            if(teamNameSearch==null || teamNameSearch.equals("null") || teamNameSearch.equals("All teams"))
+            {
+                topicRequestList.add(topicRequest);
+            }
+            else if(teamNameSearch.equals(teamName))
+                    topicRequestList.add(topicRequest);
+
         }
         return topicRequestList;
     }
 
-    public List<Acl> selectSyncAcls(String env){
-        Acl aclReq ;
-        List<Acl> aclList = new ArrayList();
+    List<Acl> selectSyncAcls(String env){
+        List<Acl> aclList = new ArrayList<>();
         ResultSet results = null;
-        Clause eqclause = QueryBuilder.eq("env", env);
-        Select selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
+        Select selectQuery;
+        if(!env.equals("ALL")){
+            Clause eqclause = QueryBuilder.eq("env", env);
+            selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
+        }
+        else
+            selectQuery = QueryBuilder.select().from(keyspace,"acls");
+
+        updateAclList(aclList, selectQuery);
+
+        return aclList;
+    }
+
+    private void updateAclList(List<Acl> aclList, Select selectQuery) {
+        ResultSet results;
+        Acl aclReq;
         results = session.execute(selectQuery);
 
         for (Row row : results) {
@@ -269,14 +310,35 @@ public class SelectData{
             aclReq.setAclssl(row.getString("acl_ssl"));
             aclReq.setConsumergroup(row.getString("consumergroup"));
             aclReq.setTopictype(row.getString("topictype"));
+            aclReq.setEnvironment(row.getString("env"));
 
             aclList.add(aclReq);
         }
-
-        return aclList;
     }
 
-    public List<TopicRequest> selectTopicRequests(boolean allReqs, String requestor){
+    Acl selectSyncAclsFromReqNo(String reqNo){
+        Acl acl = null;
+        ResultSet results ;
+        Clause eqclause = QueryBuilder.eq("req_no", reqNo);
+        Select selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause).allowFiltering();
+        results = session.execute(selectQuery);
+
+        for (Row row : results) {
+            acl = new Acl();
+            acl.setReq_no(row.getString("req_no"));
+            acl.setTopicname(row.getString("topicname"));
+            acl.setTeamname(row.getString("teamname"));
+            acl.setAclip(row.getString("acl_ip"));
+            acl.setAclssl(row.getString("acl_ssl"));
+            acl.setEnvironment(row.getString("env"));
+            acl.setConsumergroup(row.getString("consumergroup"));
+            acl.setTopictype(row.getString("topictype"));
+        }
+
+        return acl;
+    }
+
+    List<TopicRequest> selectTopicRequests(boolean allReqs, String requestor){
         TopicRequest topicRequest = null;
         List<TopicRequest> topicRequestList = new ArrayList();
         ResultSet results = null;
@@ -293,14 +355,7 @@ public class SelectData{
 
             String teamName = row.getString("teamname");
 
-            String teamSelected = null;
-
-            List<Map<String,String>> userList = selectAllUsers();
-            for (Map<String, String> stringStringMap : userList) {
-                teamSelected = stringStringMap.get(requestor);
-                if(teamSelected!=null)
-                    break;
-            }
+            String teamSelected = selectUserInfo(requestor).getTeam();
 
             //LOG.info("teamSelected--"+teamSelected);
 
@@ -402,19 +457,22 @@ public class SelectData{
 
         for (Row row : results) {
             aclReq.setReq_no(req_no);
+            aclReq.setUsername(row.getString("requestor"));
             aclReq.setEnvironment(row.getString("env"));
             aclReq.setAcl_ip(row.getString("acl_ip"));
             aclReq.setAcl_ssl(row.getString("acl_ssl"));
             aclReq.setConsumergroup(row.getString("consumergroup"));
             aclReq.setTopictype(row.getString("topictype"));
             aclReq.setTopicname(row.getString("topicname"));
+            aclReq.setAclstatus(row.getString("topicstatus"));
             aclReq.setRequestingteam(row.getString("requestingteam"));
+            aclReq.setAclType(row.getString("acltype"));
         }
 
         return aclReq;
     }
 
-    public List<Map<String,String>> selectAllUsers(){
+    List<Map<String,String>> selectAllUsers(){
 
         List<Map<String,String>> userList = new ArrayList();
         ResultSet results ;
@@ -448,6 +506,7 @@ public class SelectData{
             userMap.setTeam(row.getString("team"));
             userMap.setRole(row.getString("roleid"));
             userMap.setFullname(row.getString("fullname"));
+            userMap.setMailid(row.getString("mailid"));
 
             userList.add(userMap);
         }
@@ -525,6 +584,7 @@ public class SelectData{
             userMap.setTeam(row.getString("team"));
             userMap.setRole(row.getString("roleid"));
             userMap.setFullname(row.getString("fullname"));
+            userMap.setMailid(row.getString("mailid"));
         }
 
         return userMap;
@@ -575,10 +635,12 @@ public class SelectData{
 
     public List<Team> selectTeamsOfUsers(String username){
 
+        List<Team> allTeams = selectAllTeams();
+
         List<Team> teamList = new ArrayList();
         List<Team> teamListSU = new ArrayList();
         List<String> superUserTeamListStr = new ArrayList();
-        ResultSet results = null;
+        ResultSet results ;
         Select selectQuery = QueryBuilder.select().all().from(keyspace,"users");
         results = session.execute(selectQuery);
 
@@ -594,15 +656,16 @@ public class SelectData{
 
             superUserTeamListStr.add(teamName);
 
+            String finalTeamName = teamName;
+            Optional<Team> teamSel = allTeams.stream().filter(a->a.getTeamname().equals(finalTeamName)).findFirst();
+
             if(username.equals(row.getString("userid"))) {
                 String role = row.getString("roleid");
+
                 if(role.equals("SUPERUSER")){
                     isSuperUser = true;
                 }else {
-                    TeamPK teamPK = new TeamPK();
-                    teamPK.setTeamname(teamName);
-                    team.setTeamPK(teamPK);
-                    teamList.add(team);
+                    teamList.add(teamSel.get());
                 }
             }
         }
@@ -610,7 +673,7 @@ public class SelectData{
         if(isSuperUser) {
             List<String> listWithoutDuplicates = superUserTeamListStr.stream()
                     .distinct().collect(Collectors.toList());
-            listWithoutDuplicates.stream().forEach(teamNameNew->{
+            listWithoutDuplicates.forEach(teamNameNew->{
                 Team suTeam = new Team();
                     TeamPK teamPK = new TeamPK();
                     teamPK.setTeamname(teamNameNew);
@@ -623,7 +686,7 @@ public class SelectData{
             return teamList;
     }
 
-    public HashMap<String, String> getDashboardInfo(){
+    public HashMap<String, String> getDashboardInfo(String teamName){
         HashMap<String, String> dashboardInfo = new HashMap<>();
 
         Select selectQuery = QueryBuilder.select().countAll().from(keyspace,"teams");
@@ -644,7 +707,68 @@ public class SelectData{
         results = session.execute(selectQuery1);
         dashboardInfo.put("kafka_clusters_count", ""+results.one().getObject("count"));
 
+        Clause eqclause = QueryBuilder.eq("teamname", teamName);
+        Select selectQuery2 = QueryBuilder.select().from(keyspace,"topics").where(eqclause).allowFiltering();
+        results = session.execute(selectQuery2);
+        List<String> topics = new ArrayList<>();
+        results.all().forEach(row -> topics.add(row.getString("topicname")));
+        List<String> newList =  topics.stream().distinct().collect(Collectors.toList());
+        dashboardInfo.put("myteamtopics", "" + newList.size());
+
         return dashboardInfo;
     }
 
+    public List<Topic> getTopics(String topicName) {
+        Topic topicRequest = null;
+        List<Topic> topicRequestList = new ArrayList<>();
+        ResultSet results = null;
+        Select selectQuery;
+        Clause eqclause1 = QueryBuilder.eq("topicname", topicName);
+        selectQuery = QueryBuilder.select().from(keyspace,"topics").where(eqclause1)
+                .allowFiltering();
+
+        results = session.execute(selectQuery);
+
+        TopicPK topicPK ;
+        String teamName;
+
+        for (Row row : results) {
+            topicRequest = new Topic();
+            topicPK = new TopicPK();
+            teamName = row.getString("teamname");
+            topicPK.setTopicname(row.getString("topicname"));
+            topicPK.setEnvironment(row.getString("env"));
+
+            topicRequest.setTopicPK(topicPK);
+            topicRequest.setTopicname(row.getString("topicname"));
+            topicRequest.setNoOfPartitions(row.getString("partitions"));
+            topicRequest.setNoOfReplcias(row.getString("replicationfactor"));
+            topicRequest.setAppname(row.getString("appname"));
+            topicRequest.setTeamname(teamName);
+
+            topicRequestList.add(topicRequest);
+
+        }
+        return topicRequestList;
+    }
+
+    public List<Acl> selectSyncAcls(String env, String topic) {
+            List<Acl> aclList = new ArrayList<>();
+            Select selectQuery;
+            if(!env.equals("ALL")){
+                Clause eqclause = QueryBuilder.eq("env", env);
+                Clause eqclause1 = QueryBuilder.eq("topicname", topic);
+                selectQuery = QueryBuilder.select().from(keyspace,"acls").where(eqclause)
+                        .and(eqclause1)
+                        .allowFiltering();
+            }
+            else {
+                Clause eqclause1 = QueryBuilder.eq("topicname", topic);
+                selectQuery = QueryBuilder.select().from(keyspace, "acls").where(eqclause1)
+                        .allowFiltering();;
+            }
+            updateAclList(aclList, selectQuery);
+
+            return aclList;
+    }
 }

@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 
 import static org.junit.Assert.*;
@@ -29,6 +30,9 @@ public class UpdateDataTest {
     private InsertData insertDataHelper;
 
     @Mock
+    private DeleteData deleteDataHelper;
+
+    @Mock
     private ResultSet resultSet;
 
     private UpdateData updateData;
@@ -39,6 +43,7 @@ public class UpdateDataTest {
     public void setUp() {
         updateData = new UpdateData(session, insertDataHelper);
         utilMethods = new UtilMethods();
+        ReflectionTestUtils.setField(updateData, "deleteDataHelper", deleteDataHelper);
     }
 
     @Test
@@ -79,6 +84,17 @@ public class UpdateDataTest {
     public void updateAclRequest() {
         String approver = "uiuser2";
         AclRequests aclReq = utilMethods.getAclRequest("testtopic");
+
+        when(deleteDataHelper.deletePrevAclRecs(any()))
+                .thenReturn("success");
+        String result = updateData.updateAclRequest(aclReq, approver);
+        assertEquals("success", result);
+    }
+
+    @Test
+    public void updateAclRequest1() {
+        String approver = "uiuser2";
+        AclRequests aclReq = utilMethods.getAclRequestCreate("testtopic");
         when(insertDataHelper.insertIntoAclsSOT(any(), eq(false)))
                 .thenReturn("success");
 

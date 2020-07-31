@@ -31,12 +31,15 @@ public class UpdateData {
     @Autowired
     private InsertData insertDataHelper;
 
-    public UpdateData(){}
+    @Autowired
+    private DeleteData deleteDataHelper;
 
     public UpdateData(Session session, InsertData insertDataHelper){
         this.session = session;
         this.insertDataHelper = insertDataHelper;
     }
+
+    public UpdateData(){}
 
     public String declineTopicRequest(TopicRequest topicRequest, String approver){
         Clause eqclause = QueryBuilder.eq("topicname",topicRequest.getTopicname());
@@ -67,20 +70,22 @@ public class UpdateData {
         List<Topic> topics = new ArrayList<>();
         Topic topicObj = new Topic();
         copyProperties(topicRequest,topicObj);
+        topicObj.setNoOfReplcias(topicRequest.getReplicationfactor());
+        topicObj.setNoOfPartitions(topicRequest.getTopicpartitions());
         topics.add(topicObj);
 
         if(insertDataHelper.insertIntoTopicSOT(topics,false).equals("success")){
-            Acl aclReq = new Acl();
-            aclReq.setTopictype("Producer");
-            aclReq.setEnvironment(topicRequest.getEnvironment());
-            aclReq.setTeamname(topicRequest.getTeamname());
-            aclReq.setAclssl(topicRequest.getAcl_ssl());
-            aclReq.setAclip(topicRequest.getAcl_ip());
-            aclReq.setTopicname(topicRequest.getTopicname());
-
-            List<Acl> acls = new ArrayList<>();
-            acls.add(aclReq);
-            insertDataHelper.insertIntoAclsSOT(acls,false);
+//            Acl aclReq = new Acl();
+//            aclReq.setTopictype("Producer");
+//            aclReq.setEnvironment(topicRequest.getEnvironment());
+//            aclReq.setTeamname(topicRequest.getTeamname());
+//            aclReq.setAclssl(topicRequest.getAcl_ssl());
+//            aclReq.setAclip(topicRequest.getAcl_ip());
+//            aclReq.setTopicname(topicRequest.getTopicname());
+//
+//            List<Acl> acls = new ArrayList<>();
+//            acls.add(aclReq);
+//            insertDataHelper.insertIntoAclsSOT(acls,false);
 
             return "success";
         }
@@ -96,8 +101,6 @@ public class UpdateData {
                 .where(eqclause);
         session.execute(updateQuery);
 
-        // Insert to SOT
-
         List<Acl> acls = new ArrayList<>();
         Acl aclObj = new Acl();
         copyProperties(aclReq,aclObj);
@@ -105,9 +108,22 @@ public class UpdateData {
         aclObj.setAclip(aclReq.getAcl_ip());
         aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
-        if(insertDataHelper.insertIntoAclsSOT(acls,false).equals("success")){
-            return "success";
-        }else return "failure";
+
+        if(aclReq.getAclType() != null && aclReq.getAclType().equals("Create"))
+        {
+            // Insert to SOT
+            if(insertDataHelper.insertIntoAclsSOT(acls,false).equals("success")){
+                return "success";
+            }
+            else return "failure";
+        }else{
+            // Delete SOT
+            if(deleteDataHelper.deletePrevAclRecs(acls).equals("success")){
+                return "success";
+            }
+            else return "failure";
+        }
+
     }
 
     public String declineAclRequest(AclRequests aclReq, String approver){

@@ -92,45 +92,7 @@
                     <!-- Search -->
                     <!-- ============================================================== -->
                     <a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
-                    <!--<li class="nav-item d-none d-md-block search-box"> <a-->
-                            <!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
-                            <!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
-                        <!--<form class="app-search">-->
-                            <!--<input type="text" class="form-control" placeholder="Search & enter"> <a-->
-                                <!--class="srh-btn"><i class="ti-close"></i></a> </form>-->
-                    <!--</li>-->
-                    <!-- ============================================================== -->
-                    <!-- Messages -->
-                    <!-- ============================================================== -->
-                    <!--<li class="nav-item dropdown mega-dropdown"> <a-->
-                            <!--class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
-                            <!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i-->
-                            <!--class="mdi mdi-view-grid"></i></a>-->
-                        <!--<div class="dropdown-menu scale-up-left">-->
-                            <!--<ul class="mega-dropdown-menu row">-->
 
-
-                                <!--<li class="col-lg-3  mb-4">-->
-                                    <!--<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>-->
-                                    <!--&lt;!&ndash; Contact &ndash;&gt;-->
-                                    <!--<form>-->
-                                        <!--<div class="form-group">-->
-                                            <!--<input type="text" class="form-control" id="exampleInputname1"-->
-                                                   <!--placeholder="Enter Name"> </div>-->
-                                        <!--<div class="form-group">-->
-                                            <!--<input type="email" class="form-control" placeholder="Enter email">-->
-                                        <!--</div>-->
-                                        <!--<div class="form-group">-->
-                                                <!--<textarea class="form-control" id="exampleTextarea" rows="3"-->
-                                                          <!--placeholder="Message"></textarea>-->
-                                        <!--</div>-->
-                                        <!--<button type="submit" class="btn btn-info">Submit</button>-->
-                                    <!--</form>-->
-                                <!--</li>-->
-
-                            <!--</ul>-->
-                        <!--</div>-->
-                    <!--</li>-->
                     <!-- ============================================================== -->
                     <!-- End Messages -->
                     <!-- ============================================================== -->
@@ -142,6 +104,10 @@
                     <!-- ============================================================== -->
                     <!-- Comment -->
                     <!-- ============================================================== -->
+                    <li class="nav-item d-none d-md-block search-box"> <a
+                            class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+                            href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+                    </li>
                     <li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -269,7 +235,6 @@
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="requestTopics">Request Topic</a></li>
-                            <li><a href="requestAcls">Request Acl</a></li>
                             <li><a href="requestSchema">Request Schema</a></li>
                             <li><a href="myTopicRequests">My Topic Requests</a></li>
                             <li><a href="myAclRequests">My Acl Requests</a></li>
@@ -305,7 +270,7 @@
                     </li>
                     <li class="nav-devider"></li>
                     <li class="nav-small-cap">EXTRA COMPONENTS</li>
-                    <li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+                    <li class="two-column" ng-show="statusauthexectopics=='Authorized'">
                         <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -341,6 +306,7 @@
 
             <!-- Row -->
             <div class="row">
+
                 <!-- Column -->
                 <div class="col-lg-4 col-md-12" ng-init="getClusterApi();">
                     <div class="card card-inverse card-primary">
@@ -355,7 +321,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-4 align-self-center">
+                                <div class="col-12 align-self-center">
                                     <h2 class="font-weight-light text-white text-nowrap">{{ clusterapi.envStatus }}</h2>
                                 </div>
                                 <div class="col-8 pb-3 pt-2 align-self-center">
@@ -381,7 +347,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4 align-self-center">
+                                    <div class="col-12 align-self-center">
                                         <h2 class="font-weight-light text-white text-nowrap text-truncate">{{ userscount }} users</h2>
                                     </div>
                                     <div class="col-8 pb-3 pt-2 text-right">
@@ -407,7 +373,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4 align-self-center">
+                                    <div class="col-12 align-self-center">
                                         <h2 class="font-weight-light text-white text-nowrap">{{kafka_clusters_count}} Kafka clusters</h2>
                                     </div>
                                     <div class="col-8 pb-3 pt-2 text-right">
@@ -423,7 +389,19 @@
 
             <div class="row">
                 <!-- Column -->
-                <div class="col-md-6 col-lg-4 col-xlg-2">
+                <div class="col-md-6 col-lg-3 col-xlg-2">
+                    <a href="browseTopics?team={{teamname}}">
+                        <div class="card card-inverse card-info">
+                            <div class="p-2 rounded text-center">
+                                <h1 class="font-light text-white">{{ myteamtopics }} </h1>
+                                <h6 class="text-white">My team Topics</h6>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+                <!-- Column -->
+                <div class="col-md-6 col-lg-3 col-xlg-2">
                     <a href="execTopics" ng-show="statusauthexectopics=='Authorized'">
                         <div class="card card-inverse card-dark">
                             <div class="p-2 rounded text-center">
@@ -442,7 +420,7 @@
                     </a>
                 </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-4 col-xlg-2">
+                <div class="col-md-6 col-lg-3 col-xlg-2">
                     <a href="execAcls" ng-show="statusauthexectopics=='Authorized'">
                         <div class="card card-inverse card-megna">
                             <div class="p-2 rounded text-center">
@@ -461,7 +439,7 @@
                     </a>
                 </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-4 col-xlg-2">
+                <div class="col-md-6 col-lg-3 col-xlg-2">
                     <div class="card card-inverse card-warning">
                         <div class="p-2 rounded text-center">
                             <h1 class="font-light text-white">{{ notificationsSchemas }}</h1>
@@ -488,7 +466,7 @@
                                     <span class="badge badge-info">ONLINE</span>
                                 </h5>
                                 <h5 ng-show="allenvs[0].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">allenvs[0].envStatus}}</span>
+                                    <span class="badge badge-warning">{{allenvs[0].envStatus}}</span>
                                 </h5>
 
                             </div>
@@ -509,7 +487,7 @@
                                     <span class="badge badge-info">ONLINE</span>
                                 </h5>
                                 <h5 ng-show="allenvs[1].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">allenvs[1].envStatus}}</span>
+                                    <span class="badge badge-warning">{{allenvs[1].envStatus}}</span>
                                 </h5>
                             </div>
                         </div>
@@ -529,7 +507,7 @@
                                     <span class="badge badge-info">ONLINE</span>
                                 </h5>
                                 <h5 ng-show="allenvs[2].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">allenvs[2].envStatus}}</span>
+                                    <span class="badge badge-warning">{{allenvs[2].envStatus}}</span>
                                 </h5>
                             </div>
                         </div>
@@ -549,7 +527,7 @@
                                     <span class="badge badge-info">ONLINE</span>
                                 </h5>
                                 <h5 ng-show="allenvs[3].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">allenvs[3].envStatus}}</span>
+                                    <span class="badge badge-warning">{{allenvs[3].envStatus}}</span>
                                 </h5>
                             </div>
                         </div>

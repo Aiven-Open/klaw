@@ -123,6 +123,10 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             );
         }
 
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
+
        $scope.getAuth = function() {
             $http({
                    method: "GET",

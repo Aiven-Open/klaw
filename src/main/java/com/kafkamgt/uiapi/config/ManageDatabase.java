@@ -24,34 +24,35 @@ import java.util.List;
 public class ManageDatabase {
 
     @Value("${custom.db.storetype}")
+    private
     String dbStore;
 
-    public HandleDbRequests handleDbRequests;
+    private HandleDbRequests handleDbRequests;
 
     @Autowired
+    private
     UtilService utils;
 
     @Value("${custom.license.key}")
+    private
     String licenseKey;
 
     @Value("${custom.org.name}")
+    private
     String orgName;
 
-    @Value("${custom.invalidkey.msg}")
-    String invalidKeyMessage;
-
     @Autowired
+    private
     Environment environment;
 
     @PostConstruct
     public void loadDb() throws Exception {
 
-//        if(orgName.equals("Your company name."))
-//        {
-//            System.exit(0);
-//        }
+        if(orgName.equals("Your company name."))
+        {
+            System.exit(0);
+        }
 
-//        String licenseKey = "";
 //        HashMap<String, String> licenseMap = utils.validateLicense();
 //        if(! (environment.getActiveProfiles().length >0
 //                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
@@ -59,18 +60,25 @@ public class ManageDatabase {
 //                log.info(invalidKeyMessage);
 //                System.exit(0);
 //            }
-//        }else{
-//            UtilService.licenceLoaded = true;
 //        }
+
+//        UtilService.licenceLoaded = true;
 
         if (dbStore != null && dbStore.equals("rdbms")) {
             handleDbRequests = handleJdbc();
         } else
             handleDbRequests = handleCassandra();
 
-//        if(UtilService.licenceLoaded)
-//            licenseKey = licenseMap.get("LICENSE_KEY");
-            handleDbRequests.connectToDb(licenseKey);
+        handleDbRequests.connectToDb("licenseKey");
+
+//        if(UtilService.licenceLoaded) {
+//            handleDbRequests.connectToDb("licenseKey");
+//        }else
+//        {
+////            log.info(invalidKeyMessage);
+//            log.info("Herre....");
+//            System.exit(0);
+//        }
     }
 
     public HandleDbRequests getHandleDbRequests(){

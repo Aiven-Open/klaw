@@ -77,7 +77,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
         $scope.addNewEnv = function() {
 
-
                 if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
                 {
                     $scope.alertnote = "Default partitions should not be empty and should be greater than 0";
@@ -115,6 +114,13 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 if($scope.addNewEnv.envname == undefined)
                 {
                     $scope.alertnote = "Please fill in a name for cluster";
+                    $scope.showAlertToast();
+                    return;
+                }
+
+                if($scope.addNewEnv.envname.length > 3)
+                {
+                    $scope.alertnote = "Cluster name cannot be more than 3 characters.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -165,6 +171,10 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 }
             );
         }
+
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
 
            $scope.getAuth = function() {
            	$http({

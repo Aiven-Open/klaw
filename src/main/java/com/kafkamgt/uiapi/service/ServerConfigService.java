@@ -1,8 +1,7 @@
 package com.kafkamgt.uiapi.service;
 
 
-import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.ServerConfigProperties;
+import com.kafkamgt.uiapi.model.ServerConfigProperties;
 import org.apache.commons.text.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

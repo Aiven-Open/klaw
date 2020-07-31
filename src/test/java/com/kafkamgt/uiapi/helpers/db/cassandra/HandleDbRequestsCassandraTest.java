@@ -68,11 +68,11 @@ public class HandleDbRequestsCassandraTest {
 
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "clusterConnPort", 9042);
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "keyspace", "kafkamanagementapi");
-        ReflectionTestUtils.setField(handleDbRequestsCassandra, "environment", environment);
+        //ReflectionTestUtils.setField(handleDbRequestsCassandra, "environment", environment);
     }
 
     @Test
-    public void connectToDbSuccess() {
+    public void connectToDbSuccess() throws Exception {
         List connectedHosts = new ArrayList<>(Arrays.asList("localhosttest"));
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "clusterConnHost", "localhosttest");
         ReflectionTestUtils.setField(handleDbRequestsCassandra, "dbScriptsExecution", "auto");
@@ -81,12 +81,11 @@ public class HandleDbRequestsCassandraTest {
         when(cluster.connect()).thenReturn(session);
         when(cluster.connect(any())).thenReturn(session);
         when(session.getState()).thenReturn(sessionState);
-//        String[] envArr = {"integrationtest"};
-//        when(environment.getActiveProfiles()).thenReturn(envArr);
+        String[] envArr = {"integrationtest"};
+        //when(environment.getActiveProfiles()).thenReturn(envArr);
         doNothing().when(loadDb).dropTables();
         doNothing().when(loadDb).insertData();
         doNothing().when(loadDb).createTables();
-
         when(sessionState.getConnectedHosts()).thenReturn(connectedHosts);
         handleDbRequestsCassandra.connectToDb("testlicensekey");
     }

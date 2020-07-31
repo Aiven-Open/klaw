@@ -15,20 +15,16 @@ public class TeamPK implements Serializable {
     @Column(name = "team")
     private String teamname;
 
-    @Column(name = "app")
-    private String app;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TeamPK)) return false;
         TeamPK that = (TeamPK) o;
-        return Objects.equals(getTeamname(), that.getTeamname()) &&
-                Objects.equals(getApp(), that.getApp());
+        return Objects.equals(getTeamname(), that.getTeamname());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getTeamname(),getApp());
+        return Objects.hash(getTeamname());
     }
 }

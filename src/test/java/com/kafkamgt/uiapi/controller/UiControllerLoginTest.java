@@ -200,6 +200,12 @@ public class UiControllerLoginTest {
     }
 
     @Test
+    public void browseTopics()throws Exception {
+        loginMock();
+        mvcPerformAndAssert("/browseTopics", "browseTopics.html");
+    }
+
+    @Test
     public void serverConfig() throws Exception{
         loginMock();
         mvcPerformAndAssert("/serverConfig", "serverConfig.html");

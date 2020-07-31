@@ -198,11 +198,31 @@ public class ClusterApiServiceTest {
     }
 
     @Test
-    public void approveAclRequestsSuccess() throws KafkawizeException {
+    public void approveAclRequestsSuccess1() throws KafkawizeException {
         AclRequests aclRequests = new AclRequests();
         aclRequests.setReq_no("fsd3D213");
         aclRequests.setEnvironment("DEV");
         aclRequests.setTopicname("testtopic");
+        aclRequests.setAclType("Create");
+
+        when(utilService.getRestTemplate()).thenReturn(restTemplate);
+        when(handleDbRequests.selectEnvDetails("DEV")).thenReturn(this.env);
+        when(restTemplate.postForEntity
+                (Mockito.anyString(), Mockito.any(),
+                        eq(String.class)))
+                .thenReturn(response);
+
+        ResponseEntity<String> response = clusterApiService.approveAclRequests(aclRequests);
+        assertEquals(response.getBody(), "success");
+    }
+
+    @Test
+    public void approveAclRequestsSuccess2() throws KafkawizeException {
+        AclRequests aclRequests = new AclRequests();
+        aclRequests.setReq_no("fsd3D213");
+        aclRequests.setEnvironment("DEV");
+        aclRequests.setTopicname("testtopic");
+        aclRequests.setAclType("Delete");
 
         when(utilService.getRestTemplate()).thenReturn(restTemplate);
         when(handleDbRequests.selectEnvDetails("DEV")).thenReturn(this.env);
@@ -221,13 +241,7 @@ public class ClusterApiServiceTest {
         aclRequests.setReq_no("fsd3D213");
         aclRequests.setEnvironment("DEV");
         aclRequests.setTopicname("testtopic");
-
-        when(utilService.getRestTemplate()).thenReturn(restTemplate);
-        when(handleDbRequests.selectEnvDetails("DEV")).thenReturn(this.env);
-        when(restTemplate.postForEntity
-                (Mockito.anyString(), Mockito.any(),
-                        eq(String.class)))
-                .thenThrow(new RuntimeException("error"));
+        aclRequests.setAclType("Create");
 
         clusterApiService.approveAclRequests(aclRequests);
     }

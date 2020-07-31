@@ -27,4 +27,7 @@ public class UserInfo implements Serializable {
 
     @Column(name = "fullname")
     private String fullname;
+
+    @Column(name = "mailid")
+    private String mailid;
 }

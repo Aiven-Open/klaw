@@ -79,6 +79,10 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                 $scope.showProgressBar = "false";
           }
 
+          $scope.refreshPage = function(){
+                  $window.location.reload();
+              }
+
            $scope.getAuth = function() {
            	$http({
                    method: "GET",
@@ -88,6 +92,7 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.myteamtopics = output.myteamtopics;
                    $scope.kafkawizeversion = output.kafkawizeversion;
                    $scope.notifications = output.notifications;
                    $scope.notificationsAcls = output.notificationsAcls;

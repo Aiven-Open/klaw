@@ -9,4 +9,3 @@ drop table if exists kafkamanagementapi.activitylog;
 drop table if exists kafkamanagementapi.productdetails;
 drop table if exists kafkamanagementapi.acls;
 drop table if exists kafkamanagementapi.topics;
-drop keyspace if exists kafkamanagementapi;

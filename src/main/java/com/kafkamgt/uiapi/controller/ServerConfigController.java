@@ -1,6 +1,6 @@
 package com.kafkamgt.uiapi.controller;
 
-import com.kafkamgt.uiapi.dao.ServerConfigProperties;
+import com.kafkamgt.uiapi.model.ServerConfigProperties;
 import com.kafkamgt.uiapi.service.ServerConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

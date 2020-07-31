@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -63,6 +64,39 @@ public class UiConfigControllerTest {
 
         List<Env> response = new ObjectMapper().readValue(res, List.class);
         assertEquals(1, response.size());
+    }
+
+    @Test
+    public void getSyncEnv() throws Exception {
+        List<HashMap<String,String>> envList = utilMethods.getSyncEnv();
+        when(uiConfigControllerService.getSyncEnvs()).thenReturn(envList);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getSyncEnv")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<HashMap<String,String>> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(2, response.size());
+        assertEquals(2,response.get(0).size());
+    }
+
+    @Test
+    public void getEnvsOnly() throws Exception {
+        List<String> envList = utilMethods.getEnvsOnly();
+        when(uiConfigControllerService.getEnvsOnly(eq(true))).thenReturn(envList);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getEnvsOnly")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<String> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(2, response.size());
     }
 
     @Test
@@ -159,6 +193,22 @@ public class UiConfigControllerTest {
 
         List<Team> response = new ObjectMapper().readValue(res, List.class);
         assertEquals(1, response.size());
+    }
+
+    @Test
+    public void getAllTeamsSUOnly() throws Exception {
+        List<String> teamList = utilMethods.getAllTeamsSUOnly();
+        when(uiConfigControllerService.getAllTeamsSUOnly()).thenReturn(teamList);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getAllTeamsSUOnly")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<Team> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(2, response.size());
     }
 
     @Test

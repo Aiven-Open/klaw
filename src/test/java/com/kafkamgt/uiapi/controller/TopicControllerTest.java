@@ -1,9 +1,11 @@
 package com.kafkamgt.uiapi.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.model.SyncTopicUpdates;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.service.TopicControllerService;
 import org.junit.Before;
@@ -17,7 +19,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -68,18 +72,23 @@ public class TopicControllerTest {
 
     @Test
     public void updateSyncTopics() throws Exception {
-        when(topicControllerService.updateSyncTopics(anyString(), anyString())).thenReturn("success");
+        List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncTopicUpdates);
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("result","success");
+        when(topicControllerService.updateSyncTopics(any())).thenReturn(resultMap);
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/updateSyncTopics")
-                .param("updatedSyncTopics","update")
-                .param("envSelected","DEV")
+                .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertEquals("success", response);
+        HashMap<String, String> actualResult = new ObjectMapper().readValue(response, new TypeReference<HashMap<String,String>>(){});
+
+        assertEquals("success", actualResult.get("result"));
     }
 
     @Test
@@ -102,20 +111,18 @@ public class TopicControllerTest {
 
     @Test
     public void getTopicTeam() throws Exception {
-        Topic topic = utilMethods.getTopic("testtopic");
-        when(topicControllerService.getTopicTeam(anyString(), anyString())).thenReturn(topic);
+        String topicName = "testtopic";
+        when(topicControllerService.getTopicTeamOnly(topicName)).thenReturn("Team1");
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopicTeam")
-                .param("topicName","testtopic")
-                .param("env","DEV")
+                .param("topicName",topicName)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        Topic response = new ObjectMapper().readValue(res, Topic.class);
-        assertEquals("Team1", response.getTeamname());
+        assertEquals("Team1", res);
     }
 
     @Test
@@ -185,13 +192,14 @@ public class TopicControllerTest {
     public void getTopics() throws Exception {
         List<List<TopicInfo>> topicList = utilMethods.getTopicInfoList();
 
-        when(topicControllerService.getTopics(anyString(), anyString(), anyString())).thenReturn(topicList);
+        when(topicControllerService.getTopics(anyString(), anyString(), anyString(), anyString())).thenReturn(topicList);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopics")
                 .param("env","DEV")
                 .param("pageNo","1")
                 .param("topicnamesearch","testtopic")
+                .param("teamName","Team1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -204,7 +212,7 @@ public class TopicControllerTest {
     @Test
     public void getTopicsOnly() throws Exception {
         List<String> topicList = Arrays.asList("testtopic1", "testtopic2");
-        when(topicControllerService.getAllTopics(anyString())).thenReturn(topicList);
+        when(topicControllerService.getAllTopics()).thenReturn(topicList);
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopicsOnly")
                 .param("env","DEV")

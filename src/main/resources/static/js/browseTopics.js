@@ -21,7 +21,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "getEnvs",
+                url: "getEnvsOnly",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -32,6 +32,25 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                 }
             );
         }
+
+        $scope.loadTeams = function() {
+                $http({
+                    method: "GET",
+                    url: "getAllTeamsSUOnly",
+                    headers : { 'Content-Type' : 'application/json' }
+                }).success(function(output) {
+                    $scope.allTeams = output;
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+            }
+
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
 
     $scope.getAuth = function() {
     	$http({
@@ -91,47 +110,56 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.resultPages = null;
         $scope.alert = null;
         $scope.resultPageSelected = null;
-
+        var teamSel = $scope.getTopics.team;
+        var str = window.location.search;
         if(fromSelect == "false")
         {
-            var str = window.location.search;
             var envSelected;
-
             if(str && str.length>10){
-                        var envSelectedIndex = str.indexOf("envSelected");
-
-                        if(envSelectedIndex > 0)
-                        {
-                            envSelected = str.substring(13);
-                            if(envSelected && envSelected.length>0) {
-                                serviceInput['env'] = envSelected;
-                                $scope.envSelected = envSelected;
-                            }else return;
-                        }
+                var envSelectedIndex = str.indexOf("envSelected");
+                if(envSelectedIndex > 0)
+                {
+                    envSelected = str.substring(13);
+                    if(envSelected && envSelected.length>0) {
+                        serviceInput['env'] = envSelected;
+                        $scope.envSelected = envSelected;
+                        $scope.getTopics.envName = envSelected;
                     }else return;
+                }
+            }else return;
+        }else if(fromSelect == "true"){
+                 if(!$scope.getTopics.envName)
+                        envSelected = "ALL";
+                 else
+                    envSelected = $scope.getTopics.envName;
+
+                serviceInput['env'] = envSelected;
+                $scope.envSelected = envSelected;
         }else{
-             if(!$scope.getTopics.envName)
-        		    return;
-
-            envSelected = $scope.getTopics.envName.name;
-            serviceInput['env'] = envSelected;
-            $scope.envSelected = envSelected;
+                envSelected = "ALL";
+                var teamFromSearchParams = str.indexOf("team=");
+                if(teamFromSearchParams > 0){
+                    teamSel = str.substring(6);
+                    window.history.pushState({}, document.title, "browseTopics");
+                    $scope.getTopics.team = teamSel;
+                }
         }
-
 
 		var topicFilter = $scope.getTopics.topicnamesearch;
 		if(topicFilter && topicFilter.length>0 && topicFilter.length<3){
 		    alert("Please enter atleast 3 characters of the topic name.");
 		    return;
 		    }
-		
+
 		$http({
 			method: "GET",
 			url: "getTopics",
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : envSelected,
                 'pageNo' : pageNoSelected,
-                 'topicnamesearch' : $scope.getTopics.topicnamesearch}
+                 'topicnamesearch' : $scope.getTopics.topicnamesearch,
+                 'teamName' : teamSel
+                 }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
 			if(output!=null && output.length !=0){

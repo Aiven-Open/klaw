@@ -15,7 +15,12 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	//$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
+
+	$scope.refreshPage = function(){
+            $window.location.reload();
+        }
+
         $scope.getAuth = function() {
         	$http({
                 method: "GET",
@@ -25,6 +30,7 @@ app.controller("indexCtrl", function($scope, $http, $location, $window) {
                 $scope.statusauth = output.status;
                 $scope.userlogged = output.username;
                 $scope.teamname = output.teamname;
+                $scope.myteamtopics = output.myteamtopics;
                  $scope.notifications = output.notifications;
                 $scope.notificationsAcls = output.notificationsAcls;
                 $scope.statusauthexectopics = output.statusauthexectopics;

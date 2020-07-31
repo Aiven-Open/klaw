@@ -16,14 +16,14 @@ public class Team implements Serializable {
     @Transient
     private String teamname;
 
-    @Transient
-    private String app;
-
     @EmbeddedId
     private TeamPK teamPK;
 
     @Column(name = "teammail")
     private String teammail;
+
+    @Column(name = "app")
+    private String app;
 
     @Column(name = "teamphone")
     private String teamphone;
@@ -42,24 +42,12 @@ public class Team implements Serializable {
         this.teamname = teamname;
     }
 
-    public String getApp() {
-        if(this.teamPK == null)
-            return this.app;
-        else
-            return getTeamPK().getApp();
-    }
-
-    public void setApp(String app) {
-        this.app = app;
-    }
-
     public TeamPK getTeamPK() {
         return teamPK;
     }
 
     public void setTeamPK(TeamPK teamPK) {
         this.teamPK = teamPK;
-        this.app = teamPK.getApp();
         this.teamname = teamPK.getTeamname();
     }
 

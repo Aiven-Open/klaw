@@ -1,10 +1,8 @@
 package com.kafkamgt.uiapi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.service.UtilControllerService;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,26 +28,15 @@ public class UtilControllerTest {
     @MockBean
     private UtilControllerService utilControllerService;
 
-    @Mock
-    HttpServletRequest request;
-
-    @Mock
-    HttpServletResponse response;
-
-    private UtilController utilController;
-
-    private UtilMethods utilMethods;
-
     private MockMvc mvc;
 
     @Before
     public void setUp() throws Exception {
-        utilController = new UtilController();
+        UtilController utilController = new UtilController();
         mvc = MockMvcBuilders
                 .standaloneSetup(utilController)
                 .dispatchOptions(true)
                 .build();
-        utilMethods = new UtilMethods();
         ReflectionTestUtils.setField(utilController, "utilControllerService", utilControllerService);
     }
 

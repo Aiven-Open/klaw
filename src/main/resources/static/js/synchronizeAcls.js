@@ -22,10 +22,9 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                }
 
 	$scope.getEnvs = function() {
-
 	        $http({
                 method: "GET",
-                url: "getEnvs",
+                url: "getSyncEnv",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -36,6 +35,10 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                 }
             );
         }
+
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
 
     $scope.getAuth = function() {
     	$http({
@@ -84,12 +87,22 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             );
         }
 
-        $scope.updatedSyncStr="";
-        $scope.getDetails = function(req_no, teamselected, topic, consumergroup, acl_ip, acl_ssl, acltype) {
+        $scope.updatedSyncArray = [];
+        $scope.getDetails = function(sequence, req_no, teamselected, topic, consumergroup, acl_ip, acl_ssl, acltype) {
 
-            $scope.updatedSyncStr  = $scope.updatedSyncStr + req_no + "-----" + topic + "-----" + teamselected+"-----"
-            +consumergroup+"-----"+acl_ip+"-----"+acl_ssl+"-----"+acltype+"\n";
-           // alert("updatedSyncStr "+$scope.updatedSyncStr);
+            var serviceInput = {};
+
+            serviceInput['sequence'] = sequence;
+            serviceInput['req_no'] = req_no;
+            serviceInput['topicName'] = topic;
+            serviceInput['teamSelected'] = teamselected;
+            serviceInput['consumerGroup'] = consumergroup;
+            serviceInput['aclIp'] = acl_ip;
+            serviceInput['aclSsl'] = acl_ssl;
+            serviceInput['aclType'] = acltype;
+            serviceInput['envSelected'] = $scope.getAcls.envName.name.key;
+
+            $scope.updatedSyncArray.push(serviceInput);
         }
 
         $scope.synchAcls = function() {
@@ -99,8 +112,8 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             if(!$scope.getAcls.envName)
                 return;
 
-            if (!window.confirm("Are you sure, you would like to Synchronize this info on "+$scope.getAcls.envName.name+ " ?")) {
-                $scope.updatedSyncStr="";
+            if (!window.confirm("Are you sure, you would like to Synchronize this info on "+$scope.getAcls.envName.name.key+ " ?")) {
+                $scope.updatedSyncArray = [];
                 return;
             }
 
@@ -108,12 +121,13 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                 method: "POST",
                 url: "updateSyncAcls",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updatedSyncAcls' : $scope.updatedSyncStr , 'envSelected': $scope.getAcls.envName.name},
-                data: {'updatedSyncAcls' : $scope.updatedSyncStr}
+                params: {'syncAclUpdates' : $scope.updatedSyncArray },
+                data: $scope.updatedSyncArray
             }).success(function(output) {
                 $scope.alert = "Acl Sync Request : "+output.result;
-                $scope.updatedSyncStr="";
+                $scope.updatedSyncArray = [];
                 $scope.showSuccessToast();
+                $scope.getAcls(1);
             }).error(
                 function(error)
                 {
@@ -131,16 +145,13 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 	$scope.getAcls = function(pageNoSelected) {
 
         var serviceInput = {};
-		
-		//serviceInput['clusterType'] = $scope.getAcls.clusterType.value;
-		serviceInput['env'] = $scope.getAcls.envName.name;
-		//alert("---"+$scope.getTopics.envName.value);
+		serviceInput['env'] = $scope.getAcls.envName.name.key;
 
 		$http({
 			method: "GET",
 			url: "getSyncAcls",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getAcls.envName.name, 'topicnamesearch' : $scope.getAcls.topicnamesearch,
+            params: {'env' : $scope.getAcls.envName.name.key, 'topicnamesearch' : $scope.getAcls.topicnamesearch,
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
@@ -151,6 +162,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 		}).error(
 			function(error) 
 			{
+			    $scope.resultBrowse = [];
 				$scope.alert = error;
 			}
 		);

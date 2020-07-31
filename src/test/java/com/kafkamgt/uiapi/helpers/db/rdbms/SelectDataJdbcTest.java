@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -127,17 +128,21 @@ public class SelectDataJdbcTest {
     @Test
     public void selectTopicDetailsSuccess() {
         String topicName = "testtopic", env = "DEV";
-        when(topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topicName)).thenReturn(java.util.Optional.ofNullable(utilMethods.getTopic(topicName)));
-        Topic topic = selectData.selectTopicDetails(topicName, env);
+        List<Topic> topicList = new ArrayList<>();
+        topicList.add(utilMethods.getTopic(topicName));
+        when(topicRepo.findAllByTopicPKTopicname(topicName)).
+                thenReturn(topicList);
+        List<Topic> topic = selectData.selectTopicDetails(topicName);
 
-        assertEquals(topicName, topic.getTopicname());
+        assertEquals(topicName, topic.get(0).getTopicname());
     }
 
     @Test
-    public void selectTopicDetailsFalure() {
-        String topicName = "testtopic", env = "DEV";
-        when(topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topicName)).thenReturn(java.util.Optional.empty());
-        Topic topic = selectData.selectTopicDetails(topicName, env);
+    public void selectTopicDetailsFailure() {
+        String topicName = "testtopic";
+        List<Topic> topicList = new ArrayList<>();
+        when(topicRepo.findAllByTopicPKTopicname(topicName)).thenReturn(topicList);
+        List<Topic> topic = selectData.selectTopicDetails(topicName);
 
         assertNull(topic);
     }
@@ -148,7 +153,7 @@ public class SelectDataJdbcTest {
 
         when(topicRepo.findAllByTopicPKEnvironment(env)).thenReturn(utilMethods.getTopics());
 
-        List<Topic> topicList = selectData.selectSyncTopics(env);
+        List<Topic> topicList = selectData.selectSyncTopics(env,null);
 
         assertEquals(1, topicList.size());
     }
@@ -251,6 +256,7 @@ public class SelectDataJdbcTest {
         String username = "uiuser1";
 
         when(userInfoRepo.findAll()).thenReturn(utilMethods.getUserInfoList(username, "ADMIN"));
+        when(teamRepo.findAll()).thenReturn(utilMethods.getTeams());
 
         List<Team> teamList = selectData.selectTeamsOfUsers(username);
         assertEquals(1, teamList.size());

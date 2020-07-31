@@ -1,4 +1,4 @@
-package com.kafkamgt.uiapi.dao;
+package com.kafkamgt.uiapi.model;
 
 import lombok.Getter;
 import lombok.Setter;

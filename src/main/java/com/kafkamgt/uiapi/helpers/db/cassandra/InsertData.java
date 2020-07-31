@@ -88,8 +88,8 @@ public class InsertData {
 
     private void getBoundStatementInsertIntoTopicSOT() {
         String tableName = "topics";
-        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname,env,teamname,appname)" +
-                "VALUES (?,?,?,?);";
+        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(topicname,env,partitions,replicationfactor,teamname,appname)" +
+                "VALUES (?,?,?,?,?,?);";
         boundStatementInsertIntoTopicSOT = getBoundStatement(insertstat);
     }
 
@@ -122,8 +122,8 @@ public class InsertData {
 
         String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(req_no,topicname,env,teamname,appname," +
                 "topictype,requestor," +
-                "requesttime, acl_ip, acl_ssl, remarks, topicstatus,consumergroup,requestingteam) " +
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                "requesttime, acl_ip, acl_ssl, remarks, topicstatus,consumergroup,requestingteam,acltype) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
         boundStatementAclRequest = getBoundStatement(insertstat);
     }
 
@@ -154,8 +154,8 @@ public class InsertData {
 
     private void getBoundStatementUsers() {
         String tableName = "users";
-        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(fullname, userid, pwd, team, roleid) " +
-                "VALUES (?,?,?,?,?);";
+        String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(fullname, userid, pwd, team, roleid, mailid) " +
+                "VALUES (?,?,?,?,?,?);";
         boundStatementUsers = getBoundStatement(insertstat);
     }
 
@@ -195,30 +195,15 @@ public class InsertData {
     }
 
     public String insertIntoTopicSOT(List<Topic> topicRequests, boolean isSyncTopics){
-
-        TopicRequest topicRequest ;
-
         for(Topic topic:topicRequests) {
             session.execute(boundStatementInsertIntoTopicSOT.bind(topic.getTopicname(), topic.getEnvironment(),
-                    topic.getTeamname(), topic.getAppname()));
-
-            if(isSyncTopics) {
-                topicRequest = cassandraSelectHelper.selectTopicRequestsForTopic(topic.getTopicname(),topic.getEnvironment());
-                if(topicRequest!=null)
-                    session.execute(boundStatementInsertIntoAclsSOT.bind(getRandom(), topic.getTopicname(),
-                            topic.getEnvironment(), topic.getTeamname(),
-                        "Producer", topicRequest.getAcl_ip(), topicRequest.getAcl_ssl()));
-                else
-                    session.execute(boundStatementInsertIntoAclsSOT.bind(getRandom(), topic.getTopicname(),
-                            topic.getEnvironment(), topic.getTeamname(),
-                            "Producer", null, null));
-            }
+                    topic.getNoOfPartitions(), topic.getNoOfReplcias(), topic.getTeamname(), topic.getAppname()));
         }
 
         return "success";
     }
 
-    public String insertIntoActivityLogTopic(TopicRequest topicRequest){
+    String insertIntoActivityLogTopic(TopicRequest topicRequest){
 
         UserInfo userInfo = cassandraSelectHelper.selectUserInfo(topicRequest.getUsername());
 
@@ -229,14 +214,20 @@ public class InsertData {
         return "success";
     }
 
-    public String insertIntoRequestAcl(AclRequests aclReq){
+    String insertIntoRequestAcl(AclRequests aclReq){
+        String reqNo = aclReq.getReq_no();
+
+        if(aclReq.getAclType() !=null && aclReq.getAclType().equals("Create")){
+            reqNo = getRandom();
+        }
 
         String topicReqType = aclReq.getTopictype();
-        session.execute(boundStatementAclRequest.bind(getRandom(),aclReq.getTopicname(),aclReq.getEnvironment(),
+        session.execute(boundStatementAclRequest.bind(reqNo,aclReq.getTopicname(),aclReq.getEnvironment(),
                 aclReq.getTeamname(), aclReq.getAppname(),
                 topicReqType, aclReq.getUsername(), new Date(),aclReq.getAcl_ip(),aclReq.getAcl_ssl(),
                 aclReq.getRemarks(), "created",
-                aclReq.getConsumergroup(), cassandraSelectHelper.selectTeamsOfUsers(aclReq.getUsername()).get(0).getTeamname()));
+                aclReq.getConsumergroup(), cassandraSelectHelper.selectTeamsOfUsers(aclReq.getUsername()).get(0).getTeamname(),
+                aclReq.getAclType()));
 
         // Insert into acl
         if(insertIntoActivityLogAcl(aclReq).equals("success"))
@@ -248,28 +239,33 @@ public class InsertData {
     public String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls){
 
         acls.forEach(aclReq-> {
-            session.execute(boundStatementInsertAclsSOT.bind(getRandom(),aclReq.getTopicname(),
+            if(aclReq.getReq_no()!=null)
+                session.execute(boundStatementInsertAclsSOT.bind(aclReq.getReq_no(),aclReq.getTopicname(),
                     aclReq.getEnvironment(), aclReq.getTeamname(),
                     aclReq.getConsumergroup(), aclReq.getTopictype(),
                     aclReq.getAclip(),aclReq.getAclssl()));
+            else
+                session.execute(boundStatementInsertAclsSOT.bind(getRandom(),aclReq.getTopicname(),
+                        aclReq.getEnvironment(), aclReq.getTeamname(),
+                        aclReq.getConsumergroup(), aclReq.getTopictype(),
+                        aclReq.getAclip(),aclReq.getAclssl()));
         });
 
         return "success";
     }
 
     private String insertIntoActivityLogAcl(AclRequests aclReq){
-
         UserInfo userInfo = cassandraSelectHelper.selectUserInfo(aclReq.getUsername());
 
         session.execute(boundStatementInsertIntoActivityLogAcl.bind(getRandom(), "acl",
-                "new", new Date(),aclReq.getAcl_ip()+"-"+aclReq.getTopicname()+"-"+aclReq.getAcl_ssl()+"-"+
+                aclReq.getAclType(), new Date(),aclReq.getAcl_ip()+"-"+aclReq.getTopicname()+"-"+aclReq.getAcl_ssl()+"-"+
                         aclReq.getConsumergroup()+"-"+aclReq.getTopictype()
                 ,""+aclReq.getUsername(), aclReq.getEnvironment(), userInfo.getTeam()));
 
         return "success";
     }
 
-    public String insertIntoRequestSchema(SchemaRequest schemaRequest){
+    String insertIntoRequestSchema(SchemaRequest schemaRequest){
         session.execute(boundStatementSchemaReqs.bind(schemaRequest.getTopicname(), schemaRequest.getEnvironment(),
                 schemaRequest.getTeamname(), schemaRequest.getAppname(),
                 schemaRequest.getUsername(), new Date(), schemaRequest.getSchemafull().trim(), schemaRequest.getRemarks(), "created",
@@ -277,7 +273,7 @@ public class InsertData {
         return "success";
     }
 
-    public String insertIntoMessageSchemaSOT(List<MessageSchema> messageSchemas){
+    String insertIntoMessageSchemaSOT(List<MessageSchema> messageSchemas){
         messageSchemas.forEach(messageSchema ->
             session.execute(boundStatementSchemas.bind(messageSchema.getTopicname(),messageSchema.getEnvironment(),
                 messageSchema.getTeamname(), messageSchema.getSchemafull().trim(),
@@ -285,19 +281,19 @@ public class InsertData {
         return "success";
     }
 
-    public String insertIntoUsers(UserInfo userInfo){
+    String insertIntoUsers(UserInfo userInfo){
         session.execute(boundStatementUsers.bind(userInfo.getFullname(),userInfo.getUsername(),
-                userInfo.getPwd(),userInfo.getTeam(),userInfo.getRole()));
+                userInfo.getPwd(),userInfo.getTeam(),userInfo.getRole(),userInfo.getMailid()));
         return "success";
     }
 
-    public String insertIntoTeams(Team team){
+    String insertIntoTeams(Team team){
         session.execute(boundStatementTeams.bind(team.getTeamname(),team.getTeammail(),
-                team.getApp(),team.getTeamphone(), team.getContactperson()));
+                "",team.getTeamphone(), team.getContactperson()));
         return "success";
     }
 
-    public String insertIntoEnvs(Env env){
+    String insertIntoEnvs(Env env){
         session.execute(boundStatementEnvs.bind(env.getName(),env.getHost(),env.getPort(),
                 env.getProtocol(),env.getType()
                 ,env.getKeyStoreLocation(),env.getTrustStoreLocation(),env.getKeyStorePwd(),
@@ -305,7 +301,7 @@ public class InsertData {
         return "success";
     }
 
-    public String updateLicense(String org, String version, String licenseKey) throws Exception {
+    String updateLicense(String org, String version, String licenseKey) throws Exception {
         String tableName = "productdetails";
         String insertstat = "INSERT INTO " + keyspace + "."+tableName+"(name, version, licensekey ) " +
                 "VALUES (?,?,?);";

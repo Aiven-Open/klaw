@@ -1,9 +1,12 @@
 package com.kafkamgt.uiapi.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.model.SyncAclUpdates;
+import com.kafkamgt.uiapi.model.TopicOverview;
 import com.kafkamgt.uiapi.service.AclControllerService;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +19,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -67,19 +72,24 @@ public class AclControllerTest {
 
     @Test
     public void updateSyncAcls() throws Exception {
+        List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
 
-        when(aclControllerService.updateSyncAcls(anyString(), anyString())).thenReturn("success");
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
+        HashMap<String, String> result = new HashMap<>();
+        result.put("result","success");
+        when(aclControllerService.updateSyncAcls(any())).thenReturn(result);
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/updateSyncAcls")
-                .param("updatedSyncAcls","update")
-                .param("envSelected","DEV")
+                .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertEquals("success", response);
+        HashMap<String, String> actualResult = new ObjectMapper().readValue(response, new TypeReference<HashMap<String,String>>(){});
+
+        assertEquals("success", actualResult.get("result"));
     }
 
     @Test
@@ -166,50 +176,46 @@ public class AclControllerTest {
 
     @Test
     public void getAcls1() throws Exception {
-        List<AclInfo> aclInfo = utilMethods.getAclInfoList();
+        TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-        when(aclControllerService.getAcls(anyString(), anyString(), any(), eq(false)))
-                .thenReturn(aclInfo);
-
-        String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getAcls")
-                .param("env","DEV")
-                .param("pageNo","1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(1, response.size());
-    }
-
-    @Test
-    public void getAcls2() throws Exception {
-        List<AclInfo> aclInfo = utilMethods.getAclInfoList();
-
-        when(aclControllerService.getAcls(anyString(), anyString(), any(), eq(false)))
-                .thenReturn(aclInfo);
+        when(aclControllerService.getAcls("testtopic"))
+                .thenReturn(topicOverview);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getAcls")
-                .param("env","DEV")
-                .param("pageNo","1")
                 .param("topicnamesearch","testtopic")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(1, response.size());
+        TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
+        assertEquals(1, response.getAclInfoList().size());
+    }
+
+    @Test
+    public void getAcls2() throws Exception {
+        TopicOverview topicOverview = utilMethods.getTopicOverview();
+
+        when(aclControllerService.getAcls( null))
+                .thenReturn(topicOverview);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getAcls")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
+        assertEquals(1, response.getTopicInfoList().size());
     }
 
     @Test
     public void getSyncAcls() throws Exception {
         List<AclInfo> aclInfo = utilMethods.getAclInfoList();
 
-        when(aclControllerService.getAcls(anyString(), anyString(), any(), eq(true)))
+        when(aclControllerService.getSyncAcls(anyString(), anyString(), any()))
                 .thenReturn(aclInfo);
 
         String res = mvc.perform(MockMvcRequestBuilders

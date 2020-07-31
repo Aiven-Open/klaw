@@ -89,8 +89,6 @@ public class DeleteDataTest {
         rowList.add(row);
 
         when(session.execute((Select) any())).thenReturn(resultSet);
-        when(resultSet.iterator()).thenReturn(rowList.iterator());
-        when(row.getString("req_no")).thenReturn("rwe42FSDE");
 
         String result = deleteData.deletePrevAclRecs(aclReqs);
         assertEquals("success", result);

@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +38,9 @@ public class UpdateDataJdbcTest {
     @Mock
     private InsertDataJdbc insertDataJdbcHelper;
 
+    @Mock
+    private DeleteDataJdbc deleteDataJdbcHelper;
+
     private UpdateDataJdbc updateData;
 
     private UtilMethods utilMethods;
@@ -47,6 +51,7 @@ public class UpdateDataJdbcTest {
                 userInfoRepo, schemaRequestRepo,
                 insertDataJdbcHelper);
         utilMethods = new UtilMethods();
+        ReflectionTestUtils.setField(updateData, "deleteDataJdbcHelper", deleteDataJdbcHelper);
     }
 
     @Test
@@ -60,8 +65,6 @@ public class UpdateDataJdbcTest {
     public void updateTopicRequest() {
         when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
                 .thenReturn("success");
-        when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false)))
-                .thenReturn("success");
 
         String result = updateData.updateTopicRequest(utilMethods.getTopicRequest("testtopic"),
                 "uiuser2");
@@ -71,6 +74,15 @@ public class UpdateDataJdbcTest {
     @Test
     public void updateAclRequest() {
         when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false)))
+                .thenReturn("success");
+        String result = updateData.updateAclRequest(utilMethods.getAclRequestCreate("testtopic"),
+                "uiuser2");
+        assertEquals("success", result);
+    }
+
+    @Test
+    public void updateAclRequest1() {
+        when(deleteDataJdbcHelper.deletePrevAclRecs(any()))
                 .thenReturn("success");
         String result = updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"),
                 "uiuser2");

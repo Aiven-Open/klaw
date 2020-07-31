@@ -22,24 +22,11 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 	
     $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
 
-    $scope.loadFromUrl = function() {
-        var str = window.location.search;
-        var envSelected, topicSelected;
-        if(str){
-            var envSelectedIndex = str.indexOf("envSelected");
-            var topicNameIndex = str.indexOf("topicname");
-
-            if(envSelectedIndex > 0 && topicNameIndex > 0)
-            {
-                $scope.envSelectedFromUrl = str.substring(13, topicNameIndex-1);
-                $scope.topicSelectedFromUrl = str.substring(topicNameIndex+10);
+        $scope.refreshPage = function(){
+                $window.location.reload();
             }
-        }
-    }
 
             $scope.getAuth = function() {
-
-            $scope.loadFromUrl();
 
             	$http({
                     method: "GET",
@@ -91,11 +78,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
                 $http({
                     method: "GET",
-                    url: "getEnvs",
+                    url: "getEnvsOnly",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allenvs = output;
-
                 }).error(
                     function(error)
                     {
@@ -112,13 +98,14 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             }
 
             $scope.onSelectAcl = function(selectedAclType){
-
                     if(selectedAclType=='SSL'){
                         $scope.disable_ssl=false;
                         $scope.disable_ip=true;
+                        $scope.addAcl.acl_ip = "";
                     }else{
                         $scope.disable_ssl=true;
                         $scope.disable_ip=false;
+                        $scope.addAcl.acl_ssl = "";
                     }
                 }
 
@@ -127,7 +114,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     $scope.alltopics = null;
                             $http({
                                 method: "GET",
-                                url: "getTopicsOnly?env="+$scope.addAcl.envName.name,
+                                url: "getTopicsOnly",
                                 headers : { 'Content-Type' : 'application/json' }
                             }).success(function(output) {
                                 $scope.alltopics = output;
@@ -139,23 +126,23 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                             );
                         }
 
-    $scope.getExecAuth = function() {
-    	//alert("onload");
-        $http({
-            method: "GET",
-            url: "getExecAuth",
-            headers : { 'Content-Type' : 'application/json' }
-        }).success(function(output) {
-            $scope.statusauth = output.status;
-            if(output.status=="NotAuthorized")
-                $scope.alerttop = output.status;
-        }).error(
-            function(error)
-            {
-                $scope.alert = error;
-            }
-        );
-	}
+        $scope.getExecAuth = function() {
+            //alert("onload");
+            $http({
+                method: "GET",
+                url: "getExecAuth",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.statusauth = output.status;
+                if(output.status=="NotAuthorized")
+                    $scope.alerttop = output.status;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
 
         $scope.getTopicTeam = function(topicName) {
 
@@ -169,19 +156,16 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 method: "GET",
                 url: "getTopicTeam",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'env' : $scope.addAcl.envName.name,
-                    'topicName' : topicName }
+                params: {'topicName' : topicName }
             }).success(function(output) {
-                $scope.topicDetails = output;
-                //alert($scope.topicDetails.teamname + "---");
-                if(!$scope.topicDetails.teamname){
+                $scope.teamname = output.team;
+                if(!$scope.teamname){
                         alert("There is no team found for this topic : " +  topicName);
                         $scope.addAcl.team="";
                         addAcl.topicname.focus();
                             return;
                 }
-                $scope.addAcl.team = $scope.topicDetails.teamname;
-                //alert("---"+$scope.topicDetails.teamname);
+                $scope.addAcl.team = $scope.teamname;
             }).error(
                 function(error)
                 {
@@ -201,10 +185,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.alertnote = null;
             var serviceInput = {};
 
-//            if($scope.addAcl.acl_ip_ssl == 'IP')
-//                $scope.addAcl.acl_ssl = "";
-//             else if($scope.addAcl.acl_ip_ssl == 'SSL')
-//                $scope.addAcl.acl_ip = "";
+            if($scope.addAcl.acl_ip_ssl == 'IP')
+                $scope.addAcl.acl_ssl = null;
+             else if($scope.addAcl.acl_ip_ssl == 'SSL')
+                $scope.addAcl.acl_ip = null;
 
             if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
             {
@@ -213,7 +197,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            serviceInput['environment'] = $scope.addAcl.envName.name;
+            serviceInput['environment'] = $scope.addAcl.envName;
             serviceInput['topicname'] = $scope.addAcl.topicname;
             serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
             serviceInput['teamname'] = $scope.addAcl.team;
@@ -256,27 +240,27 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     $scope.alert = error;
                     $scope.alertnote = error;
                     $scope.showAlertToast();
-                    //alert("Error : "+error.value);
                 }
             );
 
         };
 
-        $scope.loadTeams = function() {
-            $http({
-                method: "GET",
-                url: "getAllTeams",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.allTeams = output;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                    alert("Error : "+error.value);
+        $scope.loadParams = function() {
+                var str = window.location.search;
+                var topicSelected;
+                if(str){
+                    var topicNameIndex = str.indexOf("topicname");
+
+                    if(topicNameIndex > 0)
+                    {
+                        $scope.topicSelectedFromUrl = str.substring(topicNameIndex+10);
+                        $scope.addAcl.topicname = $scope.topicSelectedFromUrl;
+
+                        $scope.getAllTopics();
+                        $scope.getTopicTeam($scope.addAcl.topicname);
+                    }
                 }
-            );
-        }
+            }
 
         $scope.showSuccessToast = function() {
                   var x = document.getElementById("successbar");
@@ -289,8 +273,5 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                   x.className = "show";
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
                 }
-
-
-
 }
 );

@@ -4,7 +4,7 @@ Kafkawize is a Self service Apache Kafka Topic Management tool/portal. It is a w
 
 ## Getting Started
 
-To get Kafkwize running on your local machine or server, please follow the instructions mentioned in [GettingStarted - ReadTheDocs](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
+To get Kafkawize running on your local machine or server, please follow the instructions mentioned in [GettingStarted - ReadTheDocs](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
 
 ### Prerequisites
 
@@ -66,7 +66,14 @@ This project is licensed under the Apache License 2.0  - see the [LICENSE.md](LI
 
 [![Watch the Introduction](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)](https://youtu.be/KOjdpRtRhEY)
 
-## A glimpse of Kafkawize 4.0 :
+## A glimpse of Kafkawize 4.2 :
 
-[![Kafkawize 4.0](https://github.com/muralibasani/kafkawize/blob/master/screenshots/login.JPG)](https://youtu.be/nUnJJC6pDTQ)
+[![Dashboard](https://github.com/muralibasani/kafkawize/blob/master/screenshots/Dashboard.JPG)]
+
+
+[![Topics](https://github.com/muralibasani/kafkawize/blob/master/screenshots/BrowseTopics.JPG)]
+
+
+[![Subscriptions](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ViewAcls.JPG)]
+
 

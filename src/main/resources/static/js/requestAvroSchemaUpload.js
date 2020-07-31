@@ -60,15 +60,15 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     params: {'env' : $scope.addSchema.envName.name,
                         'topicName' : topicName }
                 }).success(function(output) {
-                    $scope.topicDetails = output;
+                    $scope.teamname = output.team;
                     //alert($scope.topicDetails.teamname + "---");
-                    if(!$scope.topicDetails.teamname){
+                    if(!$scope.teamname){
                             alert("There is NO team found for this topic : " +  topicName);
                             $scope.addSchema.team="";
                             addSchema.topicname.focus();
                                 return;
                     }
-                    $scope.addSchema.team = $scope.topicDetails.teamname;
+                    $scope.addSchema.team = $scope.teamname;
                     //alert("---"+$scope.topicDetails.teamname);
                 }).error(
                     function(error)
@@ -150,6 +150,10 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 }
             );
         }
+
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
 
             $scope.getAuth = function() {
             	$http({

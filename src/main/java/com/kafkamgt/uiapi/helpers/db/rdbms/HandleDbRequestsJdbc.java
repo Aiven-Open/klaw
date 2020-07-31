@@ -5,7 +5,6 @@ import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -33,15 +32,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     @Autowired
     LoadDbJdbc loadDbJdbc;
-
-    @Value("${custom.org.name}")
-    String companyInfo;
-
-    @Value("${custom.kafkawize.version:4.1}")
-    String kafkawizeVersion;
-
-    @Autowired
-    Environment environment;
 
     public void connectToDb(String licenseKey) throws Exception {
         if(dbScriptsExecution.equals("auto")){
@@ -111,12 +101,27 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectTopicRequestsForTopic(topicName, env);
     }
 
-    public List<Topic> getSyncTopics(String env){
-        return jdbcSelectHelper.selectSyncTopics(env);
+    public List<Topic> getSyncTopics(String env, String teamName){
+        return jdbcSelectHelper.selectSyncTopics(env, teamName);
+    }
+
+    @Override
+    public List<Topic> getTopics(String topicName) {
+        return jdbcSelectHelper.getTopics(topicName);
     }
 
     public List<Acl> getSyncAcls(String env){
         return jdbcSelectHelper.selectSyncAcls(env);
+    }
+
+    @Override
+    public List<Acl> getSyncAcls(String env, String topic) {
+        return jdbcSelectHelper.selectSyncAcls(env, topic);
+    }
+
+    @Override
+    public Acl selectSyncAclsFromReqNo(String reqNo) {
+        return jdbcSelectHelper.selectSyncAclsFromReqNo(reqNo);
     }
 
     public List<AclRequests> getAllAclRequests(String requestor){
@@ -146,8 +151,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     @Override
-    public HashMap<String, String> getDashboardInfo() {
-        return jdbcSelectHelper.getDashboardInfo();
+    public HashMap<String, String> getDashboardInfo(String teamName) {
+        return jdbcSelectHelper.getDashboardInfo(teamName);
     }
 
     public List<UserInfo> selectAllUsersInfo(){
@@ -162,8 +167,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcSelectHelper.selectAcl(req_no);
     }
 
-    public Topic getTopicTeam(String topicName, String env){
-        return jdbcSelectHelper.selectTopicDetails(topicName, env);
+    public List<Topic> getTopicTeam(String topicName){
+        return jdbcSelectHelper.selectTopicDetails(topicName);
     }
 
     public List<Env> selectAllKafkaEnvs(){
@@ -219,6 +224,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     @Override
+    public String deleteAclSubscriptionRequest(String req_no) {
+        return jdbcDeleteHelper.deleteAclSubscriptionRequest(req_no);
+    }
+
+    @Override
     public String deleteClusterRequest(String clusterId) {
         return jdbcDeleteHelper.deleteClusterRequest(clusterId);
     }
@@ -236,6 +246,4 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return jdbcDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
-
-    public String deletePrevAclRecs(List<Acl> aclReqs){ return jdbcDeleteHelper.deletePrevAclRecs(aclReqs);}
 }

@@ -10,27 +10,29 @@ Insert into users(fullname,team,userid,roleid,pwd) values('User4','Team1','uiuse
 
 Insert into users(fullname,team,userid,roleid,pwd) values('User5','Team2','uiuser5','ADMIN','user');
 
+Insert into users(fullname,team,userid,roleid,pwd) values('User6','Team3','uiuser6','ADMIN','user');
+
 Insert into users(fullname,team,userid,roleid,pwd) values('SuperUser','Team2','superuser','SUPERUSER','user');
 
 /* Insert Teams */
 
-Insert into teams(team,app,teammail,teamphone,contactperson) values('Team1','App1','t1@test.com','+132323232','John Woo');
+Insert into teams(team,app,teammail,teamphone,contactperson) values('Team1','Team1','t1@test.com','+132323232','John Woo');
 
-Insert into teams(team,app,teammail,teamphone) values('Team2','App1','t1@test2.com','+132323232');
+Insert into teams(team,app,teammail,teamphone) values('Team2','Team2','t1@test2.com','+132323232');
 
-Insert into teams(team,app,teammail,teamphone) values('Team3','App1','t1@test3.com','+132323232');
+Insert into teams(team,app,teammail,teamphone) values('Team3','Team3','t1@test3.com','+132323232');
 
 /* Insert env */
 
 Insert into env(name,host,port,protocol,type,other_params) values ('DEV','localhost','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
-Insert into env(name,host,port,protocol,type,other_params) values ('TST','tesstserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
+Insert into env(name,host,port,protocol,type,other_params) values ('TST','localhost','9094','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
-Insert into env(name,host,port,protocol,type,other_params) values ('ACC','accserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=2');
+Insert into env(name,host,port,protocol,type,other_params) values ('ACC','localhost','9096','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
 
-Insert into env(name,host,port,protocol,type,other_params) values ('PRD','prdserver','9092','PLAIN','kafka','default.paritions=2,max.partitions=16,replication.factor=4');
+Insert into env(name,host,port,protocol,type,other_params) values ('PRD','localhost','9098','PLAIN','kafka','default.paritions=2,max.partitions=16,replication.factor=1');
 
-Insert into env(name,host,port,protocol,type) values ('DEV_SCHEMAREGISTRY','localhost','8081','PLAIN','schemaregistry');
+Insert into env(name,host,port,protocol,type) values ('DEV_SCH','localhost','8081','PLAIN','schemaregistry');
 
 /* Insert product and version */
 

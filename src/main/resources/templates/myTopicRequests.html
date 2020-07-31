@@ -147,6 +147,10 @@
 					<!-- ============================================================== -->
 
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -267,7 +271,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -303,7 +306,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -380,7 +383,7 @@
 				<div class="col-lg-12" ng-show="topicRequests.length > 0">
 					<div class="card">
 						<div class="card-body">
-							<h4 class="card-title">Topic Requests</h4>
+							<h4 class="card-title">My Topic Requests</h4>
 							<div>
 								<table width="100%" class="table color-table success-table">
 									<thead><tr>
@@ -402,7 +405,27 @@
 									<tr ng-repeat="topicRequest in topicRequests">
 
 										<td>{{ topicRequest.topicname }}</td>
-										<td>{{ topicRequest.environment }}</td>
+
+										<td ng-show="topicRequest.environment=='DEV'">
+											<span class="badge badge-success">{{ topicRequest.environment }}</span>
+										</td>
+										<td ng-show="topicRequest.environment=='TST'">
+											<span  class="badge badge-warning">{{ topicRequest.environment }}</span>
+										</td>
+
+										<td ng-show="topicRequest.environment=='ACC'">
+											<span  class="badge badge-info">{{ topicRequest.environment }}</span>
+										</td>
+
+										<td ng-show="topicRequest.environment=='PRD'">
+											<span  class="badge badge-danger">{{ topicRequest.environment }}</span>
+										</td>
+
+										<td ng-show="topicRequest.environment!='PRD' && topicRequest.environment != 'TST'
+										&& topicRequest.environment != 'ACC' && topicRequest.environment != 'DEV'">
+											<span  class="badge badge-primary">{{ topicRequest.environment }}</span>
+										</td>
+
 										<td>{{ topicRequest.username }}</td>
 										<!--<td>{{ topicRequest.acl_ip }}</td>-->
 										<!--<td>{{ topicRequest.acl_ssl }}</td>-->

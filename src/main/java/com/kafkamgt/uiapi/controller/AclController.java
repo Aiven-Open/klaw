@@ -4,6 +4,8 @@ package com.kafkamgt.uiapi.controller;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.model.SyncAclUpdates;
+import com.kafkamgt.uiapi.model.TopicOverview;
 import com.kafkamgt.uiapi.service.AclControllerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -30,9 +33,8 @@ public class AclController {
     }
 
     @PostMapping(value = "/updateSyncAcls")
-    public ResponseEntity<String> updateSyncAcls(@RequestParam ("updatedSyncAcls") String updateSyncAcls,
-                                                   @RequestParam ("envSelected") String envSelected) {
-        return new ResponseEntity<>(aclControllerService.updateSyncAcls(updateSyncAcls, envSelected), HttpStatus.OK);
+    public ResponseEntity<HashMap<String, String>> updateSyncAcls(@RequestBody List<SyncAclUpdates> syncAclUpdates) {
+        return new ResponseEntity<>(aclControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -61,14 +63,13 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclInfo>> getAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                                                 @RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
-        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch, false), HttpStatus.OK);
+    public ResponseEntity<TopicOverview> getAcls(@RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
+        return new ResponseEntity<>(aclControllerService.getAcls(topicNameSearch), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
                                                      @RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
-        return new ResponseEntity<>(aclControllerService.getAcls(env, pageNo, topicNameSearch, true), HttpStatus.OK);
+        return new ResponseEntity<>(aclControllerService.getSyncAcls(env, pageNo, topicNameSearch), HttpStatus.OK);
     }
 }

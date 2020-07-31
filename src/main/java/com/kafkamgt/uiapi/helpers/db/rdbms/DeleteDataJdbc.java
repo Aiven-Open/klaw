@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Optional;
 
 @Configuration
 public class DeleteDataJdbc {
@@ -103,7 +104,11 @@ public class DeleteDataJdbc {
 
     public String deleteTeamRequest(String teamId){
         Team team = new Team();
+        TeamPK teamPK = new TeamPK();
+        teamPK.setTeamname(teamId);
+        team.setTeamPK(teamPK);
         team.setTeamname(teamId);
+
         teamRepo.delete(team);
         return "success";
     }
@@ -137,4 +142,11 @@ public class DeleteDataJdbc {
         return "success";
     }
 
+    public String deleteAclSubscriptionRequest(String req_no) {
+
+        Optional<Acl> aclRec = aclRepo.findById(req_no);
+        aclRepo.delete(aclRec.get());
+
+        return "success";
+    }
 }

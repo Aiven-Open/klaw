@@ -62,13 +62,13 @@
                     <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
                     <!-- Dark Logo icon -->
                     <!--<img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo" />-->
-                    <!-- Light Logo icon -->
+                    <!--&lt;!&ndash; Light Logo icon &ndash;&gt;-->
                     <!--<img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />-->
                 </b>
                     <!--End Logo icon -->
                     <!-- Logo text --><span>
                             <!-- dark Logo text -->
-                            <!--<img src="assets/images/logo-dark.png" alt="homepage" class="dark-logo" />-->
+                            <img src="assets/images/logo-dark.png" alt="homepage" class="dark-logo" />
                     <!-- Light Logo text -->
                             <img src="assets/images/logo-light.png" class="light-logo" alt="homepage" /></span>
                 </a>
@@ -93,6 +93,9 @@
                     <!-- ============================================================== -->
                     <a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
 
+                    <!-- ============================================================== -->
+                    <!-- End Messages -->
+                    <!-- ============================================================== -->
                 </ul>
                 <!-- ============================================================== -->
                 <!-- User profile and search -->
@@ -101,6 +104,10 @@
                     <!-- ============================================================== -->
                     <!-- Comment -->
                     <!-- ============================================================== -->
+                    <li class="nav-item d-none d-md-block search-box"> <a
+                            class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+                            href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+                    </li>
                     <li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -228,7 +235,6 @@
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="requestTopics">Request Topic</a></li>
-                            <li><a href="requestAcls">Request Acl</a></li>
                             <li><a href="requestSchema">Request Schema</a></li>
                             <li><a href="myTopicRequests">My Topic Requests</a></li>
                             <li><a href="myAclRequests">My Acl Requests</a></li>
@@ -264,7 +270,7 @@
                     </li>
                     <li class="nav-devider"></li>
                     <li class="nav-small-cap">EXTRA COMPONENTS</li>
-                    <li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+                    <li class="two-column" ng-show="statusauthexectopics=='Authorized'">
                         <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -300,6 +306,7 @@
 
             <!-- Row -->
             <div class="row">
+
                 <!-- Column -->
                 <div class="col-lg-4 col-md-12" ng-init="getClusterApi();">
                     <div class="card card-inverse card-primary">
@@ -314,7 +321,7 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-4 align-self-center">
+                                <div class="col-12 align-self-center">
                                     <h2 class="font-weight-light text-white text-nowrap">{{ clusterapi.envStatus }}</h2>
                                 </div>
                                 <div class="col-8 pb-3 pt-2 align-self-center">
@@ -340,7 +347,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4 align-self-center">
+                                    <div class="col-12 align-self-center">
                                         <h2 class="font-weight-light text-white text-nowrap text-truncate">{{ userscount }} users</h2>
                                     </div>
                                     <div class="col-8 pb-3 pt-2 text-right">
@@ -366,7 +373,7 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-4 align-self-center">
+                                    <div class="col-12 align-self-center">
                                         <h2 class="font-weight-light text-white text-nowrap">{{kafka_clusters_count}} Kafka clusters</h2>
                                     </div>
                                     <div class="col-8 pb-3 pt-2 text-right">
@@ -382,7 +389,19 @@
 
             <div class="row">
                 <!-- Column -->
-                <div class="col-md-6 col-lg-4 col-xlg-2">
+                <div class="col-md-6 col-lg-3 col-xlg-2">
+                    <a href="browseTopics?team={{teamname}}">
+                        <div class="card card-inverse card-info">
+                            <div class="p-2 rounded text-center">
+                                <h1 class="font-light text-white">{{ myteamtopics }} </h1>
+                                <h6 class="text-white">My team Topics</h6>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+                <!-- Column -->
+                <div class="col-md-6 col-lg-3 col-xlg-2">
                     <a href="execTopics" ng-show="statusauthexectopics=='Authorized'">
                         <div class="card card-inverse card-dark">
                             <div class="p-2 rounded text-center">
@@ -401,7 +420,7 @@
                     </a>
                 </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-4 col-xlg-2">
+                <div class="col-md-6 col-lg-3 col-xlg-2">
                     <a href="execAcls" ng-show="statusauthexectopics=='Authorized'">
                         <div class="card card-inverse card-megna">
                             <div class="p-2 rounded text-center">
@@ -420,7 +439,7 @@
                     </a>
                 </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-4 col-xlg-2">
+                <div class="col-md-6 col-lg-3 col-xlg-2">
                     <div class="card card-inverse card-warning">
                         <div class="p-2 rounded text-center">
                             <h1 class="font-light text-white">{{ notificationsSchemas }}</h1>

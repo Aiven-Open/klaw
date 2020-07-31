@@ -5,6 +5,7 @@ import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.SyncTopicUpdates;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import org.junit.After;
 import org.junit.Before;
@@ -23,6 +24,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -69,6 +72,7 @@ public class TopicControllerServiceTest {
         env.setPort("9092");
         env.setName("DEV");
         ReflectionTestUtils.setField(topicControllerService, "manageDatabase", manageDatabase);
+        ReflectionTestUtils.setField(topicControllerService, "syncCluster", "DEV");
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
         loginMock();
     }
@@ -99,6 +103,7 @@ public class TopicControllerServiceTest {
 
     @Test
     public void createTopicsSuccess1() throws KafkawizeException {
+        String topicName = "testtopic";
         this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
@@ -155,41 +160,36 @@ public class TopicControllerServiceTest {
 
     @Test
     public void updateSyncTopicsSuccess() {
-        String env = "DEV";
         String teamSelected = "Team1";
-        String syncTopicsStr = "demotopic101" + "-----" + teamSelected;
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("result","success");
 
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
 
-        String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
+        HashMap<String, String> result = topicControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-        assertEquals("{\"result\":\"success\"}",result);
+        assertEquals("success",result.get("result"));
     }
 
     @Test
     public void updateSyncTopicsNoUpdate() {
-        String env = "DEV";
-        String syncTopicsStr = "";
-
+        List<SyncTopicUpdates> topicUpdates = new ArrayList<>();
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
 
-        String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
+        HashMap<String, String> result = topicControllerService.updateSyncTopics(topicUpdates);
 
-        assertEquals("{\"result\":\"No record updated.\"}",result);
+        assertEquals("No record updated.",result.get("result"));
     }
 
     @Test
     public void updateSyncTopicsNotAuthorized() {
-        String env = "DEV";
         String teamSelected = "Team1";
-        String syncTopicsStr = "demotopic101" + "-----" + teamSelected;
-
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
-        String result = topicControllerService.updateSyncTopics(syncTopicsStr, env);
+        HashMap<String, String> result = topicControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-        assertEquals("{\"result\":\"Not Authorized\"}",result);
+        assertEquals("Not Authorized.",result.get("result"));
     }
 
     @Test
@@ -268,46 +268,37 @@ public class TopicControllerServiceTest {
     public void getAllTopics() throws Exception {
         String envSel = "DEV";
 
-        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
-        when(clusterApiService.getAllTopics(any()))
-                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
+        when(handleDbRequests.getSyncTopics(any(),any())).thenReturn(utilMethods.getTopics());
 
-        List<String> result = topicControllerService.getAllTopics(envSel);
-        assertEquals(result.size(),10);
-        assertEquals(result.get(0),"topic0");
-        assertEquals(result.get(9),"topic9");
+        List<String> result = topicControllerService.getAllTopics();
+        assertEquals(result.size(),1);
+        assertEquals(result.get(0),"testtopic");
     }
 
     @Test
     public void getTopicsSuccess1() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
-        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
-        when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
-        when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
+        when(handleDbRequests.getSyncTopics(envSel, null)).thenReturn(getSyncTopics("topic",4));
 
-        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
+        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null);
 
-        assertEquals(topicsList.size(),4);
+        assertEquals(2, topicsList.size());
     }
 
     @Test
     public void getTopicsSuccess2() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
-        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
-        when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(utilMethods.getClusterApiTopics("topic",30));
-        when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",12));
+        when(handleDbRequests.getSyncTopics(envSel, null)).thenReturn(getSyncTopics("topic",12));
 
-        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
+        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null);
 
-        assertEquals(topicsList.size(),7);
+        assertEquals(4,topicsList.size());
         assertEquals(topicsList.get(0).get(0).getTeamname(),"Team1");
-        assertEquals(topicsList.get(0).get(1).getTeamname(),"Team1");
-        assertEquals(topicsList.get(0).get(2).getTeamname(),"Team2");
-        assertEquals(topicsList.get(0).get(2).getTotalNoPages(),"2");
+        assertEquals("Team2", topicsList.get(0).get(1).getTeamname());
+        assertEquals("Team1", topicsList.get(0).get(2).getTeamname());
+        assertEquals("1", topicsList.get(0).get(2).getTotalNoPages());
     }
 
     // topicSearch does not exist in topic names
@@ -315,12 +306,9 @@ public class TopicControllerServiceTest {
     public void getTopicsSearchFailure() throws Exception {
         String envSel = "DEV", pageNo = "1", topicNameSearch = "demo";
 
-        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
-        when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
-        when(handleDbRequests.getSyncTopics(envSel)).thenReturn(getSyncTopics("topic",4));
+        when(handleDbRequests.getSyncTopics(envSel, null)).thenReturn(getSyncTopics("topic",4));
 
-        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch);
+        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null);
 
         assertNull(topicsList);
     }
@@ -364,16 +352,16 @@ public class TopicControllerServiceTest {
     @Test
     public void getTopicTeam(){
         String topicName = "testtopic", envSel = "DEV";
-        when(handleDbRequests.getTopicTeam(topicName,envSel)).thenReturn(getTopic(topicName));
+        when(handleDbRequests.getTopicTeam(topicName)).thenReturn(Arrays.asList(getTopic(topicName)));
 
-        Topic topicTeam = topicControllerService.getTopicTeam(topicName, envSel);
-        assertEquals(topicTeam.getTeamname(), "Team1");
+        List<Topic> topicTeam = topicControllerService.getTopicTeam(topicName);
+        assertEquals(topicTeam.get(0).getTeamname(), "Team1");
     }
 
     private TopicRequest getCorrectTopic(){
 
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setEnvironment(env.getHost());
+        topicRequest.setEnvironment(env.getName());
         topicRequest.setTopicpartitions("2");
         topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
@@ -382,7 +370,7 @@ public class TopicControllerServiceTest {
     private TopicRequest getFailureTopic(){
 
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setEnvironment(env.getHost());
+        topicRequest.setEnvironment(env.getName());
         topicRequest.setTopicpartitions("abc");
         topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
@@ -391,7 +379,7 @@ public class TopicControllerServiceTest {
     private TopicRequest getFailureTopic1(){
 
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setEnvironment(env.getHost());
+        topicRequest.setEnvironment(env.getName());
         topicRequest.setTopicpartitions("-1");
         topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
@@ -401,7 +389,7 @@ public class TopicControllerServiceTest {
 
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setTopicname(name);
-        topicRequest.setEnvironment(env.getHost());
+        topicRequest.setEnvironment(env.getName());
         topicRequest.setTopicpartitions("2");
         topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
         return topicRequest;
@@ -411,7 +399,7 @@ public class TopicControllerServiceTest {
 
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setTopicname("testtopic1");
-        topicRequest.setEnvironment(env.getHost());
+        topicRequest.setEnvironment(env.getName());
         topicRequest.setTopicpartitions("2");
         topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
 
@@ -420,7 +408,7 @@ public class TopicControllerServiceTest {
 
         TopicRequest topicRequest1 = new TopicRequest();
         topicRequest1.setTopicname("testtopic12");
-        topicRequest1.setEnvironment(env.getHost());
+        topicRequest1.setEnvironment(env.getName());
         topicRequest1.setTopicpartitions("2");
         topicRequest1.setRequesttime(new Timestamp(System.currentTimeMillis()));
 

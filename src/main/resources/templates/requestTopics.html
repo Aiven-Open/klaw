@@ -141,6 +141,10 @@
 					<!-- ============================================================== -->
 					<!-- Comment -->
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -268,7 +272,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -304,7 +307,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -407,7 +410,7 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label>Topic name</label>
-												<input type="text" class="form-control" ng-model="addTopic.topicname" required placeholder="application-functionality-topic">
+												<input type="text" class="form-control" ng-model="addTopic.topicname" required>
 											</div>
 										</div>
 										<!--/span-->
@@ -426,7 +429,7 @@
 										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label>Topic Partitions</label>
-												<input type="text" class="form-control" ng-model="addTopic.topicpartitions" required placeholder="2">
+												<input type="text" class="form-control" ng-model="addTopic.topicpartitions" required placeholder="<1>">
 												<a href="envs"><small class="form-control-feedback"> Check default parameters </small></a>
 
 											</div>
@@ -452,7 +455,7 @@
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
 									<button ng-click="addTopic();" class="btn btn-success"> <i class="fa fa-check"></i>
-										Save</button>
+										Submit</button>
 									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
 								</div>
 							</form>

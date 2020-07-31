@@ -1,8 +1,7 @@
 package com.kafkamgt.uiapi;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.model.AclInfo;
-import com.kafkamgt.uiapi.model.TopicInfo;
+import com.kafkamgt.uiapi.model.*;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
@@ -98,6 +97,24 @@ public class UtilMethods {
     public List<Topic> getTopics() {
         List<Topic> allTopicReqs = new ArrayList<>();
         Topic topicRequest = new Topic();
+        TopicPK topicPK = new TopicPK();
+        topicPK.setEnvironment("DEV");
+        topicPK.setTopicname("testtopic");
+
+        topicRequest.setTopicPK(topicPK);
+        topicRequest.setTeamname("Team1");
+        allTopicReqs.add(topicRequest);
+        return allTopicReqs;
+    }
+
+    public List<Topic> getTopics(String topicName) {
+        List<Topic> allTopicReqs = new ArrayList<>();
+        Topic topicRequest = new Topic();
+        TopicPK topicPK = new TopicPK();
+        topicPK.setEnvironment("DEV");
+        topicPK.setTopicname(topicName);
+
+        topicRequest.setTopicPK(topicPK);
         topicRequest.setTeamname("Team1");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
@@ -141,6 +158,40 @@ public class UtilMethods {
         aclbindingMap.put("permissionType", "ALLOW");
         aclbindingMap.put("resourceType", "TOPIC");
         aclbindingMap.put("resourceName", "testtopic1");
+        acls.add(aclbindingMap);
+
+        aclbindingMap = new HashMap<>();
+        aclbindingMap.put("host","2.1.2.1");
+        aclbindingMap.put("principle", "User:*");
+        aclbindingMap.put("operation", "READ");
+        aclbindingMap.put("permissionType", "ALLOW");
+        aclbindingMap.put("resourceType", "GROUP");
+        aclbindingMap.put("resourceName", "mygrp1");
+        acls.add(aclbindingMap);
+
+        return new ArrayList<>(acls);
+    }
+
+    public List<HashMap<String, String>> getClusterAcls2(){
+        Set<HashMap<String,String>> acls = new HashSet<>();
+
+        HashMap<String,String> aclbindingMap = new HashMap<>();
+
+        aclbindingMap.put("host","1.1.1.1");
+        aclbindingMap.put("principle", "User:*");
+        aclbindingMap.put("operation", "READ");
+        aclbindingMap.put("permissionType", "ALLOW");
+        aclbindingMap.put("resourceType", "GROUP");
+        aclbindingMap.put("resourceName", "myconsumergroup1");
+        acls.add(aclbindingMap);
+
+        aclbindingMap = new HashMap<>();
+        aclbindingMap.put("host","2.1.2.1");
+        aclbindingMap.put("principle", "User:*");
+        aclbindingMap.put("operation", "READ");
+        aclbindingMap.put("permissionType", "ALLOW");
+        aclbindingMap.put("resourceType", "TOPIC");
+        aclbindingMap.put("resourceName", "testtopic");
         acls.add(aclbindingMap);
 
         aclbindingMap = new HashMap<>();
@@ -202,7 +253,6 @@ public class UtilMethods {
         Team topicRequest = new Team();
         TeamPK teamPk = new TeamPK();
         teamPk.setTeamname("Team1");
-        teamPk.setApp("App");
         topicRequest.setTeamPK(teamPk);
 
         topicRequest.setTeamname("Team1");
@@ -237,6 +287,20 @@ public class UtilMethods {
         aclRequest.setTopicname(topicName);
         aclRequest.setUsername("uiuser1");
         aclRequest.setTopictype("Consumer");
+        aclRequest.setAclType("Delete");
+        aclRequest.setConsumergroup("congroup1");
+        aclRequest.setAcl_ip("10.11.112.113");
+        return aclRequest;
+    }
+
+    public AclRequests getAclRequestCreate(String topicName) {
+        AclRequests aclRequest = new AclRequests();
+        aclRequest.setTeamname("Team1");
+        aclRequest.setEnvironment("DEV");
+        aclRequest.setTopicname(topicName);
+        aclRequest.setUsername("uiuser1");
+        aclRequest.setTopictype("Consumer");
+        aclRequest.setAclType("Create");
         aclRequest.setConsumergroup("congroup1");
         aclRequest.setAcl_ip("10.11.112.113");
         return aclRequest;
@@ -260,6 +324,7 @@ public class UtilMethods {
         AclRequests aclRequests1 = new AclRequests();
         aclRequests1.setTeamname("Team1");
         aclRequests1.setRequestingteam("Team1");
+        aclRequests1.setAclType("Create");
         aclRequests.add(aclRequests1);
         return aclRequests;
     }
@@ -312,11 +377,27 @@ public class UtilMethods {
         return envList;
     }
 
-    public AclRequests getAclRequest11(String testtopic1) {
+    public List<HashMap<String,String>> getSyncEnv() {
+        List<HashMap<String,String>> envList = new ArrayList<>();
+
+        HashMap<String,String> hMap = new HashMap<>();
+        hMap.put("key","DEV");
+        hMap.put("name","DEV");
+        envList.add(hMap);
+
+        HashMap<String,String>  hMap1 = new HashMap<>();
+        hMap1.put("key","TST");
+        hMap1.put("name","TST");
+        envList.add(hMap1);
+
+        return envList;
+    }
+
+    public AclRequests getAclRequest11(String topic) {
         AclRequests aclRequest = new AclRequests();
         aclRequest.setTeamname("Team1");
         aclRequest.setEnvironment("DEV");
-        aclRequest.setTopicname(testtopic1);
+        aclRequest.setTopicname(topic);
         aclRequest.setUsername("uiuser1");
         aclRequest.setTopictype("Consumer");
         aclRequest.setConsumergroup("mygrp1");
@@ -332,4 +413,83 @@ public class UtilMethods {
         }
         return listTopics;
     }
+
+    public List<SyncTopicUpdates> getSyncTopicUpdates(){
+        List<SyncTopicUpdates> syncUpdatesList = new ArrayList<>();
+        SyncTopicUpdates syncTopicUpdates = new SyncTopicUpdates();
+        syncTopicUpdates.setEnvSelected("DEV");
+        syncTopicUpdates.setPartitions("2");
+        syncTopicUpdates.setReplicationFactor("1");
+        syncTopicUpdates.setTopicName("testtopic");
+        syncTopicUpdates.setTeamSelected("Team1");
+        syncTopicUpdates.setReq_no("fsadFDS");
+        syncUpdatesList.add(syncTopicUpdates);
+
+        return syncUpdatesList;
+    }
+
+    public List<SyncAclUpdates> getSyncAclsUpdates() {
+        List<SyncAclUpdates> syncUpdatesList = new ArrayList<>();
+        SyncAclUpdates syncAclUpdates = new SyncAclUpdates();
+        syncAclUpdates.setTopicName("testtopic");
+        syncAclUpdates.setReq_no("fsdFDSFa");
+        syncAclUpdates.setAclType("Producer");
+        syncAclUpdates.setAclIp("12.2.4.55");
+        syncAclUpdates.setTeamSelected("Team2");
+        syncAclUpdates.setEnvSelected("DEV");
+
+        SyncAclUpdates syncAclUpdates1 = new SyncAclUpdates();
+        syncAclUpdates1.setTopicName("testtopic1");
+        syncAclUpdates1.setReq_no("fsdFDSFa");
+        syncAclUpdates1.setAclType("Consumer");
+        syncAclUpdates1.setAclIp("12.2.4.55");
+        syncAclUpdates1.setTeamSelected("Team2");
+        syncAclUpdates1.setEnvSelected("DEV");
+
+        syncUpdatesList.add(syncAclUpdates);
+        syncUpdatesList.add(syncAclUpdates1);
+
+        return syncUpdatesList;
+    }
+
+    public TopicOverview getTopicOverview() {
+        TopicOverview topicOverview = new TopicOverview();
+
+        List<TopicInfo> allTopicReqs = new ArrayList<>();
+        TopicInfo topicRequest = new TopicInfo();
+        topicRequest.setTeamname("Team1");
+        allTopicReqs.add(topicRequest);
+
+        topicOverview.setAclInfoList(getAclInfoList());
+        topicOverview.setTopicInfoList(allTopicReqs);
+        return topicOverview;
+    }
+
+    public List<String> getEnvsOnly() {
+        List<String> envsStrList = new ArrayList<>();
+        envsStrList.add("DEV");
+        envsStrList.add("TST");
+
+        return envsStrList;
+    }
+
+    public List<String> getAllTeamsSUOnly() {
+        List<String> teamsList = new ArrayList<>();
+        teamsList.add("Team1");
+        teamsList.add("Team2");
+
+        return teamsList;
+    }
+
+    public List<ServerConfigProperties> getServerConfig() {
+        List<ServerConfigProperties> serverConfigPropertiesList = new ArrayList<>();
+        ServerConfigProperties serverConfigProperties = new ServerConfigProperties();
+        serverConfigProperties.setKey("JDK");
+        serverConfigProperties.setValue("OpenJDK");
+
+        serverConfigPropertiesList.add(serverConfigProperties);
+
+        return serverConfigPropertiesList;
+    }
+
 }

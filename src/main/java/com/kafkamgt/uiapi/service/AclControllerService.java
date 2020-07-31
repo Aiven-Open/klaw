@@ -1,13 +1,16 @@
 package com.kafkamgt.uiapi.service;
 
-
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Acl;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.model.SyncAclUpdates;
+import com.kafkamgt.uiapi.model.TopicInfo;
+import com.kafkamgt.uiapi.model.TopicOverview;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,22 +20,23 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.kafkamgt.uiapi.dao.MailType.*;
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 
 @Service
 public class AclControllerService {
-
-    //private HandleDbRequests manageDatabase.getHandleDbRequests() = null;//ManageDatabase.manageDatabase.getHandleDbRequests();
-
     @Autowired
     ManageDatabase manageDatabase;
     
     @Autowired
-    private UtilService utilService;
+    private final UtilService utilService;
 
     @Autowired
+    private final
     ClusterApiService clusterApiService;
 
-    public AclControllerService(ClusterApiService clusterApiService, UtilService utilService){
+    AclControllerService(ClusterApiService clusterApiService, UtilService utilService){
         this.clusterApiService = clusterApiService;
         this.utilService = utilService;
     }
@@ -40,64 +44,72 @@ public class AclControllerService {
     public String createAcl(AclRequests aclReq) {
 
         UserDetails userDetails = getUserDetails();
-
+        aclReq.setAclType("Create");
         aclReq.setUsername(userDetails.getUsername());
 
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
+
         return "{\"result\":\""+execRes+"\"}";
     }
 
-    public String updateSyncAcls(String updateSyncAcls, String envSelected) {
-
+    public HashMap<String, String> updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) {
         UserDetails userDetails = getUserDetails();
-        if(!utilService.checkAuthorizedSU(userDetails))
-            return "{\"result\":\"Not Authorized\"}";
+        HashMap<String, String> response = new HashMap<>();
 
-        StringTokenizer strTkr = null;
-        if(updateSyncAcls != null)
-            strTkr = new StringTokenizer(updateSyncAcls,"\n");
+        if(!utilService.checkAuthorizedSU(userDetails)){
+            response.put("result", "Not Authorized.");
+            return response;
+        }
 
-        String reqNo, topicSel, teamSelected, consumerGroup, aclIp, aclSsl, aclType, tmpToken;
         List<Acl> listTopics = new ArrayList<>();
         Acl t;
 
-        StringTokenizer strTkrIn ;
-        while(strTkr != null && strTkr.hasMoreTokens()){
-            tmpToken = strTkr.nextToken().trim();
-            strTkrIn = new StringTokenizer(tmpToken,"-----");
-            while(strTkrIn.hasMoreTokens()){
+        if(syncAclUpdates != null && syncAclUpdates.size() > 0){
+            Set<String> sequences = new HashSet<>();
+            syncAclUpdates.forEach(updateItem ->sequences.add(updateItem.getSequence()));
+            HashMap<String,SyncAclUpdates> stringSyncAclUpdatesHashMap = new HashMap<>();
+
+            // remove duplicates
+            for(SyncAclUpdates syncAclUpdateItem: syncAclUpdates){
+                if(stringSyncAclUpdatesHashMap.containsKey(syncAclUpdateItem.getSequence())){
+                    stringSyncAclUpdatesHashMap.remove(syncAclUpdateItem.getSequence());
+                    stringSyncAclUpdatesHashMap.put(syncAclUpdateItem.getSequence(), syncAclUpdateItem);
+                }
+                else
+                    stringSyncAclUpdatesHashMap.put(syncAclUpdateItem.getSequence(), syncAclUpdateItem);
+            }
+
+            for (Map.Entry<String, SyncAclUpdates> stringSyncAclUpdatesEntry : stringSyncAclUpdatesHashMap.entrySet()) {
+                SyncAclUpdates syncAclUpdateItem = stringSyncAclUpdatesEntry.getValue();
+
                 t = new Acl();
 
-                reqNo = strTkrIn.nextToken();
-                topicSel = strTkrIn.nextToken();
-                teamSelected = strTkrIn.nextToken();
-                consumerGroup = strTkrIn.nextToken();
-                aclIp =strTkrIn.nextToken();
-                aclSsl = strTkrIn.nextToken();
-                aclType = strTkrIn.nextToken();
-
-                t.setReq_no(reqNo);
-                t.setTopicname(topicSel);
-                t.setConsumergroup(consumerGroup);
-                t.setAclip(aclIp);
-                t.setAclssl(aclSsl);
-                t.setTeamname(teamSelected);
-                t.setEnvironment(envSelected);
-                t.setTopictype(aclType);
+                t.setReq_no(syncAclUpdateItem.getReq_no());
+                t.setTopicname(syncAclUpdateItem.getTopicName());
+                t.setConsumergroup(syncAclUpdateItem.getConsumerGroup());
+                t.setAclip(syncAclUpdateItem.getAclIp());
+                t.setAclssl(syncAclUpdateItem.getAclSsl());
+                t.setTeamname(syncAclUpdateItem.getTeamSelected());
+                t.setEnvironment(syncAclUpdateItem.getEnvSelected());
+                t.setTopictype(syncAclUpdateItem.getAclType());
 
                 listTopics.add(t);
             }
         }
+        else
+        {
+            response.put("result", "No record updated.");
+            return response;
+        }
 
         try{
             if(listTopics.size()>0){
-                return "{\"result\":\""+manageDatabase.getHandleDbRequests().addToSyncacls(listTopics)+"\"}";
+                response.put("result", manageDatabase.getHandleDbRequests().addToSyncacls(listTopics));
             }
-            else
-                return "{\"result\":\"No records to update\"}";
         }catch(Exception e){
-            return "{\"result\":\"failure "+e.toString()+"\"}";
+            response.put("result", "Failure." + e.toString());
         }
+        return response;
     }
 
     public List<AclRequests> getAclRequests(String pageNo) {
@@ -191,20 +203,22 @@ public class AclControllerService {
         if(!utilService.checkAuthorizedAdmin_SU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
-        AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
+        HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+        AclRequests aclReq = dbHandle.selectAcl(req_no);
         if(aclReq.getReq_no() != null){
             ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq);
 
             String updateAclReqStatus ;
 
             try {
-                if (response!=null && response.getBody().equals("success"))
-                    updateAclReqStatus = manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, userDetails.getUsername());
+                if (response!=null && Objects.equals(response.getBody(), "success"))
+                    updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails.getUsername());
                 else
                     return "{\"result\":\"failure\"}";
             }catch(Exception e){
                 return "{\"result\":\"failure "+e.toString()+"\"}";
             }
+
             return "{\"result\":\""+updateAclReqStatus+"\"}";
         }
         else
@@ -216,12 +230,14 @@ public class AclControllerService {
         if(!utilService.checkAuthorizedAdmin_SU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
-        AclRequests aclReq = manageDatabase.getHandleDbRequests().selectAcl(req_no);
+        HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+        AclRequests aclReq = dbHandle.selectAcl(req_no);
         String updateAclReqStatus ;
 
         if(aclReq.getReq_no() != null){
             try {
-                 updateAclReqStatus = manageDatabase.getHandleDbRequests().declineAclRequest(aclReq, userDetails.getUsername());
+                 updateAclReqStatus = dbHandle.declineAclRequest(aclReq, userDetails.getUsername());
+
                  return "{\"result\":\""+updateAclReqStatus+"\"}";
             }catch(Exception e){
                  return "{\"result\":\"failure "+e.toString()+"\"}";
@@ -275,55 +291,112 @@ public class AclControllerService {
         return filteredList;
     }
 
-    private List<Acl> getAclsFromSOT(String env, String topicNameSearch){
-        List<Acl> aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env);
-
-        List<Acl> topicFilteredList = aclsFromSOT;
-        // Filter topics on topic name for search
-        if(topicNameSearch!=null && topicNameSearch.length()>0) {
-            final String topicSearchFilter = topicNameSearch;
-            topicFilteredList = aclsFromSOT.stream()
-                    .filter(acl -> acl.getTopicname().contains(topicSearchFilter)
-                    )
-                    .collect(Collectors.toList());
+    private List<Acl> getAclsFromSOT(String env, String topicNameSearch, boolean regex){
+        List<Acl> aclsFromSOT;
+        if(!regex)
+            aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env, topicNameSearch);
+        else{
+            aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env);
+            List<Acl> topicFilteredList = aclsFromSOT;
+            // Filter topics on topic name for search
+            if(topicNameSearch!=null && topicNameSearch.length()>0) {
+                final String topicSearchFilter = topicNameSearch;
+                topicFilteredList = aclsFromSOT.stream()
+                        .filter(acl -> acl.getTopicname().contains(topicSearchFilter)
+                        )
+                        .collect(Collectors.toList());
+            }
+            aclsFromSOT = topicFilteredList;
         }
-
-        aclsFromSOT = topicFilteredList;
 
         return aclsFromSOT;
     }
 
-    public List<AclInfo> getAcls(String env, String pageNo, String topicNameSearch, boolean isSyncAcls) throws KafkawizeException {
+    public TopicOverview getAcls(String topicNameSearch) throws KafkawizeException {
+        if(topicNameSearch != null)
+            topicNameSearch = topicNameSearch.trim();
+        else
+            return null;
+
+        List<Topic> topics = manageDatabase.getHandleDbRequests().getTopics(topicNameSearch);
+
+        List<TopicInfo> topicInfoList = new ArrayList<>();
+        for (Topic topic : topics) {
+            TopicInfo topicInfo = new TopicInfo();
+            topicInfo.setCluster(topic.getTopicPK().getEnvironment());
+            topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
+            topicInfo.setNoOfReplcias(topic.getNoOfReplcias());
+            topicInfoList.add(topicInfo);
+        }
+        List<Acl> aclsFromSOT = new ArrayList<>();
+        List<AclInfo> aclInfo = new ArrayList<>();
+        List<AclInfo> tmpAcl;
+        TopicOverview topicOverview = new TopicOverview();
+
+        for (TopicInfo topicInfo : topicInfoList) {
+            aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getCluster(), topicNameSearch, false));
+
+            tmpAcl = applyFiltersAclsForSOT(topicInfo.getCluster(), aclsFromSOT)
+                    .stream()
+                    .collect(Collectors.groupingBy(AclInfo::getTopicname))
+                    .get(topicNameSearch);
+            
+            if(tmpAcl != null)
+                aclInfo.addAll(tmpAcl);
+        }
+        aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
+        topicOverview.setAclInfoList(aclInfo);
+        topicOverview.setTopicInfoList(topicInfoList);
+
+        return topicOverview;
+    }
+
+    public List<AclInfo> getSyncAcls(String env, String pageNo, String topicNameSearch) throws KafkawizeException {
         UserDetails userDetails = getUserDetails();
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
 
-        if(isSyncAcls)
-            if(!utilService.checkAuthorizedSU(userDetails))
-                return null;
+        if(!utilService.checkAuthorizedSU(userDetails))
+            return null;
+
+        List<HashMap<String,String>> aclList;
 
         Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
+        aclList = getAclListFromCluster(bootstrapHost, true, topicNameSearch);
 
-        List<HashMap<String,String>> aclList = getAclListFromCluster(bootstrapHost, isSyncAcls, topicNameSearch);
-        List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch);
+        List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true);
 
         topicCounter = 0;
+        return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, true));
+    }
 
-        if(!isSyncAcls){
-            return applyFiltersAcls(env, aclList, aclsFromSOT, false)
-                    .stream()
-                    .collect(Collectors.groupingBy(AclInfo::getTopicname))
-                    .get(topicNameSearch);
-        }else{
-            return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, true));
-        }
+    private List<AclInfo> applyFiltersAclsForSOT(String env, List<Acl> aclsFromSOT){
+
+        List<AclInfo> aclListMap = new ArrayList<>() ;
+        AclInfo mp ;
+
+        for(Acl aclSotItem : aclsFromSOT)
+            {
+                mp = new AclInfo();
+                mp.setEnvironment(aclSotItem.getEnvironment());
+                mp.setTopicname(aclSotItem.getTopicname());
+                mp.setAcl_ip(aclSotItem.getAclip());
+                mp.setAcl_ssl(aclSotItem.getAclssl());
+                mp.setTeamname(aclSotItem.getTeamname());
+                mp.setConsumergroup(aclSotItem.getConsumergroup());
+                mp.setTopictype(aclSotItem.getTopictype());
+                mp.setReq_no(aclSotItem.getReq_no());
+
+                if(aclSotItem.getAclip()!=null || aclSotItem.getAclssl()!=null)
+                    aclListMap.add(mp);
+            }
+        return aclListMap;
     }
 
     private List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){
 
         UserDetails userDetails = getUserDetails();
-
         List<AclInfo> aclListMap = new ArrayList<>() ;
         AclInfo mp ;
         List<String> teamList = new ArrayList<>();
@@ -364,11 +437,17 @@ public class AclControllerService {
             for(Acl aclSotItem : aclsFromSOT)
             {
                 String acl_ssl = aclSotItem.getAclssl();
-                if(acl_ssl==null)
-                    acl_ssl="User:*";
-
                 String acl_host = aclSotItem.getAclip();
-                if(acl_host==null)
+
+                if(acl_ssl==null || acl_ssl.equals(""))
+                    acl_ssl="User:*";
+                else {
+                    if(!acl_ssl.equals("User:*")){
+                        acl_ssl = "User:" + acl_ssl;
+                    }
+                }
+
+                if(acl_host==null || acl_host.equals(""))
                     acl_host="*";
 
                 if( aclSotItem.getTopicname()!=null &&
@@ -378,8 +457,7 @@ public class AclControllerService {
                         aclSotItem.getTopictype().equals(mp.getTopictype()))
                 {
                     mp.setTeamname(aclSotItem.getTeamname());
-                    if(isSyncAcls)
-                        mp.setReq_no(aclSotItem.getReq_no());
+                    mp.setReq_no(aclSotItem.getReq_no());
                     break;
                 }
             }
@@ -430,4 +508,6 @@ public class AclControllerService {
     private UserDetails getUserDetails(){
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
+
 }

@@ -33,7 +33,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
 	        $http({
                 method: "GET",
-                url: "getEnvs",
+                url: "getSyncEnv",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -44,6 +44,10 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 }
             );
         }
+
+        $scope.refreshPage = function(){
+                $window.location.reload();
+            }
 
     $scope.getAuth = function() {
     	$http({
@@ -92,9 +96,17 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             );
         }
 
-        $scope.updatedSyncStr="";
-        $scope.getDetails = function(teamselected,topic) {
-            $scope.updatedSyncStr  = $scope.updatedSyncStr + topic + "-----" + teamselected+"\n";
+        $scope.updatedSyncArray = [];
+        $scope.updateTopicDetails = function(sequence, teamselected,topic, partitions, replicationFactor) {
+            var serviceInput = {};
+            serviceInput['sequence'] = sequence;
+            serviceInput['topicName'] = topic;
+            serviceInput['partitions'] = partitions;
+            serviceInput['replicationFactor'] = replicationFactor;
+            serviceInput['teamSelected'] = teamselected;
+            serviceInput['envSelected'] = $scope.getTopics.envName.name.key;
+
+            $scope.updatedSyncArray.push(serviceInput);
         }
 
         $scope.synchTopics = function() {
@@ -104,8 +116,8 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             if(!$scope.getTopics.envName)
                    return;
 
-            if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getTopics.envName.name)) {
-                $scope.updatedSyncStr="";
+            if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getTopics.envName.name.key)) {
+                $scope.updatedSyncArray = [];
                 return;
             }
 
@@ -113,13 +125,11 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 method: "POST",
                 url: "updateSyncTopics",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'updatedSyncTopics' : $scope.updatedSyncStr ,
-                         'envSelected': $scope.getTopics.envName.name
-                         },
-                data: {'updatedSyncTopics' : $scope.updatedSyncStr}
+                params: {'updatedSyncTopics' : $scope.updatedSyncArray},
+                data:  $scope.updatedSyncArray
             }).success(function(output) {
                 $scope.alert = "Topic Sync Request : "+output.result;
-                $scope.updatedSyncStr="";
+                $scope.updatedSyncArray = [];
                 $scope.showSuccessToast();
             }).error(
                 function(error)
@@ -138,16 +148,13 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 	$scope.getTopics = function(pageNoSelected) {
 
         var serviceInput = {};
-		
-		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
-		serviceInput['env'] = $scope.getTopics.envName.name;
-		//alert("---"+$scope.getTopics.envName.value);
+		serviceInput['env'] = $scope.getTopics.envName.name.key;
 
 		$http({
 			method: "GET",
 			url: "getSyncTopics",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getTopics.envName.name, 'topicnamesearch' : $scope.getTopics.topicnamesearch,
+            params: {'env' : $scope.getTopics.envName.name.key, 'topicnamesearch' : $scope.getTopics.topicnamesearch,
                 'pageNo' : pageNoSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
@@ -155,9 +162,11 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 $scope.resultPages = output[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
             }
+            $scope.alert = "";
 		}).error(
 			function(error) 
 			{
+			    $scope.resultBrowse = [];
 				$scope.alert = error;
 			}
 		);

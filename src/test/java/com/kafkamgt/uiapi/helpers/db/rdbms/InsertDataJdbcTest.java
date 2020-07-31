@@ -79,8 +79,7 @@ public class InsertDataJdbcTest {
     @Test
     public void insertIntoTopicSOT() {
         List<Topic> topics = utilMethods.getTopics();
-        when(topicRequestsRepo.findById(any()))
-                .thenReturn(java.util.Optional.ofNullable(utilMethods.getTopicRequest("")));
+
         String result = insertData.insertIntoTopicSOT(topics, true);
         assertEquals("success", result);
     }

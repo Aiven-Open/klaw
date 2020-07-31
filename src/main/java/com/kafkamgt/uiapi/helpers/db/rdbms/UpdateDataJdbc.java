@@ -33,10 +33,11 @@ public class UpdateDataJdbc {
     @Autowired(required=false)
     private SchemaRequestRepo schemaRequestRepo;
 
-    @Autowired
+    @Autowired(required=false)
     private InsertDataJdbc insertDataJdbcHelper;
 
-    public UpdateDataJdbc(){}
+    @Autowired(required=false)
+    private DeleteDataJdbc deleteDataJdbcHelper;
 
     public UpdateDataJdbc(TopicRequestsRepo topicRequestsRepo, AclRequestsRepo aclRequestsRepo,
                           UserInfoRepo userInfoRepo, SchemaRequestRepo schemaRequestRepo,
@@ -47,6 +48,8 @@ public class UpdateDataJdbc {
         this.schemaRequestRepo = schemaRequestRepo;
         this.insertDataJdbcHelper = insertDataJdbcHelper;
     }
+
+    public UpdateDataJdbc(){}
 
     public String declineTopicRequest(TopicRequest topicRequest, String approver){
 
@@ -70,6 +73,8 @@ public class UpdateDataJdbc {
 
         Topic topicObj = new Topic();
         copyProperties(topicRequest,topicObj);
+        topicObj.setNoOfReplcias(topicRequest.getReplicationfactor());
+        topicObj.setNoOfPartitions(topicRequest.getTopicpartitions());
         TopicPK topicPK = new TopicPK();
         topicPK.setTopicname(topicObj.getTopicname());
         topicPK.setEnvironment(topicObj.getEnvironment());
@@ -77,39 +82,48 @@ public class UpdateDataJdbc {
         topics.add(topicObj);
         insertDataJdbcHelper.insertIntoTopicSOT(topics,false);
 
-        Acl aclReq = new Acl();
-        aclReq.setTopictype("Producer");
-        aclReq.setEnvironment(topicRequest.getEnvironment());
-        aclReq.setTeamname(topicRequest.getTeamname());
-        aclReq.setAclssl(topicRequest.getAcl_ssl());
-        aclReq.setAclip(topicRequest.getAcl_ip());
-        aclReq.setTopicname(topicRequest.getTopicname());
-
-        List<Acl> acls = new ArrayList<>();
-        acls.add(aclReq);
-        insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
+//        Acl aclReq = new Acl();
+//        aclReq.setTopictype("Producer");
+//        aclReq.setEnvironment(topicRequest.getEnvironment());
+//        aclReq.setTeamname(topicRequest.getTeamname());
+//        aclReq.setAclssl(topicRequest.getAcl_ssl());
+//        aclReq.setAclip(topicRequest.getAcl_ip());
+//        aclReq.setTopicname(topicRequest.getTopicname());
+//
+//        List<Acl> acls = new ArrayList<>();
+//        acls.add(aclReq);
+//        insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
 
         return "success";
     }
 
-    public String updateAclRequest(AclRequests aclRequests, String approver){
-        aclRequests.setApprover(approver);
-        aclRequests.setAclstatus("approved");
-        aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
-        aclRequestsRepo.save(aclRequests);
-
-        // Insert to SOT
+    public String updateAclRequest(AclRequests aclReq, String approver){
+        aclReq.setApprover(approver);
+        aclReq.setAclstatus("approved");
+        aclReq.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+        aclRequestsRepo.save(aclReq);
 
         List<Acl> acls = new ArrayList<>();
         Acl aclObj = new Acl();
-        copyProperties(aclRequests,aclObj);
-        aclObj.setTeamname(aclRequests.getRequestingteam());
-        aclObj.setAclip(aclRequests.getAcl_ip());
-        aclObj.setAclssl(aclRequests.getAcl_ssl());
+        copyProperties(aclReq,aclObj);
+        aclObj.setTeamname(aclReq.getRequestingteam());
+        aclObj.setAclip(aclReq.getAcl_ip());
+        aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
-        insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
 
-        return "success";
+        if(aclReq.getAclType() != null && aclReq.getAclType().equals("Create")){
+            if(insertDataJdbcHelper.insertIntoAclsSOT(acls,false).equals("success"))
+                return "success";
+            else
+                return "failure";
+        }else{
+            // Delete SOT
+            if(deleteDataJdbcHelper.deletePrevAclRecs(acls).equals("success")){
+                return "success";
+            }
+            else return "failure";
+        }
+
     }
 
     public String declineAclRequest(AclRequests aclRequests, String approver){

@@ -115,25 +115,6 @@ public class InsertDataJdbc {
         topics.forEach(topic->
                 {
                     topicRepo.save(topic);
-                    if(isSyncTopics) {
-                        TopicRequestPK topicRequestPK = new TopicRequestPK();
-                        topicRequestPK.setEnvironment(topic.getEnvironment());
-                        topicRequestPK.setTopicname(topic.getTopicname());
-                        Optional<TopicRequest> topicRequest = topicRequestsRepo.findById(topicRequestPK);
-
-                            Acl acl = new Acl();
-                            acl.setReq_no(getRandom());
-                            acl.setTopictype("Producer");
-                            acl.setTopicname(topic.getTopicname());
-                            if(topicRequest.isPresent()) {
-                                acl.setAclip(topicRequest.get().getAcl_ip());
-                                acl.setAclssl(topicRequest.get().getAcl_ssl());
-                            }
-                            acl.setEnvironment(topic.getEnvironment());
-                            acl.setTeamname(topic.getTeamname());
-
-                            aclRepo.save(acl);
-                    }
                 }
         );
 
@@ -147,9 +128,12 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoRequestAcl(AclRequests aclReq){
+    String insertIntoRequestAcl(AclRequests aclReq){
 
-        aclReq.setReq_no(getRandom());
+        if(aclReq.getAclType() !=null && aclReq.getAclType().equals("Create")){
+            aclReq.setReq_no(getRandom());
+        }
+
         aclReq.setAclstatus("created");
         aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
         aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getUsername()).getTeam());
@@ -160,7 +144,7 @@ public class InsertDataJdbc {
         ActivityLog activityLog = new ActivityLog();
         activityLog.setReq_no(getRandom());
         activityLog.setActivityName("AclRequest");
-        activityLog.setActivityType("new");
+        activityLog.setActivityType(aclReq.getAclType());
         activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
         activityLog.setTeam(userInfo.getTeam());
         activityLog.setDetails(aclReq.getAcl_ip()+"-"+aclReq.getTopicname()+"-"+aclReq.getAcl_ssl()+"-"+
@@ -234,36 +218,34 @@ public class InsertDataJdbc {
     }
 
     public String insertIntoUsers(UserInfo userInfo){
+        Optional<UserInfo> userExists = userInfoRepo.findById(userInfo.getUsername());
+        if(userExists.isPresent())
+            return "Failure. User already exists";
+
         userInfoRepo.save(userInfo);
         return "success";
     }
 
     public String insertIntoTeams(Team team){
+        TeamPK teamPK = new TeamPK();
+        teamPK.setTeamname(team.getTeamname());
+        team.setTeamPK(teamPK);
+
+        Optional<Team> teamExists = teamRepo.findById(teamPK);
+        if(teamExists.isPresent())
+            return "Failure. Team already exists";
+
+        team.setApp("");
         teamRepo.save(team);
         return "success";
     }
 
     public String insertIntoEnvs(Env env){
+        Optional<Env> envExists = envRepo.findById(env.getName());
+        if(envExists.isPresent())
+            return "Failure. Cluster already exists";
+
         envRepo.save(env);
-        return "success";
-    }
-
-    public String updateLicense(String org, String version, String licenseKey) throws Exception{
-
-        ProductDetails product = new ProductDetails();
-        product.setName(org);
-
-        Optional<ProductDetails> pd = productDetailsRepo.findById(org);
-        if(pd.isPresent())
-            return "success";
-        product = new ProductDetails();
-        product.setName(org);
-        product.setVersion(version);
-        product.setLicensekey(licenseKey);
-        if(licenseKey!=null && licenseKey.length()>0)
-            productDetailsRepo.save(product);
-        else
-            throw new Exception("Invalid license");
         return "success";
     }
 

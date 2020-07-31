@@ -1,6 +1,9 @@
-Kafkawize 4.1
-
-Kafkawize is a Kafka Topic management tool (A Web application) which automates the process of creating and browsing Kafka components, by introducing  roles/authorizations to users of various teams of an organization
+Kafkawize 4.2
 
 Changes include
-1. Critical bug fix - concurrent user access
+1. Ability to have environments DEV, TST, ACC and PRD
+2. Ability to request for topics in DTAP environments
+3. Ability to view topic overview and subscriptions in one page
+4. Ability to view topic partitions and replication factor of all environments in topic overview page
+5. Ability to view topics and their existence in all environments
+6. Updated dashboard to view your team topics

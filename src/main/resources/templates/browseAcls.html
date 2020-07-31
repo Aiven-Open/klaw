@@ -142,6 +142,10 @@
 					<!-- ============================================================== -->
 
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -262,7 +266,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -298,7 +301,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -326,18 +329,7 @@
 		<div class="container-fluid">
 			<div class="row page-titles">
 			</div>
-			<!-- ============================================================== -->
-			<!-- Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
 
-			<!-- ============================================================== -->
-			<!-- End Bread crumb and right sidebar toggle -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Start Page Content -->
-			<!-- ============================================================== -->
-
-			<!-- Row -->
 
 			<div class="row" ng-show="resultPages == null && alerttop != null && alerttop != ''" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
@@ -372,25 +364,71 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="resultBrowse.length==0" ng-init="">
+			<div class="row" ng-show="topicOverview!=null && topicOverview.length!=0">
+				<div class="col-lg-12">
+					<div class="card">
+						<div class="card-body">
+							<table width="100%"><tr>
+								<td align="left"><h4 class="card-title">Topic : {{ topicSelectedParam }}</h4></td>
+								<td align="right">
+									<a href="browseTopics?envSelected={{envSelectedParam}}">
+										<i class="fas fa-arrow-alt-circle-left"></i>
+										<button type="button"
+												class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Back to Topics</button>
+									</a>
+
+								</td></tr>
+							</table>
+
+
+							<div>
+								<table class="table color-table success-table">
+									<thead><tr>
+										<th width="10%">Cluster</th>
+										<th width="15%">Partitions</th>
+										<th width="15%">Replication Factor</th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr ng-repeat="resultB in topicOverview">
+										<td width="10%">
+											<span ng-show="resultB.cluster=='DEV'" class="badge badge-success">{{ resultB.cluster}}</span>
+											<span ng-show="resultB.cluster=='TST'" class="badge badge-warning">{{ resultB.cluster}}</span>
+											<span ng-show="resultB.cluster=='ACC'" class="badge badge-info">{{ resultB.cluster}}</span>
+											<span ng-show="resultB.cluster=='PRD'" class="badge badge-danger">{{ resultB.cluster}}</span>
+											<span ng-show="resultB.cluster!='PRD' && resultB.cluster != 'TST' && resultB.cluster != 'ACC' && resultB.cluster != 'DEV'" class="badge badge-primary">{{ resultB.cluster}}</span>
+										</td>
+										<td width="15%">{{ resultB.noOfPartitions}}</td>
+										<td width="15%">{{ resultB.noOfReplcias}}</td>
+									</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<div class="row" ng-show="resultBrowse.length == 0" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 
 					<table class="table color-table success-table" width="100%"><tr>
-						<td align="left"><h4 class="card-title">Topic : {{ topicSelectedParam}}</h4><br>
-							<h6 class="card-subtitle">Cluster <code> {{envSelectedParam}}</code></h6>
+						<td align="left"><h4 class="card-title">Subscriptions</h4>
 						</td>
 						<td align="right">
-							<a href="browseTopics?envSelected={{envSelectedParam}}">
-								<i class="fas fa-arrow-alt-circle-left"></i>
+							<a href="requestAcls?topicname={{topicSelectedParam}}">
 								<button type="button"
-										class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
+										class="btn waves-effect waves-light btn-rounded btn-sm btn-success">Subscribe</button>
 							</a>
 						</td></tr>
 					</table>
 
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">No Acls found for this topic.</p>
+						<p class="ribbon-content">No Subscriptions found for this topic.</p>
 					</div>
 				</div>
 			</div>
@@ -400,25 +438,26 @@
 					<div class="card">
 						<div class="card-body">
 							<table width="100%"><tr>
-								<td align="left"><h4 class="card-title">Topic : {{ resultBrowse[0].topicname}}</h4></td>
+								<td align="left"><h4 class="card-title">Subscriptions</h4></td>
 								<td align="right">
-									<a href="browseTopics?envSelected={{envSelectedParam}}">
-										<i class="fas fa-arrow-alt-circle-left"></i>
+
+									<a href="requestAcls?topicname={{topicSelectedParam}}">
 										<button type="button"
-												class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
+												class="btn waves-effect waves-light btn-rounded btn-sm btn-success">Subscribe</button>
 									</a>
 								</td></tr>
 							</table>
 
-							<h6 class="card-subtitle">Cluster <code> {{envSelectedParam}}</code></h6>
+
 							<div>
 								<table class="table color-table success-table">
 									<thead><tr>
 										<th width="10%">Type</th>
+										<th width="10%">Cluster</th>
 										<th width="15%">Owned by</th>
 										<th width="15%">ConsumerGroup</th>
-										<th width="20%">Hosts</th>
-										<th width="40%">Principle</th>
+										<th width="15%">Hosts</th>
+										<th width="35%">Principle</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -431,40 +470,26 @@
 										<td width="10%" ng-show="resultB.topictype == 'Consumer'" >
 											<span class="badge badge-warning">{{ resultB.topictype}}</span></td>
 
+										<td width="5%">{{ resultB.environment}}</td>
 										<td width="15%">{{ resultB.teamname}}</td>
 										<td width="15%">{{ resultB.consumergroup}}</td>
-										<td width="20%">{{ resultB.acl_ip}}</td>
-										<td width="40%">{{ resultB.acl_ssl}}</td>
+										<td width="15%">{{ resultB.acl_ip}}</td>
+										<td width="35%">{{ resultB.acl_ssl}}</td>
+
 									</tr>
 									</tbody>
 								</table>
 							</div>
 						</div>
+
+
 					</div>
+
 				</div>
 			</div>
 
 
-			<!-- Row -->
-
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Right sidebar -->
-			<!-- ============================================================== -->
-			<!-- .right-sidebar -->
-
-			<!-- ============================================================== -->
-			<!-- End Right sidebar -->
-			<!-- ============================================================== -->
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-		<!-- ============================================================== -->
-		<!-- ============================================================== -->
-		<!-- footer -->
-		<!-- ============================================================== -->
 		<footer class="footer">
 			© 2020 Kafkawize by <a href="https://kafkawize.com">kafkawize.com</a>
 		</footer>

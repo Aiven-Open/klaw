@@ -48,8 +48,11 @@ public class SelectDataTest {
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator(),
                 rowList.iterator(), rowList.iterator(), rowList.iterator(), rowList.iterator());
         when(row.getString("teamname")).thenReturn("Team1", "Team1", "Team1");
+        when(row.getString("team")).thenReturn("Team1", "Team1");
+        when(row.getString("requestingteam")).thenReturn("Team1", "Team1", "Team1");
         when(row.getString("userid")).thenReturn(requestor, requestor, requestor);
-        when(row.getString("team")).thenReturn("Team1", "Team1", "Team1");
+
+        when(row.getString("acltype")).thenReturn("Delete", "Create", "Delete");
         when(row.getTimestamp("exectime")).thenReturn(new Date(), new Date());
         when(row.getTimestamp("requesttime")).thenReturn(new Date(), new Date());
 
@@ -133,8 +136,8 @@ public class SelectDataTest {
         when(resultSet.iterator()).thenReturn(rowList.iterator());
         when(row.getString("teamname")).thenReturn("Team1");
 
-        Topic topic = selectData.selectTopicDetails(topicName, envSel);
-        assertEquals("Team1", topic.getTeamname());
+        List<Topic> topic = selectData.selectTopicDetails(topicName);
+        assertEquals("Team1", topic.get(0).getTeamname());
     }
 
     @Test
@@ -149,7 +152,7 @@ public class SelectDataTest {
         when(row.getString("topicname")).thenReturn(topicName, topicName);
         when(row.getString("teamname")).thenReturn("Team1");
 
-        List<Topic> topicList = selectData.selectSyncTopics(envSel);
+        List<Topic> topicList = selectData.selectSyncTopics(envSel, null);
         assertEquals(1, topicList.size());
         assertEquals(topicName, topicList.get(0).getTopicname());
         assertEquals("Team1", topicList.get(0).getTeamname());
@@ -189,7 +192,7 @@ public class SelectDataTest {
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator(),
                 rowList.iterator(), rowList.iterator());
         when(row.getString("teamname")).thenReturn("Team1", "Team1");
-        when(row.getString("userid")).thenReturn(requestor, requestor);
+
         when(row.getString("team")).thenReturn("Team1", "Team1");
 
         List<TopicRequest> listReqs = selectData.selectTopicRequests(false, requestor);
@@ -373,7 +376,7 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1", "Team2");
+        when(row.getString("team")).thenReturn("Team1","Team2","Team1", "Team2");
         when(row.getString("userid")).thenReturn(username, username);
         when(row.getString("roleid")).thenReturn("SUPERUSER", "SUPERUSER");
 

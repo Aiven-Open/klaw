@@ -35,9 +35,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Value("${custom.org.name}")
     private String orgName;
 
-    @Value("${custom.invalidkey.msg}")
-    private String invalidKeyMessage;
-
     @Autowired
     private Environment environment;
 
@@ -70,12 +67,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
         List<UserInfo> users = new ArrayList<>();
-//        if(orgName.equals("Your company name."))
-//        {
-//            LOG.error("Invalid organization configured !!");
-//            System.exit(0);
-//            throw new Exception("Invalid organization configured !!");
-//        }
+        if(orgName.equals("Your company name."))
+        {
+            LOG.error("Invalid organization configured !!");
+            System.exit(0);
+            throw new Exception("Invalid organization configured !!");
+        }
 //        if(! (environment.getActiveProfiles().length >0
 //                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
 //            HashMap<String, String> licenseMap = utils.validateLicense();

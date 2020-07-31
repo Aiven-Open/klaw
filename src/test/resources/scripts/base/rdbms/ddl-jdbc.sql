@@ -22,6 +22,8 @@ Create table if not exists topic_requests(
 
 Create table if not exists topics(
 	topicname varchar(150),
+	partitions varchar(3),
+    replicationfactor varchar(2),
 	env varchar(50),
 	teamname varchar(150),
 	appname varchar(150),
@@ -44,7 +46,8 @@ Create table if not exists acl_requests(
 	acl_ip varchar(150),
 	acl_ssl varchar(200),
 	approver varchar(20),
-	exectime timestamp
+	exectime timestamp,
+	acltype varchar(10)
 );
 
 Create table if not exists acls(
@@ -89,7 +92,7 @@ Create table if not exists teams(
 	teammail varchar(50),
 	teamphone varchar(25),
 	contactperson varchar(50),
-	PRIMARY KEY(team,app)
+	PRIMARY KEY(team)
 );
 
 Create table if not exists users(
@@ -98,11 +101,12 @@ Create table if not exists users(
 	team varchar(150),
 	roleid varchar(20),
 	fullname varchar(50),
+	mailid varchar(150),
 	PRIMARY KEY(userid)
 );
 
 Create table if not exists env(
-	name varchar(50),
+	name varchar(10),
 	host varchar(20),
 	port varchar(6),
 	protocol varchar(20),
@@ -119,6 +123,7 @@ Create table if not exists env(
 Create table if not exists productdetails(
 	name varchar(9),
 	version varchar(10),
+	licensekey varchar(150),
 	PRIMARY KEY(name)
 );
 

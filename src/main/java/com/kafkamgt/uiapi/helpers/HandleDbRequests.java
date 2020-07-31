@@ -8,96 +8,102 @@ import java.util.List;
 
 public interface HandleDbRequests {
 
-    public void connectToDb(String licenseKey) throws Exception;
+    void connectToDb(String licenseKey) throws Exception;
 
     /*--------------------Insert */
 
-    public String requestForTopic(TopicRequest topicRequest);
+    String requestForTopic(TopicRequest topicRequest);
 
-    public String requestForAcl(AclRequests aclReq);
+    String requestForAcl(AclRequests aclReq);
 
-    public String addNewUser(UserInfo userInfo);
+    String addNewUser(UserInfo userInfo);
 
-    public String addNewTeam(Team team);
+    String addNewTeam(Team team);
 
-    public String addNewEnv(Env env);
+    String addNewEnv(Env env);
 
-    public String requestForSchema(SchemaRequest schemaRequest);
+    String requestForSchema(SchemaRequest schemaRequest);
 
-    public String addToSynctopics(List<Topic> topicRequests);
+    String addToSynctopics(List<Topic> topicRequests);
 
-    public String addToSyncacls(List<Acl> acls);
+    String addToSyncacls(List<Acl> acls);
 
     /*--------------------Select */
 
-    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role);
+    HashMap<String, String> getAllRequestsToBeApproved(String requestor, String role);
 
-    public List<TopicRequest> getAllTopicRequests(String requestor);
-    public List<TopicRequest> getCreatedTopicRequests(String requestor);
+    List<TopicRequest> getAllTopicRequests(String requestor);
+    List<TopicRequest> getCreatedTopicRequests(String requestor);
 
-    public TopicRequest selectTopicRequestsForTopic(String topicName, String env) ;
+    TopicRequest selectTopicRequestsForTopic(String topicName, String env) ;
 
-    public List<Topic> getSyncTopics(String env);
+    List<Topic> getSyncTopics(String env, String teamName);
 
-    public List<Acl> getSyncAcls(String env);
+    List<Topic> getTopics(String topicName);
 
-    public List<AclRequests> getAllAclRequests(String requestor);
-    public List<AclRequests> getCreatedAclRequests(String requestor);
+    List<Acl> getSyncAcls(String env);
 
-    public List<SchemaRequest> getAllSchemaRequests(String requestor);
-    public List<SchemaRequest> getCreatedSchemaRequests(String requestor);
+    List<Acl> getSyncAcls(String env, String topic);
 
-    public SchemaRequest selectSchemaRequest(String topicName, String schemaVersion, String env);
+    Acl selectSyncAclsFromReqNo(String reqNo);
 
-    public List<Team> selectAllTeamsOfUsers(String username);
+    List<AclRequests> getAllAclRequests(String requestor);
+    List<AclRequests> getCreatedAclRequests(String requestor);
 
-    public List<Team> selectAllTeams();
+    List<SchemaRequest> getAllSchemaRequests(String requestor);
+    List<SchemaRequest> getCreatedSchemaRequests(String requestor);
 
-    public HashMap<String, String> getDashboardInfo();
+    SchemaRequest selectSchemaRequest(String topicName, String schemaVersion, String env);
 
-    public List<UserInfo> selectAllUsersInfo();
+    List<Team> selectAllTeamsOfUsers(String username);
 
-    public UserInfo getUsersInfo(String username);
+    List<Team> selectAllTeams();
 
-    public AclRequests selectAcl(String req_no);
+    HashMap<String, String> getDashboardInfo(String teamName);
 
-    public Topic getTopicTeam(String topicName, String env);
+    List<UserInfo> selectAllUsersInfo();
 
-    public List<Env> selectAllKafkaEnvs();
+    UserInfo getUsersInfo(String username);
 
-    public List<Env> selectAllSchemaRegEnvs();
+    AclRequests selectAcl(String req_no);
 
-    public Env selectEnvDetails(String env);
+    List<Topic> getTopicTeam(String topicName);
 
-    public List<ActivityLog> selectActivityLog(String user, String env);
+    List<Env> selectAllKafkaEnvs();
+
+    List<Env> selectAllSchemaRegEnvs();
+
+    Env selectEnvDetails(String env);
+
+    List<ActivityLog> selectActivityLog(String user, String env);
 
     /*--------------------Update */
-    public String updateTopicRequest(TopicRequest topicRequest, String approver);
+    String updateTopicRequest(TopicRequest topicRequest, String approver);
 
-    public String updateAclRequest(AclRequests aclRequests, String approver);
+    String updateAclRequest(AclRequests aclRequests, String approver);
 
-    public String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
+    String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
 
-    public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
+    String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
 
-    public String declineTopicRequest(TopicRequest topicRequest, String approver);
+    String declineTopicRequest(TopicRequest topicRequest, String approver);
 
-    public String declineAclRequest(AclRequests aclRequests, String approver);
+    String declineAclRequest(AclRequests aclRequests, String approver);
 
-    public String updatePassword(String username, String pwd);
+    String updatePassword(String username, String pwd);
 
     /*--------------------Delete */
-    public String deleteTopicRequest(String topicName, String env);
+    String deleteTopicRequest(String topicName, String env);
 
-    public String deleteAclRequest(String req_no);
+    String deleteAclRequest(String req_no);
 
-    public String deleteClusterRequest(String clusterId);
+    String deleteAclSubscriptionRequest(String req_no);
 
-    public String deleteUserRequest(String userId);
+    String deleteClusterRequest(String clusterId);
 
-    public String deleteTeamRequest(String teamId);
+    String deleteUserRequest(String userId);
 
-    public String deleteSchemaRequest(String topicName, String schemaVersion, String env);
+    String deleteTeamRequest(String teamId);
 
-    public String deletePrevAclRecs(List<Acl> aclReqs);
+    String deleteSchemaRequest(String topicName, String schemaVersion, String env);
 }

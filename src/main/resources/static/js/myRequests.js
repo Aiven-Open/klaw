@@ -15,7 +15,10 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
+	$scope.refreshPage = function(){
+            $window.location.reload();
+        }
 
 
             $scope.getAuth = function() {

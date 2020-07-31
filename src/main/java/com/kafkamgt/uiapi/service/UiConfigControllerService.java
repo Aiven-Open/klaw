@@ -7,6 +7,7 @@ import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,14 +18,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UiConfigControllerService {
+
+    @Value("${custom.syncdata.cluster:DEV}")
+    private String syncCluster;
 
     @Autowired
     private UtilService utilService;
@@ -38,6 +39,8 @@ public class UiConfigControllerService {
     private ClusterApiService clusterApiService;
 
     private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
+
+    private static String baseClusterDropDownStr = " (Base Sync cluster)";
 
     @Autowired
     public UiConfigControllerService(InMemoryUserDetailsManager inMemoryUserDetailsManager) {
@@ -55,6 +58,35 @@ public class UiConfigControllerService {
         env.setHost(clusterApiService.getClusterApiUrl());
         env.setEnvStatus(clusterApiService.getClusterApiStatus());
         return env;
+    }
+
+    public List<String> getEnvsOnly(boolean envStatus){
+        List<String> envsOnly = new ArrayList<>();
+        List<Env> envList = getEnvs(envStatus);
+        for (Env env : envList) {
+            envsOnly.add(env.getName());
+        }
+
+        return envsOnly;
+    }
+
+    public List<HashMap<String,String>> getSyncEnvs() {
+
+        HashMap<String,String> hMap = null;
+        List<HashMap<String,String>> envsOnly = new ArrayList<>();
+        List<Env> envList = getEnvs(true);
+        for (Env env : envList) {
+            hMap = new HashMap<>();
+            hMap.put("key", env.getName());
+            if(syncCluster.equals(env.getName()))
+                hMap.put("name", env.getName() + baseClusterDropDownStr);
+            else
+                hMap.put("name", env.getName());
+
+            envsOnly.add(hMap);
+        }
+
+        return envsOnly;
     }
 
     public List<Env> getEnvs(boolean envStatus) {
@@ -106,7 +138,19 @@ public class UiConfigControllerService {
         return manageDatabase.getHandleDbRequests().selectAllTeams();
     }
 
+    public List<String> getAllTeamsSUOnly() {
+        List<String> teams = new ArrayList<>();
+        List<Team> teamsList = getAllTeamsSU();
+        teams.add("All teams");
+        for(Team team: teamsList)
+            teams.add(team.getTeamname());
+
+        return teams;
+    }
+
     public String addNewEnv(Env newEnv){
+        if(newEnv.getName().length() > 3)
+            newEnv.setName(newEnv.getName().substring(0,3));
         UserDetails userDetails = getUserDetails();
         if(!utilService.checkAuthorizedSU(userDetails))
             return "{\"result\":\"Not Authorized\"}";
@@ -181,7 +225,11 @@ public class UiConfigControllerService {
             inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername()).password(encoder.encode(newUser.getPwd()))
                     .roles(newUser.getRole()).build());
 
-           return "{\"result\":\""+manageDatabase.getHandleDbRequests().addNewUser(newUser)+"\"}";
+            HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+
+            String result = dbHandle.addNewUser(newUser);
+
+           return "{\"result\":\""+result+"\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
@@ -307,4 +355,6 @@ public class UiConfigControllerService {
     private UserDetails getUserDetails(){
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
+
+
 }

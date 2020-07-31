@@ -10,5 +10,9 @@ import java.util.Optional;
 public interface TopicRepo extends CrudRepository<Topic, TopicPK> {
     Optional<Topic> findById(TopicPK topicPK);
     List<Topic> findAllByTopicPKEnvironment(String env);
-    Optional<Topic> findByTopicPKEnvironmentAndTopicPKTopicname(String env, String topicName);
+    List<Topic> findAllByTeamname(String teamName);
+    List<Topic> findAllByTopicPKEnvironmentAndTeamname(String env, String teamName);
+    List<Topic> findAllByTopicPKEnvironmentAndTopicPKTopicname(String env, String topicName);
+
+    List<Topic> findAllByTopicPKTopicname(String topicName);
 }

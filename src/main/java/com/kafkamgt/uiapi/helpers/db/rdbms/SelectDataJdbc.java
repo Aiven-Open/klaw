@@ -1,8 +1,5 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.repository.*;
@@ -17,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
 public class SelectDataJdbc {
@@ -92,11 +90,15 @@ public class SelectDataJdbc {
 
         for (AclRequests row : aclListSub) {
             String teamName ;
+            String aclType = row.getAclType();
             if(allReqs) {
                 if(role.equals("ROLE_USER"))
                     teamName = row.getRequestingteam();
                 else
                     teamName = row.getTeamname();
+
+                if(aclType.equals("Delete"))
+                    teamName = row.getRequestingteam();
             }
             else
                 teamName = row.getRequestingteam();
@@ -146,20 +148,32 @@ public class SelectDataJdbc {
         return schemaRequestRepo.findById(schemaPK).get();
     }
 
-    public Topic selectTopicDetails(String topic, String env){
+    public List<Topic> selectTopicDetails(String topic){
 
-        Optional<Topic> topicOpt =  topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topic);
+        List<Topic> topicOpt =  topicRepo.findAllByTopicPKTopicname(topic);
 
-        if(topicOpt.isPresent())
-            return topicRepo.findByTopicPKEnvironmentAndTopicPKTopicname(env,topic).get();
+        if(topicOpt.size()>0)
+            return topicOpt;
         else
             return null;
 
     }
 
-    public List<Topic> selectSyncTopics(String env){
-
-        return topicRepo.findAllByTopicPKEnvironment(env);
+    public List<Topic> selectSyncTopics(String env, String teamName){
+        if(teamName==null || teamName.equals("null") || teamName.equals("All teams")){
+            if (env == null || env.equals("ALL")){
+                return StreamSupport.stream(topicRepo.findAll().spliterator(), false)
+                        .collect(Collectors.toList());
+            }
+            else
+                return topicRepo.findAllByTopicPKEnvironment(env);
+        }
+        else {
+            if (env.equals("ALL"))
+                return topicRepo.findAllByTeamname(teamName);
+            else
+                return topicRepo.findAllByTopicPKEnvironmentAndTeamname(env, teamName);
+        }
     }
 
     public List<Acl> selectSyncAcls(String env){
@@ -183,14 +197,14 @@ public class SelectDataJdbc {
 
             String teamSelected = selectUserInfo(requestor).getTeam();
 
-            if(teamSelected!=null && teamSelected.equals(teamName)) {
-                topicRequestList.add(row);
-            }
-
             try {
                 row.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
                         .format((row.getRequesttime()).getTime()));
             }catch (Exception e){}
+
+            if(teamSelected!=null && teamSelected.equals(teamName)) {
+                topicRequestList.add(row);
+            }
         }
 
         return topicRequestList;
@@ -209,7 +223,10 @@ public class SelectDataJdbc {
     }
 
     public AclRequests selectAcl(String req_no){
-        return aclRequestsRepo.findById(req_no).get();
+        if(aclRequestsRepo.findById(req_no).isPresent())
+            return aclRequestsRepo.findById(req_no).get();
+        else
+            return null;
     }
 
     public List<UserInfo> selectAllUsersInfo(){
@@ -249,33 +266,32 @@ public class SelectDataJdbc {
 
     public List<Team> selectTeamsOfUsers(String username){
 
+        List<Team> allTeams = selectAllTeams();
+
         List<Team> teamList = new ArrayList<>();
         List<UserInfo> userInfoList = Lists.newArrayList(userInfoRepo.findAll());
 
         List<Team> teamListSU = new ArrayList<>();
         List<String> superUserTeamListStr = new ArrayList<>();
 
-        Team team ;
-
         String teamName ;
         boolean isSuperUser = false;
 
         for (UserInfo row : userInfoList) {
-            team = new Team();
-
             teamName = row.getTeam();
 
             superUserTeamListStr.add(teamName);
 
+            String finalTeamName = teamName;
+            Optional<Team> teamSel = allTeams.stream().filter(a->a.getTeamname().equals(finalTeamName)).findFirst();
+
             if(username.equals(row.getUsername())) {
                 String role = row.getRole();
+
                 if(role.equals("SUPERUSER")){
                     isSuperUser = true;
                 }else {
-                    TeamPK teamPK = new TeamPK();
-                    teamPK.setTeamname(teamName);
-                    team.setTeamPK(teamPK);
-                    teamList.add(team);
+                    teamList.add(teamSel.get());
                 }
             }
         }
@@ -296,7 +312,7 @@ public class SelectDataJdbc {
             return teamList;
     }
 
-    public HashMap<String, String> getDashboardInfo(){
+    public HashMap<String, String> getDashboardInfo(String teamName){
         HashMap<String, String> dashboardInfo = new HashMap<>();
 
         dashboardInfo.put("teamsize", ""+teamRepo.count());
@@ -304,6 +320,24 @@ public class SelectDataJdbc {
         dashboardInfo.put("schema_clusters_count", ""+envRepo.findAllByType("schemaregistry").size());
         dashboardInfo.put("kafka_clusters_count", ""+envRepo.findAllByType("kafka").size());
 
+        List<Topic> topicList = topicRepo.findAllByTeamname(teamName);
+        List<String> topicStrs = new ArrayList<>();
+        topicList.forEach(topic -> topicStrs.add(topic.getTopicPK().getTopicname()));
+        List<String> topicStrsTmp = topicStrs.stream().distinct().collect(Collectors.toList());
+        dashboardInfo.put("myteamtopics", "" + topicStrsTmp.size());
+
         return dashboardInfo;
+    }
+
+    Acl selectSyncAclsFromReqNo(String reqNo) {
+        return aclRepo.findById(reqNo).get();
+    }
+
+    public List<Topic> getTopics(String topicName) {
+        return topicRepo.findAllByTopicPKTopicname(topicName);
+    }
+
+    public List<Acl> selectSyncAcls(String env, String topic) {
+        return aclRepo.findAllByEnvironmentAndTopicname(env, topic);
     }
 }

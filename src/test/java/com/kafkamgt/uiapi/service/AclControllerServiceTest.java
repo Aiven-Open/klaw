@@ -9,6 +9,7 @@ import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.model.SyncAclUpdates;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
@@ -100,74 +101,46 @@ public class AclControllerServiceTest {
 
     @Test
     public void updateSyncAcls() {
-        String topicName = "testtopic";
-        String updateSyncAcls = "fdsDZD34"+ "-----" + topicName + "-----" + "Team1" + "-----"
-                + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
-        String envSelected = "DEV";
-
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSyncacls(anyList())).thenReturn("success");
 
-        String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertEquals("{\"result\":\"success\"}",result);
+        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        assertEquals("success",result.get("result"));
     }
 
     @Test
     public void updateSyncAclsFailure1() {
-        String topicName = "testtopic";
-
-        String updateSyncAcls = topicName + "-----" + "Team1" + "-----"
-                + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
-
-        String envSelected = "DEV";
-
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
-        String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertEquals("{\"result\":\"Not Authorized\"}",result);
+        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        assertEquals("Not Authorized.",result.get("result"));
     }
 
     @Test
     public void updateSyncAclsFailure2() {
-        String topicName = "testtopic";
-
-        String updateSyncAcls = "fdsDZD34"+ "-----" + topicName + "-----" + "Team1" + "-----"
-                + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
-
-        String envSelected = "DEV";
-
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
-        String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertThat(result, CoreMatchers.containsString("failure"));
+        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
     }
 
     @Test
     public void updateSyncAclsFailure3() {
-        String updateSyncAcls = null;
-        String envSelected = "DEV";
-
+        List<SyncAclUpdates> updates = new ArrayList<>();
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
 
-        String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertEquals("{\"result\":\"No records to update\"}",result);
+        HashMap<String, String> result = aclControllerService.updateSyncAcls(updates);
+        assertEquals("No record updated.",result.get("result"));
     }
 
     @Test
     public void updateSyncAclsFailure4() {
-        String topicName = "testtopic";
-
-        String updateSyncAcls = "fdsDZD34"+ "-----" + topicName + "-----" + "Team1" + "-----"
-                + "testconsumergroup" + "-----" + "10.11.11.223" + "-----"+null+"-----"+"consumer"+"\n";
-
-        String envSelected = "DEV";
-
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
 
-        String result = aclControllerService.updateSyncAcls(updateSyncAcls, envSelected);
-        assertThat(result, CoreMatchers.containsString("failure"));
+        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
     }
 
     @Test
@@ -288,35 +261,34 @@ public class AclControllerServiceTest {
 
     @Test
     public void getAclsSyncFalse1() throws KafkawizeException {
-        String envSelected = "DEV", pageNo = "1", topicNameSearch = "testtopic1";
-        boolean isSyncAcls = false;
+        String env="DEV",topicNameSearch = "testtopic";
 
-        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
-        when(clusterApiService.getAcls(anyString()))
-                .thenReturn(utilMethods.getClusterAcls());
-        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT(topicNameSearch));
+        when(handleDbRequests.getTopics(topicNameSearch)).thenReturn(utilMethods.getTopics(topicNameSearch));
+        when(handleDbRequests.getSyncAcls(env, topicNameSearch)).thenReturn(getAclsSOT(topicNameSearch));
 
-        List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
+        List<AclInfo> aclList =  aclControllerService.getAcls(topicNameSearch).getAclInfoList();
 
         assertEquals(1, aclList.size());
-        assertEquals("testtopic1",aclList.get(0).getTopicname());
+
+        assertEquals(topicNameSearch, aclList.get(0).getTopicname());
         assertEquals("mygrp1",aclList.get(0).getConsumergroup());
         assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
     }
 
     @Test
     public void getAclsSyncFalse2() throws KafkawizeException {
-        String envSelected = "DEV", pageNo = "1", topicNameSearch = "testtopic";
-        boolean isSyncAcls = false;
+        String env="DEV",topicNameSearch = "testnewtopic1";
 
-        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
-        when(clusterApiService.getAcls(any()))
-                .thenReturn(utilMethods.getClusterAcls());
-        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
+        when(handleDbRequests.getTopics(topicNameSearch)).thenReturn(utilMethods.getTopics());
+        when(handleDbRequests.getSyncAcls(env, topicNameSearch)).thenReturn(getAclsSOT(topicNameSearch));
 
-        List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
+        List<AclInfo> aclList =  aclControllerService.getAcls(topicNameSearch).getAclInfoList();
 
-        assertEquals(aclList, null);
+        assertEquals(1, aclList.size());
+
+        assertEquals(topicNameSearch,aclList.get(0).getTopicname());
+        assertEquals("mygrp1",aclList.get(0).getConsumergroup());
+        assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
     }
 
     @Test
@@ -332,7 +304,7 @@ public class AclControllerServiceTest {
         when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
-        List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
+        List<AclInfo> aclList =  aclControllerService.getSyncAcls(envSelected, pageNo, topicNameSearch);
 
         assertEquals(1, aclList.size());
         assertEquals("testtopic1",aclList.get(0).getTopicname());
@@ -353,7 +325,7 @@ public class AclControllerServiceTest {
         when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
         when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
 
-        List<AclInfo> aclList =  aclControllerService.getAcls(envSelected, pageNo, topicNameSearch, isSyncAcls);
+        List<AclInfo> aclList =  aclControllerService.getSyncAcls(envSelected, pageNo, topicNameSearch);
 
         assertEquals(1, aclList.size());
         assertEquals("testtopic1",aclList.get(0).getTopicname());

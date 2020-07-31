@@ -147,6 +147,10 @@
 					<!-- ============================================================== -->
 
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -267,7 +271,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -303,7 +306,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -385,44 +388,42 @@
 								<table width="100%" class="table color-table success-table">
 									<thead><tr>
 
-										<th>TopicName</th>
-										<th>AclType</th>
-										<th>Consumer Group</th>
-										<th>Cluster</th>
-										<th>Requestor</th>
-										<th>Acl_IP</th>
-										<th>Acl_SSL</th>
-										<!--<th>Application</th>-->
-										<th>Topic Owner Team</th>
-										<th>Status</th>
+										<th width="10%">TopicName</th>
+										<th width="10%">AclType</th>
+										<th width="10%">Consumer Group</th>
+										<th width="10%">Cluster</th>
+										<th width="10%">Requestor</th>
+										<th width="10%">IP Address</th>
+										<th width="10%">SSL</th>
+										<th width="10%">Status</th>
 										<!--<th>Requested Time</th>-->
-										<th>Requested Time</th>
+										<th width="10%">Requested Time</th>
+										<th width="10%">Request type</th>
 										<th></th>
 									</tr>
 									</thead>
 									<tbody>
 									<tr ng-repeat="aclRequest in aclRequests">
 
-										<td>{{ aclRequest.topicname }}</td>
-										<td>{{ aclRequest.topictype }}</td>
-										<td>{{ aclRequest.consumergroup }}</td>
-										<td>{{ aclRequest.environment }}</td>
-										<td>{{ aclRequest.username }}</td>
-										<td>{{ aclRequest.acl_ip }}</td>
-										<td>{{ aclRequest.acl_ssl }}</td>
-										<!--<td>{{ aclRequest.appname }}</td>-->
-										<td>{{ aclRequest.teamname }}</td>
-										<td ng-show="aclRequest.aclstatus == 'created'" >
+										<td width="10%">{{ aclRequest.topicname }}</td>
+										<td width="10%">{{ aclRequest.topictype }}</td>
+										<td width="10%">{{ aclRequest.consumergroup }}</td>
+										<td width="10%">{{ aclRequest.environment }}</td>
+										<td width="10%">{{ aclRequest.username }}</td>
+										<td width="10%">{{ aclRequest.acl_ip }}</td>
+										<td width="10%">{{ aclRequest.acl_ssl }}</td>
+										<td width="10%" ng-show="aclRequest.aclstatus == 'created'" >
 											<span class="badge badge-info">created</span></td>
 
-										<td ng-show="aclRequest.aclstatus == 'declined'" >
+										<td width="10%" ng-show="aclRequest.aclstatus == 'declined'" >
 											<span class="badge badge-danger">declined</span></td>
 
-										<td ng-show="aclRequest.aclstatus == 'approved'" >
+										<td width="10%" ng-show="aclRequest.aclstatus == 'approved'" >
 											<span class="badge badge-success">approved</span></td>
 
-										<td>{{ aclRequest.requesttimestring }}</td>
-										<td ng-show="aclRequest.aclstatus == 'created'">
+										<td width="10%">{{ aclRequest.requesttimestring }}</td>
+										<td width="10%">{{ aclRequest.aclType }}</td>
+										<td width="10%" ng-show="aclRequest.aclstatus == 'created'">
 											<button type="button" ng-click="deleteAclRequest(aclRequest.req_no)"
 													class="btn btn-secondary btn-circle">
 												<i class="fa fa-times"></i>

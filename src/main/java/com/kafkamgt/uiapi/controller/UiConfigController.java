@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -24,6 +25,16 @@ public class UiConfigController {
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {
         return new ResponseEntity<>(uiConfigControllerService.getEnvs(true), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getEnvsOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getEnvsOnly() {
+        return new ResponseEntity<>(uiConfigControllerService.getEnvsOnly(true), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getSyncEnv", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<HashMap<String,String>>> getSyncEnv() {
+        return new ResponseEntity<>(uiConfigControllerService.getSyncEnvs(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -54,6 +65,11 @@ public class UiConfigController {
     @RequestMapping(value = "/getAllTeamsSU", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Team>> getAllTeamsSU() {
         return new ResponseEntity<>(uiConfigControllerService.getAllTeamsSU(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getAllTeamsSUOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getAllTeamsSUOnly() {
+        return new ResponseEntity<>(uiConfigControllerService.getAllTeamsSUOnly(), HttpStatus.OK);
     }
 
     @PostMapping(value = "/addNewEnv")

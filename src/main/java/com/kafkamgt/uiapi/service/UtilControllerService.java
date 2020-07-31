@@ -20,8 +20,6 @@ import java.util.HashMap;
 @DependsOn(value={"utilService"})
 public class UtilControllerService {
 
-    //private HandleDbRequests handleDbRequests = ManageDatabase.handleDbRequests;
-
     @Autowired
     ManageDatabase manageDatabase;
 
@@ -29,28 +27,30 @@ public class UtilControllerService {
     UtilService utilService;
 
     @Value("${custom.org.name}")
+    private
     String companyInfo;
 
-    @Value("${custom.kafkawize.version:4.1}")
+    @Value("${custom.kafkawize.version:5.0}")
+    private
     String kafkawizeVersion;
 
-    public UtilControllerService(UtilService utilService){
+    UtilControllerService(UtilService utilService){
         this.utilService = utilService;
     }
 
     public HashMap<String, String> getAuth() {
         UserDetails userDetails =
                 (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
+        HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
         if(userDetails!=null) {
 
-            String teamName = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername()).getTeam();
+            String teamName = reqsHandle.getUsersInfo(userDetails.getUsername()).getTeam();
             String authority = utilService.getAuthority(userDetails);
 
             String statusAuth = null;
             String statusAuthExecTopics, statusAuthExecTopicsSU;
 
-            HashMap<String, String> outstanding = manageDatabase.getHandleDbRequests()
+            HashMap<String, String> outstanding = reqsHandle
                     .getAllRequestsToBeApproved(userDetails.getUsername(), authority);
 
             String outstandingTopicReqs = outstanding.get("topics");
@@ -87,7 +87,7 @@ public class UtilControllerService {
             else
                 statusAuthExecTopicsSU = "NotAuthorized";
 
-            HashMap<String, String> dashboardData = manageDatabase.getHandleDbRequests().getDashboardInfo();
+            HashMap<String, String> dashboardData = reqsHandle.getDashboardInfo(teamName);
 
             dashboardData.put("status",statusAuth);
             dashboardData.put("username",userDetails.getUsername());

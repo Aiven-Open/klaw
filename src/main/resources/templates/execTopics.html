@@ -92,54 +92,18 @@
 					<!-- Search -->
 					<!-- ============================================================== -->
 					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
-					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
-							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
-							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
-						<!--<form class="app-search">-->
-							<!--<input type="text" class="form-control" placeholder="Search & enter"> <a-->
-								<!--class="srh-btn"><i class="ti-close"></i></a> </form>-->
-					<!--</li>-->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
-					<!--<li class="nav-item dropdown mega-dropdown"> <a-->
-							<!--class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
-							<!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i-->
-							<!--class="mdi mdi-view-grid"></i></a>-->
-						<!--<div class="dropdown-menu scale-up-left">-->
-							<!--<ul class="mega-dropdown-menu row">-->
 
-
-								<!--<li class="col-lg-3  mb-4">-->
-									<!--<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>-->
-									<!--&lt;!&ndash; Contact &ndash;&gt;-->
-									<!--<form>-->
-										<!--<div class="form-group">-->
-											<!--<input type="text" class="form-control" id="exampleInputname1"-->
-												   <!--placeholder="Enter Name"> </div>-->
-										<!--<div class="form-group">-->
-											<!--<input type="email" class="form-control" placeholder="Enter email">-->
-										<!--</div>-->
-										<!--<div class="form-group">-->
-                                                <!--<textarea class="form-control" id="exampleTextarea" rows="3"-->
-														  <!--placeholder="Message"></textarea>-->
-										<!--</div>-->
-										<!--<button type="submit" class="btn btn-info">Submit</button>-->
-									<!--</form>-->
-								<!--</li>-->
-
-							<!--</ul>-->
-						<!--</div>-->
-					<!--</li>-->
-					<!-- ============================================================== -->
-					<!-- End Messages -->
-					<!-- ============================================================== -->
 				</ul>
 				<!-- ============================================================== -->
 				<!-- User profile and search -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
 					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+					</li>
+
 					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
@@ -260,7 +224,6 @@
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestAcls">Request Acl</a></li>
 							<li><a href="requestSchema">Request Schema</a></li>
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
@@ -296,7 +259,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="three-column active" ng-show="statusauthexectopics=='Authorized'">
+					<li class="two-column active" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
@@ -404,22 +367,24 @@
 									</div>
 									<div class="d-flex flex-row">
 										<div class="p-2 pl-0 border-right">
-											<h6 class="font-light">Partitions</h6><b>{{ topicRequest[0].topicpartitions }}</b>
+											<h6 class="text-primary">Partitions</h6><b>{{ topicRequest[0].topicpartitions }}</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Replica factor</h6><b>{{ topicRequest[0].replicationfactor }}</b>
+											<h6 class="text-primary">Replica factor</h6><b>{{ topicRequest[0].replicationfactor }}</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Cluster</h6><b>{{ topicRequest[0].environment }}</b>
+											<h6 class="text-primary">Cluster</h6><b>
+											<span class="badge badge-info">{{ topicRequest[0].environment }}</span>
+										</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Requestor</h6><b>{{ topicRequest[0].username }}</b>
+											<h6 class="text-primaryt">Requestor</h6><b>{{ topicRequest[0].requestor }}</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Team</h6><b>{{ topicRequest[0].teamname }}</b>
+											<h6 class="text-primary">Team</h6><b>{{ topicRequest[0].teamname }}</b>
 										</div>
 										<div class="p-2">
-											<h6 class="font-light">Type</h6><b>Create Topic</b>
+											<h6 class="text-primary">Type</h6><b>Create Topic</b>
 										</div>
 									</div>
 
@@ -448,22 +413,22 @@
 									</div>
 									<div class="d-flex flex-row">
 										<div class="p-2 pl-0 border-right">
-											<h6 class="font-light">Partitions</h6><b>{{ topicRequest[1].topicpartitions }}</b>
+											<h6 class="text-primary">Partitions</h6><b>{{ topicRequest[1].topicpartitions }}</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Replica factor</h6><b>{{ topicRequest[1].replicationfactor }}</b>
+											<h6 class="text-primary">Replica factor</h6><b>{{ topicRequest[1].replicationfactor }}</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Cluster</h6><b>{{ topicRequest[1].environment }}</b>
+											<h6 class="text-primary">Cluster</h6><b><span class="badge badge-info">{{ topicRequest[1].environment }}</span></b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Requestor</h6><b>{{ topicRequest[1].username }}</b>
+											<h6 class="text-primary">Requestor</h6><b>{{ topicRequest[1].requestor }}</b>
 										</div>
 										<div class="p-2 border-right">
-											<h6 class="font-light">Team</h6><b>{{ topicRequest[1].teamname }}</b>
+											<h6 class="text-primary">Team</h6><b>{{ topicRequest[1].teamname }}</b>
 										</div>
 										<div class="p-2">
-											<h6 class="font-light">Type</h6><b>Create Topic</b>
+											<h6 class="text-primary">Type</h6><b>Create Topic</b>
 										</div>
 									</div>
 
@@ -481,23 +446,6 @@
 			<div id="successbar">{{ alert }}</div>
 			<div id="alertbar">{{ alertnote }}</div>
 
-
-			<!-- Row -->
-
-
-			<!-- Row -->
-
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Right sidebar -->
-			<!-- ============================================================== -->
-			<!-- .right-sidebar -->
-
-			<!-- ============================================================== -->
-			<!-- End Right sidebar -->
-			<!-- ============================================================== -->
 		</div>
 		<!-- ============================================================== -->
 		<!-- End Container fluid  -->

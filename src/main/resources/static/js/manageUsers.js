@@ -182,11 +182,27 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 $scope.showAlertToast();
                 return;
             }
+
+            if($scope.addNewUser.pwd.length < 6)
+            {
+                $scope.alertnote = "Password should be atleast 6 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.role.value)
+            {
+                $scope.alertnote = "Please select a role.";
+                $scope.showAlertToast();
+                return;
+            }
+
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['pwd'] = $scope.addNewUser.pwd;
             serviceInput['team'] = $scope.addNewUser.team.teamname;
             serviceInput['role'] = $scope.addNewUser.role.value;
+            serviceInput['mailid'] = "";
 
             if (!window.confirm("Are you sure, you would like to add user : "
                 +  $scope.addNewUser.username + ": " +
@@ -226,42 +242,57 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
         $scope.addNewTeam = function() {
 
-                    var serviceInput = {};
+                var serviceInput = {};
 
-                    serviceInput['teamname'] = $scope.addNewTeam.teamname;
-                    serviceInput['teammail'] = $scope.addNewTeam.teammail;
-                    serviceInput['teamphone'] = $scope.addNewTeam.teamphone;
-                    serviceInput['contactperson'] = $scope.addNewTeam.contactperson;
-                    serviceInput['app'] = "";
+                if(!$scope.addNewTeam.teamname || $scope.addNewTeam.teamname.length==0)
+                {
+                    $scope.alertnote = "Please fill in Team mail id.";
+                    $scope.showAlertToast();
 
+                    return;
+                }
 
-                    if (!window.confirm("Are you sure, you would like to add team : "
-                        +  $scope.addNewTeam.teamname + ": " +
-                        "\nTeammail : " + $scope.addNewTeam.teammail +
-                        "\nPhone : " + $scope.addNewTeam.teamphone
-                        )) {
-                        return;
+                if(!$scope.addNewTeam.contactperson || $scope.addNewTeam.contactperson.length==0)
+                {
+                    $scope.alertnote = "Please fill in Team contact person.";
+                    $scope.showAlertToast();
+
+                    return;
+                }
+
+                serviceInput['teamname'] = $scope.addNewTeam.teamname;
+                serviceInput['teammail'] = $scope.addNewTeam.teammail;
+                serviceInput['teamphone'] = $scope.addNewTeam.teamphone;
+                serviceInput['contactperson'] = $scope.addNewTeam.contactperson;
+                serviceInput['app'] = "";
+
+                if (!window.confirm("Are you sure, you would like to add team : "
+                    +  $scope.addNewTeam.teamname + ": " +
+                    "\nTeammail : " + $scope.addNewTeam.teammail +
+                    "\nPhone : " + $scope.addNewTeam.teamphone
+                    )) {
+                    return;
+                }
+
+                $http({
+                    method: "POST",
+                    url: "addNewTeam",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'addNewTeam' : serviceInput },
+                    data: serviceInput
+                }).success(function(output) {
+                    $scope.alert = "New User Team : "+output.result;
+                    $scope.showSuccessToast();
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                        $scope.alertnote = error;
+                        $scope.showAlertToast();
                     }
+                );
 
-                    $http({
-                        method: "POST",
-                        url: "addNewTeam",
-                        headers : { 'Content-Type' : 'application/json' },
-                        params: {'addNewTeam' : serviceInput },
-                        data: serviceInput
-                    }).success(function(output) {
-                        $scope.alert = "New User Team : "+output.result;
-                        $scope.showSuccessToast();
-                    }).error(
-                        function(error)
-                        {
-                            $scope.alert = error;
-                            $scope.alertnote = error;
-                            $scope.showAlertToast();
-                        }
-                    );
-
-                };
+            };
 
         $scope.showUsers = function() {
             $http({
@@ -296,35 +327,39 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
         );
 	}
 
-            $scope.getAuth = function() {
-            	$http({
-                    method: "GET",
-                    url: "getAuth",
-                    headers : { 'Content-Type' : 'application/json' }
-                }).success(function(output) {
-                    $scope.statusauth = output.status;
-                    $scope.userlogged = output.username;
-                    $scope.teamname = output.teamname;
-                     $scope.notifications = output.notifications;
-                    $scope.notificationsAcls = output.notificationsAcls;
-                    $scope.statusauthexectopics = output.statusauthexectopics;
-                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-                    $scope.alerttop = output.alertmessage;
-                    if(output.companyinfo == null){
-                        $scope.companyinfo = "Company not defined!!";
-                    }
-                    else
-                        $scope.companyinfo = output.companyinfo;
+	$scope.refreshPage = function(){
+            $window.location.reload();
+        }
 
-                    if($scope.userlogged != null)
-                        $scope.loggedinuser = "true";
-                }).error(
-                    function(error)
-                    {
-                        $scope.alert = error;
-                    }
-                );
-        	}
+        $scope.getAuth = function() {
+            $http({
+                method: "GET",
+                url: "getAuth",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.statusauth = output.status;
+                $scope.userlogged = output.username;
+                $scope.teamname = output.teamname;
+                 $scope.notifications = output.notifications;
+                $scope.notificationsAcls = output.notificationsAcls;
+                $scope.statusauthexectopics = output.statusauthexectopics;
+                $scope.statusauthexectopics_su = output.statusauthexectopics_su;
+                $scope.alerttop = output.alertmessage;
+                if(output.companyinfo == null){
+                    $scope.companyinfo = "Company not defined!!";
+                }
+                else
+                    $scope.companyinfo = output.companyinfo;
+
+                if($scope.userlogged != null)
+                    $scope.loggedinuser = "true";
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
 
         $scope.logout = function() {
             //alert("onload");
