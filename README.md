@@ -62,18 +62,18 @@ For the versions available, see the [tags on this repository](https://github.com
 
 This project is licensed under the Apache License 2.0  - see the [LICENSE.md](LICENSE.md) file for details
 
-## Watch the Introduction:
+## Architecture:
 
-[![Watch the Introduction](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)](https://youtu.be/KOjdpRtRhEY)
+![Architecture](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)
 
 ## A glimpse of Kafkawize 4.2 :
 
-[![Dashboard](https://github.com/muralibasani/kafkawize/blob/master/screenshots/Dashboard.JPG)]
+![Dashboard](https://github.com/muralibasani/kafkawize/blob/master/screenshots/Dashboard.JPG)
 
 
-[![Topics](https://github.com/muralibasani/kafkawize/blob/master/screenshots/BrowseTopics.JPG)]
+![Topics](https://github.com/muralibasani/kafkawize/blob/master/screenshots/BrowseTopics.JPG)
 
 
-[![Subscriptions](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ViewAcls.JPG)]
+![Subscriptions](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ViewAcls.JPG)
 
 
