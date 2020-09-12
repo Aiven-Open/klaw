@@ -1,18 +1,17 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.repository.AclRequestsRepo;
-import com.kafkamgt.uiapi.repository.SchemaRequestRepo;
-import com.kafkamgt.uiapi.repository.TopicRequestsRepo;
-import com.kafkamgt.uiapi.repository.UserInfoRepo;
+import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -80,19 +79,8 @@ public class UpdateDataJdbc {
         topicPK.setEnvironment(topicObj.getEnvironment());
         topicObj.setTopicPK(topicPK);
         topics.add(topicObj);
-        insertDataJdbcHelper.insertIntoTopicSOT(topics,false);
 
-//        Acl aclReq = new Acl();
-//        aclReq.setTopictype("Producer");
-//        aclReq.setEnvironment(topicRequest.getEnvironment());
-//        aclReq.setTeamname(topicRequest.getTeamname());
-//        aclReq.setAclssl(topicRequest.getAcl_ssl());
-//        aclReq.setAclip(topicRequest.getAcl_ip());
-//        aclReq.setTopicname(topicRequest.getTopicname());
-//
-//        List<Acl> acls = new ArrayList<>();
-//        acls.add(aclReq);
-//        insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
+        insertDataJdbcHelper.insertIntoTopicSOT(topics,false);
 
         return "success";
     }
@@ -173,4 +161,5 @@ public class UpdateDataJdbc {
 
         return "success";
     }
+
 }

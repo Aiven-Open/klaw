@@ -27,10 +27,14 @@ public class UiConfigControllerService {
     @Value("${custom.syncdata.cluster:DEV}")
     private String syncCluster;
 
+    @Value("${custom.request.topics.envs}")
+    private String requestTopicsEnvs;
+
+    @Value("${custom.envs.order}")
+    private String orderOfEnvs;
+
     @Autowired
     private UtilService utilService;
-
-    //private HandleDbRequests manageDatabase.getHandleDbRequests() = ManageDatabase.manageDatabase.getHandleDbRequests();
 
     @Autowired
     ManageDatabase manageDatabase;
@@ -60,19 +64,45 @@ public class UiConfigControllerService {
         return env;
     }
 
+    class TopicEnvComparator implements Comparator<String> {
+        List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
+
+        @Override
+        public int compare(String topicEnv1, String topicEnv2) {
+            if(orderedEnv.indexOf(topicEnv1) > orderedEnv.indexOf(topicEnv2))
+                return 1;
+            else
+                return -1;
+        }
+    }
+
+    class TopicEnvClassComparator implements Comparator<Env> {
+        List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
+
+        @Override
+        public int compare(Env topicEnv1, Env topicEnv2) {
+            if(orderedEnv.indexOf(topicEnv1.getName()) > orderedEnv.indexOf(topicEnv2.getName()))
+                return 1;
+            else
+                return -1;
+        }
+    }
+
     public List<String> getEnvsOnly(boolean envStatus){
         List<String> envsOnly = new ArrayList<>();
         List<Env> envList = getEnvs(envStatus);
+
         for (Env env : envList) {
             envsOnly.add(env.getName());
         }
+        envsOnly = envsOnly.stream().sorted(new TopicEnvComparator()).collect(Collectors.toList());
 
         return envsOnly;
     }
 
     public List<HashMap<String,String>> getSyncEnvs() {
 
-        HashMap<String,String> hMap = null;
+        HashMap<String,String> hMap;
         List<HashMap<String,String>> envsOnly = new ArrayList<>();
         List<Env> envList = getEnvs(true);
         for (Env env : envList) {
@@ -89,12 +119,17 @@ public class UiConfigControllerService {
         return envsOnly;
     }
 
+    public List<String> getEnvsBaseCluster() {
+        return Arrays.asList(requestTopicsEnvs.split(","));
+    }
+
     public List<Env> getEnvs(boolean envStatus) {
-
-        if(envStatus)
-            return manageDatabase.getHandleDbRequests().selectAllKafkaEnvs();
-
         List<Env> listEnvs = manageDatabase.getHandleDbRequests().selectAllKafkaEnvs();
+
+        if(envStatus){
+            return listEnvs.stream().sorted(new TopicEnvClassComparator()).collect(Collectors.toList());
+        }
+
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status;
@@ -106,7 +141,11 @@ public class UiConfigControllerService {
             newListEnvs.add(oneEnv);
         }
 
-        return newListEnvs;
+        return newListEnvs.stream().sorted(new TopicEnvClassComparator()).collect(Collectors.toList());
+    }
+
+    public HashMap<String, List<String>> getEnvParams(String targetEnv) {
+        return ManageDatabase.envParamsMap.get(targetEnv);
     }
 
     public List<Env> getSchemaRegEnvs() {
@@ -139,11 +178,22 @@ public class UiConfigControllerService {
     }
 
     public List<String> getAllTeamsSUOnly() {
+        UserDetails userDetails = getUserDetails();
+        String myTeamName = manageDatabase.
+                getHandleDbRequests().
+                selectAllTeamsOfUsers(userDetails.getUsername()).
+                get(0).
+                getTeamname();
+
         List<String> teams = new ArrayList<>();
         List<Team> teamsList = getAllTeamsSU();
         teams.add("All teams");
-        for(Team team: teamsList)
-            teams.add(team.getTeamname());
+        teams.add(myTeamName);
+
+        for(Team team: teamsList) {
+            if(!team.getTeamname().equals(myTeamName))
+                teams.add(team.getTeamname());
+        }
 
         return teams;
     }
@@ -222,7 +272,8 @@ public class UiConfigControllerService {
             PasswordEncoder encoder =
                     PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-            inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername()).password(encoder.encode(newUser.getPwd()))
+            inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername())
+                    .password(encoder.encode(newUser.getPwd()))
                     .roles(newUser.getRole()).build());
 
             HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -248,6 +299,7 @@ public class UiConfigControllerService {
     }
 
     public String changePwd(String changePwd){
+
         UserDetails userDetails = getUserDetails();
 
         GsonJsonParser jsonParser = new GsonJsonParser();
@@ -355,6 +407,5 @@ public class UiConfigControllerService {
     private UserDetails getUserDetails(){
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
-
 
 }

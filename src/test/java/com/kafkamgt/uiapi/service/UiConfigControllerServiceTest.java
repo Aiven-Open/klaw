@@ -77,6 +77,7 @@ public class UiConfigControllerServiceTest {
         env.setPort("9092");
         env.setName("DEV");
         ReflectionTestUtils.setField(uiConfigControllerService, "manageDatabase", manageDatabase);
+        ReflectionTestUtils.setField(uiConfigControllerService, "orderOfEnvs", "DEV,TST,ACC,PRD");
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
         loginMock();
     }

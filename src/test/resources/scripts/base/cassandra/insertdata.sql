@@ -24,16 +24,16 @@ Insert into kafkamanagementapi.teams(team,app,teammail,teamphone) values('Team3'
 
 /* Insert env */
 
-Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('DEV','localhost','9092','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
+Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('DEV','localhost','9092','PLAIN','kafka','default.partitions=2,max.partitions=4,replication.factor=1');
 
-Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('TST','localhost','9094','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
+Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('TST','localhost','9094','PLAIN','kafka','default.partitions=2,max.partitions=4,replication.factor=1');
 
-Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('ACC','localhost','9096','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
+Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('ACC','localhost','9096','PLAIN','kafka','default.partitions=2,max.partitions=4,replication.factor=1');
 
-Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('PRD','localhost','9098','PLAIN','kafka','default.paritions=2,max.partitions=4,replication.factor=1');
+Insert into kafkamanagementapi.env(name,host,port,protocol,type,other_params) values ('PRD','localhost','9098','PLAIN','kafka','default.partitions=2,max.partitions=4,replication.factor=1');
 
 Insert into kafkamanagementapi.env(name,host,port,protocol,type) values ('DEV_SCH','localhost','8081','PLAIN','schemaregistry');
 
 /* Insert product and version */
 
-Insert into kafkamanagementapi.productdetails(name,version,licensekey) values ('KafkaWize','5.0','');
+Insert into kafkamanagementapi.productdetails(name,version,licensekey) values ('KafkaWize','4.3','');

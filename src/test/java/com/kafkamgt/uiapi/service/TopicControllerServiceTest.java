@@ -73,6 +73,7 @@ public class TopicControllerServiceTest {
         env.setName("DEV");
         ReflectionTestUtils.setField(topicControllerService, "manageDatabase", manageDatabase);
         ReflectionTestUtils.setField(topicControllerService, "syncCluster", "DEV");
+        ReflectionTestUtils.setField(topicControllerService, "orderOfEnvs", "DEV,TST,ACC,PRD");
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
         loginMock();
     }
@@ -91,12 +92,12 @@ public class TopicControllerServiceTest {
 
     @Test
     public void createTopicsSuccess() throws KafkawizeException {
-        this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
+        this.env.setOtherParams("default.partitions=2,max.partitions=4,replication.factor=1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
         when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
-        String result = topicControllerService.createTopics(getCorrectTopic());
+        String result = topicControllerService.createTopicsRequest(getCorrectTopic());
 
         assertEquals("{\"result\":\"success\"}",result);
     }
@@ -104,35 +105,35 @@ public class TopicControllerServiceTest {
     @Test
     public void createTopicsSuccess1() throws KafkawizeException {
         String topicName = "testtopic";
-        this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
+        this.env.setOtherParams("default.partitions=2,max.partitions=4,replication.factor=1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
         when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
-        String result = topicControllerService.createTopics(getFailureTopic());
+        String result = topicControllerService.createTopicsRequest(getFailureTopic());
 
         assertEquals("{\"result\":\"success\"}",result);
     }
 
     @Test
     public void createTopicsSuccess2() throws KafkawizeException {
-        this.env.setOtherParams("default.paritions=2,max.partitions=4,replication.factor=1");
+        this.env.setOtherParams("default.partitions=2,max.partitions=4,replication.factor=1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
         when(handleDbRequests.requestForTopic(any())).thenReturn("success");
 
-        String result = topicControllerService.createTopics(getFailureTopic1());
+        String result = topicControllerService.createTopicsRequest(getFailureTopic1());
 
         assertEquals("{\"result\":\"success\"}",result);
     }
 
     @Test(expected = KafkawizeException.class)
     public void createTopicsFailure1() throws KafkawizeException {
-        this.env.setOtherParams("default.paritions=abc,max.partitions=4,replication.factor=1");
+        this.env.setOtherParams("default.partitions=abc,max.partitions=4,replication.factor=1");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
-        String result = topicControllerService.createTopics(getFailureTopic());
+        String result = topicControllerService.createTopicsRequest(getFailureTopic());
 
         assertEquals("{\"result\":\"failure\"}",result);
     }
@@ -142,18 +143,18 @@ public class TopicControllerServiceTest {
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
-        String result = topicControllerService.createTopics(getFailureTopic());
+        String result = topicControllerService.createTopicsRequest(getFailureTopic());
 
         assertEquals("{\"result\":\"failure\"}",result);
     }
 
     @Test(expected = KafkawizeException.class)
     public void createTopicsFailure3() throws KafkawizeException {
-        this.env.setOtherParams("default.paritions=abc,max.partitions=4");
+        this.env.setOtherParams("default.partitions=abc,max.partitions=4");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.selectEnvDetails(anyString())).thenReturn(env);
 
-        String result = topicControllerService.createTopics(getFailureTopic());
+        String result = topicControllerService.createTopicsRequest(getFailureTopic());
 
         assertEquals("{\"result\":\"failure\"}",result);
     }
@@ -354,7 +355,7 @@ public class TopicControllerServiceTest {
         String topicName = "testtopic", envSel = "DEV";
         when(handleDbRequests.getTopicTeam(topicName)).thenReturn(Arrays.asList(getTopic(topicName)));
 
-        List<Topic> topicTeam = topicControllerService.getTopicTeam(topicName);
+        List<Topic> topicTeam = topicControllerService.getTopicFromName(topicName);
         assertEquals(topicTeam.get(0).getTeamname(), "Team1");
     }
 

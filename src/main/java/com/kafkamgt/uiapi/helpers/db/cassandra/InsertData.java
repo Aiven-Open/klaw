@@ -1,7 +1,6 @@
 package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 import com.datastax.driver.core.BoundStatement;
-import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.service.UtilService;
@@ -28,8 +27,8 @@ public class InsertData {
     private static BoundStatement boundStatementInsertIntoRequestTopic, boundStatementInsertIntoTopicSOT,
             boundStatementInsertIntoAclsSOT, boundStatementAclRequest,
             boundStatementInsertAclsSOT, boundStatementTopicsSOT, boundStatementInsertIntoActivityLogAcl,
-            boundStatementSchemaReqs, boundStatementSchemas, boundStatementUsers, boundStatementTeams,
-            boundStatementEnvs;
+            boundStatementSchemaReqs, boundStatementSchemas, boundStatementUsers, boundStatementRegisterUsers,
+            boundStatementTeams,  boundStatementEnvs;
 
     @Value("${custom.cassandradb.keyspace:@null}")
     private String keyspace;
@@ -80,7 +79,7 @@ public class InsertData {
     private void getInsertIntoRequestTopicBoundStatement(){
         String tableName = "topic_requests";
         String insertStat = "INSERT INTO " + keyspace + "."+tableName+"(topicname, partitions, replicationfactor, env," +
-                "teamname,appname,topictype,requestor," +
+                "teamname, appname, topictype, requestor," +
                 "requesttime,  remarks, topicstatus) " +
                 "VALUES (?,?,?,?,?,?,?,?,?,?,?);";
         boundStatementInsertIntoRequestTopic  = getBoundStatement(insertStat);
@@ -177,15 +176,12 @@ public class InsertData {
 
     public String insertIntoRequestTopic(TopicRequest topicRequest){
 
-        String  topicReqType;
-
-        topicReqType = "Producer";
         session.execute(boundStatementInsertIntoRequestTopic.bind(topicRequest.getTopicname(),
                 topicRequest.getTopicpartitions(),
                 topicRequest.getReplicationfactor(),
                 topicRequest.getEnvironment(), topicRequest.getTeamname(),
                 topicRequest.getAppname(),
-                topicReqType, topicRequest.getUsername(), new Date(), topicRequest.getRemarks(), "created"));
+                topicRequest.getTopictype(), topicRequest.getUsername(), new Date(), topicRequest.getRemarks(), "created"));
 
         // Activity log
         if(insertIntoActivityLogTopic(topicRequest).equals("success"))

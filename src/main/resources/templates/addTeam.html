@@ -90,7 +90,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -185,6 +185,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -373,15 +374,15 @@
 			<div class="row" ng-init="getExecAuth();loadTeamsSU();">
 				<div ng-if="statusauthexectopics_su=='Authorized'" class="col-lg-12">
 					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Add Team Form</h4>
-						</div>
+<!--						<div class="card-header">-->
+<!--							<h4 class="mb-0 text-white">Add Team Form</h4>-->
+<!--						</div>-->
 						<div class="card-body">
 							<form id="form">
 								<div class="form-body">
 
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Team details</h3>
+										<td align="left"><h3 class="card-title">Add Team</h3>
 										</td>
 										<td align="right">
 											<a href="teams">
@@ -392,19 +393,19 @@
 										</td></tr>
 									</table>
 
-									<hr>
+									<hr size="1" color="black">
 
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Team Name</label>
 												<input type="text" class="form-control" required ng-model="addNewTeam.teamname" placeholder="octopus">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Team Email</label>
 												<input type="email" class="form-control" required ng-model="addNewTeam.teammail" placeholder="eg.: email@email.com">
 											</div>
@@ -414,14 +415,14 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Team Phone</label>
 												<input type="text" class="form-control" required ng-model="addNewTeam.teamphone" placeholder="+31 123456789">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Team Contact</label>
 												<input type="text" class="form-control" required ng-model="addNewTeam.contactperson" placeholder="John Woo">
 
@@ -436,9 +437,9 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addNewTeam();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addNewTeam();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Save</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
 							</form>
 						</div>

@@ -188,10 +188,12 @@ public class UtilControllerServiceTest {
             countList.put("topics", "2");
             countList.put("acls", "1");
             countList.put("schemas", "1");
+            countList.put("users", "0");
         }else{
             countList.put("topics", "0");
             countList.put("acls", "0");
             countList.put("schemas", "2");
+            countList.put("users", "0");
         }
         return countList;
     }

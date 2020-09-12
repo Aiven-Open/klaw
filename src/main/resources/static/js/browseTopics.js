@@ -63,6 +63,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             $scope.teamname = output.teamname;
             $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
+            $scope.notificationsSchemas = output.notificationsSchemas;
+            $scope.notificationsUsers = output.notificationsUsers;
             $scope.statusauthexectopics = output.statusauthexectopics;
             $scope.statusauthexectopics_su = output.statusauthexectopics_su;
             $scope.alerttop = output.alertmessage;

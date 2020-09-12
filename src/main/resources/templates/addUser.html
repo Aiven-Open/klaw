@@ -90,7 +90,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -185,6 +185,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -373,15 +374,15 @@
 			<div class="row" ng-init="getExecAuth();loadTeamsSU();">
 				<div ng-if="statusauthexectopics_su=='Authorized'" class="col-lg-12">
 					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Add User Form</h4>
-						</div>
+<!--						<div class="card-header">-->
+<!--							<h4 class="mb-0 text-white">Add User Form</h4>-->
+<!--						</div>-->
 						<div class="card-body">
 							<form id="form">
 								<div class="form-body">
 
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">User details</h3>
+										<td align="left"><h3 class="card-title">Add User</h3>
 										</td>
 										<td align="right">
 											<a href="users">
@@ -392,19 +393,19 @@
 										</td></tr>
 									</table>
 
-									<hr>
+									<hr size="1" color="black">
 
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">User Name</label>
 												<input type="text" class="form-control" required ng-model="addNewUser.username" placeholder="johnwoo">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Full Name</label>
 												<input type="text" class="form-control" required ng-model="addNewUser.fullname" placeholder="John Woo">
 											</div>
@@ -415,14 +416,14 @@
 									<div class="row">
 
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Password</label>
 												<input type="password" class="form-control" required ng-model="addNewUser.pwd">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Repeat Password</label>
 												<input type="password" class="form-control" required ng-model="addNewUser.reppwd">
 											</div>
@@ -430,9 +431,23 @@
 										<!--/span-->
 									</div>
 
+									<!--/row-->
+									<div class="row">
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Email Id</label>
+												<input type="email" class="form-control" required ng-model="addNewUser.emailid">
+											</div>
+										</div>
+										<!--/span-->
+
+										<!--/span-->
+									</div>
+
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Select a Team</label>
 												<select class="form-control custom-select" ng-model="addNewUser.team" ng-options="team as team.teamname for team in allTeams">
 
@@ -441,7 +456,7 @@
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Select a Role</label>
 												<select class="form-control custom-select" ng-model="addNewUser.role" ng-options="roleid as roleid.label for roleid in rolelist">
 
@@ -457,9 +472,9 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addNewUser();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addNewUser();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Save</button>
-									<button type="button" ng-click="cancelUserRequest();" class="btn btn-inverse">Cancel</button>
+									<button type="button" ng-click="cancelUserRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
 							</form>
 						</div>

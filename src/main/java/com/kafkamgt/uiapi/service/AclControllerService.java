@@ -20,9 +20,6 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kafkamgt.uiapi.dao.MailType.*;
-import static org.springframework.beans.BeanUtils.copyProperties;
-
 
 @Service
 public class AclControllerService {
@@ -46,6 +43,10 @@ public class AclControllerService {
         UserDetails userDetails = getUserDetails();
         aclReq.setAclType("Create");
         aclReq.setUsername(userDetails.getUsername());
+
+        if(utilService.checkAuthorizedSU(userDetails)){
+            return "{\"result\":\"Not Authorized\"}";
+        }
 
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
 
@@ -218,7 +219,6 @@ public class AclControllerService {
             }catch(Exception e){
                 return "{\"result\":\"failure "+e.toString()+"\"}";
             }
-
             return "{\"result\":\""+updateAclReqStatus+"\"}";
         }
         else
@@ -313,12 +313,26 @@ public class AclControllerService {
     }
 
     public TopicOverview getAcls(String topicNameSearch) throws KafkawizeException {
+        UserDetails userDetails = getUserDetails();
+        HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
+
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
         else
             return null;
 
-        List<Topic> topics = manageDatabase.getHandleDbRequests().getTopics(topicNameSearch);
+        String loggedInUserTeam = handleDb.selectAllTeamsOfUsers(userDetails.
+                getUsername()).get(0).getTeamPK().getTeamname();
+
+        List<Topic> topics = handleDb.getTopics(topicNameSearch);
+        TopicOverview topicOverview = new TopicOverview();
+
+        if(topics.size() == 0)
+        {
+            topicOverview.setTopicExists(false);
+            return topicOverview;
+        }
+        else topicOverview.setTopicExists(true);
 
         List<TopicInfo> topicInfoList = new ArrayList<>();
         for (Topic topic : topics) {
@@ -331,12 +345,11 @@ public class AclControllerService {
         List<Acl> aclsFromSOT = new ArrayList<>();
         List<AclInfo> aclInfo = new ArrayList<>();
         List<AclInfo> tmpAcl;
-        TopicOverview topicOverview = new TopicOverview();
 
         for (TopicInfo topicInfo : topicInfoList) {
             aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getCluster(), topicNameSearch, false));
 
-            tmpAcl = applyFiltersAclsForSOT(topicInfo.getCluster(), aclsFromSOT)
+            tmpAcl = applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT)
                     .stream()
                     .collect(Collectors.groupingBy(AclInfo::getTopicname))
                     .get(topicNameSearch);
@@ -347,7 +360,6 @@ public class AclControllerService {
         aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
         topicOverview.setAclInfoList(aclInfo);
         topicOverview.setTopicInfoList(topicInfoList);
-
         return topicOverview;
     }
 
@@ -371,9 +383,9 @@ public class AclControllerService {
         return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, true));
     }
 
-    private List<AclInfo> applyFiltersAclsForSOT(String env, List<Acl> aclsFromSOT){
+    private List<AclInfo> applyFiltersAclsForSOT(String loggedInUserTeam, List<Acl> aclsFromSOT){
 
-        List<AclInfo> aclListMap = new ArrayList<>() ;
+        List<AclInfo> aclList = new ArrayList<>() ;
         AclInfo mp ;
 
         for(Acl aclSotItem : aclsFromSOT)
@@ -389,9 +401,9 @@ public class AclControllerService {
                 mp.setReq_no(aclSotItem.getReq_no());
 
                 if(aclSotItem.getAclip()!=null || aclSotItem.getAclssl()!=null)
-                    aclListMap.add(mp);
+                    aclList.add(mp);
             }
-        return aclListMap;
+        return aclList;
     }
 
     private List<AclInfo> applyFiltersAcls(String env, List<HashMap<String,String>> aclList, List<Acl> aclsFromSOT, boolean isSyncAcls){

@@ -74,22 +74,9 @@ public class UpdateData {
         topicObj.setNoOfPartitions(topicRequest.getTopicpartitions());
         topics.add(topicObj);
 
-        if(insertDataHelper.insertIntoTopicSOT(topics,false).equals("success")){
-//            Acl aclReq = new Acl();
-//            aclReq.setTopictype("Producer");
-//            aclReq.setEnvironment(topicRequest.getEnvironment());
-//            aclReq.setTeamname(topicRequest.getTeamname());
-//            aclReq.setAclssl(topicRequest.getAcl_ssl());
-//            aclReq.setAclip(topicRequest.getAcl_ip());
-//            aclReq.setTopicname(topicRequest.getTopicname());
-//
-//            List<Acl> acls = new ArrayList<>();
-//            acls.add(aclReq);
-//            insertDataHelper.insertIntoAclsSOT(acls,false);
+        insertDataHelper.insertIntoTopicSOT(topics,false);
 
-            return "success";
-        }
-            return "failure";
+        return "success";
     }
 
     public String updateAclRequest(AclRequests aclReq, String approver){

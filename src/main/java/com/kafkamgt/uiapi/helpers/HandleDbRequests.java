@@ -97,8 +97,6 @@ public interface HandleDbRequests {
 
     String deleteAclRequest(String req_no);
 
-    String deleteAclSubscriptionRequest(String req_no);
-
     String deleteClusterRequest(String clusterId);
 
     String deleteUserRequest(String userId);

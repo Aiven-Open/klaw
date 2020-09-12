@@ -97,7 +97,7 @@ public class InsertDataJdbc {
         ActivityLog activityLog = new ActivityLog();
         activityLog.setReq_no(getRandom());
         activityLog.setActivityName("TopicRequest");
-        activityLog.setActivityType("new");
+        activityLog.setActivityType(topicRequest.getTopictype());
         activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
         activityLog.setTeam(userInfo.getTeam());
         activityLog.setDetails(topicRequest.getTopicname());

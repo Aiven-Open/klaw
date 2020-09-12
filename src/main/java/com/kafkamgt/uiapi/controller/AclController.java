@@ -63,7 +63,7 @@ public class AclController {
     }
 
     @RequestMapping(value = "/getAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<TopicOverview> getAcls(@RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
+    public ResponseEntity<TopicOverview> getAcls(@RequestParam(value="topicnamesearch") String topicNameSearch) throws KafkawizeException {
         return new ResponseEntity<>(aclControllerService.getAcls(topicNameSearch), HttpStatus.OK);
     }
 
@@ -72,4 +72,6 @@ public class AclController {
                                                      @RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
         return new ResponseEntity<>(aclControllerService.getSyncAcls(env, pageNo, topicNameSearch), HttpStatus.OK);
     }
+
+
 }

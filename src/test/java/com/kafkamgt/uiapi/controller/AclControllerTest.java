@@ -204,11 +204,8 @@ public class AclControllerTest {
                 .get("/getAcls")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
+                .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
-
-        TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
-        assertEquals(1, response.getTopicInfoList().size());
     }
 
     @Test

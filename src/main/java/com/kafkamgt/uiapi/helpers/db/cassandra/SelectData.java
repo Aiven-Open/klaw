@@ -46,6 +46,7 @@ public class SelectData{
         countList.put("acls",allAclReqs.size()+"");
         countList.put("schemas",allSchemaReqs.size()+"");
 
+
         return countList;
     }
 
@@ -231,6 +232,9 @@ public class SelectData{
                 topicObj.setEnvironment(env);
                 topicObj.setTopicPK(topicPK);
                 topicObj.setTeamname(teamName);
+                topicObj.setTopicname(topic);
+                topicObj.setNoOfPartitions(row.getString("partitions"));
+                topicObj.setNoOfReplcias(row.getString("replicationfactor"));
             topicList.add(topicObj);
             }
 
@@ -373,14 +377,17 @@ public class SelectData{
                 topicRequest.setTeamname(teamName);
                 topicRequest.setRemarks(row.getString("remarks"));
                 topicRequest.setTopicstatus(row.getString("topicstatus"));
+                topicRequest.setRequestor(row.getString("requestor"));
+                topicRequest.setTopictype(row.getString("topictype"));
                 try {
                     topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
-                }catch (Exception e){}
+                }catch (Exception ignored) {
+                }
                 try {
                     topicRequest.setRequesttime(new java.sql.Timestamp((row.getTimestamp("requesttime")).getTime()));
                     topicRequest.setRequesttimestring((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
                             .format((row.getTimestamp("requesttime")).getTime()));
-                }catch (Exception e){}
+                }catch (Exception ignored){}
 
                 topicRequestList.add(topicRequest);
             }
@@ -413,6 +420,8 @@ public class SelectData{
             topicRequest.setTeamname(row.getString("teamname"));
             topicRequest.setRemarks(row.getString("remarks"));
             topicRequest.setTopicstatus(row.getString("topicstatus"));
+            topicRequest.setTopictype(row.getString("topictype"));
+            topicRequest.setRequestor(row.getString("requestor"));
             try {
                 topicRequest.setApprovingtime(new java.sql.Timestamp((row.getTimestamp("exectime")).getTime()));
             }catch (Exception e){}
@@ -441,6 +450,10 @@ public class SelectData{
             team.setTeammail(row.getString("teammail"));
             team.setTeamphone(row.getString("teamphone"));
             team.setContactperson(row.getString("contactperson"));
+
+            TeamPK teamPK = new TeamPK();
+            teamPK.setTeamname(row.getString("team"));
+            team.setTeamPK(teamPK);
 
             teamList.add(team);
         }
@@ -771,4 +784,5 @@ public class SelectData{
 
             return aclList;
     }
+
 }

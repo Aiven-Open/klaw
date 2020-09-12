@@ -94,7 +94,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -191,6 +191,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -385,6 +386,7 @@
 									</a>
 								</td></tr>
 							</table>
+							<hr size="1" color="black">
 							<div>
 								<table width="100%" class="table color-table success-table">
 									<thead><tr>
@@ -401,15 +403,15 @@
 									<tr ng-repeat="allenv in allenvs">
 
 										<td width="10%">
-											{{ allenv.name }}
+											<span class="badge badge-primary">{{ allenv.name }}</span>
 										</td>
 										<td>{{ allenv.host }}</td>
 										<td>{{ allenv.port }}</td>
 										<td width="10%" ng-show="allenv.protocol == 'PLAIN' || allenv.protocol == 'plain'" >
-											<span class="badge badge-info">PLAIN</span></td>
+											<span class="badge badge-warning">PLAIN</span></td>
 
 										<td width="10%" ng-show="allenv.protocol == 'SSL'" >
-											<span class="badge badge-warning">{{ allenv.protocol}}</span></td>
+											<span class="badge badge-danger">{{ allenv.protocol}}</span></td>
 										<td>{{ allenv.type }}</td>
 										<td>{{ allenv.otherParams }}</td>
 										<td ng-show="statusauthexectopics_su=='Authorized'">
@@ -442,6 +444,7 @@
 									</a>
 								</td></tr>
 							</table>
+							<hr size="1" color="black">
 							<div>
 								<table class="table color-table success-table">
 									<thead><tr>
@@ -456,15 +459,15 @@
 									<tbody>
 									<tr ng-repeat="allenv in allschenvs">
 										<td width="10%">
-											{{ allenv.name }}
+											<span class="badge badge-primary">{{ allenv.name }}</span>
 										</td>
 										<td>{{ allenv.host }}</td>
 										<td>{{ allenv.port }}</td>
 										<td width="10%" ng-show="allenv.protocol == 'PLAIN'  || allenv.protocol == 'plain'" >
-											<span class="badge badge-info">PLAIN</span></td>
+											<span class="badge badge-warning">PLAIN</span></td>
 
 										<td width="10%" ng-show="allenv.protocol == 'SSL'" >
-											<span class="badge badge-warning">{{ allenv.protocol}}</span></td>
+											<span class="badge badge-danger">{{ allenv.protocol}}</span></td>
 										<td>{{ allenv.type }}</td>
 										<td ng-show="statusauthexectopics_su=='Authorized'">
 											<button type="button" ng-click="deleteEnv(allenv.name)"

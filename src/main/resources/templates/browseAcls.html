@@ -24,6 +24,7 @@
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="js/browseAcls.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -89,49 +90,8 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
-					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
-							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
-							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
-						<!--<form class="app-search">-->
-							<!--<input type="text" class="form-control" placeholder="Search & enter"> <a-->
-								<!--class="srh-btn"><i class="ti-close"></i></a> </form>-->
-					<!--</li>-->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
-					<!--<li class="nav-item dropdown mega-dropdown"> <a-->
-							<!--class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
-							<!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i-->
-							<!--class="mdi mdi-view-grid"></i></a>-->
-						<!--<div class="dropdown-menu scale-up-left">-->
-							<!--<ul class="mega-dropdown-menu row">-->
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 
-
-								<!--<li class="col-lg-3  mb-4">-->
-									<!--<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>-->
-									<!--&lt;!&ndash; Contact &ndash;&gt;-->
-									<!--<form>-->
-										<!--<div class="form-group">-->
-											<!--<input type="text" class="form-control" id="exampleInputname1"-->
-												   <!--placeholder="Enter Name"> </div>-->
-										<!--<div class="form-group">-->
-											<!--<input type="email" class="form-control" placeholder="Enter email">-->
-										<!--</div>-->
-										<!--<div class="form-group">-->
-                                                <!--<textarea class="form-control" id="exampleTextarea" rows="3"-->
-														  <!--placeholder="Message"></textarea>-->
-										<!--</div>-->
-										<!--<button type="submit" class="btn btn-info">Submit</button>-->
-									<!--</form>-->
-								<!--</li>-->
-
-							<!--</ul>-->
-						<!--</div>-->
-					<!--</li>-->
-					<!-- ============================================================== -->
-					<!-- End Messages -->
-					<!-- ============================================================== -->
 				</ul>
 				<!-- ============================================================== -->
 				<!-- User profile and search -->
@@ -186,6 +146,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -330,34 +291,11 @@
 			<div class="row page-titles">
 			</div>
 
-
-			<div class="row" ng-show="resultPages == null && alerttop != null && alerttop != ''" ng-init="">
+			<div class="row" ng-show="alertTopicDelete != null && alertTopicDelete != ''">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ alerttop }}</p>
-					</div>
-				</div>
-			</div>
-
-			<!-- Row -->
-
-			<div class="row" ng-show="resultPages == null && alert != null && alert != ''" ng-init="">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ alert }}</p>
-					</div>
-				</div>
-			</div>
-
-			<!-- Row -->
-
-			<div class="row" ng-show="resultPages == null && errorMessage != null && errorMessage != ''" ng-init="">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ errorMessage }}</p>
+						<p class="ribbon-content">{{ alertTopicDelete }} </p>
 					</div>
 				</div>
 			</div>
@@ -375,42 +313,61 @@
 										<i class="fas fa-arrow-alt-circle-left"></i>
 										<button type="button"
 												class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Back to Topics</button>
+
 									</a>
-
-								</td></tr>
+								</td>
+							</tr>
 							</table>
-
+							<hr size="1" color="black">
 
 							<div>
 								<table class="table color-table success-table">
 									<thead><tr>
-										<th width="10%">Cluster</th>
-										<th width="15%">Partitions</th>
-										<th width="15%">Replication Factor</th>
+										<th align="left" width="25%">Cluster</th>
+										<th align="left" width="25%">Partitions</th>
+										<th align="left" width="25%">Replication Factor</th>
+										<th width="5%"></th>
+										<th width="20">
 									</tr>
 									</thead>
 									<tbody>
 									<tr ng-repeat="resultB in topicOverview">
-										<td width="10%">
+										<td align="left" width="25%">
 											<span ng-show="resultB.cluster=='DEV'" class="badge badge-success">{{ resultB.cluster}}</span>
 											<span ng-show="resultB.cluster=='TST'" class="badge badge-warning">{{ resultB.cluster}}</span>
 											<span ng-show="resultB.cluster=='ACC'" class="badge badge-info">{{ resultB.cluster}}</span>
 											<span ng-show="resultB.cluster=='PRD'" class="badge badge-danger">{{ resultB.cluster}}</span>
 											<span ng-show="resultB.cluster!='PRD' && resultB.cluster != 'TST' && resultB.cluster != 'ACC' && resultB.cluster != 'DEV'" class="badge badge-primary">{{ resultB.cluster}}</span>
 										</td>
-										<td width="15%">{{ resultB.noOfPartitions}}</td>
-										<td width="15%">{{ resultB.noOfReplcias}}</td>
+										<td align="left" width="25%">
+											<span class="badge badge-info">{{ resultB.noOfPartitions}}</span>
+										</td>
+										<td align="left" width="25%">
+											<span class="badge badge-info">{{ resultB.noOfReplcias}}</span>
+										</td>
+										<td width="5%"></td>
+										<td align="right" width="20%">
+
+										</td>
 									</tr>
 									</tbody>
 								</table>
 							</div>
+
+
 						</div>
-
 					</div>
-
 				</div>
 			</div>
 
+			<div class="row" ng-show="alert != null && alert != ''" ng-init="">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="ribbon-wrapper card">
+						<div class="ribbon ribbon-warning">Notification</div>
+						<p class="ribbon-content">{{alert}}</p>
+					</div>
+				</div>
+			</div>
 
 			<div class="row" ng-show="resultBrowse.length == 0" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
@@ -425,7 +382,7 @@
 							</a>
 						</td></tr>
 					</table>
-
+					<hr size="1" color="black">
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
 						<p class="ribbon-content">No Subscriptions found for this topic.</p>
@@ -447,7 +404,7 @@
 									</a>
 								</td></tr>
 							</table>
-
+							<hr size="1" color="black">
 
 							<div>
 								<table class="table color-table success-table">
@@ -476,6 +433,7 @@
 										<td width="15%">{{ resultB.acl_ip}}</td>
 										<td width="35%">{{ resultB.acl_ssl}}</td>
 
+										</td>
 									</tr>
 									</tbody>
 								</table>
@@ -488,7 +446,8 @@
 				</div>
 			</div>
 
-
+			<div id="successbar">{{ alert }}</div>
+			<div id="alertbar">{{ alertnote }}</div>
 		</div>
 		<footer class="footer">
 			© 2020 Kafkawize by <a href="https://kafkawize.com">kafkawize.com</a>

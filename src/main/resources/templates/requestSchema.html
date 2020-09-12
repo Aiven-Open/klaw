@@ -90,7 +90,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -182,6 +182,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -375,16 +376,14 @@
 			<div class="row" ng-init="getAuth();getEnvs();loadTeams();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Avro Schema Request Form</h4>
-						</div>
+<!--						<div class="card-header">-->
+<!--							<h4 class="mb-0 text-white">Avro Schema Request Form</h4>-->
+<!--						</div>-->
 						<div class="card-body">
 							<form id="form">
 								<div class="form-body">
-
-
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Avro Schema details</h3>
+										<td align="left"><h3 class="card-title">Avro Schema Request</h3>
 										</td>
 										<td align="right">
 											<a href="browseTopics">
@@ -395,7 +394,7 @@
 										</td></tr>
 									</table>
 
-									<hr>
+									<hr size="1" color="black">
 
 									<!--/row-->
 									<div class="row">
@@ -441,19 +440,16 @@
 											</div>
 										</div>
 
-										<!--/span-->
-									</div>
-
-									<div class="row">
-										<div class="col-md-12">
+										<div class="col-md-6">
 											<div class="form-group has-success">
 												<label class="control-label">Remarks</label>
 												<textarea class="form-control" placeholder="Any specific comments" title=""
-														  ng-model="addSchema.remarks" rows="3"></textarea>
+														  ng-model="addSchema.remarks" rows="1"></textarea>
 											</div>
 										</div>
-										<!--/span-->
 									</div>
+
+
 
 									<!--/row-->
 
@@ -461,9 +457,9 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addSchema();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addSchema();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Save</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
 							</form>
 						</div>

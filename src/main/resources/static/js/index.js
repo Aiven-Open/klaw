@@ -96,6 +96,8 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                    $scope.kafkawizeversion = output.kafkawizeversion;
                    $scope.notifications = output.notifications;
                    $scope.notificationsAcls = output.notificationsAcls;
+                   $scope.notificationsSchemas = output.notificationsSchemas;
+                   $scope.notificationsUsers = output.notificationsUsers;
                    $scope.statusauthexectopics = output.statusauthexectopics;
                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                    $scope.notificationsSchemas = output.notificationsSchemas;

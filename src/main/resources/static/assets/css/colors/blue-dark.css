@@ -250,20 +250,20 @@ a.link:hover, a.link:focus {
   .sidebar-nav ul li a {
     color: #798699; }
     .sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
-      color: #26c6da; }
+      color: #1e88e5; }
     .sidebar-nav ul li a.active {
-      color: #fff; }
+      color: #212529; }
   .sidebar-nav ul li.nav-small-cap {
     color: #99abb4; }
   .sidebar-nav > ul > li.active > a, .sidebar-nav > ul > li.active:hover > a {
     color: #fff;
-    background: #26c6da; }
+    background: #1e88e5; }
     .sidebar-nav > ul > li.active > a i, .sidebar-nav > ul > li.active:hover > a i {
       color: #fff; }
     .sidebar-nav > ul > li.active > a:after, .sidebar-nav > ul > li.active:hover > a:after {
       border-color: #fff; }
   .sidebar-nav > ul > li > a.active i, .sidebar-nav > ul > li > a:hover i {
-    color: #26c6da; }
+    color: #1e88e5; }
   .sidebar-nav > ul > li > a i {
     color: #798699; }
   .sidebar-nav > ul > li > a.active {

@@ -224,11 +224,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     }
 
     @Override
-    public String deleteAclSubscriptionRequest(String req_no) {
-        return jdbcDeleteHelper.deleteAclSubscriptionRequest(req_no);
-    }
-
-    @Override
     public String deleteClusterRequest(String clusterId) {
         return jdbcDeleteHelper.deleteClusterRequest(clusterId);
     }

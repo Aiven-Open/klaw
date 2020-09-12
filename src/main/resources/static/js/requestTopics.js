@@ -28,6 +28,22 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
                 }
 
+         $scope.getEnvTopicPartitions = function(envSelected){
+             	    $http({
+                            method: "GET",
+                            url: "getEnvParams",
+                             headers : { 'Content-Type' : 'application/json' },
+                             params: {'envSelected' : envSelected }
+                        }).success(function(output) {
+                            $scope.envTopicPartitions = output;
+                        }).error(
+                            function(error)
+                            {
+                                $scope.alert = error;
+                            }
+                        );
+             	}
+
         $scope.addTopic = function() {
 
             var serviceInput = {};
@@ -35,32 +51,17 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             $scope.alert = null;
             $scope.alertnote = null;
 
-            if($scope.addTopic.topicpartitions ==null && $scope.addTopic.topicpartitions.length<0){
-                //alert("Please fill in topic partitions");
-                $scope.alertnote = "Please fill in topic partitions.";
-                $scope.showAlertToast();
-                return;
-            }
+            if(!$scope.addTopic.topicpartitions || $scope.addTopic.topicpartitions == 'selected'){
+                        //alert("Please fill in topic partitions");
+                        $scope.alertnote = "Please select topic partitions.";
+                        $scope.showAlertToast();
+                        return;
+                    }
 
-            if(isNaN($scope.addTopic.topicpartitions)){
-                //alert("Please fill in a valid number for partitions for topic");
-                $scope.alertnote = "Please fill in a valid number for partitions for topic.";
-                $scope.showAlertToast();
-                return;
-            }
-
-             if(!$scope.addTopic.team)
-              {
-                 //alert("Please select your team.");
-                 $scope.alertnote = "Please select your team.";
-                 $scope.showAlertToast();
-                 return;
-              }
-
-            serviceInput['environment'] = $scope.addTopic.envName.name;
+            serviceInput['environment'] = $scope.addTopic.envName;
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = $scope.addTopic.topicpartitions;
-            serviceInput['teamname'] = $scope.addTopic.team.teamname;
+            serviceInput['teamname'] = $scope.teamname;
             serviceInput['appname'] = "App";//$scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
 
@@ -94,7 +95,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
                 $http({
                     method: "GET",
-                    url: "getEnvs",
+                    url: "getEnvsBaseCluster",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allenvs = output;
@@ -138,6 +139,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                    $scope.teamname = output.teamname;
                    $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
+                    $scope.notificationsSchemas = output.notificationsSchemas;
+                    $scope.notificationsUsers = output.notificationsUsers;
                    $scope.statusauthexectopics = output.statusauthexectopics;
                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                    $scope.alerttop = output.alertmessage;
@@ -191,10 +194,6 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             }
         );
 	}
-
-
-
-
 
 }
 );

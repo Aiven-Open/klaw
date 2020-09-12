@@ -90,7 +90,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -185,6 +185,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -374,16 +375,16 @@
 			<div class="row" ng-init="getAuth();getEnvs();loadTeams();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Topic Request Form</h4>
-						</div>
+<!--						<div class="card-header">-->
+<!--							<h4 class="mb-0 text-white">Topic Request Form</h4>-->
+<!--						</div>-->
 						<div class="card-body">
 							<form id="form">
 								<div class="form-body">
 
 
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Topic details</h3>
+										<td align="left"><h3 class="card-title">Topic Request</h3>
 										</td>
 										<td align="right">
 											<a href="browseTopics">
@@ -394,21 +395,23 @@
 										</td></tr>
 									</table>
 
-									<hr>
+									<hr size="1" color="black">
 
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Select Cluster</label>
-												<select class="form-control custom-select" ng-model="addTopic.envName" ng-options="env as env.name for env in allenvs">
-
+												<select class="form-control custom-select"
+														ng-model="addTopic.envName"
+														ng-change="getEnvTopicPartitions(addTopic.envName)"
+														ng-options="env as env for env in allenvs">
 												</select>
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Topic name</label>
 												<input type="text" class="form-control" ng-model="addTopic.topicname" required>
 											</div>
@@ -417,32 +420,29 @@
 									</div>
 									<!--/row-->
 									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group has-success">
-												<label class="control-label">Select Team</label>
-												<select class="form-control custom-select" ng-model="addTopic.team" ng-options="team as team.teamname for team in allTeams">
 
-												</select>
-											</div>
-										</div>
-										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Topic Partitions</label>
-												<input type="text" class="form-control" ng-model="addTopic.topicpartitions" required placeholder="<1>">
-												<a href="envs"><small class="form-control-feedback"> Check default parameters </small></a>
+												<select class="form-control custom-select"
+														required
+														ng-model="addTopic.topicpartitions"
+														ng-options="partitions as partitions for partitions in envTopicPartitions.partitionsList">
+													<option value="" selected="selected">
+														Select Partitions</option>
+												</select>
+<!--												<input type="text" class="form-control" ng-model="addTopic.topicpartitions" required placeholder="<1>">-->
+<!--												<a href="envs"><small class="form-control-feedback"> Check default parameters </small></a>-->
 
 											</div>
 										</div>
 										<!--/span-->
-									</div>
 
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group has-success">
+										<div class="col-md-6">
+											<div class="form-group">
 												<label class="control-label">Remarks</label>
 												<textarea class="form-control" placeholder="Any specific comments" title=""
-														  ng-model="addTopic.remarks" rows="3"></textarea>
+														  ng-model="addTopic.remarks" rows="1"></textarea>
 											</div>
 										</div>
 										<!--/span-->
@@ -454,28 +454,16 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addTopic();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addTopic();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Submit</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
 							</form>
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- Row -->
 
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Right sidebar -->
-			<!-- ============================================================== -->
-			<!-- .right-sidebar -->
-
-			<!-- ============================================================== -->
-			<!-- End Right sidebar -->
-			<!-- ============================================================== -->
 		</div>
 		<!-- ============================================================== -->
 		<!-- End Container fluid  -->

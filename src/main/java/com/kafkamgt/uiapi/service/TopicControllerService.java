@@ -20,14 +20,15 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.kafkamgt.uiapi.dao.MailType.*;
-
 @Service
 @Slf4j
 public class TopicControllerService {
 
     @Value("${custom.syncdata.cluster:DEV}")
     private String syncCluster;
+
+    @Value("${custom.envs.order}")
+    private String orderOfEnvs;
 
     @Autowired
     private final
@@ -46,13 +47,19 @@ public class TopicControllerService {
         this.utilService = utilService;
     }
 
-    public String createTopics(TopicRequest topicRequestReq) throws KafkawizeException {
+    public String createTopicsRequest(TopicRequest topicRequestReq) throws KafkawizeException {
         UserDetails userDetails = getUserDetails();
         log.info(topicRequestReq.getTopicname() + "---" +
                 topicRequestReq.getTeamname() + "---" + topicRequestReq.getEnvironment() +
                 "---" + topicRequestReq.getAppname());
+
+        if(utilService.checkAuthorizedSU(userDetails)){
+            return "{\"result\":\"Not Authorized\"}";
+        }
+
         topicRequestReq.setRequestor(userDetails.getUsername());
         topicRequestReq.setUsername(userDetails.getUsername());
+        topicRequestReq.setTopictype("Create"); // Possible options Create/Delete
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
 
@@ -60,7 +67,7 @@ public class TopicControllerService {
 
         HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
-        List<Topic> topics = getTopicTeam(topicRequestReq.getTopicname());
+        List<Topic> topics = getTopicFromName(topicRequestReq.getTopicname());
 
         if(topics!=null && topics.size()>0
                 && !topics.get(0).getTeamname().equals(topicRequestReq.getTeamname()))
@@ -118,6 +125,9 @@ public class TopicControllerService {
             int defMaxPartnsInt = Integer.parseInt(defMaxPartns);
 
             if (topicPartitions != null && topicPartitions.length() > 0) {
+                if(topicPartitions.contains("default"))
+                    topicPartitions = topicPartitions.substring(0,topicPartitions.indexOf(" "));
+
                 topicPartitionsInt = Integer.parseInt(topicPartitions);
 
                 if (topicPartitionsInt > defMaxPartnsInt)
@@ -179,7 +189,7 @@ public class TopicControllerService {
             for(Map.Entry<String, SyncTopicUpdates> stringSyncAclUpdatesEntry : stringSyncTopicUpdatesHashMap.entrySet()){
                 SyncTopicUpdates topicUpdate = stringSyncAclUpdatesEntry.getValue();
 
-                existingTopics = getTopicTeam(topicUpdate.getTopicName());
+                existingTopics = getTopicFromName(topicUpdate.getTopicName());
 
                 if(existingTopics != null){
                     for (Topic existingTopic : existingTopics) {
@@ -282,7 +292,7 @@ public class TopicControllerService {
         return newList;
     }
 
-    public List<Topic> getTopicTeam(String topicName) {
+    public List<Topic> getTopicFromName(String topicName) {
         return manageDatabase.getHandleDbRequests().getTopicTeam(topicName);
     }
 
@@ -350,7 +360,6 @@ public class TopicControllerService {
 
         if(Objects.equals(response.getBody(), "success"))
             updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userDetails.getUsername());
-
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
@@ -375,38 +384,6 @@ public class TopicControllerService {
         topicsFromSOT.forEach(topic -> topicsList.add(topic.getTopicname()));
 
         return topicsList.stream().distinct().collect(Collectors.toList());
-    }
-
-    private List<HashMap<String, String>> getTopicsListMap(List<String> topicStrList){
-        List<HashMap<String, String>> topicsListMap = new ArrayList<>();
-
-        String substChar = ":::::";
-        StringTokenizer strTkr = null;
-        HashMap<String, String> hMap;
-        for (String topicStr : topicStrList) {
-            hMap = new HashMap<>();
-            if(topicStr.indexOf(substChar) > 0){
-                strTkr = new StringTokenizer(topicStr,substChar);
-                hMap.put("topicName", strTkr.nextToken());
-                hMap.put("replicationFactor", strTkr.nextToken());
-                hMap.put("partitions", strTkr.nextToken());
-                topicsListMap.add(hMap);
-            }
-        }
-        return topicsListMap;
-    }
-
-    class TopicEnvComparator implements Comparator<String> {
-        List<String> orderedEnv = Arrays.asList("DEV", "TST", "ACC", "PRD");
-
-
-        @Override
-        public int compare(String topicEnv1, String topicEnv2) {
-            if(orderedEnv.indexOf(topicEnv1) > orderedEnv.indexOf(topicEnv2))
-                return 1;
-            else
-                return -1;
-        }
     }
 
     class TopicNameComparator implements Comparator<Topic> {
@@ -501,7 +478,8 @@ public class TopicControllerService {
         Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
         String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
 
-        List<HashMap<String, String>> topicsList = getTopicsListMap(clusterApiService.getAllTopics(bootstrapHost));
+        List<HashMap<String, String>> topicsList = clusterApiService.getAllTopics(bootstrapHost);
+        //getTopicsListMap(clusterApiService.getAllTopics(bootstrapHost));
 
         topicCounter = 0;
 
@@ -525,6 +503,18 @@ public class TopicControllerService {
     {
         topicCounter++;
         return topicCounter;
+    }
+
+    class TopicEnvComparator implements Comparator<String> {
+        List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
+
+        @Override
+        public int compare(String topicEnv1, String topicEnv2) {
+            if(orderedEnv.indexOf(topicEnv1) > orderedEnv.indexOf(topicEnv2))
+                return 1;
+            else
+                return -1;
+        }
     }
 
     private List<TopicInfo> getTopicInfoList(List<Topic> topicsFromSOT, String pageNo){

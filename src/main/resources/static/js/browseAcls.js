@@ -23,11 +23,11 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                       setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
                     }
 
-            $scope.showAlertToast = function() {
-                      var x = document.getElementById("alertbar");
-                      x.className = "show";
-                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
-                    }
+    $scope.showAlertToast = function() {
+              var x = document.getElementById("alertbar");
+              x.className = "show";
+              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+            }
 
 	$scope.getEnvs = function() {
 
@@ -60,6 +60,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             $scope.teamname = output.teamname;
             $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
+            $scope.notificationsSchemas = output.notificationsSchemas;
+            $scope.notificationsUsers = output.notificationsUsers;
+
             $scope.statusauthexectopics = output.statusauthexectopics;
             $scope.statusauthexectopics_su = output.statusauthexectopics_su;
             $scope.alerttop = output.alertmessage;
@@ -98,25 +101,23 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
         $scope.getAllTopics = function() {
 
-                            $scope.alltopics = null;
-                                    $http({
-                                        method: "GET",
-                                        url: "getTopicsOnly?env="+$scope.getAcls.envName.name,
-                                        headers : { 'Content-Type' : 'application/json' }
-                                    }).success(function(output) {
-                                        $scope.alltopics = output;
-                                    }).error(
-                                        function(error)
-                                        {
-                                            $scope.alert = error;
-                                        }
-                                    );
-                                }
-
-	// We add the "time" query parameter to prevent IE
-	// from caching ajax results
+            $scope.alltopics = null;
+                $http({
+                    method: "GET",
+                    url: "getTopicsOnly?env="+$scope.getAcls.envName.name,
+                    headers : { 'Content-Type' : 'application/json' }
+                }).success(function(output) {
+                    $scope.alltopics = output;
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+            }
 
 	$scope.getAcls = function(pageNoSelected) {
+        $scope.alert = null;
 
         var serviceInput = {};
 
@@ -142,23 +143,20 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             headers : { 'Content-Type' : 'application/json' },
             params: {'topicnamesearch' : topicSelected }
 		}).success(function(output) {
-			$scope.resultBrowse = output.aclInfoList;
-			$scope.topicOverview = output.topicInfoList;
-			if(output.aclInfoList != null){
-                $scope.resultPages = output.aclInfoList[0].allPageNos;
-                $scope.resultPageSelected = pageNoSelected;
-            }
+		    if(output.topicExists == true){
+		        $scope.resultBrowse = output.aclInfoList;
+            	$scope.topicOverview = output.topicInfoList;
+		    }
+		    else
+		        $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
 		}).error(
 			function(error) 
 			{
 				$scope.alert = error;
-				$scope.resultPages = null;
-                $scope.resultPageSelected = null;
 			}
 		);
 		
 	};
-
 
 }
 );

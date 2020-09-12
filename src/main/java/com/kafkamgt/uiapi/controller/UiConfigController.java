@@ -1,9 +1,7 @@
 package com.kafkamgt.uiapi.controller;
 
-import com.kafkamgt.uiapi.dao.ActivityLog;
-import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.Team;
-import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.service.UiConfigControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,6 +20,11 @@ public class UiConfigController {
 
     @Autowired
     private UiConfigControllerService uiConfigControllerService;
+
+    @RequestMapping(value = "/getEnvsBaseCluster", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getEnvsBaseCluster() {
+        return new ResponseEntity<>(uiConfigControllerService.getEnvsBaseCluster(), HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {
@@ -40,6 +44,12 @@ public class UiConfigController {
     @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvsStatus() {
         return new ResponseEntity<>(uiConfigControllerService.getEnvs(false), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getEnvParams", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<HashMap<String, List<String>>> getEnvParams(@RequestParam(value="envSelected") String envSelected)
+            throws KafkawizeException {
+        return new ResponseEntity<>(uiConfigControllerService.getEnvParams(envSelected), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getClusterApiStatus", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

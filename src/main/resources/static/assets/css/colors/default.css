@@ -235,16 +235,16 @@ a.link:hover, a.link:focus {
     color: #99abb4; }
   .sidebar-nav > ul > li.active > a, .sidebar-nav > ul > li.active:hover > a {
     color: #fff;
-    background: #26c6da; }
+    background: #607d8b; }
     .sidebar-nav > ul > li.active > a i, .sidebar-nav > ul > li.active:hover > a i {
       color: #fff; }
     .sidebar-nav > ul > li.active > a:after, .sidebar-nav > ul > li.active:hover > a:after {
       border-color: #fff; }
   .sidebar-nav > ul > li > a.active i, .sidebar-nav > ul > li > a:hover i {
-    color: #26c6da; }
+    color: #607d8b; }
   .sidebar-nav > ul > li > a i {
     color: #99abb4; }
   .sidebar-nav > ul > li > a.active {
     font-weight: 400;
     background: #fff;
-    color: #009efb; }
+    color: #607d8b; }

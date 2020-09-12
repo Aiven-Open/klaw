@@ -146,7 +146,7 @@ public class ClusterApiServiceTest {
                         eq(Set.class)))
                 .thenReturn(response);
 
-        List<String> result = clusterApiService.getAllTopics("");
+        List<HashMap<String, String>> result = clusterApiService.getAllTopics("");
         assertEquals(result, new ArrayList<>(topicsList));
     }
 
@@ -168,6 +168,7 @@ public class ClusterApiServiceTest {
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setTopicname("testtopic");
         topicRequest.setEnvironment("DEV");
+        topicRequest.setTopictype("Create");
 
         when(utilService.getRestTemplate()).thenReturn(restTemplate);
         when(handleDbRequests.selectEnvDetails("DEV")).thenReturn(this.env);
@@ -186,6 +187,7 @@ public class ClusterApiServiceTest {
         TopicRequest topicRequest = new TopicRequest();
         topicRequest.setTopicname("testtopic");
         topicRequest.setEnvironment("DEV");
+        topicRequest.setTopictype("Create");
 
         when(utilService.getRestTemplate()).thenReturn(restTemplate);
         when(handleDbRequests.selectEnvDetails("DEV")).thenReturn(this.env);

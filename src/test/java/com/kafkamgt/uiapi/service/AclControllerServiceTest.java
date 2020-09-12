@@ -263,6 +263,8 @@ public class AclControllerServiceTest {
     public void getAclsSyncFalse1() throws KafkawizeException {
         String env="DEV",topicNameSearch = "testtopic";
 
+
+        when(handleDbRequests.selectAllTeamsOfUsers(userDetails.getUsername())).thenReturn(utilMethods.getTeams());
         when(handleDbRequests.getTopics(topicNameSearch)).thenReturn(utilMethods.getTopics(topicNameSearch));
         when(handleDbRequests.getSyncAcls(env, topicNameSearch)).thenReturn(getAclsSOT(topicNameSearch));
 
@@ -279,6 +281,7 @@ public class AclControllerServiceTest {
     public void getAclsSyncFalse2() throws KafkawizeException {
         String env="DEV",topicNameSearch = "testnewtopic1";
 
+        when(handleDbRequests.selectAllTeamsOfUsers(userDetails.getUsername())).thenReturn(utilMethods.getTeams());
         when(handleDbRequests.getTopics(topicNameSearch)).thenReturn(utilMethods.getTopics());
         when(handleDbRequests.getSyncAcls(env, topicNameSearch)).thenReturn(getAclsSOT(topicNameSearch));
 

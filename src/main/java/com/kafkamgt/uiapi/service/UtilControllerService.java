@@ -30,7 +30,7 @@ public class UtilControllerService {
     private
     String companyInfo;
 
-    @Value("${custom.kafkawize.version:5.0}")
+    @Value("${custom.kafkawize.version:4.3}")
     private
     String kafkawizeVersion;
 
@@ -47,7 +47,7 @@ public class UtilControllerService {
             String teamName = reqsHandle.getUsersInfo(userDetails.getUsername()).getTeam();
             String authority = utilService.getAuthority(userDetails);
 
-            String statusAuth = null;
+            String statusAuth;
             String statusAuthExecTopics, statusAuthExecTopicsSU;
 
             HashMap<String, String> outstanding = reqsHandle

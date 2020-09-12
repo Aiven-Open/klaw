@@ -20,6 +20,9 @@ public class DeleteDataJdbc {
     TopicRequestsRepo topicRequestsRepo;
 
     @Autowired(required=false)
+    private TopicRepo topicRepo;
+
+    @Autowired(required=false)
     SchemaRequestRepo schemaRequestRepo;
 
     @Autowired(required = false)
@@ -119,21 +122,39 @@ public class DeleteDataJdbc {
 
         for(Acl aclToBeDeleted :aclsToBeDeleted){
             for(Acl allAcl: allAcls) {
-                if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
-                        aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
-                        aclToBeDeleted.getConsumergroup().equals(allAcl.getConsumergroup()) &&
-                        aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment())
-                        )
-                {
-                    if((aclToBeDeleted.getAclip()!=null && allAcl.getAclip()!=null &&
-                            aclToBeDeleted.getAclip().equals(allAcl.getAclip()) ) ||
-                            (aclToBeDeleted.getAclssl() !=null && allAcl.getAclssl()!=null &&
-                                    aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))){
-                        LOG.info("acl to be deleted" + allAcl);
-                        aclRepo.delete(allAcl);
-                        break;
-                    }
 
+                if(aclToBeDeleted.getTopictype().equals("Producer")) {
+                    if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
+                            aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
+                            aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment())
+                    ) {
+                        if ((aclToBeDeleted.getAclip() != null && allAcl.getAclip() != null &&
+                                aclToBeDeleted.getAclip().equals(allAcl.getAclip())) ||
+                                (aclToBeDeleted.getAclssl() != null && allAcl.getAclssl() != null &&
+                                        aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))) {
+                            LOG.info("acl to be deleted" + allAcl);
+                            aclRepo.delete(allAcl);
+                            break;
+                        }
+
+                    }
+                }
+                else if (aclToBeDeleted.getTopictype().equals("Consumer")) {
+                    if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
+                            aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
+                            aclToBeDeleted.getConsumergroup().equals(allAcl.getConsumergroup()) &&
+                            aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment())
+                    ) {
+                        if ((aclToBeDeleted.getAclip() != null && allAcl.getAclip() != null &&
+                                aclToBeDeleted.getAclip().equals(allAcl.getAclip())) ||
+                                (aclToBeDeleted.getAclssl() != null && allAcl.getAclssl() != null &&
+                                        aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))) {
+                            LOG.info("acl to be deleted" + allAcl);
+                            aclRepo.delete(allAcl);
+                            break;
+                        }
+
+                    }
                 }
             }
         }
@@ -142,11 +163,4 @@ public class DeleteDataJdbc {
         return "success";
     }
 
-    public String deleteAclSubscriptionRequest(String req_no) {
-
-        Optional<Acl> aclRec = aclRepo.findById(req_no);
-        aclRepo.delete(aclRec.get());
-
-        return "success";
-    }
 }

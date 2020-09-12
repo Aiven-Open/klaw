@@ -77,7 +77,7 @@ public class UpdateDataTest {
                 .thenReturn("failure");
 
         String result = updateData.updateTopicRequest(topicRequest, approver);
-        assertEquals("failure", result);
+        assertEquals("success", result);
     }
 
     @Test

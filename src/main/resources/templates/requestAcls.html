@@ -90,7 +90,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
@@ -186,6 +186,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -376,16 +377,15 @@
 			<div class="row" ng-init="getAuth();getEnvs();loadParams();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">ACL (Access Control) Request Form</h4>
-						</div>
+<!--						<div class="card-header">-->
+<!--							<h4 class="mb-0 text-white">ACL (Access Control) Request Form</h4>-->
+<!--						</div>-->
 						<div class="card-body">
 							<form id="form">
 								<div class="form-body">
 
-
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Access Control details</h3>
+										<td align="left"><h3 class="card-title">ACL (Access Control) Request</h3>
 										</td>
 										<td align="right">
 											<a href="browseTopics">
@@ -396,12 +396,12 @@
 										</td></tr>
 									</table>
 
-									<hr>
+									<hr size="1" color="black">
 
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Select Cluster</label>
 												<select class="form-control custom-select" ng-model="addAcl.envName" ng-options="env as env for env in allenvs">
 
@@ -410,7 +410,7 @@
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Select Topic</label>
 												<select class="form-control custom-select"  ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" ng-options="topic as topic for topic in alltopics">
 
@@ -423,7 +423,7 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">ACL Type</label>
 												<select class="form-control custom-select" ng-change="changeTopicType()" ng-model="addAcl.topicreqtype" ng-options="topType as topType.label for topType in TopReqTypeList">
 
@@ -433,7 +433,7 @@
 
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Consumer Group (Only for consumers)</label>
 												<input ng-disabled="disable_consumergrp" ng-model="addAcl.consumergroup" type="text"
 													   class="form-control">
@@ -446,7 +446,7 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-12">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Acl IP or SSL based</label>
 												<div class="demo-radio-button">
 													<input ng-change="onSelectAcl('IP')" ng-model="addAcl.acl_ip_ssl" name="group1"
@@ -464,7 +464,7 @@
 									<!--/span-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>IP Address</label>
 												<input ng-disabled="disable_ip" ng-model="addAcl.acl_ip" name="acl_ip"
 													   type="text" placeholder="" class="form-control">
@@ -473,7 +473,7 @@
 										</div>
 
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>SSL CN</label>
 												<input ng-disabled="disable_ssl" ng-model="addAcl.acl_ssl" name="acl_ip"
 													   type="text" placeholder="" class="form-control">
@@ -485,22 +485,17 @@
 
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Topic Owner Team</label>
 												<input disabled ng-model="addAcl.team" type="text" placeholder="topicownerteam" class="form-control">
 												<small class="form-control-feedback"> On selecting a topic, this team field is filled automatically. </small>
 											</div>
 										</div>
-
-										<!--/span-->
-									</div>
-
-									<div class="row">
-										<div class="col-md-12">
-											<div class="form-group has-success">
+										<div class="col-md-6">
+											<div class="form-group">
 												<label class="control-label">Remarks</label>
 												<textarea class="form-control" placeholder="Any specific comments" title=""
-														  ng-model="addTopic.remarks" rows="3"></textarea>
+														  ng-model="addTopic.remarks" rows="1"></textarea>
 											</div>
 										</div>
 										<!--/span-->
@@ -512,9 +507,9 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addAcl();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addAcl();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Submit</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
 							</form>
 						</div>

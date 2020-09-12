@@ -8,4 +8,5 @@ import java.util.List;
 public class TopicOverview {
     List<TopicInfo> topicInfoList;
     List<AclInfo> aclInfoList;
+    boolean topicExists;
 }

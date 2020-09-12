@@ -90,7 +90,7 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
 							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
 							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
@@ -185,6 +185,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -374,15 +375,15 @@
 			<div class="row" ng-init="getExecAuth();loadTeamsSU();">
 				<div ng-if="statusauthexectopics_su=='Authorized'" class="col-lg-12">
 					<div class="card card-outline-success">
-						<div class="card-header">
-							<h4 class="mb-0 text-white">Add Cluster Form</h4>
-						</div>
+<!--						<div class="card-header">-->
+<!--							<h4 class="mb-0 text-white">Add Cluster Form</h4>-->
+<!--						</div>-->
 						<div class="card-body">
 							<form id="form">
 								<div class="form-body">
 
 									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Cluster details</h3>
+										<td align="left"><h3 class="card-title">Add Cluster</h3>
 										</td>
 										<td align="right">
 											<a href="envs">
@@ -393,19 +394,19 @@
 										</td></tr>
 									</table>
 
-									<hr>
+									<hr size="1" color="black">
 
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Cluster Name</label>
 												<input type="text" class="form-control" required ng-model="addNewEnv.envname" placeholder="DEV-AMS">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Host</label>
 												<input type="text" class="form-control" required ng-model="addNewEnv.host" placeholder="devams.cmp.net">
 											</div>
@@ -415,14 +416,14 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Port</label>
 												<input type="text" class="form-control" required ng-model="addNewEnv.port" placeholder="9092">
 											</div>
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Protocol</label>
 												<input type="text" disabled ng-init="addNewEnv.protocol = 'PLAIN'" class="form-control" required ng-model="addNewEnv.protocol" placeholder="9092">
 
@@ -433,7 +434,7 @@
 
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Default Partitions</label>
 												<input required ng-model="addNewEnv.defparts" id="addNewEnv.defparts"
 													   ng-init="addNewEnv.defparts = '2'" type="text" class="form-control">
@@ -441,7 +442,7 @@
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Default Max Partitions</label>
 												<input required ng-model="addNewEnv.defmaxparts" id="addNewEnv.defmaxparts"
 													   ng-init="addNewEnv.defmaxparts = '2'" type="text" class="form-control">
@@ -452,7 +453,7 @@
 
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Default Replication factor</label>
 												<input required ng-model="addNewEnv.defrepfctr" id="addNewEnv.defrepfctr"
 													   ng-init="addNewEnv.defrepfctr = '1'" type="text" class="form-control">
@@ -460,7 +461,7 @@
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Cluster Type</label>
 												<select required class="form-control custom-select" ng-model="addNewEnv.type">
 													<option>kafka</option>
@@ -477,9 +478,9 @@
 								<div id="successbar">{{ alert }}</div>
 								<div id="alertbar">{{ alertnote }}</div>
 								<div class="form-actions">
-									<button ng-click="addNewEnv();" class="btn btn-success"> <i class="fa fa-check"></i>
+									<button ng-click="addNewEnv();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 										Save</button>
-									<button type="button" ng-click="cancelRequest();" class="btn btn-inverse">Cancel</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
 								</div>
 							</form>
 						</div>

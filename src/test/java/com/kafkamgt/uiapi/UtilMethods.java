@@ -277,6 +277,7 @@ public class UtilMethods {
         topicRequest.setTopicpartitions("2");
         topicRequest.setReplicationfactor("1");
         topicRequest.setEnvironment("DEV");
+        topicRequest.setTopictype("Create");
         return topicRequest;
     }
 
@@ -406,10 +407,15 @@ public class UtilMethods {
         return aclRequest;
     }
 
-    public List<String> getClusterApiTopics(String topicPrefix, int size){
-        List<String> listTopics = new ArrayList<>();
+    public List<HashMap<String, String>> getClusterApiTopics(String topicPrefix, int size){
+        List<HashMap<String, String>> listTopics = new ArrayList<>();
+        HashMap<String, String> hashMap = new HashMap<>();
         for(int i=0;i<size;i++) {
-            listTopics.add(topicPrefix +i+ ":::::" + "1" + ":::::" + "2");
+            hashMap = new HashMap<>();
+            hashMap.put("topicName", topicPrefix +i);
+            hashMap.put("replicationFactor", "1");
+            hashMap.put("partitions", "2");
+            listTopics.add(hashMap);
         }
         return listTopics;
     }

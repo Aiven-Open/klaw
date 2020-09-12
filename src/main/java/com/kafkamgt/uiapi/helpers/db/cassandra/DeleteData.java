@@ -9,6 +9,7 @@ import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.datastax.driver.core.querybuilder.Select;
 import com.kafkamgt.uiapi.dao.Acl;
+import com.kafkamgt.uiapi.dao.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,17 +99,6 @@ public class DeleteData {
                         .where(eqclause6);
                 session.execute(delQuery);
             }
-
-
-        return "success";
-    }
-
-    String deleteAclSubscriptionRequest(String req_no) {
-
-        Clause eqclause = QueryBuilder.eq("req_no",req_no);
-        Delete.Where delQuery = QueryBuilder.delete().all().from(keyspace,"acls")
-                .where(eqclause);
-        session.execute(delQuery);
 
         return "success";
     }

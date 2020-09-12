@@ -1,10 +1,8 @@
 package com.kafkamgt.uiapi.controller;
 
 
-import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import com.kafkamgt.uiapi.model.SyncAclUpdates;
 import com.kafkamgt.uiapi.model.SyncTopicUpdates;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.service.TopicControllerService;
@@ -25,8 +23,8 @@ public class TopicController {
     private TopicControllerService topicControllerService;
 
     @PostMapping(value = "/createTopics")
-    public ResponseEntity<String> createTopics(@RequestBody TopicRequest addTopicRequest) throws KafkawizeException {
-        String result = topicControllerService.createTopics(addTopicRequest);
+    public ResponseEntity<String> createTopicsRequest(@RequestBody TopicRequest addTopicRequest) throws KafkawizeException {
+        String result = topicControllerService.createTopicsRequest(addTopicRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -92,5 +90,7 @@ public class TopicController {
 
         return new ResponseEntity<>(topicControllerService.getSyncTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
     }
+
+
 
 }

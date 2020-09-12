@@ -43,11 +43,11 @@ public class ClusterApiService {
         this.utilService = utilService;
     }
 
-    String getClusterApiUrl(){
+    public String getClusterApiUrl(){
         return this.clusterConnUrl;
     }
 
-    String getClusterApiStatus() {
+    public String getClusterApiStatus() {
         String clusterStatus;
         try {
             String URI_CLSTR_API_STAUTS = "/topics/getApiStatus";
@@ -135,8 +135,8 @@ public class ClusterApiService {
         return aclListOriginal;
     }
 
-    public List<String> getAllTopics(String bootstrapHost) throws Exception{
-        List<String> topicsList ;
+    public List<HashMap<String, String>> getAllTopics(String bootstrapHost) throws Exception{
+        List<HashMap<String, String>> topicsList ;
         try {
             String URI_GET_TOPICS = "/topics/getTopics/";
             String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS + bootstrapHost;
@@ -169,19 +169,22 @@ public class ClusterApiService {
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicRequest.getEnvironment());
             String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
             params.add("env", bootstrapHost);
-
             params.add("topicName", topicName);
+
+            String URI_CREATE_TOPICS = "/topics/createTopics";
+            String uri;
+            uri = clusterConnUrl + URI_CREATE_TOPICS;
             params.add("partitions", topicRequest.getTopicpartitions());
             params.add("rf", topicRequest.getReplicationfactor());
 
-            HttpHeaders headers = new HttpHeaders();//createHeaders("user1", "pwd");
+            HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-            String URI_CREATE_TOPICS = "/topics/createTopics";
-            response = restTemplate.postForEntity(clusterConnUrl + URI_CREATE_TOPICS, request, String.class);
+            response = restTemplate.postForEntity(uri, request, String.class);
         }catch(Exception e){
+            e.printStackTrace();
             throw new KafkawizeException("Could not approve topic request. Check Cluster Api connection. "+e.toString());
         }
         return response;
@@ -194,6 +197,7 @@ public class ClusterApiService {
             String uri;
 
             String URI_CREATE_ACLS = "/topics/createAcls";
+
             uri = clusterConnUrl + URI_CREATE_ACLS;
 
             RestTemplate restTemplate = utilService.getRestTemplate();

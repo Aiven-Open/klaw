@@ -66,13 +66,16 @@ public class SchemaRegstryControllerService {
         SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,"1.0", env);
 
         ResponseEntity<String> response = clusterApiService.postSchema(schemaRequest, env, topicName);
-
+        String responseDb;
+        HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
         if(response.getBody().contains("id\":")) {
             try {
-                return manageDatabase.getHandleDbRequests().updateSchemaRequest(schemaRequest, userDetails.getUsername());
+                responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails.getUsername());
             }catch (Exception e){
                 return e.getMessage();
             }
+
+            return responseDb;
         }
         else {
             return "Failure in uploading schema" ;
@@ -84,17 +87,21 @@ public class SchemaRegstryControllerService {
         if(!utilService.checkAuthorizedAdmin(userDetails))
             return "{\"result\":\"Not Authorized\"}";
 
-        SchemaRequest schemaRequest = manageDatabase.getHandleDbRequests().selectSchemaRequest(topicName,"1.0", env);
+        HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+        SchemaRequest schemaRequest = dbHandle.selectSchemaRequest(topicName,"1.0", env);
+        String responseDb =  dbHandle.updateSchemaRequestDecline(schemaRequest, userDetails.getUsername());
 
-        return  manageDatabase.getHandleDbRequests().updateSchemaRequestDecline(schemaRequest, userDetails.getUsername());
-
+        return responseDb;
     }
 
     public String uploadSchema(SchemaRequest schemaRequest){
         UserDetails userDetails = getUserDetails();
         schemaRequest.setUsername(userDetails.getUsername());
+        HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
         try {
-            return manageDatabase.getHandleDbRequests().requestForSchema(schemaRequest);
+            String responseDb =  dbHandle.requestForSchema(schemaRequest);
+
+            return responseDb;
         }catch (Exception e){
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }

@@ -10323,8 +10323,8 @@ Table-Layout
   background: #f2f4f8; }
 
 .color-table.success-table thead th {
-  background-color: #21c1d6;
-  color: #fff; }
+  background-color: #fff;
+  color: #1e88e5; }
 
 .color-table.info-table thead th {
   background-color: #1e88e5;

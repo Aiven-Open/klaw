@@ -340,4 +340,5 @@ public class SelectDataJdbc {
     public List<Acl> selectSyncAcls(String env, String topic) {
         return aclRepo.findAllByEnvironmentAndTopicname(env, topic);
     }
+
 }

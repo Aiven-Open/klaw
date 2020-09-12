@@ -3,7 +3,6 @@ package com.kafkamgt.uiapi.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
-import com.kafkamgt.uiapi.dao.Topic;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.model.SyncTopicUpdates;
 import com.kafkamgt.uiapi.model.TopicInfo;
@@ -19,7 +18,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +55,7 @@ public class TopicControllerTest {
     public void createTopics() throws Exception {
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-        when(topicControllerService.createTopics(any())).thenReturn("success");
+        when(topicControllerService.createTopicsRequest(any())).thenReturn("success");
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/createTopics")

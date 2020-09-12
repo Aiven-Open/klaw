@@ -381,9 +381,8 @@ public class SelectDataTest {
         when(row.getString("roleid")).thenReturn("SUPERUSER", "SUPERUSER");
 
         List<Team> listTeams = selectData.selectTeamsOfUsers(username);
-        assertEquals(2, listTeams.size());
-        assertEquals("Team1", listTeams.get(0).getTeamname());
-        assertEquals("Team2", listTeams.get(1).getTeamname());
+        assertEquals(1, listTeams.size());
+        assertEquals("Team2", listTeams.get(0).getTeamname());
     }
 
     @Test

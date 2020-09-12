@@ -75,6 +75,8 @@ public class TopicAclControllerIT {
                 .webAppContextSetup(context)
                 .apply(springSecurity())
                 .build();
+//        when(clusterApiService.getClusterApiStatus())
+//                .thenReturn("ONLINE");
     }
 
     // Create topic requests

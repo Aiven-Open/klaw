@@ -70,7 +70,7 @@ public class UiControllerLoginTest {
 
     @Test
     public void login1() throws Exception {
-        mvcPerformAndAssert("/login", "loginnew.html");
+        mvcPerformAndAssert("/login", "login.html");
     }
 
     @Test
@@ -196,7 +196,7 @@ public class UiControllerLoginTest {
     @Test
     public void browseAcls()throws Exception {
         loginMock();
-        mvcPerformAndAssert("/browseAcls", "browseAcls.html");
+        mvcPerformAndAssert("/topicOverview", "browseAcls.html");
     }
 
     @Test

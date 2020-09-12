@@ -118,49 +118,8 @@
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
-					<a href="index"><img src="assets/images/logo_kw.png" width="20%" /></a>
-					<!--<li class="nav-item d-none d-md-block search-box"> <a-->
-							<!--class="nav-link d-none d-md-block text-muted waves-effect waves-dark"-->
-							<!--href="javascript:void(0)"><i class="ti-search"></i></a>-->
-						<!--<form class="app-search">-->
-							<!--<input type="text" class="form-control" placeholder="Search & enter"> <a-->
-								<!--class="srh-btn"><i class="ti-close"></i></a> </form>-->
-					<!--</li>-->
-					<!-- ============================================================== -->
-					<!-- Messages -->
-					<!-- ============================================================== -->
-					<!--<li class="nav-item dropdown mega-dropdown"> <a-->
-							<!--class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
-							<!--data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i-->
-							<!--class="mdi mdi-view-grid"></i></a>-->
-						<!--<div class="dropdown-menu scale-up-left">-->
-							<!--<ul class="mega-dropdown-menu row">-->
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 
-
-								<!--<li class="col-lg-3  mb-4">-->
-									<!--<h4 class="mb-3">CONTACT ADMIN (Coming soon..)</h4>-->
-									<!--&lt;!&ndash; Contact &ndash;&gt;-->
-									<!--<form>-->
-										<!--<div class="form-group">-->
-											<!--<input type="text" class="form-control" id="exampleInputname1"-->
-												   <!--placeholder="Enter Name"> </div>-->
-										<!--<div class="form-group">-->
-											<!--<input type="email" class="form-control" placeholder="Enter email">-->
-										<!--</div>-->
-										<!--<div class="form-group">-->
-                                                <!--<textarea class="form-control" id="exampleTextarea" rows="3"-->
-														  <!--placeholder="Message"></textarea>-->
-										<!--</div>-->
-										<!--<button type="submit" class="btn btn-info">Submit</button>-->
-									<!--</form>-->
-								<!--</li>-->
-
-							<!--</ul>-->
-						<!--</div>-->
-					<!--</li>-->
-					<!-- ============================================================== -->
-					<!-- End Messages -->
-					<!-- ============================================================== -->
 				</ul>
 				<!-- ============================================================== -->
 				<!-- User profile and search -->
@@ -211,6 +170,7 @@
 
 											</div>
 										</a>
+
 									</div>
 								</li>
 
@@ -431,7 +391,7 @@
 				<div class="col-lg-4 col-md-6">
 					<div class="card">
 						<div class="card-body">
-							<a href="browseAcls?topicname={{ resultBrowset[0].topicName}}">
+							<a href="topicOverview?topicname={{ resultBrowset[0].topicName}}">
 								<div class="row">
 									<div class="col-12">
 										<h3>{{ resultBrowset[0].topicName}}</h3>
@@ -472,7 +432,7 @@
 				<div class="col-lg-4 col-md-6" ng-show="resultBrowset[1].topicName != null">
 					<div class="card">
 						<div class="card-body">
-							<a href="browseAcls?topicname={{ resultBrowset[1].topicName}}">
+							<a href="topicOverview?topicname={{ resultBrowset[1].topicName}}">
 								<div class="row">
 									<div class="col-12">
 										<h3>{{ resultBrowset[1].topicName}}</h3>
@@ -512,7 +472,7 @@
 				<div class="col-lg-4 col-md-6" ng-show="resultBrowset[2].topicName != null">
 					<div class="card">
 						<div class="card-body">
-							<a href="browseAcls?topicname={{ resultBrowset[2].topicName}}">
+							<a href="topicOverview?topicname={{ resultBrowset[2].topicName}}">
 								<div class="row">
 									<div class="col-12">
 										<h3>{{ resultBrowset[2].topicName}}</h3>
@@ -558,21 +518,20 @@
             <button id="myBtn" type="button" class="btn btn-success btn-circle btn-lg float:right"><i
                     class="ti-upload"></i></button></a>
 
-			<div class="row">
-				<div class="dataTables_paginate paging_simple_numbers"  ng-show="resultPageSelected != null && resultBrowse.length>0">
-					<ul class="pagination">
-						<li class="paginate_button page-item active" disabled>
-							<a href="#" class="page-link">Pages</a>
-						</li>
-						<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
-							<a ng-show="resultPageSelected == allPages" href="#" class="page-link text-success" ng-click="getTopics(allPages,'true')">
-								<b>{{allPages}}</b></a>
-							<a ng-show="resultPageSelected != allPages" href="#" class="page-link" ng-click="getTopics(allPages,'true')">
-								{{allPages}}</a>
-						</li>
-					</ul>
-				</div>
+			<div class="dataTables_paginate paging_simple_numbers"  ng-show="resultPageSelected != null && resultBrowse.length>0">
+				<ul class="pagination">
+					<li class="paginate_button page-item active" disabled>
+						<a href="#" class="page-link">Pages</a>
+					</li>
+					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
+						<a ng-show="resultPageSelected == allPages" href="#" class="page-link text-success" ng-click="getTopics(allPages,'true')">
+							<b>{{allPages}}</b></a>
+						<a ng-show="resultPageSelected != allPages" href="#" class="page-link" ng-click="getTopics(allPages,'true')">
+							{{allPages}}</a>
+					</li>
+				</ul>
 			</div>
+
 			<!-- Row -->
 
 
@@ -583,7 +542,7 @@
 		<!-- footer -->
 		<!-- ============================================================== -->
 		<footer class="footer">
-			© 2020 Kafkawize by kafkawize.com
+			© 2020 Kafkawize by <a href="https://kafkawize.com">kafkawize.com</a>
 		</footer>
 		<!-- ============================================================== -->
 		<!-- End footer -->

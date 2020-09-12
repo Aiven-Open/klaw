@@ -190,6 +190,25 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
+            if(!$scope.addNewUser.emailid)
+            {
+                $scope.alertnote = "Email id is mandatory.";
+                $scope.showAlertToast();
+                return;
+            }
+            else if($scope.addNewUser.emailid.length < 7)
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
+                return;
+            }
+            else if(!$scope.addNewUser.emailid.includes("@"))
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
+                return;
+            }
+
             if(!$scope.addNewUser.role.value)
             {
                 $scope.alertnote = "Please select a role.";
@@ -202,11 +221,12 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['pwd'] = $scope.addNewUser.pwd;
             serviceInput['team'] = $scope.addNewUser.team.teamname;
             serviceInput['role'] = $scope.addNewUser.role.value;
-            serviceInput['mailid'] = "";
+            serviceInput['mailid'] = $scope.addNewUser.emailid;
 
             if (!window.confirm("Are you sure, you would like to add user : "
                 +  $scope.addNewUser.username + ": " +
                 "\nTeam : " + $scope.addNewUser.team.teamname +
+                "\nEmail : " + $scope.addNewUser.emailid +
                 "\nRole : " + $scope.addNewUser.role.value
                 )) {
                 return;
@@ -342,6 +362,8 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 $scope.teamname = output.teamname;
                  $scope.notifications = output.notifications;
                 $scope.notificationsAcls = output.notificationsAcls;
+                $scope.notificationsSchemas = output.notificationsSchemas;
+                $scope.notificationsUsers = output.notificationsUsers;
                 $scope.statusauthexectopics = output.statusauthexectopics;
                 $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                 $scope.alerttop = output.alertmessage;

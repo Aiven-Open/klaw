@@ -15,7 +15,7 @@ public class UiControllerLogin {
 
     private static Logger LOG = LoggerFactory.getLogger(UiControllerLogin.class);
 
-    private static final String defaultPage = "loginnew.html";
+    private static final String defaultPage = "login.html";
 
     private String checkAuth(String uri){
         try {
@@ -146,7 +146,7 @@ public class UiControllerLogin {
         return checkAuth("browseTopics.html");
     }
 
-    @RequestMapping(value = "/browseAcls", method = RequestMethod.GET)
+    @RequestMapping(value = "/topicOverview", method = RequestMethod.GET)
     public String browseAcls(ModelMap model) {
         return checkAuth("browseAcls.html");
     }
