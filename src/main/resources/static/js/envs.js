@@ -48,6 +48,22 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             );
         };
 
+        $scope.getOtherEnvs = function() {
+
+                    $http({
+                        method: "GET",
+                        url: "getOtherEnvs",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $scope.allotherenvs = output;
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+                };
+
         $scope.deleteEnv = function(idval) {
 
         if (!window.confirm("Are you sure, you would like to delete the cluster : "
@@ -80,48 +96,48 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 if($scope.addNewEnv.defparts.length<=0 || $scope.addNewEnv.defparts<=0)
                 {
                     $scope.alertnote = "Default partitions should not be empty and should be greater than 0";
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                     return;
                 }
 
                 if($scope.addNewEnv.defmaxparts.length<=0 || $scope.addNewEnv.defmaxparts<=0)
                 {
                     $scope.alertnote = "Maximum partitions should not be empty and should be greater than 0";
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                     return;
                 }
                 if($scope.addNewEnv.defrepfctr.length<=0 || $scope.addNewEnv.defrepfctr<=0)
                 {
                     $scope.alertnote = "Default replication factor should not be empty and should be greater than 0";
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                     return;
                 }
 
                 if($scope.addNewEnv.type == undefined)
                     {
                         $scope.alertnote = "Please select the cluster type";
-                        $scope.showAlertToast();
+                        // $scope.showAlertToast();
                         return;
                     }
 
                 if($scope.addNewEnv.host == undefined)
                     {
                         $scope.alertnote = "Please fill in host";
-                        $scope.showAlertToast();
+                        // $scope.showAlertToast();
                         return;
                     }
 
                 if($scope.addNewEnv.envname == undefined)
                 {
                     $scope.alertnote = "Please fill in a name for cluster";
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                     return;
                 }
 
                 if($scope.addNewEnv.envname.length > 3)
                 {
                     $scope.alertnote = "Cluster name cannot be more than 3 characters.";
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                     return;
                 }
 
@@ -144,13 +160,13 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New cluster added: "+output.result;
-                    $scope.showSuccessToast();
+                    // $scope.showSuccessToast();
                 }).error(
                     function(error)
                     {
                      $scope.alert = error;
                      $scope.alertnote = error;
-                     $scope.showAlertToast();
+                     // $scope.showAlertToast();
                     }
                 );
 
@@ -185,6 +201,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.userrole = output.userrole;
                     $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;

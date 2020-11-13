@@ -4,6 +4,7 @@ package com.kafkamgt.uiapi.config;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.service.UtilService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.security.config.annotation.authentication.configurers
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -34,10 +34,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UtilService utils;
 
-    @Value("${custom.org.name}")
+    @Value("${kafkawize.org.name}")
     private String orgName;
 
-    @Value("${custom.invalidkey.msg}")
+    @Value("${kafkawize.invalidkey.msg}")
     private String invalidKeyMessage;
 
     @Autowired
@@ -69,14 +69,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         PasswordEncoder encoder =
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        List<UserInfo> users = new ArrayList<>();
+        List<UserInfo> users ;
         if(orgName.equals("Your company name."))
         {
             LOG.error("Invalid organization configured !!");
             System.exit(0);
             throw new Exception("Invalid organization configured !!");
         }
-
+        if(! (environment.getActiveProfiles().length >0
+                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+            HashMap<String, String> licenseMap = utils.validateLicense();
+            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+                LOG.error(invalidKeyMessage);
+                System.exit(0);
+                throw new Exception(invalidKeyMessage);
+            }
+        }
         try {
             users = manageTopics.selectAllUsersInfo();
         }catch(Exception e){
@@ -93,17 +101,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         userDetailsBuilder = auth.inMemoryAuthentication()
                 .passwordEncoder(encoder)
                 .withUser(userInfo.getUsername())
-                .password(encoder.encode(userInfo.getPwd()))
+                .password(encoder.encode(base64DecodePwd((userInfo.getPwd()))))
                 .roles(userInfo.getRole());
 
         while(iter.hasNext()){
-            userInfo = iter.next();
-            userDetailsBuilder
-                    .and()
-                    .withUser(userInfo.getUsername())
-                    .password(encoder.encode(userInfo.getPwd()))
-                    .roles(userInfo.getRole());
-        }
+             userInfo = iter.next();
+             userDetailsBuilder
+                     .and()
+                     .withUser(userInfo.getUsername())
+                     .password(encoder.encode(base64DecodePwd(userInfo.getPwd())))
+                     .roles(userInfo.getRole());
+         }
 
         auth.userDetailsService(inMemoryUserDetailsManager());
     }
@@ -118,11 +126,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 PasswordEncoderFactories.createDelegatingPasswordEncoder();
         while(iter.hasNext()){
             userInfo = iter.next();
-            globalUsers.put(userInfo.getUsername(),encoder.encode(userInfo.getPwd())+","+
+            globalUsers.put(userInfo.getUsername(),
+                    encoder.encode(base64DecodePwd(userInfo.getPwd()))+","+
             userInfo.getRole()+",enabled");
         }
 
         return new InMemoryUserDetailsManager(globalUsers);
     }
 
+    private String base64DecodePwd(String pwd){
+        return new String(Base64.getDecoder().decode(pwd));
+    }
 }

@@ -1,15 +1,11 @@
 package com.kafkamgt.uiapi.helpers.db.cassandra;
 
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.Clause;
 import com.datastax.driver.core.querybuilder.Delete;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
 import com.kafkamgt.uiapi.dao.Acl;
-import com.kafkamgt.uiapi.dao.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +20,7 @@ public class DeleteData {
 
     Session session;
 
-    @Value("${custom.cassandradb.keyspace:@null}")
+    @Value("${kafkawize.cassandradb.keyspace:@null}")
     String keyspace;
 
     public DeleteData(){}

@@ -41,19 +41,19 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     private Cluster cluster;
 
-    @Value("${custom.cassandradb.url:@null}")
+    @Value("${kafkawize.cassandradb.url:@null}")
     private String clusterConnHost;
 
-    @Value("${custom.cassandradb.port:9042}")
+    @Value("${kafkawize.cassandradb.port:9042}")
     private int clusterConnPort;
 
-    @Value("${custom.cassandradb.keyspace:@null}")
+    @Value("${kafkawize.cassandradb.keyspace:@null}")
     private String keyspace;
 
-    @Value("${custom.dbscripts.execution:auto}")
+    @Value("${kafkawize.dbscripts.execution:auto}")
     private String dbScriptsExecution;
 
-    @Value("${custom.dbscripts.dropall_recreate:false}")
+    @Value("${kafkawize.dbscripts.dropall_recreate:false}")
     private String dbScriptsDropAllRecreate;
 
     public HandleDbRequestsCassandra(){
@@ -155,6 +155,7 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
     public String addToSyncacls(List<Acl> acls) {
         return cassandraInsertHelper.insertIntoAclsSOT(acls,true);
     }
+
 
     /*--------------------Select */
 

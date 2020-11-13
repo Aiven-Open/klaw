@@ -57,6 +57,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.userrole = output.userrole;
                     $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;
@@ -145,14 +146,14 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 
                 $scope.alert = "Acl Approve Request : "+output.result;
                 $scope.getMyAclRequests();
-                $scope.showSuccessToast();
+                // $scope.showSuccessToast();
 
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
                     $scope.alertnote = error;
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                 }
             );
         }
@@ -171,14 +172,14 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 
                          $scope.alert = "Acl Decline Request : "+output.result;
                          $scope.getMyAclRequests();
-                         $scope.showSuccessToast();
+                         // $scope.showSuccessToast();
 
                      }).error(
                          function(error)
                          {
                              $scope.alert = error;
                              $scope.alertnote = error;
-                             $scope.showAlertToast();
+                             // $scope.showAlertToast();
                          }
                      );
                  }

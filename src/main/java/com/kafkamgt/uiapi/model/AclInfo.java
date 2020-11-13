@@ -21,4 +21,5 @@ public class AclInfo {
     private String totalNoPages;
     private List<String> allPageNos;
     private List<String> possibleTeams;
+    private boolean showDeleteAcl;
 }

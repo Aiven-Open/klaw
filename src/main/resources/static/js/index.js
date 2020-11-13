@@ -92,6 +92,7 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.userrole = output.userrole;
                    $scope.myteamtopics = output.myteamtopics;
                    $scope.kafkawizeversion = output.kafkawizeversion;
                    $scope.notifications = output.notifications;

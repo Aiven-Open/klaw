@@ -90,7 +90,7 @@ public class DeleteDataJdbcTest {
     @Test
     public void deletePrevAclRecs() {
         List<Acl> acls = utilMethods.getAclsForDelete();
-        when(aclRepo.findAll()).thenReturn(utilMethods.getAllAcls());
+        //when(aclRepo.findAll()).thenReturn(utilMethods.getAllAcls());
 
         String result = deleteDataJdbc.deletePrevAclRecs(acls);
         assertEquals("success", result);

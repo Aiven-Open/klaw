@@ -69,6 +69,17 @@ public class UtilMethods {
         return userInfoList;
     }
 
+    public List<UserInfoModel> getUserInfoListModel(String username, String role){
+        List<UserInfoModel> userInfoList = new ArrayList<>();
+        UserInfoModel userInfo = new UserInfoModel();
+        userInfo.setTeam("Team1");
+        userInfo.setUsername(username);
+        userInfo.setRole(role);
+        userInfoList.add(userInfo);
+
+        return userInfoList;
+    }
+
     public List<ActivityLog> getLogs(){
         List<ActivityLog> activityLogs = new ArrayList<>();
         ActivityLog activityLog = new ActivityLog();
@@ -103,6 +114,7 @@ public class UtilMethods {
 
         topicRequest.setTopicPK(topicPK);
         topicRequest.setTeamname("Team1");
+        topicRequest.setEnvironment("DEV");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
     }

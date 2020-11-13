@@ -12,10 +12,10 @@ import java.util.List;
 @Configuration
 public class HandleDbRequestsJdbc implements HandleDbRequests {
 
-    @Value("${custom.dbscripts.execution:auto}")
+    @Value("${kafkawize.dbscripts.execution:auto}")
     String dbScriptsExecution;
 
-    @Value("${custom.dbscripts.dropall_recreate:false}")
+    @Value("${kafkawize.dbscripts.dropall_recreate:false}")
     String dbScriptsDropAllRecreate;
 
     @Autowired

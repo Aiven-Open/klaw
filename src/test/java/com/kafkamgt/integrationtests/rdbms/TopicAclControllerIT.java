@@ -186,24 +186,6 @@ public class TopicAclControllerIT {
         assertThat(res, CoreMatchers.containsString("Team1"));
     }
 
-    // Update team of a topic
-    @Test
-    public void test007() throws Exception {
-        List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
-        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncTopicUpdates);
-
-        login("superuser","user", "SUPERUSER");
-        String response = mvc.perform(MockMvcRequestBuilders
-                .post("/updateSyncTopics").with(user("superuser").password("user").roles("SUPERUSER"))
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        assertThat(response, CoreMatchers.containsString("success"));
-    }
-
     // delete a topic request of his own
     @Test
     public void test008() throws Exception {
@@ -235,7 +217,8 @@ public class TopicAclControllerIT {
     // get topics from cluster
     @Test
     public void test009() throws Exception {
-        when(clusterApiService.getAllTopics(anyString())).thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
+        when(clusterApiService.getAllTopics(anyString(), eq("PLAINTEXT")))
+                .thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopics").with(user("uiuser1").password("user"))
@@ -255,7 +238,8 @@ public class TopicAclControllerIT {
     //get only topic names
     @Test
     public void test010() throws Exception {
-        when(clusterApiService.getAllTopics(anyString())).thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
+        when(clusterApiService.getAllTopics(anyString(), eq("PLAINTEXT")))
+                .thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopicsOnly").with(user("uiuser1").password("user"))
@@ -267,25 +251,6 @@ public class TopicAclControllerIT {
 
         List<String> response = new ObjectMapper().readValue(res, List.class);
         assertEquals(1, response.size());
-    }
-
-    // get all topics which can be updated with new team ids
-    @Test
-    public void test011() throws Exception {
-        when(clusterApiService.getAllTopics(anyString())).thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
-
-        String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getSyncTopics").with(user("uiuser1").password("user"))
-                .param("env","DEV")
-                .param("pageNo","1")
-                .param("topicnamesearch","testtopic")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(10, response.size());
     }
 
 
@@ -386,7 +351,7 @@ public class TopicAclControllerIT {
     // Request for a acl
     @Test
     public void test06() throws Exception {
-        AclRequests addAclRequest = utilMethods.getAclRequest("testtopic1");
+        AclRequests addAclRequest = utilMethods.getAclRequest("testtopic");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
 
         String response = mvc.perform(MockMvcRequestBuilders
@@ -454,34 +419,13 @@ public class TopicAclControllerIT {
         assertThat(responseNew, CoreMatchers.containsString("success"));
     }
 
-    // update acls with team - sync
-    @Test
-    public void test09() throws Exception {
-
-        List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
-
-        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
-
-        login("superuser","user", "SUPERUSER");
-
-        String response = mvc.perform(MockMvcRequestBuilders
-                .post("/updateSyncAcls").with(user("superuser").password("user").roles("SUPERUSER"))
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        assertThat(response, CoreMatchers.containsString("success"));
-    }
-
     // getacls with topic search filter
     @Test
     public void test11() throws Exception {
 
         List<HashMap<String,String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
 
-        when(clusterApiService.getAcls(anyString()))
+        when(clusterApiService.getAcls(anyString(), eq("PLAINTEXT")))
                 .thenReturn(aclInfo);
 
         String res = mvc.perform(get("/getAcls").with(user("uiuser1").password("user"))
@@ -493,26 +437,6 @@ public class TopicAclControllerIT {
 
         TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
         assertEquals(1, response.getAclInfoList().size());
-    }
-
-    // get acls to be synced - retrieve from Source of truth
-    @Test
-    public void test13() throws Exception {
-        List<HashMap<String,String>> aclInfo = utilMethods.getClusterAcls();
-
-        when(clusterApiService.getAcls(anyString()))
-                .thenReturn(aclInfo);
-
-        String res = mvc.perform(get("/getSyncAcls").with(user("superuser").password("user").roles("SUPERUSER"))
-                .param("env","DEV")
-                .param("pageNo","1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(1, response.size());
     }
 
     private void login(String user, String pwd, String role) throws Exception {

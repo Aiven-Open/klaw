@@ -28,7 +28,7 @@ public class LoadDbJdbc {
     @Autowired(required=false)
     private JdbcTemplate jdbcTemplate;
 
-    @Value("${custom.kafkawize.version:4.1}")
+    @Value("${kafkawize.version:4.4}")
     private String kafkawizeVersion;
 
     @Autowired
@@ -147,9 +147,7 @@ public class LoadDbJdbc {
                     try {
                         jdbcTemplate.execute(execQuery.trim());
                     }catch (Exception sqlException){
-                        if(sqlException instanceof SQLIntegrityConstraintViolationException){
-                            //do nothing
-                        }else throw sqlException;
+                        throw sqlException;
                     }
                     execQuery = "";
                 }

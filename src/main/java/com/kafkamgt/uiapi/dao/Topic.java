@@ -43,7 +43,7 @@ public class Topic implements Serializable {
     }
 
     public String getEnvironment() {
-        if(this.topicPK == null)
+        if(this.environment != null)
             return this.environment;
         else
             return this.topicPK.getEnvironment();

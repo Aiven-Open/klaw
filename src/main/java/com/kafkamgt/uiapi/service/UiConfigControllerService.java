@@ -1,11 +1,10 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.config.ManageDatabase;
-import com.kafkamgt.uiapi.dao.ActivityLog;
-import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.Team;
-import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.UserInfoModel;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.GsonJsonParser;
@@ -18,19 +17,24 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.springframework.beans.BeanUtils.copyProperties;
+
+
 @Service
+@Slf4j
 public class UiConfigControllerService {
 
-    @Value("${custom.syncdata.cluster:DEV}")
+    @Value("${kafkawize.syncdata.cluster:DEV}")
     private String syncCluster;
 
-    @Value("${custom.request.topics.envs}")
+    @Value("${kafkawize.request.topics.envs}")
     private String requestTopicsEnvs;
 
-    @Value("${custom.envs.order}")
+    @Value("${kafkawize.envs.order}")
     private String orderOfEnvs;
 
     @Autowired
@@ -55,6 +59,12 @@ public class UiConfigControllerService {
     public void setServices(ClusterApiService clusterApiService, UtilService utilService){
         this.clusterApiService = clusterApiService;
         this.utilService = utilService;
+    }
+
+    @PostConstruct
+    public void initialLoadClusters(){
+        log.info("Loading clusters");
+        getEnvs(false);
     }
 
     public Env getClusterApiStatus(){
@@ -123,6 +133,29 @@ public class UiConfigControllerService {
         return Arrays.asList(requestTopicsEnvs.split(","));
     }
 
+    public List<String> getOtherEnvs() {
+
+        List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
+        List<Env> listEnvs = manageDatabase.getHandleDbRequests().selectAllKafkaEnvs();
+
+        List<String> newList = new ArrayList();
+        boolean envFound;
+
+        for (String env : orderedEnv) {
+            envFound = false;
+            for (Env listEnv : listEnvs) {
+                if(env.equals(listEnv.getName())) {
+                    envFound = true;
+                    break;
+                }
+            }
+            if(!envFound)
+                newList.add(env);
+        }
+
+        return newList;
+    }
+
     public List<Env> getEnvs(boolean envStatus) {
         List<Env> listEnvs = manageDatabase.getHandleDbRequests().selectAllKafkaEnvs();
 
@@ -133,10 +166,8 @@ public class UiConfigControllerService {
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status;
-            if(oneEnv.getProtocol().equalsIgnoreCase("plain"))
-                status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort());
-            else
-                status = "NOT_KNOWN";
+            status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort(),
+                    oneEnv.getProtocol());
             oneEnv.setEnvStatus(status);
             newListEnvs.add(oneEnv);
         }
@@ -157,7 +188,7 @@ public class UiConfigControllerService {
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status = null;
-           if (oneEnv.getProtocol().equalsIgnoreCase("plain"))
+           if (oneEnv.getProtocol().equalsIgnoreCase("plaintext"))
                 status = clusterApiService.getSchemaClusterStatus(oneEnv.getHost() + ":" + oneEnv.getPort());
             else
                 status = "NOT_KNOWN";
@@ -256,11 +287,17 @@ public class UiConfigControllerService {
         if(userId.equals("superuser") || userDetails.getUsername().equals(userId))
             return envAddResult;
 
+        inMemoryUserDetailsManager.deleteUser(User.withUsername(userId).toString());
+
         try {
             return "{\"result\":\""+manageDatabase.getHandleDbRequests().deleteUserRequest(userId)+"\"}";
         }catch (Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
+    }
+
+    private String base64EncodePwd(String pwd){
+        return Base64.getEncoder().encodeToString(pwd.getBytes());
     }
 
     public String addNewUser(UserInfo newUser){
@@ -271,10 +308,10 @@ public class UiConfigControllerService {
         try {
             PasswordEncoder encoder =
                     PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-            inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername())
-                    .password(encoder.encode(newUser.getPwd()))
-                    .roles(newUser.getRole()).build());
+                inMemoryUserDetailsManager.createUser(User.withUsername(newUser.getUsername())
+                        .password(encoder.encode(newUser.getPwd()))
+                        .roles(newUser.getRole()).build());
+                newUser.setPwd(base64EncodePwd(newUser.getPwd()));
 
             HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
@@ -313,15 +350,24 @@ public class UiConfigControllerService {
                     pwdChange);
             inMemoryUserDetailsManager.updateUser(userDetailsUpdated);
 
-            return "{\"result\":\"" + manageDatabase.getHandleDbRequests().updatePassword(userDetails.getUsername(), pwdChange) + "\"}";
+            return "{\"result\":\"" + manageDatabase.getHandleDbRequests()
+                    .updatePassword(userDetails.getUsername(), base64EncodePwd(pwdChange)) + "\"}";
         }catch(Exception e){
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
 
-    public List<UserInfo> showUsers(){
+    public List<UserInfoModel> showUsers(){
+        List<UserInfoModel> userInfoModels = new ArrayList<>();
 
-        return manageDatabase.getHandleDbRequests().selectAllUsersInfo();
+        List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersInfo();
+        userList.forEach(userListItem -> {
+            UserInfoModel userInfoModel = new UserInfoModel();
+            copyProperties(userListItem,userInfoModel);
+            userInfoModels.add(userInfoModel);
+        });
+
+        return userInfoModels;
     }
 
     public UserInfo getMyProfileInfo(){

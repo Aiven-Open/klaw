@@ -30,13 +30,13 @@ public class ClusterApiService {
     @Autowired
     private final UtilService utilService;
 
-    @Value("${custom.clusterapi.url}")
+    @Value("${kafkawize.clusterapi.url}")
     private String clusterConnUrl;
 
-    @Value("${custom.clusterapi.username}")
+    @Value("${kafkawize.clusterapi.username}")
     private String clusterApiUser;
 
-    @Value("${custom.clusterapi.password}")
+    @Value("${kafkawize.clusterapi.password}")
     private String clusterApiPwd;
 
     public ClusterApiService(UtilService utilService){
@@ -90,12 +90,12 @@ public class ClusterApiService {
         return clusterStatus;
     }
 
-    String getKafkaClusterStatus(String bootstrapHost) {
+    String getKafkaClusterStatus(String bootstrapHost, String protocol) {
         String clusterStatus ;
 
         try {
             String URI_ENV_STATUS = "/topics/getStatus/";
-            String uri = clusterConnUrl + URI_ENV_STATUS + bootstrapHost;
+            String uri = clusterConnUrl + URI_ENV_STATUS + bootstrapHost + "/"+protocol;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
             HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
@@ -113,11 +113,11 @@ public class ClusterApiService {
         return clusterStatus;
     }
 
-    public List<HashMap<String,String>> getAcls(String bootstrapHost) throws KafkawizeException {
+    public List<HashMap<String,String>> getAcls(String bootstrapHost, String protocol) throws KafkawizeException {
         List<HashMap<String, String>> aclListOriginal;
         try {
             String URI_GET_ACLS = "/topics/getAcls/";
-            String uri = clusterConnUrl + URI_GET_ACLS + bootstrapHost;
+            String uri = clusterConnUrl + URI_GET_ACLS + bootstrapHost + "/"+protocol;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
             HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
@@ -135,11 +135,11 @@ public class ClusterApiService {
         return aclListOriginal;
     }
 
-    public List<HashMap<String, String>> getAllTopics(String bootstrapHost) throws Exception{
+    public List<HashMap<String, String>> getAllTopics(String bootstrapHost, String protocol) throws Exception{
         List<HashMap<String, String>> topicsList ;
         try {
             String URI_GET_TOPICS = "/topics/getTopics/";
-            String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS + bootstrapHost;
+            String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS + bootstrapHost + "/"+protocol;
             RestTemplate restTemplate = utilService.getRestTemplate();
 
             HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
@@ -169,13 +169,19 @@ public class ClusterApiService {
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicRequest.getEnvironment());
             String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
             params.add("env", bootstrapHost);
+            params.add("protocol", envSelected.getProtocol());
             params.add("topicName", topicName);
 
             String URI_CREATE_TOPICS = "/topics/createTopics";
+            String URI_DELETE_TOPICS = "/topics/deleteTopics";
             String uri;
-            uri = clusterConnUrl + URI_CREATE_TOPICS;
-            params.add("partitions", topicRequest.getTopicpartitions());
-            params.add("rf", topicRequest.getReplicationfactor());
+            if(topicRequest.getTopictype().equals("Create")) {
+                uri = clusterConnUrl + URI_CREATE_TOPICS;
+                params.add("partitions", topicRequest.getTopicpartitions());
+                params.add("rf", topicRequest.getReplicationfactor());
+            }
+            else
+                uri = clusterConnUrl + URI_DELETE_TOPICS;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -197,8 +203,12 @@ public class ClusterApiService {
             String uri;
 
             String URI_CREATE_ACLS = "/topics/createAcls";
+            String URI_DELETE_ACLS = "/topics/deleteAcls";
 
-            uri = clusterConnUrl + URI_CREATE_ACLS;
+            if(aclReq.getAclType().equals("Create"))
+                uri = clusterConnUrl + URI_CREATE_ACLS;
+            else
+                uri = clusterConnUrl + URI_DELETE_ACLS;
 
             RestTemplate restTemplate = utilService.getRestTemplate();
 
@@ -207,6 +217,7 @@ public class ClusterApiService {
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
             String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
             params.add("env", bootstrapHost);
+            params.add("protocol", envSelected.getProtocol());
             params.add("topicName", aclReq.getTopicname());
             params.add("consumerGroup", aclReq.getConsumergroup());
             params.add("aclType", aclReq.getTopictype());

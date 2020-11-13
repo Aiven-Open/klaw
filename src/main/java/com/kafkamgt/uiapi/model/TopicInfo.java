@@ -15,4 +15,6 @@ public class TopicInfo {
     private String teamname;
     private String cluster;
     private List<String> environmentsList;
+    private boolean showDeleteTopic;
+    private boolean topicDeletable;
 }

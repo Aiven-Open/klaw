@@ -1,5 +1,8 @@
 package com.kafkamgt.uiapi.controller;
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.service.UtilService;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -38,6 +41,18 @@ public class UiControllerLoginTest {
     private
     UserDetails userDetails;
 
+    @Mock
+    private
+    HandleDbRequests handleDbRequests;
+
+    @Mock
+    private
+    ManageDatabase manageDatabase;
+
+    @Mock
+    private
+    UserInfo userInfo;
+
     private MockMvc mvc;
 
     @Before
@@ -47,6 +62,7 @@ public class UiControllerLoginTest {
                 .standaloneSetup(uiControllerLogin)
                 .dispatchOptions(true)
                 .build();
+        ReflectionTestUtils.setField(uiControllerLogin, "manageDatabase", manageDatabase);
     }
 
     private void mvcPerformAndAssert(String uri, String fwdedUrl) throws Exception {
@@ -65,6 +81,8 @@ public class UiControllerLoginTest {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+        when(handleDbRequests.getUsersInfo(userDetails.getUsername())).thenReturn(userInfo);
         SecurityContextHolder.setContext(securityContext);
     }
 
@@ -80,6 +98,8 @@ public class UiControllerLoginTest {
         SecurityContext securityContext = Mockito.mock(SecurityContext.class);
         when(securityContext.getAuthentication()).thenReturn(authentication);
         when(authentication.getPrincipal()).thenReturn(userDetails);
+        when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+        when(handleDbRequests.getUsersInfo(userDetails.getUsername())).thenReturn(userInfo);
         SecurityContextHolder.setContext(securityContext);
 
         mvcPerformAndAssert("/login", "index");

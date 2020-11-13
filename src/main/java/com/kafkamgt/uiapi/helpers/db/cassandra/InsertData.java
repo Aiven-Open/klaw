@@ -27,10 +27,10 @@ public class InsertData {
     private static BoundStatement boundStatementInsertIntoRequestTopic, boundStatementInsertIntoTopicSOT,
             boundStatementInsertIntoAclsSOT, boundStatementAclRequest,
             boundStatementInsertAclsSOT, boundStatementTopicsSOT, boundStatementInsertIntoActivityLogAcl,
-            boundStatementSchemaReqs, boundStatementSchemas, boundStatementUsers, boundStatementRegisterUsers,
+            boundStatementSchemaReqs, boundStatementSchemas, boundStatementUsers,
             boundStatementTeams,  boundStatementEnvs;
 
-    @Value("${custom.cassandradb.keyspace:@null}")
+    @Value("${kafkawize.cassandradb.keyspace:@null}")
     private String keyspace;
 
     SelectData cassandraSelectHelper;

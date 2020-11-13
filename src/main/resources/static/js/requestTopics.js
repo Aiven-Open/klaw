@@ -54,7 +54,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             if(!$scope.addTopic.topicpartitions || $scope.addTopic.topicpartitions == 'selected'){
                         //alert("Please fill in topic partitions");
                         $scope.alertnote = "Please select topic partitions.";
-                        $scope.showAlertToast();
+                         $scope.showAlertToast();
                         return;
                     }
 
@@ -81,7 +81,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     $scope.alert = error;
                     $scope.alertnote = error;
                    // alert("Error : "+error.value);
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                 }
             );
 
@@ -137,6 +137,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                    $scope.statusauth = output.status;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.userrole = output.userrole;
                    $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;

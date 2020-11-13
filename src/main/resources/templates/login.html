@@ -16,7 +16,7 @@
 
     <link href="assets/css/style.css" rel="stylesheet">
     <!-- You can change the theme colors from here -->
-    <link href="assets/css/colors/default.css" id="theme" rel="stylesheet">
+    <link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
 
     <script src="lib/angular.min.js"></script>
     <script src="lib/angular-route.min.js"></script>
@@ -45,78 +45,85 @@
     <!-- ============================================================== -->
     <!-- Topbar header - style you can find in pages.scss -->
     <!-- ============================================================== -->
-<!--    <header class="topbar">-->
-<!--        <nav class="navbar top-navbar navbar-expand-md navbar-light">-->
-<!--            -->
-<!--            <div class="navbar-header">-->
-<!--                <a class="navbar-brand" href="dashboard">-->
-<!--                    <b>-->
-<!--                    -->
-<!--                </b>-->
-<!--                    -->
-<!--                   <span>-->
-<!--                           -->
-<!--                            <img src="assets/images/logo-dark.png" alt="homepage" class="dark-logo" />-->
-<!--                    -->
-<!--                            <img src="assets/images/logo-light.png" class="light-logo" alt="homepage" /></span>-->
-<!--                </a>-->
-<!--            </div>-->
-<!--            -->
-<!--            <div class="navbar-collapse">-->
-<!--                -->
-<!--                <ul class="navbar-nav mr-auto mt-md-0">-->
-<!--                    &lt;!&ndash; This is  &ndash;&gt;-->
-<!--                    <li class="nav-item"> <a-->
-<!--                            class="nav-link nav-toggler d-block d-md-none text-muted waves-effect waves-dark"-->
-<!--                            href="javascript:void(0)"><i class="mdi mdi-menu"></i></a> </li>-->
-<!--                    <li class="nav-item"> <a-->
-<!--                            class="nav-link sidebartoggler d-none d-md-block text-muted waves-effect waves-dark"-->
-<!--                            href="javascript:void(0)"><i class="ti-menu"></i></a> </li>-->
-<!--                    &lt;!&ndash; ============================================================== &ndash;&gt;-->
-<!--                    &lt;!&ndash; Search &ndash;&gt;-->
-<!--                    &lt;!&ndash; ============================================================== &ndash;&gt;-->
-<!--                    <a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>-->
+    <header class="topbar">
+        <nav class="navbar top-navbar navbar-expand-md navbar-light">
+            <!-- ============================================================== -->
+            <!-- Logo -->
+            <!-- ============================================================== -->
 
-<!--                    &lt;!&ndash; ============================================================== &ndash;&gt;-->
-<!--                    &lt;!&ndash; End Messages &ndash;&gt;-->
-<!--                    &lt;!&ndash; ============================================================== &ndash;&gt;-->
-<!--                </ul>-->
-<!--                &lt;!&ndash; ============================================================== &ndash;&gt;-->
-<!--                &lt;!&ndash; User profile and search &ndash;&gt;-->
-<!--                &lt;!&ndash; ============================================================== &ndash;&gt;-->
-<!--                <ul class="navbar-nav my-lg-0">-->
+            <!-- ============================================================== -->
+            <!-- End Logo -->
+            <!-- ============================================================== -->
+            <div class="navbar-collapse">
+                <!-- ============================================================== -->
+                <!-- toggle and nav items -->
+                <!-- ============================================================== -->
+                <ul class="navbar-nav mr-auto mt-md-0">
+                    <!-- This is  -->
 
-<!--                    <li class="nav-item">-->
-<!--                        <table width="100%">-->
-<!--                            <tr>-->
-<!--                                <td></td>-->
+                    <!-- ============================================================== -->
+                    <!-- Search -->
+                    <!-- ============================================================== -->
+                    <a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
 
-<!--&lt;!&ndash;                                <td><a class="nav-link" href="mailto:{{}}">&ndash;&gt;-->
-<!--&lt;!&ndash;                                    <span style="color:white">ContactAdmin</span></a></td>&ndash;&gt;-->
+                    <!-- ============================================================== -->
+                    <!-- End Messages -->
+                    <!-- ============================================================== -->
+                </ul>
+                <!-- ============================================================== -->
+                <!-- User profile and search -->
+                <!-- ============================================================== -->
+                <ul class="navbar-nav my-lg-0">
 
-<!--                                <td><a class="nav-link" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">-->
-<!--                                    <span style="color:white">Docs</span></a></td>-->
+                    <li class="nav-item">
+                        <table width="100%">
+                            <tr>
+                                <td></td>
 
-<!--                            </tr>-->
-<!--                        </table>-->
-<!--                    </li>-->
-<!--                </ul>-->
-<!--            </div>-->
-<!--        </nav>-->
-<!--    </header>-->
+<!--                                <td><a class="nav-link" href="mailto:{{}}">-->
+<!--                                    <span style="color:white">ContactAdmin</span></a></td>-->
+
+                                <td><a class="nav-link" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">
+                                    <span style="color:white">Docs</span></a></td>
+
+                            </tr>
+                        </table>
+                    </li>
+
+                    <!--                    <li class="nav-item dropdown">-->
+                    <!--                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
+                    <!--                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+                    <!--                            <i class="mdi mdi-account-circle"></i>-->
+                    <!--                        </button></a>-->
+
+                    <!--                    </li>-->
+                    <!-- ============================================================== -->
+                    <!-- Language -->
+                    <!-- ============================================================== -->
+                    <!--                    <li class="nav-item dropdown">-->
+                    <!--                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
+                    <!--                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+                    <!--                            <i class="mdi mdi-help-circle"></i></a>-->
+                    <!--                        <div class="dropdown-menu dropdown-menu-right scale-up">-->
+                    <!--                            <a class="dropdown-item" target="_blank" href="contactus">Help</a>  </div>-->
+                    <!--                    </li>-->
+                </ul>
+            </div>
+        </nav>
+    </header>
     <!-- ============================================================== -->
     <!-- End Topbar header -->
     <!-- ============================================================== -->
     <!-- ============================================================== -->
     <!-- Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
-<!--    <aside class="left-sidebar">-->
-<!--        &lt;!&ndash; Sidebar scroll&ndash;&gt;-->
-<!--        <div class="scroll-sidebar">-->
+    <aside class="left-sidebar">
+        <!-- Sidebar scroll-->
+        <div class="scroll-sidebar">
 
-<!--        </div>-->
-<!--        &lt;!&ndash; End Sidebar scroll&ndash;&gt;-->
-<!--    </aside>-->
+        </div>
+        <!-- End Sidebar scroll-->
+    </aside>
     <!-- ============================================================== -->
     <!-- End Left Sidebar - style you can find in sidebar.scss  -->
     <!-- ============================================================== -->
@@ -168,6 +175,7 @@
                     <div th:if="${param.logout}">
                         You have been logged out.
                     </div>
+
                 </div>
             </div>
         </div>

@@ -70,27 +70,7 @@ public class AclControllerTest {
         assertEquals("success", response);
     }
 
-    @Test
-    public void updateSyncAcls() throws Exception {
-        List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
 
-        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
-        HashMap<String, String> result = new HashMap<>();
-        result.put("result","success");
-        when(aclControllerService.updateSyncAcls(any())).thenReturn(result);
-
-        String response = mvc.perform(MockMvcRequestBuilders
-                .post("/updateSyncAcls")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        HashMap<String, String> actualResult = new ObjectMapper().readValue(response, new TypeReference<HashMap<String,String>>(){});
-
-        assertEquals("success", actualResult.get("result"));
-    }
 
     @Test
     public void getAclRequests() throws Exception {
@@ -208,23 +188,5 @@ public class AclControllerTest {
                 .andReturn().getResponse().getContentAsString();
     }
 
-    @Test
-    public void getSyncAcls() throws Exception {
-        List<AclInfo> aclInfo = utilMethods.getAclInfoList();
 
-        when(aclControllerService.getSyncAcls(anyString(), anyString(), any()))
-                .thenReturn(aclInfo);
-
-        String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getSyncAcls")
-                .param("env","DEV")
-                .param("pageNo","1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(1, response.size());
-    }
 }

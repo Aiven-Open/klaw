@@ -25,7 +25,7 @@ public class UpdateData {
 
     Session session;
 
-    @Value("${custom.cassandradb.keyspace:@null}")
+    @Value("${kafkawize.cassandradb.keyspace:@null}")
     String keyspace;
 
     @Autowired
@@ -173,4 +173,24 @@ public class UpdateData {
         return "success";
     }
 
+    public String updateNewUserRequest(String username, String approver, boolean isApprove) {
+        String status ;
+        if(isApprove)
+            status = "APPROVED";
+        else
+            status = "DECLINED";
+        try {
+            Clause eqclause = QueryBuilder.eq("userid", username);
+            Update.Where updateQuery = QueryBuilder.update(keyspace, "registerusers")
+                    .with(QueryBuilder.set("status", status))
+                    .and(QueryBuilder.set("approver", approver))
+                    .and(QueryBuilder.set("registeredtime", new Date()))
+                    .where(eqclause);
+            session.execute(updateQuery);
+
+            return "success";
+        }catch (Exception e){
+            return "failure";
+        }
+    }
 }

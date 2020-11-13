@@ -122,14 +122,14 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Schema Upload Request : "+output.result;
-                $scope.showSuccessToast();
+                // $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
                     //alert("Error : "+error.value);
                     $scope.alertnote = error;
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                 }
             );
 
@@ -164,6 +164,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
                     $scope.teamname = output.teamname;
+                    $scope.userrole = output.userrole;
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;

@@ -2,10 +2,7 @@ package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.config.ManageDatabase;
-import com.kafkamgt.uiapi.dao.Acl;
-import com.kafkamgt.uiapi.dao.AclRequests;
-import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.Team;
+import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
@@ -15,7 +12,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -31,9 +27,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,6 +67,7 @@ public class AclControllerServiceTest {
         env.setHost("101.10.11.11");
         env.setPort("9092");
         env.setName("DEV");
+        env.setProtocol("PLAINTEXT");
         ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
         loginMock();
@@ -93,55 +88,16 @@ public class AclControllerServiceTest {
     @Test
     public void createAcl() {
         AclRequests aclRequests = getAclRequest();
+        List<Topic> topicList = utilMethods.getTopics();
+
+        when(handleDbRequests.getTopics(any())).thenReturn(topicList);
         when(handleDbRequests.requestForAcl(aclRequests)).thenReturn("success");
 
         String result = aclControllerService.createAcl(aclRequests);
         assertEquals("{\"result\":\"success\"}",result);
     }
 
-    @Test
-    public void updateSyncAcls() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addToSyncacls(anyList())).thenReturn("success");
 
-        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-        assertEquals("success",result.get("result"));
-    }
-
-    @Test
-    public void updateSyncAclsFailure1() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-
-        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-        assertEquals("Not Authorized.",result.get("result"));
-    }
-
-    @Test
-    public void updateSyncAclsFailure2() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
-
-        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-        assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
-    }
-
-    @Test
-    public void updateSyncAclsFailure3() {
-        List<SyncAclUpdates> updates = new ArrayList<>();
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-
-        HashMap<String, String> result = aclControllerService.updateSyncAcls(updates);
-        assertEquals("No record updated.",result.get("result"));
-    }
-
-    @Test
-    public void updateSyncAclsFailure4() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
-
-        HashMap<String, String> result = aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-        assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
-    }
 
     @Test
     public void getAclRequests() {
@@ -294,47 +250,7 @@ public class AclControllerServiceTest {
         assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
     }
 
-    @Test
-    public void getAclsSyncTrue1() throws KafkawizeException {
-        String envSelected = "DEV", pageNo = "1", topicNameSearch = "testtopic1";
-        boolean isSyncAcls = true;
 
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
-        when(clusterApiService.getAcls(any()))
-                .thenReturn(utilMethods.getClusterAcls());
-        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
-
-        List<AclInfo> aclList =  aclControllerService.getSyncAcls(envSelected, pageNo, topicNameSearch);
-
-        assertEquals(1, aclList.size());
-        assertEquals("testtopic1",aclList.get(0).getTopicname());
-        assertEquals("mygrp1",aclList.get(0).getConsumergroup());
-        assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
-    }
-
-    @Test
-    public void getAclsSyncTrue2() throws KafkawizeException {
-        String envSelected = "DEV", pageNo = "1", topicNameSearch = "test";
-        boolean isSyncAcls = true;
-
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.selectEnvDetails(envSelected)).thenReturn(this.env);
-        when(clusterApiService.getAcls(any()))
-                .thenReturn(utilMethods.getClusterAcls());
-        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-        when(handleDbRequests.getSyncAcls(envSelected)).thenReturn(getAclsSOT0());
-
-        List<AclInfo> aclList =  aclControllerService.getSyncAcls(envSelected, pageNo, topicNameSearch);
-
-        assertEquals(1, aclList.size());
-        assertEquals("testtopic1",aclList.get(0).getTopicname());
-        assertEquals("mygrp1",aclList.get(0).getConsumergroup());
-        assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
-    }
 
     private List<Team> getAvailableTeams(){
 
@@ -397,6 +313,7 @@ public class AclControllerServiceTest {
         aclReq.setTopictype("producer");
         aclReq.setRequestingteam("Team1");
         aclReq.setReq_no("112");
+        aclReq.setEnvironment("DEV");
         return aclReq;
     }
 

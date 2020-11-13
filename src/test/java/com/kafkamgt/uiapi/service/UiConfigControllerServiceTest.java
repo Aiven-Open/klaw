@@ -7,12 +7,12 @@ import com.kafkamgt.uiapi.dao.Team;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.UserInfoModel;
 import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -20,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -30,6 +29,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -117,30 +117,30 @@ public class UiConfigControllerServiceTest {
         when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
         List<Env> envsList = uiConfigControllerService.getEnvs(true);
 
-        assertEquals(3, envsList.size());
+        assertEquals(2, envsList.size());
         assertEquals(null, envsList.get(0).getEnvStatus());
     }
 
     @Test
     public void getEnvs2() throws KafkawizeException {
         when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
-        when(clusterApiService.getKafkaClusterStatus(any())).thenReturn("ONLINE");
+        when(clusterApiService.getKafkaClusterStatus(any(), eq("PLAINTEXT"))).thenReturn("ONLINE");
         List<Env> envsList = uiConfigControllerService.getEnvs(false);
 
-        assertEquals(3, envsList.size());
+        assertEquals(2, envsList.size());
         assertEquals("ONLINE", envsList.get(0).getEnvStatus());
-        assertEquals("NOT_KNOWN", envsList.get(2).getEnvStatus());
+        assertEquals("ONLINE", envsList.get(1).getEnvStatus());
     }
 
     @Test
     public void getEnvs3() throws KafkawizeException {
         when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
-        when(clusterApiService.getKafkaClusterStatus(any())).thenReturn("OFFLINE");
+        when(clusterApiService.getKafkaClusterStatus(any(), eq("PLAINTEXT"))).thenReturn("OFFLINE");
         List<Env> envsList = uiConfigControllerService.getEnvs(false);
 
-        assertEquals(3, envsList.size());
+        assertEquals(2, envsList.size());
         assertEquals("OFFLINE", envsList.get(0).getEnvStatus());
-        assertEquals("NOT_KNOWN", envsList.get(2).getEnvStatus());
+        assertEquals("OFFLINE", envsList.get(1).getEnvStatus());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class UiConfigControllerServiceTest {
         when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
         List<Env> envsList = uiConfigControllerService.getSchemaRegEnvs();
 
-        assertEquals(2, envsList.size());
+        assertEquals(1, envsList.size());
         assertEquals(null, envsList.get(0).getEnvStatus());
     }
 
@@ -158,7 +158,7 @@ public class UiConfigControllerServiceTest {
         when(clusterApiService.getSchemaClusterStatus(any())).thenReturn("ONLINE");
 
         List<Env> envsList = uiConfigControllerService.getSchemaRegEnvsStatus();
-        assertEquals(2, envsList.size());
+        assertEquals(1, envsList.size());
         assertEquals("ONLINE", envsList.get(0).getEnvStatus());
     }
 
@@ -168,8 +168,8 @@ public class UiConfigControllerServiceTest {
         when(clusterApiService.getSchemaClusterStatus(any())).thenReturn("OFFLINE");
 
         List<Env> envsList = uiConfigControllerService.getSchemaRegEnvsStatus();
-        assertEquals(2, envsList.size());
-        assertEquals("NOT_KNOWN", envsList.get(1).getEnvStatus());
+        assertEquals(1, envsList.size());
+        assertEquals("OFFLINE", envsList.get(0).getEnvStatus());
     }
 
     @Test
@@ -404,7 +404,8 @@ public class UiConfigControllerServiceTest {
     public void changePwd1() {
 
         String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
-        when(handleDbRequests.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenReturn("success");
+        when(userDetails.getUsername()).thenReturn("uiuser1");
+        when(handleDbRequests.updatePassword(eq("uiuser1"), any())).thenReturn("success");
 
         String result = uiConfigControllerService.changePwd(pwdUpdate);
 
@@ -415,7 +416,9 @@ public class UiConfigControllerServiceTest {
     public void changePwd2() {
 
         String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
-        when(handleDbRequests.updatePassword(this.userDetails.getUsername(), "newpasswd")).thenThrow(new RuntimeException("Error"));
+        when(userDetails.getUsername()).thenReturn("uiuser1");
+        when(handleDbRequests.updatePassword(eq("uiuser1"), any())).
+                thenThrow(new RuntimeException("Error"));
 
         String result = uiConfigControllerService.changePwd(pwdUpdate);
 
@@ -425,7 +428,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void showUsers() {
         when(handleDbRequests.selectAllUsersInfo()).thenReturn(getUsernfoList());
-        List<UserInfo> userInfoList = uiConfigControllerService.showUsers();
+        List<UserInfoModel> userInfoList = uiConfigControllerService.showUsers();
         assertEquals(1,userInfoList.size());
     }
 
@@ -533,14 +536,7 @@ public class UiConfigControllerServiceTest {
         env.setHost("localhost");
         env.setPort("8081");
         env.setName("DEV");
-        env.setProtocol("plain");
-        listEnvs.add(env);
-
-        env = new Env();
-        env.setHost("localhost");
-        env.setPort("8081");
-        env.setName("TST");
-        env.setProtocol("ssl");
+        env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
 
         return listEnvs;
@@ -553,21 +549,14 @@ public class UiConfigControllerServiceTest {
         env.setHost("localhost");
         env.setPort("9092");
         env.setName("DEV");
-        env.setProtocol("plain");
+        env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
 
         env = new Env();
         env.setHost("10.22.34.121");
         env.setPort("9092");
         env.setName("TST");
-        env.setProtocol("plain");
-        listEnvs.add(env);
-
-        env = new Env();
-        env.setHost("10.23.34.121");
-        env.setPort("9093");
-        env.setName("ACC");
-        env.setProtocol("ssl");
+        env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
 
         return listEnvs;

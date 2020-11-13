@@ -36,6 +36,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
                     $scope.teamname = output.teamname;
+                    $scope.userrole = output.userrole;
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;
@@ -195,7 +196,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
             {
                 $scope.alertnote = "Consumer group is not filled."
-                $scope.showAlertToast();
+                 $scope.showAlertToast();
                 return;
             }
 
@@ -213,7 +214,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             {
                 //alert("This topic is not owned by any team. Synchronize the metadata.");
                 $scope.alertnote = "This topic is not owned by any team. Synchronize the metadata.";
-                $scope.showAlertToast();
+                 $scope.showAlertToast();
                 return false;
             }
 
@@ -222,7 +223,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              else
              {
                 $scope.alertnote = "Please fill in a valid IP address or SSL-CN Name of the Producer/Consumer client";
-                $scope.showAlertToast();
+                 $scope.showAlertToast();
                 return;
              }
 
@@ -235,13 +236,13 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Acl Request : "+output.result;
-                $scope.showSuccessToast();
+                 $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
                     $scope.alertnote = error;
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                 }
             );
 

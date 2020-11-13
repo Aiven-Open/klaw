@@ -125,8 +125,7 @@ public class UpdateDataJdbc {
 
     public String updatePassword(String username, String password){
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername(username);
+        UserInfo userInfo = userInfoRepo.findById(username).get();
         userInfo.setPwd(password);
         userInfoRepo.save(userInfo);
 

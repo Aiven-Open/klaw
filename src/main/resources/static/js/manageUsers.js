@@ -101,7 +101,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 data: {'changePwd' : serviceInput}
             }).success(function(output) {
                 $scope.alert = "Password changed : "+output.result;
-                $scope.showSuccessToast();
+                // $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
@@ -131,7 +131,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 }).success(function(output) {
 
                     $scope.alert = "Delete Team Request : "+output.result;
-                    $scope.showSuccessToast();
+                    // $scope.showSuccessToast();
                     $scope.loadTeamsSU();
                 }).error(
                     function(error)
@@ -160,7 +160,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             }).success(function(output) {
 
                 $scope.alert = "Delete User Request : "+output.result;
-                $scope.showSuccessToast();
+                // $scope.showSuccessToast();
                 $scope.showUsers();
             }).error(
                 function(error)
@@ -190,24 +190,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            if(!$scope.addNewUser.emailid)
-            {
-                $scope.alertnote = "Email id is mandatory.";
-                $scope.showAlertToast();
-                return;
-            }
-            else if($scope.addNewUser.emailid.length < 7)
-            {
-                $scope.alertnote = "Please enter a valid email id.";
-                $scope.showAlertToast();
-                return;
-            }
-            else if(!$scope.addNewUser.emailid.includes("@"))
-            {
-                $scope.alertnote = "Please enter a valid email id.";
-                $scope.showAlertToast();
-                return;
-            }
 
             if(!$scope.addNewUser.role.value)
             {
@@ -221,7 +203,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['pwd'] = $scope.addNewUser.pwd;
             serviceInput['team'] = $scope.addNewUser.team.teamname;
             serviceInput['role'] = $scope.addNewUser.role.value;
-            serviceInput['mailid'] = $scope.addNewUser.emailid;
+            serviceInput['mailid'] = '';
 
             if (!window.confirm("Are you sure, you would like to add user : "
                 +  $scope.addNewUser.username + ": " +
@@ -240,7 +222,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "New User Request : "+output.result;
-                $scope.showSuccessToast();
+                // $scope.showSuccessToast();
             }).error(
                 function(error)
                 {
@@ -251,6 +233,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             );
 
         };
+
 
         $scope.cancelRequest = function() {
                     $window.location.href = $window.location.origin + "/kafkawize/teams";
@@ -302,7 +285,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New User Team : "+output.result;
-                    $scope.showSuccessToast();
+                    // $scope.showSuccessToast();
                 }).error(
                     function(error)
                     {
@@ -360,6 +343,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 $scope.statusauth = output.status;
                 $scope.userlogged = output.username;
                 $scope.teamname = output.teamname;
+                $scope.userrole = output.userrole;
                  $scope.notifications = output.notifications;
                 $scope.notificationsAcls = output.notificationsAcls;
                 $scope.notificationsSchemas = output.notificationsSchemas;
