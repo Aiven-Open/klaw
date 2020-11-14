@@ -28,12 +28,6 @@ public class TopicController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/updateSyncTopics")
-    public ResponseEntity<HashMap<String, String>> updateSyncTopics(@RequestBody List<SyncTopicUpdates> syncTopicUpdates) {
-        HashMap<String, String> updateSyncTopicsResult = topicControllerService.updateSyncTopics(syncTopicUpdates);
-        return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/getTopicRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<TopicRequest>> getTopicRequests(@RequestParam("pageNo") String pageNo) {
         return new ResponseEntity<>(topicControllerService.getTopicRequests(pageNo), HttpStatus.OK);
@@ -83,14 +77,5 @@ public class TopicController {
 
         return new ResponseEntity<>(topicControllerService.getAllTopics(), HttpStatus.OK);
     }
-
-    @RequestMapping(value = "/getSyncTopics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<TopicRequest>> getSyncTopics(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                                                            @RequestParam(value="topicnamesearch",required=false) String topicNameSearch) throws Exception {
-
-        return new ResponseEntity<>(topicControllerService.getSyncTopics(env, pageNo, topicNameSearch), HttpStatus.OK);
-    }
-
-
 
 }

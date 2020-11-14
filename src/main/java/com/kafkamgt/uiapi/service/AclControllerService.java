@@ -1,10 +1,7 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.config.ManageDatabase;
-import com.kafkamgt.uiapi.dao.Acl;
-import com.kafkamgt.uiapi.dao.AclRequests;
-import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
@@ -12,6 +9,7 @@ import com.kafkamgt.uiapi.model.SyncAclUpdates;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.model.TopicOverview;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 
 @Service
@@ -32,6 +32,12 @@ public class AclControllerService {
     @Autowired
     private final
     ClusterApiService clusterApiService;
+
+    @Autowired
+    UiConfigControllerService uiConfigControllerService;
+
+    @Value("${kafkawize.envs.order}")
+    private String orderOfEnvs;
 
     AclControllerService(ClusterApiService clusterApiService, UtilService utilService){
         this.clusterApiService = clusterApiService;
@@ -48,69 +54,26 @@ public class AclControllerService {
             return "{\"result\":\"Not Authorized\"}";
         }
 
+        if(aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null"))
+            aclReq.setAcl_ssl("User:*");
+
+        List<Topic> topics = manageDatabase.getHandleDbRequests().getTopics(aclReq.getTopicname());
+        boolean topicFound = false;
+        for (Topic topic : topics) {
+            if (topic.getEnvironment().equals(aclReq.getEnvironment()))
+            {
+                topicFound = true;
+                break;
+            }
+        }
+
+        String result = "Failure : Topic not found on target environment.";
+        if(!topicFound)
+            return "{\"result\":\""+result+"\"}";
+
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
 
         return "{\"result\":\""+execRes+"\"}";
-    }
-
-    public HashMap<String, String> updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) {
-        UserDetails userDetails = getUserDetails();
-        HashMap<String, String> response = new HashMap<>();
-
-        if(!utilService.checkAuthorizedSU(userDetails)){
-            response.put("result", "Not Authorized.");
-            return response;
-        }
-
-        List<Acl> listTopics = new ArrayList<>();
-        Acl t;
-
-        if(syncAclUpdates != null && syncAclUpdates.size() > 0){
-            Set<String> sequences = new HashSet<>();
-            syncAclUpdates.forEach(updateItem ->sequences.add(updateItem.getSequence()));
-            HashMap<String,SyncAclUpdates> stringSyncAclUpdatesHashMap = new HashMap<>();
-
-            // remove duplicates
-            for(SyncAclUpdates syncAclUpdateItem: syncAclUpdates){
-                if(stringSyncAclUpdatesHashMap.containsKey(syncAclUpdateItem.getSequence())){
-                    stringSyncAclUpdatesHashMap.remove(syncAclUpdateItem.getSequence());
-                    stringSyncAclUpdatesHashMap.put(syncAclUpdateItem.getSequence(), syncAclUpdateItem);
-                }
-                else
-                    stringSyncAclUpdatesHashMap.put(syncAclUpdateItem.getSequence(), syncAclUpdateItem);
-            }
-
-            for (Map.Entry<String, SyncAclUpdates> stringSyncAclUpdatesEntry : stringSyncAclUpdatesHashMap.entrySet()) {
-                SyncAclUpdates syncAclUpdateItem = stringSyncAclUpdatesEntry.getValue();
-
-                t = new Acl();
-
-                t.setReq_no(syncAclUpdateItem.getReq_no());
-                t.setTopicname(syncAclUpdateItem.getTopicName());
-                t.setConsumergroup(syncAclUpdateItem.getConsumerGroup());
-                t.setAclip(syncAclUpdateItem.getAclIp());
-                t.setAclssl(syncAclUpdateItem.getAclSsl());
-                t.setTeamname(syncAclUpdateItem.getTeamSelected());
-                t.setEnvironment(syncAclUpdateItem.getEnvSelected());
-                t.setTopictype(syncAclUpdateItem.getAclType());
-
-                listTopics.add(t);
-            }
-        }
-        else
-        {
-            response.put("result", "No record updated.");
-            return response;
-        }
-
-        try{
-            if(listTopics.size()>0){
-                response.put("result", manageDatabase.getHandleDbRequests().addToSyncacls(listTopics));
-            }
-        }catch(Exception e){
-            response.put("result", "Failure." + e.toString());
-        }
-        return response;
     }
 
     public List<AclRequests> getAclRequests(String pageNo) {
@@ -199,6 +162,7 @@ public class AclControllerService {
         }
     }
 
+
     public String approveAclRequests(String req_no) throws KafkawizeException {
         UserDetails userDetails = getUserDetails();
         if(!utilService.checkAuthorizedAdmin_SU(userDetails))
@@ -219,6 +183,7 @@ public class AclControllerService {
             }catch(Exception e){
                 return "{\"result\":\"failure "+e.toString()+"\"}";
             }
+
             return "{\"result\":\""+updateAclReqStatus+"\"}";
         }
         else
@@ -246,9 +211,9 @@ public class AclControllerService {
             return "{\"result\":\"Record not found !\"}";
     }
 
-    private List<HashMap<String, String>> getAclListFromCluster(String bootstrapHost, boolean isSyncAcls, String topicNameSearch) throws KafkawizeException {
+    private List<HashMap<String, String>> getAclListFromCluster(String bootstrapHost, String protocol, boolean isSyncAcls, String topicNameSearch) throws KafkawizeException {
         List<HashMap<String, String>> aclList ;
-        aclList = clusterApiService.getAcls(bootstrapHost);
+        aclList = clusterApiService.getAcls(bootstrapHost, protocol);
         if(isSyncAcls)
             return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
         else
@@ -312,6 +277,57 @@ public class AclControllerService {
         return aclsFromSOT;
     }
 
+
+    class TopicEnvComparator implements Comparator<String> {
+        List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
+
+        @Override
+        public int compare(String topicEnv1, String topicEnv2) {
+            if(orderedEnv.indexOf(topicEnv1) > orderedEnv.indexOf(topicEnv2))
+                return 1;
+            else
+                return -1;
+        }
+    }
+
+    public HashMap<String, String> getTopicPromotionEnv(String topicSearch, List<Topic> topics)
+    {
+        HashMap<String, String> hashMap = new HashMap<>();
+        try {
+            if(topics == null)
+                topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch);
+
+            hashMap.put("topicName", topicSearch);
+
+            if (topics != null && topics.size() > 0) {
+                List<String> envList = new ArrayList<>();
+                List<String> finalEnvList = envList;
+                topics.forEach(topic -> finalEnvList.add(topic.getEnvironment()));
+                envList = finalEnvList;
+                envList = envList.stream().sorted(new TopicEnvComparator()).collect(Collectors.toList());
+
+                String lastEnv = envList.get(envList.size() - 1);
+                List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
+
+                if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
+                    hashMap.put("status", "NO_PROMOTION"); // PRD
+                } else {
+                    hashMap.put("status", "success");
+                    hashMap.put("sourceEnv", lastEnv);
+                    String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
+                    hashMap.put("targetEnv", targetEnv);
+                }
+
+                return hashMap;
+            }
+        }catch (Exception e){
+            hashMap.put("status","failure");
+            hashMap.put("error","Topic does not exist in any environment.");
+        }
+
+        return hashMap;
+    }
+
     public TopicOverview getAcls(String topicNameSearch) throws KafkawizeException {
         UserDetails userDetails = getUserDetails();
         HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
@@ -346,6 +362,7 @@ public class AclControllerService {
         List<AclInfo> aclInfo = new ArrayList<>();
         List<AclInfo> tmpAcl;
 
+
         for (TopicInfo topicInfo : topicInfoList) {
             aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getCluster(), topicNameSearch, false));
 
@@ -360,27 +377,31 @@ public class AclControllerService {
         aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
         topicOverview.setAclInfoList(aclInfo);
         topicOverview.setTopicInfoList(topicInfoList);
+
+        try {
+            String topicOwnerTeam = handleDb.getTopicTeam(topicNameSearch).get(0).getTeamname();
+
+            if (topicOwnerTeam.equals(loggedInUserTeam)) {
+                topicOverview.setPromotionDetails(getTopicPromotionEnv(topicNameSearch, topics));
+
+                if(topicInfoList.size() > 0)
+                {
+                    TopicInfo lastItem = topicInfoList.get(topicInfoList.size()-1);
+                    lastItem.setTopicDeletable(aclInfo.stream()
+                            .noneMatch(aclItem -> aclItem.getEnvironment().equals(lastItem.getCluster())));
+                    lastItem.setShowDeleteTopic(true);
+                }
+            } else {
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("status", "not_authorized");
+                topicOverview.setPromotionDetails(hashMap);
+            }
+        }catch (Exception e){
+            HashMap<String, String> hashMap = new HashMap<>();
+            hashMap.put("status", "not_authorized");
+            topicOverview.setPromotionDetails(hashMap);
+        }
         return topicOverview;
-    }
-
-    public List<AclInfo> getSyncAcls(String env, String pageNo, String topicNameSearch) throws KafkawizeException {
-        UserDetails userDetails = getUserDetails();
-        if(topicNameSearch != null)
-            topicNameSearch = topicNameSearch.trim();
-
-        if(!utilService.checkAuthorizedSU(userDetails))
-            return null;
-
-        List<HashMap<String,String>> aclList;
-
-        Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-        aclList = getAclListFromCluster(bootstrapHost, true, topicNameSearch);
-
-        List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true);
-
-        topicCounter = 0;
-        return getAclsList(pageNo,applyFiltersAcls(env, aclList, aclsFromSOT, true));
     }
 
     private List<AclInfo> applyFiltersAclsForSOT(String loggedInUserTeam, List<Acl> aclsFromSOT){
@@ -399,6 +420,8 @@ public class AclControllerService {
                 mp.setConsumergroup(aclSotItem.getConsumergroup());
                 mp.setTopictype(aclSotItem.getTopictype());
                 mp.setReq_no(aclSotItem.getReq_no());
+                if(aclSotItem.getTeamname()!=null && aclSotItem.getTeamname().equals(loggedInUserTeam))
+                    mp.setShowDeleteAcl(true);
 
                 if(aclSotItem.getAclip()!=null || aclSotItem.getAclssl()!=null)
                     aclList.add(mp);
@@ -454,7 +477,7 @@ public class AclControllerService {
                 if(acl_ssl==null || acl_ssl.equals(""))
                     acl_ssl="User:*";
                 else {
-                    if(!acl_ssl.equals("User:*")){
+                    if(!acl_ssl.equals("User:*") && !acl_ssl.startsWith("User:")){
                         acl_ssl = "User:" + acl_ssl;
                     }
                 }

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class SelectData{
@@ -26,7 +25,7 @@ public class SelectData{
 
     Session session;
 
-    @Value("${custom.cassandradb.keyspace:@null}")
+    @Value("${kafkawize.cassandradb.keyspace:@null}")
     String keyspace;
 
     public SelectData(){}
@@ -45,7 +44,6 @@ public class SelectData{
         countList.put("topics",allTopicRequestReqs.size()+"");
         countList.put("acls",allAclReqs.size()+"");
         countList.put("schemas",allSchemaReqs.size()+"");
-
 
         return countList;
     }

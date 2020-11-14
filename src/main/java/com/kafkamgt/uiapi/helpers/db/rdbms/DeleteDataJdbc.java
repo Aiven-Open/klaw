@@ -1,6 +1,5 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
-import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.repository.*;
 import org.slf4j.Logger;
@@ -118,47 +117,12 @@ public class DeleteDataJdbc {
 
     public String deletePrevAclRecs(List<Acl> aclsToBeDeleted){
 
-        List<Acl> allAcls = Lists.newArrayList(aclRepo.findAll());
-
         for(Acl aclToBeDeleted :aclsToBeDeleted){
-            for(Acl allAcl: allAcls) {
-
-                if(aclToBeDeleted.getTopictype().equals("Producer")) {
-                    if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
-                            aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
-                            aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment())
-                    ) {
-                        if ((aclToBeDeleted.getAclip() != null && allAcl.getAclip() != null &&
-                                aclToBeDeleted.getAclip().equals(allAcl.getAclip())) ||
-                                (aclToBeDeleted.getAclssl() != null && allAcl.getAclssl() != null &&
-                                        aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))) {
-                            LOG.info("acl to be deleted" + allAcl);
-                            aclRepo.delete(allAcl);
-                            break;
-                        }
-
-                    }
-                }
-                else if (aclToBeDeleted.getTopictype().equals("Consumer")) {
-                    if (aclToBeDeleted.getTopicname().equals(allAcl.getTopicname()) &&
-                            aclToBeDeleted.getTopictype().equals(allAcl.getTopictype()) &&
-                            aclToBeDeleted.getConsumergroup().equals(allAcl.getConsumergroup()) &&
-                            aclToBeDeleted.getEnvironment().equals(allAcl.getEnvironment())
-                    ) {
-                        if ((aclToBeDeleted.getAclip() != null && allAcl.getAclip() != null &&
-                                aclToBeDeleted.getAclip().equals(allAcl.getAclip())) ||
-                                (aclToBeDeleted.getAclssl() != null && allAcl.getAclssl() != null &&
-                                        aclToBeDeleted.getAclssl().equals(allAcl.getAclssl()))) {
-                            LOG.info("acl to be deleted" + allAcl);
-                            aclRepo.delete(allAcl);
-                            break;
-                        }
-
-                    }
-                }
+            Optional<Acl> acl = aclRepo.findById(aclToBeDeleted.getReq_no());
+            if(acl.isPresent() && acl.get().getTopicname().equals(aclToBeDeleted.getTopicname())) {
+                aclRepo.delete(acl.get());
             }
         }
-
 
         return "success";
     }

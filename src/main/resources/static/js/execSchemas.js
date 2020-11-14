@@ -57,14 +57,14 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 
                 $scope.alert = "Schema Approve Request : "+output.result;
                 $scope.getMySchemaRequests();
-                $scope.showSuccessToast();
+                // $scope.showSuccessToast();
 
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
                     $scope.alertnote = error;
-                    $scope.showAlertToast();
+                    // $scope.showAlertToast();
                 }
             );
         }
@@ -82,14 +82,14 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 
                         $scope.alert = "Schema Decline Request : "+output.result;
                         $scope.getMySchemaRequests();
-                        $scope.showSuccessToast();
+                        // $scope.showSuccessToast();
 
                     }).error(
                         function(error)
                         {
                             $scope.alert = error;
                             $scope.alertnote = error;
-                            $scope.showAlertToast();
+                            // $scope.showAlertToast();
                         }
                     );
                 }
@@ -125,6 +125,7 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                     $scope.statusauth = output.status;
                     $scope.userlogged = output.username;
                     $scope.teamname = output.teamname;
+                    $scope.userrole = output.userrole;
                      $scope.notifications = output.notifications;
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;

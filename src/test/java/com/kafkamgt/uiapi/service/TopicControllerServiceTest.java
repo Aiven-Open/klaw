@@ -70,6 +70,7 @@ public class TopicControllerServiceTest {
         this.env = new Env();
         env.setHost("101.10.11.11");
         env.setPort("9092");
+        env.setProtocol("PLAINTEXT");
         env.setName("DEV");
         ReflectionTestUtils.setField(topicControllerService, "manageDatabase", manageDatabase);
         ReflectionTestUtils.setField(topicControllerService, "syncCluster", "DEV");
@@ -159,39 +160,7 @@ public class TopicControllerServiceTest {
         assertEquals("{\"result\":\"failure\"}",result);
     }
 
-    @Test
-    public void updateSyncTopicsSuccess() {
-        String teamSelected = "Team1";
-        HashMap<String, String> resultMap = new HashMap<>();
-        resultMap.put("result","success");
 
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
-
-        HashMap<String, String> result = topicControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
-
-        assertEquals("success",result.get("result"));
-    }
-
-    @Test
-    public void updateSyncTopicsNoUpdate() {
-        List<SyncTopicUpdates> topicUpdates = new ArrayList<>();
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-
-        HashMap<String, String> result = topicControllerService.updateSyncTopics(topicUpdates);
-
-        assertEquals("No record updated.",result.get("result"));
-    }
-
-    @Test
-    public void updateSyncTopicsNotAuthorized() {
-        String teamSelected = "Team1";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-
-        HashMap<String, String> result = topicControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
-
-        assertEquals("Not Authorized.",result.get("result"));
-    }
 
     @Test
     public void getCreatedTopicRequests1() {
@@ -314,18 +283,7 @@ public class TopicControllerServiceTest {
         assertNull(topicsList);
     }
 
-    @Test
-    public void getSyncTopics() throws Exception {
-        String envSel = "DEV", pageNo = "1", topicNameSearch = "top";
 
-        when(handleDbRequests.selectEnvDetails(envSel)).thenReturn(this.env);
-        when(clusterApiService.getAllTopics(this.env.getHost()+":"+this.env.getPort()))
-                .thenReturn(utilMethods.getClusterApiTopics("topic",10));
-        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-
-        List<TopicRequest> topicRequests = topicControllerService.getSyncTopics(envSel, pageNo, topicNameSearch);
-        assertEquals(topicRequests.size(),10);
-    }
 
     @Test
     public void declineTopicRequests() throws KafkawizeException {

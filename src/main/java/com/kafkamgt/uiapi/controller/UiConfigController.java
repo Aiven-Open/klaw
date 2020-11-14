@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.controller;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.model.UserInfoModel;
 import com.kafkamgt.uiapi.service.UiConfigControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,6 +29,11 @@ public class UiConfigController {
     @RequestMapping(value = "/getEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<Env>> getEnvs() {
         return new ResponseEntity<>(uiConfigControllerService.getEnvs(true), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getOtherEnvs", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<String>> getOtherEnvs() {
+        return new ResponseEntity<>(uiConfigControllerService.getOtherEnvs(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getEnvsOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -121,7 +126,7 @@ public class UiConfigController {
     }
 
     @RequestMapping(value = "/showUserList", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<UserInfo>> showUsers(){
+    public ResponseEntity<List<UserInfoModel>> showUsers(){
         return new ResponseEntity<>(uiConfigControllerService.showUsers(), HttpStatus.OK);
     }
 

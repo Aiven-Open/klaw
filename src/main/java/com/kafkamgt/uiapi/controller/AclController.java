@@ -32,11 +32,6 @@ public class AclController {
         return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/updateSyncAcls")
-    public ResponseEntity<HashMap<String, String>> updateSyncAcls(@RequestBody List<SyncAclUpdates> syncAclUpdates) {
-        return new ResponseEntity<>(aclControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/getAclRequests", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<List<AclRequests>> getAclRequests(@RequestParam("pageNo") String pageNo) {
         return new ResponseEntity<>(aclControllerService.getAclRequests(pageNo), HttpStatus.OK);
@@ -67,11 +62,6 @@ public class AclController {
         return new ResponseEntity<>(aclControllerService.getAcls(topicNameSearch), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/getSyncAcls", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<AclInfo>> getSyncAcls(@RequestParam("env") String env, @RequestParam("pageNo") String pageNo,
-                                                     @RequestParam(value="topicnamesearch", required=false) String topicNameSearch) throws KafkawizeException {
-        return new ResponseEntity<>(aclControllerService.getSyncAcls(env, pageNo, topicNameSearch), HttpStatus.OK);
-    }
 
 
 }

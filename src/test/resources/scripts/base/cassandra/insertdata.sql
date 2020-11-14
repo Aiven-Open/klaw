@@ -1,18 +1,18 @@
-/* Insert Users */
+/* Insert Users, pwd - base64 encoded */
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User1','Team1','uiuser1','USER','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User1','Team1','uiuser1','USER','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User2','Team2','uiuser2','USER','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User2','Team2','uiuser2','USER','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User3','Team3','uiuser3','USER','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User3','Team3','uiuser3','USER','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User4','Team1','uiuser4','ADMIN','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User4','Team1','uiuser4','ADMIN','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User5','Team2','uiuser5','ADMIN','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User5','Team2','uiuser5','ADMIN','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User6','Team3','uiuser6','ADMIN','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User6','Team3','uiuser6','ADMIN','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('SuperUser','Team2','superuser','SUPERUSER','user');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('SuperUser','Team2','superuser','SUPERUSER','dXNlcg==');
 
 /* Insert Teams */
 
@@ -36,4 +36,4 @@ Insert into kafkamanagementapi.env(name,host,port,protocol,type) values ('DEV_SC
 
 /* Insert product and version */
 
-Insert into kafkamanagementapi.productdetails(name,version,licensekey) values ('KafkaWize','4.3','');
+Insert into kafkamanagementapi.productdetails(name,version,licensekey) values ('KafkaWize','4.4','');

@@ -68,26 +68,7 @@ public class TopicControllerTest {
         assertEquals("success", response);
     }
 
-    @Test
-    public void updateSyncTopics() throws Exception {
-        List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
-        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncTopicUpdates);
-        HashMap<String, String> resultMap = new HashMap<>();
-        resultMap.put("result","success");
-        when(topicControllerService.updateSyncTopics(any())).thenReturn(resultMap);
 
-        String response = mvc.perform(MockMvcRequestBuilders
-                .post("/updateSyncTopics")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        HashMap<String, String> actualResult = new ObjectMapper().readValue(response, new TypeReference<HashMap<String,String>>(){});
-
-        assertEquals("success", actualResult.get("result"));
-    }
 
     @Test
     public void getTopicRequests() throws Exception {
@@ -223,23 +204,5 @@ public class TopicControllerTest {
         assertEquals(2, response.size());
     }
 
-    @Test
-    public void getSyncTopics() throws Exception {
-        List<TopicRequest> topicRequests = utilMethods.getTopicRequests();
 
-        when(topicControllerService.getSyncTopics(anyString(), anyString(), anyString())).thenReturn(topicRequests);
-
-        String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getSyncTopics")
-                .param("env","DEV")
-                .param("pageNo","1")
-                .param("topicnamesearch","testtopic")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
-        assertEquals(1, response.size());
-    }
 }

@@ -49,6 +49,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             $scope.statusauth = output.status;
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
+            $scope.userrole = output.userrole;
              $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.notificationsSchemas = output.notificationsSchemas;
@@ -89,87 +90,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             );
         }
 
-        $scope.updatedSyncArray = [];
-        $scope.getDetails = function(sequence, req_no, teamselected, topic, consumergroup, acl_ip, acl_ssl, acltype) {
 
-            var serviceInput = {};
-
-            serviceInput['sequence'] = sequence;
-            serviceInput['req_no'] = req_no;
-            serviceInput['topicName'] = topic;
-            serviceInput['teamSelected'] = teamselected;
-            serviceInput['consumerGroup'] = consumergroup;
-            serviceInput['aclIp'] = acl_ip;
-            serviceInput['aclSsl'] = acl_ssl;
-            serviceInput['aclType'] = acltype;
-            serviceInput['envSelected'] = $scope.getAcls.envName.name.key;
-
-            $scope.updatedSyncArray.push(serviceInput);
-        }
-
-        $scope.synchAcls = function() {
-
-            var serviceInput = {};
-
-            if(!$scope.getAcls.envName)
-                return;
-
-            if (!window.confirm("Are you sure, you would like to Synchronize this info on "+$scope.getAcls.envName.name.key+ " ?")) {
-                $scope.updatedSyncArray = [];
-                return;
-            }
-
-            $http({
-                method: "POST",
-                url: "updateSyncAcls",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'syncAclUpdates' : $scope.updatedSyncArray },
-                data: $scope.updatedSyncArray
-            }).success(function(output) {
-                $scope.alert = "Acl Sync Request : "+output.result;
-                $scope.updatedSyncArray = [];
-                $scope.showSuccessToast();
-                $scope.getAcls(1);
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                    $scope.alertnote = error;
-                    $scope.showAlertToast();
-                }
-            );
-
-        };
-
-	// We add the "time" query parameter to prevent IE
-	// from caching ajax results
-
-	$scope.getAcls = function(pageNoSelected) {
-
-        var serviceInput = {};
-		serviceInput['env'] = $scope.getAcls.envName.name.key;
-
-		$http({
-			method: "GET",
-			url: "getSyncAcls",
-            headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getAcls.envName.name.key, 'topicnamesearch' : $scope.getAcls.topicnamesearch,
-                'pageNo' : pageNoSelected }
-		}).success(function(output) {
-			$scope.resultBrowse = output;
-			if(output!=null){
-                $scope.resultPages = output[0].allPageNos;
-                $scope.resultPageSelected = pageNoSelected;
-            }
-		}).error(
-			function(error) 
-			{
-			    $scope.resultBrowse = [];
-				$scope.alert = error;
-			}
-		);
-		
-	};
 
         $scope.getExecAuth = function() {
             //alert("onload");

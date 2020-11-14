@@ -12,7 +12,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -83,7 +82,7 @@ public class ClusterApiServiceTest {
         result = clusterApiService.getSchemaClusterStatus("");
         assertEquals("success",result);
 
-        result = clusterApiService.getKafkaClusterStatus("");
+        result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT");
         assertEquals("success",result);
     }
 
@@ -103,7 +102,7 @@ public class ClusterApiServiceTest {
         result = clusterApiService.getSchemaClusterStatus("");
         assertEquals("OFFLINE",result);
 
-        result = clusterApiService.getKafkaClusterStatus("");
+        result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT");
         assertEquals("NOT_KNOWN",result);
     }
 
@@ -119,7 +118,7 @@ public class ClusterApiServiceTest {
                         eq(Set.class)))
                 .thenReturn(response);
 
-        List<HashMap<String, String>> result = clusterApiService.getAcls("");
+        List<HashMap<String, String>> result = clusterApiService.getAcls("", "PLAINTEXT");
         assertEquals(result, new ArrayList<>(aclListOriginal));
     }
 
@@ -132,7 +131,7 @@ public class ClusterApiServiceTest {
                         eq(Set.class)))
                 .thenThrow(new RuntimeException("error"));
 
-        clusterApiService.getAcls("");
+        clusterApiService.getAcls("", "PLAINTEXT");
     }
 
     @Test
@@ -146,7 +145,7 @@ public class ClusterApiServiceTest {
                         eq(Set.class)))
                 .thenReturn(response);
 
-        List<HashMap<String, String>> result = clusterApiService.getAllTopics("");
+        List<HashMap<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT");
         assertEquals(result, new ArrayList<>(topicsList));
     }
 
@@ -159,7 +158,7 @@ public class ClusterApiServiceTest {
                         eq(Set.class)))
                 .thenThrow(new RuntimeException("error"));
 
-        clusterApiService.getAllTopics("");
+        clusterApiService.getAllTopics("", "PLAINTEXT");
     }
 
     @Test

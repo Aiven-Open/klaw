@@ -3,7 +3,6 @@ package com.kafkamgt.uiapi.service;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.Topic;
-import com.kafkamgt.uiapi.dao.TopicPK;
 import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
@@ -24,10 +23,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TopicControllerService {
 
-    @Value("${custom.syncdata.cluster:DEV}")
+    @Value("${kafkawize.syncdata.cluster:DEV}")
     private String syncCluster;
 
-    @Value("${custom.envs.order}")
+    @Value("${kafkawize.envs.order}")
     private String orderOfEnvs;
 
     @Autowired
@@ -59,7 +58,7 @@ public class TopicControllerService {
 
         topicRequestReq.setRequestor(userDetails.getUsername());
         topicRequestReq.setUsername(userDetails.getUsername());
-        topicRequestReq.setTopictype("Create"); // Possible options Create/Delete
+        topicRequestReq.setTopictype("Create");
 
         String topicPartitions = topicRequestReq.getTopicpartitions();
 
@@ -150,103 +149,6 @@ public class TopicControllerService {
             }
         }
         return true;
-    }
-
-    public HashMap<String, String> updateSyncTopics(List<SyncTopicUpdates> updatedSyncTopics) {
-        UserDetails userDetails = getUserDetails();
-        HashMap<String, String> response = new HashMap<>();
-
-        if(!utilService.checkAuthorizedSU(userDetails)){
-            response.put("result", "Not Authorized.");
-            return response;
-        }
-
-        List<Topic> existingTopics ;
-        List<Topic> listTopics = new ArrayList<>();
-        Topic t;
-
-        String erroredTopics = "";
-        boolean topicsWithDiffTeams = false;
-
-        String erroredTopicsExist = "";
-        boolean topicsDontExistInMainCluster = false;
-
-        if(updatedSyncTopics!=null && updatedSyncTopics.size() > 0){
-            Set<String> sequences = new HashSet<>();
-            updatedSyncTopics.forEach(updateItem ->sequences.add(updateItem.getSequence()));
-            HashMap<String, SyncTopicUpdates> stringSyncTopicUpdatesHashMap = new HashMap<>();
-
-            // remove duplicates
-            for(SyncTopicUpdates syncTopicUpdateItem: updatedSyncTopics){
-                if(stringSyncTopicUpdatesHashMap.containsKey(syncTopicUpdateItem.getSequence())){
-                    stringSyncTopicUpdatesHashMap.remove(syncTopicUpdateItem.getSequence());
-                    stringSyncTopicUpdatesHashMap.put(syncTopicUpdateItem.getSequence(), syncTopicUpdateItem);
-                }
-                else
-                    stringSyncTopicUpdatesHashMap.put(syncTopicUpdateItem.getSequence(), syncTopicUpdateItem);
-            }
-
-            for(Map.Entry<String, SyncTopicUpdates> stringSyncAclUpdatesEntry : stringSyncTopicUpdatesHashMap.entrySet()){
-                SyncTopicUpdates topicUpdate = stringSyncAclUpdatesEntry.getValue();
-
-                existingTopics = getTopicFromName(topicUpdate.getTopicName());
-
-                if(existingTopics != null){
-                    for (Topic existingTopic : existingTopics) {
-                        if(existingTopic.getEnvironment().equals(syncCluster)){
-                            if(!existingTopic.getTeamname().equals(topicUpdate.getTeamSelected()) &&
-                                    !topicUpdate.getEnvSelected().equals(syncCluster))
-                            {
-                                erroredTopics += topicUpdate.getTopicName() + " ";
-                                topicsWithDiffTeams = true;
-                            }
-                            break;
-                        }
-                    }
-                }
-                else if(!topicUpdate.getEnvSelected().equals(syncCluster)){
-                    erroredTopicsExist += topicUpdate.getTopicName() + " ";
-                    topicsDontExistInMainCluster = true;
-                }
-
-                t = new Topic();
-
-                TopicPK topicPK = new TopicPK();
-                topicPK.setTopicname(topicUpdate.getTopicName());
-                topicPK.setEnvironment(topicUpdate.getEnvSelected());
-
-                t.setTopicname(topicUpdate.getTopicName());
-                t.setNoOfPartitions(topicUpdate.getPartitions());
-                t.setNoOfReplcias(topicUpdate.getReplicationFactor());
-                t.setEnvironment(topicUpdate.getEnvSelected());
-                t.setTeamname(topicUpdate.getTeamSelected());
-                t.setTopicPK(topicPK);
-
-                listTopics.add(t);
-            }
-        }
-
-        if(topicsDontExistInMainCluster){
-            response.put("result", "Failure. Please sync up the team of the following topic(s) first in" +
-                    " main Sync cluster (custom.syncdata.cluster)" +
-                    " :" + syncCluster + ". \n Topics : " + erroredTopicsExist);
-            return response;
-        }
-
-        if(topicsWithDiffTeams) {
-            response.put("result", "Failure. The following topics are being synchronized with" +
-                    " a different team, when compared to main Sync cluster (custom.syncdata.cluster)" +
-                    " :" + syncCluster + ". \n Topics : " + erroredTopics);
-            return response;
-        }
-
-        if(listTopics.size()>0){
-            response.put("result", manageDatabase.getHandleDbRequests().addToSynctopics(listTopics));
-        }
-        else
-            response.put("result", "No record updated.");
-
-        return response;
     }
 
     public List<TopicRequest> getTopicRequests(String pageNo) {
@@ -360,6 +262,7 @@ public class TopicControllerService {
 
         if(Objects.equals(response.getBody(), "success"))
             updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userDetails.getUsername());
+
         return "{\"result\":\""+updateTopicReqStatus+"\"}";
     }
 
@@ -467,36 +370,6 @@ public class TopicControllerService {
             newList.add(innerList);
 
         return newList;
-    }
-
-    public List<TopicRequest> getSyncTopics(String env, String pageNo, String topicNameSearch) throws Exception {
-        UserDetails userDetails = getUserDetails();
-
-        if(topicNameSearch != null)
-            topicNameSearch = topicNameSearch.trim();
-
-        Env envSelected= manageDatabase.getHandleDbRequests().selectEnvDetails(env);
-        String bootstrapHost=envSelected.getHost()+":"+envSelected.getPort();
-
-        List<HashMap<String, String>> topicsList = clusterApiService.getAllTopics(bootstrapHost);
-        //getTopicsListMap(clusterApiService.getAllTopics(bootstrapHost));
-
-        topicCounter = 0;
-
-        List<HashMap<String, String>> topicFilteredList = topicsList;
-        // Filter topics on topic name for search
-
-        if(topicNameSearch!=null && topicNameSearch.length()>0){
-            final String topicSearchFilter = topicNameSearch;
-            topicFilteredList = topicsList.stream().filter(topic-> {
-                return topic.get("topicName").contains(topicSearchFilter);
-                    }
-            ).collect(Collectors.toList());
-        }
-
-        topicsList = topicFilteredList.stream().sorted(new TopicNameSyncComparator()).collect(Collectors.toList());
-
-        return getSyncTopicList(topicsList,userDetails,pageNo,env);
     }
 
     private int counterIncrement()
@@ -628,6 +501,8 @@ public class TopicControllerService {
         }
         return topicsListMap;
     }
+
+
 
     private UserDetails getUserDetails(){
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

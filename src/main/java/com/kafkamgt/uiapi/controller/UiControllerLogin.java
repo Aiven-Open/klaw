@@ -1,8 +1,13 @@
 package com.kafkamgt.uiapi.controller;
 
 
+import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -13,8 +18,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class UiControllerLogin {
 
+    @Autowired
+    ManageDatabase manageDatabase;
+
     private static Logger LOG = LoggerFactory.getLogger(UiControllerLogin.class);
 
+    private static final String indexPage = "index";
     private static final String defaultPage = "login.html";
 
     private String checkAuth(String uri){
@@ -22,11 +31,21 @@ public class UiControllerLogin {
             UserDetails userDetails =
                     (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             if (userDetails != null) {
+
+                HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
+                UserInfo userInfo = reqsHandle.getUsersInfo(userDetails.getUsername());
+                if(userInfo == null)
+                        return defaultPage;
+
                 LOG.info("Authenticated..." + userDetails.getUsername());
+                if(uri.equals(defaultPage) )
+                    return indexPage;
                 return uri;
             }
             return defaultPage;
         }catch (Exception e){
+            if(uri.equals(defaultPage) )
+                return uri;
             return defaultPage;
         }
     }
@@ -43,7 +62,7 @@ public class UiControllerLogin {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(ModelMap model) {
-        return checkAuth("index");
+        return checkAuth("login.html");
     }
 
     @RequestMapping(value = "/addUser", method = RequestMethod.GET)

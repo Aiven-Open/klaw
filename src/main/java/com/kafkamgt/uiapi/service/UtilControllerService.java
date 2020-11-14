@@ -26,11 +26,11 @@ public class UtilControllerService {
     @Autowired
     UtilService utilService;
 
-    @Value("${custom.org.name}")
+    @Value("${kafkawize.org.name}")
     private
     String companyInfo;
 
-    @Value("${custom.kafkawize.version:4.3}")
+    @Value("${kafkawize.version:5.0}")
     private
     String kafkawizeVersion;
 
@@ -60,7 +60,6 @@ public class UtilControllerService {
 
             String outstandingSchemasReqs = outstanding.get("schemas");
             int outstandingSchemasReqsInt = Integer.parseInt(outstandingSchemasReqs);
-
 
             if(outstandingTopicReqsInt<=0)
                 outstandingTopicReqs = "0";
@@ -92,6 +91,7 @@ public class UtilControllerService {
             dashboardData.put("status",statusAuth);
             dashboardData.put("username",userDetails.getUsername());
             dashboardData.put("teamname",teamName);
+            dashboardData.put("userrole",authority.substring(5));
             dashboardData.put("companyinfo",companyInfo);
             dashboardData.put("kafkawizeversion",kafkawizeVersion);
             dashboardData.put("notifications",outstandingTopicReqs);

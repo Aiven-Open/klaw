@@ -58,6 +58,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             $scope.statusauth = output.status;
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
+            $scope.userrole = output.userrole;
              $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.notificationsSchemas = output.notificationsSchemas;
@@ -97,83 +98,6 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 }
             );
         }
-
-        $scope.updatedSyncArray = [];
-        $scope.updateTopicDetails = function(sequence, teamselected,topic, partitions, replicationFactor) {
-            var serviceInput = {};
-            serviceInput['sequence'] = sequence;
-            serviceInput['topicName'] = topic;
-            serviceInput['partitions'] = partitions;
-            serviceInput['replicationFactor'] = replicationFactor;
-            serviceInput['teamSelected'] = teamselected;
-            serviceInput['envSelected'] = $scope.getTopics.envName.name.key;
-
-            $scope.updatedSyncArray.push(serviceInput);
-        }
-
-        $scope.synchTopics = function() {
-
-            var serviceInput = {};
-
-            if(!$scope.getTopics.envName)
-                   return;
-
-            if (!window.confirm("Are you sure, you would like to Synchronize this info ? "+$scope.getTopics.envName.name.key)) {
-                $scope.updatedSyncArray = [];
-                return;
-            }
-
-            $http({
-                method: "POST",
-                url: "updateSyncTopics",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'updatedSyncTopics' : $scope.updatedSyncArray},
-                data:  $scope.updatedSyncArray
-            }).success(function(output) {
-                $scope.alert = "Topic Sync Request : "+output.result;
-                $scope.updatedSyncArray = [];
-                $scope.showSuccessToast();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                    $scope.alertnote = error;
-                    $scope.showAlertToast();
-                }
-            );
-
-        };
-
-	// We add the "time" query parameter to prevent IE
-	// from caching ajax results
-
-	$scope.getTopics = function(pageNoSelected) {
-
-        var serviceInput = {};
-		serviceInput['env'] = $scope.getTopics.envName.name.key;
-
-		$http({
-			method: "GET",
-			url: "getSyncTopics",
-            headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getTopics.envName.name.key, 'topicnamesearch' : $scope.getTopics.topicnamesearch,
-                'pageNo' : pageNoSelected }
-		}).success(function(output) {
-			$scope.resultBrowse = output;
-			if(output!=null && output.length !=0){
-                $scope.resultPages = output[0].allPageNos;
-                $scope.resultPageSelected = pageNoSelected;
-            }
-            $scope.alert = "";
-		}).error(
-			function(error) 
-			{
-			    $scope.resultBrowse = [];
-				$scope.alert = error;
-			}
-		);
-		
-	};
 
         $scope.getExecAuth = function() {
             //alert("onload");

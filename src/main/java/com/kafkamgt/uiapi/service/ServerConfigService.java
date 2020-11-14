@@ -44,7 +44,7 @@ public class ServerConfigService {
 
                         ServerConfigProperties props = new ServerConfigProperties();
                         props.setKey(key);
-                        if(key.contains("password") || key.contains("license"))
+                        if(key.contains("password") || key.contains("license") || key.contains("path"))
                             props.setValue("*******");
                         else
                             props.setValue(WordUtils.wrap(propertySource.getProperty(key)+"",125,"\n",true));

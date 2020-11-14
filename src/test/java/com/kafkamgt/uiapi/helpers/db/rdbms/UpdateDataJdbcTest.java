@@ -4,6 +4,7 @@ import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.dao.TopicRequest;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.repository.AclRequestsRepo;
 import com.kafkamgt.uiapi.repository.SchemaRequestRepo;
 import com.kafkamgt.uiapi.repository.TopicRequestsRepo;
@@ -14,6 +15,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +47,9 @@ public class UpdateDataJdbcTest {
     private UpdateDataJdbc updateData;
 
     private UtilMethods utilMethods;
+
+    @Mock
+    UserInfo userInfo;
 
     @Before
     public void setUp() throws Exception {
@@ -98,7 +104,9 @@ public class UpdateDataJdbcTest {
 
     @Test
     public void updatePassword() {
-        String result = updateData.updatePassword("uiuser1", "pwd");
+        String user = "uiuser1";
+        when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
+        String result = updateData.updatePassword(user, "pwd");
         assertEquals("success", result);
     }
 

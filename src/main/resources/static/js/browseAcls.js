@@ -58,6 +58,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             $scope.statusauth = output.status;
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
+            $scope.userrole = output.userrole;
             $scope.notifications = output.notifications;
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.notificationsSchemas = output.notificationsSchemas;
@@ -157,6 +158,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		);
 		
 	};
+
 
 }
 );

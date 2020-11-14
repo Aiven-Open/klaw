@@ -3,6 +3,7 @@ package com.kafkamgt.uiapi.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.dao.*;
+import com.kafkamgt.uiapi.model.UserInfoModel;
 import com.kafkamgt.uiapi.service.UiConfigControllerService;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -325,7 +326,7 @@ public class UiConfigControllerTest {
 
     @Test
     public void showUsers() throws Exception {
-        List<UserInfo> userList = utilMethods.getUserInfoList("uiuser","ADMIN");
+        List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser","ADMIN");
         when(uiConfigControllerService.showUsers()).thenReturn(userList);
 
         String res = mvc.perform(MockMvcRequestBuilders

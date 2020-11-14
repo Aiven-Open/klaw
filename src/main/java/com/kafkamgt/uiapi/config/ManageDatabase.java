@@ -6,11 +6,15 @@ import com.kafkamgt.uiapi.helpers.db.cassandra.CassandraDataSourceCondition;
 import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
+import com.kafkamgt.uiapi.service.ClusterApiService;
+import com.kafkamgt.uiapi.service.UtilService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -22,20 +26,32 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ManageDatabase {
 
-    @Value("${custom.db.storetype}")
+    @Value("${kafkawize.db.storetype}")
     private
     String dbStore;
 
-    @Value("${custom.envs.order}")
+    @Value("${kafkawize.envs.order}")
     private String orderOfEnvs;
 
     private HandleDbRequests handleDbRequests;
 
     public static HashMap<String, HashMap<String, List<String>>> envParamsMap;
 
-    @Value("${custom.org.name}")
+    @Autowired
+    private
+    UtilService utils;
+
+    @Value("${kafkawize.invalidkey.msg}")
+    private
+    String invalidKeyMessage;
+
+    @Value("${kafkawize.org.name}")
     private
     String orgName;
+
+    @Autowired
+    private
+    Environment environment;
 
     @PostConstruct
     public void loadDb() throws Exception {
@@ -45,13 +61,28 @@ public class ManageDatabase {
             System.exit(0);
         }
 
+        HashMap<String, String> licenseMap = utils.validateLicense();
+        if(! (environment.getActiveProfiles().length >0
+                && environment.getActiveProfiles()[0].equals("integrationtest"))) {
+            if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
+                log.info(invalidKeyMessage);
+                System.exit(0);
+            }
+        }
+
         if (dbStore != null && dbStore.equals("rdbms")) {
             handleDbRequests = handleJdbc();
         } else
             handleDbRequests = handleCassandra();
 
-        handleDbRequests.connectToDb("licenseKey");
-        loadEnvParams();
+        if(UtilService.licenceLoaded) {
+            handleDbRequests.connectToDb("licenseKey");
+            loadEnvParams();
+        }else
+        {
+            log.info(invalidKeyMessage);
+            System.exit(0);
+        }
 
     }
 

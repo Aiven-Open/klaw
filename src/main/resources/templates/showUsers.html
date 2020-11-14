@@ -19,7 +19,7 @@
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
-	<link href="assets/css/colors/default.css" id="theme" rel="stylesheet">
+	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
@@ -59,23 +59,7 @@
 			<!-- ============================================================== -->
 			<!-- Logo -->
 			<!-- ============================================================== -->
-			<div class="navbar-header">
-				<a class="navbar-brand" href="dashboard">
-					<!-- Logo icon --><b>
-					<!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-					<!-- Dark Logo icon -->
-					<!--<img src="assets/images/logo-icon.png" alt="homepage" class="dark-logo" />-->
-					<!--&lt;!&ndash; Light Logo icon &ndash;&gt;-->
-					<!--<img src="assets/images/logo-light-icon.png" alt="homepage" class="light-logo" />-->
-				</b>
-					<!--End Logo icon -->
-					<!-- Logo text --><span>
-                            <!-- dark Logo text -->
-                            <img src="assets/images/logo-dark.png" alt="homepage" class="dark-logo" />
-					<!-- Light Logo text -->
-                            <img src="assets/images/logo-light.png" class="light-logo" alt="homepage" /></span>
-				</a>
-			</div>
+
 			<!-- ============================================================== -->
 			<!-- End Logo -->
 			<!-- ============================================================== -->
@@ -85,12 +69,7 @@
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
 					<!-- This is  -->
-					<li class="nav-item"> <a
-							class="nav-link nav-toggler d-block d-md-none text-muted waves-effect waves-dark"
-							href="javascript:void(0)"><i class="mdi mdi-menu"></i></a> </li>
-					<li class="nav-item"> <a
-							class="nav-link sidebartoggler d-none d-md-block text-muted waves-effect waves-dark"
-							href="javascript:void(0)"><i class="ti-menu"></i></a> </li>
+
 					<!-- ============================================================== -->
 					<!-- Search -->
 					<!-- ============================================================== -->
@@ -191,7 +170,6 @@
 
 											</div>
 										</a>
-
 									</div>
 								</li>
 
@@ -206,8 +184,8 @@
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><button type="button" class="btn waves-effect waves-light btn-rounded btn-sm btn-success">
-							<i class="mdi mdi-account"></i>
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="mdi mdi-account-circle"></i>
 						</button></a>
 						<div class="dropdown-menu dropdown-menu-right scale-up">
 							<ul class="dropdown-user">
@@ -240,6 +218,32 @@
 						<div class="dropdown-menu dropdown-menu-right scale-up">
 							<a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">Help</a>  </div>
 					</li>
+				</ul>
+				<ul class="navbar-nav my-lg-0" style="width:200px;color:black;">
+					<table>
+						<tr>
+							<td width="100%">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-warning"
+											style="width:200px;color:black;">
+										<b>LoggedIn: {{userlogged}}</b></button>
+								</li>
+							</td>
+
+						</tr>
+						<tr>
+							<td width="50%">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											style="width:200px;">
+										{{teamname}} / {{userrole}}</button>
+
+								</li>
+							</td>
+						</tr>
+
+					</table>
+
 				</ul>
 			</div>
 		</nav>
@@ -381,7 +385,7 @@
 								</td>
 								<td ng-show="statusauthexectopics_su=='Authorized'" align="right">
 									<a href="addUser">
-										<i class="mdi mdi-account-plus"></i>
+										<i class="mdi mdi-account-circle-plus"></i>
 										<button type="button" class="btn btn-outline-info">
 											Add User</button>
 									</a>
@@ -413,7 +417,7 @@
 
 										<td ng-show="statusauthexectopics_su=='Authorized'">
 											<button type="button" ng-click="deleteUser(userDetails.username)"
-													class="btn btn-secondary btn-circle">
+													class="btn btn-outline-secondary btn-circle">
 												<i class="fa fa-times"></i>
 											</button>
 										</td>
