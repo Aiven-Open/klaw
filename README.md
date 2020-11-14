@@ -6,6 +6,10 @@ Kafkawize is a Self service Apache Kafka Topic Management tool/portal. It is a w
 
 To get Kafkawize running on your local machine or server, please follow the instructions mentioned in [GettingStarted - ReadTheDocs](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
 
+### Download
+
+You can download the full latest Kafkawize software bundle including documentation from https://kafkawize.com/download/
+
 ### Prerequisites
 
 ```
