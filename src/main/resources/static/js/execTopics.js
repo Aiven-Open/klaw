@@ -97,23 +97,6 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                     );
                 }
 
-    $scope.getExecAuth = function() {
-    	//alert("onload");
-        $http({
-            method: "GET",
-            url: "getExecAuth",
-            headers : { 'Content-Type' : 'application/json' }
-        }).success(function(output) {
-            $scope.statusauth = output.status;
-            if(output.status=="NotAuthorized")
-                $scope.alerttop = output.status;
-        }).error(
-            function(error)
-            {
-                $scope.alert = error;
-            }
-        );
-	}
 
 	$scope.refreshPage = function(){
             $window.location.reload();

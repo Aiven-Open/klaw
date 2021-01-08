@@ -1,3 +1,33 @@
+Kafkawize 4.5
+
+Kafkawize 4.5 has several changes including the below.
+
+1. New dashboard displaying the following details
+    a. My team topics
+    b. My producer topics
+    c. My consumer topics
+    d. My team members
+    e. Chart with Activity log overview of your team
+    f. Chart with topics on different clusters of your team
+    g. Pending Topics requests
+    h. Available Clusters and their status
+
+2. Show Producer and Consumer topics when requested from Dashboard
+3. Enabled deep linking of urls
+4. Color layout similar to pro version, and updated logos
+5. Comma separated bootstrap servers for Kafka and schema registry clusters. (Removed explicit port field.)
+6. Pagination on users page
+7. Users page for a team
+8. Bug fix for displaying team on Request acl page
+9. Improvement on processing concurrent requests
+10. Code improvisation : removed commented blocks and unused FE calls
+11. Added Spring shutdown hooks and removed system exits.
+12. Removed support for Cassandra metastore option.
+13. Support for File based metastore (File - H2 database)
+
+
+----------------------------------------------------------------
+
 Kafkawize 4.4
 
 1. Changes include improved User interface and few bug fixes.

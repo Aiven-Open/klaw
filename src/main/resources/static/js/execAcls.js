@@ -28,21 +28,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
                 }
 	
-  $scope.getExecAuth = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "getExecAuth",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.statusauth = output.status;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
-        }
+
 
         $scope.refreshPage = function(){
                 $window.location.reload();
@@ -98,23 +84,6 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-    $scope.getExecAuth = function() {
-    	//alert("onload");
-        $http({
-            method: "GET",
-            url: "getExecAuth",
-            headers : { 'Content-Type' : 'application/json' }
-        }).success(function(output) {
-            $scope.statusauth = output.status;
-            if(output.status=="NotAuthorized")
-                $scope.alerttop = output.status;
-        }).error(
-            function(error)
-            {
-                $scope.alert = error;
-            }
-        );
-	}
 
         $scope.getMyAclRequests = function() {
             $http({

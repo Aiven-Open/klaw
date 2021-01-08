@@ -114,11 +114,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
             }
             else{
                 LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort);
-                System.exit(0);
+                //System.exit(0);
             }
         }catch (Exception e){
             LOG.error("Could not connect to Cassandra "+clusterConnHost+":"+clusterConnPort + " Error : " + e.getMessage());
-            System.exit(0);
+            //System.exit(0);
         }
     }
 

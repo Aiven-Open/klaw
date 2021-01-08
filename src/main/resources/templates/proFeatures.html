@@ -334,59 +334,180 @@
 			<div class="row page-titles">
 			</div>
 
-			<!-- Row -->
 			<div class="row">
-				<!-- Column -->
-				<div class="col-md-6 col-lg-4 col-xlg-2">
-					<div class="card card-inverse card-info">
-						<div class="p-2 rounded bg-info text-center">
-							<h1 class="font-light text-white">2,064</h1>
-							<h6 class="text-white">Sessions</h6>
-						</div>
-					</div>
-				</div>
-				<!-- Column -->
-				<div class="col-md-6 col-lg-4 col-xlg-2">
-					<div class="card card-primary card-inverse">
-						<div class="p-2 rounded text-center">
-							<h1 class="font-light text-white">1,738</h1>
-							<h6 class="text-white">Users</h6>
-						</div>
-					</div>
-				</div>
-				<!-- Column -->
-				<div class="col-md-6 col-lg-4 col-xlg-2">
-					<div class="card card-inverse card-success">
-						<div class="p-2 rounded text-center">
-							<h1 class="font-light text-white">5963</h1>
-							<h6 class="text-white">Page Views</h6>
-						</div>
-					</div>
-				</div>
-				<!-- Column -->
-				<div class="col-md-6 col-lg-4 col-xlg-2">
-					<div class="card card-inverse card-dark">
-						<div class="p-2 rounded text-center">
-							<h1 class="font-light text-white">2.9s</h1>
-							<h6 class="text-white">Pages/Session</h6>
-						</div>
-					</div>
-				</div>
-				<!-- Column -->
-				<div class="col-md-6 col-lg-4 col-xlg-2">
-					<div class="card card-inverse card-megna">
-						<div class="p-2 rounded text-center">
-							<h1 class="font-light text-white">1.5s</h1>
-							<h6 class="text-white">Avg. Session</h6>
-						</div>
-					</div>
-				</div>
-				<!-- Column -->
-				<div class="col-md-6 col-lg-4 col-xlg-2">
-					<div class="card card-inverse card-warning">
-						<div class="p-2 rounded text-center">
-							<h1 class="font-light text-white">10%</h1>
-							<h6 class="text-white">Bounce Rate</h6>
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-body">
+							<h4 class="card-title">Kafkawize Professional Version</h4>
+							<h6 class="card-subtitle">Features overview
+								<a href="https://kafkawize.com/features" target="_blank">
+									<span class="badge badge-danger">View on Kafkawize.com</span></a></h6>
+							<!-- Nav tabs -->
+							<div class="vtabs">
+								<ul class="nav nav-tabs tabs-vertical" role="tablist">
+									<li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#topics"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Topics</span> </a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#acls"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Acls</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#schemas"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Schemas</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#backup"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Backup Config</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#restore"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Restore Config</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#authentication"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Authentication</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#tenancy"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Multi-tenancy</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#analytics"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Analytics & Reports</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#rolesperms"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Roles & Permissions</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#emails"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Email Notifications</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#kafkaconn"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Kafka Connectivity</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#support"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Support</span></a> </li>
+								</ul>
+								<!-- Tab panes -->
+								<div class="tab-content">
+									<div class="tab-pane active" id="topics" role="tabpanel">
+										<div class="p-3">
+											<h3>Promote Topics</h3>
+											<p>Topics can be promoted from one environment to another (lower to higher). With approvals.</p>
+											<h3>Delete Topics</h3>
+											<p>Topics can be deleted from a selected environment. With approvals.</p>
+											<h3>Naming conventions for new Topics</h3>
+											<p>Topics can be created prefixed with a name if there is a prefix configured on an environment.
+											<br>Ex: "dev" is a prefix configured when creating an environment. When reuesting for topic in dev environment
+											, it forces users to prefix "dev".</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="acls" role="tabpanel">
+										<div class="p-3">
+											<h3>Prefixed Acls</h3>
+											<p>Prefixed access controls can be requested</p>
+											<h3>TransactionalID (idem potency) Acls</h3>
+											<p>TransactionalID access controls can be requested</p>
+											<h3>Delete Acls</h3>
+											<p>Acls can be deleted with approvals</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="schemas" role="tabpanel">
+										<div class="p-3">
+											<h3>View Schemas</h3>
+											<p>Avro schemas (latest version) of all subjects on all environments can be viewed.</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="backup" role="tabpanel">
+										<div class="p-3">
+											<h3>Synchronize/Backup of Configuration</h3>
+											<p>All the existing topics and access controls on Kafka cluster can be
+												associated to Teams and hence stored in metastore.
+												<br>With this feature, you can already start using Kafkawize, with ease.</p>
+										</div>
+									</div>
+
+									<div class="tab-pane p-3" id="restore" role="tabpanel">
+										<div class="p-3">
+											<h3>Restore of Configuration</h3>
+											<p>All the existing topics and access controls on Kafkawize metastore can be
+												created back on any selected Kafka cluster. (In case there is a crash of ZK/Broker)
+												<br>In no time, a copy of a cluster is created.
+												<br>Audit of the whole activity.
+											</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="authentication" role="tabpanel">
+										<div class="p-3">
+											<h3>Active Directory integration</h3>
+											<p>Kafkawize can be integrated into your organization's existing Active directory, so users do not
+												have to enter or create a new password to login to Kafkawize.
+											</p>
+											<h3>Ldap server integration</h3>
+											<p>Kafkawize can be integrated into your organization's any existing Ldap server, so users do not
+												have to enter or create a new password to login to Kafkawize.
+											</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="tenancy" role="tabpanel">
+										<div class="p-3">
+											<h3>Multi Tenancy</h3>
+											<p>Each tenant can manage their topics with their own teams in isolation.
+												Every tenant can have their own set of Kafka environments, and users of one tenant cannot view/access topics, acls
+												or any from other tenants.
+												<br>It provides an isolation avoiding any security breach.
+											</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="analytics" role="tabpanel">
+										<div class="p-3">
+											<h3>Analytics</h3>
+											<p>Several charts are introduced to give an overview of Clusters and usages by teams.
+												<br>Topics, Acls and Partitions per team
+												<br>Topics, Acls and Partitions per environments
+												<br>Activity log per team and per environments
+											</p>
+											<h3>Reports</h3>
+											<p>A full data report can be downloaded for further analysis</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="rolesperms" role="tabpanel">
+										<div class="p-3">
+											<h3>Configurable Roles</h3>
+											<p>Any new roles can be added and associate different kind of permissions</p>
+											<h3>Permissions</h3>
+											<p>A whole bunch of permissions can be assigned to roles from User interface, making it very flexible.
+												With immediate effect, users will be able to see the changes.
+												<br>Ex: A permission to request topics, or approve or add users, environments, clusters etc.
+											</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="emails" role="tabpanel">
+										<div class="p-3">
+											<h3>Email notifications</h3>
+											<p>Users receive email notifications on every request, on approvals, new user creations, etc</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="kafkaconn" role="tabpanel">
+										<div class="p-3">
+											<h3>Kafka connectivity</h3>
+											<p>ClusterManagement api can connect to Kafka on various protocols/mechanisms like
+												SSL, SASL_SSL, SASL_PLAINTEXT and GSSAPI (Kerberos)</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="support" role="tabpanel">
+										<div class="p-3">
+											<h3>Support</h3>
+											<p>Kafkawize provides support in white labelling, company colors, installation and new features</p>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -34,7 +34,7 @@ public class ActivityLog implements Serializable {
     @Column(name = "details")
     private String details;
 
-    @Column(name = "user")
+    @Column(name = "userid")
     private String user;
 
     @Column(name = "team")

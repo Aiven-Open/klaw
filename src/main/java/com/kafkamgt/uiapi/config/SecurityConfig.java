@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
@@ -81,7 +80,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         if(orgName.equals("Your company name."))
         {
             LOG.error("Invalid organization configured !!");
-            System.exit(0);
             throw new Exception("Invalid organization configured !!");
         }
         if(! (environment.getActiveProfiles().length >0
@@ -89,7 +87,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             HashMap<String, String> licenseMap = utils.validateLicense();
             if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
                 LOG.error(invalidKeyMessage);
-                System.exit(0);
                 throw new Exception(invalidKeyMessage);
             }
         }
@@ -144,7 +141,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     encoder.encode(base64DecodePwd(userInfo.getPwd()))+","+
             userInfo.getRole()+",enabled");
         }
-
         return new InMemoryUserDetailsManager(globalUsers);
     }
 

@@ -1,5 +1,6 @@
 /* Create */
 
+/* For default  timestamps warnings: You can try disabling strict mode. mysql -u root -p -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" or set global sql_mode=''; */
 
 Create table if not exists topic_requests(
 	topicname varchar(150),
@@ -133,7 +134,7 @@ Create table if not exists activitylog(
 	activitytype varchar(25),
 	activitytime timestamp,
 	details varchar(250),
-	user varchar(20),
+	userid varchar(20),
 	team varchar(150),
 	env varchar(50)
 );

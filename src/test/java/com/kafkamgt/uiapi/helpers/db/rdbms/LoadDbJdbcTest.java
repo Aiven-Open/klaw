@@ -7,6 +7,8 @@ import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -31,6 +33,9 @@ public class LoadDbJdbcTest {
     ResourceLoader resourceLoader;
 
     @Mock
+    private ConfigurableApplicationContext contextApp;
+
+    @Mock
     Resource resource;
 
     private static String CREATE_SQL = "scripts/base/rdbms/ddl-jdbc.sql";
@@ -48,6 +53,7 @@ public class LoadDbJdbcTest {
     public void setUp() throws Exception {
         loadDb = new LoadDbJdbc();
         ReflectionTestUtils.setField(loadDb, "resourceLoader", resourceLoader);
+        ReflectionTestUtils.setField(loadDb, "contextApp", contextApp);
     }
 
     @Test
@@ -66,15 +72,15 @@ public class LoadDbJdbcTest {
     }
 
     @Test
-    public void createTablesFail() {
+    public void createTablesSuccess1() {
         ReflectionTestUtils.setField(loadDb, "CREATE_SQL", CREATE_SQL);
-        exit.expectSystemExitWithStatus(0);
+
         loadDb.createTables();
     }
 
     @Test
     public void dropTables() {
-        ReflectionTestUtils.setField(loadDb, "INSERT_SQL", INSERT_SQL);
+        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
         ReflectionTestUtils.setField(loadDb, "jdbcTemplate", jdbcTemplate);
         when(resourceLoader.getResource(anyString())).thenReturn(resource, resource);
         try {
@@ -88,9 +94,8 @@ public class LoadDbJdbcTest {
     }
 
     @Test
-    public void dropTablesFail() {
-        ReflectionTestUtils.setField(loadDb, "INSERT_SQL", INSERT_SQL);
-        exit.expectSystemExitWithStatus(0);
+    public void dropTables2() {
+        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
         loadDb.dropTables();
     }
 
@@ -110,9 +115,9 @@ public class LoadDbJdbcTest {
     }
 
     @Test
-    public void insertDataFail() {
+    public void insertData2() {
         ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
-        exit.expectSystemExitWithStatus(0);
+
         loadDb.insertData();
     }
 }
