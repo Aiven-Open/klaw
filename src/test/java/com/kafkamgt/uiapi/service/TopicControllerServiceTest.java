@@ -68,8 +68,7 @@ public class TopicControllerServiceTest {
         this.topicControllerService = new TopicControllerService(clusterApiService, utilService);
         utilMethods = new UtilMethods();
         this.env = new Env();
-        env.setHost("101.10.11.11");
-        env.setPort("9092");
+        env.setHost("101.10.11.11:9092");
         env.setProtocol("PLAINTEXT");
         env.setName("DEV");
         ReflectionTestUtils.setField(topicControllerService, "manageDatabase", manageDatabase);
@@ -251,7 +250,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.getSyncTopics(envSel, null)).thenReturn(getSyncTopics("topic",4));
 
-        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null);
+        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null, null);
 
         assertEquals(2, topicsList.size());
     }
@@ -262,7 +261,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.getSyncTopics(envSel, null)).thenReturn(getSyncTopics("topic",12));
 
-        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null);
+        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null, null);
 
         assertEquals(4,topicsList.size());
         assertEquals(topicsList.get(0).get(0).getTeamname(),"Team1");
@@ -278,7 +277,7 @@ public class TopicControllerServiceTest {
 
         when(handleDbRequests.getSyncTopics(envSel, null)).thenReturn(getSyncTopics("topic",4));
 
-        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null);
+        List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null, null);
 
         assertNull(topicsList);
     }

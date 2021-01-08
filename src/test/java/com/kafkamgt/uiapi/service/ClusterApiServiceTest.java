@@ -56,8 +56,7 @@ public class ClusterApiServiceTest {
         response = new ResponseEntity<>("success", HttpStatus.OK);
 
         this.env = new Env();
-        env.setHost("101.10.11.11");
-        env.setPort("9092");
+        env.setHost("101.10.11.11:9092");
         env.setName("DEV");
         ReflectionTestUtils.setField(clusterApiService, "manageDatabase", manageDatabase);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);

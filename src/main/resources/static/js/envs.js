@@ -13,7 +13,16 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
+
+	$scope.allotherenvs= [ { label: 'DEV', value: 'DEV' }, { label: 'TST', value: 'TST' },
+		 { label: 'ACC', value: 'ACC' }, { label: 'UAT', value: 'UAT' }, { label: 'QAE', value: 'QAE' }
+		, { label: 'PRD', value: 'PRD' }, { label: 'PRE', value: 'PRE' }, { label: 'SIT', value: 'SIT' },
+		{ label: 'DEV_SCH', value: 'DEV_SCH' }, { label: 'TST_SCH', value: 'TST_SCH' },
+        		 { label: 'ACC_SCH', value: 'ACC_SCH' },{ label: 'UAT_SCH', value: 'UAT_SCH' },{ label: 'PRD_SCH', value: 'PRD_SCH' }];
+
+    //$scope.allotherenvs= [ 'DEV',  'TST', 'ACC', 'UAT',  'QAE', 'PRD', 'PRE' 'SIT'];
+
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
         $scope.showSuccessToast = function() {
@@ -48,21 +57,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             );
         };
 
-        $scope.getOtherEnvs = function() {
 
-                    $http({
-                        method: "GET",
-                        url: "getOtherEnvs",
-                        headers : { 'Content-Type' : 'application/json' }
-                    }).success(function(output) {
-                        $scope.allotherenvs = output;
-                    }).error(
-                        function(error)
-                        {
-                            $scope.alert = error;
-                        }
-                    );
-                };
 
         $scope.deleteEnv = function(idval) {
 
@@ -82,6 +77,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                             $scope.alert = "Delete Cluster Request : "+output.result;
                             $scope.getEnvs();
+                            $scope.getSchemaRegEnvs();
 
                         }).error(
                             function(error)
@@ -122,19 +118,19 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                 if($scope.addNewEnv.host == undefined)
                     {
-                        $scope.alertnote = "Please fill in host";
+                        $scope.alertnote = "Please fill in bootstrap servers";
                         // $scope.showAlertToast();
                         return;
                     }
 
-                if($scope.addNewEnv.envname == undefined)
+                if($scope.addNewEnv.envname.label == undefined)
                 {
                     $scope.alertnote = "Please fill in a name for cluster";
                     // $scope.showAlertToast();
                     return;
                 }
 
-                if($scope.addNewEnv.envname.length > 3)
+                if($scope.addNewEnv.envname.labellength > 3)
                 {
                     $scope.alertnote = "Cluster name cannot be more than 3 characters.";
                     // $scope.showAlertToast();
@@ -143,9 +139,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                 var serviceInput = {};
 
-                serviceInput['name'] = $scope.addNewEnv.envname;
+                serviceInput['name'] = $scope.addNewEnv.envname.label;
                 serviceInput['host'] = $scope.addNewEnv.host;
-                serviceInput['port'] = $scope.addNewEnv.port;
                 serviceInput['protocol'] = $scope.addNewEnv.protocol;
                 serviceInput['type'] = $scope.addNewEnv.type;
 
@@ -160,6 +155,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New cluster added: "+output.result;
+                    $scope.getEnvs();
                     // $scope.showSuccessToast();
                 }).error(
                     function(error)

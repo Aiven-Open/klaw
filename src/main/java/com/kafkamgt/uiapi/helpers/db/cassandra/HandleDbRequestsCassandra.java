@@ -257,6 +257,11 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     public List<ActivityLog> selectActivityLog(String user, String env){return cassandraSelectHelper.selectActivityLog(user, env);}
 
+    @Override
+    public HashMap<String, String> getDashboardStats(String teamName) {
+        return null;
+    }
+
     /*--------------------Update */
     public String updateTopicRequest(TopicRequest topicRequest, String approver){
         return cassandraUpdateHelper.updateTopicRequest(topicRequest, approver);
@@ -312,5 +317,20 @@ public class HandleDbRequestsCassandra implements HandleDbRequests {
 
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return cassandraDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
+    }
+
+    @Override
+    public List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(String teamName) {
+        return null;
+    }
+
+    @Override
+    public List<HashMap<String, String>> selectActivityLogByTeam(String teamName, int numberOfDays) {
+        return null;
+    }
+
+    @Override
+    public List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, String teamName) {
+        return null;
     }
 }

@@ -327,10 +327,12 @@ public class UiConfigControllerTest {
     @Test
     public void showUsers() throws Exception {
         List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser","ADMIN");
-        when(uiConfigControllerService.showUsers()).thenReturn(userList);
+        when(uiConfigControllerService.showUsers("Team1","1")).thenReturn(userList);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/showUserList")
+                .param("teamName","Team1")
+                .param("pageNo","1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

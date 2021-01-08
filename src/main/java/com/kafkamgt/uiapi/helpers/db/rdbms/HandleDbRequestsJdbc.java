@@ -12,11 +12,11 @@ import java.util.List;
 @Configuration
 public class HandleDbRequestsJdbc implements HandleDbRequests {
 
-    @Value("${kafkawize.dbscripts.execution:auto}")
-    String dbScriptsExecution;
+    @Value("${kafkawize.dbscripts.create.tables:false}")
+    String dbCreateTables;
 
-    @Value("${kafkawize.dbscripts.dropall_recreate:false}")
-    String dbScriptsDropAllRecreate;
+    @Value("${kafkawize.dbscripts.insert.basicdata:false}")
+    String dbInsertData;
 
     @Autowired
     SelectDataJdbc jdbcSelectHelper;
@@ -34,18 +34,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     LoadDbJdbc loadDbJdbc;
 
     public void connectToDb(String licenseKey) throws Exception {
-        if(dbScriptsExecution.equals("auto")){
-            if(dbScriptsDropAllRecreate.equals("true"))
-                loadDbJdbc.dropTables();
+        if(dbCreateTables.equals("true")){
             loadDbJdbc.createTables();
+        }
+        if(dbInsertData.equals("true")){
             loadDbJdbc.insertData();
-//            if(! (environment.getActiveProfiles().length >0
-//                    && environment.getActiveProfiles()[0].equals("integrationtest"))) {
-//                if (licenseKey != null && licenseKey.trim().length() > 0)
-//                    jdbcInsertHelper.updateLicense("KW"+kafkawizeVersion, kafkawizeVersion, licenseKey);
-//                else
-//                    throw new Exception("Invalid license");
-//            }
         }
     }
 
@@ -183,6 +176,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     public List<ActivityLog> selectActivityLog(String user, String env){return jdbcSelectHelper.selectActivityLog(user, env);}
 
+    @Override
+    public HashMap<String, String> getDashboardStats(String teamName) {
+        return jdbcSelectHelper.getDashboardStats(teamName);
+    }
+
     /*--------------------Update */
     public String updateTopicRequest(TopicRequest topicRequest, String approver){
         return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
@@ -241,4 +239,20 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     public String deleteSchemaRequest(String topicName, String schemaVersion, String env){
         return jdbcDeleteHelper.deleteSchemaRequest(topicName,schemaVersion, env);
     }
+
+    @Override
+    public List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(String teamName) {
+        return jdbcSelectHelper.selectAllTopicsForTeamGroupByEnv(teamName);
+    }
+
+    @Override
+    public List<HashMap<String, String>> selectActivityLogByTeam(String teamName, int numberOfDays) {
+        return jdbcSelectHelper.selectActivityLogByTeam(teamName, numberOfDays);
+    }
+
+    @Override
+    public List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, String teamName) {
+        return jdbcSelectHelper.selectAllTopicsByTopictypeAndTeamname(topicType, teamName);
+    }
+
 }

@@ -290,7 +290,7 @@ public class InsertData {
     }
 
     String insertIntoEnvs(Env env){
-        session.execute(boundStatementEnvs.bind(env.getName(),env.getHost(),env.getPort(),
+        session.execute(boundStatementEnvs.bind(env.getName(),env.getHost(),"",
                 env.getProtocol(),env.getType()
                 ,env.getKeyStoreLocation(),env.getTrustStoreLocation(),env.getKeyStorePwd(),
                 env.getKeyPwd(),env.getTrustStorePwd(), env.getOtherParams()));

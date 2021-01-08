@@ -303,15 +303,39 @@ public class TopicControllerService {
         }
     }
 
-    public List<List<TopicInfo>> getTopics(String env, String pageNo, String topicNameSearch, String teamName) throws Exception {
+    public List<List<TopicInfo>> getTopics(String env, String pageNo, String topicNameSearch, String teamName,
+                                           String topicType) throws Exception {
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
+
+        // To get Producer or Consumer topics, first get all topics based on acls and then filter
+        List<Topic> producerConsumerTopics = new ArrayList<>();
+        if(topicType != null && (topicType.equals("Producer") || topicType.equals("Consumer")) && teamName != null) {
+            producerConsumerTopics = manageDatabase.getHandleDbRequests().selectAllTopicsByTopictypeAndTeamname(topicType, teamName);
+            // select all topics and then filter
+            env = "ALL";
+            teamName = null;
+        }
 
         // Get Sync topics
         List<Topic> topicsFromSOT = manageDatabase.getHandleDbRequests().getSyncTopics(env, teamName);
 
         topicsFromSOT = groupTopicsByEnv(topicsFromSOT);
+        List<Topic> filterProducerConsumerList = new ArrayList<>();
+
+        if(producerConsumerTopics.size() > 0){
+            for (Topic topicInfo : topicsFromSOT) {
+                for (Topic producerConsumerTopic : producerConsumerTopics) {
+                    if(producerConsumerTopic.getTopicname().equals(topicInfo.getTopicname()) &&
+                            topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
+                        topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+                        filterProducerConsumerList.add(topicInfo);
+                    }
+                }
+            }
+            topicsFromSOT = filterProducerConsumerList;
+        }
 
         List<Topic> topicFilteredList = topicsFromSOT;
         // Filter topics on topic name for search

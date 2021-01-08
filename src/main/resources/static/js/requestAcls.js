@@ -161,14 +161,14 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : topicName }
             }).success(function(output) {
-                $scope.teamname = output.team;
-                if(!$scope.teamname){
+                $scope.topicteamname = output.team;
+                if(!$scope.topicteamname){
                         alert("There is no team found for this topic : " +  topicName);
                         $scope.addAcl.team="";
                         addAcl.topicname.focus();
                             return;
                 }
-                $scope.addAcl.team = $scope.teamname;
+                $scope.addAcl.team = $scope.topicteamname;
             }).error(
                 function(error)
                 {

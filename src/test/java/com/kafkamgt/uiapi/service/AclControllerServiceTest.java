@@ -64,8 +64,7 @@ public class AclControllerServiceTest {
         this.aclControllerService = new AclControllerService(clusterApiService, utilService);
 
         this.env = new Env();
-        env.setHost("101.10.11.11");
-        env.setPort("9092");
+        env.setHost("101.10.11.11:9092");
         env.setName("DEV");
         env.setProtocol("PLAINTEXT");
         ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);

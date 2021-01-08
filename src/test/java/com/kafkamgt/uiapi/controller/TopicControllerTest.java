@@ -171,7 +171,7 @@ public class TopicControllerTest {
     public void getTopics() throws Exception {
         List<List<TopicInfo>> topicList = utilMethods.getTopicInfoList();
 
-        when(topicControllerService.getTopics(anyString(), anyString(), anyString(), anyString())).thenReturn(topicList);
+        when(topicControllerService.getTopics(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(topicList);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopics")
@@ -179,6 +179,7 @@ public class TopicControllerTest {
                 .param("pageNo","1")
                 .param("topicnamesearch","testtopic")
                 .param("teamName","Team1")
+                .param("topicType","")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

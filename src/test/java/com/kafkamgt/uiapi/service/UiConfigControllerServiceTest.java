@@ -73,8 +73,7 @@ public class UiConfigControllerServiceTest {
         uiConfigControllerService.setServices(clusterApiService, utilService);
 
         this.env = new Env();
-        env.setHost("101.10.11.11");
-        env.setPort("9092");
+        env.setHost("101.10.11.11:9092");
         env.setName("DEV");
         ReflectionTestUtils.setField(uiConfigControllerService, "manageDatabase", manageDatabase);
         ReflectionTestUtils.setField(uiConfigControllerService, "orderOfEnvs", "DEV,TST,ACC,PRD");
@@ -428,7 +427,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void showUsers() {
         when(handleDbRequests.selectAllUsersInfo()).thenReturn(getUsernfoList());
-        List<UserInfoModel> userInfoList = uiConfigControllerService.showUsers();
+        List<UserInfoModel> userInfoList = uiConfigControllerService.showUsers(null,"1");
         assertEquals(1,userInfoList.size());
     }
 
@@ -533,8 +532,7 @@ public class UiConfigControllerServiceTest {
         List<Env> listEnvs = new ArrayList<>();
 
         Env env = new Env();
-        env.setHost("localhost");
-        env.setPort("8081");
+        env.setHost("localhost:8081");
         env.setName("DEV");
         env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
@@ -546,15 +544,13 @@ public class UiConfigControllerServiceTest {
         List<Env> listEnvs = new ArrayList<>();
 
         Env env = new Env();
-        env.setHost("localhost");
-        env.setPort("9092");
+        env.setHost("localhost:9092");
         env.setName("DEV");
         env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
 
         env = new Env();
-        env.setHost("10.22.34.121");
-        env.setPort("9092");
+        env.setHost("10.22.34.121:9092");
         env.setName("TST");
         env.setProtocol("PLAINTEXT");
         listEnvs.add(env);

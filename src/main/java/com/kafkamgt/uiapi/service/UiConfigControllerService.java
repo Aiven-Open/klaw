@@ -166,7 +166,7 @@ public class UiConfigControllerService {
         List<Env> newListEnvs = new ArrayList<>();
         for(Env oneEnv: listEnvs){
             String status;
-            status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost()+":"+oneEnv.getPort(),
+            status = clusterApiService.getKafkaClusterStatus(oneEnv.getHost(),
                     oneEnv.getProtocol());
             oneEnv.setEnvStatus(status);
             newListEnvs.add(oneEnv);
@@ -189,7 +189,7 @@ public class UiConfigControllerService {
         for(Env oneEnv: listEnvs){
             String status = null;
            if (oneEnv.getProtocol().equalsIgnoreCase("plaintext"))
-                status = clusterApiService.getSchemaClusterStatus(oneEnv.getHost() + ":" + oneEnv.getPort());
+                status = clusterApiService.getSchemaClusterStatus(oneEnv.getHost());
             else
                 status = "NOT_KNOWN";
             oneEnv.setEnvStatus(status);
@@ -230,7 +230,7 @@ public class UiConfigControllerService {
     }
 
     public String addNewEnv(Env newEnv){
-        if(newEnv.getName().length() > 3)
+        if(newEnv.getName().length() > 3 && newEnv.getType().equals("kafka"))
             newEnv.setName(newEnv.getName().substring(0,3));
         UserDetails userDetails = getUserDetails();
         if(!utilService.checkAuthorizedSU(userDetails))
@@ -357,17 +357,54 @@ public class UiConfigControllerService {
         }
     }
 
-    public List<UserInfoModel> showUsers(){
+    public List<UserInfoModel> showUsers(String teamName, String pageNo){
+
         List<UserInfoModel> userInfoModels = new ArrayList<>();
 
         List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersInfo();
         userList.forEach(userListItem -> {
             UserInfoModel userInfoModel = new UserInfoModel();
             copyProperties(userListItem,userInfoModel);
-            userInfoModels.add(userInfoModel);
+            if(teamName!=null && !teamName.equals("")) {
+                if (userInfoModel.getTeam().equals(teamName))
+                    userInfoModels.add(userInfoModel);
+            }
+            else
+                userInfoModels.add(userInfoModel);
         });
 
-        return userInfoModels;
+        userInfoModels.sort(Comparator.comparing(UserInfoModel::getTeam));
+
+        return getPagedUsers(pageNo, userInfoModels);
+    }
+
+    private List<UserInfoModel> getPagedUsers(String pageNo, List<UserInfoModel> userListMap){
+        List<UserInfoModel> aclListMapUpdated = new ArrayList<>();
+
+        int totalRecs = userListMap.size();
+        int recsPerPage = 20;
+
+        int totalPages = userListMap.size()/recsPerPage + (userListMap.size()%recsPerPage > 0 ? 1 : 0);
+
+        int requestPageNo = Integer.parseInt(pageNo);
+        int startVar = (requestPageNo-1) * recsPerPage;
+        int lastVar = (requestPageNo) * (recsPerPage);
+
+        for(int i=0;i<totalRecs;i++) {
+
+            if(i>=startVar && i<lastVar) {
+                UserInfoModel mp = userListMap.get(i);
+
+                mp.setTotalNoPages(totalPages + "");
+                List<String> numList = new ArrayList<>();
+                for (int k = 1; k <= totalPages; k++) {
+                    numList.add("" + k);
+                }
+                mp.setAllPageNos(numList);
+                aclListMapUpdated.add(mp);
+            }
+        }
+        return aclListMapUpdated;
     }
 
     public UserInfo getMyProfileInfo(){

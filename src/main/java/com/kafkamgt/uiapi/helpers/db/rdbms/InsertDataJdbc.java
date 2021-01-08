@@ -82,7 +82,7 @@ public class InsertDataJdbc {
         return builder.toString();
     }
 
-    public String insertIntoRequestTopic(TopicRequest topicRequest){
+    public synchronized String insertIntoRequestTopic(TopicRequest topicRequest){
 
         TopicRequestPK topicRequestPK = new TopicRequestPK();
         topicRequestPK.setTopicname(topicRequest.getTopicname());
@@ -110,7 +110,7 @@ public class InsertDataJdbc {
             return "failure";
     }
 
-    public String insertIntoTopicSOT(List<Topic> topics, boolean isSyncTopics){
+    public synchronized String insertIntoTopicSOT(List<Topic> topics, boolean isSyncTopics){
 
         topics.forEach(topic->
                 {
@@ -128,7 +128,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    String insertIntoRequestAcl(AclRequests aclReq){
+    synchronized String insertIntoRequestAcl(AclRequests aclReq){
 
         if(aclReq.getAclType() !=null && aclReq.getAclType().equals("Create")){
             aclReq.setReq_no(getRandom());
@@ -157,7 +157,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls){
+    public synchronized String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls){
 
         acls.forEach(acl->{
 
@@ -168,7 +168,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoRequestSchema(SchemaRequest schemaRequest){
+    public synchronized String insertIntoRequestSchema(SchemaRequest schemaRequest){
 
         SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
         schemaRequestPK.setEnvironment(schemaRequest.getEnvironment());
@@ -202,7 +202,7 @@ public class InsertDataJdbc {
         return "success";
     }
 
-    public String insertIntoMessageSchemaSOT(List<MessageSchema> schemas){
+    public synchronized String insertIntoMessageSchemaSOT(List<MessageSchema> schemas){
 
         for(MessageSchema mSchema : schemas){
             MessageSchemaPK messageSchemaPK = new MessageSchemaPK();

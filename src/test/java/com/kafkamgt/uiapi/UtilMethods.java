@@ -384,8 +384,7 @@ public class UtilMethods {
         List<Env> envList = new ArrayList<>();
         Env env = new Env();
         env.setName("DEV");
-        env.setHost("localhost");
-        env.setPort("9092");
+        env.setHost("localhost:9092");
         envList.add(env);
         return envList;
     }

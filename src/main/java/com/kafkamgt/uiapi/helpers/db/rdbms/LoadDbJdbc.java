@@ -38,8 +38,8 @@ public class LoadDbJdbc {
 
         createTables("create");
         LOG.info("Create DB Tables setup done !! ");
-        createTables("alter");
-        LOG.info("Alter DB Tables setup done !! ");
+//        createTables("alter");
+//        LOG.info("Alter DB Tables setup done !! ");
     }
 
     private void createTables(String sqlType){

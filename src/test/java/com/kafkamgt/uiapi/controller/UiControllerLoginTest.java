@@ -177,17 +177,8 @@ public class UiControllerLoginTest {
         mvcPerformAndAssert("/changePwd", "changePwd.html");
     }
 
-    @Test
-    public void synchronizeTopics() throws Exception{
-        loginMock();
-        mvcPerformAndAssert("/synchronizeTopics", "synchronizeTopics.html");
-    }
 
-    @Test
-    public void synchronizeAcls()throws Exception {
-        loginMock();
-        mvcPerformAndAssert("/synchronizeAcls", "synchronizeAcls.html");
-    }
+
 
     @Test
     public void showTeams() throws Exception{

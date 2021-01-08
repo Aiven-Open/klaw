@@ -130,16 +130,6 @@ public class UiControllerLogin {
         return checkAuth("changePwd.html");
     }
 
-    @RequestMapping(value = "/synchronizeTopics", method = RequestMethod.GET)
-    public String synchronizeTopics(ModelMap model) {
-        return checkAuth("synchronizeTopics.html");
-    }
-
-    @RequestMapping(value = "/synchronizeAcls", method = RequestMethod.GET)
-    public String synchronizeAcls(ModelMap model) {
-        return checkAuth("synchronizeAcls.html");
-    }
-
     @RequestMapping(value = "/teams", method = RequestMethod.GET)
     public String showTeams(ModelMap model) {
         return checkAuth("showTeams.html");
@@ -168,6 +158,11 @@ public class UiControllerLogin {
     @RequestMapping(value = "/topicOverview", method = RequestMethod.GET)
     public String browseAcls(ModelMap model) {
         return checkAuth("browseAcls.html");
+    }
+
+    @RequestMapping(value = "/proFeatures", method = RequestMethod.GET)
+    public String proFeatures(ModelMap model) {
+        return checkAuth("proFeatures.html");
     }
 
     @RequestMapping(value = "/serverConfig", method = RequestMethod.GET)

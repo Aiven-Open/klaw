@@ -20,9 +20,6 @@ public class Env implements Serializable {
     @Column(name = "host")
     private String host;
 
-    @Column(name = "port")
-    private String port;
-
     @Column(name = "protocol")
     private String protocol;
 

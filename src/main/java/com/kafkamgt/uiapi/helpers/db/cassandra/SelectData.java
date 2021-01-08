@@ -538,7 +538,6 @@ public class SelectData{
             env = new Env();
             env.setName(row.getString("name"));
             env.setHost(row.getString("host"));
-            env.setPort(row.getString("port"));
             env.setProtocol(row.getString("protocol"));
             env.setType(row.getString("type"));
             env.setKeyStoreLocation(row.getString("keystorelocation"));
@@ -568,7 +567,6 @@ public class SelectData{
             env = new Env();
             env.setName(row.getString("name"));
             env.setHost(row.getString("host"));
-            env.setPort(row.getString("port"));
             env.setProtocol(row.getString("protocol"));
             env.setType(row.getString("type"));
             env.setKeyStoreLocation(row.getString("keystorelocation"));

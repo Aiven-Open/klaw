@@ -79,10 +79,14 @@ public class DataSourceConfig {
     }
 
     private Properties jpaHibernateProperties() {
-
         Properties properties = new Properties();
-
         properties.put("hibernate.dialect",environment.getProperty("spring.jpa.properties.hibernate.dialect"));
+        properties.put("hibernate.show_sql",environment.getProperty("spring.jpa.hibernate.show_sql"));
+        properties.put("hibernate.generate-ddl",environment.getProperty("spring.jpa.hibernate.generate-ddl"));
+        properties.put("hibernate.ddl-auto",environment.getProperty("spring.jpa.hibernate.ddl-auto"));
+        properties.put("hibernate.jdbc.lob.non_contextual_creation",
+                environment.getProperty("spring.jpa.hibernate.jdbc.lob.non_contextual_creation"));
+
         return properties;
     }
 

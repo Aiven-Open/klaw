@@ -60,15 +60,15 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                     params: {'env' : $scope.addSchema.envName.name,
                         'topicName' : topicName }
                 }).success(function(output) {
-                    $scope.teamname = output.team;
+                    $scope.topicteamname = output.team;
                     //alert($scope.topicDetails.teamname + "---");
-                    if(!$scope.teamname){
+                    if(!$scope.topicteamname){
                             alert("There is NO team found for this topic : " +  topicName);
                             $scope.addSchema.team="";
                             addSchema.topicname.focus();
                                 return;
                     }
-                    $scope.addSchema.team = $scope.teamname;
+                    $scope.addSchema.team = $scope.topicteamname;
                     //alert("---"+$scope.topicDetails.teamname);
                 }).error(
                     function(error)

@@ -236,7 +236,7 @@ a.link:hover, a.link:focus {
 /*sidebar navigation
 *******************/
 .card-no-border .left-sidebar, .card-no-border .sidebar-nav {
-  background: #272c33; }
+  background: #ffffff; }
 
 .mini-sidebar .sidebar-nav {
   background: transparent; }
@@ -248,7 +248,7 @@ a.link:hover, a.link:focus {
 .sidebar-nav {
   background: #272c33; }
   .sidebar-nav ul li a {
-    color: #798699; }
+    color: #1e88e5; }
     .sidebar-nav ul li a.active, .sidebar-nav ul li a:hover {
       color: #1e88e5; }
     .sidebar-nav ul li a.active {
@@ -265,7 +265,7 @@ a.link:hover, a.link:focus {
   .sidebar-nav > ul > li > a.active i, .sidebar-nav > ul > li > a:hover i {
     color: #1e88e5; }
   .sidebar-nav > ul > li > a i {
-    color: #798699; }
+    color: #1e88e5; }
   .sidebar-nav > ul > li > a.active {
     font-weight: 400;
     background: #fff;

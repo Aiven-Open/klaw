@@ -66,10 +66,11 @@ public class TopicController {
     public ResponseEntity<List<List<TopicInfo>>> getTopics(@RequestParam("env") String env,
                                                      @RequestParam("pageNo") String pageNo,
                                                      @RequestParam(value="topicnamesearch",required=false) String topicNameSearch,
-                                                           @RequestParam(value="teamName",required=false) String teamName
+                                                           @RequestParam(value="teamName",required=false) String teamName,
+                                                           @RequestParam(value="topicType",required=false) String topicType
                                                            ) throws Exception {
 
-        return new ResponseEntity<>(topicControllerService.getTopics(env, pageNo, topicNameSearch, teamName), HttpStatus.OK);
+        return new ResponseEntity<>(topicControllerService.getTopics(env, pageNo, topicNameSearch, teamName, topicType), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getTopicsOnly", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
