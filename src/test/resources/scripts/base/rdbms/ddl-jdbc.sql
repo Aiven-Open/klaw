@@ -108,8 +108,7 @@ Create table if not exists users(
 
 Create table if not exists env(
 	name varchar(10),
-	host varchar(20),
-	port varchar(6),
+	host varchar(1000),
 	protocol varchar(20),
 	type varchar(20),
 	keystorelocation varchar(200),

@@ -208,7 +208,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             if (!window.confirm("Are you sure, you would like to add user : "
                 +  $scope.addNewUser.username + ": " +
                 "\nTeam : " + $scope.addNewUser.team.teamname +
-                "\nEmail : " + $scope.addNewUser.emailid +
                 "\nRole : " + $scope.addNewUser.role.value
                 )) {
                 return;

@@ -66,6 +66,9 @@ For the versions available, see the [tags on this repository](https://github.com
 
 This project is licensed under the GPL license 3.0  - see the [LICENSE.md](LICENSE.md) file for details
 
+The frontend code (Html, Css, Scss, js, images, icons) of this project cannot be Distributed, Modified, Patented. 
+They are licensed to the original Theme software.
+
 ## Architecture:
 
 ![Architecture](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)

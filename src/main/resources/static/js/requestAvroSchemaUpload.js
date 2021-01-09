@@ -48,7 +48,6 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
     $scope.getTopicTeam = function(topicName) {
 
                 if(topicName == null){
-                    this.addAcl.topicname.focus();
                     alert("Please mention a topic name.");
                     return false;
                 }
