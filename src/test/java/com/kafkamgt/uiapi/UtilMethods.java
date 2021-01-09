@@ -52,7 +52,7 @@ public class UtilMethods {
 
     public UserInfo getUserInfoMock(){
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
         userInfo.setUsername("uiuser1");
 
         return userInfo;
@@ -61,7 +61,7 @@ public class UtilMethods {
     public List<UserInfo> getUserInfoList(String username, String role){
         List<UserInfo> userInfoList = new ArrayList<>();
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
         userInfo.setUsername(username);
         userInfo.setRole(role);
         userInfoList.add(userInfo);
@@ -72,7 +72,7 @@ public class UtilMethods {
     public List<UserInfoModel> getUserInfoListModel(String username, String role){
         List<UserInfoModel> userInfoList = new ArrayList<>();
         UserInfoModel userInfo = new UserInfoModel();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
         userInfo.setUsername(username);
         userInfo.setRole(role);
         userInfoList.add(userInfo);
@@ -90,7 +90,7 @@ public class UtilMethods {
 
     public Topic getTopic(String topicName){
         Topic topic = new Topic();
-        topic.setTeamname("Team1");
+        topic.setTeamname("Octopus");
         topic.setTopicname(topicName);
 
         return topic;
@@ -113,7 +113,7 @@ public class UtilMethods {
         topicPK.setTopicname("testtopic");
 
         topicRequest.setTopicPK(topicPK);
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         topicRequest.setEnvironment("DEV");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
@@ -127,7 +127,7 @@ public class UtilMethods {
         topicPK.setTopicname(topicName);
 
         topicRequest.setTopicPK(topicPK);
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
     }
@@ -135,7 +135,7 @@ public class UtilMethods {
     public List<Acl> getAcls() {
         List<Acl> allTopicReqs = new ArrayList<>();
         Acl topicRequest = new Acl();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         topicRequest.setTopictype("Producer");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
@@ -144,7 +144,7 @@ public class UtilMethods {
     public List<AclInfo> getAclInfoList() {
         List<AclInfo> allTopicReqs = new ArrayList<>();
         AclInfo topicRequest = new AclInfo();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         topicRequest.setTopictype("Producer");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
@@ -245,7 +245,7 @@ public class UtilMethods {
     public List<Acl> getAllAcls() {
         List<Acl> allTopicReqs = new ArrayList<>();
         Acl topicRequest = new Acl();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         topicRequest.setTopictype("Producer");
         allTopicReqs.add(topicRequest);
 
@@ -264,10 +264,10 @@ public class UtilMethods {
         List<Team> allTopicReqs = new ArrayList<>();
         Team topicRequest = new Team();
         TeamPK teamPk = new TeamPK();
-        teamPk.setTeamname("Team1");
+        teamPk.setTeamname("Octopus");
         topicRequest.setTeamPK(teamPk);
 
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
     }
@@ -275,14 +275,14 @@ public class UtilMethods {
     public List<TopicRequest> getTopicRequests() {
         List<TopicRequest> allTopicReqs = new ArrayList<>();
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         allTopicReqs.add(topicRequest);
         return allTopicReqs;
     }
 
     public TopicRequest getTopicRequest(String topicName) {
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         topicRequest.setUsername("uiuser1");
         topicRequest.setTopicname(topicName);
         topicRequest.setAcl_ip("12.11.223.12");
@@ -295,7 +295,7 @@ public class UtilMethods {
 
     public AclRequests getAclRequest(String topicName) {
         AclRequests aclRequest = new AclRequests();
-        aclRequest.setTeamname("Team1");
+        aclRequest.setTeamname("Octopus");
         aclRequest.setEnvironment("DEV");
         aclRequest.setTopicname(topicName);
         aclRequest.setUsername("uiuser1");
@@ -308,7 +308,7 @@ public class UtilMethods {
 
     public AclRequests getAclRequestCreate(String topicName) {
         AclRequests aclRequest = new AclRequests();
-        aclRequest.setTeamname("Team1");
+        aclRequest.setTeamname("Octopus");
         aclRequest.setEnvironment("DEV");
         aclRequest.setTopicname(topicName);
         aclRequest.setUsername("uiuser1");
@@ -324,7 +324,7 @@ public class UtilMethods {
         SchemaRequest schemaRequest = new SchemaRequest();
         SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
         schemaRequestPK.setEnvironment("DEV");
-        schemaRequest.setTeamname("Team1");
+        schemaRequest.setTeamname("Octopus");
         schemaRequest.setUsername("uiuser1");
         schemaRequest.setSchemaRequestPK(schemaRequestPK);
         schemaRequest.setSchemafull("schema");
@@ -335,8 +335,8 @@ public class UtilMethods {
     public List<AclRequests> getAclRequests() {
         List<AclRequests> aclRequests = new ArrayList<>();
         AclRequests aclRequests1 = new AclRequests();
-        aclRequests1.setTeamname("Team1");
-        aclRequests1.setRequestingteam("Team1");
+        aclRequests1.setTeamname("Octopus");
+        aclRequests1.setRequestingteam("Octopus");
         aclRequests1.setAclType("Create");
         aclRequests.add(aclRequests1);
         return aclRequests;
@@ -347,8 +347,8 @@ public class UtilMethods {
 
         List<AclRequests> aclRequests = new ArrayList<>();
         AclRequests aclRequests1 = new AclRequests();
-        aclRequests1.setTeamname("Team1");
-        aclRequests1.setRequestingteam("Team1");
+        aclRequests1.setTeamname("Octopus");
+        aclRequests1.setRequestingteam("Octopus");
         aclRequests.add(aclRequests1);
 
         aclList.add(aclRequests);
@@ -361,7 +361,7 @@ public class UtilMethods {
 
         List<TopicRequest> allTopicReqs = new ArrayList<>();
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         allTopicReqs.add(topicRequest);
         topicReqs.add(allTopicReqs);
 
@@ -373,7 +373,7 @@ public class UtilMethods {
 
         List<TopicInfo> allTopicReqs = new ArrayList<>();
         TopicInfo topicRequest = new TopicInfo();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         allTopicReqs.add(topicRequest);
         topicReqs.add(allTopicReqs);
 
@@ -407,7 +407,7 @@ public class UtilMethods {
 
     public AclRequests getAclRequest11(String topic) {
         AclRequests aclRequest = new AclRequests();
-        aclRequest.setTeamname("Team1");
+        aclRequest.setTeamname("Octopus");
         aclRequest.setEnvironment("DEV");
         aclRequest.setTopicname(topic);
         aclRequest.setUsername("uiuser1");
@@ -438,7 +438,7 @@ public class UtilMethods {
         syncTopicUpdates.setPartitions("2");
         syncTopicUpdates.setReplicationFactor("1");
         syncTopicUpdates.setTopicName("testtopic");
-        syncTopicUpdates.setTeamSelected("Team1");
+        syncTopicUpdates.setTeamSelected("Octopus");
         syncTopicUpdates.setReq_no("fsadFDS");
         syncUpdatesList.add(syncTopicUpdates);
 
@@ -474,7 +474,7 @@ public class UtilMethods {
 
         List<TopicInfo> allTopicReqs = new ArrayList<>();
         TopicInfo topicRequest = new TopicInfo();
-        topicRequest.setTeamname("Team1");
+        topicRequest.setTeamname("Octopus");
         allTopicReqs.add(topicRequest);
 
         topicOverview.setAclInfoList(getAclInfoList());
@@ -492,7 +492,7 @@ public class UtilMethods {
 
     public List<String> getAllTeamsSUOnly() {
         List<String> teamsList = new ArrayList<>();
-        teamsList.add("Team1");
+        teamsList.add("Octopus");
         teamsList.add("Team2");
 
         return teamsList;

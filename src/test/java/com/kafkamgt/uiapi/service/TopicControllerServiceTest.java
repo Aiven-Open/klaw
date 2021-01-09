@@ -264,9 +264,9 @@ public class TopicControllerServiceTest {
         List<List<TopicInfo>> topicsList = topicControllerService.getTopics(envSel, pageNo, topicNameSearch, null, null);
 
         assertEquals(4,topicsList.size());
-        assertEquals(topicsList.get(0).get(0).getTeamname(),"Team1");
+        assertEquals(topicsList.get(0).get(0).getTeamname(),"Octopus");
         assertEquals("Team2", topicsList.get(0).get(1).getTeamname());
-        assertEquals("Team1", topicsList.get(0).get(2).getTeamname());
+        assertEquals("Octopus", topicsList.get(0).get(2).getTeamname());
         assertEquals("1", topicsList.get(0).get(2).getTotalNoPages());
     }
 
@@ -313,7 +313,7 @@ public class TopicControllerServiceTest {
         when(handleDbRequests.getTopicTeam(topicName)).thenReturn(Arrays.asList(getTopic(topicName)));
 
         List<Topic> topicTeam = topicControllerService.getTopicFromName(topicName);
-        assertEquals(topicTeam.get(0).getTeamname(), "Team1");
+        assertEquals(topicTeam.get(0).getTeamname(), "Octopus");
     }
 
     private TopicRequest getCorrectTopic(){
@@ -377,8 +377,8 @@ public class TopicControllerServiceTest {
 
     private List<Team> getAvailableTeams(){
 
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         Team team2 = new Team();
         team2.setTeamname("Team2");
@@ -387,7 +387,7 @@ public class TopicControllerServiceTest {
         team3.setTeamname("Team3");
 
         List<Team> teamList = new ArrayList<>();
-        teamList.add(team1);
+        teamList.add(Octopus);
         teamList.add(team2);
         teamList.add(team3);
 
@@ -397,7 +397,7 @@ public class TopicControllerServiceTest {
     private Topic getTopic(String topicName){
         Topic t = new Topic();
         TopicPK topicPK = new TopicPK();
-        t.setTeamname("Team1");
+        t.setTeamname("Octopus");
         t.setTopicname(topicName);
         topicPK.setTopicname(topicName);
         t.setTopicPK(topicPK);
@@ -415,7 +415,7 @@ public class TopicControllerServiceTest {
             topicPK = new TopicPK();
 
             if(i%2 == 0)
-                t.setTeamname("Team1");
+                t.setTeamname("Octopus");
             else
                 t.setTeamname("Team2");
 

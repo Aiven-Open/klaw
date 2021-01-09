@@ -82,7 +82,7 @@ public class UtilControllerServiceTest {
     public void getAuth1() {
         loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn("Team1");
+        when(userInfo.getTeam()).thenReturn("Octopus");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_USER");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllRequestsToBeApproved(any(),anyString())).thenReturn(getCounts(true));
@@ -93,7 +93,7 @@ public class UtilControllerServiceTest {
 
         expectedResult.put("status","Authorized");
         expectedResult.put("username","uiuser1");
-        expectedResult.put("teamname","Team1");
+        expectedResult.put("teamname","Octopus");
         expectedResult.put("companyinfo","null");
         expectedResult.put("kafkawizeversion","null");
         expectedResult.put("notifications","2");
@@ -109,7 +109,7 @@ public class UtilControllerServiceTest {
     public void getAuth2() {
         loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn("Team1");
+        when(userInfo.getTeam()).thenReturn("Octopus");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_ADMIN");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getAllRequestsToBeApproved(any(), anyString())).thenReturn(getCounts(false));
@@ -119,7 +119,7 @@ public class UtilControllerServiceTest {
 
         expectedResult.put("status","Authorized");
         expectedResult.put("username","uiuser1");
-        expectedResult.put("teamname","Team1");
+        expectedResult.put("teamname","Octopus");
         expectedResult.put("companyinfo","null");
         expectedResult.put("kafkawizeversion","null");
         expectedResult.put("notifications","0");
@@ -147,14 +147,14 @@ public class UtilControllerServiceTest {
 
         loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn("Team1");
+        when(userInfo.getTeam()).thenReturn("Octopus");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_ADMIN");
 
         String actualResult = utilControllerService.getExecAuth();
         String expectedResult = "{ \"status\": \"Authorized\" ," +
                 "  \"companyinfo\": \"null\"," +
-                " \"teamname\": \"Team1\"," +
+                " \"teamname\": \"Octopus\"," +
                 "\"username\":\"uiuser1\" }";
         assertEquals(expectedResult, actualResult);
     }
@@ -163,14 +163,14 @@ public class UtilControllerServiceTest {
     public void getExecAuth2() {
         loginMock();
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn("Team1");
+        when(userInfo.getTeam()).thenReturn("Octopus");
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(utilService.getAuthority(userDetails)).thenReturn("ROLE_USER");
 
         String actualResult = utilControllerService.getExecAuth();
         String expectedResult = "{ \"status\": \"NotAuthorized\" ," +
                 "  \"companyinfo\": \"null\"," +
-                " \"teamname\": \"Team1\"," +
+                " \"teamname\": \"Octopus\"," +
                 "\"username\":\"uiuser1\" }";
         assertEquals(expectedResult, actualResult);
     }

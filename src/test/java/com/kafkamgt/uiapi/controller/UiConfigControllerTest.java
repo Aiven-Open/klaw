@@ -250,7 +250,7 @@ public class UiConfigControllerTest {
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/deleteTeamRequest")
-                .param("teamId", "Team101")
+                .param("teamId", "Octopus01")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -327,11 +327,11 @@ public class UiConfigControllerTest {
     @Test
     public void showUsers() throws Exception {
         List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser","ADMIN");
-        when(uiConfigControllerService.showUsers("Team1","1")).thenReturn(userList);
+        when(uiConfigControllerService.showUsers("Octopus","1")).thenReturn(userList);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/showUserList")
-                .param("teamName","Team1")
+                .param("teamName","Octopus")
                 .param("pageNo","1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -355,7 +355,7 @@ public class UiConfigControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         UserInfo response = new ObjectMapper().readValue(res, UserInfo.class);
-        assertEquals("Team1", response.getTeam());
+        assertEquals("Octopus", response.getTeam());
     }
 
     @Test

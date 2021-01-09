@@ -186,7 +186,7 @@ public class TopicAclControllerIT {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertThat(res, CoreMatchers.containsString("Team1"));
+        assertThat(res, CoreMatchers.containsString("Octopus"));
     }
 
     // delete a topic request of his own

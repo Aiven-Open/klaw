@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name="env")
+@Table(name="kwenv")
 public class Env implements Serializable {
 
     @Id

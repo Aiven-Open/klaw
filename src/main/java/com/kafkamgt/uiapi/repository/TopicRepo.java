@@ -18,6 +18,6 @@ public interface TopicRepo extends CrudRepository<Topic, TopicPK> {
 
     List<Topic> findAllByTopicPKTopicname(String topicName);
 
-    @Query(value ="select env, count(*) from topics where teamname = :teamnameVar group by env", nativeQuery = true)
+    @Query(value ="select env, count(*) from kwtopics where teamname = :teamnameVar group by env", nativeQuery = true)
     List<Object[]> findAllTopicsForTeamGroupByEnv(@Param("teamnameVar") String teamnameVar);
 }

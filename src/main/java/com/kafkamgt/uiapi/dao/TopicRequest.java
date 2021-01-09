@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name="topic_requests")
+@Table(name="kwtopicrequests")
 public class TopicRequest implements Serializable {
 
     @Transient

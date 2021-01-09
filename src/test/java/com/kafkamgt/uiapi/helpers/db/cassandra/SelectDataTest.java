@@ -47,9 +47,9 @@ public class SelectDataTest {
                 resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator(),
                 rowList.iterator(), rowList.iterator(), rowList.iterator(), rowList.iterator());
-        when(row.getString("teamname")).thenReturn("Team1", "Team1", "Team1");
-        when(row.getString("team")).thenReturn("Team1", "Team1");
-        when(row.getString("requestingteam")).thenReturn("Team1", "Team1", "Team1");
+        when(row.getString("teamname")).thenReturn("Octopus", "Octopus", "Octopus");
+        when(row.getString("team")).thenReturn("Octopus", "Octopus");
+        when(row.getString("requestingteam")).thenReturn("Octopus", "Octopus", "Octopus");
         when(row.getString("userid")).thenReturn(requestor, requestor, requestor);
 
         when(row.getString("acltype")).thenReturn("Delete", "Create", "Delete");
@@ -74,9 +74,9 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator(),
                 rowList.iterator(), rowList.iterator());
-        when(row.getString("requestingteam")).thenReturn("Team1", "Team1");
+        when(row.getString("requestingteam")).thenReturn("Octopus", "Octopus");
         when(row.getString("userid")).thenReturn(requestor, requestor);
-        when(row.getString("team")).thenReturn("Team1", "Team1");
+        when(row.getString("team")).thenReturn("Octopus", "Octopus");
         when(row.getTimestamp("exectime")).thenReturn(new Date(), new Date());
         when(row.getTimestamp("requesttime")).thenReturn(new Date(), new Date());
 
@@ -95,9 +95,9 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator(),
                 rowList.iterator(), rowList.iterator());
-        when(row.getString("teamname")).thenReturn("Team1", "Team1");
+        when(row.getString("teamname")).thenReturn("Octopus", "Octopus");
         when(row.getString("userid")).thenReturn(requestor, requestor);
-        when(row.getString("team")).thenReturn("Team1", "Team1");
+        when(row.getString("team")).thenReturn("Octopus", "Octopus");
         when(row.getTimestamp("exectime")).thenReturn(new Date(), new Date());
         when(row.getTimestamp("requesttime")).thenReturn(new Date(), new Date());
 
@@ -134,10 +134,10 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator());
-        when(row.getString("teamname")).thenReturn("Team1");
+        when(row.getString("teamname")).thenReturn("Octopus");
 
         List<Topic> topic = selectData.selectTopicDetails(topicName);
-        assertEquals("Team1", topic.get(0).getTeamname());
+        assertEquals("Octopus", topic.get(0).getTeamname());
     }
 
     @Test
@@ -150,12 +150,12 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator());
         when(row.getString("topicname")).thenReturn(topicName, topicName);
-        when(row.getString("teamname")).thenReturn("Team1");
+        when(row.getString("teamname")).thenReturn("Octopus");
 
         List<Topic> topicList = selectData.selectSyncTopics(envSel, null);
         assertEquals(1, topicList.size());
         assertEquals(topicName, topicList.get(0).getTopicname());
-        assertEquals("Team1", topicList.get(0).getTeamname());
+        assertEquals("Octopus", topicList.get(0).getTeamname());
     }
 
     @Test
@@ -168,14 +168,14 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator());
         when(row.getString("topicname")).thenReturn(topicName);
-        when(row.getString("teamname")).thenReturn("Team1");
+        when(row.getString("teamname")).thenReturn("Octopus");
         when(row.getString("consumergroup")).thenReturn("testgroup");
         when(row.getString("acl_ip")).thenReturn("12.133.122.21");
 
         List<Acl> topicList = selectData.selectSyncAcls(envSel);
         assertEquals(1, topicList.size());
         assertEquals(topicName, topicList.get(0).getTopicname());
-        assertEquals("Team1", topicList.get(0).getTeamname());
+        assertEquals("Octopus", topicList.get(0).getTeamname());
         assertEquals("testgroup", topicList.get(0).getConsumergroup());
         assertEquals("12.133.122.21", topicList.get(0).getAclip());
     }
@@ -191,9 +191,9 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator(),
                 rowList.iterator(), rowList.iterator());
-        when(row.getString("teamname")).thenReturn("Team1", "Team1");
+        when(row.getString("teamname")).thenReturn("Octopus", "Octopus");
 
-        when(row.getString("team")).thenReturn("Team1", "Team1");
+        when(row.getString("team")).thenReturn("Octopus", "Octopus");
 
         List<TopicRequest> listReqs = selectData.selectTopicRequests(false, requestor);
         assertEquals(2, listReqs.size());
@@ -210,14 +210,14 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator());
         when(row.getString("topicname")).thenReturn(topicName);
-        when(row.getString("teamname")).thenReturn("Team1");
+        when(row.getString("teamname")).thenReturn("Octopus");
         when(row.getString("acl_ip")).thenReturn("12.133.122.21");
         when(row.getTimestamp("exectime")).thenReturn(new Date());
         when(row.getTimestamp("requesttime")).thenReturn(new Date());
 
         TopicRequest topicRequest = selectData.selectTopicRequestsForTopic(topicName, envSel);
         assertEquals(topicName, topicRequest.getTopicname());
-        assertEquals("Team1", topicRequest.getTeamname());
+        assertEquals("Octopus", topicRequest.getTeamname());
         assertEquals("12.133.122.21", topicRequest.getAcl_ip());
     }
 
@@ -229,7 +229,7 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1", "Team2");
+        when(row.getString("team")).thenReturn("Octopus", "Team2");
         when(row.getString("contactperson")).thenReturn("John", "Wilson");
 
         List<Team> listTeams = selectData.selectAllTeams();
@@ -266,11 +266,11 @@ public class SelectDataTest {
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
         when(row.getString("userid")).thenReturn("uiuser1", "uiuser2");
-        when(row.getString("team")).thenReturn("Team1", "Team2");
+        when(row.getString("team")).thenReturn("Octopus", "Team2");
 
         List<Map<String,String>> listUsers = selectData.selectAllUsers();
         assertEquals(2, listUsers.size());
-        assertEquals("Team1", listUsers.get(0).get("uiuser1"));
+        assertEquals("Octopus", listUsers.get(0).get("uiuser1"));
         assertEquals("Team2", listUsers.get(1).get("uiuser2"));
     }
 
@@ -282,7 +282,7 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet, resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1", "Team2");
+        when(row.getString("team")).thenReturn("Octopus", "Team2");
         when(row.getString("userid")).thenReturn("uiuser1", "uiuser2");
         when(row.getString("pwd")).thenReturn("pwd1", "pwd2");
 
@@ -339,13 +339,13 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1" );
+        when(row.getString("team")).thenReturn("Octopus" );
         when(row.getString("roleid")).thenReturn("ADMIN");
         when(row.getString("fullname")).thenReturn("Firstname lastname");
 
         UserInfo userInfo = selectData.selectUserInfo(username);
         assertEquals(username, userInfo.getUsername());
-        assertEquals("Team1", userInfo.getTeam());
+        assertEquals("Octopus", userInfo.getTeam());
         assertEquals("ADMIN", userInfo.getRole());
     }
 
@@ -358,13 +358,13 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1");
+        when(row.getString("team")).thenReturn("Octopus");
         when(row.getString("userid")).thenReturn(username);
         when(row.getString("roleid")).thenReturn("USER");
 
         List<Team> listTeams = selectData.selectTeamsOfUsers(username);
         assertEquals(2, listTeams.size());
-        assertEquals("Team1", listTeams.get(0).getTeamname());
+        assertEquals("Octopus", listTeams.get(0).getTeamname());
     }
 
     @Test
@@ -376,7 +376,7 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1","Team2","Team1", "Team2");
+        when(row.getString("team")).thenReturn("Octopus","Team2","Octopus", "Team2");
         when(row.getString("userid")).thenReturn(username, username);
         when(row.getString("roleid")).thenReturn("SUPERUSER", "SUPERUSER");
 
@@ -394,13 +394,13 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1", "Team1");
+        when(row.getString("team")).thenReturn("Octopus", "Octopus");
         when(row.getString("userid")).thenReturn(username, username);
         when(row.getString("roleid")).thenReturn("SUPERUSER", "SUPERUSER");
 
         List<Team> listTeams = selectData.selectTeamsOfUsers(username);
         assertEquals(1, listTeams.size());
-        assertEquals("Team1", listTeams.get(0).getTeamname());
+        assertEquals("Octopus", listTeams.get(0).getTeamname());
     }
 
     @Test
@@ -412,7 +412,7 @@ public class SelectDataTest {
 
         when(session.execute((Select) any())).thenReturn(resultSet, resultSet);
         when(resultSet.iterator()).thenReturn(rowList.iterator(), rowList.iterator());
-        when(row.getString("team")).thenReturn("Team1");
+        when(row.getString("team")).thenReturn("Octopus");
         when(row.getString("roleid")).thenReturn("SUPERUSER");
 
         when(row.getString("activityname")).thenReturn("topic");

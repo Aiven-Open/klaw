@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Entity
 @IdClass(ActivityLog.class)
-@Table(name="activitylog")
+@Table(name="kwactivitylog")
 public class ActivityLog implements Serializable {
 
     @Id

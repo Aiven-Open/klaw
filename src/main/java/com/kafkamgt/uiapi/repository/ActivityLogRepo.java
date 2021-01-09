@@ -13,7 +13,7 @@ public interface ActivityLogRepo extends CrudRepository<ActivityLog, String> {
     List<ActivityLog> findAllByEnv(String env);
     List<ActivityLog> findAllByEnvAndTeam(String env, String team);
 
-    @Query(value ="select date(activitytime), count(*) from activitylog where" +
+    @Query(value ="select date(activitytime), count(*) from kwactivitylog where" +
             " team = :teamnameVar group by date(activitytime) order by date(activitytime) asc", nativeQuery = true)
     List<Object[]> findActivityLogForTeam(@Param("teamnameVar") String teamnameVar);
 

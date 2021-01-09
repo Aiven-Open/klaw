@@ -25,6 +25,7 @@ Kafkawize 4.5 has several changes including the below.
 12. Removed support for Cassandra metastore option.
 13. Support for File based metastore (File - H2 database)
 14. Upgraded Kafka client to 2.5.1
+15. Database changes, following better naming conventions.
 
 
 ----------------------------------------------------------------

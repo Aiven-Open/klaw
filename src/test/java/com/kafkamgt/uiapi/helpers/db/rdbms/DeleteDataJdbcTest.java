@@ -83,7 +83,7 @@ public class DeleteDataJdbcTest {
 
     @Test
     public void deleteTeamRequest() {
-        String result = deleteDataJdbc.deleteTeamRequest("Team1");
+        String result = deleteDataJdbc.deleteTeamRequest("Octopus");
         assertEquals("success", result);
     }
 

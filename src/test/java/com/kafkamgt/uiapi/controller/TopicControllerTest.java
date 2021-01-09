@@ -91,7 +91,7 @@ public class TopicControllerTest {
     @Test
     public void getTopicTeam() throws Exception {
         String topicName = "testtopic";
-        when(topicControllerService.getTopicTeamOnly(topicName)).thenReturn("Team1");
+        when(topicControllerService.getTopicTeamOnly(topicName)).thenReturn("Octopus");
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getTopicTeam")
@@ -101,7 +101,7 @@ public class TopicControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertEquals("Team1", res);
+        assertEquals("Octopus", res);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class TopicControllerTest {
                 .param("env","DEV")
                 .param("pageNo","1")
                 .param("topicnamesearch","testtopic")
-                .param("teamName","Team1")
+                .param("teamName","Octopus")
                 .param("topicType","")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

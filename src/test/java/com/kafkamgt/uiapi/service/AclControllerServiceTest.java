@@ -253,8 +253,8 @@ public class AclControllerServiceTest {
 
     private List<Team> getAvailableTeams(){
 
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         Team team2 = new Team();
         team2.setTeamname("Team2");
@@ -263,7 +263,7 @@ public class AclControllerServiceTest {
         team3.setTeamname("Team3");
 
         List<Team> teamList = new ArrayList<>();
-        teamList.add(team1);
+        teamList.add(Octopus);
         teamList.add(team2);
         teamList.add(team3);
 
@@ -278,7 +278,7 @@ public class AclControllerServiceTest {
         Acl aclReq = new Acl();
         aclReq.setReq_no("fsd432FD");
         aclReq.setTopicname("testtopic1");
-        aclReq.setTeamname("Team1");
+        aclReq.setTeamname("Octopus");
         aclReq.setAclip("2.1.2.1");
         aclReq.setAclssl(null);
         aclReq.setConsumergroup("mygrp1");
@@ -295,7 +295,7 @@ public class AclControllerServiceTest {
         Acl aclReq = new Acl();
         aclReq.setReq_no("fsd432FD");
         aclReq.setTopicname(topicName);
-        aclReq.setTeamname("Team1");
+        aclReq.setTeamname("Octopus");
         aclReq.setAclip("2.1.2.1");
         aclReq.setAclssl(null);
         aclReq.setConsumergroup("mygrp1");
@@ -310,7 +310,7 @@ public class AclControllerServiceTest {
         AclRequests aclReq = new AclRequests();
         aclReq.setTopicname("testtopic");
         aclReq.setTopictype("producer");
-        aclReq.setRequestingteam("Team1");
+        aclReq.setRequestingteam("Octopus");
         aclReq.setReq_no("112");
         aclReq.setEnvironment("DEV");
         return aclReq;
@@ -324,7 +324,7 @@ public class AclControllerServiceTest {
             aclReq = new AclRequests();
             aclReq.setTopicname(topicPrefix+i);
             aclReq.setTopictype("producer");
-            aclReq.setRequestingteam("Team1");
+            aclReq.setRequestingteam("Octopus");
             aclReq.setReq_no("100"+i);
             aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
             listReqs.add(aclReq);

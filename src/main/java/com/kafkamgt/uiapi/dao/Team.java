@@ -10,7 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name="teams")
+@Table(name="kwteams")
 public class Team implements Serializable {
 
     @Transient
