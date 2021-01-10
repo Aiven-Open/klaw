@@ -64,7 +64,7 @@ public class SelectDataJdbcTest {
         String requestor = "uiuser1";
 
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
 
         List<AclRequests> aclRequests = utilMethods.getAclRequests();
         List<SchemaRequest> schemaList = utilMethods.getSchemaRequests();
@@ -87,7 +87,7 @@ public class SelectDataJdbcTest {
     public void selectAclRequests() {
         String requestor = "uiuser1";
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
 
         List<AclRequests> aclRequests = utilMethods.getAclRequests();
 
@@ -102,7 +102,7 @@ public class SelectDataJdbcTest {
     public void selectSchemaRequests() {
         String requestor = "uiuser1";
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
 
         List<SchemaRequest> schemaRequests = utilMethods.getSchemaRequests();
 
@@ -173,7 +173,7 @@ public class SelectDataJdbcTest {
     public void selectTopicRequests() {
         String requestor = "uiuser1";
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
 
         List<TopicRequest> schemaRequests = utilMethods.getTopicRequests();
 
@@ -209,7 +209,7 @@ public class SelectDataJdbcTest {
 
         AclRequests aclRequests = selectData.selectAcl(req_no);
 
-        assertEquals("Team1", aclRequests.getTeamname());
+        assertEquals("Octopus", aclRequests.getTeamname());
     }
 
     @Test
@@ -225,7 +225,7 @@ public class SelectDataJdbcTest {
     public void selectActivityLog1() {
         String username = "uuser1", env = "DEV";
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
         userInfo.setUsername(username);
         userInfo.setRole("ADMIN");
         when(userInfoRepo.findByUsername(username)).thenReturn(java.util.Optional.of(userInfo));
@@ -240,7 +240,7 @@ public class SelectDataJdbcTest {
     public void selectActivityLog2() {
         String username = "uuser1", env = "DEV";
         UserInfo userInfo = new UserInfo();
-        userInfo.setTeam("Team1");
+        userInfo.setTeam("Octopus");
         userInfo.setUsername(username);
         userInfo.setRole("SUPERUSER");
         when(userInfoRepo.findByUsername(username)).thenReturn(java.util.Optional.of(userInfo));

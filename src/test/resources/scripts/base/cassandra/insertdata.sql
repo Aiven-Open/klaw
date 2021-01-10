@@ -1,12 +1,12 @@
 /* Insert Users, pwd - base64 encoded */
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User1','Team1','uiuser1','USER','dXNlcg==');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User1','Octopus','uiuser1','USER','dXNlcg==');
 
 Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User2','Team2','uiuser2','USER','dXNlcg==');
 
 Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User3','Team3','uiuser3','USER','dXNlcg==');
 
-Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User4','Team1','uiuser4','ADMIN','dXNlcg==');
+Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User4','Octopus','uiuser4','ADMIN','dXNlcg==');
 
 Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('User5','Team2','uiuser5','ADMIN','dXNlcg==');
 
@@ -16,7 +16,7 @@ Insert into kafkamanagementapi.users(fullname,team,userid,roleid,pwd) values('Su
 
 /* Insert Teams */
 
-Insert into kafkamanagementapi.teams(team,app,teammail,teamphone,contactperson) values('Team1','Team1','t1@test.com','+132323232','John Woo');
+Insert into kafkamanagementapi.teams(team,app,teammail,teamphone,contactperson) values('Octopus','Octopus','t1@test.com','+132323232','John Woo');
 
 Insert into kafkamanagementapi.teams(team,app,teammail,teamphone) values('Team2','Team2','t1@test2.com','+132323232');
 

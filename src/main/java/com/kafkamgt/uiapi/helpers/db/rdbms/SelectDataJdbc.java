@@ -3,20 +3,20 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 import com.google.common.collect.Lists;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.repository.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Component
+@Slf4j
 public class SelectDataJdbc {
 
     private static Logger LOG = LoggerFactory.getLogger(SelectDataJdbc.class);
@@ -341,4 +341,114 @@ public class SelectDataJdbc {
         return aclRepo.findAllByEnvironmentAndTopicname(env, topic);
     }
 
+    public HashMap<String, String> getDashboardStats(String teamName) {
+        HashMap<String, String> dashboardMap = new HashMap<>();
+        int countProducers = 0, countConsumers = 0;
+        List<Acl> acls = aclRepo.findAllByTopictypeAndTeamname("Producer", teamName);
+        List<String> topicList = new ArrayList<>();
+        if(acls != null) {
+            acls.forEach(a -> topicList.add(a.getTopicname()));
+            countProducers = (int) topicList.stream().distinct().count();
+        }
+        dashboardMap.put("producerCount","" + countProducers);
+
+        acls = aclRepo.findAllByTopictypeAndTeamname("Consumer", teamName);
+        List<String> topicListCons = new ArrayList<>();
+        if(acls != null) {
+            acls.forEach(a -> topicListCons.add(a.getTopicname()));
+            countConsumers = (int) topicListCons.stream().distinct().count();
+        }
+        dashboardMap.put("consumerCount","" + countConsumers);
+
+        List<UserInfo> allUsers = userInfoRepo.findAllByTeam(teamName);
+        dashboardMap.put("teamMembersCount","" + allUsers.size());
+
+        return dashboardMap;
+    }
+
+    public List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(String teamName) {
+        List<HashMap<String, String>> totalTopicCount = new ArrayList<>();
+        try {
+            List<Object[]> topics = topicRepo.findAllTopicsForTeamGroupByEnv(teamName);
+
+            HashMap<String, String> hashMap;
+            for (Object[] topic : topics) {
+                hashMap = new HashMap<>();
+                hashMap.put("cluster", selectEnvDetails((String)topic[0]).getName());
+                hashMap.put("topicscount", "" + ((BigInteger) topic[1]).intValue());
+
+                totalTopicCount.add(hashMap);
+            }
+        }catch (Exception ignored){}
+        return totalTopicCount;
+    }
+
+    public List<HashMap<String, String>> selectActivityLogByTeam(String teamName, int numberOfDays){
+        List<HashMap<String, String>> totalActivityLogCount = new ArrayList<>();
+        try {
+            List<Object[]> activityCount = activityLogRepo.findActivityLogForTeam(teamName);
+            if(activityCount.size()>numberOfDays)
+                activityCount = activityCount.subList(0,numberOfDays-1);
+            HashMap<String, String> hashMap;
+            for (Object[] actvty : activityCount) {
+                hashMap = new HashMap<>();
+                hashMap.put("dateofactivity", "" + actvty[0]);
+                hashMap.put("activitycount", "" + ((BigInteger) actvty[1]).intValue());
+
+                totalActivityLogCount.add(hashMap);
+            }
+        }catch (Exception e){
+            log.error("Error selectActivityLogForLastDays {}",e.getMessage());
+        }
+        return totalActivityLogCount;
+    }
+
+    public List<Topic> selectAllTopicsByTopictypeAndTeamname(String isProducerConsumer, String teamName){
+        log.info("selectAllByTopictypeAndTeamname {} {}", isProducerConsumer, teamName);
+        List<Topic> topics = new ArrayList<>();
+        String topicType;
+        if(isProducerConsumer!=null && isProducerConsumer.equals("Producer"))
+            topicType = "Producer";
+        else topicType = "Consumer";
+
+        List<Acl> acls = aclRepo.findAllByTopictypeAndTeamname(topicType, teamName);
+        Topic t;
+        HashMap<String, List<String>> topicEnvMap = new HashMap<>();
+        String tmpTopicName ;
+        List<String> envList ;
+
+        for (Acl acl : acls) {
+            t = new Topic();
+            tmpTopicName = acl.getTopicname();
+
+            t.setEnvironment(acl.getEnvironment());
+            t.setTopicname(tmpTopicName);
+
+            if(topicEnvMap.containsKey(tmpTopicName)) {
+                envList = topicEnvMap.get(tmpTopicName);
+                if(!envList.contains(acl.getEnvironment())) {
+                    envList.add(acl.getEnvironment());
+                    topicEnvMap.put(tmpTopicName, envList);
+                }
+            }
+            else {
+                envList = new ArrayList<>();
+                envList.add(acl.getEnvironment());
+                topicEnvMap.put(tmpTopicName, envList);
+            }
+
+            topics.add(t);
+        }
+
+        for (Topic topic : topics) {
+            topic.setEnvironmentsList(topicEnvMap.get(topic.getTopicname()));
+        }
+
+        topics = topics.stream()
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(Topic:: getTopicname))),
+                        ArrayList::new));
+
+        return topics;
+    }
 }

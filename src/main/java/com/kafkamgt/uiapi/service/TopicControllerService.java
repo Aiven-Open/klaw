@@ -303,15 +303,39 @@ public class TopicControllerService {
         }
     }
 
-    public List<List<TopicInfo>> getTopics(String env, String pageNo, String topicNameSearch, String teamName) throws Exception {
+    public List<List<TopicInfo>> getTopics(String env, String pageNo, String topicNameSearch, String teamName,
+                                           String topicType) throws Exception {
 
         if(topicNameSearch != null)
             topicNameSearch = topicNameSearch.trim();
+
+        // To get Producer or Consumer topics, first get all topics based on acls and then filter
+        List<Topic> producerConsumerTopics = new ArrayList<>();
+        if(topicType != null && (topicType.equals("Producer") || topicType.equals("Consumer")) && teamName != null) {
+            producerConsumerTopics = manageDatabase.getHandleDbRequests().selectAllTopicsByTopictypeAndTeamname(topicType, teamName);
+            // select all topics and then filter
+            env = "ALL";
+            teamName = null;
+        }
 
         // Get Sync topics
         List<Topic> topicsFromSOT = manageDatabase.getHandleDbRequests().getSyncTopics(env, teamName);
 
         topicsFromSOT = groupTopicsByEnv(topicsFromSOT);
+        List<Topic> filterProducerConsumerList = new ArrayList<>();
+
+        if(producerConsumerTopics.size() > 0){
+            for (Topic topicInfo : topicsFromSOT) {
+                for (Topic producerConsumerTopic : producerConsumerTopics) {
+                    if(producerConsumerTopic.getTopicname().equals(topicInfo.getTopicname()) &&
+                            topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
+                        topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
+                        filterProducerConsumerList.add(topicInfo);
+                    }
+                }
+            }
+            topicsFromSOT = filterProducerConsumerList;
+        }
 
         List<Topic> topicFilteredList = topicsFromSOT;
         // Filter topics on topic name for search
@@ -436,73 +460,6 @@ public class TopicControllerService {
 
         return topicsListMap;
     }
-
-    private List<TopicRequest> getSyncTopicList(List<HashMap<String, String>> topicsList, UserDetails userDetails, String pageNo, String env){
-        int totalRecs = topicsList.size();
-        int recsPerPage = 20;
-
-        int totalPages = totalRecs/recsPerPage + (totalRecs%recsPerPage > 0 ? 1 : 0);
-
-        int requestPageNo = Integer.parseInt(pageNo);
-
-        // Get Sync topics
-        List<Topic> topicsFromSOT = manageDatabase.getHandleDbRequests().getSyncTopics(env, null);
-
-        List<TopicRequest> topicsListMap = new ArrayList<>();
-        int startVar = (requestPageNo-1) * recsPerPage;
-        int lastVar = (requestPageNo) * (recsPerPage);
-
-        List<String> teamList = new ArrayList<>();
-
-        manageDatabase.getHandleDbRequests().selectAllTeamsOfUsers(userDetails.getUsername())
-                .forEach(teamS->teamList.add(teamS.getTeamname()));
-
-        HashMap<String, String> topicMap;
-
-        for(int i=0; i < topicsList.size(); i++){
-            int counterInc = counterIncrement();
-            if(i>=startVar && i<lastVar) {
-                TopicRequest mp = new TopicRequest();
-                mp.setSequence(counterInc + "");
-
-                topicMap = topicsList.get(i);
-                final String tmpTopicName = topicMap.get("topicName");
-
-                mp.setTopicname(tmpTopicName);
-                mp.setTopicpartitions(topicMap.get("partitions"));
-                mp.setReplicationfactor(topicMap.get("replicationFactor"));
-                String teamUpdated = null;
-
-                try {
-                    teamUpdated = topicsFromSOT.stream().filter(a -> {
-                        return a.getTopicPK().getTopicname().equals(tmpTopicName);
-                    }).findFirst().get().getTeamname();
-                }catch (Exception ignored){}
-
-                if(teamUpdated!=null && !teamUpdated.equals("undefined")){
-                    mp.setPossibleTeams(teamList);
-                    mp.setTeamname(teamUpdated);
-                }
-                else{
-                    mp.setPossibleTeams(teamList);
-                    mp.setTeamname("");
-                }
-
-                List<String> numList = new ArrayList<>();
-                for (int k = 1; k <= totalPages; k++) {
-                    numList.add("" + k);
-                }
-                mp.setTotalNoPages(totalPages + "");
-                mp.setAllPageNos(numList);
-
-                topicsListMap.add(mp);
-            }
-
-        }
-        return topicsListMap;
-    }
-
-
 
     private UserDetails getUserDetails(){
         return (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

@@ -2,15 +2,15 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.dao.UserInfo;
-import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.filters.KwRequestFilter;
 import com.kafkamgt.uiapi.service.UtilService;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
 import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.*;
 
@@ -43,6 +44,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private KwRequestFilter kwRequestFilter;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
@@ -63,6 +67,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests().antMatchers(staticResources).permitAll()
                 .and()
             .logout().logoutSuccessUrl("/login");
+
+        //         Add a filter to validate the username/pwd with every request
+        http.addFilterBefore(kwRequestFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     @Autowired
@@ -73,7 +80,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         if(orgName.equals("Your company name."))
         {
             LOG.error("Invalid organization configured !!");
-            System.exit(0);
             throw new Exception("Invalid organization configured !!");
         }
         if(! (environment.getActiveProfiles().length >0
@@ -81,7 +87,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             HashMap<String, String> licenseMap = utils.validateLicense();
             if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
                 LOG.error(invalidKeyMessage);
-                System.exit(0);
                 throw new Exception(invalidKeyMessage);
             }
         }
@@ -116,6 +121,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(inMemoryUserDetailsManager());
     }
 
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Bean
     public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
         final Properties globalUsers = new Properties();
@@ -130,7 +141,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     encoder.encode(base64DecodePwd(userInfo.getPwd()))+","+
             userInfo.getRole()+",enabled");
         }
-
         return new InMemoryUserDetailsManager(globalUsers);
     }
 

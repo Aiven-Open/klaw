@@ -167,7 +167,7 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicRequest.getEnvironment());
-            String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+            String bootstrapHost = envSelected.getHost();
             params.add("env", bootstrapHost);
             params.add("protocol", envSelected.getProtocol());
             params.add("topicName", topicName);
@@ -215,7 +215,7 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
-            String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+            String bootstrapHost = envSelected.getHost();
             params.add("env", bootstrapHost);
             params.add("protocol", envSelected.getProtocol());
             params.add("topicName", aclReq.getTopicname());
@@ -247,7 +247,7 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env);
-            String bootstrapHost = envSelected.getHost() + ":" + envSelected.getPort();
+            String bootstrapHost = envSelected.getHost();
             params.add("env", bootstrapHost);
 
             params.add("topicName", topicName);

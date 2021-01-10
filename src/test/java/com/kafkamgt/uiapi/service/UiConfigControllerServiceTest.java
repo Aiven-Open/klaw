@@ -73,8 +73,7 @@ public class UiConfigControllerServiceTest {
         uiConfigControllerService.setServices(clusterApiService, utilService);
 
         this.env = new Env();
-        env.setHost("101.10.11.11");
-        env.setPort("9092");
+        env.setHost("101.10.11.11:9092");
         env.setName("DEV");
         ReflectionTestUtils.setField(uiConfigControllerService, "manageDatabase", manageDatabase);
         ReflectionTestUtils.setField(uiConfigControllerService, "orderOfEnvs", "DEV,TST,ACC,PRD");
@@ -236,8 +235,8 @@ public class UiConfigControllerServiceTest {
     }
 
     @Test
-    public void deleteTeam1() {
-        String teamId = "Team1";
+    public void deleteOctopus() {
+        String teamId = "Octopus";
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = uiConfigControllerService.deleteTeam(teamId);
@@ -246,7 +245,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void deleteTeam2() {
-        String teamId = "Team1";
+        String teamId = "Octopus";
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
@@ -258,7 +257,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void deleteTeam3() {
-        String teamId = "Team1";
+        String teamId = "Octopus";
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
@@ -271,7 +270,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void deleteTeam4() {
-        String teamId = "Team1";
+        String teamId = "Octopus";
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
         when(userDetails.getUsername()).thenReturn("uiuser1");
         when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
@@ -284,7 +283,7 @@ public class UiConfigControllerServiceTest {
 
     @Test
     public void deleteUser1() {
-        String userId = "Team1";
+        String userId = "Octopus";
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
         String result = uiConfigControllerService.deleteUser(userId);
@@ -366,37 +365,37 @@ public class UiConfigControllerServiceTest {
     }
 
     @Test
-    public void addNewTeam1() {
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+    public void addNewOctopus() {
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
 
-        String result = uiConfigControllerService.addNewTeam(team1);
+        String result = uiConfigControllerService.addNewTeam(Octopus);
         assertEquals("{\"result\":\"Not Authorized\"}", result);
     }
 
     @Test
     public void addNewTeam2() {
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewTeam(team1)).thenReturn("success");
+        when(handleDbRequests.addNewTeam(Octopus)).thenReturn("success");
 
-        String result = uiConfigControllerService.addNewTeam(team1);
+        String result = uiConfigControllerService.addNewTeam(Octopus);
         assertEquals("{\"result\":\"success\"}", result);
     }
 
     @Test
     public void addNewTeam3() {
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewTeam(team1)).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.addNewTeam(Octopus)).thenThrow(new RuntimeException("Error"));
 
-        String result = uiConfigControllerService.addNewTeam(team1);
+        String result = uiConfigControllerService.addNewTeam(Octopus);
         assertThat(result, CoreMatchers.containsString("failure"));
     }
 
@@ -428,7 +427,7 @@ public class UiConfigControllerServiceTest {
     @Test
     public void showUsers() {
         when(handleDbRequests.selectAllUsersInfo()).thenReturn(getUsernfoList());
-        List<UserInfoModel> userInfoList = uiConfigControllerService.showUsers();
+        List<UserInfoModel> userInfoList = uiConfigControllerService.showUsers(null,"1");
         assertEquals(1,userInfoList.size());
     }
 
@@ -501,19 +500,19 @@ public class UiConfigControllerServiceTest {
 
     private List<Team> getAvailableTeams(){
 
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         List<Team> teamList = new ArrayList<>();
-        teamList.add(team1);
+        teamList.add(Octopus);
 
         return teamList;
     }
 
     private List<Team> getAvailableTeamsSU(){
 
-        Team team1 = new Team();
-        team1.setTeamname("Team1");
+        Team Octopus = new Team();
+        Octopus.setTeamname("Octopus");
 
         Team team2 = new Team();
         team2.setTeamname("Team2");
@@ -522,7 +521,7 @@ public class UiConfigControllerServiceTest {
         team3.setTeamname("Team3");
 
         List<Team> teamList = new ArrayList<>();
-        teamList.add(team1);
+        teamList.add(Octopus);
         teamList.add(team2);
         teamList.add(team3);
 
@@ -533,8 +532,7 @@ public class UiConfigControllerServiceTest {
         List<Env> listEnvs = new ArrayList<>();
 
         Env env = new Env();
-        env.setHost("localhost");
-        env.setPort("8081");
+        env.setHost("localhost:8081");
         env.setName("DEV");
         env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
@@ -546,15 +544,13 @@ public class UiConfigControllerServiceTest {
         List<Env> listEnvs = new ArrayList<>();
 
         Env env = new Env();
-        env.setHost("localhost");
-        env.setPort("9092");
+        env.setHost("localhost:9092");
         env.setName("DEV");
         env.setProtocol("PLAINTEXT");
         listEnvs.add(env);
 
         env = new Env();
-        env.setHost("10.22.34.121");
-        env.setPort("9092");
+        env.setHost("10.22.34.121:9092");
         env.setName("TST");
         env.setProtocol("PLAINTEXT");
         listEnvs.add(env);

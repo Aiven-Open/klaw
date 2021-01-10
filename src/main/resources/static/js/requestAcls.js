@@ -129,28 +129,12 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                             );
                         }
 
-        $scope.getExecAuth = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "getExecAuth",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.statusauth = output.status;
-                if(output.status=="NotAuthorized")
-                    $scope.alerttop = output.status;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
-        }
+
 
         $scope.getTopicTeam = function(topicName) {
 
             if(topicName == null){
-                this.addAcl.topicname.focus();
+//                this.addAcl.topicname.focus();
                 alert("Please mention a topic name.");
                 return false;
             }
@@ -161,14 +145,14 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : topicName }
             }).success(function(output) {
-                $scope.teamname = output.team;
-                if(!$scope.teamname){
+                $scope.topicteamname = output.team;
+                if(!$scope.topicteamname){
                         alert("There is no team found for this topic : " +  topicName);
                         $scope.addAcl.team="";
                         addAcl.topicname.focus();
                             return;
                 }
-                $scope.addAcl.team = $scope.teamname;
+                $scope.addAcl.team = $scope.topicteamname;
             }).error(
                 function(error)
                 {

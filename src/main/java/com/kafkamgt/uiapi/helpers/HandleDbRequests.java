@@ -77,6 +77,8 @@ public interface HandleDbRequests {
 
     List<ActivityLog> selectActivityLog(String user, String env);
 
+    HashMap<String, String> getDashboardStats(String teamName);
+
     /*--------------------Update */
     String updateTopicRequest(TopicRequest topicRequest, String approver);
 
@@ -104,4 +106,10 @@ public interface HandleDbRequests {
     String deleteTeamRequest(String teamId);
 
     String deleteSchemaRequest(String topicName, String schemaVersion, String env);
+
+    List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(String teamName);
+
+    List<HashMap<String, String>> selectActivityLogByTeam(String teamName, int numberOfDays);
+
+    List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, String teamName);
 }

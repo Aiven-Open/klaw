@@ -21,7 +21,7 @@ public class LoadDb {
 
     private static String DROP_SQL = "scripts/base/cassandra/dropcassandra.sql";
 
-    @Value("${kafkawize.version:4.4}")
+    @Value("${kafkawize.version:4.5}")
     private String kafkawizeVersion;
 
     @Autowired
@@ -46,7 +46,7 @@ public class LoadDb {
             in.close();
         }catch (Exception e){
             LOG.error("Exiting .. could not setup create database tables " + e.getMessage());
-            System.exit(0);
+            //System.exit(0);
         }
         LOG.info("Cassandra Create DB Tables setup done !! ");
 
@@ -79,7 +79,7 @@ public class LoadDb {
             in.close();
         } catch (Exception e) {
             LOG.error("Exiting .. could not setup insert database tables " + e.getMessage());
-            System.exit(0);
+            //System.exit(0);
         }
         LOG.info("Cassandra Insert DB Tables setup done !! ");
     }
@@ -96,7 +96,7 @@ public class LoadDb {
             in.close();
         } catch (Exception e) {
             LOG.error("Exiting .. could not setup insert database tables " + e.getMessage());
-            System.exit(0);
+            //System.exit(0);
         }
         LOG.info("Cassandra drop DB Tables setup done !! ");
     }

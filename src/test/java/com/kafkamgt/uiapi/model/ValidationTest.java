@@ -35,7 +35,7 @@ public class ValidationTest {
         aclRequests.setAppname("newapp");
         aclRequests.setEnvironment("dev");
         aclRequests.setReq_no("101");
-        aclRequests.setRequestingteam("team1");
+        aclRequests.setRequestingteam("Octopus");
         aclRequests.setApprover("user1");
         aclRequests.setTopicname("newtopic");
         aclRequests.setTopictype("producer");
@@ -50,7 +50,7 @@ public class ValidationTest {
         schemaRequest.setEnvironment("dev");
         schemaRequest.setApprover("user1");
         schemaRequest.setTopicname("newtopic");
-        schemaRequest.setTeamname("team1");
+        schemaRequest.setTeamname("Octopus");
         schemaRequest.setSchemafull("{type:string}");
         SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
         schemaRequestPK.setTopicname("newtopic");

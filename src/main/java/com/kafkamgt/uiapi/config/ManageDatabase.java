@@ -9,8 +9,12 @@ import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
 import com.kafkamgt.uiapi.service.ClusterApiService;
 import com.kafkamgt.uiapi.service.UtilService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +28,7 @@ import java.util.stream.Collectors;
 
 @Configuration
 @Slf4j
-public class ManageDatabase {
+public class ManageDatabase implements ApplicationContextAware {
 
     @Value("${kafkawize.db.storetype}")
     private
@@ -49,6 +53,17 @@ public class ManageDatabase {
     private
     String orgName;
 
+    private ApplicationContext contextApp;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.contextApp = applicationContext;
+    }
+
+    private void shutdownApp(){
+        ((ConfigurableApplicationContext) contextApp).close();
+    }
+
     @Autowired
     private
     Environment environment;
@@ -58,7 +73,7 @@ public class ManageDatabase {
 
         if(orgName.equals("Your company name."))
         {
-            System.exit(0);
+            shutdownApp();
         }
 
         HashMap<String, String> licenseMap = utils.validateLicense();
@@ -66,7 +81,7 @@ public class ManageDatabase {
                 && environment.getActiveProfiles()[0].equals("integrationtest"))) {
             if (!licenseMap.get("LICENSE_STATUS").equals(Boolean.TRUE.toString())) {
                 log.info(invalidKeyMessage);
-                System.exit(0);
+                shutdownApp();
             }
         }
 
@@ -81,7 +96,7 @@ public class ManageDatabase {
         }else
         {
             log.info(invalidKeyMessage);
-            System.exit(0);
+            shutdownApp();
         }
 
     }

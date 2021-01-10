@@ -80,9 +80,9 @@ public class TopicAclControllerIT {
     public void test001() throws Exception {
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-        login("uiuser1","user", "USER");
+        login("gary","user", "USER");
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
+                .post("/createTopics").with(user("gary").password("user").roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -98,7 +98,7 @@ public class TopicAclControllerIT {
         List<List<TopicRequest>> topicReqs = utilMethods.getTopicRequestsList();
 
         String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getCreatedTopicRequests").with(user("uiuser1").password("user"))
+                .get("/getCreatedTopicRequests").with(user("gary").password("user"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -112,7 +112,7 @@ public class TopicAclControllerIT {
     @Test
     public void test003() throws Exception {
         String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getTopicRequests").with(user("uiuser1").password("user"))
+                .get("/getTopicRequests").with(user("gary").password("user"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("pageNo","1")
                 .accept(MediaType.APPLICATION_JSON))
@@ -130,7 +130,7 @@ public class TopicAclControllerIT {
                 .thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
 
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/execTopicRequests").with(user("uiuser4").password("user").roles("ADMIN"))
+                .post("/execTopicRequests").with(user("cris").password("user").roles("ADMIN"))
                 .param("topicName","testtopic")
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -147,9 +147,9 @@ public class TopicAclControllerIT {
 
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic1");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-        login("uiuser1","user", "USER");
+        login("gary","user", "USER");
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
+                .post("/createTopics").with(user("gary").password("user").roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -158,10 +158,10 @@ public class TopicAclControllerIT {
 
         assertThat(response, CoreMatchers.containsString("success"));
 
-        login("uiuser4","user", "ADMIN");
+        login("cris","user", "ADMIN");
 
         response = mvc.perform(MockMvcRequestBuilders
-                .post("/execTopicRequestsDecline").with(user("uiuser4").password("user").roles("ADMIN"))
+                .post("/execTopicRequestsDecline").with(user("cris").password("user").roles("ADMIN"))
                 .param("topicName","testtopic1")
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -176,14 +176,14 @@ public class TopicAclControllerIT {
     @Test
     public void test006() throws Exception {
         String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getTopicTeam").with(user("uiuser1").password("user"))
+                .get("/getTopicTeam").with(user("gary").password("user"))
                 .param("topicName","testtopic")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertThat(res, CoreMatchers.containsString("Team1"));
+        assertThat(res, CoreMatchers.containsString("Octopus"));
     }
 
     // delete a topic request of his own
@@ -192,9 +192,9 @@ public class TopicAclControllerIT {
 
         TopicRequest addTopicRequest = utilMethods.getTopicRequest("testtopic2");
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-        login("uiuser1","user", "USER");
+        login("gary","user", "USER");
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createTopics").with(user("uiuser1").password("user").roles("USER"))
+                .post("/createTopics").with(user("gary").password("user").roles("USER"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -205,7 +205,7 @@ public class TopicAclControllerIT {
 
         response = mvc.perform(MockMvcRequestBuilders
                 .get("/deleteTopicRequests")
-                .param("topicName","testtopic2,DEV").with(user("uiuser1").password("user"))
+                .param("topicName","testtopic2,DEV").with(user("gary").password("user"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -221,7 +221,7 @@ public class TopicAclControllerIT {
                 .thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
 
         String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getTopics").with(user("uiuser1").password("user"))
+                .get("/getTopics").with(user("gary").password("user"))
                 .param("env","DEV")
                 .param("pageNo","1")
                 .param("topicnamesearch","testtopic")
@@ -242,7 +242,7 @@ public class TopicAclControllerIT {
                 .thenReturn(utilMethods.getClusterApiTopics("testtopic",10));
 
         String res = mvc.perform(MockMvcRequestBuilders
-                .get("/getTopicsOnly").with(user("uiuser1").password("user"))
+                .get("/getTopicsOnly").with(user("gary").password("user"))
                 .param("env","DEV")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -259,7 +259,7 @@ public class TopicAclControllerIT {
     public void test01() throws Exception {
 
         String res = mvc.perform(
-                get("/getAclRequests").with(user("uiuser1").password("user"))
+                get("/getAclRequests").with(user("gary").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
@@ -274,7 +274,7 @@ public class TopicAclControllerIT {
     @Test
     public void test02() throws Exception {
 
-        String res = mvc.perform(get("/getCreatedAclRequests").with(user("uiuser1").password("user"))
+        String res = mvc.perform(get("/getCreatedAclRequests").with(user("gary").password("user"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -291,7 +291,7 @@ public class TopicAclControllerIT {
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
 
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createAcl").with(user("uiuser1").password("user"))
+                .post("/createAcl").with(user("gary").password("user"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -305,7 +305,7 @@ public class TopicAclControllerIT {
     @Test
     public void test04() throws Exception {
 
-        String res = mvc.perform(get("/getCreatedAclRequests").with(user("uiuser1").password("user"))
+        String res = mvc.perform(get("/getCreatedAclRequests").with(user("gary").password("user"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -319,7 +319,7 @@ public class TopicAclControllerIT {
     @Test
     public void test05() throws Exception {
         String res = mvc.perform(
-                get("/getAclRequests").with(user("uiuser1").password("user"))
+                get("/getAclRequests").with(user("gary").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
@@ -333,12 +333,12 @@ public class TopicAclControllerIT {
 
         assertEquals(1, response.size());
 
-        login("uiuser4","user", "ADMIN");
+        login("cris","user", "ADMIN");
 
         when(clusterApiService.approveAclRequests(any())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
 
         res = mvc.perform(MockMvcRequestBuilders
-                .post("/execAclRequest").with(user("uiuser4").password("user").roles("ADMIN"))
+                .post("/execAclRequest").with(user("cris").password("user").roles("ADMIN"))
                 .param("req_no",reqId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -355,7 +355,7 @@ public class TopicAclControllerIT {
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
 
         String response = mvc.perform(MockMvcRequestBuilders
-                .post("/createAcl").with(user("uiuser1").password("user"))
+                .post("/createAcl").with(user("gary").password("user"))
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -369,7 +369,7 @@ public class TopicAclControllerIT {
     @Test
     public void test07() throws Exception {
         String res = mvc.perform(
-                get("/getAclRequests").with(user("uiuser1").password("user"))
+                get("/getAclRequests").with(user("gary").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
@@ -381,9 +381,9 @@ public class TopicAclControllerIT {
         LinkedHashMap<String, String> hMap = (LinkedHashMap)obj;
         this.reqId = hMap.get("req_no");
 
-        login("uiuser4","user", "ADMIN");
+        login("cris","user", "ADMIN");
         String resNew = mvc.perform(MockMvcRequestBuilders
-                .post("/execAclRequestDecline").with(user("uiuser4").password("user").roles("ADMIN"))
+                .post("/execAclRequestDecline").with(user("cris").password("user").roles("ADMIN"))
                 .param("req_no",reqId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -397,7 +397,7 @@ public class TopicAclControllerIT {
     @Test
     public void test08() throws Exception {
         String res = mvc.perform(
-                get("/getAclRequests").with(user("uiuser1").password("user"))
+                get("/getAclRequests").with(user("gary").password("user"))
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("pageNo","1")
                         .accept(MediaType.APPLICATION_JSON))
@@ -409,7 +409,7 @@ public class TopicAclControllerIT {
         LinkedHashMap<String, String> hMap = (LinkedHashMap)obj;
         this.reqId = hMap.get("req_no");
 
-        String responseNew = mvc.perform(get("/deleteAclRequests").with(user("uiuser1").password("user"))
+        String responseNew = mvc.perform(get("/deleteAclRequests").with(user("gary").password("user"))
                 .param("req_no",this.reqId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -428,7 +428,7 @@ public class TopicAclControllerIT {
         when(clusterApiService.getAcls(anyString(), eq("PLAINTEXT")))
                 .thenReturn(aclInfo);
 
-        String res = mvc.perform(get("/getAcls").with(user("uiuser1").password("user"))
+        String res = mvc.perform(get("/getAcls").with(user("gary").password("user"))
                 .param("topicnamesearch","testtopic")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

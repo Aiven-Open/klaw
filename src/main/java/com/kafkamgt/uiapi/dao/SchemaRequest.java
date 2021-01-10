@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name="schema_requests")
+@Table(name="kwschemarequests")
 public class SchemaRequest implements Serializable {
 
     @Transient

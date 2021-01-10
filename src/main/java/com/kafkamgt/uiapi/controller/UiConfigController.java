@@ -126,8 +126,8 @@ public class UiConfigController {
     }
 
     @RequestMapping(value = "/showUserList", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<List<UserInfoModel>> showUsers(){
-        return new ResponseEntity<>(uiConfigControllerService.showUsers(), HttpStatus.OK);
+    public ResponseEntity<List<UserInfoModel>> showUsers(@RequestParam ("teamName") String teamName, @RequestParam("pageNo") String pageNo){
+        return new ResponseEntity<>(uiConfigControllerService.showUsers(teamName, pageNo), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/getMyProfileInfo", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})

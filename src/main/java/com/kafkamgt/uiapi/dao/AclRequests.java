@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name="acl_requests")
+@Table(name="kwaclrequests")
 public class AclRequests implements Serializable {
 
     @Id

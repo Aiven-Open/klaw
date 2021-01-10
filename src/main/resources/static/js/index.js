@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('dashboardApp',[]);
+var app = angular.module('dashboardApp',['googlechart']);
 
 app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
 
@@ -82,6 +82,42 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
           $scope.refreshPage = function(){
                   $window.location.reload();
               }
+
+
+          $scope.getChartOverviewChart = function() {
+
+              $http({
+                  method: "GET",
+                  url: "getActivityLogForTeamOverview",
+                  headers : { 'Content-Type' : 'application/json' },
+                  params: {'activityLogForTeam' : 'true' },
+              }).success(function(output) {
+                  $scope.activitylogchart = output.activityLogOverview;
+                  $scope.topicsperteamchart = output.topicsPerTeamPerEnvOverview;
+              }).error(
+                  function(error)
+                  {
+                      $scope.alert = error;
+                  }
+              );
+          };
+
+          $scope.getDashboardStatistics = function() {
+                $http({
+                     method: "GET",
+                     url: "getDashboardStats",
+                     headers : { 'Content-Type' : 'application/json' }
+                 }).success(function(output) {
+                     $scope.producerCount = output.producerCount;
+                     $scope.consumerCount = output.consumerCount;
+                     $scope.teamMembersCount = output.teamMembersCount;
+                 }).error(
+                     function(error)
+                     {
+                         $scope.alert = error;
+                     }
+                 );
+            }
 
            $scope.getAuth = function() {
            	$http({

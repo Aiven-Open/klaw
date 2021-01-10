@@ -14,7 +14,7 @@ You can download the full latest Kafkawize software bundle including documentati
 
 ```
 Intellij/Eclipse/Netbeans
-Kafkawize metastore (Rdbms or Cassandra)
+Kafkawize metastore (Rdbms)
 others..
 ```
 
@@ -41,7 +41,7 @@ Run a clean install with mvn clean install
 ## Deployment
 
 ```
-Install Cassandra/Rdbms
+Install Rdbms
 Update configuration and mvn install kafkawize and kafkawizeclusterapi
 Start Kafka,Zookeeper
 Access Kafkawize
@@ -66,11 +66,14 @@ For the versions available, see the [tags on this repository](https://github.com
 
 This project is licensed under the GPL license 3.0  - see the [LICENSE.md](LICENSE.md) file for details
 
+The frontend code (Html, Css, Scss, js, images, icons) and backend code of this project cannot be (Re)Distributed, Modified, Patented. 
+They are licensed to the original Theme software.
+
 ## Architecture:
 
 ![Architecture](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)
 
-## A glimpse of Kafkawize 4.4 :
+## A glimpse of Kafkawize 4.5 :
 
 ![Dashboard](https://github.com/muralibasani/kafkawize/blob/master/screenshots/Dashboard.JPG)
 

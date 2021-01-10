@@ -208,7 +208,6 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             if (!window.confirm("Are you sure, you would like to add user : "
                 +  $scope.addNewUser.username + ": " +
                 "\nTeam : " + $scope.addNewUser.team.teamname +
-                "\nEmail : " + $scope.addNewUser.emailid +
                 "\nRole : " + $scope.addNewUser.role.value
                 )) {
                 return;
@@ -297,38 +296,36 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             };
 
-        $scope.showUsers = function() {
-            $http({
-                method: "GET",
-                url: "showUserList",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.userList = output;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
-        }
+        $scope.showUsers = function(pageNo) {
+                    var sPageURL = window.location.search.substring(1);
+                    var sURLVariables = sPageURL.split('&');
+                    var teamSel="";
+                    for (var i = 0; i < sURLVariables.length; i++)
+                        {
+                            var sParameterName = sURLVariables[i].split('=');
+                            if (sParameterName[0] == "team")
+                            {
+                                teamSel = sParameterName[1];
+                            }
+                        }
 
-    $scope.getExecAuth = function() {
-    	//alert("onload");
-        $http({
-            method: "GET",
-            url: "getExecAuth",
-            headers : { 'Content-Type' : 'application/json' }
-        }).success(function(output) {
-            $scope.statusauth = output.status;
-            if(output.status=="NotAuthorized")
-                $scope.alerttop = output.status;
-        }).error(
-            function(error)
-            {
-                $scope.alert = error;
-            }
-        );
-	}
+                    $http({
+                        method: "GET",
+                        url: "showUserList",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'teamName' : teamSel , 'pageNo' : pageNo},
+                    }).success(function(output) {
+                        $scope.userList = output;
+                        $scope.resultPages = output[0].allPageNos;
+                        $scope.resultPageSelected = pageNo;
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+                }
+
 
 	$scope.refreshPage = function(){
             $window.location.reload();

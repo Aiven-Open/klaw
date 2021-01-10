@@ -113,6 +113,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.resultPages = null;
         $scope.alert = null;
         $scope.resultPageSelected = null;
+        var topicType = null;
+
         var teamSel = $scope.getTopics.team;
         var str = window.location.search;
         if(fromSelect == "false")
@@ -140,12 +142,27 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                 $scope.envSelected = envSelected;
         }else{
                 envSelected = "ALL";
-                var teamFromSearchParams = str.indexOf("team=");
-                if(teamFromSearchParams > 0){
-                    teamSel = str.substring(6);
-                    window.history.pushState({}, document.title, "browseTopics");
-                    $scope.getTopics.team = teamSel;
-                }
+                var sPageURL = window.location.search.substring(1);
+                var sURLVariables = sPageURL.split('&');
+
+                for (var i = 0; i < sURLVariables.length; i++)
+                    {
+                        var sParameterName = sURLVariables[i].split('=');
+                        if (sParameterName[0] == "team")
+                        {
+                            teamSel = sParameterName[1];
+                            window.history.pushState({}, document.title, "browseTopics");
+                            $scope.getTopics.team = teamSel;
+                        }
+                        else if (sParameterName[0] == "producer")
+                        {
+                            topicType = 'Producer';
+                        }
+                        else if (sParameterName[0] == "consumer")
+                        {
+                            topicType = 'Consumer';
+                        }
+                    }
         }
 
 		var topicFilter = $scope.getTopics.topicnamesearch;
@@ -161,7 +178,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             params: {'env' : envSelected,
                 'pageNo' : pageNoSelected,
                  'topicnamesearch' : $scope.getTopics.topicnamesearch,
-                 'teamName' : teamSel
+                 'teamName' : teamSel,
+                 'topicType' : topicType
                  }
 		}).success(function(output) {
 			$scope.resultBrowse = output;

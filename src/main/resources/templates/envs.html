@@ -226,7 +226,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:black;border:0;">
+											style="width:200px;background-color:#1e88e5;border:0;">
 										LoggedIn: {{userlogged}}</button>
 								</li>
 							</td>
@@ -236,7 +236,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:black;border:0;">
+											style="width:200px;background-color:#1e88e5;border:0;">
 										{{teamname}} | {{userrole}}</button>
 
 								</li>
@@ -303,15 +303,6 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="synchronizeTopics">Topics</a></li>
-							<li><a href="synchronizeAcls">Acls</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
 					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
@@ -319,6 +310,9 @@
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
+					</li>
+					<li>
+						<a class="has-arrow " href="proFeatures" aria-expanded="false"><i class="mdi mdi-flash-outline"></i><span class="hide-menu">Pro Features</span></a>
 					</li>
 
 				</ul>
@@ -376,7 +370,7 @@
 			</div>
 			<!-- Row -->
 
-			<div class="row"  ng-init="getAuth();getEnvs();">
+			<div class="row"  ng-init="getEnvs();">
 				<div class="col-lg-12">
 					<div class="card">
 						<div class="card-body">
@@ -393,11 +387,10 @@
 							</table>
 							<hr size="1" color="black">
 							<div>
-								<table width="100%" class="table color-table success-table">
+								<table width="100%" class="table table-hover color-table success-table">
 									<thead><tr>
 										<th>Cluster</th>
-										<th>Host</th>
-										<th>Port</th>
+										<th>Bootstrap servers</th>
 										<th>Protocol</th>
 										<th>Type</th>
 										<th>Other Params</th>
@@ -411,7 +404,6 @@
 											<span class="badge badge-primary">{{ allenv.name }}</span>
 										</td>
 										<td>{{ allenv.host }}</td>
-										<td>{{ allenv.port }}</td>
 										<td width="10%" ng-show="allenv.protocol == 'plaintext' || allenv.protocol == 'PLAINTEXT'" >
 											<span class="badge badge-warning">PLAINTEXT</span></td>
 
@@ -432,11 +424,11 @@
 				</div>
 			</div>
 
-			<div class="row"  ng-init="getAuth();getSchemaRegEnvs();">
+			<div class="row"  ng-init="getSchemaRegEnvs();">
 				<div class="col-lg-12">
 					<div class="card">
 						<div class="card-body">
-							<table class="table color-table success-table" width="100%"><tr>
+							<table class="table table-hover color-table success-table" width="100%"><tr>
 								<td align="left"><h3 class="card-title">Schema Registry Clusters</h3>
 								</td>
 								<td ng-show="statusauthexectopics_su=='Authorized'" align="right">
@@ -449,11 +441,10 @@
 							</table>
 							<hr size="1" color="black">
 							<div>
-								<table class="table color-table success-table">
+								<table class="table table-hover color-table success-table">
 									<thead><tr>
 										<th width="10%">Cluster</th>
-										<th>Host</th>
-										<th>Port</th>
+										<th>Schema Registry servers</th>
 										<th>Protocol</th>
 										<th>Type</th>
 										<th>Delete</th>
@@ -465,7 +456,6 @@
 											<span class="badge badge-primary">{{ allenv.name }}</span>
 										</td>
 										<td>{{ allenv.host }}</td>
-										<td>{{ allenv.port }}</td>
 										<td width="10%" ng-show="allenv.protocol == 'plaintext'  || allenv.protocol == 'PLAINTEXT'" >
 											<span class="badge badge-warning">PLAINTEXT</span></td>
 
@@ -525,7 +515,7 @@
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap tether Core JavaScript -->
-<script src="assets/plugins/popper/popper.min.js"></script>
+<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
 <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <!-- slimscrollbar scrollbar JavaScript -->
 <script src="assets/js/jquery.slimscroll.js"></script>

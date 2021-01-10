@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name="acls")
+@Table(name="kwacls")
 public class Acl implements Serializable {
 
     @Id

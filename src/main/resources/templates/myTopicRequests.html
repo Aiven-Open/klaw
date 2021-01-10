@@ -184,7 +184,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:black;border:0;">
+											style="width:200px;background-color:#1e88e5;border:0;">
 										LoggedIn: {{userlogged}}</button>
 								</li>
 							</td>
@@ -194,7 +194,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:black;border:0;">
+											style="width:200px;background-color:#1e88e5;border:0;">
 										{{teamname}} | {{userrole}}</button>
 
 								</li>
@@ -261,15 +261,6 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="synchronizeTopics">Topics</a></li>
-							<li><a href="synchronizeAcls">Acls</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
 					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
@@ -277,6 +268,9 @@
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
+					</li>
+					<li>
+						<a class="has-arrow " href="proFeatures" aria-expanded="false"><i class="mdi mdi-flash-outline"></i><span class="hide-menu">Pro Features</span></a>
 					</li>
 
 				</ul>
@@ -350,7 +344,7 @@
 							<h4 class="card-title">My Topic Requests</h4>
 							<hr size="1" color="black">
 							<div>
-								<table width="100%" class="table color-table success-table">
+								<table width="100%" class="table table-hover color-table success-table">
 									<thead><tr>
 
 										<th>TopicName</th>
@@ -363,7 +357,7 @@
 										<th>Status</th>
 										<!--<th>Requested Time</th>-->
 										<th>Updated Time</th>
-										<th></th>
+										<th>Actions</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -473,7 +467,7 @@
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap tether Core JavaScript -->
-<script src="assets/plugins/popper/popper.min.js"></script>
+<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
 <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <!-- slimscrollbar scrollbar JavaScript -->
 <script src="assets/js/jquery.slimscroll.js"></script>

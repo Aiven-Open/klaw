@@ -1,7 +1,7 @@
 /* Create */
 
 
-Create table if not exists topic_requests(
+Create table if not exists kwtopicrequests(
 	topicname varchar(150),
 	partitions varchar(3),
 	replicationfactor varchar(2),
@@ -20,7 +20,7 @@ Create table if not exists topic_requests(
 	PRIMARY KEY(topicname,env)
 );
 
-Create table if not exists topics(
+Create table if not exists kwtopics(
 	topicname varchar(150),
 	partitions varchar(3),
     replicationfactor varchar(2),
@@ -30,7 +30,7 @@ Create table if not exists topics(
 	PRIMARY KEY(topicname,env)
 );
 
-Create table if not exists acl_requests(
+Create table if not exists kwaclrequests(
 	req_no varchar(20) PRIMARY KEY,
 	topicname varchar(150),
 	env varchar(50),
@@ -50,7 +50,7 @@ Create table if not exists acl_requests(
 	acltype varchar(10)
 );
 
-Create table if not exists acls(
+Create table if not exists kwacls(
 	req_no varchar(20) PRIMARY KEY,
 	topicname varchar(150),
 	env varchar(50),
@@ -61,7 +61,7 @@ Create table if not exists acls(
 	acl_ssl varchar(200)
 );
 
-Create table if not exists schema_requests(
+Create table if not exists kwschemarequests(
 	topicname varchar(150),
 	env varchar(50),
 	teamname varchar(150),
@@ -77,7 +77,7 @@ Create table if not exists schema_requests(
 	PRIMARY KEY(topicname,versionschema,env)
 );
 
-Create table if not exists avroschemas(
+Create table if not exists kwavroschemas(
 	topicname varchar(150),
 	env varchar(50),
 	teamname varchar(150),
@@ -86,7 +86,7 @@ Create table if not exists avroschemas(
 	PRIMARY KEY(topicname,versionschema,env)
 );
 
-Create table if not exists teams(
+Create table if not exists kwteams(
 	team varchar(150),
 	app varchar(150),
 	teammail varchar(50),
@@ -95,7 +95,7 @@ Create table if not exists teams(
 	PRIMARY KEY(team)
 );
 
-Create table if not exists users(
+Create table if not exists kwusers(
 	userid varchar(20),
 	pwd varchar(50),
 	team varchar(150),
@@ -105,10 +105,9 @@ Create table if not exists users(
 	PRIMARY KEY(userid)
 );
 
-Create table if not exists env(
+Create table if not exists kwenv(
 	name varchar(10),
-	host varchar(20),
-	port varchar(6),
+	host varchar(1000),
 	protocol varchar(20),
 	type varchar(20),
 	keystorelocation varchar(200),
@@ -120,20 +119,20 @@ Create table if not exists env(
 	PRIMARY KEY(name)
 );
 
-Create table if not exists productdetails(
+Create table if not exists kwproductdetails(
 	name varchar(9),
 	version varchar(10),
 	licensekey varchar(150),
 	PRIMARY KEY(name)
 );
 
-Create table if not exists activitylog(
+Create table if not exists kwactivitylog(
 	req_no varchar(20) PRIMARY KEY,
 	activityname varchar(25),
 	activitytype varchar(25),
 	activitytime timestamp,
 	details varchar(250),
-	user varchar(20),
+	userid varchar(20),
 	team varchar(150),
 	env varchar(50)
 );

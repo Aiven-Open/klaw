@@ -30,6 +30,20 @@
     <![endif]-->
 </head>
 
+<script>
+    function callLogin(){
+        document.loginForm.urlbar.value = window.location.href.replace(window.location.origin, "");
+        document.loginForm.submit();
+    }
+</script>
+
+<style>
+#grad1 {
+  background-color: #1e88e5; /* For browsers that do not support gradients */
+  background-image: linear-gradient(to bottom right, #1e88e5, #88B8E1);
+}
+</style>
+
 <body class="fix-header card-no-border logo-center">
 <!-- ============================================================== -->
 <!-- Preloader - style you can find in spinners.css -->
@@ -79,34 +93,12 @@
                         <table width="100%">
                             <tr>
                                 <td></td>
-
-<!--                                <td><a class="nav-link" href="mailto:{{}}">-->
-<!--                                    <span style="color:white">ContactAdmin</span></a></td>-->
-
                                 <td><a class="nav-link" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">
                                     <span style="color:white">Docs</span></a></td>
-
                             </tr>
                         </table>
                     </li>
 
-                    <!--                    <li class="nav-item dropdown">-->
-                    <!--                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
-                    <!--                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-                    <!--                            <i class="mdi mdi-account-circle"></i>-->
-                    <!--                        </button></a>-->
-
-                    <!--                    </li>-->
-                    <!-- ============================================================== -->
-                    <!-- Language -->
-                    <!-- ============================================================== -->
-                    <!--                    <li class="nav-item dropdown">-->
-                    <!--                        <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""-->
-                    <!--                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
-                    <!--                            <i class="mdi mdi-help-circle"></i></a>-->
-                    <!--                        <div class="dropdown-menu dropdown-menu-right scale-up">-->
-                    <!--                            <a class="dropdown-item" target="_blank" href="contactus">Help</a>  </div>-->
-                    <!--                    </li>-->
                 </ul>
             </div>
         </nav>
@@ -131,10 +123,11 @@
     <!-- Page wrapper  -->
     <!-- ============================================================== -->
     <section id="wrapper">
-        <div class="login-register" style="background-image:url(assets/images/background/login-register.jpg);">
+        <div class="login-register" id="grad1">
             <div class="login-box card">
                 <div class="card-body">
-                    <form class="form-horizontal form-material" id="login" th:action="@{/login}" method="post">
+                    <form class="form-horizontal form-material" name="loginForm" id="loginFormId" th:action="@{/login}" method="post">
+                        <input type="hidden" name="urlbar">
                         <table width="100%">
                             <tr>
                                 <td width="50%" align="left"><h3 class="p-2 rounded-title mb-3">Sign In</h3></td>
@@ -164,7 +157,7 @@
                         </div>
                         <div class="form-group text-center mt-3">
                             <div class="col-xs-12">
-                                <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" type="submit">Log In</button>
+                                <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" onClick="callLogin()" type="submit">Log In</button>
                             </div>
                         </div>
                     </form>

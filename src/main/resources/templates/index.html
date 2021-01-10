@@ -25,6 +25,7 @@
 
     <script src="lib/angular.min.js"></script>
     <script src="lib/angular-route.min.js"></script>
+    <script src="assets/js/ng-google-charts.js"></script>
     <script src="js/index.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -191,7 +192,7 @@
                             <td width="100%">
                                 <li class="nav-item d-none d-md-block search-box">
                                     <button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-                                            style="width:200px;background-color:black;border:0;">
+                                            style="width:200px;background-color:#1e88e5;border:0;">
                                         LoggedIn: {{userlogged}}</button>
                                 </li>
                             </td>
@@ -201,7 +202,7 @@
                             <td width="100%">
                                 <li class="nav-item d-none d-md-block search-box">
                                     <button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-                                            style="width:200px;background-color:black;border:0;">
+                                            style="width:200px;background-color:#1e88e5;border:0;">
                                         {{teamname}} | {{userrole}}</button>
 
                                 </li>
@@ -268,15 +269,6 @@
                     </li>
                     <li class="nav-devider"></li>
                     <li class="nav-small-cap">EXTRA COMPONENTS</li>
-                    <li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
-                        <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
-                        <ul aria-expanded="false" class="collapse">
-                            <li><a href="synchronizeTopics">Topics</a></li>
-                            <li><a href="synchronizeAcls">Acls</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-devider"></li>
-                    <li class="nav-small-cap">EXTRA COMPONENTS</li>
                     <li class="two-column" ng-show="statusauthexectopics=='Authorized'">
                         <a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
                         <ul aria-expanded="false" class="collapse">
@@ -284,6 +276,9 @@
                             <li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
                             <li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
                         </ul>
+                    </li>
+                    <li>
+                        <a class="has-arrow " href="proFeatures" aria-expanded="false"><i class="mdi mdi-flash-outline"></i><span class="hide-menu">Pro Features</span></a>
                     </li>
 
                 </ul>
@@ -302,178 +297,229 @@
         <!-- ============================================================== -->
         <!-- Container fluid  -->
         <!-- ============================================================== -->
-        <div class="container-fluid">
+        <div class="container-fluid" ng-init="getChartOverviewChart();getDashboardStatistics();">
             <!-- ============================================================== -->
             <!-- Bread crumb and right sidebar toggle -->
             <!-- ============================================================== -->
             <div class="row page-titles">
-
-
             </div>
 
-            <!-- Row -->
             <div class="row">
+                <!-- col -->
 
-                <!-- Column -->
-                <div class="col-lg-4 col-md-12" ng-init="getClusterApi();">
-                    <div class="card card-inverse card-primary">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card bg-info">
                         <div class="card-body">
-                            <div class="d-flex">
-                                <div class="mr-3 align-self-center">
-                                    <h1 class="text-white"><i class="ti-pie-chart"></i></h1>
+                            <a href="browseTopics?team={{teamname}}">
+                                <div class="carousel-item active flex-column">
+                                    <i class="fas fa-cogs fa-2x text-white"></i>
+                                    <p class="text-white">{{ teamname }}</p>
+                                    <h3 class="text-white font-light">My Owned <span class="font-bold">Topics</span><br>
+                                        {{ myteamtopics }}</h3>
+                                    <div class="text-white mt-3">
+                                        <i></i>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 class="card-title">Cluster Api Status</h3>
-                                    <h6 class="card-subtitle">{{ clusterapi.host }}</h6>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-12 align-self-center">
-                                    <h2 class="font-weight-light text-white text-nowrap">{{ clusterapi.envStatus }}</h2>
-                                </div>
-                                <div class="col-8 pb-3 pt-2 align-self-center">
-                                    <div class="usage chartist-chart" style="height:65px"></div>
-                                </div>
-                            </div>
+                            </a>
                         </div>
                     </div>
                 </div>
-                <!-- Column -->
-                <!-- Column -->
-                <div class="col-lg-4 col-md-12">
-                    <div class="card card-inverse card-success">
-                        <a href="users">
-                            <div class="card-body">
-                                <div class="d-flex">
-                                    <div class="mr-3 align-self-center">
-                                        <h1 class="text-white"><i class="ti-user"></i></h1>
-                                    </div>
-                                    <div>
-                                        <h3 class="card-title">Teams & Users</h3>
-                                        <h6 class="card-subtitle">{{ teamsize }} teams</h6>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 align-self-center">
-                                        <h2 class="font-weight-light text-white text-nowrap text-truncate">{{ userscount }} users</h2>
-                                    </div>
-                                    <div class="col-8 pb-3 pt-2 text-right">
-                                        <div class="spark-count" style="height:65px"></div>
+
+                <!-- col -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="card bg-info">
+                        <div class="card-body">
+                            <a href="users?team={{teamname}}">
+                                <div class="carousel-item active flex-column">
+                                    <i class="fas fa-user fa-2x text-white"></i>
+                                    <p class="text-white">{{ teamname }}</p>
+                                    <h3 class="text-white font-light">My Team <span class="font-bold">Members</span><br>
+                                        {{ teamMembersCount }}</h3>
+                                    <div class="text-white mt-3">
+                                        <i></i>
                                     </div>
                                 </div>
-                            </div></a>
+                            </a>
+                        </div>
                     </div>
                 </div>
-                <!-- Column -->
-                <!-- Column -->
-                <div class="col-lg-4 col-md-12">
-                    <div class="card card-inverse card-info">
-                        <a href="envs">
-                            <div class="card-body">
-                                <div class="d-flex">
-                                    <div class="mr-3 align-self-center">
-                                        <h1 class="text-white"><i class="ti-view-list"></i></h1>
-                                    </div>
-                                    <div>
-                                        <h3 class="card-title">Configured clusters</h3>
-                                        <h6 class="card-subtitle">{{schema_clusters_count}} Schema Registry cluster</h6>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-12 align-self-center">
-                                        <h2 class="font-weight-light text-white text-nowrap">{{kafka_clusters_count}} Kafka clusters</h2>
-                                    </div>
-                                    <div class="col-8 pb-3 pt-2 text-right">
-                                        <div class="spark-count" style="height:65px"></div>
-                                    </div>
-                                </div>
-                            </div></a>
+                <!-- col -->
+                <div class="col-lg-6 col-md-6">
+                    <div google-chart chart="activitylogchart">
+
                     </div>
                 </div>
-                <!-- Column -->
+                <!-- col -->
+
+                <!-- col -->
             </div>
+
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card bg-primary">
+                        <div class="card-body">
+                            <a href="browseTopics?team={{teamname}}&producer=true">
+                                <div class="carousel-item active flex-column">
+                                    <i class="fas fas fa-unlock fa-2x text-white"></i>
+                                    <p class="text-white">{{ teamname }}</p>
+                                    <h3 class="text-white font-light">My Producer <span class="font-bold">Topics</span><br>
+                                        {{ producerCount }}</h3>
+                                    <div class="text-white mt-3">
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card bg-primary">
+                        <div class="card-body">
+                            <a href="browseTopics?team={{teamname}}&consumer=true">
+                                <div class="carousel-item active flex-column">
+                                    <i class="fas fa-venus-double fa-2x text-white"></i>
+                                    <p class="text-white">{{ teamname }}</p>
+                                    <h3 class="text-white font-light">My Consumer <span class="font-bold">Topics</span><br>
+                                        {{ consumerCount }}</h3>
+                                    <div class="text-white mt-3">
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- col -->
+
+
+                <div class="col-lg-6 col-md-6">
+                    <div google-chart chart="topicsperteamchart">
+
+                    </div>
+                </div>
+                <!-- col -->
+            </div>
+
+            <!-- Row -->
+
             <!-- Row -->
 
             <div class="row">
                 <!-- Column -->
-                <div class="col-md-6 col-lg-3 col-xlg-2">
-                    <a href="browseTopics?team={{teamname}}">
-                        <div class="card card-inverse card-info">
-                            <div class="p-2 rounded text-center">
-                                <h1 class="font-light text-white">{{ myteamtopics }} </h1>
-                                <h6 class="text-white">My team Topics</h6>
-                            </div>
-                        </div>
-                    </a>
 
-                </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-3 col-xlg-2">
+                <div class="col-lg-2">
                     <a href="execTopics" ng-show="statusauthexectopics=='Authorized'">
-                        <div class="card card-inverse card-dark">
+                        <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notifications }} </h1>
-                                <h6 class="text-white">Pending Topic Requests</h6>
+                                <h6 class="text-white">Topic Requests</h6>
                             </div>
                         </div>
                     </a>
                     <a href="myTopicRequests" ng-show="statusauthexectopics!='Authorized'">
-                        <div class="card card-inverse card-dark">
+                        <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notifications }} </h1>
-                                <h6 class="text-white">Pending Topic Requests</h6>
+                                <h6 class="text-white">Topic Requests</h6>
                             </div>
                         </div>
                     </a>
                 </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-3 col-xlg-2">
+                <div class="col-lg-2">
                     <a href="execAcls" ng-show="statusauthexectopics=='Authorized'">
-                        <div class="card card-inverse card-megna">
+                        <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notificationsAcls }} </h1>
-                                <h6 class="text-white">Pending Acl Requests</h6>
+                                <h6 class="text-white">Acl Requests</h6>
                             </div>
                         </div>
                     </a>
                     <a href="myAclRequests" ng-show="statusauthexectopics!='Authorized'">
-                        <div class="card card-inverse card-megna">
+                        <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notificationsAcls }} </h1>
-                                <h6 class="text-white">Pending Acl Requests</h6>
+                                <h6 class="text-white">Acl Requests</h6>
                             </div>
                         </div>
                     </a>
                 </div>
                 <!-- Column -->
-                <div class="col-md-6 col-lg-3 col-xlg-2">
-                    <div class="card card-inverse card-warning">
-                        <div class="p-2 rounded text-center">
-                            <h1 class="font-light text-white">{{ notificationsSchemas }}</h1>
-                            <h6 class="text-white">Pending Schema Requests</h6>
+                <div class="col-lg-2">
+                    <a href="execSchemas" ng-show="statusauthexectopics=='Authorized'">
+                        <div class="card card-inverse card-success">
+                            <div class="p-2 rounded text-center">
+                                <h1 class="font-light text-white">{{ notificationsSchemas }}</h1>
+                                <h6 class="text-white">Schema Requests</h6>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="myAclRequests" ng-show="statusauthexectopics!='Authorized'">
+                        <div class="card card-inverse card-success">
+                            <div class="p-2 rounded text-center">
+                                <h1 class="font-light text-white">0</h1>
+                                <h6 class="text-white">Schema Requests</h6>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="envs">
+                                <div class="d-flex flex-row">
+                                    <div class="round text-white d-inline-block text-center rounded-circle bg-danger">
+                                        <i class="ti-calendar"></i></div>
+                                    <div class="ml-2 align-self-center">
+                                        <h3 class="mb-0">{{kafka_clusters_count}}</h3>
+                                        <h5 class="text-muted mb-0">Kafka environments</h5>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
                     </div>
                 </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <a href="envs">
+                                <div class="d-flex flex-row">
+                                    <div class="round text-white d-inline-block text-center rounded-circle bg-danger">
+                                        <i class="ti-calendar"></i></div>
+                                    <div class="ml-2 align-self-center">
+                                        <h3 class="mb-0">{{schema_clusters_count}}</h3>
+                                        <h5 class="text-muted mb-0">Schema Registry envs</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
 
             <!-- Row -->
 
             <div class="row"  ng-init="getEnvs();getSchemaRegEnvs();">
                 <!-- Column -->
-                <div class="col-lg-3 col-md-6" ng-show="allenvs[0].name != null">
-                    <div class="card">
-                        <div class="d-flex flex-row">
-                            <div class="p-3 bg-info">
-                                <h3 class="text-white box mb-0"><i class="ti-wallet"></i></h3>
-                            </div>
-                            <div class="align-self-center ml-3">
-                                <h3 class="mb-0 text-info">{{ allenvs[0].name }}</h3>
 
-                                <h5 ng-show="allenvs[0].envStatus == 'ONLINE'" class="text-muted mb-0">
+                <div ng-repeat="allenv in allenvs" class="col-lg-2 col-md-6">
+                    <div class="card">
+                        <div class="d-flex flex-row">
+                            <div class="p-3 bg-megna">
+                                <h3 class="text-white box mb-0"><i class="ti-wallet"></i></h3>
+                            </div>
+                            <div class="align-self-center ml-3">
+                                <h3 class="mb-0 text-megna">{{ allenv.name }}</h3>
+
+                                <h5 ng-show="allenv.envStatus == 'ONLINE'" class="text-muted mb-0">
                                     <span class="badge badge-info">ONLINE</span>
                                 </h5>
-                                <h5 ng-show="allenvs[0].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">{{allenvs[0].envStatus}}</span>
+                                <h5 ng-show="allenv.envStatus != 'ONLINE'" class="text-muted mb-0">
+                                    <span class="badge badge-warning">{{allenv.envStatus}}</span>
                                 </h5>
 
                             </div>
@@ -481,69 +527,8 @@
                     </div>
                 </div>
                 <!-- Column -->
-                <!-- Column -->
-                <div class="col-lg-3 col-md-6" ng-show="allenvs[1].name != null">
-                    <div class="card">
-                        <div class="d-flex flex-row">
-                            <div class="p-3 bg-success">
-                                <h3 class="text-white box mb-0"><i class="ti-wallet"></i></h3>
-                            </div>
-                            <div class="align-self-center ml-3">
-                                <h3 class="mb-0 text-success">{{ allenvs[1].name }}</h3>
-                                <h5 ng-show="allenvs[1].envStatus == 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-info">ONLINE</span>
-                                </h5>
-                                <h5 ng-show="allenvs[1].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">{{allenvs[1].envStatus}}</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Column -->
-                <!-- Column -->
-                <div class="col-lg-3 col-md-6" ng-show="allenvs[2].name != null">
-                    <div class="card">
-                        <div class="d-flex flex-row">
-                            <div class="p-3 bg-inverse">
-                                <h3 class="text-white box mb-0"><i class="ti-wallet"></i></h3>
-                            </div>
-                            <div class="align-self-center ml-3">
-                                <h3 class="mb-0">{{ allenvs[2].name }}</h3>
-                                <h5 ng-show="allenvs[2].envStatus == 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-info">ONLINE</span>
-                                </h5>
-                                <h5 ng-show="allenvs[2].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">{{allenvs[2].envStatus}}</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Column -->
-                <!-- Column -->
-                <div class="col-lg-3 col-md-6" ng-show="allenvs[3].name != null">
-                    <div class="card">
-                        <div class="d-flex flex-row">
-                            <div class="p-3 bg-primary">
-                                <h3 class="text-white box mb-0"><i class="ti-wallet"></i></h3>
-                            </div>
-                            <div class="align-self-center ml-3">
-                                <h3 class="mb-0 text-primary">{{ allenvs[3].name }}</h3>
-                                <h5 ng-show="allenvs[3].envStatus == 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-info">ONLINE</span>
-                                </h5>
-                                <h5 ng-show="allenvs[3].envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">{{allenvs[3].envStatus}}</span>
-                                </h5>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Column -->
+
             </div>
-
-            <!-- Row -->
 
             <!-- ============================================================== -->
             <!-- End PAge Content -->

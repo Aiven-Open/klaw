@@ -78,7 +78,7 @@ public class DeleteDataTest {
 
     @Test
     public void deleteTeamRequest() {
-        String result = deleteData.deleteTeamRequest("Team1");
+        String result = deleteData.deleteTeamRequest("Octopus");
         assertEquals("success", result);
     }
 

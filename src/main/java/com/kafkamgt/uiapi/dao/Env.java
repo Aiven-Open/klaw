@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @Entity
-@Table(name="env")
+@Table(name="kwenv")
 public class Env implements Serializable {
 
     @Id
@@ -19,9 +19,6 @@ public class Env implements Serializable {
 
     @Column(name = "host")
     private String host;
-
-    @Column(name = "port")
-    private String port;
 
     @Column(name = "protocol")
     private String protocol;

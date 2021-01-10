@@ -90,12 +90,7 @@ public class HandleDbRequestsCassandraTest {
         handleDbRequestsCassandra.connectToDb("testlicensekey");
     }
 
-    @Test
-    public void connectToDbFailure() {
-        exit.expectSystemExitWithStatus(0);
-        ReflectionTestUtils.setField(handleDbRequestsCassandra, "clusterConnHost", "localhosttest");
-        handleDbRequestsCassandra.connectToDb("testlicensekey");
-    }
+
 
     @Test
     public void requestForTopic() {

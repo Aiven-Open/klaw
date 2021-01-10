@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Entity
-@Table(name="avroschemas")
+@Table(name="kwavroschemas")
 public class MessageSchema implements Serializable {
 
     @Transient

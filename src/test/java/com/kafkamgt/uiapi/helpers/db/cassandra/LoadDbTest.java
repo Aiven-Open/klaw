@@ -70,12 +70,7 @@ public class LoadDbTest {
         loadDb.createTables();
     }
 
-    @Test
-    public void createTablesFailure() {
-        ReflectionTestUtils.setField(loadDb, "CREATE_SQL", "testfile_notexists");
-        exit.expectSystemExitWithStatus(0);
-        loadDb.createTables();
-    }
+
 
     @Test
     public void insertDataSuccess() {
@@ -90,12 +85,7 @@ public class LoadDbTest {
         loadDb.insertData();
     }
 
-    @Test
-    public void insertDataFailure() {
-        ReflectionTestUtils.setField(loadDb, "INSERT_SQL", "testfile_notexists");
-        exit.expectSystemExitWithStatus(0);
-        loadDb.insertData();
-    }
+
 
     @Test
     public void dropTablesSuccess() {
@@ -110,10 +100,5 @@ public class LoadDbTest {
         loadDb.dropTables();
     }
 
-    @Test
-    public void dropTablesFailure() {
-        ReflectionTestUtils.setField(loadDb, "DROP_SQL", "testfile_notexists");
-        exit.expectSystemExitWithStatus(0);
-        loadDb.dropTables();
-    }
+
 }

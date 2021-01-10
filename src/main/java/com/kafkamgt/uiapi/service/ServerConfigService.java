@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -35,7 +36,7 @@ public class ServerConfigService {
         LOG.info("All server properties loaded");
 
         List<ServerConfigProperties> listProps = new ArrayList<>();
-        WordUtils wr;
+        List<String> allowedKeys = Arrays.asList("spring.","java.","kafkawize.","server.","logging.","management.","endpoints.");
 
         if (env instanceof ConfigurableEnvironment) {
             for (PropertySource propertySource : ((ConfigurableEnvironment) env).getPropertySources()) {
@@ -49,18 +50,20 @@ public class ServerConfigService {
                         else
                             props.setValue(WordUtils.wrap(propertySource.getProperty(key)+"",125,"\n",true));
 
-                        if(!checkPropertyExists(listProps,key))
-                            listProps.add(props);
+                        if(!checkPropertyExists(listProps,key) && !key.toLowerCase().contains("path")) {
+                            if(allowedKeys.stream().anyMatch(key::startsWith))
+                                listProps.add(props);
+                        }
                     }
                 }
             }
         }
-        this.listProps = listProps;
+        ServerConfigService.listProps = listProps;
 
     }
 
     public List<ServerConfigProperties> getAllProps(){
-        return this.listProps;
+        return listProps;
     }
 
     private boolean checkPropertyExists(List<ServerConfigProperties> props, String key){

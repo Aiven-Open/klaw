@@ -216,7 +216,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:black;border:0;">
+											style="width:200px;background-color:#1e88e5;border:0;">
 										LoggedIn: {{userlogged}}</button>
 								</li>
 							</td>
@@ -226,7 +226,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:black;border:0;">
+											style="width:200px;background-color:#1e88e5;border:0;">
 										{{teamname}} | {{userrole}}</button>
 
 								</li>
@@ -293,15 +293,6 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="statusauthexectopics_su=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Metadata Synchronize</span></a>
-						<ul aria-expanded="false" class="collapse">
-							<li><a href="synchronizeTopics">Topics</a></li>
-							<li><a href="synchronizeAcls">Acls</a></li>
-						</ul>
-					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
 					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
 						<ul aria-expanded="false" class="collapse">
@@ -309,6 +300,9 @@
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
 							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
 						</ul>
+					</li>
+					<li>
+						<a class="has-arrow " href="proFeatures" aria-expanded="false"><i class="mdi mdi-flash-outline"></i><span class="hide-menu">Pro Features</span></a>
 					</li>
 
 				</ul>
@@ -377,7 +371,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="getAuth();getEnvs();loadTeams();">
+			<div class="row" ng-init="getEnvs();loadTeams();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
 <!--						<div class="card-header">-->
@@ -403,7 +397,7 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Select Cluster</label>
 												<select class="form-control custom-select" ng-blur="getAllTopics()"  ng-model="addSchema.envName" ng-options="env as env.name for env in allenvs">
 
@@ -412,7 +406,7 @@
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Select Topic</label>
 												<select class="form-control custom-select"  ng-model="addSchema.topicname" ng-blur="getTopicTeam(addSchema.topicname)" ng-options="o as o for o in alltopics">
 
@@ -425,7 +419,7 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-12">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Schema</label>
 												<textarea class="form-control" placeholder="{&quot;type&quot; : &quot;string&quot;}" title=""
 														  ng-model="addSchema.schemafull" rows="3"></textarea>
@@ -437,7 +431,7 @@
 									<!--/row-->
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label>Topic Owner Team</label>
 												<input disabled ng-model="addSchema.team" type="text" placeholder="topicownerteam" class="form-control">
 												<small class="form-control-feedback"> On selecting a topic, this team field is filled automatically. </small>
@@ -445,7 +439,7 @@
 										</div>
 
 										<div class="col-md-6">
-											<div class="form-group has-success">
+											<div class="form-group">
 												<label class="control-label">Remarks</label>
 												<textarea class="form-control" placeholder="Any specific comments" title=""
 														  ng-model="addSchema.remarks" rows="1"></textarea>
@@ -509,7 +503,7 @@
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap tether Core JavaScript -->
-<script src="assets/plugins/popper/popper.min.js"></script>
+<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
 <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <!-- slimscrollbar scrollbar JavaScript -->
 <script src="assets/js/jquery.slimscroll.js"></script>

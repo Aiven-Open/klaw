@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Entity
 @IdClass(ActivityLog.class)
-@Table(name="activitylog")
+@Table(name="kwactivitylog")
 public class ActivityLog implements Serializable {
 
     @Id
@@ -34,7 +34,7 @@ public class ActivityLog implements Serializable {
     @Column(name = "details")
     private String details;
 
-    @Column(name = "user")
+    @Column(name = "userid")
     private String user;
 
     @Column(name = "team")
