@@ -1,5 +1,6 @@
 /* Create */
 
+/* For default  timestamps warnings: You can try disabling strict mode. mysql -u root -p -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" or set global sql_mode=''; */
 
 Create table if not exists kwtopicrequests(
 	topicname varchar(150),
