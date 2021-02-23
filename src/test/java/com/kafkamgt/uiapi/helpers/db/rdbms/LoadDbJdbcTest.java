@@ -58,7 +58,6 @@ public class LoadDbJdbcTest {
 
     @Test
     public void createTables() {
-        ReflectionTestUtils.setField(loadDb, "CREATE_SQL", CREATE_SQL);
         ReflectionTestUtils.setField(loadDb, "jdbcTemplate", jdbcTemplate);
         when(resourceLoader.getResource(anyString())).thenReturn(resource, resource);
         try {
@@ -73,35 +72,11 @@ public class LoadDbJdbcTest {
 
     @Test
     public void createTablesSuccess1() {
-        ReflectionTestUtils.setField(loadDb, "CREATE_SQL", CREATE_SQL);
-
         loadDb.createTables();
     }
 
     @Test
-    public void dropTables() {
-        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
-        ReflectionTestUtils.setField(loadDb, "jdbcTemplate", jdbcTemplate);
-        when(resourceLoader.getResource(anyString())).thenReturn(resource, resource);
-        try {
-            InputStream inputStream = new ClassPathResource(INSERT_SQL).getInputStream();
-            when(resource.getInputStream()).thenReturn(inputStream, inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        doNothing().when(jdbcTemplate).execute(anyString());
-        loadDb.dropTables();
-    }
-
-    @Test
-    public void dropTables2() {
-        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
-        loadDb.dropTables();
-    }
-
-    @Test
     public void insertData() {
-        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
         ReflectionTestUtils.setField(loadDb, "jdbcTemplate", jdbcTemplate);
         when(resourceLoader.getResource(anyString())).thenReturn(resource, resource);
         try {
@@ -116,8 +91,6 @@ public class LoadDbJdbcTest {
 
     @Test
     public void insertData2() {
-        ReflectionTestUtils.setField(loadDb, "DROP_SQL", DROP_SQL);
-
         loadDb.insertData();
     }
 }
