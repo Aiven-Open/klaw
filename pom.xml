@@ -31,7 +31,7 @@
         <netty-all.version>4.1.43.Final</netty-all.version>
         <lombok.version>1.18.10</lombok.version>
         <commons-text.version>1.8</commons-text.version>
-        <guava.version>20.0</guava.version>
+        <guava.version>[24.1.1,)</guava.version>
         <system-rules.version>1.19.0</system-rules.version>
         <h2.version>1.4.200</h2.version>
         <apachepoi.version>4.1.1</apachepoi.version>
@@ -150,11 +150,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <jvmArguments>
-                        -Dcom.datastax.driver.USE_NATIVE_CLOCK=false
-                    </jvmArguments>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
