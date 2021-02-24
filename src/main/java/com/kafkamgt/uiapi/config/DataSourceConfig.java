@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.config;
 
 
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
+import com.zaxxer.hikari.HikariDataSource;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +13,13 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
-import java.beans.PropertyVetoException;
+import java.sql.SQLException;
+import java.util.Objects;
 import java.util.Properties;
 
 @Configuration
@@ -33,14 +34,21 @@ public class DataSourceConfig {
 
     @Bean(name="dataSource")
     @Conditional(JdbcDataSourceCondition.class)
-    public DataSource dataSource() throws PropertyVetoException {
-        LOG.info("Into datasource config..");
-        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    public DataSource dataSource() throws SQLException {
+
+        LOG.info("Into Hikari datasource config.");
+        final HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(environment.getProperty("spring.datasource.driver.class"));
-        dataSource.setUrl(environment.getProperty("spring.datasource.url"));
+        dataSource.setJdbcUrl(environment.getProperty("spring.datasource.url"));
         dataSource.setUsername(environment.getProperty("spring.datasource.username"));
         dataSource.setPassword(environment.getProperty("spring.datasource.password"));
-        LOG.info("Connecting RDBMS datasource..");
+        dataSource.setAutoCommit(true);
+        dataSource.setConnectionTimeout(Long.parseLong(Objects.requireNonNull(environment.getProperty("spring.datasource.hikari.connectionTimeout"))));
+        dataSource.setIdleTimeout(Long.parseLong(Objects.requireNonNull(environment.getProperty("spring.datasource.hikari.idleTimeout"))));
+        dataSource.setLoginTimeout(60);
+        dataSource.setMinimumIdle(100);
+        dataSource.setMaximumPoolSize(Integer.parseInt(Objects.requireNonNull(environment.getProperty("spring.datasource.hikari.maxPoolSize"))));
+        LOG.info("Connecting to RDBMS datasource..");
         return dataSource;
     }
 
@@ -68,7 +76,7 @@ public class DataSourceConfig {
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdaptor());
         try {
             entityManagerFactoryBean.setDataSource(dataSource());
-        } catch (PropertyVetoException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);

@@ -2,11 +2,8 @@ package com.kafkamgt.uiapi.config;
 
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
-import com.kafkamgt.uiapi.helpers.db.cassandra.CassandraDataSourceCondition;
-import com.kafkamgt.uiapi.helpers.db.cassandra.HandleDbRequestsCassandra;
 import com.kafkamgt.uiapi.helpers.db.rdbms.HandleDbRequestsJdbc;
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
-import com.kafkamgt.uiapi.service.ClusterApiService;
 import com.kafkamgt.uiapi.service.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -87,8 +84,7 @@ public class ManageDatabase implements ApplicationContextAware {
 
         if (dbStore != null && dbStore.equals("rdbms")) {
             handleDbRequests = handleJdbc();
-        } else
-            handleDbRequests = handleCassandra();
+        }
 
         if(UtilService.licenceLoaded) {
             handleDbRequests.connectToDb("licenseKey");
@@ -109,12 +105,6 @@ public class ManageDatabase implements ApplicationContextAware {
     @Conditional(JdbcDataSourceCondition.class)
     HandleDbRequestsJdbc handleJdbc() {
         return new HandleDbRequestsJdbc();
-    }
-
-    @Bean()
-    @Conditional(CassandraDataSourceCondition.class)
-    HandleDbRequestsCassandra handleCassandra() {
-        return new HandleDbRequestsCassandra();
     }
 
     public List<UserInfo> selectAllUsersInfo(){

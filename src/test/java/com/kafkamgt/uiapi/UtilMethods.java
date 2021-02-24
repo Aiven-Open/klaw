@@ -2,31 +2,14 @@ package com.kafkamgt.uiapi;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.model.*;
-import org.apache.thrift.transport.TTransportException;
 import org.apache.tomcat.util.codec.binary.Base64;
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
 import org.springframework.http.HttpHeaders;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.sql.Timestamp;
 import java.util.*;
 
 public class UtilMethods {
-
-    public static void startEmbeddedCassandraServer(){
-        try {
-            EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
-            EmbeddedCassandraServerHelper.startEmbeddedCassandra(200000L);
-        } catch (TTransportException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public HttpHeaders createHeaders(String username, String password) {
         return new HttpHeaders() {{

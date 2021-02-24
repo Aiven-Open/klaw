@@ -36,6 +36,6 @@ Insert into kwenv(name,host,protocol,type) values ('DEV_SCH','localhost:8081','P
 
 /* Insert product and version */
 
-Insert into kwproductdetails(name,version) values ('Kafkawize','4.5');
+Insert into kwproductdetails(name,version) values ('Kafkawize','4.5.1');
 
 commit;

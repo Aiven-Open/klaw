@@ -46,6 +46,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/*
+Add license key to application properties in test resources folder to run IT tests.
+ */
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT, classes=UiapiApplication.class)
 @ActiveProfiles("integrationtest")

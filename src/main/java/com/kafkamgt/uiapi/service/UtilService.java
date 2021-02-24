@@ -1,14 +1,11 @@
 package com.kafkamgt.uiapi.service;
 
-import com.datastax.driver.core.*;
-import com.datastax.driver.core.policies.DefaultRetryPolicy;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,26 +46,6 @@ public class UtilService {
 
     RestTemplate getRestTemplate(){
         return new RestTemplate();
-    }
-
-    public BoundStatement getBoundStatement(Session session, String query){
-        return new BoundStatement(session.prepare(query));
-    }
-
-    public Cluster getCluster(String clusterConnHost, int clusterConnPort, CodecRegistry myCodecRegistry){
-
-        return Cluster
-                .builder()
-                .addContactPoint(clusterConnHost)
-                .withPort(clusterConnPort)
-                .withRetryPolicy(DefaultRetryPolicy.INSTANCE)
-                .withCodecRegistry(myCodecRegistry)
-                .withoutJMXReporting()
-                .withoutMetrics()
-                .withSocketOptions(
-                        new SocketOptions()
-                                .setConnectTimeoutMillis(10000))
-                .build();
     }
 
     String getAuthority(UserDetails userDetails){
