@@ -357,6 +357,14 @@
 															 role="tab"><span class="hidden-sm-up"></span>
 										<span class="hidden-xs-down">Schemas</span></a> </li>
 
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#kafkaconnect"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Kafka Connect</span></a> </li>
+
+									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#clen"
+															 role="tab"><span class="hidden-sm-up"></span>
+										<span class="hidden-xs-down">Clusters & Environments</span></a> </li>
+
 									<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#backup"
 															 role="tab"><span class="hidden-sm-up"></span>
 										<span class="hidden-xs-down">Backup Config</span></a> </li>
@@ -402,7 +410,7 @@
 											<h3>Delete Topics</h3>
 											<p>Topics can be deleted from a selected environment. With approvals.</p>
 											<h3>Naming conventions for new Topics</h3>
-											<p>Topics can be created prefixed with a name if there is a prefix configured on an environment.
+											<p>Topics can be created prefixed with a name if there is a prefix configured on an environment and suffixes.
 											<br>Ex: "dev" is a prefix configured when creating an environment. When reuesting for topic in dev environment
 											, it forces users to prefix "dev".</p>
 										</div>
@@ -415,12 +423,29 @@
 											<p>TransactionalID access controls can be requested</p>
 											<h3>Delete Acls</h3>
 											<p>Acls can be deleted with approvals</p>
+											<h3>Consumer Lag</h3>
+											<p>Retrieve Lag on consumer groups</p>
 										</div>
 									</div>
 									<div class="tab-pane p-3" id="schemas" role="tabpanel">
 										<div class="p-3">
-											<h3>View Schemas</h3>
-											<p>Avro schemas (latest version) of all subjects on all environments can be viewed.</p>
+											<h3>View, Register and Promote Schemas</h3>
+											<p>Avro schemas (latest version) of all subjects on all environments can be viewed, registered and promoted to higher environments.</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="kafkaconnect" role="tabpanel">
+										<div class="p-3">
+											<h3>Kafka Connectors</h3>
+											<p>Ability to add, delete, update Kafka connectors on any selected environments with request/approvals in place.</p>
+										</div>
+									</div>
+									<div class="tab-pane p-3" id="clen" role="tabpanel">
+										<div class="p-3">
+											<h3>Clusters & Environments</h3>
+											<p>There is a diffentiation between clusters and Environments. Clusters have configuration of bootstrap servers and ports.<br>
+												Environments are wrappers on clusters. There could be multiple environments for same cluster, and with different <br>
+												properties like prefix, suffixes on topic names., and other properties. This gives much flexibility.
+											</p>
 										</div>
 									</div>
 									<div class="tab-pane p-3" id="backup" role="tabpanel">
@@ -503,7 +528,7 @@
 									<div class="tab-pane p-3" id="support" role="tabpanel">
 										<div class="p-3">
 											<h3>Support</h3>
-											<p>Kafkawize provides support in white labelling, company colors, installation and new features</p>
+											<p>Kafkawize provides support in white labelling, installation, customization and new features</p>
 										</div>
 									</div>
 								</div>
