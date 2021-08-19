@@ -42,4 +42,4 @@ They are licensed to the original Theme software.
 ![Subscriptions](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ViewAcls.JPG)
 
 
-![Preview](https://youtu.be/Oy22txP80_8)
+[Preview](https://youtu.be/Oy22txP80_8)
