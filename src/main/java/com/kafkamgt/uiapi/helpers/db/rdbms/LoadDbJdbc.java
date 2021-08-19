@@ -35,7 +35,8 @@ public class LoadDbJdbc implements ApplicationContextAware {
     @Value("${kafkawize.dbscripts.insert.basicdata.file:insertdata.sql}")
     private String basicInsertSqlFile;
 
-    String scriptsDefaultLocation = "scripts/base/rdbms/";
+    @Value("${kafkawize.dbscripts.location}")
+    private String scriptsDefaultLocation;
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -60,9 +61,6 @@ public class LoadDbJdbc implements ApplicationContextAware {
                 in = getReader(scriptsDefaultLocation + "ddl-jdbc.sql");
             else
                 in = getReader(scriptsLocation + "ddl-jdbc.sql");
-
-//            else if(sqlType.equals("alter"))
-//                in = getReader(ALTER_SQL);
 
             String tmpLine;
             StringBuilder execQuery = new StringBuilder();
@@ -146,14 +144,36 @@ public class LoadDbJdbc implements ApplicationContextAware {
         log.info("Insert DB Tables setup done !! ");
     }
 
-    private BufferedReader getReader(String sql) throws IOException {
+    private BufferedReader getReader(String sqlPath) throws IOException {
         if(scriptsLocationType.equals("internal")) {
-            Resource resource = resourceLoader.getResource("classpath:" + sql);
-            InputStream inputStream = resource.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            return new BufferedReader(inputStreamReader);
+            try {
+                Resource resource;
+                if(sqlPath.startsWith("file:///")){
+                    resource = resourceLoader.getResource("classpath:" + sqlPath);
+                }else{
+                    File f = new File("");
+                    log.info("File path" + f.getAbsolutePath());
+                    resource = resourceLoader.getResource("classpath:" + sqlPath);
+                }
+                InputStream inputStream = resource.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                return new BufferedReader(inputStreamReader);
+            }catch (Exception e){
+                Resource resource;
+                if(sqlPath.startsWith("file:///")){
+                    resource = resourceLoader.getResource(sqlPath);
+                }
+                else{
+                    File f = new File("");
+                    log.info("File path" + f.getAbsolutePath());
+                    resource = resourceLoader.getResource("file:///" + f.getAbsolutePath() + sqlPath);
+                }
+                InputStream inputStream = resource.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                return new BufferedReader(inputStreamReader);
+            }
         }
         else
-            return new BufferedReader(new FileReader(sql));
+            return new BufferedReader(new FileReader(sqlPath));
     }
 }

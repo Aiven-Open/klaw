@@ -1,4 +1,11 @@
-Kafkawize 4.5.1
+Kafkawize 4.5.2
+
+Kafkawize 4.5.2 is a short release having minor improvements
+
+1. Bug fixes on loading clusters and configurable location for loading dbscripts
+2. Updated documentation
+
+----------------------------------------------------------------
 
 Kafkawize 4.5.1 is a minor release having minor improvements
 

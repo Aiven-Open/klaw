@@ -64,7 +64,7 @@ public class UiConfigControllerService {
     @PostConstruct
     public void initialLoadClusters(){
         log.info("Loading clusters");
-        getEnvs(false);
+        getEnvs(true);
     }
 
     public Env getClusterApiStatus(){

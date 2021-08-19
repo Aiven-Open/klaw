@@ -2,51 +2,9 @@
 
 Kafkawize is a Self service Apache Kafka Topic Management tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, schemas by introducing roles/authorizations to users of various teams of an organization.
 
-## Getting Started
-
-To get Kafkawize running on your local machine or server, please follow the instructions mentioned in [GettingStarted - ReadTheDocs](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
-
 ### Download
 
 You can download the full latest Kafkawize software bundle including documentation from https://kafkawize.com/download/
-
-### Prerequisites
-
-```
-Intellij/Eclipse/Netbeans
-Kafkawize metastore (Rdbms)
-others..
-```
-
-Detailed in page [Prerequisites](https://kafkawize.readthedocs.io/en/latest/getting_started.html#prerequisites)
-
-### Installing
-
-```
-Install Cassandra/Rdbms
-Update configuration and mvn install kafkawize and kafkawizeclusterapi
-Start Kafka,Zookeeper
-Access Kafkawize
-```
-
-A step by step guide is explained in this page [DetailedInstallation](https://kafkawize.readthedocs.io/en/latest/getting_started.html)
-
-## Running the tests
-
-Unit and Integration tests are available in [kafkawize](https://github.com/muralibasani/kafkawize) and [kafkawizeclusterapi](https://github.com/muralibasani/kafkawizeclusterapi)
-
-Run a clean install with mvn clean install
-
-
-## Deployment
-
-```
-Install Rdbms
-Update configuration and mvn install kafkawize and kafkawizeclusterapi
-Start Kafka,Zookeeper
-Access Kafkawize
-Make sure the applications are running without any network/firewall issues
-```
 
 ## Built With
 
@@ -64,7 +22,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ## License
 
-This project is licensed under the GPL license 3.0  - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the Apache License  - see the [LICENSE.md](LICENSE.md) file for details
 
 The frontend code (Html, Css, Scss, js, images, icons) and backend code of this project cannot be (Re)Distributed, Modified, Patented. 
 They are licensed to the original Theme software.
@@ -84,3 +42,4 @@ They are licensed to the original Theme software.
 ![Subscriptions](https://github.com/muralibasani/kafkawize/blob/master/screenshots/ViewAcls.JPG)
 
 
+[Preview](https://youtu.be/Oy22txP80_8)
