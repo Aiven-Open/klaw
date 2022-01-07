@@ -6,6 +6,8 @@ Kafkawize is a Self service Apache Kafka Topic Management tool/portal. It is a w
 
 https://portal.kafkawize.io
 
+[![Producer & Consumer access](https://yt-embed.herokuapp.com/embed?v=gZ-QZdpBy7k)](https://www.youtube.com/watch?v=gZ-QZdpBy7k "Producer & Consumer access")
+
 ### Download
 
 You can download the full latest Kafkawize software bundle including documentation from https://kafkawize.com/download/
