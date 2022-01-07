@@ -10,7 +10,7 @@ https://portal.kafkawize.io
 
 ### Download
 
-You can download the full latest Kafkawize software bundle including documentation from https://kafkawize.com/download/
+You can download the full latest Kafkawize community software bundle including documentation from https://kafkawize.io/download/
 
 ## Built With
 
