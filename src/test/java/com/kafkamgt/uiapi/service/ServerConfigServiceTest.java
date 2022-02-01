@@ -1,25 +1,25 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.model.ServerConfigProperties;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class ServerConfigServiceTest {
 
     ServerConfigService serverConfigService;
 
     private Environment env;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         AnnotationConfigApplicationContext context =
                 new AnnotationConfigApplicationContext();

@@ -1,20 +1,20 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.UtilMethods;
-import com.kafkamgt.uiapi.dao.Acl;
+import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.EnvID;
 import com.kafkamgt.uiapi.repository.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class DeleteDataJdbcTest {
 
     private DeleteDataJdbc deleteDataJdbc;
@@ -42,8 +42,8 @@ public class DeleteDataJdbcTest {
 
     private UtilMethods utilMethods;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         deleteDataJdbc = new DeleteDataJdbc(topicRequestsRepo, schemaRequestRepo,
             envRepo, teamRepo, aclRequestsRepo,
             aclRepo, userInfoRepo);
@@ -52,26 +52,33 @@ public class DeleteDataJdbcTest {
 
     @Test
     public void deleteTopicRequest() {
-        String result = deleteDataJdbc.deleteTopicRequest("testtopic", "DEV");
+        String result = deleteDataJdbc.deleteTopicRequest(1001, 1);
         assertEquals("success", result);
     }
 
     @Test
     public void deleteSchemaRequest() {
-        String result = deleteDataJdbc.deleteSchemaRequest("testtopic",
-                "1.0", "DEV");
+        String result = deleteDataJdbc.deleteSchemaRequest(1001, 1);
         assertEquals("success", result);
     }
 
     @Test
     public void deleteAclRequest() {
-        String result = deleteDataJdbc.deleteAclRequest("das321SSRr");
+        String result = deleteDataJdbc.deleteAclRequest(1001, 1);
         assertEquals("success", result);
     }
 
     @Test
-    public void deleteClusterRequest() {
-        String result = deleteDataJdbc.deleteClusterRequest("DEV_ID");
+    public void deleteEnvironmentRequest() {
+        String clusterId = "1";
+        Env envObj = new Env();
+
+        EnvID env = new EnvID();
+        env.setId(clusterId);
+        env.setTenantId(101);
+
+        when(envRepo.findById(env)).thenReturn(java.util.Optional.of(envObj));
+        String result = deleteDataJdbc.deleteEnvironment("1", 101);
         assertEquals("success", result);
     }
 
@@ -83,16 +90,15 @@ public class DeleteDataJdbcTest {
 
     @Test
     public void deleteTeamRequest() {
-        String result = deleteDataJdbc.deleteTeamRequest("Octopus");
+        String result = deleteDataJdbc.deleteTeamRequest(1, 1);
         assertEquals("success", result);
     }
 
     @Test
     public void deletePrevAclRecs() {
-        List<Acl> acls = utilMethods.getAclsForDelete();
-        //when(aclRepo.findAll()).thenReturn(utilMethods.getAllAcls());
+        when(aclRepo.findAllByTenantId(101)).thenReturn(utilMethods.getAllAcls());
 
-        String result = deleteDataJdbc.deletePrevAclRecs(acls);
+        String result = deleteDataJdbc.deletePrevAclRecs(utilMethods.getAclRequest("testtopic"));
         assertEquals("success", result);
 
     }

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
+import java.util.Objects;
+
 @Configuration
 public class JdbcDataSourceCondition implements Condition {
 
@@ -13,9 +15,6 @@ public class JdbcDataSourceCondition implements Condition {
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
 
         Environment defaultEnv = conditionContext.getEnvironment();
-        if(defaultEnv.getProperty("kafkawize.db.storetype").equals("rdbms"))
-            return true;
-        else
-            return false;
+        return Objects.requireNonNull(defaultEnv.getProperty("kafkawize.db.storetype")).equals("rdbms");
     }
 }

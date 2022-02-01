@@ -2,9 +2,18 @@ package com.kafkamgt.uiapi.model;
 
 import com.kafkamgt.uiapi.dao.*;
 import org.junit.Test;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
 import java.util.ArrayList;
 import static org.junit.Assert.assertNotNull;
 
+@ExtendWith(SpringExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ValidationTest {
 
     @Test
@@ -20,10 +29,8 @@ public class ValidationTest {
         pageList.add("1");
         topicRequest.setAllPageNos(pageList);
 
-        TopicRequestPK topicRequestPK = new TopicRequestPK();
-        topicRequestPK.setTopicname("newtopic");
-        topicRequestPK.setEnvironment("dev");
-        topicRequest.setTopicRequestPK(topicRequestPK);
+        topicRequest.setTopicname("newtopic");
+        topicRequest.setEnvironment("dev");
 
         assertNotNull(topicRequest);
     }
@@ -34,8 +41,8 @@ public class ValidationTest {
         aclRequests.setAcl_ip("10.1.1.1");
         aclRequests.setAppname("newapp");
         aclRequests.setEnvironment("dev");
-        aclRequests.setReq_no("101");
-        aclRequests.setRequestingteam("Octopus");
+        aclRequests.setReq_no(1001);
+        aclRequests.setRequestingteam(1);
         aclRequests.setApprover("user1");
         aclRequests.setTopicname("newtopic");
         aclRequests.setTopictype("producer");
@@ -50,14 +57,10 @@ public class ValidationTest {
         schemaRequest.setEnvironment("dev");
         schemaRequest.setApprover("user1");
         schemaRequest.setTopicname("newtopic");
-        schemaRequest.setTeamname("Octopus");
+        schemaRequest.setTeamId(3);
         schemaRequest.setSchemafull("{type:string}");
-        SchemaRequestPK schemaRequestPK = new SchemaRequestPK();
-        schemaRequestPK.setTopicname("newtopic");
-        schemaRequestPK.setSchemaversion("1.0");
-        schemaRequestPK.setEnvironment("dev");
-
-        schemaRequest.setSchemaRequestPK(schemaRequestPK);
+        schemaRequest.setSchemaversion("1.0");
+        schemaRequest.setEnvironment("dev");
 
         assertNotNull(schemaRequest);
     }

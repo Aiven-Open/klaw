@@ -1,38 +1,37 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.config.ManageDatabase;
-import com.kafkamgt.uiapi.dao.ActivityLog;
-import com.kafkamgt.uiapi.dao.Env;
-import com.kafkamgt.uiapi.dao.Team;
-import com.kafkamgt.uiapi.dao.UserInfo;
+import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.EnvModel;
+import com.kafkamgt.uiapi.model.TeamModel;
 import com.kafkamgt.uiapi.model.UserInfoModel;
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UiConfigControllerServiceTest {
 
     @Mock
@@ -45,11 +44,15 @@ public class UiConfigControllerServiceTest {
 
     @Mock
     private
-    UtilService utilService;
+    MailUtils mailService;
 
     @Mock
     private
     UserInfo userInfo;
+
+    @Mock
+    private
+    UserInfoModel userInfoModel;
 
     @Mock
     private
@@ -59,30 +62,38 @@ public class UiConfigControllerServiceTest {
     private
     ManageDatabase manageDatabase;
 
+    @Mock CommonUtilsService commonUtilsService;
+
     @Mock
     private
     InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
-    private Env env;
+    @Mock private HashMap<Integer, String> tenantMap;
+
+    @Mock private HashMap<Integer, KwClusters> kwClustersHashMap;
+
+    @Mock private KwClusters kwClusters;
+
+    private EnvModel env;
+
+    private EnvsClustersTenantsControllerService envsClustersTenantsControllerService;
+
+    private UsersTeamsControllerService usersTeamsControllerService;
 
     private UiConfigControllerService uiConfigControllerService;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        uiConfigControllerService = new UiConfigControllerService(inMemoryUserDetailsManager);
-        uiConfigControllerService.setServices(clusterApiService, utilService);
+        usersTeamsControllerService = new UsersTeamsControllerService(inMemoryUserDetailsManager);
+        envsClustersTenantsControllerService = new EnvsClustersTenantsControllerService();
+        envsClustersTenantsControllerService.setServices(clusterApiService, mailService);
 
-        this.env = new Env();
-        env.setHost("101.10.11.11:9092");
+        this.env = new EnvModel();
         env.setName("DEV");
-        ReflectionTestUtils.setField(uiConfigControllerService, "manageDatabase", manageDatabase);
-        ReflectionTestUtils.setField(uiConfigControllerService, "orderOfEnvs", "DEV,TST,ACC,PRD");
+        ReflectionTestUtils.setField(envsClustersTenantsControllerService, "manageDatabase", manageDatabase);
+        ReflectionTestUtils.setField(envsClustersTenantsControllerService, "commonUtilsService", commonUtilsService);
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
         loginMock();
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     private void loginMock(){
@@ -94,380 +105,36 @@ public class UiConfigControllerServiceTest {
     }
 
     @Test
-    public void getClusterApiStatus1() throws KafkawizeException {
-        when(clusterApiService.getClusterApiUrl()).thenReturn("http://localhost:9343");
-        when(clusterApiService.getClusterApiStatus()).thenReturn("ONLINE");
-
-        Env result = uiConfigControllerService.getClusterApiStatus();
-        assertEquals("ONLINE", result.getEnvStatus());
-    }
-
-    @Test
-    public void getClusterApiStatus2() throws KafkawizeException {
-        when(clusterApiService.getClusterApiUrl()).thenReturn("http://localhost:9343");
-        when(clusterApiService.getClusterApiStatus()).thenReturn("OFFLINE");
-
-        Env result = uiConfigControllerService.getClusterApiStatus();
-        assertEquals("OFFLINE", result.getEnvStatus());
-    }
-
-    @Test
+    @Order(1)
     public void getEnvs1() {
-        when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
-        List<Env> envsList = uiConfigControllerService.getEnvs(true);
 
-        assertEquals(2, envsList.size());
+        stubUserInfo();
+        when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+        when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(getAllEnvs());
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+        when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
+        when(tenantMap.get(anyInt())).thenReturn("1");
+        when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(kwClustersHashMap);
+        when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+        List<EnvModel> envsList = envsClustersTenantsControllerService.getKafkaEnvs();
+
+        assertEquals(3, envsList.size());
         assertEquals(null, envsList.get(0).getEnvStatus());
     }
 
     @Test
-    public void getEnvs2() throws KafkawizeException {
-        when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
-        when(clusterApiService.getKafkaClusterStatus(any(), eq("PLAINTEXT"))).thenReturn("ONLINE");
-        List<Env> envsList = uiConfigControllerService.getEnvs(false);
-
-        assertEquals(2, envsList.size());
-        assertEquals("ONLINE", envsList.get(0).getEnvStatus());
-        assertEquals("ONLINE", envsList.get(1).getEnvStatus());
-    }
-
-    @Test
-    public void getEnvs3() throws KafkawizeException {
-        when(handleDbRequests.selectAllKafkaEnvs()).thenReturn(getAllEnvs());
-        when(clusterApiService.getKafkaClusterStatus(any(), eq("PLAINTEXT"))).thenReturn("OFFLINE");
-        List<Env> envsList = uiConfigControllerService.getEnvs(false);
-
-        assertEquals(2, envsList.size());
-        assertEquals("OFFLINE", envsList.get(0).getEnvStatus());
-        assertEquals("OFFLINE", envsList.get(1).getEnvStatus());
-    }
-
-    @Test
+    @Order(4)
     public void getSchemaRegEnvs() {
-        when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
-        List<Env> envsList = uiConfigControllerService.getSchemaRegEnvs();
+        stubUserInfo();
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-        assertEquals(1, envsList.size());
-        assertEquals(null, envsList.get(0).getEnvStatus());
+        when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+        List<EnvModel> envsList = envsClustersTenantsControllerService.getSchemaRegEnvs();
+
+        assertEquals(0, envsList.size());
     }
 
-    @Test
-    public void getSchemaRegEnvsStatus1() {
-        when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
-        when(clusterApiService.getSchemaClusterStatus(any())).thenReturn("ONLINE");
-
-        List<Env> envsList = uiConfigControllerService.getSchemaRegEnvsStatus();
-        assertEquals(1, envsList.size());
-        assertEquals("ONLINE", envsList.get(0).getEnvStatus());
-    }
-
-    @Test
-    public void getSchemaRegEnvsStatus2() {
-        when(handleDbRequests.selectAllSchemaRegEnvs()).thenReturn(getAllSchemaEnvs());
-        when(clusterApiService.getSchemaClusterStatus(any())).thenReturn("OFFLINE");
-
-        List<Env> envsList = uiConfigControllerService.getSchemaRegEnvsStatus();
-        assertEquals(1, envsList.size());
-        assertEquals("OFFLINE", envsList.get(0).getEnvStatus());
-    }
-
-    @Test
-    public void getAllTeams() {
-        when(handleDbRequests.selectAllTeamsOfUsers(any())).thenReturn(getAvailableTeams());
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-
-        List<Team> teamsList = uiConfigControllerService.getAllTeams();
-
-        assertEquals(1, teamsList.size());
-    }
-
-    @Test
-    public void getAllTeamsSU() {
-        when(handleDbRequests.selectAllTeams()).thenReturn(getAvailableTeamsSU());
-        List<Team> teamsList = uiConfigControllerService.getAllTeamsSU();
-        assertEquals(3, teamsList.size());
-    }
-
-    @Test
-    public void addNewEnv1() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-        String result = uiConfigControllerService.addNewEnv(this.env);
-        assertEquals("{\"result\":\"Not Authorized\"}",result);
-    }
-
-    @Test
-    public void addNewEnv2() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewEnv(any())).thenReturn("success");
-        String result = uiConfigControllerService.addNewEnv(this.env);
-        assertEquals("{\"result\":\"success\"}",result);
-    }
-
-    @Test
-    public void addNewEnv3() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewEnv(any())).thenThrow(new RuntimeException("Error"));
-        String result = uiConfigControllerService.addNewEnv(this.env);
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void deleteCluster1() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-        String result = uiConfigControllerService.deleteCluster("clusterId");
-        assertEquals("{\"result\":\"Not Authorized\"}", result);
-    }
-
-    @Test
-    public void deleteCluster2() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.deleteClusterRequest(any())).thenReturn("success");
-        String result = uiConfigControllerService.deleteCluster("clusterId");
-        assertEquals("{\"result\":\"success\"}",result);
-    }
-
-    @Test
-    public void deleteCluster3() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.deleteClusterRequest(any())).thenThrow(new RuntimeException("Error"));
-        String result = uiConfigControllerService.deleteCluster("clusterId");
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void deleteOctopus() {
-        String teamId = "Octopus";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-
-        String result = uiConfigControllerService.deleteTeam(teamId);
-        assertEquals("{\"result\":\"Not Authorized\"}", result);
-    }
-
-    @Test
-    public void deleteTeam2() {
-        String teamId = "Octopus";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn(teamId);
-
-        String result = uiConfigControllerService.deleteTeam(teamId);
-        assertThat(result, CoreMatchers.containsString("Your team cannot be deleted"));
-    }
-
-    @Test
-    public void deleteTeam3() {
-        String teamId = "Octopus";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn("Team2");
-        when(handleDbRequests.deleteTeamRequest(teamId)).thenReturn("success");
-
-        String result = uiConfigControllerService.deleteTeam(teamId);
-        assertEquals("{\"result\":\"success\"}",result);
-    }
-
-    @Test
-    public void deleteTeam4() {
-        String teamId = "Octopus";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getUsersInfo(any())).thenReturn(userInfo);
-        when(userInfo.getTeam()).thenReturn("Team2");
-        when(handleDbRequests.deleteTeamRequest(teamId)).thenThrow(new RuntimeException("Error"));
-
-        String result = uiConfigControllerService.deleteTeam(teamId);
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void deleteUser1() {
-        String userId = "Octopus";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-
-        String result = uiConfigControllerService.deleteUser(userId);
-        assertEquals("{\"result\":\"Not Authorized\"}", result);
-    }
-
-    @Test
-    public void deleteUser2() {
-        String userId = "uiuser1";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(userDetails.getUsername()).thenReturn(userId);
-
-        String result = uiConfigControllerService.deleteUser(userId);
-        assertThat(result, CoreMatchers.containsString("User cannot be deleted"));
-    }
-
-    @Test
-    public void deleteUser3() {
-        String userId = "uiuser1";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(userDetails.getUsername()).thenReturn("uiuser3");
-        when(handleDbRequests.deleteUserRequest(userId)).thenReturn("success");
-
-        String result = uiConfigControllerService.deleteUser(userId);
-        assertEquals("{\"result\":\"success\"}",result);
-    }
-
-    @Test
-    public void deleteUser4() {
-        String userId = "superuser";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-
-        String result = uiConfigControllerService.deleteUser(userId);
-        assertThat(result, CoreMatchers.containsString("User cannot be deleted"));
-    }
-
-    @Test
-    public void deleteUser5() {
-        String userId = "uiuser2";
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(userDetails.getUsername()).thenReturn("uiuser3");
-        when(handleDbRequests.deleteUserRequest(userId)).thenThrow(new RuntimeException("Error"));
-
-        String result = uiConfigControllerService.deleteUser(userId);
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void addNewUser1() {
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-        String result = uiConfigControllerService.addNewUser(userInfo);
-        assertEquals("{\"result\":\"Not Authorized\"}", result);
-    }
-
-    @Test
-    public void addNewUser2() {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername("uiuser1");
-        userInfo.setRole("USER");
-        userInfo.setPwd("pwd");
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewUser(userInfo)).thenReturn("success");
-
-        String result = uiConfigControllerService.addNewUser(userInfo);
-        assertEquals("{\"result\":\"success\"}", result);
-    }
-
-    @Test
-    public void addNewUser3() {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername("uiuser1");
-        userInfo.setRole("USER");
-        userInfo.setPwd("pwd");
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewUser(userInfo)).thenThrow(new RuntimeException("Error"));
-
-        String result = uiConfigControllerService.addNewUser(userInfo);
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void addNewOctopus() {
-        Team Octopus = new Team();
-        Octopus.setTeamname("Octopus");
-
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(false);
-
-        String result = uiConfigControllerService.addNewTeam(Octopus);
-        assertEquals("{\"result\":\"Not Authorized\"}", result);
-    }
-
-    @Test
-    public void addNewTeam2() {
-        Team Octopus = new Team();
-        Octopus.setTeamname("Octopus");
-
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewTeam(Octopus)).thenReturn("success");
-
-        String result = uiConfigControllerService.addNewTeam(Octopus);
-        assertEquals("{\"result\":\"success\"}", result);
-    }
-
-    @Test
-    public void addNewTeam3() {
-        Team Octopus = new Team();
-        Octopus.setTeamname("Octopus");
-
-        when(utilService.checkAuthorizedSU(userDetails)).thenReturn(true);
-        when(handleDbRequests.addNewTeam(Octopus)).thenThrow(new RuntimeException("Error"));
-
-        String result = uiConfigControllerService.addNewTeam(Octopus);
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void changePwd1() {
-
-        String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.updatePassword(eq("uiuser1"), any())).thenReturn("success");
-
-        String result = uiConfigControllerService.changePwd(pwdUpdate);
-
-        assertEquals("{\"result\":\"success\"}", result);
-    }
-
-    @Test
-    public void changePwd2() {
-
-        String pwdUpdate = "{\"pwd\":\"newpasswd\",\"repeatpwd\":\"newpasswd\"}";
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.updatePassword(eq("uiuser1"), any())).
-                thenThrow(new RuntimeException("Error"));
-
-        String result = uiConfigControllerService.changePwd(pwdUpdate);
-
-        assertThat(result, CoreMatchers.containsString("failure"));
-    }
-
-    @Test
-    public void showUsers() {
-        when(handleDbRequests.selectAllUsersInfo()).thenReturn(getUsernfoList());
-        List<UserInfoModel> userInfoList = uiConfigControllerService.showUsers(null,"1");
-        assertEquals(1,userInfoList.size());
-    }
-
-    @Test
-    public void getMyProfileInfo() {
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsername("uiuser1");
-        userInfo.setRole("USER");
-        userInfo.setPwd("pwd");
-
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getUsersInfo("uiuser1")).thenReturn(userInfo);
-        UserInfo userInfoActual = uiConfigControllerService.getMyProfileInfo();
-        assertEquals(userInfo.getUsername(), userInfoActual.getUsername());
-    }
-
-    @Test
-    public void showActivityLog1() {
-        String envSel = "DEV";
-        String pageNo = "1";
-
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(2));
-
-        List<ActivityLog> actList = uiConfigControllerService.showActivityLog(envSel, pageNo);
-        assertEquals(2, actList.size());
-        assertEquals(actList.get(0).getAllPageNos().get(0),"1");
-    }
-
-    @Test
-    public void showActivityLog2() {
-        String envSel = "DEV";
-        String pageNo = "1";
-
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.selectActivityLog("uiuser1", envSel)).thenReturn(getAcitivityList(0));
-
-        List<ActivityLog> actList = uiConfigControllerService.showActivityLog(envSel, pageNo);
-        assertEquals(0, actList.size());
-    }
 
     private List<ActivityLog> getAcitivityList(int size) {
         List<ActivityLog> actList = new ArrayList<>();
@@ -500,19 +167,19 @@ public class UiConfigControllerServiceTest {
 
     private List<Team> getAvailableTeams(){
 
-        Team Octopus = new Team();
-        Octopus.setTeamname("Octopus");
+        Team team1 = new Team();
+        team1.setTeamname("Team1");
 
         List<Team> teamList = new ArrayList<>();
-        teamList.add(Octopus);
+        teamList.add(team1);
 
         return teamList;
     }
 
     private List<Team> getAvailableTeamsSU(){
 
-        Team Octopus = new Team();
-        Octopus.setTeamname("Octopus");
+        Team team1 = new Team();
+        team1.setTeamname("Team1");
 
         Team team2 = new Team();
         team2.setTeamname("Team2");
@@ -521,7 +188,7 @@ public class UiConfigControllerServiceTest {
         team3.setTeamname("Team3");
 
         List<Team> teamList = new ArrayList<>();
-        teamList.add(Octopus);
+        teamList.add(team1);
         teamList.add(team2);
         teamList.add(team3);
 
@@ -532,9 +199,11 @@ public class UiConfigControllerServiceTest {
         List<Env> listEnvs = new ArrayList<>();
 
         Env env = new Env();
-        env.setHost("localhost:8081");
         env.setName("DEV");
-        env.setProtocol("PLAINTEXT");
+        listEnvs.add(env);
+
+        env = new Env();
+        env.setName("TST");
         listEnvs.add(env);
 
         return listEnvs;
@@ -544,17 +213,32 @@ public class UiConfigControllerServiceTest {
         List<Env> listEnvs = new ArrayList<>();
 
         Env env = new Env();
-        env.setHost("localhost:9092");
+        env.setId("1");
         env.setName("DEV");
-        env.setProtocol("PLAINTEXT");
+        env.setTenantId(101);
+        env.setClusterId(101);
         listEnvs.add(env);
 
-        env = new Env();
-        env.setHost("10.22.34.121:9092");
-        env.setName("TST");
-        env.setProtocol("PLAINTEXT");
-        listEnvs.add(env);
+        Env env1 = new Env();
+        env1.setId("2");
+        env1.setClusterId(101);
+        env1.setTenantId(101);
+        env1.setName("TST");
+        listEnvs.add(env1);
+
+        Env env2 = new Env();
+        env2.setId("3");
+        env2.setClusterId(101);
+        env2.setName("ACC");
+        env2.setTenantId(101);
+        listEnvs.add(env2);
 
         return listEnvs;
+    }
+
+    private void stubUserInfo() {
+        when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+        when(userInfo.getTeamId()).thenReturn(101);
+        when(mailService.getUserName(any())).thenReturn("kwusera");
     }
 }

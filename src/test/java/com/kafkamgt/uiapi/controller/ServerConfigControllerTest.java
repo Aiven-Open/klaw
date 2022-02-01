@@ -4,38 +4,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.model.ServerConfigProperties;
 import com.kafkamgt.uiapi.service.ServerConfigService;
-import com.kafkamgt.uiapi.service.UtilControllerService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerConfigControllerTest {
 
     @MockBean
     private ServerConfigService serverConfigService;
 
     UtilMethods utilMethods;
-
     private MockMvc mvc;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         ServerConfigController serverConfigController = new ServerConfigController();
         mvc = MockMvcBuilders
                 .standaloneSetup(serverConfigController)
@@ -46,6 +43,7 @@ public class ServerConfigControllerTest {
     }
 
     @Test
+    @Order(1)
     public void getAllServerConfig() throws Exception {
         List<ServerConfigProperties> serverConfigPropertiesList = utilMethods.getServerConfig();
         when(serverConfigService.getAllProps()).thenReturn(serverConfigPropertiesList);

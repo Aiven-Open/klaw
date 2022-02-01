@@ -19,6 +19,34 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 	$scope.disable_ssl=true;
     $scope.disable_ip=false;
     $scope.disable_consumergrp=true;
+
+    $scope.showAlertToast = function() {
+                  var x = document.getElementById("alertbar");
+                  x.className = "show";
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
+                }
+
+    $scope.showSubmitFailed = function(title, text){
+    		swal({
+    			 title: "",
+    			 text: "Request unsuccessful !!",
+    			 timer: 2000,
+    			 showConfirmButton: false
+    			 });
+    	}
+
+    $scope.handleValidationErrors = function(error){
+        if(error.errors != null && error.errors.length > 0){
+                $scope.alert = error.errors[0].defaultMessage;
+            }else if(error.message != null){
+                    $scope.alert = error.message;
+                    }else if(error.result != null){
+                    $scope.alert = error.result;
+                    }else $scope.alert = error;
+
+            $scope.alertnote = $scope.alert;
+            $scope.showAlertToast();
+     }
 	
     $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
 
@@ -33,7 +61,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
-                    $scope.statusauth = output.status;
+                    $scope.dashboardDetails = output;
                     $scope.userlogged = output.username;
                     $scope.teamname = output.teamname;
                     $scope.userrole = output.userrole;
@@ -41,9 +69,20 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;
                     $scope.notificationsUsers = output.notificationsUsers;
-                    $scope.statusauthexectopics = output.statusauthexectopics;
-                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-                    $scope.alerttop = output.alertmessage;
+
+                    if(output.requestItems!='Authorized')
+                    {
+                        swal({
+                                 title: "Not Authorized !",
+                                 text: "",
+                                 showConfirmButton: true
+                             }).then(function(isConfirm){
+                                    $scope.alertnote = "You are not authorized to request.";
+                                    $scope.showAlertToast();
+                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/index";
+                             });
+                    }
+
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";
                     }
@@ -52,6 +91,8 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
                     if($scope.userlogged != null)
                         $scope.loggedinuser = "true";
+
+                    $scope.checkPendingApprovals();
                 }).error(
                     function(error)
                     {
@@ -60,28 +101,68 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 );
         	}
 
-        $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
 
-                $location.path('/');
-                $window.location.reload();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
+
+        $scope.logout = function() {
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
                 }
-            );
-        }
 
    $scope.getEnvs = function() {
 
                 $http({
                     method: "GET",
-                    url: "getEnvsOnly",
+                    url: "getEnvs",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allenvs = output;
@@ -93,15 +174,24 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 );
             }
 
+            // set default
+            $scope.disable_consumergrp = false;
+
             $scope.changeTopicType = function(){
-                if($scope.addAcl.topicreqtype.value == "Consumer")
+                if($scope.addAcl.topicreqtype.value == "Consumer"){
                     $scope.disable_consumergrp=false;
-                else
+                    $scope.enablePrefixedTopicPattern = 'false';
+                    $scope.aclpattern = 'LITERAL';
+                    $scope.addAcl.acl_lit_pre = 'LITERAL';
+                }
+                else{
                     $scope.disable_consumergrp=true;
+                    $scope.enablePrefixedTopicPattern = 'true';
+                    }
             }
 
             $scope.onSelectAcl = function(selectedAclType){
-                    if(selectedAclType=='SSL'){
+                    if(selectedAclType =='SSL'){
                         $scope.disable_ssl=false;
                         $scope.disable_ip=true;
                         $scope.addAcl.acl_ip = "";
@@ -112,13 +202,33 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     }
                 }
 
+
+            $scope.onSelectAclPattern = function(selectedAclPatternType){
+                if(selectedAclPatternType == 'PREFIXED'){
+                    $scope.aclpattern = "PREFIXED";
+
+                    if($scope.addAcl.topicpattern && $scope.addAcl.topicpattern != null && $scope.addAcl.topicpattern.length > 3)
+                    {}
+                     else
+                     {
+                        return;
+                     }
+
+                    $scope.getTopicTeam($scope.addAcl.topicpattern);
+                }else{
+                    $scope.aclpattern = "LITERAL";
+                    $scope.getTopicTeam($scope.addAcl.topicname);
+                }
+            }
+
             $scope.getAllTopics = function() {
 
                     $scope.alltopics = null;
                             $http({
                                 method: "GET",
                                 url: "getTopicsOnly",
-                                headers : { 'Content-Type' : 'application/json' }
+                                headers : { 'Content-Type' : 'application/json' },
+                                params: {'isMyTeamTopics' : 'false' },
                             }).success(function(output) {
                                 $scope.alltopics = output;
                             }).error(
@@ -130,40 +240,66 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         }
 
 
-
         $scope.getTopicTeam = function(topicName) {
 
-            if(topicName == null){
-//                this.addAcl.topicname.focus();
-                alert("Please mention a topic name.");
-                return false;
+            if($scope.addAcl.acl_lit_pre == 'PREFIXED')
+            {
+                if(topicName && topicName.length < 3)
+                {
+                    $scope.alertnote = "Topic prefix should be atleast 3 characters.";
+                    $scope.showAlertToast();
+                    return;
+                }
+                else if(!topicName)
+                {
+                    $scope.alertnote = "Please fill in Topic prefix.";
+                    $scope.showAlertToast();
+                    return;
+                }
             }
 
             $http({
                 method: "GET",
                 url: "getTopicTeam",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'topicName' : topicName }
+                params: {'topicName' : topicName,
+                 'patternType' : $scope.addAcl.acl_lit_pre}
             }).success(function(output) {
                 $scope.topicteamname = output.team;
-                if(!$scope.topicteamname){
+                $scope.errorFound = output.error;
+                if($scope.errorFound){
+                    $scope.addAcl.team="";
+                    $scope.alert = $scope.errorFound;
+                    $scope.alertnote = $scope.errorFound;
+                    $scope.showAlertToast();
+                }
+                else if(!$scope.topicteamname){
                         alert("There is no team found for this topic : " +  topicName);
+                        $scope.alertnote = "Topic prefix should be atleast 3 characters.";
+                        $scope.showAlertToast();
+
                         $scope.addAcl.team="";
-                        addAcl.topicname.focus();
-                            return;
+                        if($scope.addAcl.acl_lit_pre == 'PREFIXED')
+                            $scope.addAcl.topicpattern.focus();
+                         else $scope.addAcl.topicname.focus();
+
+                        return;
                 }
                 $scope.addAcl.team = $scope.topicteamname;
             }).error(
                 function(error)
                 {
-                    $scope.alert = error;
+                    $scope.addAcl.team="";
+                    $scope.alert = error.message;
+                    $scope.alertnote = error.message;
+                    $scope.showAlertToast();
                 }
             );
 
         };
 
         $scope.cancelRequest = function() {
-                    $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
+                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
                 }
 
         $scope.addAcl = function() {
@@ -172,45 +308,91 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.alertnote = null;
             var serviceInput = {};
 
+            var aclpatterntypetype;
+
+            if(!$scope.addAcl.envName  || $scope.addAcl.envName == "")
+            {
+                $scope.alertnote = "Please select an environment";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addAcl.topicreqtype)
+            {
+               $scope.alertnote = "Please select an ACL type";
+               $scope.showAlertToast();
+               return;
+            }
+
+            if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
+            {
+                $scope.alertnote = "Consumer group is not filled."
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addAcl.topicreqtype.value == 'Producer' && !$scope.addAcl.acl_lit_pre)
+            {
+                $scope.alertnote = "Please "
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addAcl.acl_lit_pre == 'PREFIXED'){
+                if($scope.addAcl.topicpattern && $scope.addAcl.topicpattern != null && $scope.addAcl.topicpattern.length > 2)
+                    {
+                    }
+                 else
+                 {
+                    $scope.alertnote = "Please fill in Topic prefix. (atleast 3 characters)";
+                    $scope.showAlertToast();
+                    return;
+                 }
+                $scope.addAcl.topicname = $scope.addAcl.topicpattern;
+                aclpatterntypetype = 'PREFIXED';
+                $scope.getTopicTeam($scope.addAcl.topicpattern);
+            }
+            else
+                aclpatterntypetype = 'LITERAL';
+
             if($scope.addAcl.acl_ip_ssl == 'IP')
                 $scope.addAcl.acl_ssl = null;
              else if($scope.addAcl.acl_ip_ssl == 'SSL')
                 $scope.addAcl.acl_ip = null;
 
-            if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
-            {
-                $scope.alertnote = "Consumer group is not filled."
-                 $scope.showAlertToast();
-                return;
-            }
-
-            serviceInput['environment'] = $scope.addAcl.envName;
-            serviceInput['topicname'] = $scope.addAcl.topicname;
-            serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
-            serviceInput['teamname'] = $scope.addAcl.team;
-            serviceInput['appname'] = "App";//$scope.addAcl.app;
-            serviceInput['remarks'] = $scope.addAcl.remarks;
-            serviceInput['acl_ip'] = $scope.addAcl.acl_ip;
-            serviceInput['acl_ssl'] = $scope.addAcl.acl_ssl;
-            serviceInput['consumergroup'] = $scope.addAcl.consumergroup;
-
             if(!$scope.addAcl.team || !$scope.addAcl.topicname )
             {
                 //alert("This topic is not owned by any team. Synchronize the metadata.");
-                $scope.alertnote = "This topic is not owned by any team. Synchronize the metadata.";
-                 $scope.showAlertToast();
+                if($scope.addAcl.acl_lit_pre == 'PREFIXED'){
+                    $scope.alertnote = "There are no matching topics with this prefix. Synchronize the metadata.";
+                }
+                else
+                    $scope.alertnote = "This topic is not owned by any team. Synchronize the metadata.";
+
+                $scope.showAlertToast();
                 return false;
             }
 
             if(($scope.addAcl.acl_ip !=null && $scope.addAcl.acl_ip.length>0) ||
-                         ($scope.addAcl.acl_ssl !=null && $scope.addAcl.acl_ssl.length>0)){}
+                      ($scope.addAcl.acl_ssl !=null && $scope.addAcl.acl_ssl.length>0)){}
              else
              {
-                $scope.alertnote = "Please fill in a valid IP address or SSL-CN Name of the Producer/Consumer client";
+                $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
                  $scope.showAlertToast();
                 return;
              }
 
+             serviceInput['environment'] = $scope.addAcl.envName;
+             serviceInput['topicname'] = $scope.addAcl.topicname;
+             serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
+             serviceInput['teamname'] = $scope.addAcl.team;
+             serviceInput['appname'] = "App";//$scope.addAcl.app;
+             serviceInput['remarks'] = $scope.addAcl.remarks;
+             serviceInput['acl_ip'] = $scope.addAcl.acl_ip;
+             serviceInput['acl_ssl'] = $scope.addAcl.acl_ssl;
+             serviceInput['consumergroup'] = $scope.addAcl.consumergroup;
+             serviceInput['aclPatternType'] = aclpatterntypetype;
+             serviceInput['transactionalId'] = $scope.addAcl.transactionalId;
 
             $http({
                 method: "POST",
@@ -219,28 +401,42 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 params: {'addAclRequest' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
-                $scope.alert = "Acl Request : "+output.result;
-                 $scope.showSuccessToast();
+                if(output.result == 'success'){
+                        swal({
+                                 title: "Awesome !",
+                                 text: "Subscription Request : "+output.result,
+                                 showConfirmButton: true
+                             }).then(function(isConfirm){
+                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=created&aclCreated=true";
+                             });
+                    }
+                else{
+                        $scope.alert = "Subscription Request : "+output.result,
+                        $scope.showSubmitFailed('','');
+                    }
             }).error(
                 function(error)
                 {
-                    $scope.alert = error;
-                    $scope.alertnote = error;
-                    // $scope.showAlertToast();
+                    $scope.handleValidationErrors(error);
                 }
             );
 
         };
 
         $scope.loadParams = function() {
-                var str = window.location.search;
-                var topicSelected;
-                if(str){
-                    var topicNameIndex = str.indexOf("topicname");
+                // default setting
+                $scope.aclpattern = "LITERAL";
 
-                    if(topicNameIndex > 0)
+                var topicSelected;
+
+                var sPageURL = window.location.search.substring(1);
+                var sURLVariables = sPageURL.split('&');
+                for (var i = 0; i < sURLVariables.length; i++)
+                {
+                    var sParameterName = sURLVariables[i].split('=');
+                    if (sParameterName[0] == "topicname")
                     {
-                        $scope.topicSelectedFromUrl = str.substring(topicNameIndex+10);
+                        $scope.topicSelectedFromUrl = sParameterName[1]
                         $scope.addAcl.topicname = $scope.topicSelectedFromUrl;
 
                         $scope.getAllTopics();
@@ -249,16 +445,37 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 }
             }
 
-        $scope.showSuccessToast = function() {
-                  var x = document.getElementById("successbar");
-                  x.className = "show";
-                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
-                }
+        $scope.sendMessageToAdmin = function(){
 
-        $scope.showAlertToast = function() {
-                  var x = document.getElementById("alertbar");
-                  x.className = "show";
-                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
-                }
+                if(!$scope.contactFormSubject)
+                    return;
+                if(!$scope.contactFormMessage)
+                    return;
+                if($scope.contactFormSubject.trim().length==0)
+                    return;
+                if($scope.contactFormMessage.trim().length==0)
+                    return;
+
+                $http({
+                        method: "POST",
+                        url: "sendMessageToAdmin",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                        data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                    }).success(function(output) {
+                        $scope.alert = "Message Sent.";
+                        swal({
+                             title: "",
+                             text: "Message sent.",
+                             timer: 2000,
+                             showConfirmButton: false
+                         });
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+            }
 }
 );

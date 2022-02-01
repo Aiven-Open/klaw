@@ -16,11 +16,14 @@ public class UserInfo implements Serializable {
     @Column(name = "userid")
     private String username;
 
+    @Column(name = "tenantid")
+    private int tenantId;
+
     @Column(name = "pwd")
     private String pwd;
 
-    @Column(name = "team")
-    private String team;
+    @Column(name = "teamid")
+    private Integer teamId;
 
     @Column(name = "roleid")
     private String role;
@@ -30,4 +33,8 @@ public class UserInfo implements Serializable {
 
     @Column(name = "mailid")
     private String mailid;
+
+    @Column(name = "otherparams")
+    private String otherParams;
+
 }

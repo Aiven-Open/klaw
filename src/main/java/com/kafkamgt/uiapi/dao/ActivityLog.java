@@ -2,22 +2,28 @@ package com.kafkamgt.uiapi.dao;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+@ToString
 @Getter
 @Setter
 @Entity
-@IdClass(ActivityLog.class)
+@IdClass(ActivityLogID.class)
 @Table(name="kwactivitylog")
 public class ActivityLog implements Serializable {
 
     @Id
-    @Column(name = "req_no")
-    private String req_no;
+    @Column(name = "kwreqno")
+    private Integer req_no;
+
+    @Id
+    @Column(name = "tenantid")
+    private int tenantId;
 
     @Column(name = "activityname")
     private String activityName;
@@ -37,14 +43,23 @@ public class ActivityLog implements Serializable {
     @Column(name = "userid")
     private String user;
 
-    @Column(name = "team")
-    private String team;
+    @Column(name = "teamid")
+    private Integer teamId;
 
     @Column(name = "env")
     private String env;
 
     @Transient
+    private String envName;
+
+    @Transient
+    private String team;
+
+    @Transient
     private String totalNoPages;
+
+    @Transient
+    private String currentPage;
 
     @Transient
     private List<String> allPageNos;

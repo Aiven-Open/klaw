@@ -2,69 +2,209 @@ package com.kafkamgt.uiapi.service;
 
 
 import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
-import com.kafkamgt.uiapi.model.charts.*;
+import com.kafkamgt.uiapi.model.KwMetadataUpdates;
+import com.kafkamgt.uiapi.model.PermissionType;
+import com.kafkamgt.uiapi.model.RequestStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+
+import static com.kafkamgt.uiapi.model.RolesType.SUPERADMIN;
+import static com.kafkamgt.uiapi.service.KwConstants.*;
 
 @Service
 @Slf4j
-@DependsOn(value={"utilService"})
 public class UtilControllerService {
 
     @Autowired
     ManageDatabase manageDatabase;
 
     @Autowired
-    UtilService utilService;
+    MailUtils mailService;
 
-    @Value("${kafkawize.org.name}")
-    private
-    String companyInfo;
+    @Autowired
+    private CommonUtilsService commonUtilsService;
 
-    @Value("${kafkawize.version:5.0}")
+    @Value("${kafkawize.version:1.0.1}")
     private
     String kafkawizeVersion;
 
-    UtilControllerService(UtilService utilService){
-        this.utilService = utilService;
+    @Value("${kafkawize.login.authentication.type}")
+    private String authenticationType;
+
+    @Value("${kafkawize.enable.authorization.ad:false}")
+    private String adAuthRoleEnabled;
+
+    @Value("${kafkawize.admin.mailid:info@kafkawize.io}")
+    private String saasKwAdminMailId;
+
+    @Value("${kafkawize.installation.type:onpremise}")
+    private String kwInstallationType;
+
+    @Value("${server.servlet.context-path:}")
+    private String kwContextPath;
+
+    @Value("${kafkawize.enable.sso:false}")
+    private String ssoEnabled;
+
+    @Value("${kafkawize.sso.server.loginurl:url}")
+    private String ssoServerLoginUrl;
+
+    @Autowired
+    private ConfigurableApplicationContext context;
+
+    public HashMap<String, String> getDashboardStats(){
+        log.debug("getDashboardInfo");
+        String userName = getUserName();
+        HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
+        if(userName!=null) {
+            return reqsHandle.getDashboardStats(getMyTeamId(userName), commonUtilsService.getTenantId(getUserName()));
+        }
+
+        return new HashMap<>();
+    }
+
+    private String getUserName(){
+        return mailService.getUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
+    public String getTenantNameFromUser(String userId) {
+        UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
+        if(userInfo != null) {
+            return manageDatabase.getTenantMap().entrySet().stream()
+                    .filter(obj -> obj.getKey().equals(userInfo.getTenantId()))
+                    .findFirst().get().getValue();
+
+        }
+        else return null;
+    }
+
+    private List<String> getEnvsFromUserId(String userDetails) {
+        Integer userTeamId = getMyTeamId(userDetails);
+        return manageDatabase.getTeamsAndAllowedEnvs(userTeamId, commonUtilsService.getTenantId(userDetails));
+    }
+
+    private Integer getMyTeamId(String userName){
+        return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+    }
+
+    public HashMap<String, String> getAllRequestsToBeApproved(String requestor, int tenantId){
+        log.debug("getAllRequestsToBeApproved {}", requestor);
+        HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
+
+        HashMap<String, String> countList = new HashMap<>();
+        String roleToSet = "";
+        if(!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)){
+            roleToSet = "approver_subscriptions";
+        }
+        if(!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)){
+            roleToSet = "requestor_subscriptions";
+        }
+        List<SchemaRequest> allSchemaReqs = reqsHandle.getAllSchemaRequests(true, requestor, tenantId);
+
+        List<AclRequests> allAclReqs;
+        List<TopicRequest> allTopicReqs;
+        List<KafkaConnectorRequest> allConnectorReqs;
+
+        if(commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+            allAclReqs = reqsHandle.getAllAclRequests(true, requestor, roleToSet, RequestStatus.created.name(),
+                    false, tenantId);
+            allTopicReqs = reqsHandle.getCreatedTopicRequests(requestor, RequestStatus.created.name(), false, tenantId);
+            allConnectorReqs = reqsHandle.getCreatedConnectorRequests(requestor, RequestStatus.created.name(), false, tenantId);
+        }
+        else {
+            allAclReqs = reqsHandle.getAllAclRequests(true, requestor, roleToSet, RequestStatus.created.name(), true, tenantId);
+            allTopicReqs = reqsHandle.getCreatedTopicRequests(requestor, RequestStatus.created.name(), true, tenantId);
+            allConnectorReqs = reqsHandle.getCreatedConnectorRequests(requestor, RequestStatus.created.name(), true, tenantId);
+        }
+
+        try {
+            // tenant filtering
+            List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+            allAclReqs = allAclReqs.stream()
+                    .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+                    .collect(Collectors.toList());
+
+            // tenant filtering
+            allSchemaReqs = allSchemaReqs.stream()
+                    .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+                    .collect(Collectors.toList());
+
+            // tenant filtering
+            allTopicReqs = allTopicReqs.stream()
+                    .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+                    .collect(Collectors.toList());
+
+            // tenant filtering
+            allConnectorReqs = allConnectorReqs.stream()
+                    .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+                    .collect(Collectors.toList());
+        } catch (Exception exception) {
+            log.error("No environments/clusters found.");
+            allAclReqs = new ArrayList<>();
+            allSchemaReqs = new ArrayList<>();
+            allTopicReqs = new ArrayList<>();
+            allConnectorReqs = new ArrayList<>();
+        }
+
+        List<RegisterUserInfo> allUserReqs = reqsHandle.selectAllRegisterUsersInfoForTenant(tenantId);
+
+        countList.put("topics", allTopicReqs.size() + "");
+        countList.put("acls", allAclReqs.size() + "");
+        countList.put("schemas", allSchemaReqs.size() + "");
+        countList.put("connectors", allConnectorReqs.size() + "");
+
+        if(commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
+            countList.put("users", "0");
+        else
+            countList.put("users", allUserReqs.size() + "");
+
+        return countList;
     }
 
     public HashMap<String, String> getAuth() {
-        UserDetails userDetails =
-                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int tenantId = commonUtilsService.getTenantId(getUserName());
+        String userName = getUserName();
         HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
-        if(userDetails!=null) {
+        if(userName!=null) {
 
-            String teamName = reqsHandle.getUsersInfo(userDetails.getUsername()).getTeam();
-            String authority = utilService.getAuthority(userDetails);
+            String teamName = manageDatabase.getTeamNameFromTeamId(tenantId, getMyTeamId(userName));
 
-            String statusAuth;
-            String statusAuthExecTopics, statusAuthExecTopicsSU;
+            String authority = commonUtilsService.getAuthority(getPrincipal());
 
-            HashMap<String, String> outstanding = reqsHandle
-                    .getAllRequestsToBeApproved(userDetails.getUsername(), authority);
+            HashMap<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
 
             String outstandingTopicReqs = outstanding.get("topics");
             int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
+
             String outstandingAclReqs = outstanding.get("acls");
             int outstandingAclReqsInt = Integer.parseInt(outstandingAclReqs);
 
             String outstandingSchemasReqs = outstanding.get("schemas");
             int outstandingSchemasReqsInt = Integer.parseInt(outstandingSchemasReqs);
+
+            String outstandingConnectorReqs = outstanding.get("connectors");
+            int outstandingConnectorReqsInt = Integer.parseInt(outstandingConnectorReqs);
+
+            String outstandingUserReqs = outstanding.get("users");
+            int outstandingUserReqsInt = Integer.parseInt(outstandingUserReqs);
 
             if(outstandingTopicReqsInt<=0)
                 outstandingTopicReqs = "0";
@@ -75,256 +215,328 @@ public class UtilControllerService {
             if(outstandingSchemasReqsInt<=0)
                 outstandingSchemasReqs = "0";
 
-            if (authority.equals("ROLE_USER") || authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER")) {
-                statusAuth = "Authorized";
-            } else {
-                statusAuth = "NotAuthorized";
+            if(outstandingConnectorReqsInt<=0)
+                outstandingConnectorReqs = "0";
+
+            if(outstandingUserReqsInt<=0)
+                outstandingUserReqs = "0";
+
+            HashMap<String, String> dashboardData = reqsHandle.getDashboardInfo(getMyTeamId(userName), tenantId);
+
+            dashboardData.put("contextPath", kwContextPath);
+            dashboardData.put("teamsize", ""+manageDatabase.getTeamsForTenant(tenantId).size());
+            dashboardData.put("schema_clusters_count", ""+manageDatabase.getSchemaRegEnvList(tenantId).size());
+            dashboardData.put("kafka_clusters_count", ""+manageDatabase.getKafkaEnvList(tenantId).size());
+            dashboardData.put("kafkaconnect_clusters_count", ""+manageDatabase.getKafkaConnectEnvList(tenantId).size());
+
+            String canUpdatePermissions, addEditRoles;
+
+            if(commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS))
+                canUpdatePermissions = "NotAuthorized";
+            else canUpdatePermissions = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES))
+                addEditRoles = "NotAuthorized";
+            else addEditRoles = "Authorized";
+
+            String canShutdownKw;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SHUTDOWN_KAFKAWIZE)){
+                canShutdownKw = "NotAuthorized";
+            }
+            else canShutdownKw = "Authorized";
+
+            String syncBackTopics,syncBackAcls;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_TOPICS)){
+                syncBackTopics = "NotAuthorized";
+            }
+            else syncBackTopics = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_SUBSCRIPTIONS)){
+                syncBackAcls = "NotAuthorized";
+            }
+            else syncBackAcls = "Authorized";
+
+            String addUser, addTeams;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS)){
+                addUser = "NotAuthorized";
+            }
+            else addUser = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_TEAMS)){
+                addTeams = "NotAuthorized";
+            }
+            else addTeams = "Authorized";
+
+            String viewKafkaConnect;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_CONNECTORS)){
+                viewKafkaConnect = "NotAuthorized";
+            }
+            else viewKafkaConnect = "Authorized";
+
+            String requestTopics;
+            String requestAcls;
+            String requestSchemas;
+            String requestConnector;
+            String requestItems;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_TOPICS)){
+                requestTopics = "NotAuthorized";
+            }
+            else requestTopics = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)){
+                requestAcls = "NotAuthorized";
+            }
+            else requestAcls = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_SCHEMAS)){
+                requestSchemas = "NotAuthorized";
+            }
+            else requestSchemas = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_CONNECTORS)){
+                requestConnector = "NotAuthorized";
+            }
+            else requestConnector = "Authorized";
+
+            if(requestTopics.equals("Authorized") || requestAcls.equals("Authorized") || requestSchemas.equals("Authorized") || requestConnector.equals("Authorized"))
+                requestItems = "Authorized";
+            else
+                requestItems = "NotAuthorized";
+
+            String approveDeclineTopics;
+            String approveDeclineSubscriptions;
+            String approveDeclineSchemas;
+            String approveDeclineConnectors;
+
+            String approveAtleastOneRequest = "NotAuthorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_TOPICS)){
+                approveDeclineTopics = "NotAuthorized";
+            }
+            else approveDeclineTopics = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SUBSCRIPTIONS)){
+                approveDeclineSubscriptions = "NotAuthorized";
+            }
+            else approveDeclineSubscriptions = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SCHEMAS)){
+                approveDeclineSchemas = "NotAuthorized";
+            }
+            else approveDeclineSchemas = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_CONNECTORS)){
+                approveDeclineConnectors = "NotAuthorized";
+            }
+            else approveDeclineConnectors = "Authorized";
+
+            if(approveDeclineTopics.equals("Authorized") || approveDeclineSubscriptions.equals("Authorized") ||
+                    approveDeclineSchemas.equals("Authorized") || approveDeclineConnectors.equals("Authorized") ||
+                    addUser.equals("Authorized"))
+                approveAtleastOneRequest = "Authorized";
+
+            String redirectionPage = "";
+            if(approveAtleastOneRequest.equals("Authorized"))
+            {
+                if(outstandingTopicReqsInt > 0 && approveDeclineTopics.equals("Authorized"))
+                    redirectionPage = "execTopics";
+                else if(outstandingAclReqsInt > 0 && approveDeclineSubscriptions.equals("Authorized"))
+                    redirectionPage = "execAcls";
+                else if(outstandingSchemasReqsInt > 0 && approveDeclineSchemas.equals("Authorized"))
+                    redirectionPage = "execSchemas";
+                else if(outstandingConnectorReqsInt > 0 && approveDeclineConnectors.equals("Authorized"))
+                    redirectionPage = "execConnectors";
+                else if(outstandingUserReqsInt > 0 && addUser.equals("Authorized"))
+                    redirectionPage = "execUsers";
             }
 
-            if (authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
-                statusAuthExecTopics = "Authorized";
+            String syncTopicsAcls, syncConnectors;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_TOPICS) ||
+                    commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SUBSCRIPTIONS)){
+                syncTopicsAcls = "NotAuthorized";
+            }
+            else syncTopicsAcls = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_CONNECTORS)){
+                syncConnectors = "NotAuthorized";
+            }
+            else syncConnectors = "Authorized";
+
+            String addDeleteEditTenants;
+            String addDeleteEditEnvs;
+            String addDeleteEditClusters;
+            String updateServerConfig, showServerConfigEnvProperties;
+            String viewTopics;
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG))
+                updateServerConfig = "NotAuthorized";
+            else updateServerConfig = "Authorized";
+
+            if(tenantId == DEFAULT_TENANT_ID && !commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG))
+                showServerConfigEnvProperties = "Authorized";
+            else showServerConfigEnvProperties = "NotAuthorized";
+
+            if(tenantId == DEFAULT_TENANT_ID &&
+                    manageDatabase.getHandleDbRequests().getUsersInfo(userName).getRole().equals(SUPERADMIN.name())) // allow adding tenants only to "default"
+                addDeleteEditTenants = "Authorized";
+            else addDeleteEditTenants = "NotAuthorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_ENVS))
+                addDeleteEditEnvs = "NotAuthorized";
+            else addDeleteEditEnvs = "Authorized";
+
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
+                addDeleteEditClusters = "NotAuthorized";
+            else addDeleteEditClusters = "Authorized";
+
+            if(authenticationType.equals("ad") && adAuthRoleEnabled.equals("true"))
+                dashboardData.put("adAuthRoleEnabled","true");
             else
-                statusAuthExecTopics = "NotAuthorized";
+                dashboardData.put("adAuthRoleEnabled","false");
 
-            if (authority.equals("ROLE_SUPERUSER"))
-                statusAuthExecTopicsSU = "Authorized";
+            if(commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_TOPICS))
+                viewTopics = "NotAuthorized";
+            else viewTopics = "Authorized";
+
+            String companyInfo = manageDatabase.getTenantFullConfig(tenantId).getOrgName();
+            if(companyInfo == null || companyInfo.equals(""))
+            {
+                companyInfo = "Our Organization";
+            }
+
+            if(kwInstallationType.equals("saas"))
+                dashboardData.put("supportlink","https://github.com/muralibasani/kafkawize/issues");
             else
-                statusAuthExecTopicsSU = "NotAuthorized";
+                dashboardData.put("supportlink","https://github.com/muralibasani/kafkawize/issues");
 
-            HashMap<String, String> dashboardData = reqsHandle.getDashboardInfo(teamName);
+            // broadcast text
+            String broadCastText = "";
+            String broadCastTextLocal = manageDatabase.getKwPropertyValue(broadCastTextProperty, tenantId);
+            String broadCastTextGlobal = manageDatabase.getKwPropertyValue(broadCastTextProperty, DEFAULT_TENANT_ID);
 
-            dashboardData.put("status",statusAuth);
-            dashboardData.put("username",userDetails.getUsername());
+            if(broadCastTextLocal != null && !broadCastTextLocal.equals(""))
+                broadCastText = "Announcement : " + broadCastTextLocal;
+            if(broadCastTextGlobal != null && !broadCastTextGlobal.equals("") && tenantId != DEFAULT_TENANT_ID) {
+                broadCastText += " Announcement : " + broadCastTextGlobal;
+            }
+
+            dashboardData.put("broadcastText", broadCastText);
+
+            dashboardData.put("saasEnabled",kwInstallationType);
+            dashboardData.put("tenantActiveStatus", manageDatabase.getTenantFullConfig(tenantId).getIsActive()); // true/false
+
+            dashboardData.put("username",userName);
+            dashboardData.put("authenticationType", authenticationType);
             dashboardData.put("teamname",teamName);
-            dashboardData.put("userrole",authority.substring(5));
-            dashboardData.put("companyinfo",companyInfo);
+            dashboardData.put("tenantName",getTenantNameFromUser(getUserName()));
+            dashboardData.put("userrole",authority);
+            dashboardData.put("companyinfo", companyInfo);
             dashboardData.put("kafkawizeversion",kafkawizeVersion);
+
             dashboardData.put("notifications",outstandingTopicReqs);
             dashboardData.put("notificationsAcls",outstandingAclReqs);
             dashboardData.put("notificationsSchemas",outstandingSchemasReqs);
-            dashboardData.put("statusauthexectopics_su",statusAuthExecTopicsSU);
-            dashboardData.put("statusauthexectopics",statusAuthExecTopics);
+            dashboardData.put("notificationsUsers",outstandingUserReqs);
+            dashboardData.put("notificationsConnectors",outstandingConnectorReqs);
+
+            dashboardData.put("canShutdownKw",canShutdownKw);
+            dashboardData.put("canUpdatePermissions",canUpdatePermissions);
+            dashboardData.put("addEditRoles", addEditRoles);
+            dashboardData.put("viewTopics", viewTopics);
+            dashboardData.put("requestItems", requestItems);
+            dashboardData.put("viewKafkaConnect", viewKafkaConnect);
+
+            dashboardData.put("syncBackTopics", syncBackTopics);
+            dashboardData.put("syncBackAcls", syncBackAcls);
+            dashboardData.put("updateServerConfig", updateServerConfig);
+            dashboardData.put("showServerConfigEnvProperties", showServerConfigEnvProperties);
+
+            dashboardData.put("addUser", addUser);
+            dashboardData.put("addTeams", addTeams);
+
+            dashboardData.put("syncTopicsAcls", syncTopicsAcls);
+            dashboardData.put("syncConnectors", syncConnectors);
+
+            dashboardData.put("approveAtleastOneRequest",approveAtleastOneRequest);
+            dashboardData.put("approveDeclineTopics",approveDeclineTopics);
+            dashboardData.put("approveDeclineSubscriptions",approveDeclineSubscriptions);
+            dashboardData.put("approveDeclineSchemas",approveDeclineSchemas);
+            dashboardData.put("approveDeclineConnectors",approveDeclineConnectors);
+            dashboardData.put("pendingApprovalsRedirectionPage", redirectionPage);
+
+            dashboardData.put("showAddDeleteTenants",addDeleteEditTenants);
+            dashboardData.put("addDeleteEditClusters",addDeleteEditClusters);
+            dashboardData.put("addDeleteEditEnvs",addDeleteEditEnvs);
+//            if(manageDatabase.getIsTrialLicense())
+//                dashboardData.put("larit","(Trial) ");
+//            else
+                dashboardData.put("larit","");
 
             return dashboardData;
         }
         else return null;
     }
 
-    public HashMap<String, String> getDashboardStats(){
-        log.info("getDashboardInfo");
-        UserDetails userDetails =
-                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
-        if(userDetails!=null) {
-            String teamName = reqsHandle.getUsersInfo(userDetails.getUsername()).getTeam();
-            return reqsHandle.getDashboardStats(teamName);
-        }
-
-        return new HashMap<>();
-    }
-
-    public String getExecAuth() {
-
-        UserDetails userDetails =
-                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String teamName = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails.getUsername()).getTeam();
-
-        String authority = utilService.getAuthority(userDetails);
-
-        String statusAuth ;
-
-        if(authority.equals("ROLE_ADMIN") || authority.equals("ROLE_SUPERUSER"))
-            statusAuth = "Authorized";
-        else
-            statusAuth = "NotAuthorized";
-
-        return "{ \"status\": \""+statusAuth+"\" , " +
-                " \"companyinfo\": \"" + companyInfo + "\"," +
-                " \"teamname\": \"" + teamName + "\"," +
-                "\"username\":\""+userDetails.getUsername()+"\" }";
-    }
-
     public void getLogoutPage(HttpServletRequest request, HttpServletResponse response){
-
-        Authentication authentication = utilService.getAuthentication();
+        Authentication authentication = commonUtilsService.getAuthentication();
         if (authentication != null)
             new SecurityContextLogoutHandler().logout(request, response, authentication);
     }
 
-    public TeamOverview getActivityLogForTeamOverview(String forTeam) {
-        TeamOverview teamOverview = new TeamOverview();
+    public void shutdownContext(){
+        int tenantId = commonUtilsService.getTenantId(getUserName());
+        if(tenantId != DEFAULT_TENANT_ID)
+            return;
 
-        teamOverview.setActivityLogOverview(getActivityLogOverview(forTeam));
-        teamOverview.setTopicsPerTeamPerEnvOverview(getTopicsPerTeamEnvOverview());
-        return  teamOverview;
+        if(!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SHUTDOWN_KAFKAWIZE)){
+            log.info("Kafkawize Shutdown requested by {}", getUserName());
+            context.close();
+        }
     }
 
-    public ChartOverview getTopicsPerTeamEnvOverview(){
-        String teamName = null;
-        List<HashMap<String, String>> teamCountList = null;
-        UserDetails userDetails =
-                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(userDetails!=null) {
-            teamName = manageDatabase.getHandleDbRequests()
-                    .getUsersInfo(userDetails.getUsername()).getTeam();
-            teamCountList = manageDatabase.getHandleDbRequests()
-                    .selectAllTopicsForTeamGroupByEnv(teamName);
-        }
-
-        ChartOverview topicsPerEnvOverview = new ChartOverview();
-        DataContent dataContent = new DataContent();
-        List<Col> cols = new ArrayList<>();
-        Col col1 = new Col();
-        col1.setId("env");
-        col1.setLabel("Cluster");
-        col1.setType("string");
-//        col1.setP(new P());
-
-        cols.add(col1);
-
-        Col col2 = new Col();
-        col2.setId("topics");
-        col2.setLabel("topics");
-        col2.setType("number");
-//        col2.setP(new P());
-        cols.add(col2);
-
-        List<Row> rows = new ArrayList<>();
-        List<RowContent> rowContentList;
-
-        if(teamCountList != null)
-            for (HashMap<String, String> hashMap : teamCountList) {
-                Row row = new Row();
-                RowContent rowContent1 = new RowContent();
-                rowContent1.setV(hashMap.get("cluster"));
-
-                RowContent rowContent2 = new RowContent();
-                if(hashMap.containsKey("topicscount")) {
-                    rowContent2.setV(Integer.parseInt(hashMap.get("topicscount")));
-                    rowContent2.setF(Integer.parseInt(hashMap.get("topicscount")) +" Topics");
-                }
-                rowContentList = new ArrayList<>();
-                rowContentList.add(rowContent1);
-                rowContentList.add(rowContent2);
-                row.setC(rowContentList);
-                rows.add(row);
-            }
-
-        HAxis hAxis = new HAxis();
-        hAxis.setTitle("Clusters");
-
-        VAxis vAxis = new VAxis();
-        vAxis.setTitle("Topics");
-        Gridlines gridlines = new Gridlines();
-        gridlines.setCount(6);
-        vAxis.setGridlines(gridlines);
-
-        Options options = new Options();
-        options.setTitle("Total Topics per cluster (" + teamName + ")");
-        options.setIsStacked("true");
-        options.setFill(10);
-        options.setDisplayExactValues(true);
-        options.setHAxis(hAxis);
-        options.setVAxis(vAxis);
-        String[] colors = {"#2BB58A","#D8D72E","orange","red","brown", "black", "green"};
-        options.setColors(colors);
-
-        dataContent.setCols(cols);
-        dataContent.setRows(rows);
-        topicsPerEnvOverview.setData(dataContent);
-        topicsPerEnvOverview.setType("ColumnChart"); // PieChart
-        topicsPerEnvOverview.setDisplayed(true);
-        topicsPerEnvOverview.setOptions(options);
-
-        return topicsPerEnvOverview;
+    private Object getPrincipal(){
+        return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    public ChartOverview getActivityLogOverview(String forTeam){
-        int numberOfDays = 30;
-        List<HashMap<String, String>> activityCountList = null;
-        String teamName;
-        String title  = "Total requests per day";
-        if(forTeam != null && forTeam.equals("true")) {
-            UserDetails userDetails =
-                    (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            if(userDetails!=null) {
-                teamName = manageDatabase.getHandleDbRequests()
-                        .getUsersInfo(userDetails.getUsername()).getTeam();
-                activityCountList = manageDatabase.getHandleDbRequests()
-                        .selectActivityLogByTeam(teamName, numberOfDays);
-                title = title + " (" + teamName + ")";
-            }
+    public HashMap<String, String> getBasicInfo() {
+        HashMap<String, String> resultBasicInfo = new HashMap<>();
+        resultBasicInfo.put("contextPath", kwContextPath);
+
+        if(ssoEnabled.equals("true")) {
+            resultBasicInfo.put("ssoServerUrl", ssoServerLoginUrl);
         }
 
-        ChartOverview activityLogOverview = new ChartOverview();
-        DataContent dataContent = new DataContent();
+        return resultBasicInfo;
+    }
 
-        List<Row> rows = new ArrayList<>();
-        List<RowContent> rowContentList;
-        int totalReqs = 0, tmpActivityCount;
+    public void resetCache(String tenantName, String entityType, String operationType) {
+        int tenantId = 0;
+        try {
+            tenantId = manageDatabase.getHandleDbRequests().getTenants().stream()
+                    .filter(kwTenant -> kwTenant.getTenantName().equals(tenantName))
+                    .findFirst().get().getTenantId();
+        } catch (Exception exception) {
+            log.info("ignore");
+            return;
+        }
 
-        if(activityCountList != null)
-            for (HashMap<String, String> hashMap : activityCountList) {
-                Row row = new Row();
-                RowContent rowContent1 = new RowContent();
-                rowContent1.setV(hashMap.get("dateofactivity"));
-
-                RowContent rowContent2 = new RowContent();
-                if(hashMap.containsKey("activitycount")) {
-                    tmpActivityCount = Integer.parseInt(hashMap.get("activitycount"));
-                    totalReqs += tmpActivityCount;
-                    rowContent2.setV(tmpActivityCount);
-                    rowContent2.setF(tmpActivityCount +" requests");
-                }
-                rowContentList = new ArrayList<>();
-                rowContentList.add(rowContent1);
-                rowContentList.add(rowContent2);
-                row.setC(rowContentList);
-                rows.add(row);
-            }
-
-        List<Col> cols = new ArrayList<>();
-        Col col1 = new Col();
-        col1.setId("date");
-        col1.setLabel("Date");
-        col1.setType("string");
-//        col1.setP(new P());
-
-        cols.add(col1);
-
-        Col col2 = new Col();
-        col2.setId("requests");
-        col2.setLabel("requests");
-        col2.setType("number");
-//        col2.setP(new P());
-        cols.add(col2);
-
-        HAxis hAxis = new HAxis();
-        hAxis.setTitle("Date"+ " [Last " + numberOfDays +  " days ] : " + totalReqs + " requests");
-
-        VAxis vAxis = new VAxis();
-        vAxis.setTitle("Requests");
-        Gridlines gridlines = new Gridlines();
-        gridlines.setCount(6);
-        vAxis.setGridlines(gridlines);
-
-        Options options = new Options();
-        options.setTitle(title);
-        options.setIsStacked("true");
-        options.setFill(10);
-        options.setDisplayExactValues(true);
-        options.setHAxis(hAxis);
-        options.setVAxis(vAxis);
-        String[] colors = {"#2BB58A","#D8D72E","orange","red","brown", "black", "green"};
-        options.setColors(colors);
-
-        dataContent.setCols(cols);
-        dataContent.setRows(rows);
-        activityLogOverview.setData(dataContent);
-        activityLogOverview.setType("LineChart");
-        activityLogOverview.setDisplayed(true);
-        activityLogOverview.setOptions(options);
-
-        return activityLogOverview;
+        KwMetadataUpdates kwMetadataUpdates = KwMetadataUpdates.builder()
+                .tenantId(tenantId)
+                .entityType(entityType)
+                .operationType(operationType)
+                .createdTime(new Timestamp(System.currentTimeMillis())).build();
+        try {
+            CompletableFuture.runAsync(() -> {
+                commonUtilsService.updateMetadata(kwMetadataUpdates);
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+         log.error("Error from resetCache "+e.getMessage());
+        }
     }
 }

@@ -43,7 +43,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
             url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
-            $scope.statusauth = output.status;
+            $scope.dashboardDetails = output;
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
             $scope.userrole = output.userrole;
@@ -51,9 +51,8 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.notificationsSchemas = output.notificationsSchemas;
             $scope.notificationsUsers = output.notificationsUsers;
-            $scope.statusauthexectopics = output.statusauthexectopics;
-            $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-            $scope.alerttop = output.alertmessage;
+
+            $scope.laritstatus = output.larit;
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";
             }
@@ -62,6 +61,8 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 
             if($scope.userlogged != null)
                 $scope.loggedinuser = "true";
+
+            $scope.checkPendingApprovals();
         }).error(
             function(error)
             {
@@ -70,22 +71,62 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
         );
 	}
 
-        $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
 
-                $location.path('/');
-                $window.location.reload();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
+
+        $scope.logout = function() {
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
                 }
-            );
-        }
 
 	// We add the "time" query parameter to prevent IE
 	// from caching ajax results
@@ -94,28 +135,24 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 
         var serviceInput = {};
 
-        if(!$scope.getActivityLog.envName)
-             return;
-		
+        if($scope.resultPageSelected && $scope.resultPageSelected == pageNoSelected)
+            return;
+
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
-		serviceInput['env'] = $scope.getActivityLog.envName.name;
-		//alert("---"+$scope.getTopics.envName.value);
-//		if (!window.confirm("Are you sure, you would like to view the activity Log in Environment : " +
-//				$scope.getActivityLog.envName.name + " ?")) {
-//			return;
-//		}
+		serviceInput['env'] = $scope.getActivityLog.envId;
 		
 		$http({
 			method: "GET",
-			url: "activityLog",
+			url: "getActivityLogPerEnv",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'env' : $scope.getActivityLog.envName.name,
-                'pageNo' : pageNoSelected }
+            params: {'env' : $scope.getActivityLog.envId,
+                 'pageNo' : pageNoSelected,
+                 'currentPage' : $scope.resultPageSelected }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
 			if(output!=null && output.length>0){
                 $scope.resultPages = output[0].allPageNos;
-                $scope.resultPageSelected = pageNoSelected;
+                $scope.resultPageSelected = output[0].currentPage;
             }
 		}).error(
 			function(error) 
@@ -126,7 +163,40 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 			}
 		);
 		
-	};
+	}
+
+	$scope.sendMessageToAdmin = function(){
+
+            if(!$scope.contactFormSubject)
+                return;
+            if(!$scope.contactFormMessage)
+                return;
+            if($scope.contactFormSubject.trim().length==0)
+                return;
+            if($scope.contactFormMessage.trim().length==0)
+                return;
+
+            $http({
+                    method: "POST",
+                    url: "sendMessageToAdmin",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                    data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                }).success(function(output) {
+                    $scope.alert = "Message Sent.";
+                    swal({
+                         title: "",
+                         text: "Message sent.",
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+        }
 
 
 }

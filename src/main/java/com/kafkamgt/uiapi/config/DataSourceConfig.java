@@ -1,11 +1,9 @@
 package com.kafkamgt.uiapi.config;
 
-
 import com.kafkamgt.uiapi.helpers.db.rdbms.JdbcDataSourceCondition;
 import com.zaxxer.hikari.HikariDataSource;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.jpa.HibernatePersistenceProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +23,8 @@ import java.util.Properties;
 @Configuration
 @EntityScan
 @PropertySource(value= {"classpath:application.properties"})
+@Slf4j
 public class DataSourceConfig {
-
-    private static Logger LOG = LoggerFactory.getLogger(DataSourceConfig.class);
 
     @Autowired
     Environment environment;
@@ -35,8 +32,7 @@ public class DataSourceConfig {
     @Bean(name="dataSource")
     @Conditional(JdbcDataSourceCondition.class)
     public DataSource dataSource() throws SQLException {
-
-        LOG.info("Into Hikari datasource config.");
+        log.info("Into Hikari datasource config.");
         final HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(environment.getProperty("spring.datasource.driver.class"));
         dataSource.setJdbcUrl(environment.getProperty("spring.datasource.url"));
@@ -48,7 +44,8 @@ public class DataSourceConfig {
         dataSource.setLoginTimeout(60);
         dataSource.setMinimumIdle(100);
         dataSource.setMaximumPoolSize(Integer.parseInt(Objects.requireNonNull(environment.getProperty("spring.datasource.hikari.maxPoolSize"))));
-        LOG.info("Connecting to RDBMS datasource..");
+
+        log.info("Connecting to RDBMS datasource.");
         return dataSource;
     }
 
@@ -71,13 +68,12 @@ public class DataSourceConfig {
     @Bean(name="entityManagerFactory")
     @Conditional(JdbcDataSourceCondition.class)
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
-            //LOG.info("Into entityManagerFactoryBean config..");
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setJpaVendorAdapter(vendorAdaptor());
         try {
             entityManagerFactoryBean.setDataSource(dataSource());
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(e.getMessage() + e.getCause());
         }
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         entityManagerFactoryBean.setPackagesToScan(ENTITYMANAGER_PACKAGES_TO_SCAN);
@@ -97,6 +93,4 @@ public class DataSourceConfig {
 
         return properties;
     }
-
-
 }

@@ -16,33 +16,64 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
-	$scope.showSuccessToast = function() {
-                  var x = document.getElementById("successbar");
-                  x.className = "show";
-                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
-                }
+    	$scope.showSubmitFailed = function(title, text){
+		swal({
+			 title: "",
+			 text: "Request unsuccessful !!",
+			 timer: 2000,
+			 showConfirmButton: false
+			 });
+	     }
 
-        $scope.showAlertToast = function() {
+	     $scope.handleValidationErrors = function(error){
+	        if(error.errors != null && error.errors.length > 0){
+                    $scope.alert = error.errors[0].defaultMessage;
+                }else if(error.message != null){
+                    $scope.alert = error.message;
+                    }else if(error.result != null){
+                    $scope.alert = error.result;
+                    }
+                    else $scope.alert = "Unable to process the request.";
+
+                $scope.alertnote = $scope.alert;
+                $scope.showAlertToast();
+	     }
+
+	$scope.showAlertToast = function() {
                   var x = document.getElementById("alertbar");
                   x.className = "show";
-                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
                 }
 
-	$scope.rolelist = [ { label: 'USER', value: 'USER' }, { label: 'ADMIN', value: 'ADMIN' }	];
-
-        $scope.loadTeams = function() {
+	$scope.getRoles = function() {
             $http({
                 method: "GET",
-                url: "getAllTeams",
+                url: "getRoles",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
-                $scope.allTeams = output;
+                $scope.rolelist = output;
             }).error(
                 function(error)
                 {
                     $scope.alert = error;
                 }
             );
+        }
+
+
+        $scope.getTenants = function() {
+                $http({
+                    method: "GET",
+                          url: "getTenants",
+                          headers : { 'Content-Type' : 'application/json' }
+                      }).success(function(output) {
+                          $scope.allTenants = output;
+                      }).error(
+                          function(error)
+                          {
+                              $scope.alert = error;
+                          }
+                      );
         }
 
         $scope.loadTeamsSU = function() {
@@ -89,109 +120,262 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            if (!window.confirm("Are you sure, you would like to Change password?")) {
-                return;
-            }
-
-            $http({
-                method: "POST",
-                url: "chPwd",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'changePwd' : serviceInput },
-                data: {'changePwd' : serviceInput}
-            }).success(function(output) {
-                $scope.alert = "Password changed : "+output.result;
-                // $scope.showSuccessToast();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-
-                    $scope.alertnote = error;
-                    $scope.showAlertToast();
-                }
-            );
+            swal({
+            		title: "Are you sure?",
+            		text: "You would like to Change password?",
+            		type: "warning",
+            		showCancelButton: true,
+            		confirmButtonColor: "#DD6B55",
+            		confirmButtonText: "Yes, update it!",
+            		cancelButtonText: "No, cancel please!",
+            		closeOnConfirm: true,
+            		closeOnCancel: true
+            	}).then(function(isConfirm){
+            		if (isConfirm.dismiss != "cancel") {
+            			$http({
+                            method: "POST",
+                            url: "chPwd",
+                            headers : { 'Content-Type' : 'application/json' },
+                            params: {'changePwd' : serviceInput },
+                            data: {'changePwd' : serviceInput}
+                        }).success(function(output) {
+                            $scope.alert = "Password changed : "+output.result;
+                            if(output.result == 'success'){
+                                swal({
+                                     title: "",
+                                     text: "Password changed : "+output.result,
+                                     timer: 2000,
+                                     showConfirmButton: false
+                                 });
+                             }else $scope.showSubmitFailed('','');
+                        }).error(
+                            function(error)
+                            {
+                                $scope.handleValidationErrors(error);
+                            }
+                        );
+            		} else {
+            			return;
+            		}
+            	});
 
         };
 
-        $scope.deleteTeam = function(idval){
+        $scope.deleteTeam = function(idval, teamname){
 
-        if (!window.confirm("Are you sure, you would like to delete the team : "
-                                +  idval
-                                )) {
-                                return;
+        swal({
+        		title: "Are you sure?",
+        		text: "You would like to delete the team " + teamname + "? Note : Associated users are not deleted.",
+        		type: "warning",
+        		showCancelButton: true,
+        		confirmButtonColor: "#DD6B55",
+        		confirmButtonText: "Yes, delete it!",
+        		cancelButtonText: "No, cancel please!",
+        		closeOnConfirm: true,
+        		closeOnCancel: true
+        	}).then(function(isConfirm){
+        		if (isConfirm.dismiss != "cancel") {
+        			$http({
+                            method: "POST",
+                            url: "deleteTeamRequest",
+                            headers : { 'Content-Type' : 'application/json' },
+                            params: {'teamId' : idval },
+                            data: {'teamId' : idval}
+                        }).success(function(output) {
+
+                            $scope.alert = "Delete Team Request : "+output.result;
+                            if(output.result == 'success'){
+                                swal({
+                                     title: "",
+                                     text: "Delete Team Request : "+output.result,
+                                     timer: 2000,
+                                     showConfirmButton: false
+                                 });
+                             }else $scope.showSubmitFailed('','');
+                            $scope.loadTeamsSU();
+                        }).error(
+                            function(error)
+                            {
+                                $scope.handleValidationErrors(error);
                             }
+                        );
+        		} else {
+        			return;
+        		}
+        	});
 
-            $http({
-                    method: "POST",
-                    url: "deleteTeamRequest",
-                    headers : { 'Content-Type' : 'application/json' },
-                    params: {'teamId' : idval },
-                    data: {'teamId' : idval}
-                }).success(function(output) {
-
-                    $scope.alert = "Delete Team Request : "+output.result;
-                    // $scope.showSuccessToast();
-                    $scope.loadTeamsSU();
-                }).error(
-                    function(error)
-                    {
-                        $scope.alert = error;
-                        $scope.alertnote = error;
-                        $scope.showAlertToast();
-                    }
-                );
             }
 
     $scope.deleteUser = function(idval){
 
-        if (!window.confirm("Are you sure, you would like to delete the user : "
-                                +  idval
-                                )) {
-                                return;
-                            }
+        swal({
+        		title: "Are you sure?",
+        		text: "You would like to delete the user " + idval + "?",
+        		type: "warning",
+        		showCancelButton: true,
+        		confirmButtonColor: "#DD6B55",
+        		confirmButtonText: "Yes, delete it!",
+        		cancelButtonText: "No, cancel please!",
+        		closeOnConfirm: true,
+        		closeOnCancel: true
+        	}).then(function(isConfirm){
+        		if (isConfirm.dismiss != "cancel") {
+        			$http({
+                        method: "POST",
+                        url: "deleteUserRequest",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'userId' : idval },
+                        data: {'userId' : idval}
+                    }).success(function(output) {
+                        $scope.alert = "Delete User Request : "+output.result;
+                        if(output.result == 'success'){
+                            swal({
+                                 title: "",
+                                 text: "Delete User Request : "+output.result,
+                                 timer: 2000,
+                                 showConfirmButton: false
+                             });
+                         }else $scope.showSubmitFailed('','');
+                        $scope.showUsers(1);
+                    }).error(
+                        function(error)
+                        {
+                            $scope.handleValidationErrors(error);
+                        }
+                    );
+        		} else {
+        			return;
+        		}
+        	});
+    }
+
+    $scope.updateProfile = function() {
+        var serviceInput = {};
+
+        if(!$scope.myProfInfo.mailid)
+        {
+            $scope.alertnote = "Email id is mandatory.";
+            $scope.showAlertToast();
+            return;
+        }
+
+        if(!$scope.myProfInfo.fullname)
+        {
+            $scope.alertnote = "Full name id is mandatory.";
+            $scope.showAlertToast();
+            return;
+        }
+
+        serviceInput['username'] = $scope.myProfInfo.username;
+        serviceInput['fullname'] = $scope.myProfInfo.fullname;
+        serviceInput['mailid'] = $scope.myProfInfo.mailid;
 
         $http({
                 method: "POST",
-                url: "deleteUserRequest",
+                url: "updateProfile",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'userId' : idval },
-                data: {'userId' : idval}
+                params: {'updateProfile' : serviceInput },
+                data: serviceInput
             }).success(function(output) {
-
-                $scope.alert = "Delete User Request : "+output.result;
-                // $scope.showSuccessToast();
-                $scope.showUsers();
+                $scope.alert = "Update User Request : "+output.result;
+                if(output.result == 'success'){
+                        swal({
+                             title: "",
+                             text: "Update User Request : "+output.result,
+                             timer: 2000,
+                             showConfirmButton: false
+                         });
+                     }else $scope.showSubmitFailed('','');
             }).error(
                 function(error)
                 {
-                    $scope.alert = error;
-                    $scope.alertnote = error;
-                    $scope.showAlertToast();
+                    $scope.handleValidationErrors(error);
                 }
             );
+
     }
 
 	$scope.addNewUser = function() {
 
             var serviceInput = {};
 
-            if(!$scope.addNewUser.pwd || ($scope.addNewUser.pwd!=$scope.addNewUser.reppwd))
+            if(!$scope.addNewUser.username && $scope.addNewUser.username.indexOf(" "))
+            {
+                $scope.alertnote = "Please enter a valid username with no spaces.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.username.length < 6)
+            {
+                $scope.alertnote = "Username should be atleast 6 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.fullname)
+            {
+                $scope.alertnote = "Please enter Full Name.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.fullname.length < 6)
+            {
+                $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.pwd)
+            {
+                $scope.alertnote = "Please enter a password.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.pwd.length < 8)
+            {
+                $scope.alertnote = "Password should be atleast 8 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.pwd != $scope.addNewUser.reppwd)
             {
                 $scope.alertnote = "Passwords are not equal.";
                 $scope.showAlertToast();
                 return;
             }
 
-            if($scope.addNewUser.pwd.length < 6)
+            if(!$scope.addNewUser.emailid)
             {
-                $scope.alertnote = "Password should be atleast 6 characters.";
+                $scope.alertnote = "Please enter a valid email id.";
                 $scope.showAlertToast();
                 return;
             }
 
+            else if($scope.addNewUser.emailid.length < 7)
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
+                return;
+            }
+            else if(!$scope.addNewUser.emailid.includes("@"))
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
+                return;
+            }
 
-            if(!$scope.addNewUser.role.value)
+            if(!$scope.addNewUser.team)
+            {
+                $scope.alertnote = "Please select a team.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.role)
             {
                 $scope.alertnote = "Please select a role.";
                 $scope.showAlertToast();
@@ -200,46 +384,205 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
-            serviceInput['pwd'] = $scope.addNewUser.pwd;
+            serviceInput['userPassword'] = $scope.addNewUser.pwd;
             serviceInput['team'] = $scope.addNewUser.team.teamname;
-            serviceInput['role'] = $scope.addNewUser.role.value;
-            serviceInput['mailid'] = '';
+            serviceInput['role'] = $scope.addNewUser.role;
+            serviceInput['mailid'] = $scope.addNewUser.emailid;
 
-            if (!window.confirm("Are you sure, you would like to add user : "
-                +  $scope.addNewUser.username + ": " +
-                "\nTeam : " + $scope.addNewUser.team.teamname +
-                "\nRole : " + $scope.addNewUser.role.value
-                )) {
+            $scope.addUserHttpCall(serviceInput);
+        };
+
+        $scope.addNewSaasUser = function() {
+
+            var serviceInput = {};
+
+            if(!$scope.addNewUser.username)
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
                 return;
             }
 
-            $http({
-                method: "POST",
-                url: "addNewUser",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'addNewUser' : serviceInput },
-                data: serviceInput
-            }).success(function(output) {
-                $scope.alert = "New User Request : "+output.result;
-                // $scope.showSuccessToast();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                    $scope.alertnote = error;
-                    $scope.showAlertToast();
-                }
-            );
+            else if($scope.addNewUser.username.length < 7)
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
+                return;
+            }
+            else if(!$scope.addNewUser.username.includes("@"))
+            {
+                $scope.alertnote = "Please enter a valid email id.";
+                $scope.showAlertToast();
+                return;
+            }
 
+            if(!$scope.addNewUser.fullname)
+            {
+                $scope.alertnote = "Please enter Full Name.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.fullname.length < 6)
+            {
+                $scope.alertnote = "Please enter Full Name atleast 6 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.pwd)
+            {
+                $scope.alertnote = "Please enter a password.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.pwd.length < 8)
+            {
+                $scope.alertnote = "Password should be atleast 8 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.addNewUser.pwd != $scope.addNewUser.reppwd)
+            {
+                $scope.alertnote = "Passwords are not equal.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.team)
+            {
+                $scope.alertnote = "Please select a team.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if(!$scope.addNewUser.role)
+            {
+                $scope.alertnote = "Please select a role.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            serviceInput['username'] = $scope.addNewUser.username;
+            serviceInput['fullname'] = $scope.addNewUser.fullname;
+            serviceInput['userPassword'] = $scope.addNewUser.pwd;
+            serviceInput['team'] = $scope.addNewUser.team.teamname;
+            serviceInput['role'] = $scope.addNewUser.role;
+            serviceInput['mailid'] = $scope.addNewUser.username;
+
+            $scope.addUserHttpCall(serviceInput);
         };
 
+        $scope.addUserHttpCall = function(serviceInput){
+            $http({
+                    method: "POST",
+                    url: "addNewUser",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'addNewUser' : serviceInput },
+                    data: serviceInput
+                }).success(function(output) {
+                    $scope.alert = "New User Request : "+output.result;
+                    $scope.addNewUser.username = "";
+                    $scope.addNewUser.fullname = "";
+                    $scope.addNewUser.pwd = "";
+                    $scope.addNewUser.reppwd = "";
+                    $scope.addNewUser.emailid = "";
+                    if(output.result == 'success'){
+                            swal({
+                                 title: "",
+                                 text: "New User Request : "+output.result,
+                                 timer: 2000,
+                                 showConfirmButton: true
+                             }).then(function(isConfirm){
+                                   $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/users";
+                             });
+                         }else $scope.showSubmitFailed('','');
+                }).error(
+                    function(error)
+                    {
+                        $scope.handleValidationErrors(error);
+                    }
+                );
+        }
+
+        $scope.addNewUserLdap = function() {
+
+                    var serviceInput = {};
+
+                    if(!$scope.addNewUser.emailid)
+                    {
+                        $scope.alertnote = "Please enter a valid email id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+                    else if($scope.addNewUser.emailid.length < 7)
+                    {
+                        $scope.alertnote = "Please enter a valid email id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+                    else if(!$scope.addNewUser.emailid.includes("@"))
+                    {
+                        $scope.alertnote = "Please enter a valid email id.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    if($scope.dashboardDetails.adAuthRoleEnabled == 'true')
+                        $scope.addNewUser.role = 'NA';
+
+                    if(!$scope.addNewUser.role)
+                    {
+                        $scope.alertnote = "Please select a role.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    serviceInput['username'] = $scope.addNewUser.username;
+                    serviceInput['fullname'] = $scope.addNewUser.fullname;
+                    serviceInput['team'] = $scope.addNewUser.team.teamname;
+                    serviceInput['role'] = $scope.addNewUser.role;
+                    serviceInput['mailid'] = $scope.addNewUser.emailid;
+                    serviceInput['userPassword'] = '';
+
+                    $http({
+                        method: "POST",
+                        url: "addNewUser",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'addNewUser' : serviceInput },
+                        data: serviceInput
+                    }).success(function(output) {
+                        $scope.alert = "New User Request : "+output.result;
+                        if(output.result == 'success'){
+                            $scope.addNewUser.username = "";
+                            $scope.addNewUser.fullname = "";
+                            $scope.addNewUser.emailid = "";
+                            swal({
+                                 title: "",
+                                 text: "New User Request : "+output.result,
+                                 timer: 2000,
+                                 showConfirmButton: true
+                             }).then(function(isConfirm){
+                                  $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/users";
+                            });
+                         }else $scope.showSubmitFailed('','');
+                    }).error(
+                        function(error)
+                        {
+                            $scope.handleValidationErrors(error);
+                        }
+                    );
+
+                };
 
         $scope.cancelRequest = function() {
-                    $window.location.href = $window.location.origin + "/kafkawize/teams";
+                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/teams";
                 }
 
         $scope.cancelUserRequest = function() {
-                            $window.location.href = $window.location.origin + "/kafkawize/users";
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/users";
                         }
 
         $scope.addNewTeam = function() {
@@ -248,11 +591,35 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
                 if(!$scope.addNewTeam.teamname || $scope.addNewTeam.teamname.length==0)
                 {
-                    $scope.alertnote = "Please fill in Team mail id.";
+                    $scope.alertnote = "Please fill in Team Name.";
                     $scope.showAlertToast();
 
                     return;
                 }
+
+                if(!$scope.addNewTeam.teamname || $scope.addNewTeam.teamname.length < 3)
+                {
+                    $scope.alertnote = "Please fill in a valid Team Name.";
+                    $scope.showAlertToast();
+
+                    return;
+                }
+
+                if(!$scope.addNewTeam.teammail || $scope.addNewTeam.teammail.length==0)
+                {
+                    $scope.alertnote = "Please fill in Team Mail.";
+                    $scope.showAlertToast();
+
+                    return;
+                }
+
+                if(!$scope.addNewTeam.teamphone || $scope.addNewTeam.teamname.teamphone==0)
+                    {
+                        $scope.alertnote = "Please fill in Team phone.";
+                        $scope.showAlertToast();
+
+                        return;
+                    }
 
                 if(!$scope.addNewTeam.contactperson || $scope.addNewTeam.contactperson.length==0)
                 {
@@ -262,69 +629,131 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                serviceInput['teamname'] = $scope.addNewTeam.teamname;
+
+                serviceInput['teamname'] = $scope.addNewTeam.teamname.trim();
                 serviceInput['teammail'] = $scope.addNewTeam.teammail;
                 serviceInput['teamphone'] = $scope.addNewTeam.teamphone;
-                serviceInput['contactperson'] = $scope.addNewTeam.contactperson;
+//                serviceInput['tenantId'] = $scope.addNewTeam.tenant;
+                serviceInput['contactperson'] = $scope.addNewTeam.contactperson.trim();
                 serviceInput['app'] = "";
-
-                if (!window.confirm("Are you sure, you would like to add team : "
-                    +  $scope.addNewTeam.teamname + ": " +
-                    "\nTeammail : " + $scope.addNewTeam.teammail +
-                    "\nPhone : " + $scope.addNewTeam.teamphone
-                    )) {
-                    return;
-                }
+                serviceInput['envList'] = $scope.updatedEnvArray;
 
                 $http({
                     method: "POST",
                     url: "addNewTeam",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'addNewTeam' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "New User Team : "+output.result;
-                    // $scope.showSuccessToast();
+                    $scope.alert = "New Team added : "+output.result;
+                    if(output.result == 'success'){
+                        swal({
+                             title: "",
+                             text: "New Team added : "+output.result,
+                             timer: 2000,
+                             showConfirmButton: true
+                         }).then(function(isConfirm){
+                             $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/teams";
+                       });
+                     }else $scope.showSubmitFailed('','');
+                    $scope.addNewTeam.teamname = "";
+                    $scope.addNewTeam.teammail = "";
+                    $scope.addNewTeam.contactperson = "";
+                    $scope.addNewTeam.teamphone = "";
                 }).error(
                     function(error)
                     {
-                        $scope.alert = error;
-                        $scope.alertnote = error;
-                        $scope.showAlertToast();
+                        $scope.handleValidationErrors(error);
                     }
                 );
 
             };
 
-        $scope.showUsers = function(pageNo) {
-                    var sPageURL = window.location.search.substring(1);
-                    var sURLVariables = sPageURL.split('&');
-                    var teamSel="";
-                    for (var i = 0; i < sURLVariables.length; i++)
-                        {
-                            var sParameterName = sURLVariables[i].split('=');
-                            if (sParameterName[0] == "team")
-                            {
-                                teamSel = sParameterName[1];
-                            }
-                        }
+        $scope.searchUsers = function(){
+            if($scope.usersearch)
+            {
+               $scope.usersearch = $scope.usersearch.trim();
+            }
 
-                    $http({
-                        method: "GET",
-                        url: "showUserList",
-                        headers : { 'Content-Type' : 'application/json' },
-                        params: {'teamName' : teamSel , 'pageNo' : pageNo},
-                    }).success(function(output) {
-                        $scope.userList = output;
-                        $scope.resultPages = output[0].allPageNos;
-                        $scope.resultPageSelected = pageNo;
-                    }).error(
-                        function(error)
+            $scope.showUsers(1);
+        }
+
+        $scope.onChangeTeamVar = "false";
+
+        $scope.onChangeTeam = function(){
+            $scope.showUsers(1);
+            $scope.onChangeTeamVar = "true";
+        }
+
+        $scope.showUsers = function(pageNo) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+
+            var teamSelectedFromDropDown = $scope.teamsearch;
+            var teamSel="";
+            if(!teamSelectedFromDropDown && teamSelectedFromDropDown != "")
+            {
+                for (var i = 0; i < sURLVariables.length; i++)
+                    {
+                        var sParameterName = sURLVariables[i].split('=');
+                        if (sParameterName[0] == "team")
                         {
-                            $scope.alert = error;
+                            teamSel = sParameterName[1];
                         }
-                    );
+                    }
+            }else {
+                teamSel = teamSelectedFromDropDown;
+            }
+
+            if($scope.onChangeTeamVar == "true")
+            {
+                teamSel = teamSelectedFromDropDown;
+            }
+
+            if(teamSel == "null" || teamSel == null || !teamSel)
+                teamSel = "";
+
+            $http({
+                method: "GET",
+                url: "showUserList",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'teamName' : decodeURI(teamSel) , 'pageNo' : pageNo, 'searchUserParam' : $scope.usersearch},
+            }).success(function(output) {
+                $scope.userList = output;
+                if(output[0] != null){
+                    $scope.resultPages = output[0].allPageNos;
+                    $scope.resultPageSelected = pageNo;
                 }
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
+
+     $scope.updatedEnvArray = [];
+     $scope.onSelectEnvs = function(envId) {
+        if($scope.updatedEnvArray.includes(envId))
+            $scope.updatedEnvArray.splice($scope.updatedEnvArray.indexOf(envId), 1);
+        else
+            $scope.updatedEnvArray.push(envId);
+     }
+
+    $scope.getRequestTopicsEnvs = function() {
+
+            $http({
+                method: "GET",
+                url: "getEnvsBaseCluster",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.allenvs = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
 
 
 	$scope.refreshPage = function(){
@@ -337,7 +766,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 url: "getAuth",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
-                $scope.statusauth = output.status;
+                $scope.dashboardDetails = output;
                 $scope.userlogged = output.username;
                 $scope.teamname = output.teamname;
                 $scope.userrole = output.userrole;
@@ -345,9 +774,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 $scope.notificationsAcls = output.notificationsAcls;
                 $scope.notificationsSchemas = output.notificationsSchemas;
                 $scope.notificationsUsers = output.notificationsUsers;
-                $scope.statusauthexectopics = output.statusauthexectopics;
-                $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-                $scope.alerttop = output.alertmessage;
+
                 if(output.companyinfo == null){
                     $scope.companyinfo = "Company not defined!!";
                 }
@@ -356,6 +783,8 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
                 if($scope.userlogged != null)
                     $scope.loggedinuser = "true";
+
+                $scope.checkPendingApprovals();
             }).error(
                 function(error)
                 {
@@ -363,24 +792,95 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 }
             );
         }
+
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
+
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
 
         $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
-
-                $location.path('/');
-                $window.location.reload();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
                 }
-            );
-        }
 
+        $scope.sendMessageToAdmin = function(){
 
+                if(!$scope.contactFormSubject)
+                    return;
+                if(!$scope.contactFormMessage)
+                    return;
+                if($scope.contactFormSubject.trim().length==0)
+                    return;
+                if($scope.contactFormMessage.trim().length==0)
+                    return;
+
+                $http({
+                        method: "POST",
+                        url: "sendMessageToAdmin",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                        data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                    }).success(function(output) {
+                        $scope.alert = "Message Sent.";
+                        swal({
+                             title: "",
+                             text: "Message sent.",
+                             timer: 2000,
+                             showConfirmButton: false
+                         });
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+            }
 }
 );

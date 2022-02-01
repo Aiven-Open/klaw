@@ -8,18 +8,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YQB8J8J690');
+</script>
+
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
 	<title>Approve Acls | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
-	<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
+	<!--
+<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
 	<link rel="stylesheet" type="text/css"
 		  href="assets/plugins/datatables.net-bs4/css/responsive.dataTables.min.css">
+		  -->
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
 	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
+	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
@@ -56,7 +69,12 @@
 			<!-- ============================================================== -->
 			<!-- Logo -->
 			<!-- ============================================================== -->
-
+			<div class="navbar-header">
+				<a class="navbar-brand" href="index">
+	<h4 style="color:white;">{{ companyinfo }}</h4>
+</a>
+				<!-- <a href="index"><img src="assets/images/clients/logo.jpg" width="100%" /></a> -->
+			</div>
 			<!-- ============================================================== -->
 			<!-- End Logo -->
 			<!-- ============================================================== -->
@@ -65,12 +83,13 @@
 				<!-- toggle and nav items -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
-					<!-- This is  -->
 
 					<!-- ============================================================== -->
-					<!-- Search -->
-					<!-- ============================================================== -->
 					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
+
+					<!-- ============================================================== -->
+					<!-- End Messages -->
+					<!-- ============================================================== -->
 				</ul>
 				<!-- ============================================================== -->
 				<!-- User profile and search -->
@@ -79,9 +98,13 @@
 					<!-- ============================================================== -->
 					<li class="nav-item d-none d-md-block search-box"> <a
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
-							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+							href="requestTopics"><i class="mdi mdi-plus"></i></a>
 					</li>
-					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
+					</li>
+					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
 								class="mdi mdi-email"></i>
@@ -113,11 +136,29 @@
 											</div>
 										</a>
 										<a href="execSchemas" class="border-bottom d-block text-decoration-none py-2 px-3">
-											<div class="btn btn-success btn-circle mr-2"><i class="ti-pencil-alt"></i>
+											<div class="btn btn-info btn-circle mr-2"><i class="ti-pencil-alt"></i>
 											</div>
 											<div class="mail-contnet d-inline-block align-middle">
 												<h5 class="my-1">Schema Requests</h5> <span
 													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsSchemas }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execConnectors" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-warning btn-circle mr-2"><i class="ti-vector"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">KafkaConnector Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ dashboardDetails.notificationsConnectors }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execUsers" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-primary btn-circle mr-2"><i class="ti-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">New User Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsUsers }}  requests</span>
 
 											</div>
 										</a>
@@ -127,9 +168,7 @@
 							</ul>
 						</div>
 					</li>
-					<!-- ============================================================== -->
-					<!-- End Messages -->
-					<!-- ============================================================== -->
+
 					<!-- ============================================================== -->
 					<!-- Profile -->
 					<!-- ============================================================== -->
@@ -153,7 +192,8 @@
 								</li>
 								<li role="separator" class="divider"></li>
 								<li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
-								<li><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
+                                 <li><a href="tenantInfo"><i class="ti-package"></i> My Tenant Info</a></li>
+								<li ng-show="dashboardDetails.authenticationType=='db'"><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
 								<li role="separator" class="divider"></li>
 								<li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
 							</ul>
@@ -162,12 +202,93 @@
 					<!-- ============================================================== -->
 					<!-- Language -->
 					<!-- ============================================================== -->
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="mdi mdi-help-circle"></i></a>
-						<div class="dropdown-menu dropdown-menu-right scale-up">
-							<a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">Help</a>  </div>
+					<li class="nav-item dropdown mega-dropdown">
+						<a
+								class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+								class="mdi mdi-help-circle"></i></a>
+						<div class="dropdown-menu scale-up-left">
+							<ul class="mega-dropdown-menu row">
+								<li class="col-lg-6">
+									<h4 class="mb-3">Contact Administrator</h4>
+									<!-- Contact -->
+									<form>
+										<div class="form-group">
+											<input type="text" class="form-control" ng-model="contactFormSubject" placeholder="Enter Subject">
+										</div>
+										<div class="form-group">
+											<textarea class="form-control" ng-model="contactFormMessage" rows="3" placeholder="Message"></textarea>
+										</div>
+										<button type="button" ng-click="sendMessageToAdmin();" class="btn btn-info">Submit</button>
+									</form>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Help</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="docs">Documentation</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">ReadTheDocs</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blinds"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="{{ dashboardDetails.supportlink }}">Raise a git issue</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-hexagon"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="helpwizard">Starting Wizard</a></td>
+												</tr>
+											</table>
+										</li>
+									</ul>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Shortcuts</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="requestTopics">Request Topic</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="envs">Environments</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="users">Users</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="teams">Teams</a></td>
+												</tr>
+											</table>
+										</li>
+
+									</ul>
+								</li>
+							</ul>
+						</div>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-lg-0" style="width:200px;color:black;">
@@ -176,8 +297,8 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:#1e88e5;border:0;">
-										LoggedIn: {{userlogged}}</button>
+											id="userbackground">
+										{{userlogged}}</button>
 								</li>
 							</td>
 
@@ -186,7 +307,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:#1e88e5;border:0;">
+											id="userbackground">
 										{{teamname}} | {{userrole}}</button>
 
 								</li>
@@ -199,9 +320,7 @@
 			</div>
 		</nav>
 	</header>
-	<!-- ============================================================== -->
-	<!-- End Topbar header -->
-	<!-- ============================================================== -->
+
 	<!-- ============================================================== -->
 	<!-- Left Sidebar - style you can find in sidebar.scss  -->
 	<!-- ============================================================== -->
@@ -217,28 +336,36 @@
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="index">Home</a></li>
 							<li><a href="activityLog">Activity Log</a></li>
-							<li><a href="serverConfig">Server Configuration</a></li>
+							<li><a href="analytics">Analytics</a></li>
+							<li><a href="serverConfig">Settings</a></li>
 						</ul>
 					</li>
-					<li>
+					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
 						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li class="two-column">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
+              					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Kafka Connect</span></a>
+					</li>
+					<li class="two-column" ng-show="dashboardDetails.requestItems=='Authorized'">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestSchema">Request Schema</a></li>
+					<li><a href="requestConnector">Request Connector</a></li>
+
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
+							<li><a href="mySchemaRequests">My Schema Requests</a></li>
+					<li><a href="myConnectorRequests">My Connector Requests</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
 					<li class="two-column">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Environments</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="envs">Kafka</a></li>
-							<li><a href="envs">Schema Registry</a></li>
+							<li><a href="envs">Environments</a></li>
+							<li><a href="clusters">Clusters</a></li>
+							<li ng-show="dashboardDetails.showAddDeleteTenants == 'Authorized'" ><a href="tenants">Tenants</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -251,23 +378,44 @@
 							<li><a href="teams">Teams</a></li>
 						</ul>
 					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column active" ng-show="statusauthexectopics=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
+					<li class="two-column" ng-show="dashboardDetails.canUpdatePermissions=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-account-key"></i><span class="hide-menu">Roles - Permissions</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
+							<li><a href="roles">Roles</a></li>
+							<li><a href="permissions">Permissions</a></li>
 						</ul>
 					</li>
-					<li>
-						<a class="has-arrow " href="proFeatures" aria-expanded="false"><i class="mdi mdi-flash-outline"></i><span class="hide-menu">Pro Features</span></a>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li class="two-column" ng-show="dashboardDetails.syncTopicsAcls == 'Authorized' || dashboardDetails.syncBackTopics == 'Authorized' || dashboardDetails.syncConnectors == 'Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Synchronize</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeTopics">Topics from cluster</a></li>
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeAcls">Acls from cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackTopics == 'Authorized'"><a href="syncBackTopics">Topics to cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackAcls == 'Authorized'"><a href="syncBackAcls">Acls to cluster</a></li>
+							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li class="active" ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Approve</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
+					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
+							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+						</ul>
 					</li>
 
 				</ul>
 			</nav>
 			<!-- End Sidebar navigation -->
+		</div>
+		<div class="notificationbar" ng-show="dashboardDetails.broadcastText != ''">
+			<marquee>{{ dashboardDetails.broadcastText }}</marquee>
 		</div>
 		<!-- End Sidebar scroll-->
 	</aside>
@@ -276,12 +424,12 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid">
+		<div class="container-fluid" ng-init="getMyAclRequests(1, false);getRequestStatuses();">
 			<div class="row page-titles">
 			</div>
 
 
-			<div class="row" ng-show="statusauthexectopics!='Authorized'">
+			<div class="row" ng-show="dashboardDetails.approveDeclineSubscriptions!='Authorized'">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
@@ -292,36 +440,17 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="resultPages == null && alerttop != null && alerttop != ''" ng-init="">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ alerttop }}</p>
-					</div>
-				</div>
-			</div>
-
-			<!-- Row -->
-
 			<div class="row" ng-show="resultPages == null && alert != null && alert != ''" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
+						<div ng-show="alert.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
+						<div ng-show="alert.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
 						<p class="ribbon-content">{{ alert }}</p>
 					</div>
 				</div>
 			</div>
 
 			<!-- Row -->
-
-			<div class="row" ng-show="resultPages == null && errorMessage != null && errorMessage != ''" ng-init="">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ errorMessage }}</p>
-					</div>
-				</div>
-			</div>
 
 			<div class="row" ng-show="aclRequests.length == 0">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
@@ -332,70 +461,139 @@
 				</div>
 			</div>
 
-			<div align="center" ng-show="aclRequests.length >0" ng-init="getMyAclRequests()">
+			<div class="row" ng-show="showDeclinePanel == 'true'">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="card">
+						<div class="card-body">
+							<h4>Submit Reason to decline Acl request</h4>
+							<input type="text" ng-model="reasonForRejection" class="form-control">
+							<button type="button" ng-click="declineWithReason()"
+									class="btn waves-effect waves-light btn-rounded btn-sm btn-danger">Decline</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+			<table width="100%">
+				<tr>
+					<td align="left" width="80%">
+						<h4 class="card-title">Subscription Approvals</h4></td>
+					<td align="right" width="20%">
+						<div class="form-group has-success">
+							<label class="text-success">Filter on Status</label>
+							<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
+									ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
+
+							</select>
+						</div>
+					</td>
+				</tr>
+			</table>
+
+			<hr size="1" color="black">
+
+			<div align="center" ng-show="aclRequests.length >0 && dashboardDetails.approveDeclineSubscriptions=='Authorized'">
 
 				<div ng-repeat="aclRequest in aclRequests">
 
-					<div class="row" ng-show="aclRequest[0].topicname != null">
+					<div class="row" ng-show="aclRequest.topicname != null">
 
-						<div class="col-md-12" ng-show="aclRequest[0].topicname != null">
+						<div class="col-md-12" ng-show="aclRequest.topicname != null">
 							<div class="card">
 								<div class="card-body">
 									<div>
 										<table width="100%">
 											<tr>
-												<td align="left"><h3 class="card-title">Topic : {{ aclRequest[0].topicname }}</h3></td>
-												<td align="right"><button type="button" ng-click="execAclRequest(aclRequest[0].req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
-												</button>
-													<button type="button" ng-click="execAclRequestDecline(aclRequest[0].req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-													</button></td>
+												<td align="left">
+													<h3 ng-show="aclRequest.aclPatternType == 'LITERAL'" class="card-title">Topic : <a href="topicOverview?topicname={{aclRequest.topicname}}">{{ aclRequest.topicname }}</a></h3>
+
+													<h3 ng-show="aclRequest.aclPatternType == 'PREFIXED'" class="card-title">Topic : <a href="topicOverview?topicname={{aclRequest.topicname}}">{{ aclRequest.topicname }}</a> (PREFIXED)</h3>
+												</td>
+												<td align="right" ng-show="aclRequest.aclstatus == 'created'">
+													<button type="button" ng-click="execAclRequest(aclRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
+													</button>
+													<button type="button" ng-click="execAclRequestDecline(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
+													</button>
+												</td>
 											</tr>
 										</table>
 									</div>
-									<div class="progress">
-										<div class="progress-bar bg-warning" role="progressbar"
-											 style="width: 100%; height: 2px;" aria-valuenow="25" aria-valuemin="0"
-											 aria-valuemax="100"></div>
-									</div>
+									<hr size="1" color="black">
 									<div class="d-flex flex-row">
 
-										<div ng-show="aclRequest[0].topictype == 'Producer'" style="width:10%" class="p-2 pl-0 border-right">
+										<div ng-show="aclRequest.topictype == 'Producer'" style="width:15%" class="p-2 pl-0 border-right">
 											<h6 class="text-primary">AclType</h6><b>
-											<span class="badge badge-info">{{ aclRequest[0].topictype }}</span></b>
+											<span class="badge badge-info">{{ aclRequest.topictype }}</span></b>
 										</div>
 
-										<div ng-show="aclRequest[0].topictype == 'Consumer'" style="width:10%" class="p-2 pl-0 border-right">
+										<div ng-show="aclRequest.topictype == 'Consumer'" style="width:15%" class="p-2 pl-0 border-right">
 											<h6 class="text-primary">AclType</h6><b>
-											<span class="badge badge-primary">{{ aclRequest[0].topictype }}</span></b>
+											<span class="badge badge-primary">{{ aclRequest.topictype }}</span></b>
 										</div>
 
 
-										<div class="p-2 border-right" style="width:10%">
+										<div class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Cluster</h6><b>
-											<span class="badge badge-warning">{{ aclRequest[0].environment }}</span>
+											<span class="badge badge-warning">{{ aclRequest.environmentName }}</span>
 										</b>
 										</div>
-										<div  style="width:10%" class="p-2 border-right" ng-show="aclRequest[0].topictype == 'Consumer'">
-											<h6 class="text-primary">Consumer Group</h6><b>{{ aclRequest[0].consumergroup }}</b>
+										<div  style="width:20%" class="p-2 border-right" ng-show="aclRequest.topictype == 'Consumer'">
+											<h6 class="text-primary">Consumer Group</h6><b>{{ aclRequest.consumergroup }}</b>
 										</div>
-										<div ng-show="aclRequest[0].acl_ip != null" class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">IP Address</h6><b>{{ aclRequest[0].acl_ip }}</b>
+										<div ng-show="aclRequest.acl_ip != null" class="p-2 border-right" style="width:15%">
+											<h6 class="text-primary">IP Address</h6><b>{{ aclRequest.acl_ip }}</b>
 										</div>
-										<div ng-show="aclRequest[0].acl_ssl != null" class="p-2 border-right" style="width:15%">
-											<h6 class="text-primary">Principle</h6><b>{{ aclRequest[0].acl_ssl }}</b>
+										<div ng-show="aclRequest.acl_ssl != null" class="p-2 border-right" style="width:30%">
+											<h6 class="text-primary">Principle</h6><b>{{ aclRequest.acl_ssl }}</b>
+										</div>
+
+									</div>
+									<br>
+									<div class="d-flex flex-row">
+										<div class="p-2 border-right" style="width:15%">
+											<h6 class="text-primary">Requestor</h6><b>{{ aclRequest.username }}</b>
 										</div>
 										<div class="p-2 border-right" style="width:15%">
-											<h6 class="text-primary">Requestor</h6><b>{{ aclRequest[0].username }}</b>
+											<h6 class="text-primary">Team</h6><b>{{ aclRequest.requestingteam }}</b>
+										</div>
+										<div class="p-2 border-right" ng-show="aclRequest.aclType == 'Create'" style="width:20%">
+											<h6 class="text-primary">Request Type</h6><b>
+											<span class="badge badge-info">{{ aclRequest.aclType }} Acl</span></b>
+										</div>
+										<div class="p-2 border-right" ng-show="aclRequest.aclType == 'Delete'" style="width:20%">
+											<h6 class="text-primary">Request Type</h6><b>
+											<span class="badge badge-danger">{{ aclRequest.aclType }} Acl</span></b>
 										</div>
 										<div class="p-2 border-right" style="width:15%">
-											<h6 class="text-primary">Team</h6><b>{{ aclRequest[0].requestingteam }}</b>
-										</div>
-										<div class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">Request Type</h6><b>{{ aclRequest[0].aclType }} Acl</b>
+											<h6 class="text-primary">Date Requested</h6><b>{{ aclRequest.requesttimestring }}</b>
 										</div>
 										<div class="p-2" style="width:15%">
-											<h6 class="text-primary">Date Requested</h6><b>{{ aclRequest[0].requesttimestring }}</b>
+											<h6 class="text-primary">Topic Pattern</h6><b>{{ aclRequest.aclPatternType }}</b>
 										</div>
+										<div ng-show="aclRequest.transactionalId != null" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary">Transactional ID</h6><b>{{ aclRequest.transactionalId }}</b>
+										</div>
+									</div>
+									<br>
+									<div class="d-flex flex-row">
+										<div class="p-2"  style="width:75%">
+											<h6 class="text-primary">Remarks</h6><b>{{ aclRequest.remarks }}</b>
+										</div>
+										<div ng-show="aclRequest.aclstatus != 'created'" class="p-2 border-left" style="width:10%">
+											<h6 class="text-primary">Approver</h6><b>
+											<span class="badge badge-success">{{ aclRequest.approver }}</span></b>
+										</div>
+
+										<div ng-show="aclRequest.aclstatus == 'created'" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary">Status</h6><b>
+											<span class="badge badge-success">{{ aclRequest.aclstatus }}</span></b>
+										</div>
+										<div ng-show="aclRequest.aclstatus != 'created'" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary">Status</h6><b>
+											<span class="badge badge-info">{{ aclRequest.aclstatus }}</span></b>
+										</div>
+
 									</div>
 
 								</div>
@@ -407,33 +605,33 @@
 
 				</div>
 
+				<div class="dataTables_paginate paging_simple_numbers"  ng-show="aclRequests.length>0">
+					<ul class="pagination">
+						<li class="paginate_button page-item active" disabled>
+							<a href="#" class="page-link">Pages</a>
+						</li>
+						<li class="paginate_button page-item" ng-repeat="allPagesAcl in resultPagesAcl">
+							<a href="#" class="page-link" ng-click="getMyAclRequests(allPagesAcl, false)">{{allPagesAcl}}</a>
+						</li>
+					</ul>
+				</div>
+
 
 			</div>
 
 			<div id="successbar">{{ alert }}</div>
 			<div id="alertbar">{{ alertnote }}</div>
 
-
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Right sidebar -->
-			<!-- ============================================================== -->
-			<!-- .right-sidebar -->
-
 			<!-- ============================================================== -->
 			<!-- End Right sidebar -->
 			<!-- ============================================================== -->
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-		<!-- ============================================================== -->
+
 		<!-- ============================================================== -->
 		<!-- footer -->
 		<!-- ============================================================== -->
 		<footer class="footer">
-			© 2020 Kafkawize by <a href="https://kafkawize.com">kafkawize.com</a>
+			<a href="https://kafkawize.io">kafkawize.io</a>
 		</footer>
 		<!-- ============================================================== -->
 		<!-- End footer -->
@@ -451,7 +649,7 @@
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap tether Core JavaScript -->
-<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
+<script src="assets/plugins/popper/popper.min.js"></script>
 <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <!-- slimscrollbar scrollbar JavaScript -->
 <script src="assets/js/jquery.slimscroll.js"></script>
@@ -467,14 +665,13 @@
 <!-- ============================================================== -->
 <!-- This page plugins -->
 <!-- ============================================================== -->
+<!--
 <script src="assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
+-->
 <!-- Chart JS -->
-<script src="assets/js/widget-data.js"></script>
-<!-- ============================================================== -->
-<!-- Style switcher -->
-<!-- ============================================================== -->
-<!--<script src="assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>-->
+<!-- <script src="assets/js/widget-data.js"></script> -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 </body>
 
 </html>

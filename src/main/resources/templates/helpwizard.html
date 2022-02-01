@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<html ng-app="docsApp" ng-controller="docsCtrl">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YQB8J8J690');
+</script>
+
+	<!-- Favicon icon -->
+	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+	<title>Help Wizard | Kafka Self-service Topic Management Portal</title>
+	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
+	<!-- chartist CSS -->
+	<!--
+<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
+	<link rel="stylesheet" type="text/css"
+		  href="assets/plugins/datatables.net-bs4/css/responsive.dataTables.min.css">
+		  -->
+	<!-- Custom CSS -->
+	<link href="assets/css/style.css" rel="stylesheet">
+	<!-- You can change the theme colors from here -->
+	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
+	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+	<link href="assets/plugins/wizard/steps.css" rel="stylesheet" type="text/css">
+
+	<script src="lib/angular.min.js"></script>
+	<script src="lib/angular-route.min.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
+	<script src="js/docs.js"></script>
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+	<![endif]-->
+</head>
+
+<body class="fix-header card-no-border logo-center" ng-init="getAuth();">
+<!-- ============================================================== -->
+<!-- Preloader - style you can find in spinners.css -->
+<!-- ============================================================== -->
+<div class="preloader">
+	<svg class="circular" viewBox="25 25 50 50">
+		<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
+</div>
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+	<!-- ============================================================== -->
+	<!-- Topbar header - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<header class="topbar">
+		<nav class="navbar top-navbar navbar-expand-md navbar-light">
+			<!-- ============================================================== -->
+			<!-- Logo -->
+			<!-- ============================================================== -->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="index">
+	<h4 style="color:white;">{{ companyinfo }}</h4>
+</a>
+				<!-- <a href="index"><img src="assets/images/clients/logo.jpg" width="100%" /></a> -->
+			</div>
+			<!-- ============================================================== -->
+			<!-- End Logo -->
+			<!-- ============================================================== -->
+			<div class="navbar-collapse">
+				<!-- ============================================================== -->
+				<!-- toggle and nav items -->
+				<!-- ============================================================== -->
+				<ul class="navbar-nav mr-auto mt-md-0">
+					<!-- This is  -->
+
+					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
+
+					<!-- ============================================================== -->
+					<!-- End Messages -->
+					<!-- ============================================================== -->
+				</ul>
+				<!-- ============================================================== -->
+				<!-- User profile and search -->
+				<!-- ============================================================== -->
+				<ul class="navbar-nav my-lg-0">
+					<!-- ============================================================== -->
+					<!-- Comment -->
+					<!-- ============================================================== -->
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="requestTopics"><i class="mdi mdi-plus"></i></a>
+					</li>
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
+					</li>
+					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
+								class="mdi mdi-message"></i>
+							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+						</a>
+						<div class="dropdown-menu dropdown-menu-right mailbox scale-up">
+							<ul>
+								<li>
+									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
+								</li>
+								<li>
+									<div class="message-center position-relative">
+										<!-- Message -->
+										<a href="execTopics" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-danger btn-circle mr-2"><i class="fa fa-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Topic Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notifications }}  requests</span>
+											</div>
+										</a>
+										<a href="execAcls" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-success btn-circle mr-2"><i class="ti-calendar"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Acl Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execSchemas" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-info btn-circle mr-2"><i class="ti-pencil-alt"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Schema Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsSchemas }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execConnectors" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-warning btn-circle mr-2"><i class="ti-vector"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">KafkaConnector Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ dashboardDetails.notificationsConnectors }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execUsers" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-primary btn-circle mr-2"><i class="ti-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">New User Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsUsers }}  requests</span>
+
+											</div>
+										</a>
+									</div>
+								</li>
+
+							</ul>
+						</div>
+					</li>
+
+					<!-- Profile -->
+					<!-- ============================================================== -->
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+								<i class="mdi mdi-account-circle"></i>
+							</button></a>
+						<div class="dropdown-menu dropdown-menu-right scale-up">
+							<ul class="dropdown-user">
+								<li>
+									<div class="dw-user-box">
+										<div class="u-img"><img src="assets/images/logged-user.png" alt="user"></div>
+										<div class="u-text">
+											<h4>{{userlogged}}</h4>
+											<p class="text-muted">{{teamname}}</p><a href="myProfile"
+																					 class="btn btn-rounded btn-danger btn-sm">View
+											Profile</a>
+										</div>
+									</div>
+								</li>
+								<li role="separator" class="divider"></li>
+								<li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
+                                 <li><a href="tenantInfo"><i class="ti-package"></i> My Tenant Info</a></li>
+								<li ng-show="dashboardDetails.authenticationType=='db'"><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
+							</ul>
+						</div>
+					</li>
+					<!-- ============================================================== -->
+					<!-- Language -->
+					<!-- ============================================================== -->
+					<li class="nav-item dropdown mega-dropdown">
+						<a
+								class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+								class="mdi mdi-help-circle"></i></a>
+						<div class="dropdown-menu scale-up-left">
+							<ul class="mega-dropdown-menu row">
+								<li class="col-lg-6">
+									<h4 class="mb-3">Contact Administrator</h4>
+									<!-- Contact -->
+									<form>
+										<div class="form-group">
+											<input type="text" class="form-control" ng-model="contactFormSubject" placeholder="Enter Subject">
+										</div>
+										<div class="form-group">
+											<textarea class="form-control" ng-model="contactFormMessage" rows="3" placeholder="Message"></textarea>
+										</div>
+										<button type="button" ng-click="sendMessageToAdmin();" class="btn btn-info">Submit</button>
+									</form>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Help</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="docs">Documentation</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">ReadTheDocs</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blinds"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="{{ dashboardDetails.supportlink }}">Raise a git issue</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-hexagon"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="helpwizard">Starting Wizard</a></td>
+												</tr>
+											</table>
+										</li>
+									</ul>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Shortcuts</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="requestTopics">Request Topic</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="envs">Environments</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="users">Users</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="teams">Teams</a></td>
+												</tr>
+											</table>
+										</li>
+
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+				<ul class="navbar-nav my-lg-0" style="width:200px;color:black;">
+					<table>
+						<tr>
+							<td width="100%">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											id="userbackground">
+										{{userlogged}}</button>
+								</li>
+							</td>
+
+						</tr>
+						<tr>
+							<td width="100%">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											id="userbackground">
+										{{teamname}} | {{userrole}}</button>
+
+								</li>
+							</td>
+						</tr>
+
+					</table>
+
+				</ul>
+			</div>
+		</nav>
+	</header>
+	<!-- ============================================================== -->
+	<!-- End Topbar header -->
+
+	<aside class="left-sidebar">
+		<!-- Sidebar scroll-->
+		<div class="scroll-sidebar">
+			<!-- Sidebar navigation-->
+			<nav class="sidebar-nav">
+				<ul id="sidebarnav">
+					<li class="nav-small-cap">PERSONAL</li>
+					<li class="active">
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="index">Home</a></li>
+							<li><a href="activityLog">Activity Log</a></li>
+							<li><a href="analytics">Analytics</a></li>
+							<li><a href="serverConfig">Settings</a></li>
+						</ul>
+					</li>
+					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
+						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+					</li>
+              					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Kafka Connect</span></a>
+					</li>
+					<li class="two-column" ng-show="dashboardDetails.requestItems=='Authorized'">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="requestTopics">Request Topic</a></li>
+					<li><a href="requestConnector">Request Connector</a></li>
+
+							<li><a href="myTopicRequests">My Topic Requests</a></li>
+							<li><a href="myAclRequests">My Acl Requests</a></li>
+							<li><a href="mySchemaRequests">My Schema Requests</a></li>
+					<li><a href="myConnectorRequests">My Connector Requests</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
+					<li class="two-column">
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Environments</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="envs">Environments</a></li>
+							<li><a href="clusters">Clusters</a></li>
+							<li ng-show="dashboardDetails.showAddDeleteTenants == 'Authorized'" ><a href="tenants">Tenants</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+
+					<li class="two-column">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users - Teams</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="users">Users</a></li>
+							<li><a href="teams">Teams</a></li>
+						</ul>
+					</li>
+					<li class="two-column" ng-show="dashboardDetails.canUpdatePermissions=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-account-key"></i><span class="hide-menu">Roles - Permissions</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="roles">Roles</a></li>
+							<li><a href="permissions">Permissions</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li class="two-column" ng-show="dashboardDetails.syncTopicsAcls == 'Authorized' || dashboardDetails.syncBackTopics == 'Authorized' || dashboardDetails.syncConnectors == 'Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Synchronize</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeTopics">Topics from cluster</a></li>
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeAcls">Acls from cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackTopics == 'Authorized'"><a href="syncBackTopics">Topics to cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackAcls == 'Authorized'"><a href="syncBackAcls">Acls to cluster</a></li>
+							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Approve</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
+					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
+      						<li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+						</ul>
+					</li>
+
+				</ul>
+			</nav>
+			<!-- End Sidebar navigation -->
+		</div>
+		<div class="notificationbar" ng-show="dashboardDetails.broadcastText != ''">
+			<marquee>{{ dashboardDetails.broadcastText }}</marquee>
+		</div>
+		<!-- End Sidebar scroll-->
+	</aside>
+
+	<!-- ============================================================== -->
+	<!-- Page wrapper  -->
+	<!-- ============================================================== -->
+	<div class="page-wrapper">
+		<!-- ============================================================== -->
+		<!-- Container fluid  -->
+		<!-- ============================================================== -->
+		<div class="container-fluid" ng-init="getAclCommand()">
+			<div class="row page-titles">
+			</div>
+
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body wizard-content">
+							<h4 class="card-title">Configure Kafkawize Wizard</h4>
+
+							<form action="#" class="tab-wizard wizard-circle">
+								<!-- Step 0 -->
+								<h6>Welcome</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Congratulations !!</h2><br>
+												<h5>Kafkawize can be configured easily if you follow the next steps from here</h5><br>
+												<h5>In these steps we are going to configure kafka clusters, environments, teams, users, roles and permissions</h5>
+												<h5>For any questions or support, please click the Help button on the top right.</h5>
+												<br>
+											</div>
+										</div>
+									</div>
+								</section>
+								<!-- Step 1 -->
+								<h6>Configure Kafka Clusters</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Configure Kafka clusters !!</h2><br>
+												<h5>Configure your kafka clusters from <a class="text-primary" href="clusters">here</a>. You can add any number of clusters. Only users with SUPERADMIN roles can add.</h5><br>
+												<h5>After adding the cluster, if you have selected SSL as the protocol, download the public key and import to your kafka broker certificates.</h5><br>
+												<h5>Execute the command provided which authorizes Kafkawize to create Kafka Topis, subscriptions (acls), etc</h5>
+											</div>
+										</div>
+									</div>
+								</section>
+
+								<!-- Step 2 -->
+								<h6>Configure Environments</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Configure Environments !!</h2><br>
+												<h5>Environments are wrappers over your kafka clusters. You can have multiple environments connected to one Kafka cluster with different settings</h5><br>
+												<h5>Configure your environments from <a class="text-primary" href="envs">here</a>. You can add any number of environments. Only users with SUPERADMIN roles can add by default.</h5><br>
+												<h5>You can configure min max partitions, replication factors here.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+
+								<!-- Step 3 -->
+								<h6>Configure Environments hierarchy</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Configure Environments hierarchy !!</h2><br>
+												<h5>kafkawize.tenant.config has to be configured for promotion of topics, or to keep a base environment to be a low level environment.</h5><br>
+												<h5>Configure this from <a class="text-primary" href="serverConfig">here</a>. Only users with SUPERADMIN roles can add by default.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+
+								<!-- Step 2 -->
+								<h6>Test Kafka connectivity</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Test Kafka connectivity !!</h2><br>
+												<h5>After configuring kafka environments,
+													<br>1. Upload the public key of your broker keystore
+													<br>2. Import public key of kafkawize to your truststore
+													<br>3. Execute provided acl command.
+													<br>Now you can test the connectivity with the button provided at <a class="text-primary" href="envs">here</a>.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+
+								<!-- Step 4 -->
+								<h6>Synchronize Topics and Acls</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Synchronize Topics and Acls !!</h2><br>
+												<h5>If you already have topics on your brokers, you can synchronize the topics and Producer and Consumer acls with Kafkawize.</h5><br>
+												<h5>Synchronize Topics from <a class="text-primary" href="synchronizeTopics">here</a>.</h5><br>
+												<h5>Synchronize Acls from <a class="text-primary" href="synchronizeAcls">here</a>.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+
+								<!-- Step 5 -->
+								<h6>Create Teams</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Create Teams !!</h2><br>
+												<h5>After adding clusters and environments, now you can create Teams.</h5><br>
+												<h5>Create a team from <a class="text-primary" href="teams">here</a>. Only users with SUPERADMIN roles can add by default.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+								<!-- Step 6 -->
+								<h6>Create Users</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Create Users !!</h2><br>
+												<h5>After adding teams, now you can create users and associate to teams.</h5><br>
+												<h5>Create a user from <a class="text-primary" href="users">here</a>. Only users with SUPERADMIN roles can add by default.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+								<!-- Step 7 -->
+								<h6>Optional Roles and Permissions</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">Create Roles and Permissions !!</h2><br>
+												<h5>You can create roles and assign permissions to those roles if you need so.</h5><br>
+												<h5>Create a role from <a class="text-primary" href="roles">here</a>. Only users with SUPERADMIN roles can add by default.</h5><br>
+												<h5>Associate permissions to roles from <a class="text-primary" href="permissions">here</a>.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+								<!-- Step 7 -->
+								<h6>You are done. Hurray !!</h6>
+								<section>
+									<div class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<h2 class="text-success">You are done. Hurray !!</h2><br>
+												<h5>Your teams can now request for topics, acls, connectors and schemas.</h5><br>
+												<h5>To test this, you can request for a topic from <a class="text-primary" href="requestTopics">here</a>. Make sure your role has permission to request/approve topics.</h5><br>
+											</div>
+										</div>
+									</div>
+								</section>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ============================================================== -->
+			<!-- End Right sidebar -->
+			<!-- ============================================================== -->
+		</div>
+		<!-- ============================================================== -->
+		<!-- End Container fluid  -->
+		<!-- ============================================================== -->
+		<!-- ============================================================== -->
+		<!-- footer -->
+		<!-- ============================================================== -->
+		<footer class="footer">
+			<a href="https://kafkawize.io">kafkawize.io</a>
+		</footer>
+		<!-- ============================================================== -->
+		<!-- End footer -->
+		<!-- ============================================================== -->
+	</div>
+	<!-- ============================================================== -->
+	<!-- End Page wrapper  -->
+	<!-- ============================================================== -->
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- All Jquery -->
+<!-- ============================================================== -->
+<script src="assets/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap tether Core JavaScript -->
+<script src="assets/plugins/popper/popper.min.js"></script>
+<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<!-- slimscrollbar scrollbar JavaScript -->
+<script src="assets/js/jquery.slimscroll.js"></script>
+<!--Wave Effects -->
+<script src="assets/js/waves.js"></script>
+<!--Menu sidebar -->
+<script src="assets/js/sidebarmenu.js"></script>
+<!--stickey kit -->
+<script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
+<script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+<!--Custom JavaScript -->
+<script src="assets/js/custom.min.js"></script>
+<!--
+<script src="assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
+-->
+<!-- Chart JS -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
+<!-- <script src="assets/js/widget-data.js"></script> -->
+<script src="assets/plugins/wizard/jquery.steps.min.js"></script>
+<script src="assets/plugins/wizard/jquery.validate.min.js"></script>
+<script>
+        //Custom design form example
+        $(".tab-wizard").steps({
+            headerTag: "h6",
+            bodyTag: "section",
+            transitionEffect: "fade",
+            titleTemplate: '<span class="step">#index#</span> #title#',
+            labels: {
+                finish: "Submit"
+            },
+            onFinished: function (event, currentIndex) {
+                swal("Congratulations!", "You have a full setup of running Kafkawize !!");
+
+            }
+        });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<html ng-app="registerUsersApp" ng-controller="registerUsersCtrl">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YQB8J8J690');
+</script>
+
+	<!-- Favicon icon -->
+	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+	<title>Register User | Kafka Self-service Topic Management Portal</title>
+	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
+
+	<link href="assets/css/style.css" rel="stylesheet">
+	<!-- You can change the theme colors from here -->
+	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
+	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+
+	<script src="lib/angular.min.js"></script>
+	<script src="lib/angular-route.min.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
+	<script src="js/registerUsers.js"></script>
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+	<![endif]-->
+</head>
+
+
+<body class="fix-header card-no-border logo-center">
+<!-- ============================================================== -->
+<!-- Preloader - style you can find in spinners.css -->
+<!-- ============================================================== -->
+<div class="preloader">
+	<svg class="circular" viewBox="25 25 50 50">
+		<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
+</div>
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper"  style="overflow-y: auto;">
+
+	<section id="wrapper" ng-init="getTenantsInfo();getBasicInfo();">
+
+		<div class="login-register login-sidebar" id="grad3"  style="overflow-y: auto;">
+			<div class="row" style="padding-top:3%;padding-left:5%;padding-right:5%;background-color: #016BA7;">
+
+				<div class="col-md-6">
+					<div class="row">
+						<div class="col-md-4">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Governance</h4>
+									<ul class="list-icons">
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Approvals</a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Topic promotion</a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Naming conventions </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Ownership </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Source of truth </a></li>
+									</ul>
+
+									<button class="btn btn-warning waves-effect waves-light" type="button">
+										<i class="mdi mdi-cube-outline"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Self-Service</h4>
+									<ul class="list-icons">
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Search/Discover</a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Dashboard</a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Reporting </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Charts </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Backup, Restore, Migrate </a></li>
+									</ul>
+
+									<button class="btn btn-primary waves-effect waves-light" type="button">
+										<i class="mdi mdi-apps"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-4">
+							<div class="card">
+								<div class="card-body">
+									<h4 class="card-title">Security</h4>
+									<ul class="list-icons">
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Role based access </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Kafka security protocols</a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Audit trail </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Config backup </a></li>
+										<li><a href="javascript:void(0)"><i class="fa fa-check text-info"></i> Validations </a></li>
+									</ul>
+
+									<button class="btn btn-danger waves-effect waves-light" type="button">
+										<i class="mdi mdi-all-inclusive"></i>
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12" style="text-color:yellow;">
+							<h3>
+								<p class="text-warning">
+									<i class="mdi mdi-chart-bubble"></i>
+									Kafkawize connects to your Kafka clusters creating topics & more
+								</p>
+							</h3>
+							<h3>
+								<p class="text-warning">
+									<i class="mdi mdi-chart-bubble"></i>
+									Data sovereignity and integrity is the key
+								</p>
+							</h3>
+							<h3>
+								<p class="text-warning">
+									<i class="mdi mdi-chart-bubble"></i>
+									Conforms to local jurisdictions
+								</p>
+							</h3>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-6">
+							<div class="card" style="background-color:#016BA7">
+								<div class="card-body" style="color:white;">
+									<h6 class="card-title" style="color:white;"><marquee>Serving</marquee></h6>
+									<div class="d-flex flex-row">
+										<div class="p-2 pl-0 border-right">
+											<h6 class="text-warning">Tenants</h6><b>{{ tenantsInfo.tenants}}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="text-warning">Teams</h6><b>{{ tenantsInfo.teams}}</b>
+										</div>
+										<div class="p-2 border-right">
+											<h6 class="text-warning">Clusters</h6><b>{{ tenantsInfo.clusters}}</b>
+										</div>
+										<div class="p-2">
+											<h6 class="text-warning">Topics</h6><b>{{ tenantsInfo.topics}}</b>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-2">
+				</div>
+				<div class="col-md-4">
+					<div ng-show="userNotFoundinKwDb == 'true'" class="row" style="align:center;padding-left:30%">
+						<p class="text-warning font-weight-bold">
+							User does not exist in Kafkawize. Please register with the below form.
+						</p>
+					</div>
+					<div class="login-box card">
+						<div class="card-body">
+							<form class="form-horizontal form-material" id="registerform">
+								<table width="100%">
+									<tr>
+										<td width="50%" align="left"><h3 class="p-2 rounded-title mb-3">Sign Up</h3></td>
+										<td align="right"><img width="100%" src="assets/images/logo-signin.png" /></td>
+									</tr>
+
+								</table>
+								<!--                    <h3 class="p-2 rounded-title mb-3">Sign Up</h3>-->
+
+								<div class="form-group">
+									<div class="col-xs-12">
+										<label class="control-label">Name</label>
+										<input class="form-control" type="text" required ng-model="registerUser.usernamefull">
+									</div>
+								</div>
+
+								<div class="form-group ">
+									<div class="col-xs-12">
+										<label class="control-label">Email</label>
+										<input class="form-control" type="email" required ng-model="registerUser.emailid">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="col-xs-12">
+										<label class="control-label">Tenant</label>
+
+										<input class="form-control" maxlength="30" type="text" ng-model="registerUser.tenantName">
+										<span class="help-block"><small>If you leave it blank, we create a new tenant for you. Alternatively, if you know an existing tenant, fill it in.</small></span>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<div class="">
+										<div class="checkbox checkbox-success pt-0">
+											<input ng-model="registerUser.agreeterms" required id="checkbox-signup" type="checkbox">
+											<label for="checkbox-signup"> I agree to all <a href="terms">Terms</a></label>
+										</div>
+									</div>
+								</div>
+								<div class="form-group text-center mt-3">
+									<div class="col-xs-12" ng-show="registrationStarted != 'true'">
+										<button ng-click="registerUserSaas();" class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" id="grad1">Sign Up</button>
+									</div>
+									<div class="col-xs-12" ng-show="registrationStarted == 'true'">
+										<div class="progress">
+											<div class="progress-bar bg-info wow animated progress-animated"
+												 style="width: 90%; height:6px;" role="progressbar"> <span
+													class="sr-only">60% Complete</span> </div>
+										</div>
+									</div>
+								</div>
+								<div class="form-group mb-0">
+									<div class="col-sm-12 text-center">
+										Already have an account? <a href="login" class="text-info ml-1"><b>Sign In</b></a>
+									</div>
+								</div>
+
+								<div ng-show="alert != null && alert != ''" class="form-group mb-0">
+									<div class="col-sm-12 text-center">
+										<p class="text-warning" align="center">{{alert}} </p>
+									</div>
+								</div>
+
+
+							</form>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</section>
+	<div id="alertbar">{{ alertnote }}</div>
+	<footer class="footer" style="border:0px;background-color:#016BA7;color:white;">
+		<a href="https://kafkawize.io" class="text-warning">kafkawize.io</a>
+	</footer>
+
+</div>
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- All Jquery -->
+<!-- ============================================================== -->
+<script src="assets/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap tether Core JavaScript -->
+<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
+<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<!-- slimscrollbar scrollbar JavaScript -->
+<script src="assets/js/jquery.slimscroll.js"></script>
+<!--Wave Effects -->
+<script src="assets/js/waves.js"></script>
+<!--Menu sidebar -->
+<script src="assets/js/sidebarmenu.js"></script>
+<!--stickey kit -->
+<script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
+<script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+<!--Custom JavaScript -->
+<script src="assets/js/custom.min.js"></script>
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
+</body>
+
+</html>

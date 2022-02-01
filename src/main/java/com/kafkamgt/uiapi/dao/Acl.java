@@ -2,19 +2,26 @@ package com.kafkamgt.uiapi.dao;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
+@ToString
 @Getter
 @Setter
 @Entity
+@IdClass(AclID.class)
 @Table(name="kwacls")
 public class Acl implements Serializable {
 
     @Id
-    @Column(name = "req_no")
-    private String req_no;
+    @Column(name = "aclid")
+    private Integer req_no;
+
+    @Id
+    @Column(name = "tenantid")
+    private Integer tenantId;
 
     @Column(name = "topicname")
     private String topicname;
@@ -22,32 +29,38 @@ public class Acl implements Serializable {
     @Column(name = "env")
     private String environment;
 
-    @Column(name = "teamname")
-    private String teamname;
+    @Column(name = "teamid")
+    private Integer teamId;
 
     @Column(name = "consumergroup")
     private String consumergroup;
 
+    // producer or consumer
     @Column(name = "topictype")
     private String topictype;
 
-    @Column(name = "acl_ip")
+    @Column(name = "aclip")
     private String aclip;
 
-    @Column(name = "acl_ssl")
+    @Column(name = "aclssl")
     private String aclssl;
 
-    @Override
-    public String toString() {
-        return "Acl{" +
-                "req_no='" + req_no + '\'' +
-                ", topicname='" + topicname + '\'' +
-                ", environment='" + environment + '\'' +
-                ", teamname='" + teamname + '\'' +
-                ", consumergroup='" + consumergroup + '\'' +
-                ", topictype='" + topictype + '\'' +
-                ", aclip='" + aclip + '\'' +
-                ", aclssl='" + aclssl + '\'' +
-                '}';
-    }
+    // prefixed acls or Literal(default)
+    @Column(name = "aclpatterntype")
+    private String aclPatternType;
+
+    // Topic always
+    @Column(name = "aclresourcetype")
+    private String aclResourceType;
+
+    // TransactionalID
+    @Column(name = "transactionalid")
+    private String transactionalId;
+
+    @Column(name = "otherparams")
+    private String otherParams;
+
+    @Column(name = "jsonparams")
+    private String jsonParams;
+
 }
