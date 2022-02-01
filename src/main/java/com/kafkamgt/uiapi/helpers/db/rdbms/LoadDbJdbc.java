@@ -14,6 +14,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -23,7 +25,7 @@ public class LoadDbJdbc implements ApplicationContextAware {
     @Autowired(required=false)
     private JdbcTemplate jdbcTemplate;
 
-    @Value("${kafkawize.version:4.5.1}")
+    @Value("${kafkawize.version:1.0.1}")
     private String kafkawizeVersion;
 
     @Value("${kafkawize.dbscripts.location}")
@@ -32,11 +34,10 @@ public class LoadDbJdbc implements ApplicationContextAware {
     @Value("${kafkawize.dbscripts.location.type:internal}")
     private String scriptsLocationType;
 
-    @Value("${kafkawize.dbscripts.insert.basicdata.file:insertdata.sql}")
-    private String basicInsertSqlFile;
+//    @Value("${kafkawize.dbscripts.insert.basicdata.file:basicinsertdata.sql}")
+//    private String basicInsertSqlFile;
 
-    @Value("${kafkawize.dbscripts.location}")
-    private String scriptsDefaultLocation;
+    String scriptsDefaultLocation = "scripts/base/rdbms/";
 
     @Autowired
     ResourceLoader resourceLoader;
@@ -54,20 +55,31 @@ public class LoadDbJdbc implements ApplicationContextAware {
 
     public void createTables(){
 
+        createTables("ddl-jdbc.sql");
+        log.debug("Create DB Tables setup done !! ");
+//        createTables("alter");
+//        log.debug("Alter DB Tables setup done !! ");
+    }
+
+    private void createTables(String fileName){
+
         try{
             BufferedReader in;
 
             if(scriptsLocationType.equals("internal"))
-                in = getReader(scriptsDefaultLocation + "ddl-jdbc.sql");
+                in = getReader(scriptsDefaultLocation + fileName);
             else
-                in = getReader(scriptsLocation + "ddl-jdbc.sql");
+                in = getReader(scriptsLocation + fileName);
+
+//            else if(sqlType.equals("alter"))
+//                in = getReader(ALTER_SQL);
 
             String tmpLine;
             StringBuilder execQuery = new StringBuilder();
             while((tmpLine = Objects.requireNonNull(in).readLine())!=null){
                 if(tmpLine.toLowerCase().startsWith("create") && tmpLine.toLowerCase().endsWith(";")){
                     execQuery = new StringBuilder(tmpLine);
-                    log.info("Executing query : "+ execQuery);
+                    log.debug("Executing query : "+ execQuery);
                     jdbcTemplate.execute(execQuery.toString().trim());
                     execQuery = new StringBuilder();
                 }
@@ -76,7 +88,7 @@ public class LoadDbJdbc implements ApplicationContextAware {
                 else if(tmpLine.toLowerCase().endsWith(";"))
                 {
                     execQuery.append(tmpLine);
-                    log.info("Executing query : "+ execQuery);
+                    log.debug("Executing query : "+ execQuery);
                     jdbcTemplate.execute(execQuery.toString().trim());
                     execQuery = new StringBuilder();
                 }
@@ -91,11 +103,18 @@ public class LoadDbJdbc implements ApplicationContextAware {
             if("create".equals("create"))
                 shutdownApp();
         }
-        log.info("Create DB Tables setup done !! ");
     }
 
     public void insertData(){
-        insertData(basicInsertSqlFile);
+//        if(ifDataAlreadyExists())
+//            return;
+//        insertData(basicInsertSqlFile);
+    }
+
+    private boolean ifDataAlreadyExists() {
+        String selectQuery = "select * from kwproductdetails where version='" + kafkawizeVersion + "'";
+        List<Map<String, Object>> mapList = jdbcTemplate.queryForList(selectQuery);
+        return mapList.size() != 0;
     }
 
     private void insertData(String fileName){
@@ -106,7 +125,7 @@ public class LoadDbJdbc implements ApplicationContextAware {
                 in = getReader(scriptsDefaultLocation + fileName);
             else
                 in = getReader(scriptsLocation + fileName);
-
+            
             String tmpLine;
             StringBuilder execQuery = new StringBuilder();
             while((tmpLine=in.readLine())!=null){
@@ -114,7 +133,7 @@ public class LoadDbJdbc implements ApplicationContextAware {
                         || tmpLine.toLowerCase().startsWith("update");
                 if((isInsert) && tmpLine.toLowerCase().endsWith(";")){
                     execQuery = new StringBuilder(tmpLine);
-                    log.info("Executing query : "+ execQuery);
+                    log.debug("Executing query : "+ execQuery);
                     try {
                         jdbcTemplate.execute(execQuery.toString().trim());
                     }catch (Exception sqlException){
@@ -129,7 +148,7 @@ public class LoadDbJdbc implements ApplicationContextAware {
                 else if(tmpLine.toLowerCase().endsWith(";"))
                 {
                     execQuery.append(tmpLine);
-//                    log.info("Executing query : "+ execQuery);
+//                    log.debug("Executing query : "+ execQuery);
                     jdbcTemplate.execute(execQuery.toString().trim());
                     execQuery = new StringBuilder();
                 }
@@ -141,39 +160,17 @@ public class LoadDbJdbc implements ApplicationContextAware {
             log.error("Exiting .. could not insert data " + e.getMessage());
             shutdownApp();
         }
-        log.info("Insert DB Tables setup done !! ");
+        log.debug("Insert DB Tables setup done !! ");
     }
 
-    private BufferedReader getReader(String sqlPath) throws IOException {
+    private BufferedReader getReader(String sql) throws IOException {
         if(scriptsLocationType.equals("internal")) {
-            try {
-                Resource resource;
-                if(sqlPath.startsWith("file:///")){
-                    resource = resourceLoader.getResource("classpath:" + sqlPath);
-                }else{
-                    File f = new File("");
-                    log.info("File path" + f.getAbsolutePath());
-                    resource = resourceLoader.getResource("classpath:" + sqlPath);
-                }
-                InputStream inputStream = resource.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                return new BufferedReader(inputStreamReader);
-            }catch (Exception e){
-                Resource resource;
-                if(sqlPath.startsWith("file:///")){
-                    resource = resourceLoader.getResource(sqlPath);
-                }
-                else{
-                    File f = new File("");
-                    log.info("File path" + f.getAbsolutePath());
-                    resource = resourceLoader.getResource("file:///" + f.getAbsolutePath() + sqlPath);
-                }
-                InputStream inputStream = resource.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                return new BufferedReader(inputStreamReader);
-            }
+            Resource resource = resourceLoader.getResource("classpath:" + sql);
+            InputStream inputStream = resource.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            return new BufferedReader(inputStreamReader);
         }
         else
-            return new BufferedReader(new FileReader(sqlPath));
+            return new BufferedReader(new FileReader(sql));
     }
 }

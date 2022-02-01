@@ -21,7 +21,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "getEnvsOnly",
+                url: "getEnvs",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.allenvs = output;
@@ -58,7 +58,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
-            $scope.statusauth = output.status;
+            $scope.dashboardDetails = output;
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
             $scope.userrole = output.userrole;
@@ -66,9 +66,12 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             $scope.notificationsAcls = output.notificationsAcls;
             $scope.notificationsSchemas = output.notificationsSchemas;
             $scope.notificationsUsers = output.notificationsUsers;
-            $scope.statusauthexectopics = output.statusauthexectopics;
-            $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-            $scope.alerttop = output.alertmessage;
+
+            if(output.viewTopics!='Authorized')
+            {
+                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/index";
+            }
+
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";
             }
@@ -77,6 +80,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
             if($scope.userlogged != null)
                 $scope.loggedinuser = "true";
+
+            $scope.checkPendingApprovals();
         }).error(
             function(error)
             {
@@ -85,27 +90,67 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         );
 	}
 
-        $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
 
-                $location.path('/');
-                $window.location.reload();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
+
+        $scope.logout = function() {
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
                 }
-            );
-        }
 
 	// We add the "time" query parameter to prevent IE
 	// from caching ajax results
 
-	$scope.getTopics = function(pageNoSelected, fromSelect) {
+	$scope.getTopics = function(pageNoSelected, fromSelect, topicsDisplayType) {
 
         var serviceInput = {};
         var envSelected;
@@ -113,25 +158,26 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.resultPages = null;
         $scope.alert = null;
         $scope.resultPageSelected = null;
-        var topicType = null;
-
         var teamSel = $scope.getTopics.team;
-        var str = window.location.search;
+
+        var topicType = null;
         if(fromSelect == "false")
         {
             var envSelected;
-            if(str && str.length>10){
-                var envSelectedIndex = str.indexOf("envSelected");
-                if(envSelectedIndex > 0)
+
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == "envSelected")
                 {
-                    envSelected = str.substring(13);
-                    if(envSelected && envSelected.length>0) {
-                        serviceInput['env'] = envSelected;
-                        $scope.envSelected = envSelected;
-                        $scope.getTopics.envName = envSelected;
-                    }else return;
-                }
-            }else return;
+                    envSelected = sParameterName[1];
+                    serviceInput['env'] = envSelected;
+                    $scope.envSelected = envSelected;
+                    $scope.getTopics.envName = envSelected;
+                }else return;
+            }
         }else if(fromSelect == "true"){
                  if(!$scope.getTopics.envName)
                         envSelected = "ALL";
@@ -167,16 +213,28 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
 		var topicFilter = $scope.getTopics.topicnamesearch;
 		if(topicFilter && topicFilter.length>0 && topicFilter.length<3){
-		    alert("Please enter atleast 3 characters of the topic name.");
+
+		    swal({
+             title: "",
+             text: "Please enter atleast 3 characters to search.",
+             timer: 2000,
+             showConfirmButton: false
+             });
 		    return;
 		    }
 
+		    var getTopicsUrl = "";
+		    if(topicsDisplayType == 'grid')
+                getTopicsUrl = "getTopics";
+            else getTopicsUrl = "getTopicsRowView";
+
 		$http({
 			method: "GET",
-			url: "getTopics",
+			url: getTopicsUrl,
             headers : { 'Content-Type' : 'application/json' },
             params: {'env' : envSelected,
                 'pageNo' : pageNoSelected,
+                'currentPage' : $scope.currentPageSelected,
                  'topicnamesearch' : $scope.getTopics.topicnamesearch,
                  'teamName' : teamSel,
                  'topicType' : topicType
@@ -184,8 +242,17 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 		}).success(function(output) {
 			$scope.resultBrowse = output;
 			if(output!=null && output.length !=0){
-                $scope.resultPages = output[0][0].allPageNos;
+			    if(topicsDisplayType == "grid"){
+			        $scope.currentPageSelected = output[0][0].currentPage;
+			        $scope.resultPages = output[0][0].allPageNos;
+			    }
+                else{
+                    $scope.resultPages = output[0].allPageNos;
+                    $scope.currentPageSelected = output[0].currentPage;
+                }
+
                 $scope.resultPageSelected = pageNoSelected;
+
             }else{
                 $scope.resultPages = null;
             }
@@ -197,7 +264,40 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 				$scope.resultPageSelected = null;
 			}
 		);
-	};
+	}
+
+	$scope.sendMessageToAdmin = function(){
+
+            if(!$scope.contactFormSubject)
+                return;
+            if(!$scope.contactFormMessage)
+                return;
+            if($scope.contactFormSubject.trim().length==0)
+                return;
+            if($scope.contactFormMessage.trim().length==0)
+                return;
+
+            $http({
+                    method: "POST",
+                    url: "sendMessageToAdmin",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                    data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                }).success(function(output) {
+                    $scope.alert = "Message Sent.";
+                    swal({
+                         title: "",
+                         text: "Message sent.",
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+        }
 
 
 }

@@ -3,48 +3,45 @@ package com.kafkamgt.uiapi.dao;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
+@ToString
 @Getter
 @Setter
 @Entity
+@IdClass(EnvID.class)
 @Table(name="kwenv")
 public class Env implements Serializable {
 
     @Id
-    @Column(name = "name")
+    @Column(name = "id")
+    private String id;
+
+    @Id
+    @Column(name = "tenantid")
+    private Integer tenantId;
+
+    @Column(name = "envname")
     private String name;
 
-    @Column(name = "host")
-    private String host;
+    @Column(name = "stretchcode")
+    private String stretchCode;
 
-    @Column(name = "protocol")
-    private String protocol;
+    @Column(name = "clusterid")
+    private Integer clusterId;
 
-    @Column(name = "type")
+    @Column(name = "envtype")
     private String type;
 
-    @Column(name = "keystorelocation")
-    private String keyStoreLocation;
-
-    @Column(name = "truststorelocation")
-    private String trustStoreLocation;
-
-    @Column(name = "keystorepwd")
-    private String keyStorePwd;
-
-    @Column(name = "keypwd")
-    private String keyPwd;
-
-    @Column(name = "truststorepwd")
-    private String trustStorePwd;
-
-    @Column(name = "other_params")
+    @Column(name = "otherparams")
     private String otherParams;
 
-    @Transient
-    private String envStatus;
+    @Column(name = "envexists")
+    private String envExists;
 
+    @Column(name = "envstatus")
+    private String envStatus;
 }

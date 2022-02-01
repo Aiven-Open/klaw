@@ -1,0 +1,250 @@
+'use strict'
+
+// confirmation of delete
+// edit 
+// solution for transaction
+// message store / key / gui
+var app = angular.module('docsApp',[]);
+
+app.controller("docsCtrl", function($scope, $http, $location, $window) {
+	
+	// Set http service defaults
+	// We force the "Accept" header to be only "application/json"
+	// otherwise we risk the Accept header being set by default to:
+	// "application/json; text/plain" and this can result in us
+	// getting a "text/plain" response which is not able to be
+	// parsed. 
+	$http.defaults.headers.common['Accept'] = 'application/json';
+
+    $scope.topics = "true";
+	$scope.docTopics = function(){
+	    $scope.resetAll();
+	    $scope.topics = "true";
+	}
+
+	$scope.docAcls = function(){
+    	    $scope.resetAll();
+            $scope.acls = "true";
+    	}
+
+    $scope.docSchemas = function(){
+        $scope.resetAll();
+        $scope.schemas = "true";
+    }
+
+    $scope.docAnalytics = function(){
+            $scope.resetAll();
+            $scope.analytics = "true";
+        }
+
+    $scope.docDashboard = function(){
+            $scope.resetAll();
+            $scope.dashboard = "true";
+        }
+
+    $scope.docSyncFromCluster = function(){
+            $scope.resetAll();
+            $scope.syncfromcluster = "true";
+        }
+
+    $scope.docSyncToCluster = function(){
+        $scope.resetAll();
+        $scope.synctocluster = "true";
+    }
+
+    $scope.docServerConfig = function(){
+        $scope.resetAll();
+        $scope.serverconfig = "true";
+    }
+
+    $scope.docTenants = function(){
+        $scope.resetAll();
+        $scope.tenants = "true";
+    }
+
+    $scope.docClusters = function(){
+        $scope.resetAll();
+        $scope.clusters = "true";
+    }
+
+    $scope.docEnvironments = function(){
+        $scope.resetAll();
+        $scope.envs = "true";
+    }
+
+    $scope.docTeams = function(){
+        $scope.resetAll();
+        $scope.teams = "true";
+    }
+
+    $scope.docUsers = function(){
+            $scope.resetAll();
+            $scope.users = "true";
+        }
+
+    $scope.docRoles = function(){
+        $scope.resetAll();
+        $scope.roles = "true";
+    }
+
+    $scope.docPermissions = function(){
+        $scope.resetAll();
+        $scope.perms = "true";
+    }
+
+    $scope.docOthers = function(){
+        $scope.resetAll();
+        $scope.others = "true";
+    }
+
+   $scope.resetAll = function(){
+        $scope.topics = "false";
+        $scope.acls = "false";
+        $scope.schemas = "false";
+        $scope.analytics = "false";
+        $scope.dashboard = "false";
+        $scope.syncfromcluster = "false";
+        $scope.synctocluster = "false";
+
+        $scope.serverconfig = "false";
+        $scope.tenants = "false";
+        $scope.clusters = "false";
+        $scope.envs = "false";
+        $scope.teams = "false";
+        $scope.users = "false";
+        $scope.roles = "false";
+        $scope.perms = "false";
+        $scope.others = "false";
+   }
+
+	$scope.refreshPage = function(){
+            $window.location.reload();
+        }
+
+        $scope.getAuth = function() {
+            $http({
+                method: "GET",
+                url: "getAuth",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.dashboardDetails = output;
+                $scope.userlogged = output.username;
+                $scope.teamname = output.teamname;
+                $scope.userrole = output.userrole;
+                 $scope.notifications = output.notifications;
+                $scope.notificationsAcls = output.notificationsAcls;
+                $scope.notificationsSchemas = output.notificationsSchemas;
+                $scope.notificationsUsers = output.notificationsUsers;
+
+
+
+                if(output.companyinfo == null){
+                    $scope.companyinfo = "Company not defined!!";
+                }
+                else
+                    $scope.companyinfo = output.companyinfo;
+
+                if($scope.userlogged != null)
+                    $scope.loggedinuser = "true";
+
+                $scope.checkPendingApprovals();
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
+
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
+
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
+
+        $scope.logout = function() {
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
+                }
+
+        $scope.sendMessageToAdmin = function(){
+
+                if(!$scope.contactFormSubject)
+                    return;
+                if(!$scope.contactFormMessage)
+                    return;
+                if($scope.contactFormSubject.trim().length==0)
+                    return;
+                if($scope.contactFormMessage.trim().length==0)
+                    return;
+
+                $http({
+                        method: "POST",
+                        url: "sendMessageToAdmin",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                        data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                    }).success(function(output) {
+                        $scope.alert = "Message Sent.";
+                        swal({
+                             title: "",
+                             text: "Message sent.",
+                             timer: 2000,
+                             showConfirmButton: false
+                         });
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+            }
+
+}
+);

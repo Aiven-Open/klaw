@@ -18,7 +18,4 @@ public class ProductDetails implements Serializable {
 
     @Column(name = "version")
     private String version;
-
-    @Column(name = "licensekey")
-    private String licensekey;
 }

@@ -10,5 +10,7 @@ public interface UserInfoRepo extends CrudRepository<UserInfo, String> {
     Optional<UserInfo> findById(String userid);
     Optional<UserInfo> findByUsername(String username);
 
-    List<UserInfo> findAllByTeam(String teamName);
+    List<UserInfo>  findAllByTenantId(int tenantId);
+
+    List<UserInfo> findAllByTeamIdAndTenantId(Integer teamId, int tenantId);
 }

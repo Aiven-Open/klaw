@@ -1,34 +1,40 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
+import com.kafkamgt.uiapi.dao.Topic;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.SchemaRequestModel;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SchemaRegstryControllerServiceTest {
 
     @Mock
@@ -40,22 +46,39 @@ public class SchemaRegstryControllerServiceTest {
     HandleDbRequests handleDbRequests;
 
     @Mock
-    private UtilService utilService;
+    private MailUtils mailService;
 
     @Mock
     private
     ManageDatabase manageDatabase;
 
     @Mock
+    private UserInfo userInfo;
+
+    @Mock
     private
     ClusterApiService clusterApiService;
 
+    @Mock CommonUtilsService commonUtilsService;
+
+    @Mock RolesPermissionsControllerService rolesPermissionsControllerService;
+
     private SchemaRegstryControllerService schemaRegstryControllerService;
 
-    @Before
+    private Env env;
+
+    @BeforeEach
     public void setUp() throws Exception {
-        schemaRegstryControllerService = new SchemaRegstryControllerService(clusterApiService, utilService);
+        this.env = new Env();
+        env.setId("1");
+        env.setName("DEV");
+
+        schemaRegstryControllerService = new SchemaRegstryControllerService(clusterApiService, mailService);
         ReflectionTestUtils.setField(schemaRegstryControllerService, "manageDatabase", manageDatabase);
+        ReflectionTestUtils.setField(schemaRegstryControllerService, "mailService", mailService);
+        ReflectionTestUtils.setField(schemaRegstryControllerService, "commonUtilsService", commonUtilsService);
+        ReflectionTestUtils.setField(schemaRegstryControllerService, "rolesPermissionsControllerService", rolesPermissionsControllerService);
+
         when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
         loginMock();
     }
@@ -69,137 +92,164 @@ public class SchemaRegstryControllerServiceTest {
     }
 
     @Test
+    @Order(1)
     public void getSchemaRequests() {
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getAllSchemaRequests(anyString())).thenReturn(getSchemasReqs());
+        stubUserInfo();
+        when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+        when(handleDbRequests.getAllSchemaRequests(anyBoolean(), anyString(), anyInt())).thenReturn(getSchemasReqs());
+        when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt())).thenReturn(Arrays.asList(""));
+        when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
+        when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(Arrays.asList(userInfo));
+        when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+        when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+        when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
-        List<SchemaRequest> listReqs = schemaRegstryControllerService.getSchemaRequests();
+        List<SchemaRequestModel> listReqs = schemaRegstryControllerService.getSchemaRequests("1", "", "all");
         assertEquals(listReqs.size(), 2);
     }
 
     @Test
-    public void getCreatedSchemaRequests() {
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.getCreatedSchemaRequests(anyString())).thenReturn(getSchemasReqs());
-
-        List<SchemaRequest> listReqs = schemaRegstryControllerService.getCreatedSchemaRequests();
-        assertEquals(listReqs.size(), 2);
-    }
-
-    @Test
+    @Order(2)
     public void deleteSchemaRequestsSuccess() {
-        String topicName = "testtopic";
-        String version = "1.0";
-        String envSel = "DEV";
+        int schemaReqId = 1001;
 
-        String input = topicName +"-----"+version+"-----"+envSel;
-
-        when(handleDbRequests.deleteSchemaRequest(topicName, version, envSel))
-                .thenReturn("success");
-        String result = schemaRegstryControllerService.deleteSchemaRequests(input);
-        assertEquals(result,"success");
+        stubUserInfo();
+        when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt())).thenReturn("success");
+        String result = schemaRegstryControllerService.deleteSchemaRequests(""+schemaReqId);
+        assertEquals("success",result);
     }
 
     @Test
+    @Order(3)
     public void deleteSchemaRequestsFailure() {
-        String topicName = "testtopic";
-        String version = "1.0";
-        String envSel = "DEV";
+        int schemaReqId = 1001;
 
-        String input = topicName +"-----"+version+"-----"+envSel;
-
-        when(handleDbRequests.deleteSchemaRequest(topicName, version, envSel))
+        stubUserInfo();
+        when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt()))
                 .thenThrow(new RuntimeException("Error"));
-        String result = schemaRegstryControllerService.deleteSchemaRequests(input);
+        String result = schemaRegstryControllerService.deleteSchemaRequests(""+schemaReqId);
         assertThat(result, CoreMatchers.containsString("failure"));
     }
 
     @Test
+    @Order(4)
     public void execSchemaRequestsSuccess() throws KafkawizeException {
-        String topicName = "testtopic";
-        String version = "1.0";
-        String envSel = "DEV";
+        int schemaReqId = 1001;
 
         ResponseEntity<String> response = new ResponseEntity<>("Schema registered id\": 215",HttpStatus.OK);
         SchemaRequest schemaRequest = new SchemaRequest();
         schemaRequest.setSchemafull("schema..");
+        schemaRequest.setUsername("kwuserb");
+        schemaRequest.setEnvironment("1");
+        schemaRequest.setTopicname("topic");
 
-        String input = topicName +"-----"+version+"-----"+envSel;
-
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.selectSchemaRequest(topicName, version, envSel))
+        stubUserInfo();
+        when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt()))
                 .thenReturn(schemaRequest);
-        when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
-                .thenReturn(response);
-        when(handleDbRequests.updateSchemaRequest(schemaRequest, "uiuser1"))
+        when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt())).thenReturn(response);
+        when(handleDbRequests.updateSchemaRequest(any(), anyString()))
                 .thenReturn("success");
+        when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
+        when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-        String result = schemaRegstryControllerService.execSchemaRequests(topicName, envSel);
+        String result = schemaRegstryControllerService.execSchemaRequests(""+schemaReqId);
         assertEquals(result,"success");
     }
 
     @Test
+    @Order(5)
     public void execSchemaRequestsFailure1() throws KafkawizeException {
-        String topicName = "testtopic";
-        String version = "1.0";
-        String envSel = "DEV";
+        int schemaReqId = 1001;
 
         ResponseEntity<String> response = new ResponseEntity<>("Schema not registered",HttpStatus.OK);
         SchemaRequest schemaRequest = new SchemaRequest();
         schemaRequest.setSchemafull("schema..");
+        schemaRequest.setUsername("kwuserb");
+        schemaRequest.setEnvironment("1");
+        schemaRequest.setTopicname("topic");
 
-        when(handleDbRequests.selectSchemaRequest(topicName, version, envSel))
+        stubUserInfo();
+        when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt()))
                 .thenReturn(schemaRequest);
-        when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
-                .thenReturn(response);
+        when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt())).thenReturn(response);
+        when(handleDbRequests.updateSchemaRequest(any(), anyString()))
+                .thenReturn("success");
+        when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
+        when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-        String result = schemaRegstryControllerService.execSchemaRequests(topicName, envSel);
+        String result = schemaRegstryControllerService.execSchemaRequests(""+schemaReqId);
         assertThat(result, CoreMatchers.containsString("Failure"));
     }
 
     @Test
+    @Order(6)
     public void execSchemaRequestsFailure2() throws KafkawizeException {
-        String topicName = "testtopic";
-        String version = "1.0";
-        String envSel = "DEV";
+        int schemaReqId = 1001;
 
         ResponseEntity<String> response = new ResponseEntity<>("Schema registered id\": 215",HttpStatus.OK);
         SchemaRequest schemaRequest = new SchemaRequest();
         schemaRequest.setSchemafull("schema..");
+        schemaRequest.setUsername("kwuserb");
+        schemaRequest.setEnvironment("1");
+        schemaRequest.setTopicname("topic");
 
-        String input = topicName +"-----"+version+"-----"+envSel;
-
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.selectSchemaRequest(topicName, version, envSel))
+        stubUserInfo();
+        when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt()))
                 .thenReturn(schemaRequest);
-        when(clusterApiService.postSchema(schemaRequest, envSel, topicName))
-                .thenReturn(response);
-        when(handleDbRequests.updateSchemaRequest(schemaRequest, "uiuser1"))
+        when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt())).thenReturn(response);
+        when(handleDbRequests.updateSchemaRequest(any(), anyString()))
                 .thenThrow(new RuntimeException("Error"));
+        when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
+        when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-        String result = schemaRegstryControllerService.execSchemaRequests(topicName, envSel);
+        String result = schemaRegstryControllerService.execSchemaRequests(""+schemaReqId);
         assertThat(result, CoreMatchers.containsString("Error"));
     }
 
     @Test
+    @Order(7)
     public void uploadSchemaSuccess() {
-        SchemaRequest schemaRequest = new SchemaRequest();
-        schemaRequest.setSchemafull("");
+        SchemaRequestModel schemaRequest = new SchemaRequestModel();
+        schemaRequest.setSchemafull("{}");
+        schemaRequest.setUsername("kwuserb");
+        schemaRequest.setEnvironment("1");
+        schemaRequest.setTopicname("topic");
+        Topic topic = new Topic();
+        topic.setEnvironment("1");
+        topic.setTeamId(101);
 
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.requestForSchema(schemaRequest)).thenReturn("success");
+        stubUserInfo();
+        when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
+        when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+        when(handleDbRequests.requestForSchema(any())).thenReturn("success");
+        when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(Arrays.asList(topic));
 
         String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
         assertEquals(result,"success");
     }
 
     @Test
+    @Order(8)
     public void uploadSchemaFailure() {
-        SchemaRequest schemaRequest = new SchemaRequest();
-        schemaRequest.setSchemafull("");
+        SchemaRequestModel schemaRequest = new SchemaRequestModel();
+        schemaRequest.setSchemafull("{}");
+        schemaRequest.setUsername("kwuserb");
+        schemaRequest.setEnvironment("1");
+        schemaRequest.setTopicname("topic");
+        Topic topic = new Topic();
+        topic.setEnvironment("1");
+        topic.setTeamId(101);
 
-        when(userDetails.getUsername()).thenReturn("uiuser1");
-        when(handleDbRequests.requestForSchema(schemaRequest)).thenThrow(new RuntimeException("Error"));
+        stubUserInfo();
+        when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
+        when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+        when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+        when(handleDbRequests.requestForSchema(any())).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(Arrays.asList(topic));
 
         String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
         assertThat(result, CoreMatchers.containsString("failure"));
@@ -209,15 +259,27 @@ public class SchemaRegstryControllerServiceTest {
         List<SchemaRequest> schList = new ArrayList<>();
         SchemaRequest schReq = new SchemaRequest();
         schReq.setSchemafull("<Schema>");
+        schReq.setEnvironment("1");
+        schReq.setTopicstatus("created");
+        schReq.setTeamId(101);
         schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
         schList.add(schReq);
 
         schReq = new SchemaRequest();
         schReq.setSchemafull("<Schema1>");
+        schReq.setEnvironment("1");
+        schReq.setTopicstatus("created");
+        schReq.setTeamId(102);
         schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
         schList.add(schReq);
 
         return schList;
 
+    }
+
+    private void stubUserInfo() {
+        when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+        when(userInfo.getTeamId()).thenReturn(101);
+        when(mailService.getUserName(any())).thenReturn("kwusera");
     }
 }

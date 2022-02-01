@@ -4,9 +4,11 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('dashboardApp',['googlechart']);
+//var app = angular.module('dashboardApp',['chart.js','ngCookies']);
+var app = angular.module('dashboardApp',['chart.js']);
 
-app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
+// add $cookies
+app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $rootScope) {
 
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
@@ -17,21 +19,23 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
 	$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.showServerStatus = "false";
 
-        $scope.getClusterApi = function() {
+        $scope.getChartOverviewChart = function() {
 
-            $http({
-                method: "GET",
-                url: "getClusterApiStatus",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.clusterapi = output;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
-        };
+                    $http({
+                        method: "GET",
+                        url: "getActivityLogForTeamOverview",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'activityLogForTeam' : 'true' },
+                    }).success(function(output) {
+                        $scope.activitylogchart = output.activityLogOverview;
+                        $scope.topicsperteamchart = output.topicsPerTeamPerEnvOverview;
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+                };
 
         $scope.getEnvs = function() {
 
@@ -83,51 +87,16 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                   $window.location.reload();
               }
 
-
-          $scope.getChartOverviewChart = function() {
-
-              $http({
-                  method: "GET",
-                  url: "getActivityLogForTeamOverview",
-                  headers : { 'Content-Type' : 'application/json' },
-                  params: {'activityLogForTeam' : 'true' },
-              }).success(function(output) {
-                  $scope.activitylogchart = output.activityLogOverview;
-                  $scope.topicsperteamchart = output.topicsPerTeamPerEnvOverview;
-              }).error(
-                  function(error)
-                  {
-                      $scope.alert = error;
-                  }
-              );
-          };
-
-          $scope.getDashboardStatistics = function() {
-                $http({
-                     method: "GET",
-                     url: "getDashboardStats",
-                     headers : { 'Content-Type' : 'application/json' }
-                 }).success(function(output) {
-                     $scope.producerCount = output.producerCount;
-                     $scope.consumerCount = output.consumerCount;
-                     $scope.teamMembersCount = output.teamMembersCount;
-                 }).error(
-                     function(error)
-                     {
-                         $scope.alert = error;
-                     }
-                 );
-            }
-
            $scope.getAuth = function() {
            	$http({
                    method: "GET",
                    url: "getAuth",
                    headers : { 'Content-Type' : 'application/json' }
                }).success(function(output) {
-                   $scope.statusauth = output.status;
+                   $scope.dashboardDetails = output;
                    $scope.userlogged = output.username;
                    $scope.teamname = output.teamname;
+                   $scope.tenantName = output.tenantName;
                    $scope.userrole = output.userrole;
                    $scope.myteamtopics = output.myteamtopics;
                    $scope.kafkawizeversion = output.kafkawizeversion;
@@ -135,10 +104,8 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                    $scope.notificationsAcls = output.notificationsAcls;
                    $scope.notificationsSchemas = output.notificationsSchemas;
                    $scope.notificationsUsers = output.notificationsUsers;
-                   $scope.statusauthexectopics = output.statusauthexectopics;
-                   $scope.statusauthexectopics_su = output.statusauthexectopics_su;
                    $scope.notificationsSchemas = output.notificationsSchemas;
-                   $scope.alerttop = output.alertmessage;
+
                    if(output.companyinfo == null){
                        $scope.companyinfo = "Company not defined!!";
                    }
@@ -149,9 +116,12 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                        $scope.loggedinuser = "true";
 
                    $scope.teamsize = output.teamsize;
-                   $scope.userscount = output.users_count;
                    $scope.schema_clusters_count = output.schema_clusters_count;
                    $scope.kafka_clusters_count = output.kafka_clusters_count;
+                   if(output.kafka_clusters_count == '0')
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/helpwizard";
+
+                   $scope.checkPendingApprovals();
                }).error(
                    function(error)
                    {
@@ -160,23 +130,113 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window) {
                );
        	}
 
-        $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
+       	$scope.redirectToPendingReqs = function(redirectPage){
+            swal({
+                    title: "Pending Requests",
+                    text: "Would you like to look at them ?",
+                    type: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, show me!",
+                    cancelButtonText: "No, later!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                }).then(function(isConfirm){
+                    if (isConfirm.dismiss != "cancel") {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+                    } else {
+                        return;
+                    }
+                });
+        }
 
-                $location.path('/');
-                $window.location.reload();
+        $scope.checkPendingApprovals = function() {
+
+            if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+                return;
+
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            var foundLoggedInVar  = "false";
+            for (var i = 0; i < sURLVariables.length; i++)
+            {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == "loggedin")
+                {
+                    foundLoggedInVar  = "true";
+                    if(sParameterName[1] != "true")
+                        return;
+                }
+            }
+            if(foundLoggedInVar == "true")
+                $scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+        }
+
+       	$scope.getDashboardStatistics = function() {
+                   	$http({
+                           method: "GET",
+                           url: "getDashboardStats",
+                           headers : { 'Content-Type' : 'application/json' }
+                       }).success(function(output) {
+                           $scope.producerCount = output.producerCount;
+                           $scope.consumerCount = output.consumerCount;
+                           $scope.teamMembersCount = output.teamMembersCount;
+                       }).error(
+                           function(error)
+                           {
+                               $scope.alert = error;
+                           }
+                       );
+               	}
+
+
+        $scope.logout = function() {
+            $http({
+                method: "POST",
+                url: "logout",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
             }).error(
                 function(error)
                 {
-                    $scope.alert = error;
+                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
                 }
             );
         }
 
+        $scope.sendMessageToAdmin = function(){
+
+                if(!$scope.contactFormSubject)
+                    return;
+                if(!$scope.contactFormMessage)
+                    return;
+                if($scope.contactFormSubject.trim().length==0)
+                    return;
+                if($scope.contactFormMessage.trim().length==0)
+                    return;
+
+                $http({
+                        method: "POST",
+                        url: "sendMessageToAdmin",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                        data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                    }).success(function(output) {
+                        $scope.alert = "Message sent to Administrator !!";
+                        swal({
+                        	 title: "",
+                        	 text: "Message sent to Administrator !!",
+                        	 timer: 1500,
+                        	 showConfirmButton: false
+                         });
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+            }
 
 }
 );

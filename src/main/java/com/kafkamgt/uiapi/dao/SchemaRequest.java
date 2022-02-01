@@ -2,64 +2,42 @@ package com.kafkamgt.uiapi.dao;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+@ToString
 @Getter
 @Setter
 @Entity
+@IdClass(SchemaRequestID.class)
 @Table(name="kwschemarequests")
 public class SchemaRequest implements Serializable {
 
+    @Id
+    @Column(name = "avroschemaid")
+    private Integer req_no;
+
+    @Id
+    @Column(name = "tenantid")
+    private Integer tenantId;
+
     @Transient
+    private String environmentName;
+
+    @Column(name = "topicname")
     private String topicname;
 
-    @Transient
+    @Column(name = "env")
     private String environment;
 
-    @Transient
+    @Column(name = "versionschema")
     private String schemaversion;
 
-    @EmbeddedId
-    private SchemaRequestPK schemaRequestPK;
-
-    public String getTopicname() {
-        if(this.schemaRequestPK == null)
-            return this.topicname;
-        else
-            return this.schemaRequestPK.getTopicname();
-    }
-
-    public void setTopicname(String topicname) {
-        this.topicname = topicname;
-    }
-
-    public String getEnvironment() {
-        if(this.schemaRequestPK == null)
-            return this.environment;
-        else
-            return this.schemaRequestPK.getEnvironment();
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    public String getSchemaversion() {
-        if(this.schemaRequestPK == null)
-            return this.schemaversion;
-        else
-            return this.schemaRequestPK.getSchemaversion();
-    }
-
-    public void setSchemaversion(String schemaversion) {
-        this.schemaversion = schemaversion;
-    }
-
-    @Column(name = "teamname")
-    private String teamname;
+    @Column(name = "teamid")
+    private Integer teamId;
 
     @Column(name = "appname")
     private String appname;
@@ -73,8 +51,14 @@ public class SchemaRequest implements Serializable {
     @Column(name = "requesttime")
     private Timestamp requesttime;
 
+    @Transient
+    private String requesttimestring;
+
     @Column(name = "topicstatus")
     private String topicstatus;
+
+    @Column(name = "requesttype")
+    private String requesttype;
 
     @Column(name = "remarks")
     private String remarks;
@@ -84,5 +68,4 @@ public class SchemaRequest implements Serializable {
 
     @Column(name = "exectime")
     private Timestamp approvingtime;
-
 }

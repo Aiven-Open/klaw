@@ -8,22 +8,36 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YQB8J8J690');
+</script>
+
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>My Requests | Kafka Self-service Topic Management Portal</title>
+	<title>My Topic Requests | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
-	<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
+	<!--
+<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
 	<link rel="stylesheet" type="text/css"
 		  href="assets/plugins/datatables.net-bs4/css/responsive.dataTables.min.css">
+		  -->
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
 	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
+	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
 	<script src="js/myRequests.js"></script>
+
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -59,7 +73,12 @@
 			<!-- ============================================================== -->
 			<!-- Logo -->
 			<!-- ============================================================== -->
-
+			<div class="navbar-header">
+				<a class="navbar-brand" href="index">
+	<h4 style="color:white;">{{ companyinfo }}</h4>
+</a>
+				<!-- <a href="index"><img src="assets/images/clients/logo.jpg" width="100%" /></a> -->
+			</div>
 			<!-- ============================================================== -->
 			<!-- End Logo -->
 			<!-- ============================================================== -->
@@ -68,28 +87,19 @@
 				<!-- toggle and nav items -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
-					<!-- This is  -->
 
-					<!-- ============================================================== -->
-					<!-- Search -->
-					<!-- ============================================================== -->
 					<a href="index"><img src="assets/images/logo_kw.png" width="15%" /></a>
-
 				</ul>
-				<!-- ============================================================== -->
-				<!-- User profile and search -->
-				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
-					<!-- ============================================================== -->
-					<!-- Comment -->
-					<!-- ============================================================== -->
-
-					<!-- ============================================================== -->
 					<li class="nav-item d-none d-md-block search-box"> <a
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
-							href="javascript:void(0)" ng-click="refreshPage()"><i class="ti-reload"></i></a>
+							href="requestTopics"><i class="mdi mdi-plus"></i></a>
 					</li>
-					<li ng-if="statusauthexectopics=='Authorized'" class="nav-item dropdown">
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
+					</li>
+					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
 								class="mdi mdi-email"></i>
@@ -121,11 +131,29 @@
 											</div>
 										</a>
 										<a href="execSchemas" class="border-bottom d-block text-decoration-none py-2 px-3">
-											<div class="btn btn-success btn-circle mr-2"><i class="ti-pencil-alt"></i>
+											<div class="btn btn-info btn-circle mr-2"><i class="ti-pencil-alt"></i>
 											</div>
 											<div class="mail-contnet d-inline-block align-middle">
 												<h5 class="my-1">Schema Requests</h5> <span
 													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsSchemas }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execConnectors" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-warning btn-circle mr-2"><i class="ti-vector"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">KafkaConnector Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ dashboardDetails.notificationsConnectors }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execUsers" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-primary btn-circle mr-2"><i class="ti-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">New User Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsUsers }}  requests</span>
 
 											</div>
 										</a>
@@ -135,11 +163,7 @@
 							</ul>
 						</div>
 					</li>
-					<!-- ============================================================== -->
-					<!-- End Messages -->
-					<!-- ============================================================== -->
-					<!-- ============================================================== -->
-					<!-- Profile -->
+
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
@@ -161,7 +185,8 @@
 								</li>
 								<li role="separator" class="divider"></li>
 								<li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
-								<li><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
+                                 <li><a href="tenantInfo"><i class="ti-package"></i> My Tenant Info</a></li>
+								<li ng-show="dashboardDetails.authenticationType=='db'"><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
 								<li role="separator" class="divider"></li>
 								<li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
 							</ul>
@@ -170,12 +195,93 @@
 					<!-- ============================================================== -->
 					<!-- Language -->
 					<!-- ============================================================== -->
-					<li class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							<i class="mdi mdi-help-circle"></i></a>
-						<div class="dropdown-menu dropdown-menu-right scale-up">
-							<a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">Help</a>  </div>
+					<li class="nav-item dropdown mega-dropdown">
+						<a
+								class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+								class="mdi mdi-help-circle"></i></a>
+						<div class="dropdown-menu scale-up-left">
+							<ul class="mega-dropdown-menu row">
+								<li class="col-lg-6">
+									<h4 class="mb-3">Contact Administrator</h4>
+									<!-- Contact -->
+									<form>
+										<div class="form-group">
+											<input type="text" class="form-control" ng-model="contactFormSubject" placeholder="Enter Subject">
+										</div>
+										<div class="form-group">
+											<textarea class="form-control" ng-model="contactFormMessage" rows="3" placeholder="Message"></textarea>
+										</div>
+										<button type="button" ng-click="sendMessageToAdmin();" class="btn btn-info">Submit</button>
+									</form>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Help</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="docs">Documentation</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="https://kafkawize.readthedocs.io/en/latest/">ReadTheDocs</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blinds"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="{{ dashboardDetails.supportlink }}">Raise a git issue</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-hexagon"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="helpwizard">Starting Wizard</a></td>
+												</tr>
+											</table>
+										</li>
+									</ul>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Shortcuts</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="requestTopics">Request Topic</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="envs">Environments</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="users">Users</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="teams">Teams</a></td>
+												</tr>
+											</table>
+										</li>
+
+									</ul>
+								</li>
+							</ul>
+						</div>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-lg-0" style="width:200px;color:black;">
@@ -184,8 +290,8 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:#1e88e5;border:0;">
-										LoggedIn: {{userlogged}}</button>
+											id="userbackground">
+										{{userlogged}}</button>
 								</li>
 							</td>
 
@@ -194,7 +300,7 @@
 							<td width="100%">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-											style="width:200px;background-color:#1e88e5;border:0;">
+											id="userbackground">
 										{{teamname}} | {{userrole}}</button>
 
 								</li>
@@ -207,10 +313,7 @@
 			</div>
 		</nav>
 	</header>
-	<!-- ============================================================== -->
-	<!-- End Topbar header -->
-	<!-- ============================================================== -->
-	<!-- ============================================================== -->
+
 	<!-- Left Sidebar - style you can find in sidebar.scss  -->
 	<!-- ============================================================== -->
 	<aside class="left-sidebar">
@@ -225,28 +328,36 @@
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="index">Home</a></li>
 							<li><a href="activityLog">Activity Log</a></li>
-							<li><a href="serverConfig">Server Configuration</a></li>
+							<li><a href="analytics">Analytics</a></li>
+							<li><a href="serverConfig">Settings</a></li>
 						</ul>
 					</li>
-					<li>
+					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
 						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li class="two-column active">
+					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Kafka Connect</span></a>
+					</li>
+					<li class="two-column active" ng-show="dashboardDetails.requestItems=='Authorized'">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
-							<li><a href="requestSchema">Request Schema</a></li>
+					<li><a href="requestConnector">Request Connector</a></li>
+
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
+							<li><a href="mySchemaRequests">My Schema Requests</a></li>
+					<li><a href="myConnectorRequests">My Connector Requests</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
 					<li class="two-column">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Clusters</span></a>
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Environments</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li><a href="envs">Kafka</a></li>
-							<li><a href="envs">Schema Registry</a></li>
+							<li><a href="envs">Environments</a></li>
+							<li><a href="clusters">Clusters</a></li>
+							<li ng-show="dashboardDetails.showAddDeleteTenants == 'Authorized'" ><a href="tenants">Tenants</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -259,73 +370,72 @@
 							<li><a href="teams">Teams</a></li>
 						</ul>
 					</li>
-					<li class="nav-devider"></li>
-					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="statusauthexectopics=='Authorized'">
-						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Admin</span></a>
+					<li class="two-column" ng-show="dashboardDetails.canUpdatePermissions=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-account-key"></i><span class="hide-menu">Roles - Permissions</span></a>
 						<ul aria-expanded="false" class="collapse">
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execTopics">Approve Topic Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execAcls">Approve Acl Request</a></li>
-							<li ng-show="statusauthexectopics=='Authorized'"><a href="execSchemas">Approve Schema Request</a></li>
+							<li><a href="roles">Roles</a></li>
+							<li><a href="permissions">Permissions</a></li>
 						</ul>
 					</li>
-					<li>
-						<a class="has-arrow " href="proFeatures" aria-expanded="false"><i class="mdi mdi-flash-outline"></i><span class="hide-menu">Pro Features</span></a>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li class="two-column" ng-show="dashboardDetails.syncTopicsAcls == 'Authorized' || dashboardDetails.syncBackTopics == 'Authorized' || dashboardDetails.syncConnectors == 'Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Synchronize</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeTopics">Topics from cluster</a></li>
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeAcls">Acls from cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackTopics == 'Authorized'"><a href="syncBackTopics">Topics to cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackAcls == 'Authorized'"><a href="syncBackAcls">Acls to cluster</a></li>
+							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Approve</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
+					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
+							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+						</ul>
 					</li>
 
 				</ul>
 			</nav>
 			<!-- End Sidebar navigation -->
 		</div>
+		<div class="notificationbar" ng-show="dashboardDetails.broadcastText != ''">
+			<marquee>{{ dashboardDetails.broadcastText }}</marquee>
+		</div>
 		<!-- End Sidebar scroll-->
 	</aside>
-	<!-- ============================================================== -->
-	<!-- End Left Sidebar - style you can find in sidebar.scss  -->
-	<!-- ============================================================== -->
-	<!-- ============================================================== -->
+
 	<!-- Page wrapper  -->
 	<!-- ============================================================== -->
 	<div class="page-wrapper">
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid">
+		<div class="container-fluid" ng-init="getMyTopicRequests(1, false);getRequestStatuses();">
 			<div class="row page-titles">
 			</div>
 
-			<!-- Row -->
-			<!-- Row -->
-
-			<div class="row" ng-show="alerttop != null && alerttop != ''">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{alerttop}}</p>
-					</div>
-				</div>
-			</div>
 
 			<!-- Row -->
 
 			<div class="row" ng-show="alert != null && alert != ''" ng-init="">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
+						<div ng-show="alert.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
+						<div ng-show="alert.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
 						<p class="ribbon-content">{{ alert }}</p>
 					</div>
 				</div>
 			</div>
 
 			<!-- Row -->
-
-			<div class="row" ng-show="errorMessage != null && errorMessage != ''">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ errorMessage }}</p>
-					</div>
-				</div>
-			</div>
 
 			<div class="row" ng-show="topicRequests.length == 0">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
@@ -337,84 +447,131 @@
 			</div>
 			<!-- Row -->
 
-			<div class="row"  ng-init="getMyTopicRequests(1);">
-				<div class="col-lg-12" ng-show="topicRequests.length > 0">
-					<div class="card">
-						<div class="card-body">
-							<h4 class="card-title">My Topic Requests</h4>
-							<hr size="1" color="black">
-							<div>
-								<table width="100%" class="table table-hover color-table success-table">
-									<thead><tr>
+			<table width="100%"><tr>
+				<td align="left" width="65%"><h4 class="card-title">My Team Topic Requests</h4></td>
+				<td align="right" width="20%">
+					<div class="form-group has-success">
+						<label class="text-success">Filter on Status</label>
+						<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
+								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
-										<th>TopicName</th>
-										<th>Cluster</th>
-										<th>Requestor</th>
-										<!--<th>Acl_IP</th>-->
-										<!--<th>Acl_SSL</th>-->
-										<!--<th>Application</th>-->
-										<th>Team</th>
-										<th>Status</th>
-										<!--<th>Requested Time</th>-->
-										<th>Updated Time</th>
-										<th>Actions</th>
-									</tr>
-									</thead>
-									<tbody>
-									<tr ng-repeat="topicRequest in topicRequests">
+						</select>
+					</div>
+				</td>
+				<td align="right" width="15%">
+					<a href="requestTopics">
+						<button type="button"
+								class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Request a Topic</button>
+					</a>
+				</td>
+			</tr>
+			</table>
 
-										<td>{{ topicRequest.topicname }}</td>
+			<hr size="1" color="black">
 
-										<td ng-show="topicRequest.environment=='DEV'">
-											<span class="badge badge-success">{{ topicRequest.environment }}</span>
-										</td>
-										<td ng-show="topicRequest.environment=='TST'">
-											<span  class="badge badge-warning">{{ topicRequest.environment }}</span>
-										</td>
+			<div ng-repeat="topicRequest in topicRequests">
 
-										<td ng-show="topicRequest.environment=='ACC'">
-											<span  class="badge badge-info">{{ topicRequest.environment }}</span>
-										</td>
+				<div class="row" ng-show="topicRequest.topicname != null">
 
-										<td ng-show="topicRequest.environment=='PRD'">
-											<span  class="badge badge-danger">{{ topicRequest.environment }}</span>
-										</td>
+					<div class="col-md-12">
+						<div class="card">
 
-										<td ng-show="topicRequest.environment!='PRD' && topicRequest.environment != 'TST'
-										&& topicRequest.environment != 'ACC' && topicRequest.environment != 'DEV'">
-											<span  class="badge badge-primary">{{ topicRequest.environment }}</span>
-										</td>
+							<div class="card-body">
+								<div>
+									<table width="100%">
+										<tr>
+											<td align="left">
+												<h3 class="card-title">Topic : {{ topicRequest.topicname }}</h3>
+											</td>
+											<td ng-show="topicRequest.topicstatus == 'created'" align="right">
+												<button type="button" ng-click="deleteTopicRequest(topicRequest.topicid);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
+												</button></td>
+										</tr>
+									</table>
+								</div>
+								<hr size="1" color="black">
+								<div class="d-flex flex-row">
 
-										<td>{{ topicRequest.requestor }}</td>
-										<!--<td>{{ topicRequest.acl_ip }}</td>-->
-										<!--<td>{{ topicRequest.acl_ssl }}</td>-->
-										<!--<td>{{ topicRequest.appname }}</td>-->
-										<td>{{ topicRequest.teamname }}</td>
+									<div class="p-2 border-right" style="width:12%" ng-show="topicRequest.topictype != 'Claim'">
+										<h6 class="text-primary">Environment</h6><b>
+										<span class="badge badge-warning">{{ topicRequest.environmentName }}</span>
+									</b>
+									</div>
+									<div class="p-2 border-right" style="width:10%">
+										<h6 class="text-primary">Requestor</h6><b>{{ topicRequest.requestor }}</b>
+									</div>
+									<div class="p-2 border-right" style="width:10%" ng-show="topicRequest.topictype != 'Claim'">
+										<h6 class="text-primary">Partitions</h6><b>{{ topicRequest.topicpartitions }}</b>
+									</div>
+									<div class="p-2 border-right" style="width:13%" ng-show="topicRequest.topictype != 'Claim'">
+										<h6 class="text-primary">Replication Factor</h6><b>{{ topicRequest.replicationfactor }}</b>
+									</div>
+									<div class="p-2 border-right" style="width:15%">
+										<h6 class="text-primary">Team</h6><b>{{ topicRequest.teamname }}</b>
+									</div>
 
-										<td ng-show="topicRequest.topicstatus == 'created'" >
-											<span class="badge badge-info">created</span></td>
+									<div ng-show="topicRequest.topicstatus == 'created'" class="p-2 border-right" style="width:10%">
+										<h6 class="text-primary">Status</h6><b>
+										<span class="badge badge-success">{{ topicRequest.topicstatus }}</span></b>
+									</div>
+									<div ng-show="topicRequest.topicstatus != 'created'" class="p-2 border-right" style="width:10%">
+										<h6 class="text-primary">Status</h6><b>
+										<span class="badge badge-info">{{ topicRequest.topicstatus }}</span></b>
+									</div>
 
-										<td ng-show="topicRequest.topicstatus == 'declined'" >
-											<span class="badge badge-danger">declined</span></td>
+									<div ng-show="topicRequest.topictype == 'Create'" class="p-2 border-right" style="width:12%">
+										<h6 class="text-primary">Request Type</h6><b>
+										<span class="badge badge-info">{{ topicRequest.topictype }} Topic</span></b>
+									</div>
+									<div ng-show="topicRequest.topictype == 'Update'" class="p-2 border-right" style="width:12%">
+										<h6 class="text-primary">Request Type</h6><b>
+										<span class="badge badge-primary">{{ topicRequest.topictype }} Topic</span></b>
+									</div>
+									<div ng-show="topicRequest.topictype == 'Delete'" class="p-2 border-right" style="width:12%">
+										<h6 class="text-primary">Request Type</h6><b>
+										<span class="badge badge-danger">{{ topicRequest.topictype }} Topic</span></b>
+									</div>
+									<div ng-show="topicRequest.topictype == 'Claim'" class="p-2 border-right" style="width:12%">
+										<h6 class="text-primary">Request Type</h6><b>
+										<span class="badge badge-secondary">{{ topicRequest.topictype }} Topic</span></b>
+									</div>
 
-										<td ng-show="topicRequest.topicstatus == 'approved'" >
-											<span class="badge badge-success">approved</span></td>
+									<div class="p-2" style="width:15%">
+										<h6 class="text-primary">Date Requested</h6><b>{{ topicRequest.requesttimestring }}</b>
+									</div>
 
-										<td>{{ topicRequest.requesttimestring }}</td>
-										<td ng-show="topicRequest.topicstatus == 'created'">
-											<button type="button" ng-click="deleteTopicRequest(topicRequest.topicname,topicRequest.environment)"
-													class="btn btn-outline-secondary btn-circle">
-												<i class="fa fa-times"></i>
-											</button>
-										</td>
-										<!--<td>{{ topicRequest.approvingtime }}</td>-->
-									</tr>
-									</tbody>
-								</table>
+								</div>
+								<br>
+								<div class="d-flex flex-row">
+									<div class="p-2" style="width:50%">
+										<h6 class="text-primary">Description</h6><b>{{ topicRequest.description }}</b>
+									</div>
+
+									<div class="p-2 border-left" style="width:30%">
+										<h6 class="text-primary">Remarks</h6><b>
+										{{ topicRequest.remarks }}</b>
+									</div>
+									<div class="p-2 border-left" style="width:10%" ng-show="topicRequest.topicstatus == 'approved'">
+										<h6 class="text-primary">Approver</h6><b>
+										<span class="badge badge-info">{{ topicRequest.approver }}</span></b>
+									</div>
+									<div ng-show="topicRequest.topicstatus != 'approved'" class="p-2 border-left" style="width:10%;align:center;">
+										<h6 class="text-primary">Approving Info</h6>
+										<a class="mytooltip" href="javascript:void(0)">
+											<i class="fas fa-users"></i>
+											<span class="tooltip-content3">{{ topicRequest.approvingTeamDetails}}</span>
+										</a>
+									</div>
+								</div>
+
+
 							</div>
 						</div>
 					</div>
+
 				</div>
+
+
 			</div>
 
 			<div class="dataTables_paginate paging_simple_numbers"  ng-show="topicRequests.length>0">
@@ -423,51 +580,29 @@
 						<a href="#" class="page-link">Pages</a>
 					</li>
 					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
-						<a href="#" class="page-link" ng-click="getMyTopicRequests(allPages)">{{allPages}}</a>
+						<a href="#" class="page-link" ng-click="getMyTopicRequests(allPages, false)">{{allPages}}</a>
 					</li>
 				</ul>
 			</div>
 
-			<!-- Row -->
-
-			<!-- ============================================================== -->
-			<!-- End PAge Content -->
-			<!-- ============================================================== -->
-			<!-- ============================================================== -->
-			<!-- Right sidebar -->
-			<!-- ============================================================== -->
-			<!-- .right-sidebar -->
-
-			<!-- ============================================================== -->
-			<!-- End Right sidebar -->
-			<!-- ============================================================== -->
 		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-		<!-- ============================================================== -->
-		<!-- ============================================================== -->
+
 		<!-- footer -->
 		<!-- ============================================================== -->
 		<footer class="footer">
-			© 2020 Kafkawize by <a href="https://kafkawize.com">kafkawize.com</a>
+			<a href="https://kafkawize.io">kafkawize.io</a>
 		</footer>
-		<!-- ============================================================== -->
-		<!-- End footer -->
-		<!-- ============================================================== -->
+
 	</div>
 	<!-- ============================================================== -->
 	<!-- End Page wrapper  -->
 	<!-- ============================================================== -->
 </div>
-<!-- ============================================================== -->
-<!-- End Wrapper -->
-<!-- ============================================================== -->
-<!-- ============================================================== -->
 <!-- All Jquery -->
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap tether Core JavaScript -->
-<!--<script src="assets/plugins/popper/popper.min.js"></script>-->
+<script src="assets/plugins/popper/popper.min.js"></script>
 <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
 <!-- slimscrollbar scrollbar JavaScript -->
 <script src="assets/js/jquery.slimscroll.js"></script>
@@ -483,15 +618,14 @@
 <!-- ============================================================== -->
 <!-- This page plugins -->
 <!-- ============================================================== -->
+<!--
 <script src="assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
 <script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
+-->
 <!-- Chart JS -->
 <script src="assets/plugins/gauge/gauge.min.js"></script>
-<script src="assets/js/widget-data.js"></script>
-<!-- ============================================================== -->
-<!-- Style switcher -->
-<!-- ============================================================== -->
-<!--<script src="assets/plugins/styleswitcher/jQuery.style.switcher.js"></script>-->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
+<!-- <script src="assets/js/widget-data.js"></script> -->
 </body>
 
 </html>

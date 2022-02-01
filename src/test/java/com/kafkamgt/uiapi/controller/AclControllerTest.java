@@ -3,34 +3,32 @@ package com.kafkamgt.uiapi.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
-import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.model.AclInfo;
+import com.kafkamgt.uiapi.model.AclRequestsModel;
 import com.kafkamgt.uiapi.model.SyncAclUpdates;
 import com.kafkamgt.uiapi.model.TopicOverview;
 import com.kafkamgt.uiapi.service.AclControllerService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AclControllerTest {
 
     @MockBean
@@ -42,20 +40,24 @@ public class AclControllerTest {
 
     private AclController aclController;
 
-    @Before
+    private static final String topicName = "testtopic";
+    private static final int topicId = 1001;
+
+    @BeforeEach
     public void setup() {
         aclController = new AclController();
+        utilMethods = new UtilMethods();
         mvc = MockMvcBuilders
                 .standaloneSetup(aclController)
                 .dispatchOptions(true)
                 .build();
-        utilMethods = new UtilMethods();
         ReflectionTestUtils.setField(aclController, "aclControllerService", aclControllerService);
     }
 
     @Test
+    @Order(1)
     public void createAcl() throws Exception {
-        AclRequests addAclRequest = utilMethods.getAclRequest("testtopic");
+        AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
         String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
         when(aclControllerService.createAcl(any())).thenReturn("success");
 
@@ -70,14 +72,34 @@ public class AclControllerTest {
         assertEquals("success", response);
     }
 
+    @Test
+    public void updateSyncAcls() throws Exception {
+        List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
 
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
+        HashMap<String, String> result = new HashMap<>();
+        result.put("result","success");
+        when(aclControllerService.updateSyncAcls(any())).thenReturn(result);
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                .post("/updateSyncAcls")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        HashMap<String, String> actualResult = new ObjectMapper().readValue(response, new TypeReference<HashMap<String,String>>(){});
+
+        assertEquals("success", actualResult.get("result"));
+    }
 
     @Test
     public void getAclRequests() throws Exception {
 
-        List<AclRequests> aclRequests = utilMethods.getAclRequests();
+        List<AclRequestsModel> aclRequests = utilMethods.getAclRequestsModel();
 
-        when(aclControllerService.getAclRequests("1")).thenReturn(aclRequests);
+        when(aclControllerService.getAclRequests("1","", "all")).thenReturn(aclRequests);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getAclRequests")
@@ -87,25 +109,26 @@ public class AclControllerTest {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<AclRequests> response = new ObjectMapper().readValue(res, List.class);
+        List<AclRequestsModel> response = new ObjectMapper().readValue(res, List.class);
         assertEquals(1, response.size());
     }
 
     @Test
     public void getCreatedAclRequests() throws Exception {
 
-        List<List<AclRequests>> aclRequests = utilMethods.getAclRequestsList();
+        List<AclRequestsModel> aclRequests = utilMethods.getAclRequestsList();
 
-        when(aclControllerService.getCreatedAclRequests()).thenReturn(aclRequests);
+        when(aclControllerService.getCreatedAclRequests("1","","created")).thenReturn(aclRequests);
 
         String res = mvc.perform(MockMvcRequestBuilders
                 .get("/getCreatedAclRequests")
+                .param("pageNo","1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<List<AclRequests>> response = new ObjectMapper().readValue(res, List.class);
+        List<List<AclRequestsModel>> response = new ObjectMapper().readValue(res, List.class);
         assertEquals(1, response.size());
     }
 
@@ -114,7 +137,7 @@ public class AclControllerTest {
         when(aclControllerService.deleteAclRequests(anyString())).thenReturn("success");
 
         String response = mvc.perform(MockMvcRequestBuilders
-                .get("/deleteAclRequests")
+                .post("/deleteAclRequests")
                 .param("req_no","fsda32FSDw")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -141,11 +164,12 @@ public class AclControllerTest {
 
     @Test
     public void declineAclRequests() throws Exception {
-        when(aclControllerService.declineAclRequests(anyString())).thenReturn("success");
+        when(aclControllerService.declineAclRequests(anyString(), anyString())).thenReturn("success");
 
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/execAclRequestDecline")
                 .param("req_no","reqno")
+                .param("reasonForDecline","reason")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -158,7 +182,7 @@ public class AclControllerTest {
     public void getAcls1() throws Exception {
         TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-        when(aclControllerService.getAcls("testtopic"))
+        when(aclControllerService.getAcls("testtopic",""))
                 .thenReturn(topicOverview);
 
         String res = mvc.perform(MockMvcRequestBuilders
@@ -177,7 +201,7 @@ public class AclControllerTest {
     public void getAcls2() throws Exception {
         TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-        when(aclControllerService.getAcls( null))
+        when(aclControllerService.getAcls( null,""))
                 .thenReturn(topicOverview);
 
         String res = mvc.perform(MockMvcRequestBuilders
@@ -188,5 +212,23 @@ public class AclControllerTest {
                 .andReturn().getResponse().getContentAsString();
     }
 
+    @Test
+    public void getSyncAcls() throws Exception {
+        List<AclInfo> aclInfo = utilMethods.getAclInfoList();
 
+        when(aclControllerService.getSyncAcls(anyString(), anyString(),anyString(), any(), any()))
+                .thenReturn(aclInfo);
+
+        String res = mvc.perform(MockMvcRequestBuilders
+                .get("/getSyncAcls")
+                .param("env","DEV")
+                .param("pageNo","1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
+        assertEquals(1, response.size());
+    }
 }

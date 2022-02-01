@@ -4,7 +4,7 @@
 // edit 
 // solution for transaction
 // message store / key / gui
-var app = angular.module('browseAclsApp',[]);
+var app = angular.module('browseAclsApp',['textAngular']);
 
 app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 	
@@ -17,17 +17,45 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.envSelectedParam;
 
-	$scope.showSuccessToast = function() {
-                      var x = document.getElementById("successbar");
-                      x.className = "show";
-                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
-                    }
+	$scope.showSubmitFailed = function(title, text){
+		swal({
+			 title: "",
+			 text: "Request unsuccessful !!",
+			 timer: 2000,
+			 showConfirmButton: false
+			 });
+	}
 
-    $scope.showAlertToast = function() {
+	$scope.showAlertToast = function() {
               var x = document.getElementById("alertbar");
               x.className = "show";
-              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
             }
+
+    $scope.handleErrorMessage = function(error){
+                if(error != null && error.message != null){
+                    $scope.alert = error.message;
+                    $scope.alertnote = $scope.alert;
+                    $scope.showAlertToast();
+                }else{
+                        $scope.alert = error;
+                        $scope.alertnote = error;
+                        $scope.showAlertToast();
+                }
+            }
+
+        $scope.handleValidationErrors = function(error){
+            if(error.errors != null && error.errors.length > 0){
+                    $scope.alert = error.errors[0].defaultMessage;
+                }else if(error.message != null){
+                    $scope.alert = error.message;
+                    }else if(error.result != null){
+                    $scope.alert = error.result;
+                    }else $scope.alert = error;
+
+                $scope.alertnote = $scope.alert;
+                $scope.showAlertToast();
+         }
 
 	$scope.getEnvs = function() {
 
@@ -41,6 +69,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 function(error)
                 {
                     $scope.alert = error;
+                    $scope.alertnote = error;
+                    $scope.showAlertToast();
                 }
             );
         }
@@ -55,7 +85,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             url: "getAuth",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
-            $scope.statusauth = output.status;
+            $scope.dashboardDetails = output;
             $scope.userlogged = output.username;
             $scope.teamname = output.teamname;
             $scope.userrole = output.userrole;
@@ -64,9 +94,11 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             $scope.notificationsSchemas = output.notificationsSchemas;
             $scope.notificationsUsers = output.notificationsUsers;
 
-            $scope.statusauthexectopics = output.statusauthexectopics;
-            $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-            $scope.alerttop = output.alertmessage;
+            if(output.viewTopics!='Authorized')
+            {
+                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/index";
+            }
+
             if(output.companyinfo == null){
                 $scope.companyinfo = "Company not defined!!";
             }
@@ -75,6 +107,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
             if($scope.userlogged != null)
                 $scope.loggedinuser = "true";
+
+            $scope.checkPendingApprovals();
         }).error(
             function(error)
             {
@@ -83,53 +117,421 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         );
 	}
 
-        $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
 
-                $location.path('/');
-                $window.location.reload();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
+
+        $scope.logout = function() {
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
                 }
-            );
+
+	$scope.onDeleteTopic = function(env, topicDeletable){
+	    $scope.alertTopicDelete = null;
+	    $scope.alert = null;
+
+        if(!topicDeletable){
+            $scope.alertTopicDelete = "Please delete all the subscriptions in "+ env +" cluster, before topic can be deleted.";
+            return;
         }
 
-        $scope.getAllTopics = function() {
+        swal({
+                    title: "Are you sure?",
+                    text: "You would like to delete this topic ?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, request for deletion!",
+                    cancelButtonText: "No, cancel please!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                }).then(function(isConfirm){
+                    if (isConfirm.dismiss != "cancel") {
+                        $http({
+                                method: "POST",
+                                url: "createTopicDeleteRequest",
+                                headers : { 'Content-Type' : 'application/json' },
+                                params: {'topicName' : $scope.topicSelectedParam,
+                                                           'env' : env},
+                                data: {'topicName' : $scope.topicSelectedParam,
+                                                           'env' : env},
+                            }).success(function(output) {
 
-            $scope.alltopics = null;
+                                if(output.result == 'success'){
+                                    swal({
+                                         title: "",
+                                         text: "Topic Delete Request : "+output.result,
+                                         showConfirmButton: true
+                                     }).then(function(isConfirm){
+                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&deleteTopicCreated=true";
+                                        });
+                                }
+                                else{
+                                        $scope.alertTopicDelete = "Topic Delete Request : "+output.result;
+                                        $scope.alertnote = $scope.alertTopicDelete;
+                                        $scope.showSubmitFailed('','');
+                                    }
+                            }).error(
+                                function(error)
+                                {
+                                    $scope.handleValidationErrors(error);
+                                }
+                            );
+                    } else {
+                        return;
+                    }
+                });
+	}
+
+	$scope.onClaimTopic = function(topicName, env){
+    	    $scope.alert = null;
+
+            swal({
+                        title: "Are you sure?",
+                        text: "You would like to claim this topic ?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, request for ownership!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }).then(function(isConfirm){
+                        if (isConfirm.dismiss != "cancel") {
+                            $http({
+                                    method: "POST",
+                                    url: "createClaimTopicRequest",
+                                    headers : { 'Content-Type' : 'application/json' },
+                                    params: {'topicName' : $scope.topicSelectedParam,
+                                                               'env' : env},
+                                    data: {'topicName' : $scope.topicSelectedParam,
+                                                               'env' : env},
+                                }).success(function(output) {
+
+                                    if(output.result == 'success'){
+                                        swal({
+                                             title: "",
+                                             text: "Topic Claim Request : "+output.result,
+                                             showConfirmButton: true
+                                         }).then(function(isConfirm){
+                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +  "/myTopicRequests?reqsType=created&claimTopicCreated=true";
+                                             });
+                                    }
+                                    else{
+                                            $scope.alertTopicDelete = "Topic Claim Request : "+output.result;
+                                            $scope.alertnote = "Topic Claim Request : "+output.result;
+                                            $scope.showSubmitFailed('','');
+                                        }
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.handleValidationErrors(error);
+                                    }
+                                );
+                        } else {
+                            return;
+                        }
+                    });
+    	}
+
+	$scope.deleteAcls = function(reqNo, teamAcl){
+            $scope.alertTopicDelete = null;
+            $scope.alert = null;
+
+            if($scope.teamname != teamAcl){
+                $scope.alert = "Not authorized. You are part of a different team.";
+                $scope.alertnote = $scope.alert;
+                $scope.showAlertToast();
+                return;
+            }
+
+            swal({
+                        title: "Are you sure?",
+                        text: "You would like to delete this subscription ?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, request for deletion !",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }).then(function(isConfirm){
+                        if (isConfirm.dismiss != "cancel") {
+                            $http({
+                                    method: "POST",
+                                    url: "createDeleteAclSubscriptionRequest",
+                                    headers : { 'Content-Type' : 'application/json' },
+                                    params: {'req_no' : reqNo },
+                                    data: {'req_no' : reqNo }
+                                }).success(function(output) {
+                                    if(output.result != 'success'){
+                                        $scope.alert = "Delete Request : "+output.result+ ". Please check if there is any pending request.";
+                                        $scope.showSubmitFailed('','');
+                                     }
+                                    else{
+                                            $scope.alert = "Delete Subscription Request : "+output.result;
+                                            swal({
+                                                 title: "",
+                                                 text: "Delete Subscription Request : "+output.result,
+                                                 showConfirmButton: true
+                                             }).then(function(isConfirm){
+                                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=created&deleteAclCreated=true";
+                                                });
+                                        }
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.handleValidationErrors(error);
+                                    }
+                                );
+                        } else {
+                            return;
+                        }
+                    });
+
+    	}
+
+    	$scope.onFinalPromote = function(envSelected) {
+
+                var serviceInput = {};
+                $scope.alertTopicDelete = null;
+                $scope.alert = null;
+
+                if(!$scope.partitionsSelected || $scope.partitionsSelected == 'selected'){
+                    $scope.alertnote = "Please select topic partitions.";
+                    $scope.alert = $scope.alertnote;
+                    $scope.showAlertToast();
+                    return;
+                }
+
+                var tmpPartitionsSelected = $scope.partitionsSelected;
+                var tmpRepsSelected = $scope.replicationFactorSelected;
+
+                // selecting default partitions
+                if(tmpPartitionsSelected.indexOf("default") > 0)
+                {
+                    tmpPartitionsSelected = tmpPartitionsSelected.replace(" (default)","");
+                }
+
+                // selecting default rf
+                if(tmpRepsSelected.indexOf("default") > 0)
+                {
+                    tmpRepsSelected = tmpRepsSelected.replace(" (default)","");
+                }
+
+                serviceInput['environment'] = envSelected;
+                serviceInput['topicname'] = $scope.topicSelectedParam;
+                serviceInput['topicpartitions'] = tmpPartitionsSelected;
+                serviceInput['replicationfactor'] = tmpRepsSelected;
+                serviceInput['teamname'] = $scope.teamname;
+                serviceInput['appname'] = "App";//$scope.addTopic.app;
+                serviceInput['remarks'] = "Topic promotion."
+                serviceInput['topictype'] = 'Create';
+                serviceInput['description'] = $scope.topicSelectedParam + " topic."
+
                 $http({
-                    method: "GET",
-                    url: "getTopicsOnly?env="+$scope.getAcls.envName.name,
-                    headers : { 'Content-Type' : 'application/json' }
+                    method: "POST",
+                    url: "createTopics",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'addTopicRequest' : serviceInput },
+                    data: serviceInput
                 }).success(function(output) {
-                    $scope.alltopics = output;
+                    if(output.result == 'success'){
+                        swal({
+                        	 title: "",
+                        	 text: "Topic Promotion Request : "+output.result,
+                        	 showConfirmButton: true
+                         }).then(function(isConfirm){
+                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&topicPromotionCreated=true";
+                          });
+                    }
+                    else{
+                            $scope.alert = "Topic Promotion Request : "+output.result;
+                            $scope.showSubmitFailed('','');
+                        }
                 }).error(
                     function(error)
                     {
-                        $scope.alert = error;
+                        $scope.handleValidationErrors(error);
                     }
                 );
-            }
 
-	$scope.getAcls = function(pageNoSelected) {
+            };
+
+    	$scope.onFirstPromote = function(envSelected){
+    	    $scope.firstPromote = "true";
+    	    $scope.alertTopicDelete = null;
+    	    $scope.alert = null;
+
+    	    $http({
+            			method: "GET",
+            			url: "getEnvParams",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'envSelected' : envSelected }
+            		}).success(function(output) {
+            			$scope.promotionParams = output;
+            		}).error(
+            			function(error)
+            			{
+            				$scope.alert = error;
+            			}
+            		);
+    	}
+
+    $scope.addDocsVar = false;
+
+    $scope.addDocs = function(){
+        $scope.addDocsVar = 'true';
+    }
+
+    $scope.updateDocs = function(){
+        $scope.addDocsVar = 'true';
+    }
+
+    $scope.cancelSaveDocs = function() {
+        $scope.topicDocumentation = $scope.tmpTopicDocumentation;
+        $scope.addDocsVar = false;
+    }
+
+    $scope.saveDocs = function(){
+
+            if($scope.topicDocumentation == null || $scope.topicDocumentation.length==0)
+                {
+                    $scope.alertnote = "Please add some documentation related to topic.";
+                    $scope.showAlertToast();
+                    return;
+                }else
+                {
+                    $scope.topicDocumentation = $scope.topicDocumentation.trim();
+                    if($scope.topicDocumentation.length==0)
+                    {
+                        $scope.alertnote = "Please add some documentation related to topic.";
+                        $scope.showAlertToast();
+                        return;
+                    }
+                }
+
+            var serviceInput = {};
+            serviceInput['topicid'] = $scope.topicIdForDocumentation;
+            serviceInput['topicName'] = $scope.topicSelectedParam;
+            serviceInput['documentation'] = $scope.topicDocumentation;
+
+            swal({
+                        title: "Are you sure?",
+                        text: "You would like to save the documentation?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes, save it!",
+                        cancelButtonText: "No, cancel please!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }).then(function(isConfirm){
+                        if (isConfirm.dismiss != "cancel") {
+                            $http({
+                                    method: "POST",
+                                    url: "saveTopicDocumentation",
+                                    headers : { 'Content-Type' : 'application/json' },
+                                    data: serviceInput,
+                                }).success(function(output) {
+                                    if(output.result == 'success'){
+                                        swal({
+                                             title: "",
+                                             text: "Documentation Update Request : "+output.result,
+                                             timer: 2000,
+                                             showConfirmButton: false
+                                         });
+                                         $scope.addDocsVar = false;
+                                         $scope.tmpTopicDocumentation = $scope.topicDocumentation;
+                                         document.getElementById("topicDocId").innerHTML = $scope.topicDocumentation;
+                                    }
+                                    else{
+                                            $scope.alertTopicDelete = "Documentation Update Request : "+output.result;
+                                            $scope.alertnote = $scope.alertTopicDelete;
+                                            $scope.showSubmitFailed('','');
+                                        }
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.handleValidationErrors(error);
+                                    }
+                                );
+                        } else {
+                            return;
+                        }
+                    });
+    }
+
+    $scope.getVersionSchema = function(schemaVersion){
+        $scope.newSchemaVersion = schemaVersion;
+        $scope.getAcls();
+    }
+
+	$scope.getAcls = function() {
+        $scope.firstPromote = "false";
+        $scope.alertTopicDelete = null;
         $scope.alert = null;
 
         var serviceInput = {};
 
-        var str = window.location.search;
         var envSelected, topicSelected;
-        if(str){
-            var topicNameIndex = str.indexOf("topicname");
 
-            if(topicNameIndex > 0)
+        var sPageURL = window.location.search.substring(1);
+        var sURLVariables = sPageURL.split('&');
+        for (var i = 0; i < sURLVariables.length; i++)
+        {
+            var sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] == "topicname")
             {
-                topicSelected = str.substring(topicNameIndex+10);
+                topicSelected = sParameterName[1];
             }
         }
 
@@ -138,27 +540,171 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
 		$scope.topicSelectedParam = topicSelected;
 
+		$scope.ShowSpinnerStatusTopics = true;
+
 		$http({
 			method: "GET",
 			url: "getAcls",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'topicnamesearch' : topicSelected }
+            params: {'topicnamesearch' : topicSelected,
+             'schemaVersionSearch' : $scope.newSchemaVersion,
+             }
 		}).success(function(output) {
+		    $scope.ShowSpinnerStatusTopics = false;
 		    if(output.topicExists == true){
 		        $scope.resultBrowse = output.aclInfoList;
+		        $scope.resultBrowsePrefix = output.prefixedAclInfoList;
+		        $scope.resultBrowseTxnId = output.transactionalAclInfoList;
             	$scope.topicOverview = output.topicInfoList;
+            	$scope.promotionDetails = output.promotionDetails;
+            	$scope.schemaDetails = output.schemaDetails;
+
+            	$scope.schemaExists = output.schemaExists;
+            	$scope.prefixAclsExists = output.prefixAclsExists;
+            	$scope.txnAclsExists = output.txnAclsExists;
+                $scope.topicHistoryList = output.topicHistoryList;
+
+            	$scope.topicDocumentation = output.topicDocumentation;
+            	$scope.tmpTopicDocumentation = output.topicDocumentation;
+            	$scope.topicIdForDocumentation = output.topicIdForDocumentation;
+            	document.getElementById("topicDocId").innerHTML = output.topicDocumentation;
 		    }
 		    else
-		        $window.location.href = $window.location.origin + "/kafkawize/browseTopics";
+		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
 		}).error(
 			function(error) 
 			{
+			    $scope.ShowSpinnerStatusTopics = false;
 				$scope.alert = error;
 			}
 		);
 		
-	};
+	}
 
+	$scope.sendMessageToAdmin = function(){
+
+            if(!$scope.contactFormSubject)
+                return;
+            if(!$scope.contactFormMessage)
+                return;
+            if($scope.contactFormSubject.trim().length==0)
+                return;
+            if($scope.contactFormMessage.trim().length==0)
+                return;
+
+            $http({
+                    method: "POST",
+                    url: "sendMessageToAdmin",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                    data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                }).success(function(output) {
+                    $scope.alert = "Message Sent.";
+                    swal({
+                         title: "",
+                         text: "Message sent.",
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+        }
+
+        $scope.getOffsetValues = function(environment, topicName, consumergroup){
+            $http({
+                method: "GET",
+                url: "getConsumerOffsets",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'env' : environment, 'topicName' : topicName, 'consumerGroupId' : consumergroup},
+            }).success(function(output) {
+                $scope.consumeroffsetInfo = output;
+                var result = "";
+                var i;
+                for (i = 0; i < output.length; i++) {
+                  result += "Partition "+output[i].topicPartitionId + " | ";
+                  result += "CurrentOffset "+output[i].currentOffset + " | ";
+                  result += "EndOffset "+output[i].endOffset + " | ";
+                  result += "Lag "+output[i].lag + "\n\n";
+                }
+
+                if(output.length == 0)
+                {
+                    swal({
+                        title: "Group Id: " + consumergroup,
+                        text: "No offsets information found."
+                    });
+                }else{
+                swal({
+                        title: "Group Id: " + consumergroup,
+                        text: result
+                    });
+                }
+
+            }).error(
+                function(error)
+                {
+                    $scope.handleErrorMessage(error);
+                }
+            );
+        }
+
+        $scope.showTopicEvents = function() {
+                $scope.topiccontents = null;
+
+                if(!$scope.topicEventsSelectedEnv || $scope.topicEventsSelectedEnv == ""){
+                    swal({
+                         title: "",
+                         text: "Please select an Environment !!",
+                         timer: 2000,
+                         showConfirmButton: false
+                         });
+                    return;
+                }
+
+
+                if(!$scope.topicOffsetsVal || $scope.topicOffsetsVal == ""){
+                    swal({
+                         title: "",
+                         text: "Please select an Offset Position !!",
+                         timer: 2000,
+                         showConfirmButton: false
+                         });
+                    return;
+                }
+
+                $scope.ShowSpinnerStatus = true;
+
+                $http({
+                    method: "GET",
+                    url: "getTopicEvents",
+                    headers : { 'Content-Type' : 'application/json' },
+                    params : {'topicName' : $scope.topicSelectedParam, 'offsetId' : $scope.topicOffsetsVal,
+                     'envId' : $scope.topicEventsSelectedEnv, 'consumerGroupId': "notdefined"}
+                }).success(function(output) {
+                    $scope.ShowSpinnerStatus = false;
+                    if(output.status != null && output.status == "false"){
+                        swal({
+                             title: "",
+                             text: "No events found or Could not be retrieved !!",
+                             timer: 2000,
+                             showConfirmButton: true
+                             });
+                    }else
+                        $scope.topiccontents = output;
+                }).error(
+                    function(error)
+                    {
+                        $scope.ShowSpinnerStatus = false;
+                        $scope.alert = error;
+                        $scope.alertnote = error;
+                        $scope.showAlertToast();
+                    }
+                );
+            }
 
 }
 );

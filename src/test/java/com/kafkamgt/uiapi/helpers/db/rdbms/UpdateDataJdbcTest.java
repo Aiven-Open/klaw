@@ -1,29 +1,25 @@
 package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.UtilMethods;
-import com.kafkamgt.uiapi.dao.AclRequests;
-import com.kafkamgt.uiapi.dao.SchemaRequest;
-import com.kafkamgt.uiapi.dao.TopicRequest;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.repository.AclRequestsRepo;
 import com.kafkamgt.uiapi.repository.SchemaRequestRepo;
 import com.kafkamgt.uiapi.repository.TopicRequestsRepo;
 import com.kafkamgt.uiapi.repository.UserInfoRepo;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(SpringExtension.class)
 public class UpdateDataJdbcTest {
 
     @Mock
@@ -51,7 +47,7 @@ public class UpdateDataJdbcTest {
     @Mock
     UserInfo userInfo;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         updateData = new UpdateDataJdbc(topicRequestsRepo, aclRequestsRepo,
                 userInfoRepo, schemaRequestRepo,
@@ -62,7 +58,7 @@ public class UpdateDataJdbcTest {
 
     @Test
     public void declineTopicRequest() {
-        String result = updateData.declineTopicRequest(utilMethods.getTopicRequest("testtopic"),
+        String result = updateData.declineTopicRequest(utilMethods.getTopicRequest(1001),
                 "uiuser2");
         assertEquals("success", result);
     }
@@ -71,8 +67,9 @@ public class UpdateDataJdbcTest {
     public void updateTopicRequest() {
         when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
                 .thenReturn("success");
+        when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(1001);
 
-        String result = updateData.updateTopicRequest(utilMethods.getTopicRequest("testtopic"),
+        String result = updateData.updateTopicRequest(utilMethods.getTopicRequest(1001),
                 "uiuser2");
         assertEquals("success", result);
     }
@@ -112,7 +109,7 @@ public class UpdateDataJdbcTest {
 
     @Test
     public void updateSchemaRequest() {
-        String result = updateData.updateSchemaRequest(utilMethods.getSchemaRequests().get(0),
+        String result = updateData.updateSchemaRequest(utilMethods.getSchemaRequestsDao().get(0),
                 "uiuser1");
         assertEquals("success", result);
     }

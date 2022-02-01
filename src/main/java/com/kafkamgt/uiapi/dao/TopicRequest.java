@@ -1,59 +1,47 @@
 package com.kafkamgt.uiapi.dao;
 
-
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
+@ToString
 @Getter
 @Setter
 @Entity
+@IdClass(TopicRequestID.class)
 @Table(name="kwtopicrequests")
 public class TopicRequest implements Serializable {
 
-    @Transient
+    @Id
+    @Column(name = "topicid")
+    private Integer topicid;
+
+    @Id
+    @Column(name = "tenantid")
+    private Integer tenantId;
+
+    @Column(name = "topicname")
     private String topicname;
 
-    @Transient
+    @Column(name = "env")
     private String environment;
 
-    public String getTopicname() {
-        if(this.topicRequestPK == null)
-            return this.topicname;
-        else
-            return this.topicRequestPK.getTopicname();
-    }
-
-    public void setTopicname(String topicname) {
-        this.topicname = topicname;
-    }
-
-    public String getEnvironment() {
-        if(this.topicRequestPK == null)
-            return this.environment;
-        else
-            return this.topicRequestPK.getEnvironment();
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
-    }
-
-    @EmbeddedId
-    private TopicRequestPK topicRequestPK;
+    @Transient
+    private String environmentName;
 
     @Column(name = "partitions")
-    private String topicpartitions;
+    private Integer topicpartitions;
 
     @Column(name = "replicationfactor")
     private String replicationfactor;
 
-    @Column(name = "teamname")
-    private String teamname;
+    @Column(name = "teamid")
+    private Integer teamId;
 
     @Column(name = "appname")
     private String appname;
@@ -76,10 +64,10 @@ public class TopicRequest implements Serializable {
     @Column(name = "remarks")
     private String remarks;
 
-    @Column(name = "acl_ip")
+    @Column(name = "aclip")
     private String acl_ip;
 
-    @Column(name = "acl_ssl")
+    @Column(name = "aclssl")
     private String acl_ssl;
 
     @Column(name = "approver")
@@ -88,8 +76,17 @@ public class TopicRequest implements Serializable {
     @Column(name = "exectime")
     private Timestamp approvingtime;
 
+    @Column(name = "otherparams")
+    private String otherParams;
+
+    @Column(name = "description")
+    private String description;
+
     @Transient
     private String sequence;
+
+    @Transient
+    private String history;
 
     @Transient
     private String username;
@@ -98,9 +95,11 @@ public class TopicRequest implements Serializable {
     private String totalNoPages;
 
     @Transient
+    private String currentPage;
+
+    @Transient
     private List<String> allPageNos;
 
     @Transient
     private List<String> possibleTeams;
-
 }

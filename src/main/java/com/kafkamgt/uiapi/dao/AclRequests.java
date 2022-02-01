@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.dao;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,12 +12,18 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@ToString
+@IdClass(AclRequestID.class)
 @Table(name="kwaclrequests")
 public class AclRequests implements Serializable {
 
     @Id
-    @Column(name = "req_no")
-    private String req_no;
+    @Column(name = "aclid")
+    private Integer req_no;
+
+    @Id
+    @Column(name = "tenantid")
+    private Integer tenantId;
 
     @Column(name = "topicname")
     private String topicname;
@@ -24,15 +31,19 @@ public class AclRequests implements Serializable {
     @Column(name = "env")
     private String environment;
 
-    @Column(name = "teamname")
-    private String teamname;
+    @Transient
+    private String environmentName;
+
+    @Column(name = "teamid")
+    private Integer teamId;
 
     @Column(name = "requestingteam")
-    private String requestingteam;
+    private Integer requestingteam;
 
     @Column(name = "appname")
     private String appname;
 
+    // Producer Consumer
     @Column(name = "topictype")
     private String topictype;
 
@@ -54,10 +65,10 @@ public class AclRequests implements Serializable {
     @Column(name = "remarks")
     private String remarks;
 
-    @Column(name = "acl_ip")
+    @Column(name = "aclip")
     private String acl_ip;
 
-    @Column(name = "acl_ssl")
+    @Column(name = "aclssl")
     private String acl_ssl;
 
     @Column(name = "approver")
@@ -70,10 +81,27 @@ public class AclRequests implements Serializable {
     @Column(name = "acltype")
     private String aclType;
 
+    // prefixed acls or Literal(default)
+    @Column(name = "aclpatterntype")
+    private String aclPatternType;
+
+    // Topic
+    @Column(name = "aclresourcetype")
+    private String aclResourceType;
+
+    // TransactionalID
+    @Column(name = "transactionalid")
+    private String transactionalId;
+
+    @Column(name = "otherparams")
+    private String otherParams;
+
     @Transient
     private String totalNoPages;
 
     @Transient
-    private List<String> allPageNos;
+    private String currentPage;
 
+    @Transient
+    private List<String> allPageNos;
 }

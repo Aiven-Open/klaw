@@ -16,26 +16,80 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
-	$scope.showSuccessToast = function() {
-                      var x = document.getElementById("successbar");
-                      x.className = "show";
-                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
-                    }
+        	$scope.showSubmitFailed = function(title, textToDisplay){
+		swal({
+			 title: "Schema request Failed",
+			 text: textToDisplay,
+			 showConfirmButton: true
+			 });
+	}
 
-            $scope.showAlertToast = function() {
+		$scope.handleErrorMessage = function(error){
+                if(error != null && error.message != null){
+                    $scope.alert = error.message;
+                    $scope.alertnote = $scope.alert;
+                    $scope.showAlertToast();
+                }else{
+                        $scope.alert = error;
+                        $scope.alertnote = error;
+                        $scope.showAlertToast();
+                }
+            }
+
+	$scope.showAlertToast = function() {
                       var x = document.getElementById("alertbar");
                       x.className = "show";
-                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 4000);
+                      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
                     }
 
-        $scope.getMySchemaRequests = function() {
+        $scope.getRequestStatuses = function() {
+            $http({
+                method: "GET",
+                url: "getRequestTypeStatuses",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                const indOfDeleted = output.indexOf("deleted");
+                if(indOfDeleted > 0)
+                {
+                    output.splice(indOfDeleted, 1);
+                }
+                $scope.requestTypeStatuses = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
+
+        $scope.onChangeRequestType = function(requestType){
+            $scope.overwriteReqsType = true;
+            $scope.requestsType = requestType;
+            $scope.alert = "";
+            $scope.getMySchemaRequests(1, true);
+        }
+
+        $scope.getMySchemaRequests = function(pageNoSelected, overwriteFlag) {
+            if($scope.overwriteReqsType)
+               $scope.overwriteReqsType = false;
+
+            if(!$scope.requestsType)
+                $scope.requestsType = "created";
+
             $http({
                 method: "GET",
                 url: "getCreatedSchemaRequests",
-                headers : { 'Content-Type' : 'application/json' }
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'pageNo' : pageNoSelected,
+                 'currentPage' : $scope.currentPageSelected,
+                 'requestsType': $scope.requestsType }
             }).success(function(output) {
                 $scope.schemaRequests = output;
-
+                if(output!=null && output.length>0){
+                    $scope.resultPages = output[0].allPageNos;
+                    $scope.resultPageSelected = pageNoSelected;
+                    $scope.currentPageSelected = output[0].currentPage;
+                }
             }).error(
                 function(error)
                 {
@@ -44,55 +98,133 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
             );
         }
 
-        $scope.execSchemaRequest = function(topicName, env) {
+        $scope.execSchemaRequest = function(reqNo) {
+            $scope.showDeclinePanel = "false";
+            swal({
+                    title: "Are you sure?",
+                    text: "You would like to approve the Schema request ?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, approve it!",
+                    cancelButtonText: "No, cancel please!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                }).then(function(isConfirm){
+                    if (isConfirm.dismiss != "cancel") {
+                            $http({
+                                method: "POST",
+                                url: "execSchemaRequests",
+                                headers : { 'Content-Type' : 'application/json' },
+                                params: {'avroSchemaReqId' : reqNo},
+                                    data: {'avroSchemaReqId' : reqNo}
+                            }).success(function(output) {
+                                $scope.alert = "Schema Approve Request : " + output.result;
+                                $scope.getMySchemaRequests(1, false);
+                                if(output.result == 'success'){
+                                     swal({
+                                          title: "",
+                                          text: "Schema Approve Request : "+output.result,
+                                          timer: 2000,
+                                          showConfirmButton: false
+                                      });
+                                  }else $scope.showSubmitFailed('',output.result);
 
-            $http({
-                method: "POST",
-                url: "execSchemaRequests",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'topicName' : topicName,
-                    'env' : env},
-                    data: {'topicName' : topicName, 'env' : env}
-            }).success(function(output) {
-
-                $scope.alert = "Schema Approve Request : "+output.result;
-                $scope.getMySchemaRequests();
-                // $scope.showSuccessToast();
-
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                    $scope.alertnote = error;
-                    // $scope.showAlertToast();
-                }
-            );
+                            }).error(
+                                function(error)
+                                {
+                                    $scope.handleErrorMessage(error);
+                                }
+                            );
+                    } else {
+                        return;
+                    }
+                });
         }
 
-        $scope.execSchemaRequestDecline = function(topicName, env) {
+        $scope.declineWithReason = function(){
+            var reason = $scope.reasonForRejection;
 
-                    $http({
-                        method: "POST",
-                        url: "execSchemaRequestsDecline",
-                        headers : { 'Content-Type' : 'application/json' },
-                        params: {'topicName' : topicName,
-                            'env' : env},
-                            data: {'topicName' : topicName, 'env' : env}
-                    }).success(function(output) {
+            if(reason == null || reason.trim().length == 0)
+            {
+                return;
+            }
+            $scope.execSchemaRequestDecline('IGNORE_REQ');
+        }
 
-                        $scope.alert = "Schema Decline Request : "+output.result;
-                        $scope.getMySchemaRequests();
-                        // $scope.showSuccessToast();
+        $scope.showDeclinePanel = "false";
 
-                    }).error(
-                        function(error)
-                        {
-                            $scope.alert = error;
-                            $scope.alertnote = error;
-                            // $scope.showAlertToast();
-                        }
-                    );
-                }
+        $scope.execSchemaRequestDecline = function(reqNo) {
+            var reason = $scope.reasonForRejection;
+            if(reqNo == 'IGNORE_REQ'){
+            }else{
+                $scope.selectedReqToDecline = reqNo;
+            }
+            if(reason == null || reason.trim().length == 0)
+            {
+                swal({
+                         title: "",
+                         text: "Please mention a reason for declining this request.",
+                         timer: 2000,
+                         showConfirmButton: false
+                     });
+                $scope.showDeclinePanel = "true";
+                $scope.reqForDecline = reqNo;
+
+                return;
+            }
+            if($scope.reqForDecline != null && $scope.reqForDecline != $scope.selectedReqToDecline)
+            {
+                return;
+            }
+
+            reqNo = $scope.reqForDecline;
+
+
+            swal({
+                    title: "Are you sure?",
+                    text: "You would like to decline the Schema request ?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, decline it!",
+                    cancelButtonText: "No, cancel please!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                }).then(function(isConfirm){
+                    if (isConfirm.dismiss != "cancel") {
+                            $http({
+                                    method: "POST",
+                                    url: "execSchemaRequestsDecline",
+                                    headers : { 'Content-Type' : 'application/json' },
+                                    params: {'avroSchemaReqId' : reqNo, 'reasonForDecline' : reason},
+                                        data: {'avroSchemaReqId' : reqNo, 'reasonForDecline' : reason}
+                                }).success(function(output) {
+                                    $scope.alert = "Schema Decline Request : "+output.result;
+                                    $scope.reasonForRejection = "";
+                                    $scope.showDeclinePanel = "false";
+                                    $scope.topicForDecline = "";
+                                    $scope.getMySchemaRequests(1, false);
+                                    if(output.result == 'success'){
+                                         swal({
+                                              title: "",
+                                              text: "Schema Decline Request : "+output.result,
+                                              timer: 2000,
+                                              showConfirmButton: false
+                                          });
+                                      }else $scope.showSubmitFailed('',output.result);
+
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.handleErrorMessage(error);
+                                    }
+                                );
+                    } else {
+                        return;
+                    }
+                });
+           }
 
 
 	$scope.refreshPage = function(){
@@ -105,7 +237,7 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                     url: "getAuth",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
-                    $scope.statusauth = output.status;
+                    $scope.dashboardDetails = output;
                     $scope.userlogged = output.username;
                     $scope.teamname = output.teamname;
                     $scope.userrole = output.userrole;
@@ -113,9 +245,8 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                     $scope.notificationsAcls = output.notificationsAcls;
                     $scope.notificationsSchemas = output.notificationsSchemas;
                     $scope.notificationsUsers = output.notificationsUsers;
-                    $scope.statusauthexectopics = output.statusauthexectopics;
-                    $scope.statusauthexectopics_su = output.statusauthexectopics_su;
-                    $scope.alerttop = output.alertmessage;
+
+
                     if(output.companyinfo == null){
                         $scope.companyinfo = "Company not defined!!";
                     }
@@ -124,6 +255,8 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 
                     if($scope.userlogged != null)
                         $scope.loggedinuser = "true";
+
+                    $scope.checkPendingApprovals();
                 }).error(
                     function(error)
                     {
@@ -132,22 +265,96 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                 );
         	}
 
-        $scope.logout = function() {
-            //alert("onload");
-            $http({
-                method: "GET",
-                url: "logout"
-            }).success(function(output) {
+		$scope.redirectToPendingReqs = function(redirectPage){
+				swal({
+						title: "Pending Requests",
+						text: "Would you like to look at them ?",
+						type: "info",
+						showCancelButton: true,
+						confirmButtonColor: "#DD6B55",
+						confirmButtonText: "Yes, show me!",
+						cancelButtonText: "No, later!",
+						closeOnConfirm: true,
+						closeOnCancel: true
+					}).then(function(isConfirm){
+						if (isConfirm.dismiss != "cancel") {
+							$window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/"+redirectPage;
+						} else {
+							return;
+						}
+					});
+			}
 
-                $location.path('/');
-                $window.location.reload();
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
+			$scope.checkPendingApprovals = function() {
+
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+					return;
+
+				var sPageURL = window.location.search.substring(1);
+				var sURLVariables = sPageURL.split('&');
+				var foundLoggedInVar  = "false";
+				for (var i = 0; i < sURLVariables.length; i++)
+				{
+					var sParameterName = sURLVariables[i].split('=');
+					if (sParameterName[0] == "loggedin")
+					{
+						foundLoggedInVar  = "true";
+						if(sParameterName[1] != "true")
+							return;
+					}
+				}
+				if(foundLoggedInVar == "true")
+					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+			}
+
+        $scope.logout = function() {
+                    $http({
+                        method: "POST",
+                        url: "logout",
+                        headers : { 'Content-Type' : 'application/json' }
+                    }).success(function(output) {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                    }).error(
+                        function(error)
+                        {
+                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/" + "login";
+                        }
+                    );
                 }
-            );
-        }
+
+
+        $scope.sendMessageToAdmin = function(){
+
+                if(!$scope.contactFormSubject)
+                    return;
+                if(!$scope.contactFormMessage)
+                    return;
+                if($scope.contactFormSubject.trim().length==0)
+                    return;
+                if($scope.contactFormMessage.trim().length==0)
+                    return;
+
+                $http({
+                        method: "POST",
+                        url: "sendMessageToAdmin",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage },
+                        data:  {'contactFormSubject' : $scope.contactFormSubject,'contactFormMessage' : $scope.contactFormMessage }
+                    }).success(function(output) {
+                        $scope.alert = "Message Sent.";
+                        swal({
+                             title: "",
+                             text: "Message sent.",
+                             timer: 2000,
+                             showConfirmButton: false
+                         });
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+            }
 
 
 }
