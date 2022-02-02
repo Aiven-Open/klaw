@@ -2,8 +2,9 @@
 
 Kafkawize is now fully opensource. 🥳 All the features of the Kafkawize are now available at no cost. 
 
-Kafkawize is a Self service Apache Kafka Topic Management tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
+Kafkawize is a Self service Apache Kafka Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
 
+Withe several downloads every week, many more companies which did not adopt a solution, can happily move away from managing kafka configs in excelsheets and wiki pages. 
 
 [![Features](https://yt-embed.herokuapp.com/embed?v=i7nmi-lovgA)](https://www.youtube.com/watch?v=i7nmi-lovgA "Create a kafka topic")
 =======
@@ -124,4 +125,4 @@ Glad to discuss, if you are looking for professional support.
 
 ## Colloboration
 
-If you have some free time and like to learn and develop challenging tasks, this is an opportunity. Colloborate to the project. We are more than to onboard you.
+If you have some free time and like to learn and be part of this widely used project, this is an opportunity. Colloborate to the project. We are more than happy to onboard you.
