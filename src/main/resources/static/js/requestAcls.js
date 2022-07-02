@@ -376,8 +376,6 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 return false;
             }
 
-            // && $scope.acl_ipaddress.length>0,  && $scope.addAcl.acl_ssl.length>0
-
             if($scope.acl_ipaddress !=null){
                 for (var i = 0; i < $scope.acl_ipaddress.length; i++) {
                     if($scope.acl_ipaddress[i].length==0)

@@ -581,7 +581,7 @@
 															<input ng-disabled="disable_ip" ng-model="acl_ipaddress[$index]" name="acl_ip[$index]"
 																   type="text" placeholder="" class="form-control" id="ip_record[$index]">
 														</td>
-														<td ng-show="!disable_ip">
+														<td ng-show="!disable_ip  && alc_ipaddresslength-1 == $index">
 															<button type="button" class="btn btn-info  mb-2" ng-click="addAclRecord($index);">
 															<i class="ti-plus"></i>
 															</button>
@@ -608,7 +608,7 @@
 															<input ng-disabled="disable_ssl" ng-model="acl_ssl[$index]" name="acl_ssl[$index]"
 																   type="text" placeholder="" class="form-control" id="ssl_record[$index]">
 														</td>
-														<td ng-show="!disable_ssl">
+														<td ng-show="!disable_ssl && alc_ssllength-1 == $index">
 															<button type="button" class="btn btn-info  mb-2" ng-click="addAclSslRecord($index);">
 																<i class="ti-plus"></i>
 															</button>

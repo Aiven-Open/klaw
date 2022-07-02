@@ -231,11 +231,12 @@ public class UpdateDataJdbc {
                 aclObj.setTeamId(aclReq.getRequestingteam());
 
                 acls = new ArrayList<>();
-                aclObj.setAclip(aclString);
-                aclObj.setAclssl(aclReq.getAcl_ssl());
+                aclObj.setAclip(aclReq.getAcl_ip());
+                aclObj.setAclssl(aclString);
                 acls.add(aclObj);
 
                 if(aclReq.getAclType() != null && aclReq.getAclType().equals("Create")){
+                    acls.forEach(acl -> acl.setReq_no(null));
                     insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
                 }else{
                     // Delete SOT //
