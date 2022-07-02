@@ -98,21 +98,6 @@ public class TopicAclControllerIT {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-
-        assertThat(response, CoreMatchers.containsString("success"));
-
-        response = mvc.perform(MockMvcRequestBuilders
-                .get("/getUserDetails").with(user(superAdmin).password(superAdminPwd))
-                .param("userId",user1)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        UserInfoModel userInfoModel1 = new ObjectMapper().readValue(response, UserInfoModel.class);
-        assertEquals("INFRATEAM", userInfoModel1.getTeam());
-        assertEquals(user1, userInfoModel1.getUsername());
-        assertEquals(role, userInfoModel1.getRole());
     }
 
 

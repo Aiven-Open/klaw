@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import static com.kafkamgt.uiapi.service.KwConstants.RETRIEVE_SCHEMAS_KEY;
 
@@ -60,8 +59,7 @@ public class AclControllerService {
             return "{\"result\":\"Not Authorized\"}";
         }
 
-        if(aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null"))
-            aclReq.setAcl_ssl("User:*");
+
 
         List<Topic> topics = manageDatabase.getHandleDbRequests().getTopics(aclReq.getTopicname(), tenantId);
         boolean topicFound = false;
@@ -101,12 +99,37 @@ public class AclControllerService {
 
         AclRequests aclRequestsDao = new AclRequests();
         copyProperties(aclReq, aclRequestsDao);
-        aclRequestsDao.setTenantId(tenantId);
+        StringBuilder aclStr= new StringBuilder();
+        String seperatorAcl = "<ACL>";
+        if(aclReq.getAcl_ip() != null){
+            for(int i=0;i<aclReq.getAcl_ip().size();i++){
+                if(i==0){
+                    aclStr.append(aclReq.getAcl_ip().get(i));
+                }
+                else
+                    aclStr = new StringBuilder(aclStr + seperatorAcl + aclReq.getAcl_ip().get(i));
+            }
+            aclRequestsDao.setAcl_ip(aclStr.toString());
+        }
 
+        if(aclReq.getAcl_ssl() != null){
+            for(int i=0;i<aclReq.getAcl_ssl().size();i++){
+                if(i==0){
+                    aclStr.append(aclReq.getAcl_ssl().get(i));
+                }
+                else
+                    aclStr = new StringBuilder(aclStr + seperatorAcl + aclReq.getAcl_ssl().get(i));
+            }
+            aclRequestsDao.setAcl_ssl(aclStr.toString());
+        }
+
+        if(aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null"))
+            aclRequestsDao.setAcl_ssl("User:*");
+
+        aclRequestsDao.setTenantId(tenantId);
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
 
         if(execRes.equals("success")) {
-
             mailService.sendMail(aclReq.getTopicname(), aclReq.getTopictype(), "",
                     userDetails, manageDatabase.getHandleDbRequests(),
                     ACL_REQUESTED, commonUtilsService.getLoginUrl());
@@ -299,6 +322,15 @@ public class AclControllerService {
             for (AclRequests aclRequests : aclReqs) {
                 aclRequestsModel = new AclRequestsModel();
                 copyProperties(aclRequests, aclRequestsModel);
+                if(aclRequests.getAcl_ip() != null){
+                    String[] aclListIp = aclRequests.getAcl_ip().split("<ACL>");
+                    aclRequestsModel.setAcl_ip(new ArrayList<>(Arrays.asList(aclListIp)));
+                }
+
+                if(aclRequests.getAcl_ssl() != null){
+                    String[] aclListSsl = aclRequests.getAcl_ssl().split("<ACL>");
+                    aclRequestsModel.setAcl_ssl(new ArrayList<>(Arrays.asList(aclListSsl)));
+                }
                 aclRequestsModel.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
 
                 // show approving info only before approvals
@@ -504,8 +536,27 @@ public class AclControllerService {
         if(!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment()))
             return "{\"result\":\"Not Authorized\"}";
 
+        String allIps = aclReq.getAcl_ip();
+        String allSsl = aclReq.getAcl_ssl();
         if(aclReq.getReq_no() != null){
-            ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq, tenantId);
+            ResponseEntity<String> response = null;
+            if(aclReq.getAcl_ip() != null) {
+                String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
+                for (String s : aclListIp) {
+                    aclReq.setAcl_ip(s);
+                    response = clusterApiService.approveAclRequests(aclReq, tenantId);
+                }
+            }else if(aclReq.getAcl_ssl() != null) {
+                String[] aclListSsl = aclReq.getAcl_ssl().split("<ACL>");
+                for (String s : aclListSsl) {
+                    aclReq.setAcl_ssl(s);
+                    response = clusterApiService.approveAclRequests(aclReq, tenantId);
+                }
+            }
+
+            // set back all ips, principles
+            aclReq.setAcl_ip(allIps);
+            aclReq.setAcl_ssl(allSsl);
 
             String updateAclReqStatus ;
 

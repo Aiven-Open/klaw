@@ -197,27 +197,54 @@ public class UpdateDataJdbc {
         aclReq.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         aclRequestsRepo.save(aclReq);
 
-        List<Acl> acls = new ArrayList<>();
-        Acl aclObj = new Acl();
-        copyProperties(aclReq, aclObj);
-        aclObj.setTeamId(aclReq.getRequestingteam());
-        aclObj.setAclip(aclReq.getAcl_ip());
-        aclObj.setAclssl(aclReq.getAcl_ssl());
-        acls.add(aclObj);
+        return processMultipleAcls(aclReq);
+    }
 
-        if(aclReq.getAclType() != null && aclReq.getAclType().equals("Create")){
-            if(insertDataJdbcHelper.insertIntoAclsSOT(acls,false).equals("success"))
-                return "success";
-            else
-                return "failure";
-        }else{
-            // Delete SOT //
-            if(deleteDataJdbcHelper.deletePrevAclRecs(aclReq).equals("success")){
-                return "success";
+    private String processMultipleAcls(AclRequests aclReq) {
+        List<Acl> acls;
+        if(aclReq.getAcl_ip() != null){
+            String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
+            for (String aclString : aclListIp) {
+                Acl aclObj = new Acl();
+                copyProperties(aclReq, aclObj);
+                aclObj.setTeamId(aclReq.getRequestingteam());
+
+                acls = new ArrayList<>();
+                aclObj.setAclip(aclString);
+                aclObj.setAclssl(aclReq.getAcl_ssl());
+                acls.add(aclObj);
+
+                if(aclReq.getAclType() != null && aclReq.getAclType().equals("Create")){
+                    acls.forEach(acl -> acl.setReq_no(null));
+                    insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
+                }else{
+                    // Delete SOT //
+                    deleteDataJdbcHelper.deletePrevAclRecs(aclReq);
+                }
             }
-            else return "failure";
+        }
+        else if(aclReq.getAcl_ssl() != null){
+            String[] aclListSsl = aclReq.getAcl_ssl().split("<ACL>");
+            for (String aclString : aclListSsl) {
+                Acl aclObj = new Acl();
+                copyProperties(aclReq, aclObj);
+                aclObj.setTeamId(aclReq.getRequestingteam());
+
+                acls = new ArrayList<>();
+                aclObj.setAclip(aclString);
+                aclObj.setAclssl(aclReq.getAcl_ssl());
+                acls.add(aclObj);
+
+                if(aclReq.getAclType() != null && aclReq.getAclType().equals("Create")){
+                    insertDataJdbcHelper.insertIntoAclsSOT(acls,false);
+                }else{
+                    // Delete SOT //
+                    deleteDataJdbcHelper.deletePrevAclRecs(aclReq);
+                }
+            }
         }
 
+        return "success";
     }
 
     public String declineAclRequest(AclRequests aclRequests, String approver){

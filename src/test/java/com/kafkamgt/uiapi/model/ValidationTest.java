@@ -19,7 +19,7 @@ public class ValidationTest {
     @Test
     public void testNewTopicRequest(){
         TopicRequest topicRequest = new TopicRequest();
-        topicRequest.setAcl_ip("10.1.1.1");
+//        topicRequest.setAcl_ip("10.1.1.1");
         topicRequest.setAppname("newapp");
         topicRequest.setEnvironment("dev");
         topicRequest.setReplicationfactor("1");

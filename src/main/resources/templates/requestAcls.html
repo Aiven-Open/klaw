@@ -574,17 +574,54 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>IP Address</label>
-												<input ng-disabled="disable_ip" ng-model="addAcl.acl_ip" name="acl_ip"
-													   type="text" placeholder="" class="form-control">
+
+												<table>
+													<tr valign="top" ng-repeat="oneipaddress in acl_ipaddress track by $index">
+														<td width="95%">
+															<input ng-disabled="disable_ip" ng-model="acl_ipaddress[$index]" name="acl_ip[$index]"
+																   type="text" placeholder="" class="form-control" id="ip_record[$index]">
+														</td>
+														<td ng-show="!disable_ip">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addAclRecord($index);">
+															<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="alc_ipaddresslength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeAclRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
 												<small class="form-control-feedback"> Ex: 11.124.14.156 </small>
+
 											</div>
 										</div>
 
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Principle</label>
-												<input ng-disabled="disable_ssl" ng-model="addAcl.acl_ssl" name="acl_ip"
-													   type="text" placeholder="" class="form-control">
+												<table>
+													<tr valign="top" ng-repeat="onessl in acl_ssl track by $index">
+														<td width="95%">
+															<input ng-disabled="disable_ssl" ng-model="acl_ssl[$index]" name="acl_ssl[$index]"
+																   type="text" placeholder="" class="form-control" id="ssl_record[$index]">
+														</td>
+														<td ng-show="!disable_ssl">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addAclSslRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="alc_ssllength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeAclSslRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
+
 												<small class="form-control-feedback"> Ex: CN=myhost,OU=IS,OU=OU,OU=Services,O=Org</small>
 											</div>
 										</div>

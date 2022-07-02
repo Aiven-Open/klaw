@@ -492,7 +492,9 @@ public class UtilMethods {
         aclRequest.setUsername("kwusera");
         aclRequest.setTopictype("Consumer");
         aclRequest.setConsumergroup("mygrp1");
-        aclRequest.setAcl_ip("2.1.2.1");
+        ArrayList<String> ipList = new ArrayList<>();
+        ipList.add("2.1.2.1");
+        aclRequest.setAcl_ip(ipList);
         aclRequest.setAcl_ssl(null);
         aclRequest.setAclPatternType("LITERAL");
         aclRequest.setRequestingteam(1);

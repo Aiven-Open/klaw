@@ -29,7 +29,7 @@ This project is licensed under the Apache License  - see the [LICENSE.md](LICENS
 
 ## Architecture:
 
-![Architecture](https://github.com/muralibasani/kafkawize/blob/master/screenshots/arch.png)
+![Architecture](https://github.com/muralibasani/kafkawize/blob/master/arch.png)
 
 ## Dependency project:
 
@@ -64,7 +64,7 @@ https://github.com/muralibasani/kafkawizeclusterapi
 - Login 
   - Active directory integration
   - Single Sign-on (OAuth2)
-  - Basesd on database
+  - Based on database
   
 - Configure Clusters and Environments
   - Clusters can be created connecting to Kafka clusters. (Cluster Management Api should be configured)
@@ -121,7 +121,7 @@ and follow steps defined at https://kafkawize.readthedocs.io/en/latest
 
 ## Support
 
-Glad to discuss, if you are looking for professional support.
+Glad to discuss, if you are looking for any support.
 
 ## Colloboration
 

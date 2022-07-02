@@ -58,10 +58,6 @@ public class TopicRequestModel implements Serializable {
 
     private String topicstatus;
 
-    private String acl_ip;
-
-    private String acl_ssl;
-
     private String approver;
 
     private Timestamp approvingtime;

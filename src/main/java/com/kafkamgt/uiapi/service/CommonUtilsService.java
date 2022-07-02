@@ -1,6 +1,7 @@
 package com.kafkamgt.uiapi.service;
 
 import com.kafkamgt.uiapi.config.ManageDatabase;
+import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.model.KwMetadataUpdates;
 import com.kafkamgt.uiapi.model.EntityType;
 import com.kafkamgt.uiapi.model.MetadataOperationType;
@@ -112,10 +113,12 @@ public class CommonUtilsService {
                 return "";
         }
         else {
-            return manageDatabase
+            UserInfo userInfo = manageDatabase
                     .getHandleDbRequests()
-                    .getUsersInfo(getUserName(principal))
-                    .getRole();
+                    .getUsersInfo(getUserName(principal));
+            if(userInfo != null)
+                return userInfo.getRole();
+            else return null;
         }
     }
 

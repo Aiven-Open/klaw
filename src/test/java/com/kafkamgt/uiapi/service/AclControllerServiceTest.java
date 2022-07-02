@@ -234,7 +234,7 @@ public class AclControllerServiceTest {
         when(handleDbRequests.updateAclRequest(any(), any())).thenReturn("success");
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
 
-        String result = aclControllerService.approveAclRequests(req_no);
+        String result = aclControllerService.approveAclRequests("112");
         assertEquals("{\"result\":\"success\"}", result);
     }
 
@@ -482,6 +482,7 @@ public class AclControllerServiceTest {
         aclReq.setEnvironment("1");
         aclReq.setUsername("kwuserb");
         aclReq.setAclstatus("created");
+        aclReq.setAcl_ip("1.2.3.4");
         return aclReq;
     }
 

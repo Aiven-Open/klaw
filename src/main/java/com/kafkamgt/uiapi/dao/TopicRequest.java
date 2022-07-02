@@ -64,12 +64,6 @@ public class TopicRequest implements Serializable {
     @Column(name = "remarks")
     private String remarks;
 
-    @Column(name = "aclip")
-    private String acl_ip;
-
-    @Column(name = "aclssl")
-    private String acl_ssl;
-
     @Column(name = "approver")
     private String approver;
 

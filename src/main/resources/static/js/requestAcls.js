@@ -194,11 +194,13 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     if(selectedAclType =='SSL'){
                         $scope.disable_ssl=false;
                         $scope.disable_ip=true;
-                        $scope.addAcl.acl_ip = "";
+                        $scope.acl_ipaddress=[""];
+                        $scope.alc_ipaddresslength = $scope.acl_ipaddress.length;
                     }else{
                         $scope.disable_ssl=true;
                         $scope.disable_ip=false;
-                        $scope.addAcl.acl_ssl = "";
+                        $scope.acl_ssl=[""];
+                        $scope.alc_ssllength = $scope.acl_ssl.length;
                     }
                 }
 
@@ -356,9 +358,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 aclpatterntypetype = 'LITERAL';
 
             if($scope.addAcl.acl_ip_ssl == 'IP')
-                $scope.addAcl.acl_ssl = null;
+                $scope.acl_ssl = null;
+
              else if($scope.addAcl.acl_ip_ssl == 'SSL')
-                $scope.addAcl.acl_ip = null;
+                $scope.acl_ipaddress = null;
 
             if(!$scope.addAcl.team || !$scope.addAcl.topicname )
             {
@@ -373,8 +376,31 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 return false;
             }
 
-            if(($scope.addAcl.acl_ip !=null && $scope.addAcl.acl_ip.length>0) ||
-                      ($scope.addAcl.acl_ssl !=null && $scope.addAcl.acl_ssl.length>0)){}
+            // && $scope.acl_ipaddress.length>0,  && $scope.addAcl.acl_ssl.length>0
+
+            if($scope.acl_ipaddress !=null){
+                for (var i = 0; i < $scope.acl_ipaddress.length; i++) {
+                    if($scope.acl_ipaddress[i].length==0)
+                    {
+                      $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
+                      $scope.showAlertToast();
+                      return;
+                    }
+                }
+            }
+
+            if($scope.acl_ssl !=null){
+                for (var i = 0; i < $scope.acl_ssl.length; i++) {
+                    if($scope.acl_ssl[i].length==0)
+                    {
+                      $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
+                      $scope.showAlertToast();
+                      return;
+                    }
+                }
+            }
+
+            if(($scope.acl_ipaddress !=null) ||  ($scope.acl_ssl !=null)){}
              else
              {
                 $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
@@ -388,8 +414,8 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              serviceInput['teamname'] = $scope.addAcl.team;
              serviceInput['appname'] = "App";//$scope.addAcl.app;
              serviceInput['remarks'] = $scope.addAcl.remarks;
-             serviceInput['acl_ip'] = $scope.addAcl.acl_ip;
-             serviceInput['acl_ssl'] = $scope.addAcl.acl_ssl;
+             serviceInput['acl_ip'] = $scope.acl_ipaddress;
+             serviceInput['acl_ssl'] = $scope.acl_ssl;
              serviceInput['consumergroup'] = $scope.addAcl.consumergroup;
              serviceInput['aclPatternType'] = aclpatterntypetype;
              serviceInput['transactionalId'] = $scope.addAcl.transactionalId;
@@ -444,6 +470,37 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     }
                 }
             }
+
+        $scope.acl_ipaddress=[""];
+        $scope.acl_ssl=[""];
+        $scope.alc_ipaddresslength = $scope.acl_ipaddress.length;
+        $scope.alc_ssllength = $scope.acl_ssl.length;
+
+        $scope.addAclRecord = function(indexToAdd){
+             $scope.acl_ipaddress.push("");
+             $scope.alc_ipaddresslength = $scope.acl_ipaddress.length;
+        }
+
+        $scope.removeAclRecord = function(indexToRemove){
+             if($scope.acl_ipaddress.length ==1){}
+             else{
+                    $scope.acl_ipaddress.splice(indexToRemove, 1);
+             }
+             $scope.alc_ipaddresslength = $scope.acl_ipaddress.length;
+        }
+
+        $scope.addAclSslRecord = function(indexToAdd){
+             $scope.acl_ssl.push("");
+             $scope.alc_ssllength = $scope.acl_ssl.length;
+        }
+
+        $scope.removeAclSslRecord = function(indexToRemove){
+             if($scope.acl_ssl.length ==1){}
+             else{
+                    $scope.acl_ssl.splice(indexToRemove, 1);
+             }
+             $scope.alc_ssllength = $scope.acl_ssl.length;
+        }
 
         $scope.sendMessageToAdmin = function(){
 

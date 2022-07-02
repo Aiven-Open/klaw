@@ -336,7 +336,8 @@ public class UsersTeamsControllerService {
             return "{\"result\":\"Not Authorized\"}";
 
         UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
-        List<String> permissions = manageDatabase.getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName())).get(existingUserInfo.getRole());
+        List<String> permissions = manageDatabase.getRolesPermissionsPerTenant(commonUtilsService
+                .getTenantId(getUserName())).get(existingUserInfo.getRole());
         if(permissions != null && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name()))
             return "{\"result\":\"Not Authorized. Cannot delete a user with SUPERADMIN access.\"}";
 

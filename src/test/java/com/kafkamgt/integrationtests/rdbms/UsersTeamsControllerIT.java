@@ -43,9 +43,44 @@ public class UsersTeamsControllerIT {
     private static String teamName = "Octopus";
     private static String userPwd = "user";
 
+    private static final String INFRATEAM = "INFRATEAM";
+    private static final String PASSWORD = "user";
+
     @BeforeAll
     public static void setup() {
         mockMethods = new MockMethods();
+    }
+
+    // Create user with USER role success
+    @Test
+    @Order(1)
+    public void createRequiredUsers() throws Exception {
+        String role = "USER";
+        UserInfoModel userInfoModel = mockMethods.getUserInfoModel(user1, role, INFRATEAM);
+        String jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
+
+        String response = mvc.perform(MockMvcRequestBuilders
+                        .post("/addNewUser").with(user(superAdmin).password(superAdminPwd))
+                        .content(jsonReq)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+//        assertThat(response, CoreMatchers.containsString("success"));
+
+        userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
+        jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
+
+        response = mvc.perform(MockMvcRequestBuilders
+                        .post("/addNewUser").with(user(superAdmin).password(superAdminPwd))
+                        .content(jsonReq)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+//        assertThat(response, CoreMatchers.containsString("success"));
     }
 
     // Create team success
@@ -225,10 +260,6 @@ public class UsersTeamsControllerIT {
     @Test
     @Order(9)
     public void deleteUserSuccess() throws Exception {
-        String role = "USER";
-        UserInfoModel userInfoModel = mockMethods.getUserInfoModel(user1, role, teamName);
-        String jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
-
         String response = mvc.perform(MockMvcRequestBuilders
                 .post("/deleteUserRequest").with(user(superAdmin).password(superAdminPwd))
                 .param("userId",user1)
