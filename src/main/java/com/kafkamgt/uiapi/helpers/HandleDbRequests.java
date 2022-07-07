@@ -11,8 +11,6 @@ import java.util.Optional;
 
 public interface HandleDbRequests {
 
-    void connectToDb(String licenseKey) throws Exception;
-
     /*--------------------Insert */
 
     HashMap<String, String> requestForTopic(TopicRequest topicRequest);

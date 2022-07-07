@@ -21,6 +21,9 @@ public class ValidateCaptchaService {
     @Value("${google.recaptcha.verification.endpoint}")
     String recaptchaEndpoint;
 
+    @Value("${kafkawize.recaptcha.validate}")
+    boolean validateRecaptcha;
+
     @Value("${google.recaptcha.secret}")
     String recaptchaSecret;
 
@@ -43,6 +46,9 @@ public class ValidateCaptchaService {
         // by the recaptcha client-side integration on your site.
         params.add("response", captchaResponse);
 
+        if(!validateRecaptcha)
+            return true;
+
         CaptchaResponse apiResponse = null;
         try {
             apiResponse = template.postForObject(recaptchaEndpoint, params, CaptchaResponse.class);
@@ -50,11 +56,7 @@ public class ValidateCaptchaService {
             log.error("Some exception occurred while binding to the recaptcha endpoint.", e);
         }
 
-        if (Objects.nonNull(apiResponse) && apiResponse.isSuccess()) {
-//            log.info("Captcha API response = {}", apiResponse.toString());
-            return true;
-        } else {
-            return false;
-        }
+        //            log.info("Captcha API response = {}", apiResponse.toString());
+        return Objects.nonNull(apiResponse) && apiResponse.isSuccess();
     }
 }

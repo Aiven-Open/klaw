@@ -66,7 +66,12 @@ public class TemplateMapController {
     @RequestMapping(value = "/register", method = RequestMethod.GET)
     public String register(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
         if(authenticationType.equals("ldap") || authenticationType.equals("ad") || ssoEnabled.equals("true"))
-            return checkAuth("registerLdap.html", request, response);
+        {
+            if(kwInstallationType.equals("saas"))
+                return checkAuth("registerSaas.html", request, response);
+            else
+                return checkAuth("registerLdap.html", request, response);
+        }
         else if(authenticationType.equals("db") && kwInstallationType.equals("saas"))
             return checkAuth("registerSaas.html", request, response);
         else return checkAuth("register.html", request, response);

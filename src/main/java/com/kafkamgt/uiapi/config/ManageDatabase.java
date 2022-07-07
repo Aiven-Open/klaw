@@ -130,9 +130,7 @@ public class ManageDatabase  implements ApplicationContextAware {
     
     @PostConstruct
     public void loadDb() throws Exception {
-
         handleDbRequests = handleJdbc();
-        handleDbRequests.connectToDb("licenseKey");
         loadStaticDataToDb();
         updateStaticDataToMemory();
         checkSSOAuthentication();

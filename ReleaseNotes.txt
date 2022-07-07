@@ -1,5 +1,12 @@
 Release Notes:
 
+- The below changes are part of release 5.0.2
+
+- Introducing Liquibase for all database migrations
+- Recaptcha validation can be disabled if running in saas mode
+
+-----------------------------------------------------------------------------------
+
 - The below changes are part of release 5.0.1
 
 - Now users can request for multiple acls in one request. Earlier it was either one IP address or one Principle in one request.

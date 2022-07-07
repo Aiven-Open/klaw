@@ -34,18 +34,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     @Autowired
     DeleteDataJdbc jdbcDeleteHelper;
 
-    @Autowired
-    LoadDbJdbc loadDbJdbc;
-
-    public void connectToDb(String licenseKey) {
-        if(dbCreateTables.equals("true")){
-            loadDbJdbc.createTables();
-        }
-//        if(dbInsertData.equals("true")){
-//            loadDbJdbc.insertData();
-//        }
-    }
-
     /*--------------------Insert */
 
     public HashMap<String, String> requestForTopic(TopicRequest topicRequest){

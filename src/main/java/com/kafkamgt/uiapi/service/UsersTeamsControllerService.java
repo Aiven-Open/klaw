@@ -437,11 +437,12 @@ public class UsersTeamsControllerService {
             userInfo.setPwd(newUser.getUserPassword());
             String result = dbHandle.addNewUser(userInfo);
 
+//            log.info("pwd : "+decodePwd(newUser.getUserPassword()));
             if(isExternal) {
                 if(newUser.getUserPassword().equals(""))
                     mailService.sendMail(newUser.getUsername(), newUser.getUserPassword(),
                         dbHandle, commonUtilsService.getLoginUrl());
-                else if(!newUser.getUserPassword().equals(""))
+                else
                     mailService.sendMail(newUser.getUsername(), decodePwd(newUser.getUserPassword()),
                             dbHandle, commonUtilsService.getLoginUrl());
             }

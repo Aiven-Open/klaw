@@ -4,6 +4,10 @@
 
 /* mysql -u root -p -e "SET GLOBAL sql_mode = 'NO_ENGINE_SUBSTITUTION';" */
 
+/*
+ If you enable liquibase, the below scripts don't have to be execute manually, however configured user (in application.properties) should have the privileges to create tables
+*/
+
 Create table if not exists kwtopicrequests(
 	topicid INT NOT NULL,
 	topicname varchar(150),
