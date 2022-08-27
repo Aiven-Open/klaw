@@ -67,6 +67,8 @@ public class AclRequestsModel implements Serializable {
 
     private String aclType;
 
+    private AclIPPrincipleType aclIpPrincipleType;
+
     // Always TOPIC (for now)
     private String aclResourceType;
 

@@ -884,5 +884,14 @@ databaseChangeLog:
             name: tenantid
             type: INT
         tableName: kwusers
-
+- changeSet:
+      id: 27thAug2022 add column to store ip address or principle or username based
+      author: muralibasani
+      changes:
+      - addColumn:
+            tableName: kwaclrequests
+            columns:
+            - column:
+                  name: aclipprincipletype
+                  type: VARCHAR(50)
 

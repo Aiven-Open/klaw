@@ -555,14 +555,14 @@
 									<div class="row">
 										<div class="col-md-12">
 											<div class="form-group">
-												<label class="control-label">Acl IP or SSL based</label>
+												<label class="control-label">Acl IP or Principle Or Username based</label>
 												<div class="demo-radio-button" ng-init="addAcl.acl_ip_ssl='IP'">
 													<input class="radio-col-orange" ng-change="onSelectAcl('IP')" ng-model="addAcl.acl_ip_ssl" name="group1"
 														   type="radio" id="radio_1" value="IP" checked />
 													<label for="radio_1">IP Address</label>
 													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="addAcl.acl_ip_ssl"
 														   name="group1" type="radio" id="radio_2" value="SSL" />
-													<label for="radio_2">Principle</label>
+													<label for="radio_2">Principle / Username</label>
 												</div>
 
 											</div>
@@ -601,7 +601,7 @@
 
 										<div class="col-md-6">
 											<div class="form-group">
-												<label>Principle</label>
+												<label>Principle / Username</label>
 												<table>
 													<tr valign="top" ng-repeat="onessl in acl_ssl track by $index">
 														<td width="95%">
@@ -623,6 +623,8 @@
 
 
 												<small class="form-control-feedback"> Ex: CN=myhost,OU=IS,OU=OU,OU=Services,O=Org</small>
+												<br>
+												<small class="form-control-feedback"> Ex: alice</small>
 											</div>
 										</div>
 										<!--/span-->

@@ -190,17 +190,20 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                     }
             }
 
+            $scope.selectedAclType="IP_ADDRESS";
             $scope.onSelectAcl = function(selectedAclType){
                     if(selectedAclType =='SSL'){
                         $scope.disable_ssl=false;
                         $scope.disable_ip=true;
                         $scope.acl_ipaddress=[""];
                         $scope.alc_ipaddresslength = $scope.acl_ipaddress.length;
+                        $scope.selectedAclType="PRINCIPLE";  // Principle can be Username or CN certificate string
                     }else{
                         $scope.disable_ssl=true;
                         $scope.disable_ip=false;
                         $scope.acl_ssl=[""];
                         $scope.alc_ssllength = $scope.acl_ssl.length;
+                        $scope.selectedAclType="IP_ADDRESS";
                     }
                 }
 
@@ -417,6 +420,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              serviceInput['consumergroup'] = $scope.addAcl.consumergroup;
              serviceInput['aclPatternType'] = aclpatterntypetype;
              serviceInput['transactionalId'] = $scope.addAcl.transactionalId;
+             serviceInput['aclIpPrincipleType'] = $scope.selectedAclType;
 
             $http({
                 method: "POST",

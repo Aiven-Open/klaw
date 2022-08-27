@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.kafkamgt.uiapi</groupId>
     <artifactId>kafkawize</artifactId>
-    <version>5.0.2</version>
+    <version>5.0.3</version>
     <packaging>jar</packaging>
     <name>Kafkawize</name>
     <description>Kafkawize SelfService - Governance Portal</description>

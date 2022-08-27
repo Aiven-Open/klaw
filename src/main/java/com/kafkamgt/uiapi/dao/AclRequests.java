@@ -1,5 +1,6 @@
 package com.kafkamgt.uiapi.dao;
 
+import com.kafkamgt.uiapi.model.AclIPPrincipleType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -95,6 +96,9 @@ public class AclRequests implements Serializable {
 
     @Column(name = "otherparams")
     private String otherParams;
+
+    @Column(name = "aclipprincipletype")
+    private AclIPPrincipleType aclIpPrincipleType;
 
     @Transient
     private String totalNoPages;

@@ -59,8 +59,6 @@ public class AclControllerService {
             return "{\"result\":\"Not Authorized\"}";
         }
 
-
-
         List<Topic> topics = manageDatabase.getHandleDbRequests().getTopics(aclReq.getTopicname(), tenantId);
         boolean topicFound = false;
         String result;
