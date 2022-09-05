@@ -406,7 +406,9 @@ public class ClusterApiService {
             params.add("acl_ip", aclReq.getAcl_ip());
             params.add("acl_ssl", aclReq.getAcl_ssl());
             params.add("transactionalId", aclReq.getTransactionalId());
-            params.add("aclIpPrincipleType", aclReq.getAclIpPrincipleType().name());
+            if (aclReq.getAclIpPrincipleType() != null) {
+                params.add("aclIpPrincipleType", aclReq.getAclIpPrincipleType().name());
+            }
 
             if(aclReq.getAclPatternType() != null && aclReq.getAclPatternType().equals("PREFIXED"))
                 params.add("isPrefixAcl", "true");

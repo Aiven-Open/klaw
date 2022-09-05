@@ -245,7 +245,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <testFailureIgnore>true</testFailureIgnore>
+                    <useManifestOnlyJar>false</useManifestOnlyJar>
+                    <systemPropertyVariables>
+                        <!-- Run tests in Turkish to make sure that they don't depend on
+                             locale. Turkish is a notoriously tricky locale. -->
+                        <user.language>TR</user.language>
+                        <user.country>tr</user.country>
+                    </systemPropertyVariables>
+                    <testFailureIgnore>false</testFailureIgnore>
                 </configuration>
             </plugin>
             <plugin>
