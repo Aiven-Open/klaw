@@ -1089,4 +1089,25 @@ public class EnvsClustersTenantsControllerService {
 
         return tenantsInfo;
     }
+
+    public HashMap<String, String> getClusterInfoFromEnv(String envSelected, String clusterType) {
+        HashMap<String, String> clusterInfo = new HashMap<>();
+
+        log.debug("getEnvDetails {}", envSelected);
+        int tenantId = commonUtilsService.getTenantId(getUserName());
+        if(commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
+            // tenant filtering
+            if (!getEnvsFromUserId().contains(envSelected))
+                return null;
+        }
+
+        Env env =  manageDatabase.getHandleDbRequests().selectEnvDetails(envSelected, tenantId);
+        KwClusters kwClusters = manageDatabase.getHandleDbRequests()
+                .getClusterDetails(env.getClusterId(), tenantId);
+
+        if(kwClusters.getKafkaFlavor().equals(KafkaFlavors.Aiven_For_Apache_Kafka.value))
+            clusterInfo.put("aivenCluster", "true");
+
+        return clusterInfo;
+    }
 }

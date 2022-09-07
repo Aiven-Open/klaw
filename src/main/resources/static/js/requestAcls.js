@@ -174,6 +174,22 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 );
             }
 
+            $scope.onChangeEnvironment = function(envName, envType){
+                $http({
+                        method: "GET",
+                        url: "getClusterInfoFromEnv",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'envSelected' : envName, 'envType' : envType },
+                    }).success(function(output) {
+                        $scope.allenvs = output;
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+            }
+
             // set default
             $scope.disable_consumergrp = false;
 

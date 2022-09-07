@@ -188,4 +188,10 @@ public class EnvsClustersTenantsController {
         return new ResponseEntity<>(envsClustersTenantsControllerService.getTenantsInfo(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/getClusterInfoFromEnv", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<HashMap<String, String>> getClusterInfoFromEnv(@RequestParam(value="envSelected") String envSelected,
+                                                                          @RequestParam(value="envType") String envType) {
+        return new ResponseEntity<>(envsClustersTenantsControllerService.getClusterInfoFromEnv(envSelected, envType), HttpStatus.OK);
+    }
+
 }

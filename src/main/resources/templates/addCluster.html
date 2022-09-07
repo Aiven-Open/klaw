@@ -626,6 +626,40 @@
 										</div>
 									</div>
 
+									<div class="row" ng-show="addNewCluster.clusterType == 'kafka'">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Kafka Flavor</label>
+												<select required class="form-control custom-select" ng-change="onChangeKafkaFlavor(kafkaFlavor)" ng-model="kafkaFlavor">
+													<option value="Apache Kafka">Apache Kafka</option>
+													<option value="Aiven for Apache Kafka">Aiven for Apache Kafka</option>
+													<option value="Confluent">Confluent</option>
+													<option value="Others">Others</option>
+												</select>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="row" ng-show="kafkaFlavor=='Aiven for Apache Kafka'">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Project Name</label>
+												<input ng-model="addNewCluster.projectName" type="text"
+													   class="form-control">
+												<small class="form-control-feedback">Project defined in Aiven console</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Service Name</label>
+												<input ng-model="addNewCluster.serviceName" type="text"
+													   class="form-control">
+												<small class="form-control-feedback">Service name defined in Aiven console</small>
+											</div>
+										</div>
+									</div>
+
 
 								</div>
 								<div id="successbar">{{ alert }}</div>

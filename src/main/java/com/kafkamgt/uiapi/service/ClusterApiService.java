@@ -3,8 +3,11 @@ package com.kafkamgt.uiapi.service;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
+import com.kafkamgt.uiapi.dao.KwClusters;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.model.AclsNativeType;
+import com.kafkamgt.uiapi.model.KafkaFlavors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -393,24 +396,38 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
-            String bootstrapHost = manageDatabase.getClusters("kafka", tenantId)
-                    .get(envSelected.getClusterId()).getBootstrapServers();
-            params.add("env", bootstrapHost);
-            params.add("protocol", manageDatabase.getClusters("kafka", tenantId)
-                    .get(envSelected.getClusterId()).getProtocol());
-            params.add("clusterName", manageDatabase.getClusters("kafka", tenantId)
-                    .get(envSelected.getClusterId()).getClusterName() + "-" + tenantId);
-            params.add("topicName", aclReq.getTopicname());
-            params.add("consumerGroup", aclReq.getConsumergroup());
-            params.add("aclType", aclReq.getTopictype());
-            params.add("acl_ip", aclReq.getAcl_ip());
-            params.add("acl_ssl", aclReq.getAcl_ssl());
-            params.add("transactionalId", aclReq.getTransactionalId());
-            params.add("aclIpPrincipleType", aclReq.getAclIpPrincipleType().name());
+            KwClusters kwClusters = manageDatabase.getClusters("kafka", tenantId)
+                    .get(envSelected.getClusterId());
 
-            if(aclReq.getAclPatternType() != null && aclReq.getAclPatternType().equals("PREFIXED"))
-                params.add("isPrefixAcl", "true");
-            else params.add("isPrefixAcl", "false");
+            // aiven config
+            if(kwClusters.getKafkaFlavor().equals(KafkaFlavors.Aiven_For_Apache_Kafka.value)){
+                params.add("aclsNativeType", AclsNativeType.AIVEN.name());
+                params.add("projectName", kwClusters.getProjectName());
+                params.add("serviceName", kwClusters.getServiceName());
+                params.add("topic", aclReq.getTopicname());
+                params.add("username", aclReq.getAcl_ssl());
+
+                if(aclReq.getTopictype().equals("Producer"))
+                    params.add("permission", "write");
+                else
+                    params.add("permission", "read");
+            }else{
+                params.add("aclsNativeType", AclsNativeType.NATIVE.name());
+                params.add("env", kwClusters.getBootstrapServers());
+                params.add("protocol", kwClusters.getProtocol());
+                params.add("clusterName", kwClusters.getClusterName() + "-" + tenantId);
+                params.add("topicName", aclReq.getTopicname());
+                params.add("consumerGroup", aclReq.getConsumergroup());
+                params.add("aclType", aclReq.getTopictype());
+                params.add("acl_ip", aclReq.getAcl_ip());
+                params.add("acl_ssl", aclReq.getAcl_ssl());
+                params.add("transactionalId", aclReq.getTransactionalId());
+                params.add("aclIpPrincipleType", aclReq.getAclIpPrincipleType().name());
+
+                if(aclReq.getAclPatternType() != null && aclReq.getAclPatternType().equals("PREFIXED"))
+                    params.add("isPrefixAcl", "true");
+                else params.add("isPrefixAcl", "false");
+            }
 
             HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);//createHeaders("user1", "pwd");
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

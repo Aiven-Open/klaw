@@ -1,5 +1,6 @@
 package com.kafkamgt.uiapi.dao;
 
+import com.kafkamgt.uiapi.model.KafkaFlavors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -43,4 +44,13 @@ public class KwClusters implements Serializable {
 
     @Column(name = "cstatus")
     private String clusterStatus;
+
+    @Column(name = "projectname")
+    private String projectName;
+
+    @Column(name = "servicename")
+    private String serviceName;
+
+    @Column(name = "kafkaflavor")
+    private String kafkaFlavor;
 }
