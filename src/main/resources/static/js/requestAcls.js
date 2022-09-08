@@ -174,14 +174,16 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 );
             }
 
-            $scope.onChangeEnvironment = function(envName, envType){
+            // set default Aiven cluster
+            $scope.aivenCluster = 'false';
+            $scope.onChangeEnvironment = function(envName){
                 $http({
                         method: "GET",
                         url: "getClusterInfoFromEnv",
                         headers : { 'Content-Type' : 'application/json' },
-                        params: {'envSelected' : envName, 'envType' : envType },
+                        params: {'envSelected' : envName, 'envType' : 'kafka' },
                     }).success(function(output) {
-                        $scope.allenvs = output;
+                        $scope.aivenCluster = output.aivenCluster;
                     }).error(
                         function(error)
                         {
@@ -343,6 +345,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                $scope.alertnote = "Please select an ACL type";
                $scope.showAlertToast();
                return;
+            }
+
+            if($scope.aivenCluster == 'true'){
+                $scope.addAcl.consumergroup = '-na-';
             }
 
             if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)

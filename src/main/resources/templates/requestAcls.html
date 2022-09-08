@@ -464,7 +464,7 @@
 											<div class="form-group">
 												<label class="control-label">Select Environment</label>
 												<select class="form-control custom-select" ng-model="addAcl.envName"
-
+														ng-change="onChangeEnvironment(addAcl.envName)"
 														ng-options="env.id as env.name for env in allenvs">
 													<option value="" selected="selected">
 														Select Environment</option>
@@ -482,7 +482,8 @@
 										<!--/span-->
 									</div>
 
-									<div class="row">
+									<!-- Non Aiven -->
+									<div ng-show="aivenCluster=='false'" class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">ACL Type</label>
@@ -501,9 +502,21 @@
 											</div>
 										</div>
 									</div>
+									<!-- Aiven -->
+									<div ng-show="aivenCluster=='true'" class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">ACL Type</label>
+												<select class="form-control custom-select" ng-change="changeAivenTopicType()" ng-model="addAcl.topicreqtype"
+														ng-options="topType as topType.label for topType in TopReqTypeList">
 
-									<!--/row-->
-									<div class="row">
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<!-- row Non Aiven -->
+									<div ng-show="aivenCluster=='false'"  class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">Topic Pattern Type</label>
@@ -538,9 +551,25 @@
 										</div>
 										<!--/span-->
 									</div>
+
+									<!-- row Aiven -->
+									<div ng-show="aivenCluster=='true'"  class="row">
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Select Topic</label>
+												<select class="form-control custom-select"  ng-model="addAcl.topicname" ng-blur="getTopicTeam(addAcl.topicname)" ng-options="topic as topic for topic in alltopics">
+
+												</select>
+												<small class="form-control-feedback"> Please select the topic. </small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
 									<!--/row-->
 
-									<div class="row" ng-show="disable_consumergrp == true">
+									<!--/row Non Aiven-->
+									<div ng-show="aivenCluster=='false' && disable_consumergrp == true"  class="row">
 										<div class="col-md-6">
 										</div>
 										<div class="col-md-6">
@@ -553,8 +582,8 @@
 										</div>
 									</div>
 
-									<!--/row-->
-									<div class="row">
+									<!--/row Non Aiven-->
+									<div ng-show="aivenCluster=='false'" class="row">
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="control-label">Acl IP or Principle Or Username based</label>
@@ -571,8 +600,23 @@
 										</div>
 									</div>
 
-									<!--/span-->
-									<div class="row">
+									<!--/row Aiven-->
+									<div ng-show="aivenCluster=='true'" class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label class="control-label">Acl Username based</label>
+												<div class="demo-radio-button" ng-init="addAcl.acl_ip_ssl='SSL'">
+													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="addAcl.acl_ip_ssl"
+														   name="group1" type="radio" id="radio_2" value="SSL" checked/>
+													<label for="radio_2">Username</label>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+									<!--/row Non Aiven-->
+									<div ng-show="aivenCluster=='false'"  class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>IP Address</label>
@@ -622,10 +666,38 @@
 														</td>
 													</tr>
 												</table>
-
-
 												<small class="form-control-feedback"> Ex: CN=myhost,OU=IS,OU=OU,OU=Services,O=Org</small>
 												<br>
+												<small class="form-control-feedback"> Ex: alice</small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<!-- row Aiven-->
+									<div ng-show="aivenCluster=='true'" class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Username</label>
+												<table>
+													<tr valign="top" ng-repeat="onessl in acl_ssl track by $index">
+														<td width="95%">
+															<input ng-model="acl_ssl[$index]" name="acl_ssl[$index]"
+																   type="text" placeholder="" class="form-control" id="ssl_record[$index]">
+														</td>
+														<td ng-show="alc_ssllength-1 == $index">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addAclSslRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="alc_ssllength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeAclSslRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
 												<small class="form-control-feedback"> Ex: alice</small>
 											</div>
 										</div>

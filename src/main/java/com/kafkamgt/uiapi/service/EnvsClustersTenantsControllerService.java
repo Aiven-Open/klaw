@@ -1107,6 +1107,8 @@ public class EnvsClustersTenantsControllerService {
 
         if(kwClusters.getKafkaFlavor().equals(KafkaFlavors.Aiven_For_Apache_Kafka.value))
             clusterInfo.put("aivenCluster", "true");
+        else
+            clusterInfo.put("aivenCluster", "false");
 
         return clusterInfo;
     }
