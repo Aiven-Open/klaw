@@ -538,6 +538,7 @@
 												<label>Protocol</label>
 												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)" ng-model="addNewCluster.protocol">
 													<option value="PLAINTEXT">PLAINTEXT</option>
+													<option value="SSL">SSL</option>
 												</select>
 											</div>
 										</div>
@@ -626,7 +627,7 @@
 										</div>
 									</div>
 
-									<div class="row" ng-show="addNewCluster.clusterType == 'kafka'">
+									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Kafka Flavor</label>
@@ -641,7 +642,7 @@
 										</div>
 									</div>
 
-									<div class="row" ng-show="kafkaFlavor=='Aiven for Apache Kafka'">
+									<div class="row" ng-show="addNewCluster.clusterType == 'kafka'">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Project Name</label>

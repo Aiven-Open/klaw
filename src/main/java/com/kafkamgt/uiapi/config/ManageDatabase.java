@@ -459,9 +459,9 @@ public class ManageDatabase  implements ApplicationContextAware {
         kwAllClustersPertenant = new HashMap<>();
 
         for (Integer tenantId : tenantMap.keySet()) {
-            kafkaClusters = handleDbRequests.getAllClusters("kafka", tenantId);
-            schemaRegistryClusters = handleDbRequests.getAllClusters("schemaregistry", tenantId);
-            kafkaConnectClusters = handleDbRequests.getAllClusters("kafkaconnect", tenantId);
+            kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafka.value, tenantId);
+            schemaRegistryClusters = handleDbRequests.getAllClusters(KafkaClustersType.schemaregistry.value, tenantId);
+            kafkaConnectClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafkaconnect.value, tenantId);
 
             loadClustersForOneTenant(kafkaClusters, schemaRegistryClusters, kafkaConnectClusters, tenantId);
         }
@@ -470,11 +470,11 @@ public class ManageDatabase  implements ApplicationContextAware {
     public void loadClustersForOneTenant(List<KwClusters> kafkaClusters, List<KwClusters> schemaRegistryClusters,
                                           List<KwClusters> kafkaConnectClusters, Integer tenantId) {
         if(kafkaClusters == null)
-            kafkaClusters = handleDbRequests.getAllClusters("kafka", tenantId);
+            kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafka.value, tenantId);
         if(schemaRegistryClusters == null)
-            schemaRegistryClusters = handleDbRequests.getAllClusters("schemaregistry", tenantId);
+            schemaRegistryClusters = handleDbRequests.getAllClusters(KafkaClustersType.schemaregistry.value, tenantId);
         if(kafkaConnectClusters == null)
-            kafkaConnectClusters = handleDbRequests.getAllClusters("kafkaconnect", tenantId);
+            kafkaConnectClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafkaconnect.value, tenantId);
 
         HashMap<Integer, KwClusters> kwKafkaClusters = new HashMap<>();
         HashMap<Integer, KwClusters> kwSchemaRegClusters = new HashMap<>();

@@ -462,7 +462,7 @@ public class UtilMethods {
         EnvModel env = new EnvModel();
         env.setId("1");
         env.setName("DEV");
-        env.setType("kafka");
+        env.setType(KafkaClustersType.kafka.value);
         env.setClusterId(101);
         envList.add(env);
         return envList;

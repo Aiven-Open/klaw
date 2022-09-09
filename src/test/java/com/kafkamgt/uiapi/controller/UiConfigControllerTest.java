@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.UtilMethods;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.model.EnvModel;
+import com.kafkamgt.uiapi.model.KafkaClustersType;
 import com.kafkamgt.uiapi.model.TeamModel;
 import com.kafkamgt.uiapi.model.UserInfoModel;
 import com.kafkamgt.uiapi.service.EnvsClustersTenantsControllerService;
@@ -212,7 +213,7 @@ public class UiConfigControllerTest {
         String response = mvcEnvs.perform(MockMvcRequestBuilders
                 .post("/deleteEnvironmentRequest")
                 .param("envId", "101")
-                .param("envType", "kafka")
+                .param("envType", KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -106,7 +106,7 @@ public class EnvsClustersTenantsControllerIT {
 
         response = mvc.perform(MockMvcRequestBuilders
                 .get("/getClusters").with(user(superAdmin).password(superAdminPwd))
-                .param("clusterType","kafka")
+                .param("clusterType",KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -122,7 +122,7 @@ public class EnvsClustersTenantsControllerIT {
     public void modifyClusterSuccess() throws Exception {
         String response = mvc.perform(MockMvcRequestBuilders
                 .get("/getClusters").with(user(superAdmin).password(superAdminPwd))
-                .param("clusterType","kafka")
+                .param("clusterType",KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -184,7 +184,7 @@ public class EnvsClustersTenantsControllerIT {
 
         response = mvc.perform(MockMvcRequestBuilders
                 .get("/getClusters").with(user(superAdmin).password(superAdminPwd))
-                .param("clusterType","kafka")
+                .param("clusterType",KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -208,7 +208,7 @@ public class EnvsClustersTenantsControllerIT {
 
         response = mvc.perform(MockMvcRequestBuilders
                 .get("/getClusters").with(user(superAdmin).password(superAdminPwd))
-                .param("clusterType","kafka")
+                .param("clusterType",KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -302,7 +302,7 @@ public class EnvsClustersTenantsControllerIT {
         String response = mvc.perform(MockMvcRequestBuilders
                 .get("/getEnvDetails").with(user(superAdmin).password(superAdminPwd))
                 .param("envSelected","1")
-                .param("envType","kafka")
+                .param("envType",KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -342,7 +342,7 @@ public class EnvsClustersTenantsControllerIT {
         response = mvc.perform(MockMvcRequestBuilders
                 .post("/deleteEnvironmentRequest").with(user(superAdmin).password(superAdminPwd))
                 .param("envId","2")
-                .param("envType","kafka")
+                .param("envType",KafkaClustersType.kafka.value)
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

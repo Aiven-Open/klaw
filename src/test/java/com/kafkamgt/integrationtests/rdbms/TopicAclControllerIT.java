@@ -119,7 +119,7 @@ public class TopicAclControllerIT {
 
         response = mvc.perform(MockMvcRequestBuilders
                 .get("/getClusters").with(user(superAdmin).password(superAdminPwd))
-                .param("clusterType","kafka")
+                .param("clusterType",KafkaClustersType.kafka.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

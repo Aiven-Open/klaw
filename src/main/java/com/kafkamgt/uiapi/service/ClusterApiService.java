@@ -7,6 +7,7 @@ import com.kafkamgt.uiapi.dao.KwClusters;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.AclsNativeType;
+import com.kafkamgt.uiapi.model.KafkaClustersType;
 import com.kafkamgt.uiapi.model.KafkaFlavors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
@@ -286,7 +287,7 @@ public class ClusterApiService {
         return topicsList;
     }
 
-    public String approveConnectorRequests(String connectorName, String connectorType, String connectorConfig,
+    public String approveConnectorRequests(String connectorName, String protocol, String connectorType, String connectorConfig,
                                            String kafkaConnectHost, int tenantId) throws KafkawizeException {
         log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
         getClusterApiProperties(tenantId);
@@ -297,6 +298,7 @@ public class ClusterApiService {
             params.add("env", kafkaConnectHost);
             params.add("connectorName", connectorName);
             params.add("connectorConfig", connectorConfig);
+            params.add("protocol", protocol);
 
             String uri;
             String URI_GET_TOPICS = "/topics/";
@@ -339,12 +341,12 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicEnvId, tenantId);
-            String bootstrapHost = manageDatabase.getClusters("kafka", tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                     .get(envSelected.getClusterId()).getBootstrapServers();
             params.add("env", bootstrapHost);
-            params.add("protocol", manageDatabase.getClusters("kafka", tenantId)
+            params.add("protocol", manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                     .get(envSelected.getClusterId()).getProtocol());
-            params.add("clusterName", manageDatabase.getClusters("kafka", tenantId)
+            params.add("clusterName", manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                     .get(envSelected.getClusterId()).getClusterName() + "-" + tenantId);
             params.add("topicName", topicName);
 
@@ -396,7 +398,7 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
-            KwClusters kwClusters = manageDatabase.getClusters("kafka", tenantId)
+            KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                     .get(envSelected.getClusterId());
 
             // aiven config
@@ -454,8 +456,10 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
-            String bootstrapHost = manageDatabase.getClusters("schemaregistry", tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.schemaregistry.value, tenantId)
                     .get(envSelected.getClusterId()).getBootstrapServers();
+            params.add("protocol", manageDatabase.getClusters(KafkaClustersType.schemaregistry.value, tenantId)
+                    .get(envSelected.getClusterId()).getProtocol());
             params.add("env", bootstrapHost);
             params.add("topicName", topicName);
             params.add("fullSchema", schemaRequest.getSchemafull());
@@ -472,14 +476,14 @@ public class ClusterApiService {
         return response;
     }
 
-    public TreeMap<Integer, HashMap<String, Object>> getAvroSchema(String schemaRegistryHost, String clusterName,
+    public TreeMap<Integer, HashMap<String, Object>> getAvroSchema(String schemaRegistryHost, String protocol, String clusterName,
                                                                    String topicName, int tenantId) throws Exception{
         log.info("getAvroSchema {} {}", schemaRegistryHost, topicName);
         getClusterApiProperties(tenantId);
         TreeMap<Integer, HashMap<String, Object>> allVersionSchemas = new TreeMap<>(Collections.reverseOrder());
         try {
             String URI_GET_TOPICS = "/topics/getSchema/";
-            String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS + schemaRegistryHost + "/" + clusterName + "/" + topicName;
+            String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS + schemaRegistryHost + "/" + protocol + "/" + clusterName + "/" + topicName;
             RestTemplate restTemplate = getRestTemplate();
 
             HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
@@ -503,11 +507,11 @@ public class ClusterApiService {
         }
     }
 
-    public LinkedHashMap<String, Object> getConnectorDetails(String connectorName, String kafkaConnectHost, int tenantId) throws KafkawizeException {
+    public LinkedHashMap<String, Object> getConnectorDetails(String connectorName, String kafkaConnectHost, String protocol, int tenantId) throws KafkawizeException {
         log.info("getConnectorDetails {} {}", connectorName , kafkaConnectHost);
         getClusterApiProperties(tenantId);
         try {
-            String URI_GET_TOPICS = "/topics/getConnectorDetails/" + connectorName + "/" + kafkaConnectHost;
+            String URI_GET_TOPICS = "/topics/getConnectorDetails/" + connectorName + "/" + kafkaConnectHost + "/" + protocol;
             String uriGetConnectorsFull = clusterConnUrl + URI_GET_TOPICS ;
             RestTemplate restTemplate = getRestTemplate();
 

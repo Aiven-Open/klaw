@@ -752,12 +752,12 @@ public class TopicSyncControllerService {
             topicNameSearch = topicNameSearch.trim();
         int tenantId = commonUtilsService.getTenantId(getUserName());
         Env envSelected = getEnvDetails(env);
-        String bootstrapHost = manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
 
         List<HashMap<String, String>> topicsList = clusterApiService
                 .getAllTopics(bootstrapHost,
-                        manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getProtocol(),
-                        manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getClusterName(),
+                        manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(envSelected.getClusterId()).getProtocol(),
+                        manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(envSelected.getClusterId()).getClusterName(),
                 tenantId);
 
         topicCounter = 0;

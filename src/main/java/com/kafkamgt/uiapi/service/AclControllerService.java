@@ -925,9 +925,11 @@ public class AclControllerService {
             String schemaOfObj ;
             for(Env schemaEnv:schemaEnvs){
                 try {
+                    KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.schemaregistry.value, tenantId).get(schemaEnv.getClusterId());
                     TreeMap<Integer, HashMap<String, Object>> schemaObjects = clusterApiService.getAvroSchema(
-                            manageDatabase.getClusters("schemaregistry", tenantId).get(schemaEnv.getClusterId()).getBootstrapServers(),
-                            manageDatabase.getClusters("schemaregistry", tenantId).get(schemaEnv.getClusterId()).getClusterName(),
+                            kwClusters.getBootstrapServers(),
+                            kwClusters.getProtocol(),
+                            kwClusters.getClusterName(),
                             topicNameSearch, tenantId);
 
                     Integer latestSchemaVersion = schemaObjects.firstKey();
@@ -1013,10 +1015,10 @@ public class AclControllerService {
         List<HashMap<String,String>> aclList;
 
         Env envSelected = getEnvDetails(env, tenantId);
-        String bootstrapHost = manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getBootstrapServers();
-        aclList = getAclListFromCluster(bootstrapHost, manageDatabase.getClusters("kafka", tenantId)
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        aclList = getAclListFromCluster(bootstrapHost, manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                 .get(envSelected.getClusterId()).getProtocol(),
-                manageDatabase.getClusters("kafka", tenantId)
+                manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                         .get(envSelected.getClusterId()).getClusterName(), topicNameSearch, tenantId);
 
         List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true, tenantId);
@@ -1248,11 +1250,11 @@ public class AclControllerService {
         List<HashMap<String, String>> consumerOffsetInfoList= new ArrayList<>();
         int tenantId = commonUtilsService.getTenantId(getUserName());
         try {
-            String bootstrapHost = manageDatabase.getClusters("kafka", tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                     .get(getEnvDetails(envId, tenantId).getClusterId()).getBootstrapServers();
             consumerOffsetInfoList = clusterApiService.getConsumerOffsets(bootstrapHost,
-                    manageDatabase.getClusters("kafka", tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getProtocol(),
-                    manageDatabase.getClusters("kafka", tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getClusterName(),
+                    manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getProtocol(),
+                    manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getClusterName(),
                     topicName, consumerGroupId, tenantId);
         } catch (Exception e) {
             log.error("Ignoring error while retrieving consumer offsets {} ", e.toString());

@@ -3,6 +3,7 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
 import com.kafkamgt.uiapi.model.EntityType;
+import com.kafkamgt.uiapi.model.KafkaClustersType;
 import com.kafkamgt.uiapi.model.MetadataOperationType;
 import com.kafkamgt.uiapi.model.RequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -329,17 +330,17 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     @Override
     public List<Env> selectAllKafkaEnvs(int tenantId){
-        return jdbcSelectHelper.selectAllEnvs("kafka", tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.kafka.value, tenantId);
     }
 
     @Override
     public List<Env> selectAllSchemaRegEnvs(int tenantId){
-        return jdbcSelectHelper.selectAllEnvs("schemaregistry", tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.schemaregistry.value, tenantId);
     }
 
     @Override
     public List<Env> selectAllKafkaConnectEnvs(int tenantId) {
-        return jdbcSelectHelper.selectAllEnvs("kafkaconnect", tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.kafkaconnect.value, tenantId);
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
+import com.kafkamgt.uiapi.model.KafkaClustersType;
 import com.kafkamgt.uiapi.model.KafkaConnectorModel;
 import com.kafkamgt.uiapi.model.PermissionType;
 import com.kafkamgt.uiapi.model.SyncConnectorUpdates;
@@ -35,10 +36,11 @@ public class KafkaConnectSyncControllerService {
     public HashMap<String, String> getConnectorDetails(String connectorName, String envId) throws KafkawizeException {
         HashMap<String, String> response = new HashMap<>();
         int tenantId = commonUtilsService.getTenantId(getUserName());
-        String bootstrapHost = manageDatabase.getClusters("kafkaconnect", tenantId)
-                .get(getKafkaConnectorEnvDetails(envId).getClusterId()).getBootstrapServers();
+        KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId)
+                .get(getKafkaConnectorEnvDetails(envId).getClusterId());
 
-        LinkedHashMap<String, Object> res = clusterApiService.getConnectorDetails(connectorName, bootstrapHost, tenantId);
+        LinkedHashMap<String, Object> res = clusterApiService.getConnectorDetails(connectorName, kwClusters.getBootstrapServers(),
+                kwClusters.getProtocol(), tenantId);
 
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -217,10 +219,11 @@ public class KafkaConnectSyncControllerService {
     }
 
     private String getConnectorConfiguration(String connectorName, String environmentId, int tenantId) throws KafkawizeException, JsonProcessingException {
-        String bootstrapHost = manageDatabase.getClusters("kafkaconnect", tenantId)
-                .get(getKafkaConnectorEnvDetails(environmentId).getClusterId()).getBootstrapServers();
+        KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId)
+                .get(getKafkaConnectorEnvDetails(environmentId).getClusterId());
 
-            Object configMap = clusterApiService.getConnectorDetails(connectorName, bootstrapHost, tenantId).get("config");
+            Object configMap = clusterApiService.getConnectorDetails(connectorName, kwClusters.getBootstrapServers(),
+                    kwClusters.getProtocol(), tenantId).get("config");
             ObjectMapper om = new ObjectMapper();
             return om.writerWithDefaultPrettyPrinter().writeValueAsString(configMap);
     }
@@ -275,7 +278,7 @@ public class KafkaConnectSyncControllerService {
 
         // get from cluster
         List<KafkaConnectorModel> kafkaConnectorModelClusterList = new ArrayList<>();
-        String bootstrapHost = manageDatabase.getClusters("kafkaconnect", tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
         try {
             List<String> allConnectors =  clusterApiService.getAllKafkaConnectors(bootstrapHost, tenantId);
 

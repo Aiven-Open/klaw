@@ -607,7 +607,7 @@
 												<label>Protocol</label>
 												<select required class="form-control custom-select" ng-change="onChangeProtocol(clusterDetails.protocol)" ng-model="clusterDetails.protocol">
 													<option value="PLAINTEXT">PLAINTEXT</option>
-													<!--													<option value="SSL">SSL</option>-->
+													<option value="SSL">SSL</option>
 												</select>
 											</div>
 											<div ng-show="sslparams=='true'">
@@ -620,6 +620,15 @@
 
 										</div>
 										<!--/span-->
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Kafka Flavor : </label>
+												<label><span class="badge badge-info">{{ clusterDetails.kafkaFlavor }}</span> </label>
+											</div>
+										</div>
 									</div>
 
 								</div>
@@ -677,6 +686,7 @@
 												<label>Protocol</label>
 												<select required class="form-control custom-select" ng-change="onChangeProtocol(clusterDetails.protocol)" ng-model="clusterDetails.protocol">
 													<option value="PLAINTEXT">PLAINTEXT</option>
+													<option value="SSL">SSL</option>
 												</select>
 											</div>
 										</div>
@@ -686,6 +696,15 @@
 
 										</div>
 										<!--/span-->
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Kafka Flavor : </label>
+												<label><span class="badge badge-info">{{ clusterDetails.kafkaFlavor }}</span> </label>
+											</div>
+										</div>
 									</div>
 
 								</div>
