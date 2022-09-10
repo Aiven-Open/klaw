@@ -79,7 +79,7 @@ public class UpdateDataJdbcTest {
         when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false)))
                 .thenReturn("success");
         String result = updateData.updateAclRequest(utilMethods.getAclRequestCreate("testtopic"),
-                "uiuser2");
+                "uiuser2", "{}");
         assertEquals("success", result);
     }
 
@@ -88,7 +88,7 @@ public class UpdateDataJdbcTest {
         when(deleteDataJdbcHelper.deletePrevAclRecs(any()))
                 .thenReturn("success");
         String result = updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"),
-                "uiuser2");
+                "uiuser2", "{}");
         assertEquals("success", result);
     }
 

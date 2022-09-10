@@ -190,17 +190,17 @@ public class UpdateDataJdbc {
         });
     }
 
-    public String updateAclRequest(AclRequests aclReq, String approver){
+    public String updateAclRequest(AclRequests aclReq, String approver, String jsonParams){
         log.debug("updateAclRequest {} {}", aclReq.getTopicname(), approver);
         aclReq.setApprover(approver);
         aclReq.setAclstatus("approved");
         aclReq.setApprovingtime(new Timestamp(System.currentTimeMillis()));
         aclRequestsRepo.save(aclReq);
 
-        return processMultipleAcls(aclReq);
+        return processMultipleAcls(aclReq, jsonParams);
     }
 
-    private String processMultipleAcls(AclRequests aclReq) {
+    private String processMultipleAcls(AclRequests aclReq, String jsonParams) {
         List<Acl> acls;
         if(aclReq.getAcl_ip() != null){
             String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
@@ -208,6 +208,7 @@ public class UpdateDataJdbc {
                 Acl aclObj = new Acl();
                 copyProperties(aclReq, aclObj);
                 aclObj.setTeamId(aclReq.getRequestingteam());
+                aclObj.setJsonParams(jsonParams);
 
                 acls = new ArrayList<>();
                 aclObj.setAclip(aclString);
@@ -229,6 +230,7 @@ public class UpdateDataJdbc {
                 Acl aclObj = new Acl();
                 copyProperties(aclReq, aclObj);
                 aclObj.setTeamId(aclReq.getRequestingteam());
+                aclObj.setJsonParams(jsonParams);
 
                 acls = new ArrayList<>();
                 aclObj.setAclip(aclReq.getAcl_ip());

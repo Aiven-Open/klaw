@@ -259,12 +259,12 @@ public class AclControllerService {
             aclReq.setUsername(getUserName());
             aclReq.setTenantId(tenantId);
 
-            ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq, tenantId);
+            ResponseEntity<HashMap<String, String>> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
-            if(!Objects.requireNonNull(response.getBody()).contains("success")){
+            if(!Objects.requireNonNull(Objects.requireNonNull(response.getBody()).get("result")).contains("success")){
                 log.error("Error in creating acl {} {}", aclFound, response.getBody());
-                logUpdateSyncBackTopics.add("Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + response.getBody());
-            } else if(response.getBody().contains("Acl already exists")) {
+                logUpdateSyncBackTopics.add("Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + response.getBody().get("result"));
+            } else if(response.getBody().get("result").contains("Acl already exists")) {
                 logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
             }else{
                 if(!syncBackAcls.getSourceEnv().equals(syncBackAcls.getTargetEnv())) {
@@ -275,7 +275,7 @@ public class AclControllerService {
                     Integer aclId = Integer.parseInt(resultMapReq.get("aclId"));
                         aclReq.setReq_no(aclId);
                     // Approve request
-                        manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, getUserName());
+                        manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, getUserName(), "{}");
                     }
                 }
             }
@@ -500,6 +500,7 @@ public class AclControllerService {
         aclReq.setUsername(userDetails);
         aclReq.setAclType("Delete");
         aclReq.setOtherParams(req_no);
+        aclReq.setJsonParams(acl.getJsonParams());
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq).get("result");
 
         if(execRes.equals("success")) {
@@ -537,7 +538,7 @@ public class AclControllerService {
         String allIps = aclReq.getAcl_ip();
         String allSsl = aclReq.getAcl_ssl();
         if(aclReq.getReq_no() != null){
-            ResponseEntity<String> response = null;
+            ResponseEntity<HashMap<String, String>> response = null;
             if(aclReq.getAcl_ip() != null) {
                 String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
                 for (String s : aclListIp) {
@@ -559,12 +560,17 @@ public class AclControllerService {
             String updateAclReqStatus ;
 
             try {
-                if (response!=null && Objects.requireNonNull(response.getBody()).contains("success"))
-                    updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails);
+                if (response!=null && Objects.requireNonNull(Objects.requireNonNull(response.getBody())
+                        .get("result")).contains("success")) {
+                    String jsonParams = "", aivenAclIdKey = "aivenaclid";
+                    if(response.getBody().containsKey(aivenAclIdKey))
+                        jsonParams = "{\"" + aivenAclIdKey + "\":\"" + response.getBody().get(aivenAclIdKey) + "\"}";
+                    updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
+                }
                 else
                     return "{\"result\":\"failure\"}";
             }catch(Exception e){
-                return "{\"result\":\"failure "+e.toString()+"\"}";
+                return "{\"result\":\"failure " + e + "\"}";
             }
 
             mailService.sendMail(aclReq.getTopicname(), aclReq.getTopictype(), "", aclReq.getUsername(),

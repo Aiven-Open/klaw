@@ -5,11 +5,13 @@ import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
+import com.kafkamgt.uiapi.model.AclIPPrincipleType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -214,6 +216,11 @@ public class ClusterApiServiceTest {
         aclRequests.setEnvironment("DEV");
         aclRequests.setTopicname("testtopic");
         aclRequests.setAclType("Create");
+        aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+        ResponseEntity<HashMap<String, String>> responseEntity = new ResponseEntity<>(resultMap, HttpStatus.OK);
 
         when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
         when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -221,13 +228,13 @@ public class ClusterApiServiceTest {
         when(kwClusters.getBootstrapServers()).thenReturn("clusters");
         when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
         when(kwClusters.getClusterName()).thenReturn("cluster");
-        when(restTemplate.postForEntity
-                (Mockito.anyString(), Mockito.any(),
-                        eq(String.class)))
-                .thenReturn(response);
+        when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
+        when(restTemplate.exchange
+                (Mockito.anyString(), any(), Mockito.any(), (ParameterizedTypeReference<HashMap<String, String>>) any()))
+                .thenReturn(responseEntity);
 
-        ResponseEntity<String> response = clusterApiService.approveAclRequests(aclRequests,1);
-        assertEquals(response.getBody(), "success");
+        ResponseEntity<HashMap<String, String>> response = clusterApiService.approveAclRequests(aclRequests,1);
+        assertEquals(response.getBody().get("result"), "success");
     }
 
     @Test
@@ -238,6 +245,11 @@ public class ClusterApiServiceTest {
         aclRequests.setEnvironment("DEV");
         aclRequests.setTopicname("testtopic");
         aclRequests.setAclType("Delete");
+        aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+        ResponseEntity<HashMap<String, String>> responseEntity = new ResponseEntity<>(resultMap, HttpStatus.OK);
 
         when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
         when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -245,13 +257,13 @@ public class ClusterApiServiceTest {
         when(kwClusters.getBootstrapServers()).thenReturn("clusters");
         when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
         when(kwClusters.getClusterName()).thenReturn("cluster");
-        when(restTemplate.postForEntity
-                (Mockito.anyString(), Mockito.any(),
-                        eq(String.class)))
-                .thenReturn(response);
+        when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
+        when(restTemplate.exchange
+                (Mockito.anyString(), any(), Mockito.any(), (ParameterizedTypeReference<HashMap<String, String>>) any()))
+                .thenReturn(responseEntity);
 
-        ResponseEntity<String> response = clusterApiService.approveAclRequests(aclRequests,1);
-        assertEquals(response.getBody(), "success");
+        ResponseEntity<HashMap<String, String>> response = clusterApiService.approveAclRequests(aclRequests,1);
+        assertEquals(response.getBody().get("result"), "success");
     }
 
     @Test

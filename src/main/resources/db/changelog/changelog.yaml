@@ -917,3 +917,15 @@ databaseChangeLog:
                           defaultValue: 'Apache Kafka'
                           constraints:
                               nullable: false
+- changeSet:
+      id: 10thSep2022 add column to store extra params for acls
+      author: muralibasani
+      changes:
+          - addColumn:
+                tableName: kwaclrequests
+                columns:
+                    - column:
+                          name: jsonparams
+                          type: CLOB
+                          constraints:
+                              nullable: true

@@ -1,5 +1,6 @@
 package com.kafkamgt.uiapi.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kafkamgt.uiapi.config.ManageDatabase;
 import com.kafkamgt.uiapi.dao.AclRequests;
 import com.kafkamgt.uiapi.dao.Env;
@@ -19,6 +20,7 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
@@ -377,10 +379,10 @@ public class ClusterApiService {
         return response;
     }
 
-    public ResponseEntity<String> approveAclRequests(AclRequests aclReq, int tenantId) throws KafkawizeException {
+    public ResponseEntity<HashMap<String, String>> approveAclRequests(AclRequests aclReq, int tenantId) throws KafkawizeException {
         log.info("approveAclRequests {}", aclReq);
         getClusterApiProperties(tenantId);
-        ResponseEntity<String> response;
+        ResponseEntity<HashMap<String, String>> response;
         try {
             String env = aclReq.getEnvironment();
             String uri;
@@ -413,6 +415,18 @@ public class ClusterApiService {
                     params.add("permission", "write");
                 else
                     params.add("permission", "read");
+
+                if(aclReq.getAclType().equals("Delete")  && aclReq.getJsonParams()!=null) {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    HashMap<String, String> jsonObj = objectMapper.readValue(aclReq.getJsonParams(), HashMap.class);
+                    String aivenAclKey = "aivenaclid";
+                    if(jsonObj.containsKey(aivenAclKey))
+                        params.add(aivenAclKey, jsonObj.get(aivenAclKey));
+                    else{
+                        log.error("Error from approveAclRequests : AlcId not found");
+                        throw new KafkawizeException("Could not approve acl request. AclId not found.");
+                    }
+                }
             }else{
                 params.add("aclsNativeType", AclsNativeType.NATIVE.name());
                 params.add("env", kwClusters.getBootstrapServers());
@@ -436,7 +450,7 @@ public class ClusterApiService {
 
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 
-            response = restTemplate.postForEntity(uri, request, String.class);
+            response = restTemplate.exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
         }catch(Exception e){
             log.error("Error from approveAclRequests {}", e.toString());
             throw new KafkawizeException("Could not approve acl request. Please contact Administrator.");

@@ -97,6 +97,9 @@ public class AclRequests implements Serializable {
     @Column(name = "otherparams")
     private String otherParams;
 
+    @Column(name = "jsonparams")
+    private String jsonParams;
+
     @Column(name = "aclipprincipletype")
     private AclIPPrincipleType aclIpPrincipleType;
 

@@ -457,7 +457,10 @@ public class TopicAclControllerIT {
         Object obj = response.get(0);
         LinkedHashMap<String, Integer> hMap = (LinkedHashMap)obj;
 
-        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
+        HashMap<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+
+        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
         Integer reqNo = hMap.get("req_no");
 
         res = mvc.perform(MockMvcRequestBuilders
