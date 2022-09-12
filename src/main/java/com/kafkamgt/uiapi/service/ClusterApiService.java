@@ -400,6 +400,7 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
+
             KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
                     .get(envSelected.getClusterId());
 
