@@ -233,7 +233,7 @@ public class AclControllerServiceTest {
         HashMap<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
         when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
-        when(handleDbRequests.updateAclRequest(any(), any(), "{}")).thenReturn("success");
+        when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenReturn("success");
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
 
         String result = aclControllerService.approveAclRequests("112");
@@ -268,7 +268,7 @@ public class AclControllerServiceTest {
         HashMap<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
         when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
-        when(handleDbRequests.updateAclRequest(any(), any(), "{}")).thenThrow(new RuntimeException("Error"));
+        when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.approveAclRequests(req_no);
         assertThat(result, CoreMatchers.containsString("failure"));
