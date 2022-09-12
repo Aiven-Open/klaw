@@ -129,7 +129,7 @@ public class EnvsClustersTenantsControllerService {
                 env.setTopicsuffix(topicSuffix);
             }
         }catch (Exception e){
-            log.error("Unable to set topic partitions, setting default from properties.");
+            log.error("Unable to set topic partitions, setting default from properties.", e);
         }
     }
 
@@ -238,8 +238,8 @@ public class EnvsClustersTenantsControllerService {
         try {
             syncCluster = manageDatabase.getTenantConfig()
                     .get(tenantId).getBaseSyncEnvironment();
-        } catch (Exception exception) {
-            log.error("Tenant Configuration not found. " + tenantId);
+        } catch (Exception e) {
+            log.error("Tenant Configuration not found. " + tenantId, e);
             return new ArrayList<>();
         }
 
@@ -599,6 +599,7 @@ public class EnvsClustersTenantsControllerService {
             commonUtilsService.updateMetadata(tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
             return "{\"result\":\"" + result + "\"}";
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -661,8 +662,7 @@ public class EnvsClustersTenantsControllerService {
             }
             else return false;
         }catch (Exception e){
-            e.printStackTrace();
-            log.error(tenantId + " tenantId. Error in adding cluster " + e.getMessage() + "--" + kwClustersModel.getClusterName());
+            log.error(tenantId + " tenantId. Error in adding cluster --" + kwClustersModel.getClusterName(), e);
             return false;
         }
     }
@@ -679,9 +679,9 @@ public class EnvsClustersTenantsControllerService {
 
             outputStream = new FileOutputStream(clientCertFile);
             outputStream.write(Base64.getDecoder().decode(publicKey));
-        } catch (Exception exception) {
+        } catch (Exception e) {
             log.error("Unable to create public key file " + clusterName + " tenant id " +
-                    commonUtilsService.getTenantId(getUserName()) + exception.getMessage());
+                    commonUtilsService.getTenantId(getUserName()), e);
             return false;
         }
         finally
@@ -690,7 +690,7 @@ public class EnvsClustersTenantsControllerService {
                 if(outputStream != null)
                     outputStream.close();
             }catch(Exception ex){
-                log.error("Error in closing the BufferedWriter " + ex);
+                log.error("Error in closing the BufferedWriter ", ex);
             }
         }
         return true;
@@ -714,6 +714,7 @@ public class EnvsClustersTenantsControllerService {
             commonUtilsService.updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.DELETE);
             return "{\"result\":\"" + result + "\"}";
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -759,6 +760,7 @@ public class EnvsClustersTenantsControllerService {
             resultMap.put("result", result);
             return resultMap;
         }catch (Exception e){
+            log.error("Exception:", e);
             resultMap.put("result", "failure "+e.getMessage());
             return resultMap;
         }
@@ -824,6 +826,7 @@ public class EnvsClustersTenantsControllerService {
                 return kwClustersModel;
             }return null;
         } catch (Exception e) {
+            log.error("Exception:", e);
             return null;
         }
     }
@@ -1047,7 +1050,7 @@ public class EnvsClustersTenantsControllerService {
 
             return kwPublicKeyMap;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception:", e);
         }
         return kwPublicKeyMap;
     }
@@ -1067,7 +1070,7 @@ public class EnvsClustersTenantsControllerService {
                             .get(env.getClusterId()).getClusterName(), env.getType(), tenantId);
         }catch (Exception e){
             status = "OFFLINE";
-            log.error("Error from getUpdateEnvStatus " + e.getMessage());
+            log.error("Error from getUpdateEnvStatus ", e);
         }
         env.setEnvStatus(status);
         manageDatabase.getHandleDbRequests().addNewEnv(env);

@@ -223,9 +223,8 @@ public class MailUtils {
 
             subject = "Kafkawize Registration request";
             sendMail(registerUserInfo.getUsername(), dbHandle, formattedStr, subject, true, registerUserInfo.getMailid(), tenantId, loginUrl);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            log.error(registerUserInfo.toString());
+        } catch (Exception e) {
+            log.error(registerUserInfo.toString(), e);
         }
     }
 
@@ -241,7 +240,7 @@ public class MailUtils {
                 }
             }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            log.error("Exception:", e);
         }
     }
 
@@ -270,7 +269,8 @@ public class MailUtils {
 
                 try {
                     emailIdTeam = dbHandle.selectAllTeamsOfUsers(username, tenantId).get(0).getTeammail();
-                } catch (Exception exception) {
+                } catch (Exception e) {
+                    log.error("Exception:", e);
                     emailIdTeam = null;
                 }
 
@@ -280,7 +280,7 @@ public class MailUtils {
                 else
                     log.error("Email id not found. Notification not sent !!");
             }catch (Exception e){
-                log.error("Email id not found. Notification not sent !! {}", e.getMessage());
+                log.error("Email id not found. Notification not sent !! ", e);
             }
 
         });
@@ -290,6 +290,9 @@ public class MailUtils {
         try {
             KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig()
                     .get(tenantId);
+            if (tenantModel == null) {
+                return "";
+            }
             List<Integer> intOrderEnvsList = new ArrayList<>();
 
             switch (envPropertyType) {
@@ -310,6 +313,7 @@ public class MailUtils {
             return intOrderEnvsList.stream().map(String::valueOf)
                     .collect(Collectors.joining(","));
         } catch (Exception e){
+            log.error("Exception:", e);
             return "";
         }
     }

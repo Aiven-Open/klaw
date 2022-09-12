@@ -182,7 +182,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter  {
             }
 
         } catch (Exception e) {
-            log.error("Cannot connect to Ldap !! {}", e.getMessage());
+            log.error("Cannot connect to Ldap !! ", e);
             shutdownApp();
             throw new Exception("Cannot connect to Ldap !!");
         }
@@ -204,7 +204,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter  {
             try {
                 users = manageTopics.selectAllUsersInfo();
             }catch(Exception e){
-                log.error("Please check if tables are created." + e.getMessage());
+                log.error("Please check if tables are created.", e);
                 shutdownApp();
                 throw new Exception("Please check if tables are created.");
             }
@@ -229,8 +229,8 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter  {
                     globalUsers.put(userInfo.getUsername(),
                             encoder.encode(secPwd) + "," +
                                     userInfo.getRole() + ",enabled");
-                } catch (Exception exception) {
-                    log.error("Error : User not loaded {}. Check password.", userInfo.getUsername());
+                } catch (Exception e) {
+                    log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
                 }
 
             }
@@ -250,16 +250,18 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter  {
                             try {
                                 return attrs.get("cn").get();
                             } catch (javax.naming.NamingException e) {
-                                log.error("Ldap connectivity error : {}", e.getExplanation());
+                                log.error("Ldap connectivity error : ", e);
                                 return null;
                             }
                         }
                     });
         }catch (org.springframework.ldap.NameNotFoundException e)
         {
+            log.error("Exception:", e);
             return true;
         }
         catch (Exception e){
+            log.error("Exception:", e);
             return false;
         }
 

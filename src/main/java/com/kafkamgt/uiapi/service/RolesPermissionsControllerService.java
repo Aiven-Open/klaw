@@ -43,7 +43,8 @@ public class RolesPermissionsControllerService {
                 return Arrays.asList(manageDatabase.getKwPropertyValue("kafkawize.adduser.roles", tenantId).split(","));
             else
                 return new ArrayList<>(manageDatabase.getRolesPermissionsPerTenant(tenantId).keySet());
-        } catch (Exception exception) {
+        } catch (Exception e) {
+            log.error("Exception:", e);
             return Arrays.asList(manageDatabase.getKwPropertyValue("kafkawize.adduser.roles", tenantId).split(","));
         }
     }

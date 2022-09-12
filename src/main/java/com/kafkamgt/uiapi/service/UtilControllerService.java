@@ -156,8 +156,8 @@ public class UtilControllerService {
             allConnectorReqs = allConnectorReqs.stream()
                     .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
                     .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             allAclReqs = new ArrayList<>();
             allSchemaReqs = new ArrayList<>();
             allTopicReqs = new ArrayList<>();
@@ -521,8 +521,8 @@ public class UtilControllerService {
             tenantId = manageDatabase.getHandleDbRequests().getTenants().stream()
                     .filter(kwTenant -> kwTenant.getTenantName().equals(tenantName))
                     .findFirst().get().getTenantId();
-        } catch (Exception exception) {
-            log.info("ignore");
+        } catch (Exception e) {
+            log.info("ignore", e);
             return;
         }
 
@@ -536,7 +536,7 @@ public class UtilControllerService {
                 commonUtilsService.updateMetadata(kwMetadataUpdates);
             }).get();
         } catch (InterruptedException | ExecutionException e) {
-         log.error("Error from resetCache "+e.getMessage());
+         log.error("Error from resetCache ", e);
         }
     }
 }

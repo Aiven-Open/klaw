@@ -73,7 +73,7 @@ public class DataSourceConfig {
         try {
             entityManagerFactoryBean.setDataSource(dataSource());
         } catch (SQLException e) {
-            log.error(e.getMessage() + e.getCause());
+            log.error("Exception: ", e);
         }
         entityManagerFactoryBean.setPersistenceProviderClass(HibernatePersistenceProvider.class);
         entityManagerFactoryBean.setPackagesToScan(ENTITYMANAGER_PACKAGES_TO_SCAN);

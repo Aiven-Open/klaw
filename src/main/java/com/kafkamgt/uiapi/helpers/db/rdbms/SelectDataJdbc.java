@@ -590,7 +590,7 @@ public class SelectDataJdbc {
                 totalActivityLogCount.add(hashMap);
             }
         }catch (Exception e){
-            log.error("Error selectActivityLogForLastDays {}",e.getMessage());
+            log.error("Error selectActivityLogForLastDays ",e);
         }
         return totalActivityLogCount;
     }
@@ -611,7 +611,7 @@ public class SelectDataJdbc {
                 totalActivityLogCount.add(hashMap);
             }
         }catch (Exception e){
-            log.error("Error selectActivityLogForLastDays {}",e.getMessage());
+            log.error("Error selectActivityLogForLastDays ",e);
         }
         return totalActivityLogCount;
     }
@@ -629,8 +629,8 @@ public class SelectDataJdbc {
 
                 totalTopicCount.add(hashMap);
             }
-        }catch (Exception exception){
-            log.error("Error selectTopicsCountByEnv {}", exception.toString());
+        }catch (Exception e){
+            log.error("Error selectTopicsCountByEnv ", e);
         }
         return totalTopicCount;
     }
@@ -653,7 +653,7 @@ public class SelectDataJdbc {
                 totalPartitionsCount.add(hashMap);
             }
         }catch (Exception e){
-            log.error("Error from selectPartitionsCountByEnv {}",e.getMessage());
+            log.error("Error from selectPartitionsCountByEnv ",e);
         }
         return totalPartitionsCount;
     }
@@ -675,8 +675,8 @@ public class SelectDataJdbc {
 
                 totalAclsCount.add(hashMap);
             }
-        }catch (Exception exception){
-            log.error("Error selectAclsCountByEnv {}", exception.toString());
+        }catch (Exception e){
+            log.error("Error selectAclsCountByEnv", e);
         }
         return totalAclsCount;
     }
@@ -704,8 +704,8 @@ public class SelectDataJdbc {
 
                 totalTopicCount.add(hashMap);
             }
-        }catch (Exception exception){
-            log.error("Error from selectTopicsCountByTeams {}", exception.toString());
+        }catch (Exception e){
+            log.error("Error from selectTopicsCountByTeams ", e);
         }
         return totalTopicCount;
     }
@@ -741,8 +741,8 @@ public class SelectDataJdbc {
 
                 totalAclCount.add(hashMap);
             }
-        }catch (Exception exception){
-            log.error("Error from selectAclsCountByTeams {}", exception.toString());
+        }catch (Exception e){
+            log.error("Error from selectAclsCountByTeams ", e);
         }
         return totalAclCount;
     }
@@ -762,8 +762,8 @@ public class SelectDataJdbc {
                 }
                 else log.error("Error: Environment not found for env {}", topic[0]);
             }
-        }catch (Exception exception){
-            log.error("Error from selectAllTopicsForTeamGroupByEnv {}", exception.toString());
+        }catch (Exception e){
+            log.error("Error from selectAllTopicsForTeamGroupByEnv ", e);
         }
         return totalTopicCount;
     }
@@ -780,8 +780,8 @@ public class SelectDataJdbc {
                 hashMap.put("messagescount", (String)kwMetrics[1]);
                 metricsCount.add(hashMap);
             }
-        }catch (Exception exception){
-            log.error("Error from selectAllMetrics {}", exception.toString());
+        }catch (Exception e){
+            log.error("Error from selectAllMetrics ", e);
         }
         return metricsCount;
     }

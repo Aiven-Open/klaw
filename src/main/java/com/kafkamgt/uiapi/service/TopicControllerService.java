@@ -83,8 +83,8 @@ public class TopicControllerService {
         try {
             syncCluster = manageDatabase.getTenantConfig()
                     .get(tenantId).getBaseSyncEnvironment();
-        } catch (Exception exception) {
-            log.error("Tenant Configuration not found. " + tenantId);
+        } catch (Exception e) {
+            log.error("Tenant Configuration not found. " + tenantId, e);
             hashMapTopicReqRes.put("result", "Failure. Tenant configuration in Server config is missing. Please configure.");
             return hashMapTopicReqRes;
 
@@ -194,7 +194,7 @@ public class TopicControllerService {
                 }
             }
         }catch (Exception e){
-            log.error("Unable to set topic partitions, setting default from properties.");
+            log.error("Unable to set topic partitions, setting default from properties.", e);
         }
 
         try {
@@ -209,7 +209,7 @@ public class TopicControllerService {
                 validMap.put("error", "Topic suffix does not match. " + topicRequestReq.getTopicname());
             }
         }catch (Exception e){
-            log.error("Unable to set topic partitions, setting default from properties.");
+            log.error("Unable to set topic partitions, setting default from properties.", e);
             validMap.put("status","false");
             validMap.put("error", "Cluster default parameters config missing/incorrect.");
         }
@@ -625,8 +625,8 @@ public class TopicControllerService {
             topicHistoryList.add(topicHistory);
 
             topicRequest.setHistory(objectMapper.writer().writeValueAsString(topicHistoryList));
-        } catch (Exception exception) {
-            log.error("setTopicDocs {}", exception.toString());
+        } catch (Exception e) {
+            log.error("Exception: ", e);
         }
     }
 
@@ -1023,8 +1023,8 @@ public class TopicControllerService {
                 topicsFromSOT = topicsFromSOT.stream()
                         .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                         .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return topicsFromSOT;
@@ -1038,8 +1038,8 @@ public class TopicControllerService {
             createdTopicReqList = createdTopicReqList.stream()
                     .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
                     .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return createdTopicReqList;
@@ -1056,7 +1056,7 @@ public class TopicControllerService {
                     manageDatabase.getClusters("kafka", tenantId).get(getEnvDetails(envId).getClusterId()).getClusterName(),
                     topicName, offsetId, consumerGroupId, tenantId);
         } catch (Exception e) {
-            log.error("Ignoring error while retrieving topic events {} ", e.toString());
+            log.error("Ignoring error while retrieving topic events ", e);
             topicEvents.put("status","false");
         }
         if(topicEvents != null && topicEvents.size() == 0){

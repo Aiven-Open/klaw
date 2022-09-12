@@ -120,7 +120,7 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, String.class);
             clusterStatus = resultBody.getBody();
         }catch(Exception e){
-            log.error("Error from getClusterApiStatus {}", e.toString());
+            log.error("Error from getClusterApiStatus ", e);
             return "OFFLINE";
         }
         return clusterStatus;
@@ -144,7 +144,7 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, String.class);
             clusterStatus = resultBody.getBody();
         }catch(Exception e){
-            log.error("Error from getSchemaClusterStatus {}", e.toString());
+            log.error("Error from getSchemaClusterStatus ", e);
             return "OFFLINE";
         }
         return clusterStatus;
@@ -171,7 +171,7 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, String.class);
             clusterStatus = resultBody.getBody();
         }catch(Exception e){
-            log.error("Error from getKafkaClusterStatus {}", e.toString());
+            log.error("Error from getKafkaClusterStatus ", e);
             return "NOT_KNOWN";
         }
         return clusterStatus;
@@ -197,7 +197,7 @@ public class ClusterApiService {
 
             offsetsMap = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
         }catch (Exception e){
-            log.error("Error from getConsumerOffsets {}", e.toString());
+            log.error("Error from getConsumerOffsets ", e);
             throw new KafkawizeException("Could not get consumer offsets");
         }
         return  offsetsMap;
@@ -224,7 +224,7 @@ public class ClusterApiService {
 
             eventsMap = new TreeMap<>(Objects.requireNonNull(resultBody.getBody()));
         }catch (Exception e){
-            log.error("Error from getTopicEvents {} {}", e.toString(), topic);
+            log.error("Error from getTopicEvents {} ", topic, e);
             throw new KafkawizeException("Could not get events for Topic " + topic);
         }
         return eventsMap;
@@ -250,7 +250,7 @@ public class ClusterApiService {
                     (uri, HttpMethod.GET, entity, Set.class);
             aclListOriginal = new ArrayList(Objects.requireNonNull(resultBody.getBody()));
         }catch(Exception e){
-            log.error("Error from getAcls {}", e.toString());
+            log.error("Error from getAcls", e);
             throw new KafkawizeException("Could not load topics/acls. Please contact Administrator.");
         }
         return aclListOriginal;
@@ -276,7 +276,7 @@ public class ClusterApiService {
 
             topicsList = new ArrayList(Objects.requireNonNull(s.getBody()));
         }catch(Exception e){
-            log.error("Error from getAllTopics {}", e.toString());
+            log.error("Error from getAllTopics", e);
             throw new KafkawizeException("Could not load topics. Please contact Administrator.");
         }
 
@@ -320,7 +320,7 @@ public class ClusterApiService {
             }
 
         }catch(Exception e){
-            log.error("approveConnectorRequests {} {}",connectorName, e.getMessage());
+            log.error("approveConnectorRequests {} ",connectorName, e);
             throw new KafkawizeException("Could not approve connector request. Please contact Administrator.");
         }
     }
@@ -366,7 +366,7 @@ public class ClusterApiService {
 
             response = restTemplate.postForEntity(uri, request, String.class);
         }catch(Exception e){
-            log.error("approveTopicRequests {} {}",topicName, e.getMessage());
+            log.error("approveTopicRequests {}",topicName, e);
             throw new KafkawizeException("Could not approve topic request. Please contact Administrator.");
         }
         return response;
@@ -421,7 +421,7 @@ public class ClusterApiService {
 
             response = restTemplate.postForEntity(uri, request, String.class);
         }catch(Exception e){
-            log.error("Error from approveAclRequests {}", e.toString());
+            log.error("Error from approveAclRequests", e);
             throw new KafkawizeException("Could not approve acl request. Please contact Administrator.");
         }
         return response;
@@ -451,7 +451,7 @@ public class ClusterApiService {
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
             response = restTemplate.postForEntity(uri, request, String.class);
         }catch(Exception e){
-            log.error("Error from postSchema {}", e.toString());
+            log.error("Error from postSchema ", e);
             throw new KafkawizeException("Could not post schema. Please contact Administrator.");
         }
         return response;
@@ -483,7 +483,7 @@ public class ClusterApiService {
 
             return allVersionSchemas;
         }catch(Exception e){
-            log.error("Error from getAvroSchema {}", e.toString());
+            log.error("Error from getAvroSchema ", e);
             throw new KafkawizeException("Could not get schema.");
         }
     }
@@ -507,7 +507,7 @@ public class ClusterApiService {
 
             return s.getBody();
         }catch(Exception e){
-            log.error("Error from getConnectorDetails {}", e.toString());
+            log.error("Error from getConnectorDetails ", e);
             throw new KafkawizeException("Could not get Connector Details." + connectorName);
         }
     }
@@ -531,7 +531,7 @@ public class ClusterApiService {
 
             return s.getBody();
         }catch(Exception e){
-            log.error("Error from getAllKafkaConnectors {}", e.toString());
+            log.error("Error from getAllKafkaConnectors ", e);
             throw new KafkawizeException("Could not get KafkaConnectors.");
         }
     }
@@ -557,7 +557,7 @@ public class ClusterApiService {
             return Objects.requireNonNull(s.getBody());
 
         }catch (Exception e){
-            log.error("Error from  retrieveMetrics {} {}", jmxUrl, e.toString());
+            log.error("Error from  retrieveMetrics {} ", jmxUrl, e);
             throw new KafkawizeException("Could not get metrics.");
         }
     }
@@ -585,7 +585,7 @@ public class ClusterApiService {
                         .loadTrustMaterial(null, acceptingTrustStrategy).build();
             } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException
                     | CertificateException | UnrecoverableKeyException | IOException e) {
-                log.error(e.getMessage());
+                log.error("Exception: ", e);
             }
             SSLConnectionSocketFactory csf = null;
             if (sslContext != null) {

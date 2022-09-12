@@ -677,7 +677,7 @@ public class ManageDatabase  implements ApplicationContextAware {
                 }
             }
         } catch (IOException e) {
-            log.info("Error loading tenant config {}",e.getMessage());
+            log.info("Error loading tenant config ",e);
         }
     }
 

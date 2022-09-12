@@ -5,6 +5,7 @@ import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.model.TopicInfo;
 import com.kafkamgt.uiapi.model.TopicRequestModel;
 import com.kafkamgt.uiapi.service.TopicControllerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 
 @Service
+@Slf4j
 public class CreateBulkTests {
 
     @Autowired
@@ -40,8 +42,8 @@ public class CreateBulkTests {
             try {
                 List<List<TopicInfo>> s = topicControllerService.getTopics("1","1","",null,null,null);
                 //System.out.println(k+"--"+s.size());
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (Exception e) {
+                log.error("Exception:", e);
             }
         }
 
@@ -49,7 +51,7 @@ public class CreateBulkTests {
             try {
                 topicControllerService.approveTopicRequests(""+k);
             } catch (KafkawizeException e) {
-                e.printStackTrace();
+                log.error("Exception:", e);
             }
         }
 
@@ -69,7 +71,7 @@ public class CreateBulkTests {
             try {
                 topicControllerService.createTopicsRequest(topicRequest);
             } catch (KafkawizeException e) {
-                e.printStackTrace();
+                log.error("Exception:", e);
             }
         }
     }
@@ -82,7 +84,7 @@ public class CreateBulkTests {
                 temp.join(10);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Exception:", e);
             }
         }
     }
@@ -95,7 +97,7 @@ public class CreateBulkTests {
                 temp.join(10);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Exception:", e);
             }
         }
     }
@@ -108,7 +110,7 @@ public class CreateBulkTests {
                 temp.join(10);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("Exception:", e);
             }
         }
     }

@@ -110,8 +110,7 @@ public class SaasService {
             resultMap.put("result", "success");
             return resultMap;
         }catch(Exception e){
-            e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Exception:", e);
             resultMap.put("error","Something went wrong. Please try again.");
             return resultMap;
         }
@@ -151,8 +150,7 @@ public class SaasService {
             resultMap.put("result", "success");
             return resultMap;
         }catch(Exception e){
-            e.printStackTrace();
-            log.error(e.getMessage());
+            log.error("Exception:", e);
             resultMap.put("error","Something went wrong. Please try again.");
             return resultMap;
         }
@@ -281,8 +279,8 @@ public class SaasService {
                     resultMap.put("result","success");
                 }else
                     resultMap.put("result","othererror");
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (Exception e) {
+                log.error("Exception:", e);
             }
         }
             return resultMap;

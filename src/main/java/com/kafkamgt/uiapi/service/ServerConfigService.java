@@ -125,7 +125,7 @@ public class ServerConfigService {
 
                     listMap.add(resultMap);
                 } catch (Exception ioe) {
-                    log.error("Error from getAllEditableProps {}", kwKey);
+                    log.error("Error from getAllEditableProps {}", kwKey, ioe);
                     log.error("No environments/clusters found. {}", kwKey);
                     kwVal = "{}";
                     resultMap.put("kwvalue", kwVal);
@@ -183,11 +183,13 @@ public class ServerConfigService {
                         return response;
                     }
                 } catch (IOException e) {
+                    log.error("Exception:", e);
                     response.put("result", "Failure. Invalid json values. Please check if tenant/environments exist.");
                     return response;
                 }
             }
         }catch (Exception e){
+            log.error("Exception:", e);
             response.put("result", "Failure. Please check if the environment names exist.");
             return response;
         }
@@ -364,7 +366,7 @@ public class ServerConfigService {
 
             }
         }catch (Exception e){
-            log.error(dynamicObj + " " + e.toString());
+            log.error(dynamicObj + "", e);
             return false;
         }
 

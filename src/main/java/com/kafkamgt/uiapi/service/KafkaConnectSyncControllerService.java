@@ -46,7 +46,7 @@ public class KafkaConnectSyncControllerService {
             response.put("result", schemaOfObj);
             return response;
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
+            log.error("Exception:", e);
         }
 
         response.put("result", res.toString());
@@ -117,6 +117,7 @@ public class KafkaConnectSyncControllerService {
                 try {
                     connectorConfig = getConnectorConfiguration(topicUpdate.getConnectorName(), topicUpdate.getEnvSelected(), tenantId);
                 } catch (KafkawizeException | JsonProcessingException e) {
+                    log.error("Exception:", e);
                     response.put("result", topicUpdate.getConnectorName() + " Connector config could not be retrieved.");
                     return response;
                 }
@@ -331,7 +332,7 @@ public class KafkaConnectSyncControllerService {
             return kafkaConnectorModelClusterList;
 
         } catch (KafkawizeException e) {
-            log.error(e.getMessage());
+            log.error("Exception:", e);
         }
 
         return new ArrayList<>();
@@ -412,8 +413,8 @@ public class KafkaConnectSyncControllerService {
                 connectorsFromSOT = connectorsFromSOT.stream()
                         .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
                         .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return connectorsFromSOT;

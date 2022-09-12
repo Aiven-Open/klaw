@@ -76,8 +76,8 @@ public class TopicSyncControllerService {
                         mailService.sendReconMailToAdmin("Reconciliation of Topics", reconStr.toString(),
                                 tenantMap.get(tenantId), tenantId, commonUtilsService.getLoginUrl());
                     }
-                } catch (Exception exception) {
-                    log.error(exception.toString());
+                } catch (Exception e) {
+                    log.error("Exception:", e);
                 }
 
             }
@@ -317,7 +317,7 @@ public class TopicSyncControllerService {
             if(teamUpdatedFirst.isPresent())
                 teamUpdated =  manageDatabase.getTeamNameFromTeamId(tenantId, teamUpdatedFirst.get().getTeamId());
         }catch (Exception e){
-            log.error("Error from getSyncTopicList {}",e.getMessage());
+            log.error("Error from getSyncTopicList ",e);
         }
 
         if(teamUpdated != null && !teamUpdated.equals("undefined")){
@@ -372,8 +372,8 @@ public class TopicSyncControllerService {
                     .stream()
                     .filter(topicName -> !clusterTopicStringList.contains(topicName)).collect(Collectors.toList());
             deletedTopicsFromClusterListTmp.forEach(topicName -> deletedTopicsFromClusterList.add(sotTopics.get(topicName)));
-        } catch (Exception exception) {
-            log.error("Error from updateClusterDeletedTopicsList {}", exception.toString());
+        } catch (Exception e) {
+            log.error("Error from updateClusterDeletedTopicsList ", e);
         }
     }
 
@@ -462,7 +462,7 @@ public class TopicSyncControllerService {
                     createAndApproveTopicRequest(syncBackTopics, topicFound, tenantId);
             }
         } catch (KafkawizeException e) {
-            log.error("Error in creating topic {} {}", e.getMessage(), topicFound);
+            log.error("Error in creating topic {}", topicFound, e);
             List<String> resultStatus = new ArrayList<>();
             resultStatus.add("Error :" + e.getMessage());
             resultMap.put("result", resultStatus);
@@ -718,8 +718,8 @@ public class TopicSyncControllerService {
                 for (HashMap<String, String> hashMap : topicsMap) {
                     invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
                 }
-            } catch (Exception exception) {
-                log.error("Could not retrieve topics {}", exception.toString());
+            } catch (Exception e) {
+                log.error("Could not retrieve topics ", e);
             }
         }
 
@@ -741,9 +741,9 @@ public class TopicSyncControllerService {
         updatedSyncTopicsList.add(syncTopicUpdates);
         try {
             logArray.add("Topic status :" + hashMap.get("topicName") + " " + updateSyncTopics(updatedSyncTopicsList).get("result"));
-        } catch (Exception exception) {
-            logArray.add("Topic update failed :" + hashMap.get("topicName") + " " + exception.toString());
-            log.error(exception.getMessage());
+        } catch (Exception e) {
+            logArray.add("Topic update failed :" + hashMap.get("topicName") + " " + e.toString());
+            log.error("Exception:", e);
         }
     }
 
@@ -788,8 +788,9 @@ public class TopicSyncControllerService {
         updatedSyncTopicsList.add(syncTopicUpdates);
         try {
             logArray.add("Topic status :" + topicName + " " + updateSyncTopics(updatedSyncTopicsList).get("result"));
-        } catch (Exception exception) {
-            logArray.add("Topic update failed :" + topicName + " " + exception.toString());
+        } catch (Exception e) {
+            log.error("Exception:", e);
+            logArray.add("Topic update failed :" + topicName + " " + e);
         }
     }
 
@@ -1013,8 +1014,8 @@ public class TopicSyncControllerService {
                 topicsFromSOT = topicsFromSOT.stream()
                         .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                         .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return topicsFromSOT;
