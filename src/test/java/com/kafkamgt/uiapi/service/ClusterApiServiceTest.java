@@ -218,9 +218,9 @@ public class ClusterApiServiceTest {
         aclRequests.setAclType("Create");
         aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-        HashMap<String, String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
-        ResponseEntity<HashMap<String, String>> responseEntity = new ResponseEntity<>(resultMap, HttpStatus.OK);
+        ResponseEntity<Map<String, String>> responseEntity = new ResponseEntity<>(resultMap, HttpStatus.OK);
 
         when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
         when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -230,10 +230,10 @@ public class ClusterApiServiceTest {
         when(kwClusters.getClusterName()).thenReturn("cluster");
         when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
         when(restTemplate.exchange
-                (Mockito.anyString(), any(), Mockito.any(), (ParameterizedTypeReference<HashMap<String, String>>) any()))
+                (Mockito.anyString(), any(), Mockito.any(), (ParameterizedTypeReference<Map<String, String>>) any()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity<HashMap<String, String>> response = clusterApiService.approveAclRequests(aclRequests,1);
+        ResponseEntity<Map<String, String>> response = clusterApiService.approveAclRequests(aclRequests,1);
         assertEquals(response.getBody().get("result"), "success");
     }
 
@@ -247,9 +247,9 @@ public class ClusterApiServiceTest {
         aclRequests.setAclType("Delete");
         aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-        HashMap<String, String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
-        ResponseEntity<HashMap<String, String>> responseEntity = new ResponseEntity<>(resultMap, HttpStatus.OK);
+        ResponseEntity<Map<String, String>> responseEntity = new ResponseEntity<>(resultMap, HttpStatus.OK);
 
         when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
         when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -259,10 +259,10 @@ public class ClusterApiServiceTest {
         when(kwClusters.getClusterName()).thenReturn("cluster");
         when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
         when(restTemplate.exchange
-                (Mockito.anyString(), any(), Mockito.any(), (ParameterizedTypeReference<HashMap<String, String>>) any()))
+                (Mockito.anyString(), any(), Mockito.any(), (ParameterizedTypeReference<Map<String, String>>) any()))
                 .thenReturn(responseEntity);
 
-        ResponseEntity<HashMap<String, String>> response = clusterApiService.approveAclRequests(aclRequests,1);
+        ResponseEntity<Map<String, String>> response = clusterApiService.approveAclRequests(aclRequests,1);
         assertEquals(response.getBody().get("result"), "success");
     }
 

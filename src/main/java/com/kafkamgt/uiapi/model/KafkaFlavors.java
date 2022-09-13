@@ -1,10 +1,10 @@
 package com.kafkamgt.uiapi.model;
 
 public enum KafkaFlavors {
-    Apache_Kafka("Apache Kafka"),
-    Aiven_For_Apache_Kafka("Aiven for Apache Kafka"),
-    Confluent("Confluent"),
-    Others("Others");
+    APACHE_KAFKA("Apache Kafka"),
+    AIVEN_FOR_APACHE_KAFKA("Aiven for Apache Kafka"),
+    CONFLUENT("Confluent"),
+    OTHERS("Others");
 
     public final String value;
     private KafkaFlavors(String value) {

@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/")
@@ -189,8 +190,8 @@ public class EnvsClustersTenantsController {
     }
 
     @RequestMapping(value = "/getClusterInfoFromEnv", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<HashMap<String, String>> getClusterInfoFromEnv(@RequestParam(value="envSelected") String envSelected,
-                                                                          @RequestParam(value="envType") String envType) {
+    public ResponseEntity<Map<String, String>> getClusterInfoFromEnv(@RequestParam(value="envSelected") String envSelected,
+                                                                     @RequestParam(value="envType") String envType) {
         return new ResponseEntity<>(envsClustersTenantsControllerService.getClusterInfoFromEnv(envSelected, envType), HttpStatus.OK);
     }
 

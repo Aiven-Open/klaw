@@ -1090,8 +1090,8 @@ public class EnvsClustersTenantsControllerService {
         return tenantsInfo;
     }
 
-    public HashMap<String, String> getClusterInfoFromEnv(String envSelected, String clusterType) {
-        HashMap<String, String> clusterInfo = new HashMap<>();
+    public Map<String, String> getClusterInfoFromEnv(String envSelected, String clusterType) {
+        Map<String, String> clusterInfo = new HashMap<>();
 
         log.debug("getEnvDetails {}", envSelected);
         int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1105,10 +1105,7 @@ public class EnvsClustersTenantsControllerService {
         KwClusters kwClusters = manageDatabase.getHandleDbRequests()
                 .getClusterDetails(env.getClusterId(), tenantId);
 
-        if(kwClusters.getKafkaFlavor().equals(KafkaFlavors.Aiven_For_Apache_Kafka.value))
-            clusterInfo.put("aivenCluster", "true");
-        else
-            clusterInfo.put("aivenCluster", "false");
+        clusterInfo.put("aivenCluster", "" + KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor()));
 
         return clusterInfo;
     }

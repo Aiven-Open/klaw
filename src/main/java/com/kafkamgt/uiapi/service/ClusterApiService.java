@@ -7,9 +7,7 @@ import com.kafkamgt.uiapi.dao.Env;
 import com.kafkamgt.uiapi.dao.KwClusters;
 import com.kafkamgt.uiapi.dao.SchemaRequest;
 import com.kafkamgt.uiapi.error.KafkawizeException;
-import com.kafkamgt.uiapi.model.AclsNativeType;
-import com.kafkamgt.uiapi.model.KafkaClustersType;
-import com.kafkamgt.uiapi.model.KafkaFlavors;
+import com.kafkamgt.uiapi.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -379,10 +377,10 @@ public class ClusterApiService {
         return response;
     }
 
-    public ResponseEntity<HashMap<String, String>> approveAclRequests(AclRequests aclReq, int tenantId) throws KafkawizeException {
+    public ResponseEntity<Map<String, String>> approveAclRequests(AclRequests aclReq, int tenantId) throws KafkawizeException {
         log.info("approveAclRequests {}", aclReq);
         getClusterApiProperties(tenantId);
-        ResponseEntity<HashMap<String, String>> response;
+        ResponseEntity<Map<String, String>> response;
         try {
             String env = aclReq.getEnvironment();
             String uri;
@@ -405,27 +403,27 @@ public class ClusterApiService {
                     .get(envSelected.getClusterId());
 
             // aiven config
-            if(kwClusters.getKafkaFlavor().equals(KafkaFlavors.Aiven_For_Apache_Kafka.value)){
+            if(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor())){
                 params.add("aclsNativeType", AclsNativeType.AIVEN.name());
                 params.add("projectName", kwClusters.getProjectName());
                 params.add("serviceName", kwClusters.getServiceName());
                 params.add("topic", aclReq.getTopicname());
                 params.add("username", aclReq.getAcl_ssl());
 
-                if(aclReq.getTopictype().equals("Producer"))
+                if(aclReq.getTopictype().equals(AclType.Producer.value))
                     params.add("permission", "write");
                 else
                     params.add("permission", "read");
 
-                if(aclReq.getAclType().equals("Delete")  && aclReq.getJsonParams()!=null) {
+                if(AclOperation.Delete.name().equals(aclReq.getAclType())  && null != aclReq.getJsonParams()) {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    HashMap<String, String> jsonObj = objectMapper.readValue(aclReq.getJsonParams(), HashMap.class);
+                    Map<String, String> jsonObj = objectMapper.readValue(aclReq.getJsonParams(), Map.class);
                     String aivenAclKey = "aivenaclid";
                     if(jsonObj.containsKey(aivenAclKey))
                         params.add(aivenAclKey, jsonObj.get(aivenAclKey));
                     else{
-                        log.error("Error from approveAclRequests : AlcId not found");
-                        throw new KafkawizeException("Could not approve acl request. AclId not found.");
+                        log.error("Error from approveAclRequests : AclId - aivenaclid not found");
+                        throw new KafkawizeException("Could not approve acl request. AclId - Aiven acl id not found.");
                     }
                 }
             }else{
@@ -441,9 +439,8 @@ public class ClusterApiService {
                 params.add("transactionalId", aclReq.getTransactionalId());
                 params.add("aclIpPrincipleType", aclReq.getAclIpPrincipleType().name());
 
-                if(aclReq.getAclPatternType() != null && aclReq.getAclPatternType().equals("PREFIXED"))
-                    params.add("isPrefixAcl", "true");
-                else params.add("isPrefixAcl", "false");
+                String aclPatternType = aclReq.getAclPatternType();
+                params.add("isPrefixAcl", ("PREFIXED".equals(aclPatternType)) + "");
             }
 
             HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);//createHeaders("user1", "pwd");

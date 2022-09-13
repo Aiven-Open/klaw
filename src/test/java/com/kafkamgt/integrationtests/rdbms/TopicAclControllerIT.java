@@ -25,10 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.kafkamgt.uiapi.service.KwConstants.TENANT_CONFIG_PROPERTY;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -457,7 +454,7 @@ public class TopicAclControllerIT {
         Object obj = response.get(0);
         LinkedHashMap<String, Integer> hMap = (LinkedHashMap)obj;
 
-        HashMap<String, String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
 
         when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));

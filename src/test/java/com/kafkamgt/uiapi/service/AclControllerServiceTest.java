@@ -230,7 +230,7 @@ public class AclControllerServiceTest {
 
         stubUserInfo();
         when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
-        HashMap<String, String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
         when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
         when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenReturn("success");
@@ -248,7 +248,7 @@ public class AclControllerServiceTest {
         stubUserInfo();
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
         when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
-        HashMap<String, String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "failure");
         when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
 
@@ -265,7 +265,7 @@ public class AclControllerServiceTest {
         stubUserInfo();
         when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
-        HashMap<String, String> resultMap = new HashMap<>();
+        Map<String, String> resultMap = new HashMap<>();
         resultMap.put("result", "success");
         when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
         when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenThrow(new RuntimeException("Error"));
