@@ -328,17 +328,17 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     @Override
     public List<Env> selectAllKafkaEnvs(int tenantId){
-        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.kafka.value, tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA.value, tenantId);
     }
 
     @Override
     public List<Env> selectAllSchemaRegEnvs(int tenantId){
-        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.schemaregistry.value, tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
     }
 
     @Override
     public List<Env> selectAllKafkaConnectEnvs(int tenantId) {
-        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.kafkaconnect.value, tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
     }
 
     @Override

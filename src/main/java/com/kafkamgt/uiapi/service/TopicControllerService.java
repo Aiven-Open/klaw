@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1050,10 +1049,10 @@ public class TopicControllerService {
         Map<String, String> topicEvents = new TreeMap<>();
         int tenantId = commonUtilsService.getTenantId(getUserName());
         try {
-            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId).getClusterId()).getBootstrapServers();
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId).getClusterId()).getBootstrapServers();
             topicEvents = clusterApiService.getTopicEvents(bootstrapHost,
-                    manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId).getClusterId()).getProtocol(),
-                    manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId).getClusterId()).getClusterName(),
+                    manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId).getClusterId()).getProtocol(),
+                    manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId).getClusterId()).getClusterName(),
                     topicName, offsetId, consumerGroupId, tenantId);
         } catch (Exception e) {
             log.error("Ignoring error while retrieving topic events {} ", e.toString());

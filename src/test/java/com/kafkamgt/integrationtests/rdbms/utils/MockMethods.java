@@ -53,7 +53,7 @@ public class MockMethods {
         kwClustersModel.setClusterName(dev_cluster);
         kwClustersModel.setBootstrapServers("localhost:9092");
         kwClustersModel.setProtocol("PLAINTEXT");
-        kwClustersModel.setClusterType(KafkaClustersType.kafka.value);
+        kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
         kwClustersModel.setKafkaFlavor("Apache Kafka");
 
         return kwClustersModel;
@@ -65,7 +65,7 @@ public class MockMethods {
         envModel.setName(envName);
         envModel.setTenantId(101);
         envModel.setClusterId(1);
-        envModel.setType(KafkaClustersType.kafka.value);
+        envModel.setType(KafkaClustersType.KAFKA.value);
         envModel.setOtherParams("default.partitions=2,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=");
 
         return envModel;

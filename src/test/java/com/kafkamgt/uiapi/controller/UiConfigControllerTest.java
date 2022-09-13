@@ -213,7 +213,7 @@ public class UiConfigControllerTest {
         String response = mvcEnvs.perform(MockMvcRequestBuilders
                 .post("/deleteEnvironmentRequest")
                 .param("envId", "101")
-                .param("envType", KafkaClustersType.kafka.value)
+                .param("envType", KafkaClustersType.KAFKA.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -36,7 +36,7 @@ public class KafkaConnectSyncControllerService {
     public HashMap<String, String> getConnectorDetails(String connectorName, String envId) throws KafkawizeException {
         HashMap<String, String> response = new HashMap<>();
         int tenantId = commonUtilsService.getTenantId(getUserName());
-        KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId)
+        KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
                 .get(getKafkaConnectorEnvDetails(envId).getClusterId());
 
         LinkedHashMap<String, Object> res = clusterApiService.getConnectorDetails(connectorName, kwClusters.getBootstrapServers(),
@@ -219,7 +219,7 @@ public class KafkaConnectSyncControllerService {
     }
 
     private String getConnectorConfiguration(String connectorName, String environmentId, int tenantId) throws KafkawizeException, JsonProcessingException {
-        KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId)
+        KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
                 .get(getKafkaConnectorEnvDetails(environmentId).getClusterId());
 
             Object configMap = clusterApiService.getConnectorDetails(connectorName, kwClusters.getBootstrapServers(),
@@ -278,7 +278,7 @@ public class KafkaConnectSyncControllerService {
 
         // get from cluster
         List<KafkaConnectorModel> kafkaConnectorModelClusterList = new ArrayList<>();
-        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
         try {
             List<String> allConnectors =  clusterApiService.getAllKafkaConnectors(bootstrapHost, tenantId);
 

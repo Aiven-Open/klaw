@@ -459,9 +459,9 @@ public class ManageDatabase  implements ApplicationContextAware {
         kwAllClustersPertenant = new HashMap<>();
 
         for (Integer tenantId : tenantMap.keySet()) {
-            kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafka.value, tenantId);
-            schemaRegistryClusters = handleDbRequests.getAllClusters(KafkaClustersType.schemaregistry.value, tenantId);
-            kafkaConnectClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafkaconnect.value, tenantId);
+            kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA.value, tenantId);
+            schemaRegistryClusters = handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
+            kafkaConnectClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
 
             loadClustersForOneTenant(kafkaClusters, schemaRegistryClusters, kafkaConnectClusters, tenantId);
         }
@@ -470,11 +470,11 @@ public class ManageDatabase  implements ApplicationContextAware {
     public void loadClustersForOneTenant(List<KwClusters> kafkaClusters, List<KwClusters> schemaRegistryClusters,
                                           List<KwClusters> kafkaConnectClusters, Integer tenantId) {
         if(kafkaClusters == null)
-            kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafka.value, tenantId);
+            kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA.value, tenantId);
         if(schemaRegistryClusters == null)
-            schemaRegistryClusters = handleDbRequests.getAllClusters(KafkaClustersType.schemaregistry.value, tenantId);
+            schemaRegistryClusters = handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
         if(kafkaConnectClusters == null)
-            kafkaConnectClusters = handleDbRequests.getAllClusters(KafkaClustersType.kafkaconnect.value, tenantId);
+            kafkaConnectClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
 
         HashMap<Integer, KwClusters> kwKafkaClusters = new HashMap<>();
         HashMap<Integer, KwClusters> kwSchemaRegClusters = new HashMap<>();

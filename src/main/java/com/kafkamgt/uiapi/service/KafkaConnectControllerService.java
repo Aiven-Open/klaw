@@ -465,7 +465,7 @@ public class KafkaConnectControllerService {
                 updateTopicReqStatus = dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
         }else{
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(connectorRequest.getEnvironment(), tenantId);
-            KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafkaconnect.value, tenantId)
+            KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
                     .get(envSelected.getClusterId());
             String protocol = kwClusters.getProtocol();
             String kafkaConnectHost = kwClusters.getBootstrapServers();

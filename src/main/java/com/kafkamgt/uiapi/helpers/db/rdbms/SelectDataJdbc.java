@@ -13,7 +13,6 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Component
 @Slf4j
@@ -915,11 +914,11 @@ public class SelectDataJdbc {
     }
 
     public List<Acl> getConsumerGroupsforTeam(Integer teamId, int tenantId) {
-        return aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.Consumer.name(),teamId, tenantId);
+        return aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.CONSUMER.name(),teamId, tenantId);
     }
 
     public List<Acl> getAllConsumerGroups(int tenantId) {
-        return aclRepo.findAllByTopictypeAndTenantId(AclType.Consumer.name(), tenantId);
+        return aclRepo.findAllByTopictypeAndTenantId(AclType.CONSUMER.name(), tenantId);
     }
 
     public List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId) {

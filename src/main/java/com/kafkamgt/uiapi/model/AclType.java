@@ -1,8 +1,8 @@
 package com.kafkamgt.uiapi.model;
 
 public enum AclType {
-    Producer ("Producer"),
-    Consumer("Consumer");
+    PRODUCER("Producer"),
+    CONSUMER("Consumer");
 
     public final String value;
     private AclType(String value) {

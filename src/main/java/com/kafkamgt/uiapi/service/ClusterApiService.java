@@ -341,12 +341,12 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicEnvId, tenantId);
-            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                     .get(envSelected.getClusterId()).getBootstrapServers();
             params.add("env", bootstrapHost);
-            params.add("protocol", manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+            params.add("protocol", manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                     .get(envSelected.getClusterId()).getProtocol());
-            params.add("clusterName", manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+            params.add("clusterName", manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                     .get(envSelected.getClusterId()).getClusterName() + "-" + tenantId);
             params.add("topicName", topicName);
 
@@ -399,7 +399,7 @@ public class ClusterApiService {
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
 
-            KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+            KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                     .get(envSelected.getClusterId());
 
             // aiven config
@@ -410,12 +410,12 @@ public class ClusterApiService {
                 params.add("topic", aclReq.getTopicname());
                 params.add("username", aclReq.getAcl_ssl());
 
-                if(aclReq.getTopictype().equals(AclType.Producer.value))
+                if(aclReq.getTopictype().equals(AclType.PRODUCER.value))
                     params.add("permission", "write");
                 else
                     params.add("permission", "read");
 
-                if(AclOperation.Delete.name().equals(aclReq.getAclType())  && null != aclReq.getJsonParams()) {
+                if(AclOperation.DELETE.value.equals(aclReq.getAclType())  && null != aclReq.getJsonParams()) {
                     ObjectMapper objectMapper = new ObjectMapper();
                     Map<String, String> jsonObj = objectMapper.readValue(aclReq.getJsonParams(), Map.class);
                     String aivenAclKey = "aivenaclid";
@@ -468,9 +468,9 @@ public class ClusterApiService {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
-            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.schemaregistry.value, tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
                     .get(envSelected.getClusterId()).getBootstrapServers();
-            params.add("protocol", manageDatabase.getClusters(KafkaClustersType.schemaregistry.value, tenantId)
+            params.add("protocol", manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
                     .get(envSelected.getClusterId()).getProtocol());
             params.add("env", bootstrapHost);
             params.add("topicName", topicName);

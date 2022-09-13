@@ -938,7 +938,7 @@ public class AclControllerService {
             String schemaOfObj ;
             for(Env schemaEnv:schemaEnvs){
                 try {
-                    KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.schemaregistry.value, tenantId).get(schemaEnv.getClusterId());
+                    KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId).get(schemaEnv.getClusterId());
                     TreeMap<Integer, HashMap<String, Object>> schemaObjects = clusterApiService.getAvroSchema(
                             kwClusters.getBootstrapServers(),
                             kwClusters.getProtocol(),
@@ -1028,10 +1028,10 @@ public class AclControllerService {
         List<HashMap<String,String>> aclList;
 
         Env envSelected = getEnvDetails(env, tenantId);
-        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
-        aclList = getAclListFromCluster(bootstrapHost, manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        aclList = getAclListFromCluster(bootstrapHost, manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                 .get(envSelected.getClusterId()).getProtocol(),
-                manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+                manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                         .get(envSelected.getClusterId()).getClusterName(), topicNameSearch, tenantId);
 
         List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true, tenantId);
@@ -1263,11 +1263,11 @@ public class AclControllerService {
         List<HashMap<String, String>> consumerOffsetInfoList= new ArrayList<>();
         int tenantId = commonUtilsService.getTenantId(getUserName());
         try {
-            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                     .get(getEnvDetails(envId, tenantId).getClusterId()).getBootstrapServers();
             consumerOffsetInfoList = clusterApiService.getConsumerOffsets(bootstrapHost,
-                    manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getProtocol(),
-                    manageDatabase.getClusters(KafkaClustersType.kafka.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getClusterName(),
+                    manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getProtocol(),
+                    manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getClusterName(),
                     topicName, consumerGroupId, tenantId);
         } catch (Exception e) {
             log.error("Ignoring error while retrieving consumer offsets {} ", e.toString());
