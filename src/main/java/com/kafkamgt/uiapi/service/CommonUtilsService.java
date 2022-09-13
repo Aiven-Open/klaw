@@ -140,7 +140,7 @@ public class CommonUtilsService {
                     .get(getAuthority(principal)).contains(permissionType.name());
         }catch (Exception e){
             log.debug("Error isNotAuthorizedUser / Check if role exists. {} {} {}", getUserName(principal),
-                    permissionType.name(), getAuthority(getUserName(principal)));
+                    permissionType.name(), getAuthority(getUserName(principal)), e);
             return true;
         }
     }
@@ -273,8 +273,7 @@ public class CommonUtilsService {
             return true;
 
         } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            log.error("Unable to load public key to trust store clusterName: " + fileName + " Tenant " + tenantId + "-" +  e.getMessage());
+            log.error("Unable to load public key to trust store clusterName: " + fileName + " Tenant " + tenantId + "-", e);
             return false;
         }
 
@@ -293,7 +292,7 @@ public class CommonUtilsService {
                 resetCacheOnOtherServers(kwMetadataUpdates);
             }).get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            log.error("Exception:", e);
         }
     }
 
@@ -384,8 +383,7 @@ public class CommonUtilsService {
 
 
         }catch(Exception e){
-            e.printStackTrace();
-            log.error("Error from invokeResetEndpoints {}", e.toString());
+            log.error("Error from invokeResetEndpoints ", e);
         }
     }
 

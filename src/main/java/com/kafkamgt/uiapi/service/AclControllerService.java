@@ -197,7 +197,8 @@ public class AclControllerService {
                 response.put("result", manageDatabase.getHandleDbRequests().addToSyncacls(listTopics));
             }
         }catch(Exception e){
-            response.put("result", "Failure." + e.toString());
+            log.error("Exception:", e);
+            response.put("result", "Failure."+ e);
         }
         return response;
     }

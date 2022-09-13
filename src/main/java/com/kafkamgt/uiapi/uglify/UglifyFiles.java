@@ -1,8 +1,11 @@
 package com.kafkamgt.uiapi.uglify;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.IOException;
 
+@Slf4j
 public class UglifyFiles {
 
 //    String cssDir = "C:/murali/IdeaProjects/kafkawizepro/src/main/resources/static/assets/css/";
@@ -59,7 +62,7 @@ public class UglifyFiles {
         try {
             rt.exec(commandToExec);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception:", e);
         }
     }
 

@@ -41,8 +41,8 @@ public class EnvControllerService {
                     manageDatabase.loadOneTenant(tenantId);
                 }
             }
-        } catch (Exception exception) {
-            log.info("loadTenantActiveStatus : " + exception.getMessage());
+        } catch (Exception e) {
+            log.info("loadTenantActiveStatus : ", e);
         }
     }
 
@@ -83,8 +83,8 @@ public class EnvControllerService {
                 }
                 manageDatabase.loadEnvMapForOneTenant(tenantId);
             }
-        } catch (Exception exception) {
-            log.error("Error in loading cluster status {}", exception.getMessage());
+        } catch (Exception e) {
+            log.error("Error in loading cluster status ", e);
         }
     }
 

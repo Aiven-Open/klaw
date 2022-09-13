@@ -97,8 +97,8 @@ public class AnalyticsControllerService {
                     resultMap.put("status","success");
                     resultMap.put("aclsCount", aclsPerEnvList.get(0).get("aclscount"));
                 }
-            } catch (Exception exception) {
-                log.error("No environments/clusters found.");
+            } catch (Exception e) {
+                log.error("No environments/clusters found.", e);
             }
         }
         return resultMap;
@@ -125,8 +125,8 @@ public class AnalyticsControllerService {
                     resultMap.put("topicsCount", topicsCountList.get(0).get("topicscount"));
                 }
             }
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
         }
         return resultMap;
     }
@@ -185,8 +185,8 @@ public class AnalyticsControllerService {
                             .collect(Collectors.toList());
                 teamCountList.forEach(hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
             }
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             teamCountList = new ArrayList<>();
         }
 
@@ -226,8 +226,8 @@ public class AnalyticsControllerService {
                         .collect(Collectors.toList());
                 partitionsCountList.forEach(hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
             }
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             partitionsCountList = new ArrayList<>();
         }
 
@@ -251,8 +251,8 @@ public class AnalyticsControllerService {
                         .collect(Collectors.toList());
                 aclsPerEnvList.forEach(hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
             }
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             aclsPerEnvList = new ArrayList<>();
         }
 
@@ -277,8 +277,8 @@ public class AnalyticsControllerService {
             try {
                 activityCountList = manageDatabase.getHandleDbRequests()
                         .selectActivityLogForLastDays(numberOfDays, allowedEnvIdList.toArray(new String[0]), tenantId);
-            } catch (Exception exception) {
-                log.error("No environments/clusters found.");
+            } catch (Exception e) {
+                log.error("No environments/clusters found.", e);
                 activityCountList = new ArrayList<>();
             }
         }
@@ -376,7 +376,7 @@ public class AnalyticsControllerService {
         try {
             zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
         } catch (FileNotFoundException e) {
-            log.error(e.getMessage());
+            log.error("Exception:", e);
         }
 
         String actualFileName;
@@ -413,7 +413,7 @@ public class AnalyticsControllerService {
                 zipOutputStream.close();
             }
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("Exception:", e);
         }
 
         return zipFile;
@@ -433,7 +433,7 @@ public class AnalyticsControllerService {
             }
 
         } catch (IOException e) {
-            log.error(e.toString());
+            log.error("Exception:", e);
         }
     }
 
@@ -541,7 +541,7 @@ public class AnalyticsControllerService {
         }
         catch (Exception e)
         {
-            log.error("Error : writeToFile " + e.toString());
+            log.error("Error : writeToFile ", e);
         }
     }
 

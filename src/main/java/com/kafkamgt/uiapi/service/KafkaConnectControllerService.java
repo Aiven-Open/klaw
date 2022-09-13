@@ -79,6 +79,7 @@ public class KafkaConnectControllerService {
                         .writeValueAsString(resultMap));
             }
         } catch (JsonProcessingException e) {
+            log.error("Exception:", e);
             hashMapTopicReqRes.put("result", "Failure. Invalid config.");
             return hashMapTopicReqRes;
         }
@@ -105,8 +106,8 @@ public class KafkaConnectControllerService {
         try {
             syncCluster = manageDatabase.getTenantConfig()
                     .get(tenantId).getBaseSyncKafkaConnectCluster();
-        } catch (Exception exception) {
-            log.error("Tenant Configuration not found. " + tenantId);
+        } catch (Exception e) {
+            log.error("Tenant Configuration not found. " + tenantId, e);
             return new HashMap<>();
         }
         String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
@@ -405,7 +406,7 @@ public class KafkaConnectControllerService {
 
             return om.writerWithDefaultPrettyPrinter().writeValueAsString(connectorConfig);
         } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
+            log.error("Exception:", e);
             return e.toString();
         }
     }
@@ -428,8 +429,9 @@ public class KafkaConnectControllerService {
 
         try {
             jsonConnectorConfig = createConnectorConfig(connectorRequest);
-        } catch (Exception exception) {
-            resultMap.put("result", "Failure " + exception.getMessage());
+        } catch (Exception e) {
+            log.error("Exception:", e);
+            resultMap.put("result", "Failure " + e.getMessage());
             return resultMap;
         }
 
@@ -520,8 +522,8 @@ public class KafkaConnectControllerService {
             topicHistoryList.add(topicHistory);
 
             connectorRequest.setHistory(objectMapper.writer().writeValueAsString(topicHistoryList));
-        } catch (Exception exception) {
-            log.error("setTopicDocs {}", exception.toString());
+        } catch (Exception e) {
+            log.error("setTopicDocs ", e);
         }
     }
 
@@ -721,7 +723,8 @@ public class KafkaConnectControllerService {
 
         try {
             syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncKafkaConnectCluster();
-        } catch (Exception exception) {
+        } catch (Exception e) {
+            log.error("Exception", e);
             syncCluster = null;
         }
 
@@ -729,8 +732,8 @@ public class KafkaConnectControllerService {
             String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS");
             reqTopicsEnvs = requestTopicsEnvs.split(",");
             reqTopicsEnvsList = new ArrayList<>(Arrays.asList(reqTopicsEnvs));
-        } catch (Exception exception) {
-            log.error("Error in getting req topic envs");
+        } catch (Exception e) {
+            log.error("Error in getting req topic envs", e);
         }
 
         List<KafkaConnectorModel> topicInfoList = new ArrayList<>();
@@ -756,7 +759,7 @@ public class KafkaConnectControllerService {
                     topicHistoryFromTopic = objectMapper.readValue(topic.getHistory(), ArrayList.class);
                     topicHistoryList.addAll(topicHistoryFromTopic);
                 } catch (JsonProcessingException e) {
-                    log.error("Unable to parse topicHistory");
+                    log.error("Unable to parse topicHistory", e);
                 }
             }
 
@@ -800,6 +803,7 @@ public class KafkaConnectControllerService {
                 topicOverview.setPromotionDetails(hashMap);
             }
         }catch (Exception e){
+            log.error("Exception:", e);
             HashMap<String, String> hashMap = new HashMap<>();
             hashMap.put("status", "not_authorized");
             topicOverview.setPromotionDetails(hashMap);
@@ -904,7 +908,7 @@ public class KafkaConnectControllerService {
                 return hashMap;
             }
         }catch (Exception e){
-            log.error("getConnectorPromotionEnv {}", e.getMessage());
+            log.error("getConnectorPromotionEnv ", e);
             hashMap.put("status","failure");
             hashMap.put("error","Connector does not exist in any environment.");
         }
@@ -1035,8 +1039,8 @@ public class KafkaConnectControllerService {
                 createdTopicReqList = createdTopicReqList.stream()
                         .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
                         .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return createdTopicReqList;
@@ -1050,8 +1054,8 @@ public class KafkaConnectControllerService {
                 connectorsFromSOT = connectorsFromSOT.stream()
                         .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
                         .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return connectorsFromSOT;

@@ -2,6 +2,7 @@ package com.kafkamgt.uiapi.controller;
 
 import com.kafkamgt.uiapi.model.charts.TeamOverview;
 import com.kafkamgt.uiapi.service.AnalyticsControllerService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class AnalyticsController {
 
     @Autowired
@@ -62,7 +64,7 @@ public class AnalyticsController {
 
             return new ResponseEntity<>(map, HttpStatus.OK);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Exception:", e);
         }
         return null;
     }

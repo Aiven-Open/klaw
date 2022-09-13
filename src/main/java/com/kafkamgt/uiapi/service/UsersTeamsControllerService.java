@@ -137,7 +137,7 @@ public class UsersTeamsControllerService {
 
             return "{\"result\":\""+result+"\"}";
         }catch(Exception e){
-            log.error("Error from updateUser {}", e.toString());
+            log.error("Error from updateUser ", e);
             return "{\"result\":\"Failure "+e.getMessage()+"\"}";
         }
     }
@@ -224,8 +224,8 @@ public class UsersTeamsControllerService {
                     for (String s : teamModel.getEnvList()) {
                         tmpConvertedList.add(getEnvDetailsFromId(s).getName());
                     }
-                } catch (Exception exception) {
-                    log.error("No environments/clusters found.");
+                } catch (Exception e) {
+                    log.error("No environments/clusters found.", e);
                 }
                 teamModel.setEnvList(tmpConvertedList);
             }
@@ -324,6 +324,7 @@ public class UsersTeamsControllerService {
 
             return "{\"result\":\"" + result +"\"}";
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -351,6 +352,7 @@ public class UsersTeamsControllerService {
         try {
             return "{\"result\":\""+manageDatabase.getHandleDbRequests().deleteUserRequest(userId)+"\"}";
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -449,14 +451,15 @@ public class UsersTeamsControllerService {
             resMap.put("result", result);
             return resMap;
         }catch(Exception e){
-            log.error("Error {}",e.getMessage());
             inMemoryUserDetailsManager.deleteUser(newUser.getUsername());
             if(e.getMessage().contains("should not exist")){
                 resMap.put("result", "Failure. User already exists.");
                 return resMap;
             }
-            else
+            else {
+                log.error("Error ",e);
                 throw new KafkawizeException("Unable to create the user.");
+            }
         }
     }
 
@@ -489,6 +492,7 @@ public class UsersTeamsControllerService {
             }
             return "{\"result\":\"" + res + "\"}";
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -515,6 +519,7 @@ public class UsersTeamsControllerService {
             commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.UPDATE);
             return "{\"result\":\"" + res + "\"}";
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -541,6 +546,7 @@ public class UsersTeamsControllerService {
             return "{\"result\":\"" + manageDatabase.getHandleDbRequests()
                     .updatePassword(userDetails, encodePwd(pwdChange)) + "\"}";
         }catch(Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.getMessage()+"\"}";
         }
     }
@@ -702,6 +708,7 @@ public class UsersTeamsControllerService {
                             registerUserInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
                         }
                     }catch (Exception e){
+                        log.error("Exception:", e);
                         throw new KafkawizeException("Invalid tenant provided.");
                     }
                 }
@@ -718,7 +725,7 @@ public class UsersTeamsControllerService {
                 mailService.sendMailRegisteredUser(registerUserInfo, dbHandle, commonUtilsService.getLoginUrl());
             }
         }catch (Exception e){
-            e.printStackTrace();
+            log.error("Exception:", e);
             throw new KafkawizeException("Failure. Something went wrong. Please try later.");
         }
         return result;
@@ -790,6 +797,7 @@ public class UsersTeamsControllerService {
                 return "{\"result\":\"failure\"}";
             return "{\"result\":\"success\"}";
         }catch(Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure\"}";
         }
     }
@@ -806,6 +814,7 @@ public class UsersTeamsControllerService {
             dbHandle.updateNewUserRequest(username, userDetails, false);
             return "{\"result\":\"success\"}";
         }catch(Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure\"}";
         }
     }

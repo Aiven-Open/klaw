@@ -110,12 +110,12 @@ public class EmailService {
                         emailSender.send(message);
                     }).get();
                 } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                    log.error("Exception:", e);
                 }
             }
 
-        } catch (MailException | MessagingException | UnsupportedEncodingException exception) {
-            log.error(exception.getMessage());
+        } catch (MailException | MessagingException | UnsupportedEncodingException e) {
+            log.error("Exception:", e);
         }
     }
 }

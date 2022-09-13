@@ -72,7 +72,7 @@ public class MetricsControllerService {
                     .env("1").build();
             manageDatabase.getHandleDbRequests().insertMetrics(kwMetrics);
         } catch (KafkawizeException e) {
-            log.error("Error from  retrieveMetrics {} {}", jmxUrl, e.toString());
+            log.error("Error from  retrieveMetrics {}", jmxUrl, e);
         }
     }
 
@@ -104,8 +104,8 @@ public class MetricsControllerService {
                 metricsCountList = manageDatabase.getHandleDbRequests()
                         .selectAllMetrics("kafka.server:type=BrokerTopicMetrics",
                                 "name=MessagesInPerSec","1");
-            } catch (Exception exception) {
-                log.error("No environments/clusters found.");
+            } catch (Exception e) {
+                log.error("No environments/clusters found.", e);
                 metricsCountList = new ArrayList<>();
             }
 //        }

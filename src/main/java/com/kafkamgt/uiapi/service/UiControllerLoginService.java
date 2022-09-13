@@ -94,6 +94,7 @@ public class UiControllerLoginService {
             else
                 return defaultPage;
         }catch (Exception e){
+            log.error("Exception:", e);
             if(uri.equals("login.html") || uri.equals("register.html") || uri.equals("registerSaas.html") ||
                     uri.equals("registerLdap.html") || uri.contains("registrationReview") || uri.contains("userActivation")
                     || uri.equals("forgotPassword.html") || uri.equals("newADUser.html") || uri.equals("terms.html")
@@ -130,6 +131,7 @@ public class UiControllerLoginService {
                 return uri;
         }catch (Exception e)
         {
+            log.error("Exception:", e);
             return oauthLoginPage;
         }
     }
@@ -192,7 +194,7 @@ public class UiControllerLoginService {
                 return  "redirect:" + "register?userRegistrationId=" + randomId;
             }
         }catch(Exception e){
-            log.error("Unable to find mail/name fields.");
+            log.error("Unable to find mail/name fields.", e);
             return "registerLdap.html";
         }
     }

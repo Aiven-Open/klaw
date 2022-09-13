@@ -161,6 +161,7 @@ public class SchemaRegstryControllerService {
             return manageDatabase.getHandleDbRequests().deleteSchemaRequest(Integer.parseInt(avroSchemaId),
                     commonUtilsService.getTenantId(getUserName()));
         }catch (Exception e){
+            log.error("Exception:", e);
             return "{\"result\":\"failure "+e.toString()+"\"}";
         }
     }
@@ -194,6 +195,7 @@ public class SchemaRegstryControllerService {
                 mailService.sendMail(schemaRequest.getTopicname(), null, "",
                         schemaRequest.getUsername(), dbHandle, SCHEMA_REQUEST_APPROVED, commonUtilsService.getLoginUrl());
             }catch (Exception e){
+                log.error("Exception:", e);
                 return e.getMessage();
             }
 
@@ -236,8 +238,8 @@ public class SchemaRegstryControllerService {
                 topicsFromSOT = topicsFromSOT.stream()
                         .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                         .collect(Collectors.toList());
-        } catch (Exception exception) {
-            log.error("No environments/clusters found.");
+        } catch (Exception e) {
+            log.error("No environments/clusters found.", e);
             return new ArrayList<>();
         }
         return topicsFromSOT;
@@ -254,6 +256,7 @@ public class SchemaRegstryControllerService {
         try {
             new ObjectMapper().readValue(schemaRequest.getSchemafull(), Object.class);
         } catch (IOException e) {
+            log.error("Exception:", e);
             return "Failure. Invalid json";
         }
 
@@ -302,7 +305,8 @@ public class SchemaRegstryControllerService {
 
             return responseDb;
         }catch (Exception e){
-            return "failure " + e.toString();
+            log.error("Exception:", e);
+            return "failure " + e;
         }
     }
 

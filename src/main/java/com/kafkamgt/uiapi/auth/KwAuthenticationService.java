@@ -74,8 +74,8 @@ public class KwAuthenticationService {
 
             userObject.put("userFound", Boolean.TRUE);
             userObject.put("attributes", attributes);
-        } catch (NamingException var9) {
-            log.error("Failed to locate directory entry for authenticated user: " + username, var9);
+        } catch (NamingException e) {
+            log.error("Failed to locate directory entry for authenticated user: " + username, e);
             userObject.put("userFound", Boolean.FALSE);
         } finally {
             LdapUtils.closeContext(ctx);
@@ -97,12 +97,8 @@ public class KwAuthenticationService {
 
         try {
             return this.contextFactory.createContext(env);
-        } catch (NamingException var7) {
-            try {
-                throw var7;
-            } catch (NamingException e) {
-                log.error(e.toString());
-            }
+        } catch (NamingException e) {
+            log.error("Exception:", e);
         }
 
         return null;
@@ -122,9 +118,10 @@ public class KwAuthenticationService {
         try {
             return SpringSecurityLdapTemplate.searchForSingleEntryInternal(context, searchControls, searchRoot,
                     searchFilterUpdated, new Object[]{bindPrincipal, username});
-        } catch (IncorrectResultSizeDataAccessException var8) {
-            if (var8.getActualSize() != 0) {
-                throw var8;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            log.error("Exception:", e);
+            if (e.getActualSize() != 0) {
+                throw e;
             } else {
                 throw this.badCredentials();
             }
@@ -209,7 +206,7 @@ public class KwAuthenticationService {
                         response.sendRedirect("register?userRegistrationId=" + randomId);
                     }
                 }catch(Exception e){
-                    log.error("Unable to find mail/name fields.");
+                    log.error("Unable to find mail/name fields.", e);
                     response.sendRedirect("register");
                 }
             }
@@ -218,8 +215,8 @@ public class KwAuthenticationService {
                 response.sendRedirect("login?error");
             }
             return null;
-        } catch (NamingException | IOException | NullPointerException e) {
-            log.error("User not found / Invalid credentials {}", request.getParameter("username"));
+        } catch (NamingException | IOException e) {
+            log.error("User not found / Invalid credentials {}", request.getParameter("username"), e);
             try {
                 response.sendRedirect("login?error");
             } catch (IOException ignored) {
