@@ -15,7 +15,7 @@ jobs:
       matrix:
         java-version: [ 11, 17 ]
         runs-on: [ ubuntu-latest ]
-    name: Build on ${{ matrix.runs-on }} with jdk ${{ matrix.java-version }}
+    name: Jdk ${{ matrix.java-version }}, os ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v3
