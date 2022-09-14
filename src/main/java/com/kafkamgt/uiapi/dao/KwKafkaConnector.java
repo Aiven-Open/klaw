@@ -1,52 +1,49 @@
 package com.kafkamgt.uiapi.dao;
 
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
 
 @ToString
 @Getter
 @Setter
 @Entity
 @IdClass(KwKafkaConnectorID.class)
-@Table(name="kwkafkaconnector")
-public class KwKafkaConnector  implements Serializable {
-    @Id
-    @Column(name = "connectorid")
-    private Integer connectorId;
+@Table(name = "kwkafkaconnector")
+public class KwKafkaConnector implements Serializable {
+  @Id
+  @Column(name = "connectorid")
+  private Integer connectorId;
 
-    @Id
-    @Column(name = "tenantid")
-    private Integer tenantId;
+  @Id
+  @Column(name = "tenantid")
+  private Integer tenantId;
 
-    @Column(name = "connectorname")
-    private String connectorName;
+  @Column(name = "connectorname")
+  private String connectorName;
 
-    @Column(name = "env")
-    private String environment;
+  @Column(name = "env")
+  private String environment;
 
-    @Transient
-    private List<String> environmentsList;
+  @Transient private List<String> environmentsList;
 
-    @Column(name = "teamid")
-    private Integer teamId;
+  @Column(name = "teamid")
+  private Integer teamId;
 
-    @Column(name = "description")
-    private String description;
+  @Column(name = "description")
+  private String description;
 
-    @Column(name = "connectorconfig")
-    private String connectorConfig;
+  @Column(name = "connectorconfig")
+  private String connectorConfig;
 
-    @Column(name = "documentation")
-    private String documentation;
+  @Column(name = "documentation")
+  private String documentation;
 
-    @Column(name = "history")
-    private String history;
+  @Column(name = "history")
+  private String history;
 
-    @Transient
-    private boolean isExistingConnector;
+  @Transient private boolean isExistingConnector;
 }

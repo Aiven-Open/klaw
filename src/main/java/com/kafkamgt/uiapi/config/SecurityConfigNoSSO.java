@@ -4,6 +4,8 @@ import com.kafkamgt.uiapi.auth.KwRequestFilter;
 import com.kafkamgt.uiapi.dao.UserInfo;
 import com.kafkamgt.uiapi.error.KafkawizeException;
 import com.kafkamgt.uiapi.service.MailUtils;
+import java.util.*;
+import javax.naming.directory.Attributes;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,255 +29,265 @@ import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAu
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import javax.naming.directory.Attributes;
-import java.util.*;
-
 @EnableWebSecurity
-@ConditionalOnProperty(name="kafkawize.enable.sso", havingValue="false")
+@ConditionalOnProperty(name = "kafkawize.enable.sso", havingValue = "false")
 @Slf4j
-public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter  {
+public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private ManageDatabase manageTopics;
+  @Autowired private ManageDatabase manageTopics;
 
-    @Autowired
-    private MailUtils utils;
+  @Autowired private MailUtils utils;
 
-    @Value("${kafkawize.login.authentication.type}")
-    private String authenticationType;
+  @Value("${kafkawize.login.authentication.type}")
+  private String authenticationType;
 
-    @Value("${spring.ldap.base:@null}")
-    private String ldapBase;
+  @Value("${spring.ldap.base:@null}")
+  private String ldapBase;
 
-    @Value("${spring.ldap.url:@null}")
-    private String ldapUrls;
+  @Value("${spring.ldap.url:@null}")
+  private String ldapUrls;
 
-    @Value("${spring.ldap.userDnPatterns:@null}")
-    private String userDnPatterns;
+  @Value("${spring.ldap.userDnPatterns:@null}")
+  private String userDnPatterns;
 
-    @Value("${spring.ldap.groupSearchBase:ou=groups:@null}")
-    private String groupSearchBase;
+  @Value("${spring.ldap.groupSearchBase:ou=groups:@null}")
+  private String groupSearchBase;
 
-    @Value("${spring.ldap.passwordAttribute:@null}")
-    private String passwordAttribute;
+  @Value("${spring.ldap.passwordAttribute:@null}")
+  private String passwordAttribute;
 
-    @Value("${spring.ldap.managerusername:@null}")
-    private String managerUserName;
+  @Value("${spring.ldap.managerusername:@null}")
+  private String managerUserName;
 
-    @Value("${spring.ldap.managerpassword:@null}")
-    private String managerPwd;
+  @Value("${spring.ldap.managerpassword:@null}")
+  private String managerPwd;
 
-    @Value("${kafkawize.ldap.password.encryption:@null}")
-    private String encryptionType;
+  @Value("${kafkawize.ldap.password.encryption:@null}")
+  private String encryptionType;
 
-    @Value("${spring.ad.domain:}")
-    private String adDomain;
+  @Value("${spring.ad.domain:}")
+  private String adDomain;
 
-    @Value("${spring.ad.url:}")
-    private String adUrl;
+  @Value("${spring.ad.url:}")
+  private String adUrl;
 
-    @Value("${spring.ad.rootDn:}")
-    private String adRootDn;
+  @Value("${spring.ad.rootDn:}")
+  private String adRootDn;
 
-    @Value("${spring.ad.filter:}")
-    private String adFilter;
+  @Value("${spring.ad.filter:}")
+  private String adFilter;
 
-    @Value("${kafkawize.jasypt.encryptor.secretkey}")
-    private String encryptorSecretKey;
+  @Value("${kafkawize.jasypt.encryptor.secretkey}")
+  private String encryptorSecretKey;
 
-    @Autowired
-    LdapTemplate ldapTemplate;
+  @Autowired LdapTemplate ldapTemplate;
 
-    @Autowired
-    private KwRequestFilter kwRequestFilterup;
+  @Autowired private KwRequestFilter kwRequestFilterup;
 
-    private void shutdownApp(){
-        // ((ConfigurableApplicationContext) contextApp).close();
+  private void shutdownApp() {
+    // ((ConfigurableApplicationContext) contextApp).close();
+  }
+
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+
+    String[] staticResources = {
+      "/lib/**",
+      "/assets/**",
+      "/js/**",
+      "/home",
+      "/home/**",
+      "/register**",
+      "/login**",
+      "/terms**",
+      "/registrationReview**",
+      "/forgotPassword",
+      "/getDbAuth",
+      "/feedback**",
+      "/resetPassword",
+      "/getRoles",
+      "/getTenantsInfo",
+      "/getBasicInfo",
+      "/getAllTeamsSUFromRegisterUsers",
+      "/registerUser",
+      "/resetMemoryCache/**",
+      "/userActivation**",
+      "/getActivationInfo**"
+    };
+
+    http.csrf()
+        .disable()
+        .authorizeRequests()
+        .antMatchers(staticResources)
+        .permitAll()
+        .anyRequest()
+        .fullyAuthenticated()
+        .and()
+        .formLogin()
+        .failureForwardUrl("/login?error")
+        .failureUrl("/login?error")
+        .loginPage("/login")
+        .permitAll()
+        .and()
+        .logout()
+        .logoutSuccessUrl("/login");
+
+    //         Add a filter to validate the username/pwd with every request
+    http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
+  }
+
+  @Autowired
+  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    if (authenticationType != null && authenticationType.equals("db")) dbAuthentication(auth);
+    else if (authenticationType != null && authenticationType.equals("ldap"))
+      ldapAuthentication(auth);
+    else if (authenticationType != null && authenticationType.equals("ad")) {
+      auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
+          .userDetailsService(userDetailsService());
+    } else {
+      log.info("No proper authentication set. Possible values db/ldap/ad");
+      shutdownApp();
     }
+  }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-
-        String[] staticResources = {
-                "/lib/**","/assets/**","/js/**","/home","/home/**","/register**","/login**","/terms**","/registrationReview**",
-                "/forgotPassword","/getDbAuth","/feedback**","/resetPassword","/getRoles", "/getTenantsInfo","/getBasicInfo",
-                "/getAllTeamsSUFromRegisterUsers","/registerUser","/resetMemoryCache/**","/userActivation**","/getActivationInfo**"
-        };
-
-        http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers(staticResources).permitAll()
-                .anyRequest()
-                .fullyAuthenticated()
-                .and()
-                .formLogin()
-                .failureForwardUrl("/login?error")
-                .failureUrl("/login?error")
-                .loginPage("/login")
-                .permitAll()
-                .and()
-                .logout().logoutSuccessUrl("/login");
-
-//         Add a filter to validate the username/pwd with every request
-        http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
+  @Override
+  @Bean
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    AuthenticationManager result;
+    if (authenticationType != null && authenticationType.equals("ad")) {
+      log.info("AD authentication configured.");
+      log.info(
+          "AD URL : {}, AD Domain : {}, AD Root DN : {}, AD Filter : {}",
+          adUrl,
+          adDomain,
+          adRootDn,
+          adFilter);
+      result =
+          new ProviderManager(
+              Collections.singletonList(activeDirectoryLdapAuthenticationProvider()));
+    } else {
+      return super.authenticationManagerBean();
     }
+    return result;
+  }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        if(authenticationType != null && authenticationType.equals("db"))
-            dbAuthentication(auth);
-        else if(authenticationType != null && authenticationType.equals("ldap"))
-            ldapAuthentication(auth);
-        else if(authenticationType != null && authenticationType.equals("ad")) {
-            auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
-                    .userDetailsService(userDetailsService());
-        }
-        else {
-            log.info("No proper authentication set. Possible values db/ldap/ad");
-            shutdownApp();
-        }
+  public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
+    ActiveDirectoryLdapAuthenticationProvider provider =
+        new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
+    provider.setConvertSubErrorCodesToExceptions(true);
+    provider.setUseAuthenticationRequestCredentials(true);
+
+    if (adFilter != null && !adFilter.equals("")) provider.setSearchFilter(adFilter);
+    return provider;
+  }
+
+  private void ldapAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+    try {
+      log.info("Ldap authentication configured.");
+      if (!checkLdapConnectivity()) throw new KafkawizeException("Cannot connect to Ldap !!");
+
+      if (encryptionType != null && encryptionType.equals("bcrypt")) {
+        auth.ldapAuthentication()
+            .userSearchBase(ldapBase)
+            .userDnPatterns(userDnPatterns)
+            .contextSource()
+            .url(ldapUrls)
+            .managerDn(managerUserName)
+            .managerPassword(managerPwd)
+            .and()
+            .passwordCompare()
+            .passwordEncoder(new BCryptPasswordEncoder())
+            .passwordAttribute(passwordAttribute);
+      }
+
+    } catch (Exception e) {
+      log.error("Cannot connect to Ldap !! ", e);
+      shutdownApp();
+      throw new Exception("Cannot connect to Ldap !!");
     }
+  }
 
-    @Override
-    @Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        AuthenticationManager result;
-        if (authenticationType != null && authenticationType.equals("ad")) {
-            log.info("AD authentication configured.");
-            log.info("AD URL : {}, AD Domain : {}, AD Root DN : {}, AD Filter : {}",adUrl, adDomain, adRootDn, adFilter);
-            result = new ProviderManager(Collections.singletonList(activeDirectoryLdapAuthenticationProvider()));
-        } else {
-            return super.authenticationManagerBean();
-        }
-        return result;
-    }
+  private void dbAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+    log.info("Db authentication configured.");
+    auth.userDetailsService(inMemoryUserDetailsManager());
+  }
 
-    public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
-        ActiveDirectoryLdapAuthenticationProvider provider = new ActiveDirectoryLdapAuthenticationProvider(adDomain, adUrl, adRootDn);
-        provider.setConvertSubErrorCodesToExceptions(true);
-        provider.setUseAuthenticationRequestCredentials(true);
+  @Bean
+  public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+    final Properties globalUsers = new Properties();
+    if (authenticationType != null && authenticationType.equals("db")) {
+      log.info("Loading all users !!");
 
-        if (adFilter != null && !adFilter.equals(""))
-            provider.setSearchFilter(adFilter);
-        return provider;
-    }
+      List<UserInfo> users;
 
-    private void ldapAuthentication(AuthenticationManagerBuilder auth) throws Exception {
+      try {
+        users = manageTopics.selectAllUsersInfo();
+      } catch (Exception e) {
+        log.error("Please check if tables are created.", e);
+        shutdownApp();
+        throw new Exception("Please check if tables are created.");
+      }
+
+      if (users.size() == 0) {
+        shutdownApp();
+        throw new Exception("Please check if insert scripts are executed.");
+      }
+
+      Iterator<UserInfo> iter = users.iterator();
+      UserInfo userInfo;
+      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+      while (iter.hasNext()) {
+        userInfo = iter.next();
         try {
-            log.info("Ldap authentication configured.");
-            if(!checkLdapConnectivity())
-                throw new KafkawizeException("Cannot connect to Ldap !!");
-
-            if(encryptionType != null && encryptionType.equals("bcrypt")) {
-                auth.ldapAuthentication()
-                        .userSearchBase(ldapBase)
-                        .userDnPatterns(userDnPatterns)
-                        .contextSource()
-                        .url(ldapUrls)
-                        .managerDn(managerUserName)
-                        .managerPassword(managerPwd)
-                        .and()
-                        .passwordCompare()
-                        .passwordEncoder(new BCryptPasswordEncoder())
-                        .passwordAttribute(passwordAttribute);
-            }
-
+          String secPwd = userInfo.getPwd();
+          if (secPwd != null && secPwd.equals("")) secPwd = "gfGF%64GFDd766hfgfHFD$%#453";
+          else secPwd = decodePwd(secPwd);
+          globalUsers.put(
+              userInfo.getUsername(),
+              encoder.encode(secPwd) + "," + userInfo.getRole() + ",enabled");
         } catch (Exception e) {
-            log.error("Cannot connect to Ldap !! ", e);
-            shutdownApp();
-            throw new Exception("Cannot connect to Ldap !!");
+          log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
         }
+      }
     }
+    return new InMemoryUserDetailsManager(globalUsers);
+  }
 
-    private void dbAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-        log.info("Db authentication configured.");
-        auth.userDetailsService(inMemoryUserDetailsManager());
-    }
+  private boolean checkLdapConnectivity() {
 
-    @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
-        final Properties globalUsers = new Properties();
-        if (authenticationType != null && authenticationType.equals("db")) {
-            log.info("Loading all users !!");
-
-            List<UserInfo> users;
-
-            try {
-                users = manageTopics.selectAllUsersInfo();
-            }catch(Exception e){
-                log.error("Please check if tables are created.", e);
-                shutdownApp();
-                throw new Exception("Please check if tables are created.");
+    try {
+      log.info("Checking Ldap connectivity.");
+      ldapTemplate.search(
+          ldapBase,
+          "(objectclass=top)",
+          new AttributesMapper() {
+            public Object mapFromAttributes(Attributes attrs) throws NamingException {
+              try {
+                return attrs.get("cn").get();
+              } catch (javax.naming.NamingException e) {
+                log.error("Ldap connectivity error : ", e);
+                return null;
+              }
             }
-
-            if(users.size()==0) {
-                shutdownApp();
-                throw new Exception("Please check if insert scripts are executed.");
-            }
-
-            Iterator<UserInfo> iter = users.iterator();
-            UserInfo userInfo;
-            PasswordEncoder encoder =
-                    PasswordEncoderFactories.createDelegatingPasswordEncoder();
-            while (iter.hasNext()) {
-                userInfo = iter.next();
-                try {
-                    String secPwd = userInfo.getPwd();
-                    if (secPwd != null && secPwd.equals(""))
-                        secPwd = "gfGF%64GFDd766hfgfHFD$%#453";
-                    else
-                        secPwd = decodePwd(secPwd);
-                    globalUsers.put(userInfo.getUsername(),
-                            encoder.encode(secPwd) + "," +
-                                    userInfo.getRole() + ",enabled");
-                } catch (Exception e) {
-                    log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
-                }
-
-            }
-        }
-        return new InMemoryUserDetailsManager(globalUsers);
+          });
+    } catch (org.springframework.ldap.NameNotFoundException e) {
+      log.error("Exception:", e);
+      return true;
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      return false;
     }
 
-    private boolean checkLdapConnectivity(){
+    return true;
+  }
 
-        try {
-            log.info("Checking Ldap connectivity.");
-            ldapTemplate.search(
-                    ldapBase, "(objectclass=top)",
-                    new AttributesMapper() {
-                        public Object mapFromAttributes(Attributes attrs)
-                                throws NamingException {
-                            try {
-                                return attrs.get("cn").get();
-                            } catch (javax.naming.NamingException e) {
-                                log.error("Ldap connectivity error : ", e);
-                                return null;
-                            }
-                        }
-                    });
-        }catch (org.springframework.ldap.NameNotFoundException e)
-        {
-            log.error("Exception:", e);
-            return true;
-        }
-        catch (Exception e){
-            log.error("Exception:", e);
-            return false;
-        }
+  private String decodePwd(String pwd) {
+    if (pwd != null) {
+      BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+      textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
 
-        return true;
+      return textEncryptor.decrypt(pwd);
     }
-
-    private String decodePwd(String pwd){
-        if(pwd != null) {
-            BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-            textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
-
-            return textEncryptor.decrypt(pwd);
-        }
-        return "";
-    }
-
+    return "";
+  }
 }

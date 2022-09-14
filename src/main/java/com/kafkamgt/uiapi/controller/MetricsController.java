@@ -1,7 +1,6 @@
 package com.kafkamgt.uiapi.controller;
 
 import com.kafkamgt.uiapi.model.charts.JmxOverview;
-import com.kafkamgt.uiapi.model.charts.TeamOverview;
 import com.kafkamgt.uiapi.service.MetricsControllerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/")
 public class MetricsController {
 
-    @Autowired
-    MetricsControllerService metricsControllerService;
+  @Autowired MetricsControllerService metricsControllerService;
 
-    @RequestMapping(value = "/getBrokerTopMetrics", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<JmxOverview> getBrokerTopMetrics() {
-        return new ResponseEntity<>(metricsControllerService.getBrokerTopMetrics(), HttpStatus.OK);
-    }
+  @RequestMapping(
+      value = "/getBrokerTopMetrics",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<JmxOverview> getBrokerTopMetrics() {
+    return new ResponseEntity<>(metricsControllerService.getBrokerTopMetrics(), HttpStatus.OK);
+  }
 }

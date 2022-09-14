@@ -1,66 +1,62 @@
 package com.kafkamgt.uiapi.dao;
 
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import javax.persistence.*;
-import java.io.Serializable;
-import java.util.List;
 
 @ToString
 @Getter
 @Setter
 @Entity
 @IdClass(TopicID.class)
-@Table(name="kwtopics")
+@Table(name = "kwtopics")
 public class Topic implements Serializable {
 
-    @Id
-    @Column(name = "topicid")
-    private Integer topicid;
+  @Id
+  @Column(name = "topicid")
+  private Integer topicid;
 
-    @Id
-    @Column(name = "tenantid")
-    private Integer tenantId;
+  @Id
+  @Column(name = "tenantid")
+  private Integer tenantId;
 
-    @Column(name = "topicname")
-    private String topicname;
+  @Column(name = "topicname")
+  private String topicname;
 
-    @Column(name = "env")
-    private String environment;
+  @Column(name = "env")
+  private String environment;
 
-    @Transient
-    private List<String> environmentsList;
+  @Transient private List<String> environmentsList;
 
-    @Column(name = "partitions")
-    private Integer noOfPartitions;
+  @Column(name = "partitions")
+  private Integer noOfPartitions;
 
-    @Column(name = "replicationfactor")
-    private String noOfReplcias;
+  @Column(name = "replicationfactor")
+  private String noOfReplcias;
 
-    @Column(name = "teamid")
-    private Integer teamId;
+  @Column(name = "teamid")
+  private Integer teamId;
 
-    @Column(name = "appname")
-    private String appname;
+  @Column(name = "appname")
+  private String appname;
 
-    @Column(name = "otherparams")
-    private String otherParams;
+  @Column(name = "otherparams")
+  private String otherParams;
 
-    @Column(name = "description")
-    private String description;
+  @Column(name = "description")
+  private String description;
 
-    @Column(name = "documentation")
-    private String documentation;
+  @Column(name = "documentation")
+  private String documentation;
 
-    @Column(name = "history")
-    private String history;
+  @Column(name = "history")
+  private String history;
 
-    @Column(name = "jsonparams")
-    private String jsonParams;
+  @Column(name = "jsonparams")
+  private String jsonParams;
 
-    @Transient
-    private boolean isExistingTopic;
-
+  @Transient private boolean isExistingTopic;
 }

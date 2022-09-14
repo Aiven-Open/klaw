@@ -1,24 +1,23 @@
 package com.kafkamgt.uiapi.dao;
 
+import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 public class KwPropertiesID implements Serializable {
 
-    private String kwKey;
+  private String kwKey;
 
-    private Integer tenantId;
+  private Integer tenantId;
 
-    public KwPropertiesID(){}
+  public KwPropertiesID() {}
 
-    public KwPropertiesID(String kwKey, Integer tenantId){
-        this.kwKey = kwKey;
-        this.tenantId = tenantId;
-    }
+  public KwPropertiesID(String kwKey, Integer tenantId) {
+    this.kwKey = kwKey;
+    this.tenantId = tenantId;
+  }
 }

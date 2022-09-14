@@ -10,14 +10,11 @@ import lombok.ToString;
 @ToString
 public class SyncBackAcls {
 
-    private String[] aclIds;
+  private String[] aclIds;
 
-    @NonNull
-    private String sourceEnv;
+  @NonNull private String sourceEnv;
 
-    @NonNull
-    private String targetEnv;
+  @NonNull private String targetEnv;
 
-    @NonNull
-    private String typeOfSync;
+  @NonNull private String typeOfSync;
 }

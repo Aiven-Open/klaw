@@ -1,44 +1,44 @@
 package com.kafkamgt.uiapi.model;
 
-import lombok.Data;
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class KafkaConnectorModel {
 
-    int sequence;
+  int sequence;
 
-    int connectorId;
+  int connectorId;
 
-    String connectorName;
+  String connectorName;
 
-    String connectorConfig;
+  String connectorConfig;
 
-    String environmentName;
+  String environmentName;
 
-    String environmentId;
+  String environmentId;
 
-    String teamName;
+  String teamName;
 
-    private List<String> possibleTeams;
+  private List<String> possibleTeams;
 
-    private List<String> allPageNos;
+  private List<String> allPageNos;
 
-    private String totalNoPages;
+  private String totalNoPages;
 
-    private String currentPage;
+  private String currentPage;
 
-    private String remarks;
+  private String remarks;
 
-    private String documentation;
+  private String documentation;
 
-    private List<String> environmentsList;
+  private List<String> environmentsList;
 
-    private String description;
+  private String description;
 
-    private boolean showEditConnector;
+  private boolean showEditConnector;
 
-    private boolean showDeleteConnector;
+  private boolean showDeleteConnector;
 
-    private boolean ConnectorDeletable;
+  private boolean ConnectorDeletable;
 }
