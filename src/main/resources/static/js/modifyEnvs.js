@@ -75,8 +75,13 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     params: {'clusterId' : clusterId },
                     data: {'clusterId' : clusterId}
                 }).success(function(output) {
-                    if(output != null && output != "")
+                    if(output != null && output != ""){
                         $scope.clusterDetails = output;
+                        if($scope.clusterDetails.aivenCluster==true)
+                            $scope.clusterDetails.aivenClusterType='Aiven';
+                        else
+                            $scope.clusterDetails.aivenClusterType='Non-Aiven';
+                    }
                     else
                         $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/clusters";
                 }).error(
@@ -275,6 +280,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     serviceInput['bootstrapServers'] = $scope.clusterDetails.bootstrapServers;
                     serviceInput['protocol'] = $scope.clusterDetails.protocol;
                     serviceInput['clusterType'] = $scope.clusterDetails.type;
+                    serviceInput['projectName'] = $scope.clusterDetails.projectName;
+                    serviceInput['serviceName'] = $scope.clusterDetails.serviceName;
+                    serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
 
                     $http({
                         method: "POST",
@@ -334,6 +342,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['bootstrapServers'] = $scope.clusterDetails.bootstrapServers;
                 serviceInput['protocol'] = $scope.clusterDetails.protocol;
                 serviceInput['clusterType'] = $scope.clusterDetails.type;
+                serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
 
                 serviceInput['otherParams'] = "default.partitions=na,max.partitions=na,replication.factor=na";
 
@@ -395,7 +404,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                serviceInput['bootstrapServers'] = $scope.clusterDetails.bootstrapServers;
                serviceInput['protocol'] = $scope.clusterDetails.protocol;
                serviceInput['clusterType'] = $scope.clusterDetails.type;
-
+               serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
                serviceInput['otherParams'] = "default.partitions=na,max.partitions=na,replication.factor=na";
 
                $http({

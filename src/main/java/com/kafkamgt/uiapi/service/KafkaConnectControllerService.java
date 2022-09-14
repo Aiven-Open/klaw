@@ -467,16 +467,18 @@ public class KafkaConnectControllerService {
                 updateTopicReqStatus = dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
         }else{
             Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(connectorRequest.getEnvironment(), tenantId);
-            String kafkaConnectHost = manageDatabase.getClusters("kafkaconnect", tenantId)
-                    .get(envSelected.getClusterId()).getBootstrapServers();
+            KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
+                    .get(envSelected.getClusterId());
+            String protocol = kwClusters.getProtocol();
+            String kafkaConnectHost = kwClusters.getBootstrapServers();
 
             if(connectorRequest.getConnectortype().equals("Update")) // only config
                 updateTopicReqStatus = clusterApiService
-                        .approveConnectorRequests(connectorRequest.getConnectorName(), connectorRequest.getConnectortype(),
+                        .approveConnectorRequests(connectorRequest.getConnectorName(), protocol, connectorRequest.getConnectortype(),
                                 connectorRequest.getConnectorConfig(), kafkaConnectHost, tenantId);
             else
                 updateTopicReqStatus = clusterApiService
-                        .approveConnectorRequests(connectorRequest.getConnectorName(), connectorRequest.getConnectortype(),
+                        .approveConnectorRequests(connectorRequest.getConnectorName(), protocol, connectorRequest.getConnectortype(),
                                 jsonConnectorConfig, kafkaConnectHost, tenantId);
 
 

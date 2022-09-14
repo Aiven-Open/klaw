@@ -32,6 +32,13 @@ public class KwClustersModel implements Serializable {
     @NotNull
     private String clusterType;
 
+    @NotNull
+    private String kafkaFlavor;
+
+    private String projectName;
+
+    private String serviceName;
+
     private String publicKey;
 
     private boolean showDeleteCluster;

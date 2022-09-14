@@ -483,11 +483,12 @@
 							<div>
 								<table width="100%" class="table table-hover color-table success-table"  style="table-layout:fixed;">
 									<thead><tr>
-										<th width="15%">Cluster</th>
-										<th>Bootstrap servers</th>
-										<th width="17%">Protocol</th>
-										<th width="12%">Type</th>
-
+										<th width="12%">Cluster</th>
+										<th width="20%">Bootstrap servers</th>
+										<th width="10%">Protocol</th>
+										<th width="10%">Type</th>
+										<th width="15%">Kafka Flavor</th>
+										<th width="20%">Other Params</th>
 
 										<th width="10%" ng-show="dashboardDetails.addDeleteEditClusters=='Authorized'">Actions</th>
 									</tr>
@@ -511,6 +512,11 @@
 
 										<td ng-show="allenv.clusterType == 'kafkaconnect'" >
 											<span class="badge badge-warning">{{ allenv.clusterType }}</span></td>
+
+										<td>{{ allenv.kafkaFlavor }}</td>
+
+										<td ng-show="allenv.projectName!='' && allenv.projectName!=null">project = {{ allenv.projectName }} , serviceName = {{ allenv.serviceName }}</td>
+										<td ng-show="allenv.projectName==null">-NA-</td>
 
 										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'kafka'">
 

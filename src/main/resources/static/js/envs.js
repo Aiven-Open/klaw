@@ -34,6 +34,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 	$scope.aclCommandSsl = "";
 	$scope.aclCommandPlaintext = "";
 
+	$scope.kafkaClusters = [ { label: 'Non-Aiven', value: 'nonaiven' }, { label: 'Aiven', value: 'aiven' }	];
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
@@ -628,6 +630,12 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             $scope.addNewCluster.pubkeyUploadedFromUI = $fileContent;
         };
 
+        $scope.kafkaFlavor = 'Apache Kafka';
+
+        $scope.onChangeKafkaFlavor = function(kafkaFlavor){
+            $scope.kafkaFlavor = kafkaFlavor;
+        }
+
         $scope.addNewCluster = function() {
 
                         $scope.addNewCluster.type = $scope.addNewCluster.clusterType;
@@ -669,6 +677,22 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             }
                         }
 
+                        if($scope.addNewCluster.type == 'kafka')
+                        {
+                            if($scope.addNewCluster.projectName == undefined || !$scope.addNewCluster.projectName)
+                            {
+                                $scope.alertnote = "Please fill in Project Name as defined in Aiven console";
+                                $scope.showAlertToast();
+                                return;
+                            }
+
+                            if($scope.addNewCluster.serviceName == undefined || !$scope.addNewCluster.serviceName)
+                            {
+                                $scope.alertnote = "Please fill in service Name as defined in Aiven console";
+                                $scope.showAlertToast();
+                                return;
+                            }
+                        }
 
                         var serviceInput = {};
 
@@ -678,6 +702,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         serviceInput['clusterType'] = $scope.addNewCluster.type;
                         var pubkeyStr = window.btoa(String.fromCharCode.apply(null, new Uint8Array($scope.addNewCluster.pubkeyUploadedFromUI)));
                         serviceInput['publicKey'] = pubkeyStr;
+                        serviceInput['projectName'] = $scope.addNewCluster.projectName;
+                        serviceInput['serviceName'] = $scope.addNewCluster.serviceName;
+                        serviceInput['kafkaFlavor'] = $scope.kafkaFlavor;
 
                         $http({
                             method: "POST",

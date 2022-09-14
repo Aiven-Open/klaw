@@ -8,7 +8,6 @@ import org.apache.tomcat.util.codec.binary.Base64;
 
 import org.springframework.http.HttpHeaders;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
@@ -462,7 +461,7 @@ public class UtilMethods {
         EnvModel env = new EnvModel();
         env.setId("1");
         env.setName("DEV");
-        env.setType("kafka");
+        env.setType(KafkaClustersType.KAFKA.value);
         env.setClusterId(101);
         envList.add(env);
         return envList;

@@ -25,10 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 
 import static com.kafkamgt.uiapi.service.KwConstants.TENANT_CONFIG_PROPERTY;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -119,7 +116,7 @@ public class TopicAclControllerIT {
 
         response = mvc.perform(MockMvcRequestBuilders
                 .get("/getClusters").with(user(superAdmin).password(superAdminPwd))
-                .param("clusterType","kafka")
+                .param("clusterType",KafkaClustersType.KAFKA.value)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -457,7 +454,10 @@ public class TopicAclControllerIT {
         Object obj = response.get(0);
         LinkedHashMap<String, Integer> hMap = (LinkedHashMap)obj;
 
-        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+
+        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
         Integer reqNo = hMap.get("req_no");
 
         res = mvc.perform(MockMvcRequestBuilders

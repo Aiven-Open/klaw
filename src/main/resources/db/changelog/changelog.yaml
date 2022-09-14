@@ -894,4 +894,38 @@ databaseChangeLog:
             - column:
                   name: aclipprincipletype
                   type: VARCHAR(50)
-
+- changeSet:
+      id: 7thSep2022 add columns to store project, servicename for aiven config
+      author: muralibasani
+      changes:
+          - addColumn:
+                tableName: kwclusters
+                columns:
+                    - column:
+                          name: projectname
+                          type: VARCHAR(100)
+                          constraints:
+                              nullable: true
+                    - column:
+                          name: servicename
+                          type: VARCHAR(250)
+                          constraints:
+                              nullable: true
+                    - column:
+                          name: kafkaflavor
+                          type: VARCHAR(100)
+                          defaultValue: 'Apache Kafka'
+                          constraints:
+                              nullable: false
+- changeSet:
+      id: 10thSep2022 add column to store extra params for acls
+      author: muralibasani
+      changes:
+          - addColumn:
+                tableName: kwaclrequests
+                columns:
+                    - column:
+                          name: jsonparams
+                          type: CLOB
+                          constraints:
+                              nullable: true

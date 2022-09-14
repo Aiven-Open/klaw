@@ -1,8 +1,6 @@
 package com.kafkamgt.uiapi.helpers;
 
 import com.kafkamgt.uiapi.dao.*;
-import com.kafkamgt.uiapi.model.EntityType;
-import com.kafkamgt.uiapi.model.MetadataOperationType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -216,7 +214,7 @@ public interface HandleDbRequests {
 
     String updateConnectorRequestStatus(KafkaConnectorRequest topicRequest, String approver);
 
-    String updateAclRequest(AclRequests aclRequests, String approver);
+    String updateAclRequest(AclRequests aclRequests, String approver, String jsonParams);
 
     void updateNewUserRequest(String username, String approver, boolean isApprove);
 

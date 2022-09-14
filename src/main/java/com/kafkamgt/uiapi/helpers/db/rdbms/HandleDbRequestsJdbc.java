@@ -2,8 +2,7 @@ package com.kafkamgt.uiapi.helpers.db.rdbms;
 
 import com.kafkamgt.uiapi.dao.*;
 import com.kafkamgt.uiapi.helpers.HandleDbRequests;
-import com.kafkamgt.uiapi.model.EntityType;
-import com.kafkamgt.uiapi.model.MetadataOperationType;
+import com.kafkamgt.uiapi.model.KafkaClustersType;
 import com.kafkamgt.uiapi.model.RequestStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -329,17 +328,17 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
     @Override
     public List<Env> selectAllKafkaEnvs(int tenantId){
-        return jdbcSelectHelper.selectAllEnvs("kafka", tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA.value, tenantId);
     }
 
     @Override
     public List<Env> selectAllSchemaRegEnvs(int tenantId){
-        return jdbcSelectHelper.selectAllEnvs("schemaregistry", tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
     }
 
     @Override
     public List<Env> selectAllKafkaConnectEnvs(int tenantId) {
-        return jdbcSelectHelper.selectAllEnvs("kafkaconnect", tenantId);
+        return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
     }
 
     @Override
@@ -526,8 +525,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         return jdbcUpdateHelper.declineAclRequest(aclReq, approver);
     }
 
-    public String updateAclRequest(AclRequests aclReq, String approver){
-        return jdbcUpdateHelper.updateAclRequest(aclReq, approver);
+    public String updateAclRequest(AclRequests aclReq, String approver, String jsonParams){
+        return jdbcUpdateHelper.updateAclRequest(aclReq, approver, jsonParams);
     }
 
     @Override

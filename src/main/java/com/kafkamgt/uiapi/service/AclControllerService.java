@@ -260,12 +260,15 @@ public class AclControllerService {
             aclReq.setUsername(getUserName());
             aclReq.setTenantId(tenantId);
 
-            ResponseEntity<String> response = clusterApiService.approveAclRequests(aclReq, tenantId);
+            ResponseEntity<Map<String, String>> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
-            if(!Objects.requireNonNull(response.getBody()).contains("success")){
-                log.error("Error in creating acl {} {}", aclFound, response.getBody());
-                logUpdateSyncBackTopics.add("Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + response.getBody());
-            } else if(response.getBody().contains("Acl already exists")) {
+            Map<String, String> responseBody = response.getBody();
+            String resultAclReq = responseBody.get("result");
+            String resultAclNullCheck = Objects.requireNonNull(responseBody).get("result");
+            if(!Objects.requireNonNull(resultAclNullCheck).contains("success")){
+                log.error("Error in creating acl {} {}", aclFound, responseBody);
+                logUpdateSyncBackTopics.add("Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclReq);
+            } else if(resultAclReq.contains("Acl already exists")) {
                 logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
             }else{
                 if(!syncBackAcls.getSourceEnv().equals(syncBackAcls.getTargetEnv())) {
@@ -276,7 +279,8 @@ public class AclControllerService {
                     Integer aclId = Integer.parseInt(resultMapReq.get("aclId"));
                         aclReq.setReq_no(aclId);
                     // Approve request
-                        manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, getUserName());
+                        String emptyJsonParams = "{}";
+                        manageDatabase.getHandleDbRequests().updateAclRequest(aclReq, getUserName(), emptyJsonParams);
                     }
                 }
             }
@@ -473,6 +477,7 @@ public class AclControllerService {
             log.info("deleteAclRequests {}", req_no);
             return "{\"result\":\"" + manageDatabase.getHandleDbRequests().deleteAclRequest(Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()))+"\"}";
         }catch(Exception e){
+            log.error("Exception ", e);
             return "{\"result\":\"failure " + e.toString() + "\"}";
         }
     }
@@ -501,6 +506,7 @@ public class AclControllerService {
         aclReq.setUsername(userDetails);
         aclReq.setAclType("Delete");
         aclReq.setOtherParams(req_no);
+        aclReq.setJsonParams(acl.getJsonParams());
         String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq).get("result");
 
         if(execRes.equals("success")) {
@@ -538,7 +544,7 @@ public class AclControllerService {
         String allIps = aclReq.getAcl_ip();
         String allSsl = aclReq.getAcl_ssl();
         if(aclReq.getReq_no() != null){
-            ResponseEntity<String> response = null;
+            ResponseEntity<Map<String, String>> response = null;
             if(aclReq.getAcl_ip() != null) {
                 String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
                 for (String s : aclListIp) {
@@ -560,12 +566,19 @@ public class AclControllerService {
             String updateAclReqStatus ;
 
             try {
-                if (response!=null && Objects.requireNonNull(response.getBody()).contains("success"))
-                    updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails);
+                Map<String, String> responseBody = response.getBody();
+                if (Objects.requireNonNull(Objects.requireNonNull(responseBody)
+                                        .get("result")).contains("success")) {
+                    String jsonParams = "", aivenAclIdKey = "aivenaclid";
+                    if(responseBody.containsKey(aivenAclIdKey))
+                        jsonParams = "{\"" + aivenAclIdKey + "\":\"" + responseBody.get(aivenAclIdKey) + "\"}";
+                    updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
+                }
                 else
                     return "{\"result\":\"failure\"}";
             }catch(Exception e){
-                return "{\"result\":\"failure "+e.toString()+"\"}";
+                log.error("Exception ", e);
+                return "{\"result\":\"failure " + e.toString() + "\"}";
             }
 
             mailService.sendMail(aclReq.getTopicname(), aclReq.getTopictype(), "", aclReq.getUsername(),
@@ -926,9 +939,11 @@ public class AclControllerService {
             String schemaOfObj ;
             for(Env schemaEnv:schemaEnvs){
                 try {
+                    KwClusters kwClusters = manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId).get(schemaEnv.getClusterId());
                     TreeMap<Integer, HashMap<String, Object>> schemaObjects = clusterApiService.getAvroSchema(
-                            manageDatabase.getClusters("schemaregistry", tenantId).get(schemaEnv.getClusterId()).getBootstrapServers(),
-                            manageDatabase.getClusters("schemaregistry", tenantId).get(schemaEnv.getClusterId()).getClusterName(),
+                            kwClusters.getBootstrapServers(),
+                            kwClusters.getProtocol(),
+                            kwClusters.getClusterName(),
                             topicNameSearch, tenantId);
 
                     Integer latestSchemaVersion = schemaObjects.firstKey();
@@ -1014,10 +1029,10 @@ public class AclControllerService {
         List<HashMap<String,String>> aclList;
 
         Env envSelected = getEnvDetails(env, tenantId);
-        String bootstrapHost = manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getBootstrapServers();
-        aclList = getAclListFromCluster(bootstrapHost, manageDatabase.getClusters("kafka", tenantId)
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        aclList = getAclListFromCluster(bootstrapHost, manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                 .get(envSelected.getClusterId()).getProtocol(),
-                manageDatabase.getClusters("kafka", tenantId)
+                manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                         .get(envSelected.getClusterId()).getClusterName(), topicNameSearch, tenantId);
 
         List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true, tenantId);
@@ -1249,11 +1264,11 @@ public class AclControllerService {
         List<HashMap<String, String>> consumerOffsetInfoList= new ArrayList<>();
         int tenantId = commonUtilsService.getTenantId(getUserName());
         try {
-            String bootstrapHost = manageDatabase.getClusters("kafka", tenantId)
+            String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId)
                     .get(getEnvDetails(envId, tenantId).getClusterId()).getBootstrapServers();
             consumerOffsetInfoList = clusterApiService.getConsumerOffsets(bootstrapHost,
-                    manageDatabase.getClusters("kafka", tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getProtocol(),
-                    manageDatabase.getClusters("kafka", tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getClusterName(),
+                    manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getProtocol(),
+                    manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(getEnvDetails(envId, tenantId).getClusterId()).getClusterName(),
                     topicName, consumerGroupId, tenantId);
         } catch (Exception e) {
             log.error("Ignoring error while retrieving consumer offsets {} ", e.toString());

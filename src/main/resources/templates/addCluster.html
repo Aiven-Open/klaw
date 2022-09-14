@@ -538,6 +538,7 @@
 												<label>Protocol</label>
 												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)" ng-model="addNewCluster.protocol">
 													<option value="PLAINTEXT">PLAINTEXT</option>
+													<option value="SSL">SSL</option>
 												</select>
 											</div>
 										</div>
@@ -622,6 +623,40 @@
 												<label>Download Kafkawize public key</label>
 												<button type="button" ng-click="downloadPubKey()"
 														class="btn waves-effect waves-light btn-block btn-success" style="float:right">Download PublicKey</button>
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Kafka Flavor</label>
+												<select required class="form-control custom-select" ng-change="onChangeKafkaFlavor(kafkaFlavor)" ng-model="kafkaFlavor">
+													<option value="Apache Kafka">Apache Kafka</option>
+													<option value="Aiven for Apache Kafka">Aiven for Apache Kafka</option>
+													<option value="Confluent">Confluent</option>
+													<option value="Others">Others</option>
+												</select>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="row" ng-show="kafkaFlavor == 'Aiven for Apache Kafka'">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Project Name</label>
+												<input ng-model="addNewCluster.projectName" type="text"
+													   class="form-control">
+												<small class="form-control-feedback">Project defined in Aiven console</small>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Service Name</label>
+												<input ng-model="addNewCluster.serviceName" type="text"
+													   class="form-control">
+												<small class="form-control-feedback">Service name defined in Aiven console</small>
 											</div>
 										</div>
 									</div>

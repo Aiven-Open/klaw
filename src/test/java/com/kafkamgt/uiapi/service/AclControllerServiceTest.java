@@ -230,8 +230,10 @@ public class AclControllerServiceTest {
 
         stubUserInfo();
         when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
-        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
-        when(handleDbRequests.updateAclRequest(any(), any())).thenReturn("success");
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
+        when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenReturn("success");
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
 
         String result = aclControllerService.approveAclRequests("112");
@@ -246,7 +248,9 @@ public class AclControllerServiceTest {
         stubUserInfo();
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
         when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
-        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>("failure",HttpStatus.OK));
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "failure");
+        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
 
         String result = aclControllerService.approveAclRequests(req_no);
         assertEquals("{\"result\":\"failure\"}", result);
@@ -261,8 +265,10 @@ public class AclControllerServiceTest {
         stubUserInfo();
         when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
         when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt())).thenReturn(Collections.singletonList("1"));
-        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>("success",HttpStatus.OK));
-        when(handleDbRequests.updateAclRequest(any(), any())).thenThrow(new RuntimeException("Error"));
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("result", "success");
+        when(clusterApiService.approveAclRequests(any(), anyInt())).thenReturn(new ResponseEntity<>(resultMap,HttpStatus.OK));
+        when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenThrow(new RuntimeException("Error"));
 
         String result = aclControllerService.approveAclRequests(req_no);
         assertThat(result, CoreMatchers.containsString("failure"));

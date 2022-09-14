@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -752,12 +751,12 @@ public class TopicSyncControllerService {
             topicNameSearch = topicNameSearch.trim();
         int tenantId = commonUtilsService.getTenantId(getUserName());
         Env envSelected = getEnvDetails(env);
-        String bootstrapHost = manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getBootstrapServers();
+        String bootstrapHost = manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(envSelected.getClusterId()).getBootstrapServers();
 
         List<HashMap<String, String>> topicsList = clusterApiService
                 .getAllTopics(bootstrapHost,
-                        manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getProtocol(),
-                        manageDatabase.getClusters("kafka", tenantId).get(envSelected.getClusterId()).getClusterName(),
+                        manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(envSelected.getClusterId()).getProtocol(),
+                        manageDatabase.getClusters(KafkaClustersType.KAFKA.value, tenantId).get(envSelected.getClusterId()).getClusterName(),
                 tenantId);
 
         topicCounter = 0;
