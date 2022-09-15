@@ -5,13 +5,18 @@ import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.service.TopicSyncControllerService;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
@@ -20,17 +25,17 @@ public class TopicSyncController {
   @Autowired private TopicSyncControllerService topicSyncControllerService;
 
   @PostMapping(value = "/updateSyncTopics")
-  public ResponseEntity<HashMap<String, String>> updateSyncTopics(
+  public ResponseEntity<Map<String, String>> updateSyncTopics(
       @RequestBody List<SyncTopicUpdates> syncTopicUpdates) {
-    HashMap<String, String> updateSyncTopicsResult =
+    Map<String, String> updateSyncTopicsResult =
         topicSyncControllerService.updateSyncTopics(syncTopicUpdates);
     return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
   }
 
   @PostMapping(value = "/updateSyncTopicsBulk")
-  public ResponseEntity<HashMap<String, List<String>>> updateSyncTopicsBulk(
+  public ResponseEntity<Map<String, List<String>>> updateSyncTopicsBulk(
       @RequestBody SyncTopicsBulk syncTopicsBulk) {
-    HashMap<String, List<String>> updateSyncTopicsBulkResult =
+    Map<String, List<String>> updateSyncTopicsBulkResult =
         topicSyncControllerService.updateSyncTopicsBulk(syncTopicsBulk);
     return new ResponseEntity<>(updateSyncTopicsBulkResult, HttpStatus.OK);
   }
@@ -56,9 +61,9 @@ public class TopicSyncController {
   }
 
   @PostMapping(value = "/updateSyncBackTopics")
-  public ResponseEntity<HashMap<String, List<String>>> updateSyncBackTopics(
+  public ResponseEntity<Map<String, List<String>>> updateSyncBackTopics(
       @RequestBody SyncBackTopics syncBackTopics) {
-    HashMap<String, List<String>> updateSyncTopicsResult =
+    Map<String, List<String>> updateSyncTopicsResult =
         topicSyncControllerService.updateSyncBackTopics(syncBackTopics);
     return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
   }
@@ -67,7 +72,7 @@ public class TopicSyncController {
       value = "/getSyncTopics",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, Object>> getSyncTopics(
+  public ResponseEntity<Map<String, Object>> getSyncTopics(
       @RequestParam("env") String envId,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,

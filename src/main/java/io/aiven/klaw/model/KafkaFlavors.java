@@ -8,7 +8,7 @@ public enum KafkaFlavors {
 
   public final String value;
 
-  private KafkaFlavors(String value) {
+  KafkaFlavors(String value) {
     this.value = value;
   }
 }

@@ -4,7 +4,6 @@ import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -82,7 +81,7 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addNewCluster")
-  public ResponseEntity<HashMap<String, String>> addNewCluster(
+  public ResponseEntity<Map<String, String>> addNewCluster(
       @Valid @RequestBody KwClustersModel kwClustersModel) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addNewCluster(kwClustersModel), HttpStatus.OK);
@@ -133,13 +132,13 @@ public class EnvsClustersTenantsController {
       value = "/getSyncEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<HashMap<String, String>>> getSyncEnv() {
+  public ResponseEntity<List<Map<String, String>>> getSyncEnv() {
     return new ResponseEntity<>(envsClustersTenantsControllerService.getSyncEnvs(), HttpStatus.OK);
   }
 
   //    @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces =
   // {MediaType.APPLICATION_JSON_VALUE})
-  //    public ResponseEntity<HashMap<String, List<EnvModel>>> getEnvsStatus() {
+  //    public ResponseEntity<Map<String, List<EnvModel>>> getEnvsStatus() {
   //        return new ResponseEntity<>(envsClustersTenantsControllerService.getEnvsStatus(),
   // HttpStatus.OK);
   //    }
@@ -148,7 +147,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvParams",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, List<String>>> getEnvParams(
+  public ResponseEntity<Map<String, List<String>>> getEnvParams(
       @RequestParam(value = "envSelected") String envSelected) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvParams(envSelected), HttpStatus.OK);
@@ -188,7 +187,7 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/deleteEnvironmentRequest")
-  public ResponseEntity<HashMap<String, String>> deleteEnvironment(
+  public ResponseEntity<Map<String, String>> deleteEnvironment(
       @RequestParam("envId") String envId, @RequestParam("envType") String envType) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.deleteEnvironment(envId, envType), HttpStatus.OK);
@@ -213,20 +212,20 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addTenantId")
-  public ResponseEntity<HashMap<String, String>> addTenantId(
+  public ResponseEntity<Map<String, String>> addTenantId(
       @Valid @RequestBody KwTenantModel kwTenantModel) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteTenant")
-  public ResponseEntity<HashMap<String, String>> deleteTenant() {
+  public ResponseEntity<Map<String, String>> deleteTenant() {
     return new ResponseEntity<>(envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
   }
 
   // Pattern a-zA-z and/or spaces.
   @PostMapping(value = "/udpateTenant")
-  public ResponseEntity<HashMap<String, String>> udpateTenant(
+  public ResponseEntity<Map<String, String>> udpateTenant(
       @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
           String orgName) {
     return new ResponseEntity<>(
@@ -234,7 +233,7 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/udpateTenantExtension")
-  public ResponseEntity<HashMap<String, String>> udpateTenantExtension(
+  public ResponseEntity<Map<String, String>> udpateTenantExtension(
       @RequestParam("selectedTenantExtensionPeriod") String selectedTenantExtensionPeriod) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.udpateTenantExtension(selectedTenantExtensionPeriod),
@@ -263,7 +262,7 @@ public class EnvsClustersTenantsController {
       value = "/getAclCommands",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getAclCommand() {
+  public ResponseEntity<Map<String, String>> getAclCommand() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getAclCommands(), HttpStatus.OK);
   }
@@ -272,9 +271,9 @@ public class EnvsClustersTenantsController {
       value = "/getKwPubkey",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getKwPubkey() {
+  public ResponseEntity<Map<String, String>> getKwPubkey() {
 
-    HashMap<String, String> fileMap = envsClustersTenantsControllerService.getPublicKey();
+    Map<String, String> fileMap = envsClustersTenantsControllerService.getPublicKey();
     return new ResponseEntity<>(fileMap, HttpStatus.OK);
   }
 
@@ -282,7 +281,7 @@ public class EnvsClustersTenantsController {
       value = "/getUpdateEnvStatus",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getUpdateEnvStatus(
+  public ResponseEntity<Map<String, String>> getUpdateEnvStatus(
       @RequestParam(value = "envId") String envId) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getUpdateEnvStatus(envId), HttpStatus.OK);
@@ -292,7 +291,7 @@ public class EnvsClustersTenantsController {
       value = "/getTenantsInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, Integer>> getTenantsInfo() {
+  public ResponseEntity<Map<String, Integer>> getTenantsInfo() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getTenantsInfo(), HttpStatus.OK);
   }

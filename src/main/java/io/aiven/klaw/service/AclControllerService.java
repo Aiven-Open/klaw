@@ -1,17 +1,45 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.*;
+import static io.aiven.klaw.model.MailType.ACL_DELETE_REQUESTED;
+import static io.aiven.klaw.model.MailType.ACL_REQUESTED;
+import static io.aiven.klaw.model.MailType.ACL_REQUEST_APPROVED;
+import static io.aiven.klaw.model.MailType.ACL_REQUEST_DENIED;
 import static io.aiven.klaw.service.KwConstants.RETRIEVE_SCHEMAS_KEY;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.*;
-import java.util.*;
+import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.SyncAclUpdates;
+import io.aiven.klaw.model.SyncBackAcls;
+import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicOverview;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.SortedMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,10 +156,10 @@ public class AclControllerService {
     return "{\"result\":\"" + execRes + "\"}";
   }
 
-  public HashMap<String, String> updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) {
+  public Map<String, String> updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) {
     log.info("updateSyncAcls {}", syncAclUpdates);
     String userDetails = getUserName();
-    HashMap<String, String> response = new HashMap<>();
+    Map<String, String> response = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
@@ -144,7 +172,7 @@ public class AclControllerService {
 
     if (syncAclUpdates != null && syncAclUpdates.size() > 0) {
 
-      HashMap<String, SyncAclUpdates> stringSyncAclUpdatesHashMap = new HashMap<>();
+      Map<String, SyncAclUpdates> stringSyncAclUpdatesHashMap = new HashMap<>();
 
       // remove duplicates
       for (SyncAclUpdates syncAclUpdateItem : syncAclUpdates) {
@@ -195,9 +223,9 @@ public class AclControllerService {
     return response;
   }
 
-  public HashMap<String, List<String>> updateSyncBackAcls(SyncBackAcls syncBackAcls) {
+  public Map<String, List<String>> updateSyncBackAcls(SyncBackAcls syncBackAcls) {
     log.info("updateSyncBackAcls {}", syncBackAcls);
-    HashMap<String, List<String>> resultMap = new HashMap<>();
+    Map<String, List<String>> resultMap = new HashMap<>();
 
     List<String> logArray = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -246,7 +274,7 @@ public class AclControllerService {
 
   private void approveSyncBackAcls(
       SyncBackAcls syncBackAcls,
-      HashMap<String, List<String>> resultMap,
+      Map<String, List<String>> resultMap,
       List<String> logUpdateSyncBackTopics,
       Acl aclFound,
       int tenantId) {
@@ -278,7 +306,7 @@ public class AclControllerService {
         if (!syncBackAcls.getSourceEnv().equals(syncBackAcls.getTargetEnv())) {
           logUpdateSyncBackTopics.add("Acl added: " + aclFound.getTopicname());
           // Create request
-          HashMap<String, String> resultMapReq =
+          Map<String, String> resultMapReq =
               manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
           if (resultMapReq.containsKey("aclId")) {
             Integer aclId = Integer.parseInt(resultMapReq.get("aclId"));
@@ -685,30 +713,30 @@ public class AclControllerService {
     } else return "{\"result\":\"Record not found !\"}";
   }
 
-  private List<HashMap<String, String>> getAclListFromCluster(
+  private List<Map<String, String>> getAclListFromCluster(
       String bootstrapHost,
       String protocol,
       String clusterName,
       String topicNameSearch,
       int tenantId)
       throws KlawException {
-    List<HashMap<String, String>> aclList;
+    List<Map<String, String>> aclList;
     aclList = clusterApiService.getAcls(bootstrapHost, protocol, clusterName, tenantId);
     return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
   }
 
-  private List<HashMap<String, String>> updateConsumerGroups(
-      List<HashMap<String, String>> groupedList, List<HashMap<String, String>> clusterAclList) {
-    List<HashMap<String, String>> updateList = new ArrayList<>(groupedList);
+  private List<Map<String, String>> updateConsumerGroups(
+      List<Map<String, String>> groupedList, List<Map<String, String>> clusterAclList) {
+    List<Map<String, String>> updateList = new ArrayList<>(groupedList);
 
-    for (HashMap<String, String> hMapGroupItem : groupedList) {
-      for (HashMap<String, String> hMapItem : clusterAclList) {
+    for (Map<String, String> hMapGroupItem : groupedList) {
+      for (Map<String, String> hMapItem : clusterAclList) {
         if (hMapGroupItem.get("operation").equals("READ")
             && hMapItem.get("operation").equals("READ")
             && hMapItem.get("resourceType").equals("GROUP")) {
           if (hMapItem.get("host").equals(hMapGroupItem.get("host"))
               && hMapItem.get("principle").equals(hMapGroupItem.get("principle"))) {
-            HashMap<String, String> hashMap = new HashMap<>(hMapGroupItem);
+            Map<String, String> hashMap = new HashMap<>(hMapGroupItem);
             hashMap.put("consumerGroup", hMapItem.get("resourceName"));
             updateList.add(hashMap);
             break;
@@ -719,8 +747,8 @@ public class AclControllerService {
     return updateList;
   }
 
-  private List<HashMap<String, String>> groupAcls(
-      List<HashMap<String, String>> aclList, String topicNameSearch, boolean isSync) {
+  private List<Map<String, String>> groupAcls(
+      List<Map<String, String>> aclList, String topicNameSearch, boolean isSync) {
 
     return aclList.stream()
         .filter(
@@ -760,9 +788,9 @@ public class AclControllerService {
     return aclsFromSOT;
   }
 
-  private HashMap<String, String> getTopicPromotionEnv(
+  private Map<String, String> getTopicPromotionEnv(
       String topicSearch, List<Topic> topics, int tenantId) {
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     try {
       if (topics == null)
         topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
@@ -985,12 +1013,12 @@ public class AclControllerService {
           lastItem.setShowDeleteTopic(true);
         }
       } else {
-        HashMap<String, String> hashMap = new HashMap<>();
+        Map<String, String> hashMap = new HashMap<>();
         hashMap.put("status", "not_authorized");
         topicOverview.setPromotionDetails(hashMap);
       }
     } catch (Exception e) {
-      HashMap<String, String> hashMap = new HashMap<>();
+      Map<String, String> hashMap = new HashMap<>();
       hashMap.put("status", "not_authorized");
       topicOverview.setPromotionDetails(hashMap);
     }
@@ -1010,12 +1038,12 @@ public class AclControllerService {
       int tenantId) {
     ObjectMapper objectMapper;
     if (topicOverview.isTopicExists() && retrieveSchemas) {
-      List<HashMap<String, String>> schemaDetails = new ArrayList<>();
-      HashMap<String, String> schemaMap = new HashMap<>();
+      List<Map<String, String>> schemaDetails = new ArrayList<>();
+      Map<String, String> schemaMap = new HashMap<>();
       List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
       Object dynamicObj;
       objectMapper = new ObjectMapper();
-      HashMap<String, Object> hashMapSchemaObj;
+      Map<String, Object> hashMapSchemaObj;
       String schemaOfObj;
       for (Env schemaEnv : schemaEnvs) {
         try {
@@ -1023,7 +1051,7 @@ public class AclControllerService {
               manageDatabase
                   .getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
                   .get(schemaEnv.getClusterId());
-          TreeMap<Integer, HashMap<String, Object>> schemaObjects =
+          SortedMap<Integer, Map<String, Object>> schemaObjects =
               clusterApiService.getAvroSchema(
                   kwClusters.getBootstrapServers(),
                   kwClusters.getProtocol(),
@@ -1114,7 +1142,7 @@ public class AclControllerService {
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS))
       return null;
 
-    List<HashMap<String, String>> aclList;
+    List<Map<String, String>> aclList;
 
     Env envSelected = getEnvDetails(env, tenantId);
     String bootstrapHost =
@@ -1200,7 +1228,7 @@ public class AclControllerService {
 
   private List<AclInfo> applyFiltersAcls(
       String env,
-      List<HashMap<String, String>> aclList,
+      List<Map<String, String>> aclList,
       List<Acl> aclsFromSOT,
       boolean isReconciliation,
       int tenantId) {
@@ -1209,7 +1237,7 @@ public class AclControllerService {
     List<String> teamList = new ArrayList<>();
     teamList = tenantFiltering(teamList);
 
-    for (HashMap<String, String> aclListItem : aclList) {
+    for (Map<String, String> aclListItem : aclList) {
       AclInfo mp = new AclInfo();
       mp.setEnvironment(env);
 
@@ -1364,9 +1392,9 @@ public class AclControllerService {
     return manageDatabase.getTeamsAndAllowedEnvs(myTeamId, tenantId);
   }
 
-  public List<HashMap<String, String>> getConsumerOffsets(
+  public List<Map<String, String>> getConsumerOffsets(
       String envId, String consumerGroupId, String topicName) {
-    List<HashMap<String, String>> consumerOffsetInfoList = new ArrayList<>();
+    List<Map<String, String>> consumerOffsetInfoList = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
       String bootstrapHost =

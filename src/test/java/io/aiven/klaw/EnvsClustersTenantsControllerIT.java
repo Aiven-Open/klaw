@@ -12,10 +12,14 @@ import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -156,7 +160,7 @@ public class EnvsClustersTenantsControllerIT {
     List clusterModels = new ObjectMapper().readValue(response, List.class);
     assertEquals(1, clusterModels.size());
 
-    LinkedHashMap<String, Integer> linkedHashMap = (LinkedHashMap) clusterModels.get(0);
+    Map<String, Integer> linkedHashMap = (Map<String, Integer>) clusterModels.get(0);
 
     KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
     kwClustersModel.setClusterId(linkedHashMap.get("clusterId"));
@@ -234,7 +238,7 @@ public class EnvsClustersTenantsControllerIT {
     List clusterModels = new ObjectMapper().readValue(response, List.class);
     assertEquals(2, clusterModels.size());
 
-    LinkedHashMap<String, Integer> linkedHashMap = (LinkedHashMap) clusterModels.get(0);
+    Map<String, Integer> linkedHashMap = (Map) clusterModels.get(0);
 
     response =
         mvc.perform(
@@ -321,7 +325,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    HashMap<String, Object> envModel1 = (HashMap<String, Object>) clusterModels.get(0);
+    Map<String, Object> envModel1 = (Map<String, Object>) clusterModels.get(0);
     String envId = (String) envModel1.get("id");
     assertEquals(1, clusterModels.size());
 
@@ -359,7 +363,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     clusterModels = new ObjectMapper().readValue(response, List.class);
-    HashMap<String, Object> envModel3 = (HashMap<String, Object>) clusterModels.get(0);
+    Map<String, Object> envModel3 = (Map<String, Object>) clusterModels.get(0);
     String updatedOtherParams = (String) envModel3.get("otherParams");
     assertEquals(otherParams, updatedOtherParams);
   }

@@ -1,19 +1,36 @@
 package io.aiven.klaw.helpers;
 
-import io.aiven.klaw.dao.*;
-import java.util.HashMap;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KafkaConnectorRequest;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.KwMetrics;
+import io.aiven.klaw.dao.KwProperties;
+import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.ProductDetails;
+import io.aiven.klaw.dao.RegisterUserInfo;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface HandleDbRequests {
 
   /*--------------------Insert */
 
-  HashMap<String, String> requestForTopic(TopicRequest topicRequest);
+  Map<String, String> requestForTopic(TopicRequest topicRequest);
 
-  HashMap<String, String> requestForConnector(KafkaConnectorRequest connectorRequest);
+  Map<String, String> requestForConnector(KafkaConnectorRequest connectorRequest);
 
-  HashMap<String, String> requestForAcl(AclRequests aclReq);
+  Map<String, String> requestForAcl(AclRequests aclReq);
 
   String addNewUser(UserInfo userInfo);
 
@@ -118,7 +135,7 @@ public interface HandleDbRequests {
 
   Team selectTeamDetailsFromName(String teamName, int defaultTenantId);
 
-  HashMap<String, String> getDashboardInfo(Integer teamId, int tenantId);
+  Map<String, String> getDashboardInfo(Integer teamId, int tenantId);
 
   List<UserInfo> selectAllUsersInfo(int tenantId);
 
@@ -158,7 +175,7 @@ public interface HandleDbRequests {
 
   List<ActivityLog> selectActivityLog(String user, String env, boolean allReqs, int tenantId);
 
-  HashMap<Integer, HashMap<String, HashMap<String, String>>> selectAllKwProperties();
+  Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties();
 
   List<KwProperties> selectAllKwPropertiesPerTenant(int tenantId);
 
@@ -186,31 +203,29 @@ public interface HandleDbRequests {
 
   // Analytics - charts - dashboard
 
-  HashMap<String, String> getDashboardStats(Integer teamId, int tenantId);
+  Map<String, String> getDashboardStats(Integer teamId, int tenantId);
 
   List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
 
-  List<HashMap<String, String>> selectActivityLogForLastDays(
+  List<Map<String, String>> selectActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId);
 
-  List<HashMap<String, String>> selectActivityLogByTeam(
-      Integer teamId, int numberOfDays, int tenantId);
+  List<Map<String, String>> selectActivityLogByTeam(Integer teamId, int numberOfDays, int tenantId);
 
-  List<HashMap<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId);
+  List<Map<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId);
 
-  List<HashMap<String, String>> selectTopicsCountByEnv(Integer tenantId);
+  List<Map<String, String>> selectTopicsCountByEnv(Integer tenantId);
 
-  List<HashMap<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId);
+  List<Map<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId);
 
-  List<HashMap<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId);
+  List<Map<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId);
 
-  List<HashMap<String, String>> selectAclsCountByTeams(
+  List<Map<String, String>> selectAclsCountByTeams(
       String aclType, Integer teamId, Integer tenantId);
 
-  List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId);
+  List<Map<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId);
 
-  List<HashMap<String, String>> selectAllMetrics(
-      String metricsType, String metricsName, String env);
+  List<Map<String, String>> selectAllMetrics(String metricsType, String metricsName, String env);
 
   /*--------------------Update */
   String updateTopicDocumentation(Topic topic);

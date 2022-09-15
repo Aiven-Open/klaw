@@ -8,7 +8,12 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwProperties;
 import io.aiven.klaw.model.*;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -87,9 +92,9 @@ public class ServerConfigService {
     return false;
   }
 
-  public List<HashMap<String, String>> getAllEditableProps() {
-    List<HashMap<String, String>> listMap = new ArrayList<>();
-    HashMap<String, String> resultMap = new HashMap<>();
+  public List<Map<String, String>> getAllEditableProps() {
+    List<Map<String, String>> listMap = new ArrayList<>();
+    Map<String, String> resultMap = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
@@ -99,10 +104,10 @@ public class ServerConfigService {
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    HashMap<String, HashMap<String, String>> kwProps = manageDatabase.getKwPropertiesMap(tenantId);
+    Map<String, Map<String, String>> kwProps = manageDatabase.getKwPropertiesMap(tenantId);
     String kwVal, kwKey;
 
-    for (Map.Entry<String, HashMap<String, String>> stringStringEntry : kwProps.entrySet()) {
+    for (Map.Entry<String, Map<String, String>> stringStringEntry : kwProps.entrySet()) {
       resultMap = new HashMap<>();
       kwKey = stringStringEntry.getKey();
       kwVal = stringStringEntry.getValue().get("kwvalue");
@@ -141,9 +146,9 @@ public class ServerConfigService {
     else return listMap;
   }
 
-  public HashMap<String, String> updateKwCustomProperty(KwPropertiesModel kwPropertiesModel) {
+  public Map<String, String> updateKwCustomProperty(KwPropertiesModel kwPropertiesModel) {
     log.info("updateKwCustomProperty {}", kwPropertiesModel);
-    HashMap<String, String> response = new HashMap<>();
+    Map<String, String> response = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String kwKey = kwPropertiesModel.getKwKey();
     String kwVal = kwPropertiesModel.getKwValue().trim();
@@ -346,7 +351,7 @@ public class ServerConfigService {
   }
 
   private boolean validateTenantConfig(TenantConfig dynamicObj, int tenantId) {
-    HashMap<Integer, String> tenantMap = manageDatabase.getTenantMap();
+    Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
     List<Env> envList = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> envKafkaConnectList = manageDatabase.getKafkaConnectEnvList(tenantId);
 
@@ -444,14 +449,14 @@ public class ServerConfigService {
     return envFound.orElse(null);
   }
 
-  public HashMap<String, String> resetCache() {
-    HashMap<String, String> hashMap = new HashMap<>();
+  public Map<String, String> resetCache() {
+    Map<String, String> hashMap = new HashMap<>();
     manageDatabase.updateStaticDataForTenant(commonUtilsService.getTenantId(getUserName()));
     return hashMap;
   }
 
-  public HashMap<String, String> testClusterApiConnection(String clusterApiUrl) {
-    HashMap<String, String> hashMap = new HashMap<>();
+  public Map<String, String> testClusterApiConnection(String clusterApiUrl) {
+    Map<String, String> hashMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
     if (clusterApiStatus.equals("ONLINE")) clusterApiStatus = "successful.";

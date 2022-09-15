@@ -11,6 +11,7 @@ import io.aiven.klaw.model.RegisterUserInfoModel;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,11 +39,11 @@ public class SaasService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public HashMap<String, String> approveUserSaas(RegisterUserInfoModel newUser) throws Exception {
+  public Map<String, String> approveUserSaas(RegisterUserInfoModel newUser) throws Exception {
     log.info("approveUserSaas {} / {}", newUser.getFullname(), newUser.getMailid());
-    HashMap<Integer, String> tenantMap = manageDatabase.getTenantMap();
+    Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
 
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "failure");
 
     // check if user exists
@@ -65,14 +66,14 @@ public class SaasService {
         kwTenantModel.setContactPerson(newUser.getFullname());
         kwTenantModel.setInTrialPhase(true);
         kwTenantModel.setActiveTenant(true);
-        HashMap<String, String> addTenantResult =
+        Map<String, String> addTenantResult =
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
 
         // create INFRATEAM and STAGINGTEAM
         if (addTenantResult.get("result").equals("success")) {
           tenantId = Integer.parseInt(addTenantResult.get("tenantId"));
 
-          HashMap<String, String> teamAddMap =
+          Map<String, String> teamAddMap =
               usersTeamsControllerService.addTwoDefaultTeams(
                   newUser.getFullname(), newTenantName, tenantId);
 
@@ -109,12 +110,11 @@ public class SaasService {
   }
 
   // TO DO transactions
-  public HashMap<String, String> registerUserSaas(RegisterSaasUserInfoModel newUser)
-      throws Exception {
+  public Map<String, String> registerUserSaas(RegisterSaasUserInfoModel newUser) throws Exception {
     log.info("registerUserSaas {} / {}", newUser.getFullname(), newUser.getMailid());
-    HashMap<Integer, String> tenantMap = manageDatabase.getTenantMap();
+    Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
 
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "failure");
 
     try {
@@ -151,15 +151,14 @@ public class SaasService {
   }
 
   private boolean createNewUserForActivation(
-      HashMap<String, String> resultMap, RegisterUserInfoModel newUserTarget) throws Exception {
+      Map<String, String> resultMap, RegisterUserInfoModel newUserTarget) throws Exception {
     newUserTarget.setTenantId(0);
     String randomId = UUID.randomUUID().toString();
     newUserTarget.setRole(KwConstants.SUPERADMIN_ROLE);
     newUserTarget.setTeam(KwConstants.INFRATEAM);
     newUserTarget.setRegistrationId(randomId);
     newUserTarget.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
-    HashMap<String, String> userRegMap =
-        usersTeamsControllerService.registerUser(newUserTarget, false);
+    Map<String, String> userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
     if (!userRegMap.get("result").equals("success")) {
       resultMap.put("error", "Something went wrong. Please try again.");
@@ -187,8 +186,8 @@ public class SaasService {
 
   private boolean createUserForExistingTenant(
       RegisterSaasUserInfoModel newUser,
-      HashMap<Integer, String> tenantMap,
-      HashMap<String, String> resultMap,
+      Map<Integer, String> tenantMap,
+      Map<String, String> resultMap,
       RegisterUserInfoModel newUserTarget)
       throws Exception {
     String newTenantName = newUser.getTenantName();
@@ -205,8 +204,7 @@ public class SaasService {
     newUserTarget.setTenantId(tenantId);
     newUserTarget.setTeam(KwConstants.STAGINGTEAM);
     newUserTarget.setRole(KwConstants.USER_ROLE);
-    HashMap<String, String> userRegMap =
-        usersTeamsControllerService.registerUser(newUserTarget, false);
+    Map<String, String> userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
     if (!userRegMap.get("result").equals("success")) {
       resultMap.put("error", "Something went wrong. Please try again.");
@@ -244,8 +242,8 @@ public class SaasService {
 
   private boolean handleValidations(
       RegisterSaasUserInfoModel newUser,
-      HashMap<Integer, String> tenantMap,
-      HashMap<String, String> resultMap) {
+      Map<Integer, String> tenantMap,
+      Map<String, String> resultMap) {
     if (!validateCaptchaService.validateCaptcha(newUser.getRecaptchaStr())) {
       resultMap.put("error", " Verify Captcha.");
       return true;
@@ -291,8 +289,8 @@ public class SaasService {
   }
 
   // approve users
-  public HashMap<String, String> getActivationInfo(String activationId) {
-    HashMap<String, String> resultMap = new HashMap<>();
+  public Map<String, String> getActivationInfo(String activationId) {
+    Map<String, String> resultMap = new HashMap<>();
     RegisterUserInfoModel registerUserInfoModel =
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
@@ -303,7 +301,7 @@ public class SaasService {
       resultMap.put("result", "already_activated");
       return resultMap;
     } else if (registerUserInfoModel.getStatus().equals("PENDING")) {
-      HashMap<String, String> result;
+      Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
         if (result.get("result").equals("success")) {

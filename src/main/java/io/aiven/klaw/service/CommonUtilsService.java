@@ -18,8 +18,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -136,7 +136,7 @@ public class CommonUtilsService {
   }
 
   public ChartsJsOverview getChartsJsOverview(
-      List<HashMap<String, String>> activityCountList,
+      List<Map<String, String>> activityCountList,
       String title,
       String yaxisCount,
       String xaxisLabel,
@@ -154,7 +154,7 @@ public class CommonUtilsService {
     int totalCount = 0;
 
     if (activityCountList != null) {
-      for (HashMap<String, String> hashMap : activityCountList) {
+      for (Map<String, String> hashMap : activityCountList) {
         totalCount += Integer.parseInt(hashMap.get(yaxisCount));
         data.add(Integer.parseInt(hashMap.get(yaxisCount)));
 

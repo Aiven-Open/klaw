@@ -30,44 +30,42 @@ public class ManageDatabase implements ApplicationContextAware {
 
   private HandleDbRequests handleDbRequests;
 
-  private static HashMap<Integer, HashMap<String, HashMap<String, List<String>>>>
-      envParamsMapPerTenant;
+  private static Map<Integer, Map<String, Map<String, List<String>>>> envParamsMapPerTenant;
 
-  private static HashMap<Integer, HashMap<String, HashMap<String, String>>>
-      kwPropertiesMapPerTenant;
+  private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
 
   // key is tenant id, value is list of envs
-  private static HashMap<Integer, List<String>> envsOfTenantsMap;
+  private static Map<Integer, List<String>> envsOfTenantsMap;
 
   // key is tenantid id, value is hashmap of teamId and allowed envs
-  private static HashMap<Integer, HashMap<Integer, List<String>>> teamsAndAllowedEnvsPerTenant;
+  private static Map<Integer, Map<Integer, List<String>>> teamsAndAllowedEnvsPerTenant;
 
   // key is tenantid id, value is hashmap of team Id as key and teamname as value
-  private static HashMap<Integer, HashMap<Integer, String>> teamIdAndNamePerTenant;
+  private static Map<Integer, Map<Integer, String>> teamIdAndNamePerTenant;
 
   // EnvModel lists for status
-  private static HashMap<Integer, List<EnvModel>> envModelsClustersStatus;
+  private static Map<Integer, List<EnvModel>> envModelsClustersStatus;
 
   // key tenantId, value tenant name
-  private static HashMap<Integer, String> tenantMap;
+  private static Map<Integer, String> tenantMap;
 
   // key tenantId, value tenant full config
-  private static HashMap<Integer, KwTenants> tenantFullMap;
+  private static Map<Integer, KwTenants> tenantFullMap;
 
   // key rolename, value list of permissions per tenant
-  private static HashMap<Integer, HashMap<String, List<String>>> rolesPermsMapPerTenant;
+  private static Map<Integer, Map<String, List<String>>> rolesPermsMapPerTenant;
 
   // key tenantId, sub key clusterid Pertenant
-  private static HashMap<Integer, HashMap<Integer, KwClusters>> kwAllClustersPertenant;
+  private static Map<Integer, Map<Integer, KwClusters>> kwAllClustersPertenant;
 
   // key tenantId, sub key clusterid Pertenant
-  private static HashMap<Integer, HashMap<Integer, KwClusters>> kwKafkaClustersPertenant;
+  private static Map<Integer, Map<Integer, KwClusters>> kwKafkaClustersPertenant;
 
   // key tenantId, sub key clusterid Pertenant
-  private static HashMap<Integer, HashMap<Integer, KwClusters>> kwSchemaRegClustersPertenant;
+  private static Map<Integer, Map<Integer, KwClusters>> kwSchemaRegClustersPertenant;
 
   // key tenantId, sub key clusterid Pertenant
-  private static HashMap<Integer, HashMap<Integer, KwClusters>> kwKafkaConnectClustersPertenant;
+  private static Map<Integer, Map<Integer, KwClusters>> kwKafkaConnectClustersPertenant;
 
   //    private static List<Env> kafkaEnvList;
 
@@ -75,12 +73,12 @@ public class ManageDatabase implements ApplicationContextAware {
   //
   //    private static List<Env> schemaEnvList;
 
-  private static HashMap<Integer, List<Env>> kafkaEnvListPerTenant = new HashMap<>();
-  private static HashMap<Integer, List<Env>> schemaRegEnvListPerTenant = new HashMap<>();
-  private static HashMap<Integer, List<Env>> kafkaConnectEnvListPerTenant = new HashMap<>();
-  private static HashMap<Integer, List<Env>> allEnvListPerTenant = new HashMap<>();
+  private static Map<Integer, List<Env>> kafkaEnvListPerTenant = new HashMap<>();
+  private static Map<Integer, List<Env>> schemaRegEnvListPerTenant = new HashMap<>();
+  private static Map<Integer, List<Env>> kafkaConnectEnvListPerTenant = new HashMap<>();
+  private static Map<Integer, List<Env>> allEnvListPerTenant = new HashMap<>();
 
-  private static HashMap<Integer, KwTenantConfigModel> tenantConfig = new HashMap<>();
+  private static Map<Integer, KwTenantConfigModel> tenantConfig = new HashMap<>();
   ;
 
   private static List<String> reqStatusList;
@@ -288,7 +286,7 @@ public class ManageDatabase implements ApplicationContextAware {
         .getKey();
   }
 
-  public Map<String, HashMap<String, List<String>>> getEnvParamsMap(Integer tenantId) {
+  public Map<String, Map<String, List<String>>> getEnvParamsMap(Integer tenantId) {
     return envParamsMapPerTenant.get(tenantId);
   }
 
@@ -323,15 +321,15 @@ public class ManageDatabase implements ApplicationContextAware {
     else return ""; // unknown team
   }
 
-  public HashMap<Integer, List<String>> getEnvsOfTenantsMap() {
+  public Map<Integer, List<String>> getEnvsOfTenantsMap() {
     return envsOfTenantsMap;
   }
 
-  public HashMap<Integer, String> getTenantMap() {
+  public Map<Integer, String> getTenantMap() {
     return tenantMap;
   }
 
-  public HashMap<Integer, KwClusters> getClusters(String clusterType, int tenantId) {
+  public Map<Integer, KwClusters> getClusters(String clusterType, int tenantId) {
     switch (clusterType) {
       case "schemaregistry":
         return kwSchemaRegClustersPertenant.get(tenantId);
@@ -344,7 +342,7 @@ public class ManageDatabase implements ApplicationContextAware {
     }
   }
 
-  public HashMap<String, HashMap<String, String>> getKwPropertiesMap(int tenantId) {
+  public Map<String, Map<String, String>> getKwPropertiesMap(int tenantId) {
     return kwPropertiesMapPerTenant.get(tenantId);
   }
 
@@ -400,8 +398,8 @@ public class ManageDatabase implements ApplicationContextAware {
   public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
     if (allTeams == null) allTeams = handleDbRequests.selectAllTeams(tenantId);
 
-    HashMap<Integer, List<String>> teamsAndAllowedEnvs = new HashMap<>();
-    HashMap<Integer, String> teamsAndNames = new HashMap<>();
+    Map<Integer, List<String>> teamsAndAllowedEnvs = new HashMap<>();
+    Map<Integer, String> teamsAndNames = new HashMap<>();
 
     List<Team> teamList =
         allTeams.stream()
@@ -418,7 +416,7 @@ public class ManageDatabase implements ApplicationContextAware {
     teamIdAndNamePerTenant.put(tenantId, teamsAndNames);
   }
 
-  public HashMap<Integer, KwTenantConfigModel> getTenantConfig() {
+  public Map<Integer, KwTenantConfigModel> getTenantConfig() {
     return tenantConfig;
   }
 
@@ -429,7 +427,7 @@ public class ManageDatabase implements ApplicationContextAware {
   }
 
   private void loadKwPropertiesforAllTenants() {
-    HashMap<Integer, HashMap<String, HashMap<String, String>>> kwPropertiesMap =
+    Map<Integer, Map<String, Map<String, String>>> kwPropertiesMap =
         handleDbRequests.selectAllKwProperties();
     if (kwPropertiesMap.size() == 0) {
       log.info("Klaw Properties not loaded into database. Shutting down !!");
@@ -442,8 +440,7 @@ public class ManageDatabase implements ApplicationContextAware {
   }
 
   public void loadKwPropsPerOneTenant(
-      HashMap<Integer, HashMap<String, HashMap<String, String>>> kwPropertiesMap,
-      Integer tenantId) {
+      Map<Integer, Map<String, Map<String, String>>> kwPropertiesMap, Integer tenantId) {
     if (kwPropertiesMap == null) kwPropertiesMap = handleDbRequests.selectAllKwProperties();
 
     kwPropertiesMapPerTenant.put(tenantId, kwPropertiesMap.get(tenantId));
@@ -511,10 +508,10 @@ public class ManageDatabase implements ApplicationContextAware {
       kafkaConnectClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
 
-    HashMap<Integer, KwClusters> kwKafkaClusters = new HashMap<>();
-    HashMap<Integer, KwClusters> kwSchemaRegClusters = new HashMap<>();
-    HashMap<Integer, KwClusters> kwKafkaConnectClusters = new HashMap<>();
-    HashMap<Integer, KwClusters> kwAllClusters = new HashMap<>();
+    Map<Integer, KwClusters> kwKafkaClusters = new HashMap<>();
+    Map<Integer, KwClusters> kwSchemaRegClusters = new HashMap<>();
+    Map<Integer, KwClusters> kwKafkaConnectClusters = new HashMap<>();
+    Map<Integer, KwClusters> kwAllClusters = new HashMap<>();
 
     kafkaClusters.forEach(
         cluster -> {
@@ -606,9 +603,9 @@ public class ManageDatabase implements ApplicationContextAware {
         kafkaEnvList.stream()
             .filter(kafkaEnv -> kafkaEnv.getTenantId().equals(tenantId))
             .collect(Collectors.toList());
-    HashMap<String, HashMap<String, List<String>>> envParamsMap = new HashMap<>();
+    Map<String, Map<String, List<String>>> envParamsMap = new HashMap<>();
 
-    HashMap<String, List<String>> oneEnvParamsMap;
+    Map<String, List<String>> oneEnvParamsMap;
     for (Env env : kafkaEnvTenantList) {
       oneEnvParamsMap = new HashMap<>();
       String envParams = env.getOtherParams();
@@ -666,7 +663,7 @@ public class ManageDatabase implements ApplicationContextAware {
     envParamsMapPerTenant.put(tenantId, envParamsMap);
   }
 
-  public HashMap<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {
+  public Map<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {
     return rolesPermsMapPerTenant.get(tenantId);
   }
 
@@ -690,7 +687,7 @@ public class ManageDatabase implements ApplicationContextAware {
             .filter(rolePerms -> rolePerms.getTenantId() == tenantId)
             .collect(Collectors.toList());
     List<String> tmpList;
-    HashMap<String, List<String>> rolesPermsMap = new HashMap<>();
+    Map<String, List<String>> rolesPermsMap = new HashMap<>();
     for (KwRolesPermissions rolesPermission : rolesPermsList) {
       if (!rolesPermsMap.containsKey(rolesPermission.getRoleId())) {
         tmpList = new ArrayList<>();
@@ -703,7 +700,7 @@ public class ManageDatabase implements ApplicationContextAware {
     rolesPermsMapPerTenant.put(tenantId, rolesPermsMap);
   }
 
-  public HashMap<Integer, List<EnvModel>> getEnvModelsClustersStatusAllTenants() {
+  public Map<Integer, List<EnvModel>> getEnvModelsClustersStatusAllTenants() {
     return envModelsClustersStatus;
   }
 

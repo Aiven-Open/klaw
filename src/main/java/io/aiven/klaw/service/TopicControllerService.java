@@ -1,16 +1,40 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.*;
+import static io.aiven.klaw.model.MailType.TOPIC_CLAIM_REQUESTED;
+import static io.aiven.klaw.model.MailType.TOPIC_CREATE_REQUESTED;
+import static io.aiven.klaw.model.MailType.TOPIC_DELETE_REQUESTED;
+import static io.aiven.klaw.model.MailType.TOPIC_REQUEST_APPROVED;
+import static io.aiven.klaw.model.MailType.TOPIC_REQUEST_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.TopicRequestTypes;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,12 +66,12 @@ public class TopicControllerService {
     this.mailService = mailService;
   }
 
-  public HashMap<String, String> createTopicsRequest(TopicRequestModel topicRequestReq)
+  public Map<String, String> createTopicsRequest(TopicRequestModel topicRequestReq)
       throws KlawException {
     log.info("createTopicsRequest {}", topicRequestReq);
     String userDetails = getUserName();
 
-    HashMap<String, String> hashMapTopicReqRes = new HashMap<>();
+    Map<String, String> hashMapTopicReqRes = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
@@ -162,7 +186,7 @@ public class TopicControllerService {
 
     Env env = getEnvDetails(envSelected);
 
-    HashMap<String, String> isValidTopicMap =
+    Map<String, String> isValidTopicMap =
         validateParameters(topicRequestReq, env, topicPartitions, topicRf);
     String validTopicStatus = isValidTopicMap.get("status");
 
@@ -191,11 +215,11 @@ public class TopicControllerService {
     return orderedEnv.contains(envId);
   }
 
-  private HashMap<String, String> validateParameters(
+  private Map<String, String> validateParameters(
       TopicRequestModel topicRequestReq, Env env, int topicPartitions, String replicationFactor) {
     log.debug("Into validateParameters");
 
-    HashMap<String, String> validMap = new HashMap<>();
+    Map<String, String> validMap = new HashMap<>();
     validMap.put("status", "true");
 
     String topicPrefix = null, topicSuffix = null;
@@ -242,11 +266,11 @@ public class TopicControllerService {
   }
 
   // create a request to delete topic.
-  public HashMap<String, String> createTopicDeleteRequest(String topicName, String envId) {
+  public Map<String, String> createTopicDeleteRequest(String topicName, String envId) {
     log.info("createTopicDeleteRequest {} {}", topicName, envId);
     String userDetails = getUserName();
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_TOPICS)) {
       hashMap.put("result", "Not Authorized");
@@ -331,11 +355,11 @@ public class TopicControllerService {
     return hashMap;
   }
 
-  public HashMap<String, String> createClaimTopicRequest(String topicName, String env) {
+  public Map<String, String> createClaimTopicRequest(String topicName, String env) {
     log.info("createClaimTopicRequest {}", topicName);
     String userDetails = getUserName();
 
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestReq = new TopicRequest();
@@ -475,9 +499,9 @@ public class TopicControllerService {
     return topics;
   }
 
-  public HashMap<String, String> getTopicTeamOnly(String topicName, String patternType) {
+  public Map<String, String> getTopicTeamOnly(String topicName, String patternType) {
     log.debug("getTopicTeamOnly {} {}", topicName, patternType);
-    HashMap<String, String> teamMap = new HashMap<>();
+    Map<String, String> teamMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (patternType.equals("PREFIXED")) {
       List<Topic> topics = manageDatabase.getHandleDbRequests().getAllTopics(tenantId);
@@ -809,8 +833,8 @@ public class TopicControllerService {
     return topicsList.stream().distinct().collect(Collectors.toList());
   }
 
-  public HashMap<String, String> saveTopicDocumentation(TopicInfo topicInfo) {
-    HashMap<String, String> saveResult = new HashMap<>();
+  public Map<String, String> saveTopicDocumentation(TopicInfo topicInfo) {
+    Map<String, String> saveResult = new HashMap<>();
 
     Topic topic = new Topic();
     topic.setTenantId(commonUtilsService.getTenantId(getUserName()));
@@ -836,8 +860,8 @@ public class TopicControllerService {
     return saveResult;
   }
 
-  public HashMap<String, Object> getTopicDetailsPerEnv(String envId, String topicName) {
-    HashMap<String, Object> hashMap = new HashMap<>();
+  public Map<String, Object> getTopicDetailsPerEnv(String envId, String topicName) {
+    Map<String, Object> hashMap = new HashMap<>();
     hashMap.put("topicExists", false);
     hashMap.put("error", "Could not retrieve topic details.");
 
@@ -911,9 +935,9 @@ public class TopicControllerService {
     }
   }
 
-  static class TopicNameSyncComparator implements Comparator<HashMap<String, String>> {
+  static class TopicNameSyncComparator implements Comparator<Map<String, String>> {
     @Override
-    public int compare(HashMap<String, String> topic1, HashMap<String, String> topic2) {
+    public int compare(Map<String, String> topic1, Map<String, String> topic2) {
       return topic1.get("topicName").compareTo(topic2.get("topicName"));
     }
   }

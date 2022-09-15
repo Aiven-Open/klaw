@@ -25,8 +25,8 @@ public class UiConfigControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public HashMap<String, String> getDbAuth() {
-    HashMap<String, String> dbMap = new HashMap<>();
+  public Map<String, String> getDbAuth() {
+    Map<String, String> dbMap = new HashMap<>();
     if (authenticationType.equals("db")) dbMap.put("dbauth", "true");
     else dbMap.put("dbauth", "false");
     return dbMap;
@@ -120,11 +120,11 @@ public class UiConfigControllerService {
     return envFound.map(Env::getName).orElse(null);
   }
 
-  public HashMap<String, String> sendMessageToAdmin(
+  public Map<String, String> sendMessageToAdmin(
       String contactFormSubject, String contactFormMessage) {
     String userName = getUserName();
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", "success");
 
     contactFormMessage = "From " + userName + ":  \n" + contactFormMessage;

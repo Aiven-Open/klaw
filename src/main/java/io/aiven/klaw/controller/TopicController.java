@@ -4,7 +4,6 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.service.TopicControllerService;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -12,7 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
@@ -21,7 +25,7 @@ public class TopicController {
   @Autowired private TopicControllerService topicControllerService;
 
   @PostMapping(value = "/createTopics")
-  public ResponseEntity<HashMap<String, String>> createTopicsRequest(
+  public ResponseEntity<Map<String, String>> createTopicsRequest(
       @Valid @RequestBody TopicRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.createTopicsRequest(addTopicRequest), HttpStatus.OK);
@@ -30,7 +34,7 @@ public class TopicController {
   @PostMapping(
       value = "/createTopicDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> createTopicDeleteRequest(
+  public ResponseEntity<Map<String, String>> createTopicDeleteRequest(
       @RequestParam("topicName") String topicName, @RequestParam("env") String envId) {
     return new ResponseEntity<>(
         topicControllerService.createTopicDeleteRequest(topicName, envId), HttpStatus.OK);
@@ -39,7 +43,7 @@ public class TopicController {
   @PostMapping(
       value = "/createClaimTopicRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> createClaimTopicRequest(
+  public ResponseEntity<Map<String, String>> createClaimTopicRequest(
       @RequestParam("topicName") String topicName, @RequestParam("env") String envId) {
     return new ResponseEntity<>(
         topicControllerService.createClaimTopicRequest(topicName, envId), HttpStatus.OK);
@@ -61,7 +65,7 @@ public class TopicController {
       value = "/getTopicTeam",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getTopicTeam(
+  public ResponseEntity<Map<String, String>> getTopicTeam(
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "patternType", defaultValue = "LITERAL") String patternType)
       throws KlawException {
@@ -149,7 +153,7 @@ public class TopicController {
       value = "/getTopicDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, Object>> getTopicDetailsPerEnv(
+  public ResponseEntity<Map<String, Object>> getTopicDetailsPerEnv(
       @RequestParam("envSelected") String envId, @RequestParam("topicname") String topicName)
       throws Exception {
 
@@ -158,9 +162,9 @@ public class TopicController {
   }
 
   @PostMapping(value = "/saveTopicDocumentation")
-  public ResponseEntity<HashMap<String, String>> saveTopicDocumentation(
+  public ResponseEntity<Map<String, String>> saveTopicDocumentation(
       @RequestBody TopicInfo topicInfo) {
-    HashMap<String, String> saveTopicDocumentationResult =
+    Map<String, String> saveTopicDocumentationResult =
         topicControllerService.saveTopicDocumentation(topicInfo);
     return new ResponseEntity<>(saveTopicDocumentationResult, HttpStatus.OK);
   }

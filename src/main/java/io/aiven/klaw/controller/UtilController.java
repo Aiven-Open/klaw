@@ -2,13 +2,19 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.service.UtilControllerService;
 import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
@@ -20,7 +26,7 @@ public class UtilController {
       value = "/getDashboardStats",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getDashboardStats() {
+  public ResponseEntity<Map<String, String>> getDashboardStats() {
     return new ResponseEntity<>(utilControllerService.getDashboardStats(), HttpStatus.OK);
   }
 
@@ -28,7 +34,7 @@ public class UtilController {
       value = "/getAuth",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getAuth() {
+  public ResponseEntity<Map<String, String>> getAuth() {
     return new ResponseEntity<>(utilControllerService.getAuth(), HttpStatus.OK);
   }
 
@@ -36,12 +42,12 @@ public class UtilController {
       value = "/getBasicInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getBasicInfo() {
+  public ResponseEntity<Map<String, String>> getBasicInfo() {
     return new ResponseEntity<>(utilControllerService.getBasicInfo(), HttpStatus.OK);
   }
 
   @PostMapping(value = "/logout")
-  public ResponseEntity<HashMap<String, String>> logout(
+  public ResponseEntity<Map<String, String>> logout(
       HttpServletRequest request, HttpServletResponse response) {
     utilControllerService.getLogoutPage(request, response);
     return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
@@ -51,7 +57,7 @@ public class UtilController {
       value = "/resetMemoryCache/{tenantName}/{entityType}/{operationType}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> resetMemoryCache(
+  public ResponseEntity<Map<String, String>> resetMemoryCache(
       @PathVariable String tenantName,
       @PathVariable String entityType,
       @PathVariable String operationType) {

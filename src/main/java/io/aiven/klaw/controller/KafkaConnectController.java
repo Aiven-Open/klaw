@@ -5,14 +5,19 @@ import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
 import io.aiven.klaw.service.KafkaConnectControllerService;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
@@ -21,7 +26,7 @@ public class KafkaConnectController {
   @Autowired KafkaConnectControllerService kafkaConnectControllerService;
 
   @PostMapping(value = "/createConnector")
-  public ResponseEntity<HashMap<String, String>> createConnectorRequest(
+  public ResponseEntity<Map<String, String>> createConnectorRequest(
       @Valid @RequestBody KafkaConnectorRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createConnectorRequest(addTopicRequest), HttpStatus.OK);
@@ -58,7 +63,7 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/execConnectorRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> approveTopicRequests(
+  public ResponseEntity<Map<String, String>> approveTopicRequests(
       @RequestParam("connectorId") String connectorId) throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
@@ -80,7 +85,7 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/createConnectorDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> createConnectorDeleteRequest(
+  public ResponseEntity<Map<String, String>> createConnectorDeleteRequest(
       @RequestParam("connectorName") String topicName, @RequestParam("env") String envId) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createConnectorDeleteRequest(topicName, envId),
@@ -131,7 +136,7 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/createClaimConnectorRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> createClaimConnectorRequest(
+  public ResponseEntity<Map<String, String>> createClaimConnectorRequest(
       @RequestParam("connectorName") String connectorName, @RequestParam("env") String envId) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createClaimConnectorRequest(connectorName, envId),
@@ -139,9 +144,9 @@ public class KafkaConnectController {
   }
 
   @PostMapping(value = "/saveConnectorDocumentation")
-  public ResponseEntity<HashMap<String, String>> saveConnectorDocumentation(
+  public ResponseEntity<Map<String, String>> saveConnectorDocumentation(
       @RequestBody KafkaConnectorModel topicInfo) {
-    HashMap<String, String> saveTopicDocumentationResult =
+    Map<String, String> saveTopicDocumentationResult =
         kafkaConnectControllerService.saveConnectorDocumentation(topicInfo);
     return new ResponseEntity<>(saveTopicDocumentationResult, HttpStatus.OK);
   }
@@ -150,7 +155,7 @@ public class KafkaConnectController {
       value = "/getConnectorDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, Object>> getConnectorDetailsPerEnv(
+  public ResponseEntity<Map<String, Object>> getConnectorDetailsPerEnv(
       @RequestParam("envSelected") String envId,
       @RequestParam("connectorName") String connectorName)
       throws Exception {

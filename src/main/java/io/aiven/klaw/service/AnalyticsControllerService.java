@@ -75,12 +75,12 @@ public class AnalyticsControllerService {
   }
 
   // For Sync Back Acls
-  public HashMap<String, String> getAclsCountPerEnv(String sourceEnvSelected) {
+  public Map<String, String> getAclsCountPerEnv(String sourceEnvSelected) {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    List<HashMap<String, String>> aclsPerEnvList =
+    List<Map<String, String>> aclsPerEnvList =
         manageDatabase.getHandleDbRequests().selectAclsCountByEnv(null, tenantId);
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
 
     // tenant filtering
     List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
@@ -106,13 +106,13 @@ public class AnalyticsControllerService {
   }
 
   // For Sync Back Topics
-  public HashMap<String, String> getTopicsCountPerEnv(String sourceEnvSelected) {
-    List<HashMap<String, String>> topicsCountList =
+  public Map<String, String> getTopicsCountPerEnv(String sourceEnvSelected) {
+    List<Map<String, String>> topicsCountList =
         manageDatabase
             .getHandleDbRequests()
             .selectTopicsCountByEnv(commonUtilsService.getTenantId(getUserName()));
 
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId();
     try {
@@ -137,7 +137,7 @@ public class AnalyticsControllerService {
   }
 
   public ChartsJsOverview getProducerAclsTeamsOverview(Integer teamId, Integer tenantId) {
-    List<HashMap<String, String>> producerAclsPerTeamList =
+    List<Map<String, String>> producerAclsPerTeamList =
         manageDatabase.getHandleDbRequests().selectAclsCountByTeams("Producer", teamId, tenantId);
 
     String title = "Producer Acls";
@@ -150,7 +150,7 @@ public class AnalyticsControllerService {
   }
 
   public ChartsJsOverview getConsumerAclsTeamsOverview(Integer teamId, Integer tenantId) {
-    List<HashMap<String, String>> consumerAclsPerTeamList =
+    List<Map<String, String>> consumerAclsPerTeamList =
         manageDatabase.getHandleDbRequests().selectAclsCountByTeams("Consumer", teamId, tenantId);
 
     String title = "Consumer Acls";
@@ -164,7 +164,7 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getTopicsTeamsOverview(Integer teamId, Integer tenantId) {
 
-    List<HashMap<String, String>> teamCountList =
+    List<Map<String, String>> teamCountList =
         manageDatabase.getHandleDbRequests().selectTopicsCountByTeams(teamId, tenantId);
     String title = "Topics in all clusters";
     if (teamId != null)
@@ -176,7 +176,7 @@ public class AnalyticsControllerService {
   }
 
   public ChartsJsOverview getTopicsEnvOverview(Integer tenantId, PermissionType permissionType) {
-    List<HashMap<String, String>> teamCountList =
+    List<Map<String, String>> teamCountList =
         manageDatabase.getHandleDbRequests().selectTopicsCountByEnv(tenantId);
 
     // tenant filtering
@@ -208,7 +208,7 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getTopicsPerTeamEnvOverview(int tenantId) {
     Integer userTeamId = getMyTeamId(getUserName());
-    List<HashMap<String, String>> teamCountList = null;
+    List<Map<String, String>> teamCountList = null;
     String userDetails = getUserName();
     if (userDetails != null) {
       teamCountList =
@@ -226,7 +226,7 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getPartitionsEnvOverview(Integer teamId, Integer tenantId) {
 
-    List<HashMap<String, String>> partitionsCountList =
+    List<Map<String, String>> partitionsCountList =
         manageDatabase.getHandleDbRequests().selectPartitionsCountByEnv(teamId, tenantId);
     String title = "Partitions per cluster";
     if (teamId != null)
@@ -260,7 +260,7 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getAclsEnvOverview(Integer teamId, Integer tenantId) {
 
-    List<HashMap<String, String>> aclsPerEnvList =
+    List<Map<String, String>> aclsPerEnvList =
         manageDatabase.getHandleDbRequests().selectAclsCountByEnv(teamId, tenantId);
     String title = "Acls per cluster";
     if (teamId != null)
@@ -288,7 +288,7 @@ public class AnalyticsControllerService {
 
   private ChartsJsOverview getActivityLogOverview(Integer teamId, Integer tenantId) {
     int numberOfDays = 30;
-    List<HashMap<String, String>> activityCountList;
+    List<Map<String, String>> activityCountList;
     String title = "Requests per day";
 
     if (teamId != null) {
@@ -491,7 +491,7 @@ public class AnalyticsControllerService {
   }
 
   private void addTopicNamesPerEnvToReport(
-      HashMap<String, List<String>> topicNames,
+      Map<String, List<String>> topicNames,
       XSSFWorkbook workbook,
       File reportFile,
       String sheetName) {
@@ -595,11 +595,11 @@ public class AnalyticsControllerService {
     }
   }
 
-  private HashMap<String, List<String>> getTopicNames(int tenantId) {
+  private Map<String, List<String>> getTopicNames(int tenantId) {
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId();
 
-    HashMap<String, List<String>> topicsPerEnv = new HashMap<>();
+    Map<String, List<String>> topicsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
       Integer userTeamId = getMyTeamId(getUserName());
@@ -632,11 +632,11 @@ public class AnalyticsControllerService {
     return topicsPerEnv;
   }
 
-  private HashMap<String, List<String>> getConsumerGroups(int tenantId) {
+  private Map<String, List<String>> getConsumerGroups(int tenantId) {
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId();
 
-    HashMap<String, List<String>> aclsPerEnv = new HashMap<>();
+    Map<String, List<String>> aclsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
       Integer userTeamId = getMyTeamId(getUserName());

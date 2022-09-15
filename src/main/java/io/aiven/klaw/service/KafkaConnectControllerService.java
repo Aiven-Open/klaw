@@ -39,12 +39,11 @@ public class KafkaConnectControllerService {
 
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  public HashMap<String, String> createConnectorRequest(
-      KafkaConnectorRequestModel topicRequestReq) {
+  public Map<String, String> createConnectorRequest(KafkaConnectorRequestModel topicRequestReq) {
     log.info("createConnectorRequest {}", topicRequestReq);
     String userDetails = getUserName();
 
-    HashMap<String, String> hashMapTopicReqRes = new HashMap<>();
+    Map<String, String> hashMapTopicReqRes = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
@@ -460,9 +459,9 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public HashMap<String, String> approveConnectorRequests(String connectorId) throws KlawException {
+  public Map<String, String> approveConnectorRequests(String connectorId) throws KlawException {
     log.info("approveConnectorRequests {}", connectorId);
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -640,11 +639,11 @@ public class KafkaConnectControllerService {
   }
 
   // create a request to delete connector.
-  public HashMap<String, String> createConnectorDeleteRequest(String connectorName, String envId) {
+  public Map<String, String> createConnectorDeleteRequest(String connectorName, String envId) {
     log.info("createConnectorDeleteRequest {} {}", connectorName, envId);
     String userDetails = getUserName();
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
       hashMap.put("result", "Not Authorized");
@@ -747,11 +746,11 @@ public class KafkaConnectControllerService {
     return getConnectorRequestModels(topicReqs, true);
   }
 
-  public HashMap<String, String> createClaimConnectorRequest(String connectorName, String envId) {
+  public Map<String, String> createClaimConnectorRequest(String connectorName, String envId) {
     log.info("createClaimConnectorRequest {}", connectorName);
     String userDetails = getUserName();
 
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     KafkaConnectorRequest connectorRequest = new KafkaConnectorRequest();
@@ -924,13 +923,13 @@ public class KafkaConnectControllerService {
           lastItem.setShowDeleteConnector(true);
         }
       } else {
-        HashMap<String, String> hashMap = new HashMap<>();
+        Map<String, String> hashMap = new HashMap<>();
         hashMap.put("status", "not_authorized");
         topicOverview.setPromotionDetails(hashMap);
       }
     } catch (Exception e) {
       log.error("Exception:", e);
-      HashMap<String, String> hashMap = new HashMap<>();
+      Map<String, String> hashMap = new HashMap<>();
       hashMap.put("status", "not_authorized");
       topicOverview.setPromotionDetails(hashMap);
     }
@@ -938,8 +937,8 @@ public class KafkaConnectControllerService {
     return topicOverview;
   }
 
-  public HashMap<String, Object> getConnectorDetailsPerEnv(String envId, String connectorName) {
-    HashMap<String, Object> hashMap = new HashMap<>();
+  public Map<String, Object> getConnectorDetailsPerEnv(String envId, String connectorName) {
+    Map<String, Object> hashMap = new HashMap<>();
     hashMap.put("connectorExists", false);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -1003,9 +1002,9 @@ public class KafkaConnectControllerService {
     return hashMap;
   }
 
-  private HashMap<String, String> getConnectorPromotionEnv(
+  private Map<String, String> getConnectorPromotionEnv(
       String topicSearch, List<KwKafkaConnector> kafkaConnectors, int tenantId) {
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     try {
       if (kafkaConnectors == null)
         kafkaConnectors = manageDatabase.getHandleDbRequests().getConnectors(topicSearch, tenantId);
@@ -1054,8 +1053,8 @@ public class KafkaConnectControllerService {
     return hashMap;
   }
 
-  public HashMap<String, String> saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
-    HashMap<String, String> saveResult = new HashMap<>();
+  public Map<String, String> saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
+    Map<String, String> saveResult = new HashMap<>();
 
     KwKafkaConnector topic = new KwKafkaConnector();
     topic.setConnectorId(topicInfo.getConnectorId());

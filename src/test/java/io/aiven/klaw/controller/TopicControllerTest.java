@@ -17,6 +17,7 @@ import io.aiven.klaw.service.TopicSyncControllerService;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -61,7 +62,7 @@ public class TopicControllerTest {
   public void createTopics() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-    HashMap<String, String> resMap = new HashMap<>();
+    Map<String, String> resMap = new HashMap<>();
     resMap.put("result", "success");
     when(topicControllerService.createTopicsRequest(any())).thenReturn(resMap);
 
@@ -75,7 +76,7 @@ public class TopicControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    HashMap<String, String> actualResult =
+    Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertEquals("success", actualResult.get("result"));
   }
@@ -85,7 +86,7 @@ public class TopicControllerTest {
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(syncTopicUpdates);
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "success");
     when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(resultMap);
 
@@ -101,7 +102,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    HashMap<String, String> actualResult =
+    Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
 
     assertEquals("success", actualResult.get("result"));
@@ -133,7 +134,7 @@ public class TopicControllerTest {
   @Order(4)
   public void getTopicTeam() throws Exception {
     String topicName = "testtopic";
-    HashMap<String, String> teamMap = new HashMap<>();
+    Map<String, String> teamMap = new HashMap<>();
     teamMap.put("team", "Team1");
     when(topicControllerService.getTopicTeamOnly(topicName, "LITERAL")).thenReturn(teamMap);
 
@@ -147,8 +148,8 @@ public class TopicControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    HashMap<String, String> resp =
-        new ObjectMapper().readValue(res, new TypeReference<HashMap<String, String>>() {});
+    Map<String, String> resp =
+        new ObjectMapper().readValue(res, new TypeReference<Map<String, String>>() {});
     assertEquals("Team1", resp.get("team"));
   }
 
@@ -283,7 +284,7 @@ public class TopicControllerTest {
   @Test
   @Order(11)
   public void getSyncTopics() throws Exception {
-    HashMap<String, Object> hashMap = new HashMap<>();
+    Map<String, Object> hashMap = new HashMap<>();
     hashMap.put("", "");
     List<TopicRequestModel> topicRequests = utilMethods.getTopicRequestsModel();
 

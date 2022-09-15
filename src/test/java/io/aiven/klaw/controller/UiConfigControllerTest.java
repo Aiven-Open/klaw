@@ -21,6 +21,7 @@ import io.aiven.klaw.service.UiConfigControllerService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,7 +103,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(2)
   public void getSyncEnv() throws Exception {
-    List<HashMap<String, String>> envList = utilMethods.getSyncEnv();
+    List<Map<String, String>> envList = utilMethods.getSyncEnv();
     when(envsClustersTenantsControllerService.getSyncEnvs()).thenReturn(envList);
 
     String res =
@@ -116,7 +117,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<HashMap<String, String>> response = new ObjectMapper().readValue(res, List.class);
+    List<Map<String, String>> response = new ObjectMapper().readValue(res, List.class);
     assertEquals(2, response.size());
     assertEquals(2, response.get(0).size());
   }
@@ -230,7 +231,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(9)
   public void deleteEnv() throws Exception {
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", "success");
     when(envsClustersTenantsControllerService.deleteEnvironment(anyString(), anyString()))
         .thenReturn(hashMap);
@@ -294,7 +295,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(12)
   public void addNewUser() throws Exception {
-    HashMap<String, String> result = new HashMap<>();
+    Map<String, String> result = new HashMap<>();
     result.put("result", "success");
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(userInfo);

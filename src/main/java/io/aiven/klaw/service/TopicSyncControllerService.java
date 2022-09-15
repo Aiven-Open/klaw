@@ -3,11 +3,30 @@ package io.aiven.klaw.service;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.*;
-import java.util.*;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.SyncBackTopics;
+import io.aiven.klaw.model.SyncTopicUpdates;
+import io.aiven.klaw.model.SyncTopicsBulk;
+import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.TopicRequestTypes;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,8 +61,8 @@ public class TopicSyncControllerService {
   }
 
   public void getReconTopicsScheduled() {
-    HashMap<Integer, List<String>> envTenantMap = manageDatabase.getEnvsOfTenantsMap();
-    HashMap<Integer, String> tenantMap = manageDatabase.getTenantMap();
+    Map<Integer, List<String>> envTenantMap = manageDatabase.getEnvsOfTenantsMap();
+    Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
     List<Integer> tenants = new ArrayList<>(envTenantMap.keySet());
 
     for (Integer tenantId : tenants) {
@@ -82,7 +101,7 @@ public class TopicSyncControllerService {
     }
   }
 
-  public HashMap<String, Object> getReconTopics(
+  public Map<String, Object> getReconTopics(
       String envId,
       String pageNo,
       String currentPage,
@@ -90,7 +109,7 @@ public class TopicSyncControllerService {
       String showAllTopics,
       boolean isBulkOption)
       throws Exception {
-    HashMap<String, Object> syncTopicsObjectMap = new HashMap<>();
+    Map<String, Object> syncTopicsObjectMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     List<TopicRequestModel> topicRequestModelList =
@@ -127,7 +146,7 @@ public class TopicSyncControllerService {
     return syncTopicsObjectMap;
   }
 
-  public HashMap<String, Object> getSyncTopics(
+  public Map<String, Object> getSyncTopics(
       String env,
       String pageNo,
       String currentPage,
@@ -136,7 +155,7 @@ public class TopicSyncControllerService {
       boolean isBulkOption)
       throws Exception {
     boolean isReconciliation = !Boolean.parseBoolean(showAllTopics);
-    HashMap<String, Object> syncTopicsObjectMap = new HashMap<>();
+    Map<String, Object> syncTopicsObjectMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
@@ -145,9 +164,8 @@ public class TopicSyncControllerService {
         return null;
     }
 
-    List<HashMap<String, String>> topicFilteredList =
-        getTopicsFromKafkaCluster(env, topicNameSearch);
-    List<HashMap<String, String>> topicsList;
+    List<Map<String, String>> topicFilteredList = getTopicsFromKafkaCluster(env, topicNameSearch);
+    List<Map<String, String>> topicsList;
 
     topicsList =
         topicFilteredList.stream()
@@ -183,7 +201,7 @@ public class TopicSyncControllerService {
   }
 
   private List<TopicRequestModel> getSyncTopicList(
-      List<HashMap<String, String>> topicsList,
+      List<Map<String, String>> topicsList,
       List<TopicRequestModel> deletedTopicsFromClusterList,
       String pageNo,
       String currentPage,
@@ -257,7 +275,7 @@ public class TopicSyncControllerService {
   }
 
   private List<TopicRequestModel> getSyncTopicListRecon(
-      List<HashMap<String, String>> clusterTopicsList,
+      List<Map<String, String>> clusterTopicsList,
       List<TopicRequestModel> deletedTopicsFromClusterList,
       String pageNo,
       String env,
@@ -351,14 +369,14 @@ public class TopicSyncControllerService {
   }
 
   private boolean createTopicRequest(
-      List<HashMap<String, String>> topicsList,
+      List<Map<String, String>> topicsList,
       List<Topic> topicsFromSOT,
       List<String> teamList,
       int i,
       int counterInc,
       TopicRequest mp,
       int tenantId) {
-    HashMap<String, String> topicMap;
+    Map<String, String> topicMap;
     mp.setSequence(counterInc + "");
 
     topicMap = topicsList.get(i);
@@ -396,7 +414,7 @@ public class TopicSyncControllerService {
   }
 
   private void updateClusterDeletedTopicsList(
-      List<HashMap<String, String>> clusterTopicsList,
+      List<Map<String, String>> clusterTopicsList,
       List<TopicRequestModel> deletedTopicsFromClusterList,
       List<Topic> topicsFromSOT,
       List<String> teamList,
@@ -406,7 +424,7 @@ public class TopicSyncControllerService {
       clusterTopicsList.forEach(
           hashMapTopicObj -> clusterTopicStringList.add(hashMapTopicObj.get("topicName")));
 
-      HashMap<String, TopicRequestModel> sotTopics = new HashMap<>();
+      Map<String, TopicRequestModel> sotTopics = new HashMap<>();
 
       List<String> sotTopicStringList = new ArrayList<>();
       for (Topic topicObj : topicsFromSOT) {
@@ -465,9 +483,9 @@ public class TopicSyncControllerService {
     return teamList;
   }
 
-  public HashMap<String, List<String>> updateSyncBackTopics(SyncBackTopics syncBackTopics) {
+  public Map<String, List<String>> updateSyncBackTopics(SyncBackTopics syncBackTopics) {
     log.info("updateSyncBackTopics {}", syncBackTopics);
-    HashMap<String, List<String>> resultMap = new HashMap<>();
+    Map<String, List<String>> resultMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     List<String> logArray = new ArrayList<>();
@@ -517,7 +535,7 @@ public class TopicSyncControllerService {
 
   private void approveSyncBackTopics(
       SyncBackTopics syncBackTopics,
-      HashMap<String, List<String>> resultMap,
+      Map<String, List<String>> resultMap,
       List<String> logUpdateSyncBackTopics,
       Topic topicFound,
       int tenantId) {
@@ -576,7 +594,7 @@ public class TopicSyncControllerService {
       topicRequest.setTeamId(teamName);
       topicRequest.setTenantId(tenantId);
       // Create request
-      HashMap<String, String> createResult =
+      Map<String, String> createResult =
           manageDatabase.getHandleDbRequests().requestForTopic(topicRequest);
       // Approve request
       if (createResult.get("topicId") != null) {
@@ -800,9 +818,9 @@ public class TopicSyncControllerService {
     return tmpTopicList;
   }
 
-  public HashMap<String, List<String>> updateSyncTopicsBulk(SyncTopicsBulk syncTopicsBulk) {
+  public Map<String, List<String>> updateSyncTopicsBulk(SyncTopicsBulk syncTopicsBulk) {
     log.info("updateSyncTopicsBulk {}", syncTopicsBulk);
-    HashMap<String, List<String>> resultMap = new HashMap<>();
+    Map<String, List<String>> resultMap = new HashMap<>();
 
     List<String> logArray = new ArrayList<>();
 
@@ -824,10 +842,10 @@ public class TopicSyncControllerService {
 
     if (syncTopicsBulk.getTypeOfSync().equals("SELECTED_TOPICS")) {
       Object[] topicMap = syncTopicsBulk.getTopicDetails();
-      HashMap<String, LinkedHashMap<String, Object>> hashMap = new HashMap<>();
-      LinkedHashMap<String, Object> subObj;
+      Map<String, Map<String, Object>> hashMap = new HashMap<>();
+      Map<String, Object> subObj;
       for (Object o : topicMap) {
-        subObj = (LinkedHashMap<String, Object>) o;
+        subObj = (Map<String, Object>) o;
         hashMap.put((String) subObj.get("topicName"), subObj);
       }
 
@@ -836,10 +854,10 @@ public class TopicSyncControllerService {
       }
     } else {
       try {
-        List<HashMap<String, String>> topicsMap =
+        List<Map<String, String>> topicsMap =
             getTopicsFromKafkaCluster(
                 syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter());
-        for (HashMap<String, String> hashMap : topicsMap) {
+        for (Map<String, String> hashMap : topicsMap) {
           invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
         }
       } catch (Exception e) {
@@ -852,7 +870,7 @@ public class TopicSyncControllerService {
   }
 
   private void invokeUpdateSyncAllTopics(
-      SyncTopicsBulk syncTopicsBulk, List<String> logArray, HashMap<String, String> hashMap) {
+      SyncTopicsBulk syncTopicsBulk, List<String> logArray, Map<String, String> hashMap) {
     SyncTopicUpdates syncTopicUpdates;
     List<SyncTopicUpdates> updatedSyncTopicsList = new ArrayList<>();
 
@@ -876,8 +894,8 @@ public class TopicSyncControllerService {
     }
   }
 
-  private List<HashMap<String, String>> getTopicsFromKafkaCluster(
-      String env, String topicNameSearch) throws Exception {
+  private List<Map<String, String>> getTopicsFromKafkaCluster(String env, String topicNameSearch)
+      throws Exception {
     if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env envSelected = getEnvDetails(env);
@@ -887,7 +905,7 @@ public class TopicSyncControllerService {
             .get(envSelected.getClusterId())
             .getBootstrapServers();
 
-    List<HashMap<String, String>> topicsList =
+    List<Map<String, String>> topicsList =
         clusterApiService.getAllTopics(
             bootstrapHost,
             manageDatabase
@@ -902,7 +920,7 @@ public class TopicSyncControllerService {
 
     topicCounter = 0;
 
-    List<HashMap<String, String>> topicFilteredList = topicsList;
+    List<Map<String, String>> topicFilteredList = topicsList;
     // Filter topics on topic name for search
 
     if (topicNameSearch != null && topicNameSearch.length() > 0) {
@@ -918,7 +936,7 @@ public class TopicSyncControllerService {
   private void invokeUpdateSync(
       SyncTopicsBulk syncTopicsBulk,
       List<String> logArray,
-      HashMap<String, LinkedHashMap<String, Object>> hashMap,
+      Map<String, Map<String, Object>> hashMap,
       String topicName) {
     SyncTopicUpdates syncTopicUpdates;
     List<SyncTopicUpdates> updatedSyncTopicsList = new ArrayList<>();
@@ -944,10 +962,10 @@ public class TopicSyncControllerService {
     }
   }
 
-  public HashMap<String, String> updateSyncTopics(List<SyncTopicUpdates> updatedSyncTopics) {
+  public Map<String, String> updateSyncTopics(List<SyncTopicUpdates> updatedSyncTopics) {
     log.info("updateSyncTopics {}", updatedSyncTopics);
     String userDetails = getUserName();
-    HashMap<String, String> response = new HashMap<>();
+    Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
       response.put("result", "Not Authorized");

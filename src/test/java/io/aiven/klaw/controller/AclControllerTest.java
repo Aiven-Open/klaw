@@ -16,6 +16,7 @@ import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -75,7 +76,7 @@ public class AclControllerTest {
     List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
 
     String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
-    HashMap<String, String> result = new HashMap<>();
+    Map<String, String> result = new HashMap<>();
     result.put("result", "success");
     when(aclControllerService.updateSyncAcls(any())).thenReturn(result);
 
@@ -90,8 +91,8 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    HashMap<String, String> actualResult =
-        new ObjectMapper().readValue(response, new TypeReference<HashMap<String, String>>() {});
+    Map<String, String> actualResult =
+        new ObjectMapper().readValue(response, new TypeReference<Map<String, String>>() {});
 
     assertEquals("success", actualResult.get("result"));
   }

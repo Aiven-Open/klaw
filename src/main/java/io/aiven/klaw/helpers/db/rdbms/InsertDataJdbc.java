@@ -5,6 +5,7 @@ import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +76,10 @@ public class InsertDataJdbc {
 
   public InsertDataJdbc() {}
 
-  public synchronized HashMap<String, String> insertIntoRequestTopic(TopicRequest topicRequest) {
+  public synchronized Map<String, String> insertIntoRequestTopic(TopicRequest topicRequest) {
     log.debug("insertIntoRequestTopic {}", topicRequest);
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     Integer topicId = getNextTopicRequestId("TOPIC_REQ_ID", topicRequest.getTenantId());
     hashMap.put("topicId", "" + topicId);
 
@@ -107,11 +108,11 @@ public class InsertDataJdbc {
     return hashMap;
   }
 
-  public synchronized HashMap<String, String> insertIntoRequestConnector(
+  public synchronized Map<String, String> insertIntoRequestConnector(
       KafkaConnectorRequest connectorRequest) {
     log.debug("insertIntoRequestConnector {}", connectorRequest);
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     Integer topicId = getNextConnectorRequestId("CONNECTOR_REQ_ID", connectorRequest.getTenantId());
     hashMap.put("connectorId", "" + topicId);
 
@@ -190,9 +191,9 @@ public class InsertDataJdbc {
     return "success";
   }
 
-  synchronized HashMap<String, String> insertIntoRequestAcl(AclRequests aclReq) {
+  synchronized Map<String, String> insertIntoRequestAcl(AclRequests aclReq) {
     log.debug("insertIntoRequestAcl {}", aclReq.getTopicname());
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     Integer aclId = getNextAclRequestId(aclReq.getTenantId());
     hashMap.put("aclId", "" + aclId);
 

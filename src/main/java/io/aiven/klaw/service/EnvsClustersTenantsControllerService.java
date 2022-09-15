@@ -253,7 +253,7 @@ public class EnvsClustersTenantsControllerService {
     return envListMapUpdated;
   }
 
-  public List<HashMap<String, String>> getSyncEnvs() {
+  public List<Map<String, String>> getSyncEnvs() {
     log.debug("getSyncEnvs");
     Integer tenantId = getUserDetails(getUserName()).getTenantId();
     String syncCluster;
@@ -264,8 +264,8 @@ public class EnvsClustersTenantsControllerService {
       return new ArrayList<>();
     }
 
-    HashMap<String, String> hMap;
-    List<HashMap<String, String>> envsOnly = new ArrayList<>();
+    Map<String, String> hMap;
+    List<Map<String, String>> envsOnly = new ArrayList<>();
     List<EnvModel> envList = getKafkaEnvs();
     for (EnvModel env : envList) {
       hMap = new HashMap<>();
@@ -379,13 +379,13 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public HashMap<String, List<EnvModel>> getEnvsStatus() {
+  public Map<String, List<EnvModel>> getEnvsStatus() {
     Integer tenantId = getUserDetails(getUserName()).getTenantId();
     //        Integer tenantId =
     // getTeamDetails(getUserDetails(getUserDetails()).getTeam()).getTenantId();
-    HashMap<Integer, List<EnvModel>> allTenantsEnvModels =
+    Map<Integer, List<EnvModel>> allTenantsEnvModels =
         manageDatabase.getEnvModelsClustersStatusAllTenants();
-    HashMap<String, List<EnvModel>> allTenantsEnvModelsUpdated = new HashMap<>();
+    Map<String, List<EnvModel>> allTenantsEnvModelsUpdated = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
@@ -502,7 +502,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public HashMap<String, List<String>> getEnvParams(String targetEnv) {
+  public Map<String, List<String>> getEnvParams(String targetEnv) {
     return manageDatabase
         .getEnvParamsMap(commonUtilsService.getTenantId(getUserName()))
         .get(targetEnv);
@@ -691,9 +691,9 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public HashMap<String, String> addNewCluster(KwClustersModel kwClustersModel) {
+  public Map<String, String> addNewCluster(KwClustersModel kwClustersModel) {
     log.info("addNewCluster {}", kwClustersModel.getClusterName());
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -746,7 +746,7 @@ public class EnvsClustersTenantsControllerService {
 
   private boolean savePublicKey(
       KwClustersModel kwClustersModel,
-      HashMap<String, String> resultMap,
+      Map<String, String> resultMap,
       int tenantId,
       KwClusters kwCluster) {
     try {
@@ -819,8 +819,8 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public HashMap<String, String> deleteEnvironment(String envId, String envType) {
-    HashMap<String, String> resultMap = new HashMap<>();
+  public Map<String, String> deleteEnvironment(String envId, String envType) {
+    Map<String, String> resultMap = new HashMap<>();
 
     log.info("deleteEnvironment {}", envId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -961,9 +961,9 @@ public class EnvsClustersTenantsControllerService {
     return envList;
   }
 
-  public HashMap<String, String> addTenantId(KwTenantModel kwTenantModel, boolean isExternal) {
+  public Map<String, String> addTenantId(KwTenantModel kwTenantModel, boolean isExternal) {
 
-    HashMap<String, String> addTenantStatus = new HashMap<>();
+    Map<String, String> addTenantStatus = new HashMap<>();
 
     if (manageDatabase.getHandleDbRequests().getTenants().size()
         >= maxNumberOfTenantsCanBeCreated) {
@@ -1062,8 +1062,8 @@ public class EnvsClustersTenantsControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  public HashMap<String, String> deleteTenant() {
-    HashMap<String, String> resultMap = new HashMap<>();
+  public Map<String, String> deleteTenant() {
+    Map<String, String> resultMap = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
@@ -1103,8 +1103,8 @@ public class EnvsClustersTenantsControllerService {
     return resultMap;
   }
 
-  public HashMap<String, String> updateTenant(String orgName) {
-    HashMap<String, String> resultMap = new HashMap<>();
+  public Map<String, String> updateTenant(String orgName) {
+    Map<String, String> resultMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
       resultMap.put("result", "Not Authorized");
@@ -1128,10 +1128,10 @@ public class EnvsClustersTenantsControllerService {
     // year", "2 years", "3 years", "5 years");
   }
 
-  public HashMap<String, String> udpateTenantExtension(String selectedTenantExtensionPeriod) {
+  public Map<String, String> udpateTenantExtension(String selectedTenantExtensionPeriod) {
     // send mail
 
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
       resultMap.put("result", "Not Authorized");
@@ -1156,8 +1156,8 @@ public class EnvsClustersTenantsControllerService {
     return resultMap;
   }
 
-  public HashMap<String, String> getAclCommands() {
-    HashMap<String, String> res = new HashMap<>();
+  public Map<String, String> getAclCommands() {
+    Map<String, String> res = new HashMap<>();
     res.put("result", "success");
     res.put("aclCommandSsl", aclCommandSsl);
     res.put("aclCommandPlaintext", aclCommandPlaintext);
@@ -1168,11 +1168,11 @@ public class EnvsClustersTenantsControllerService {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
-  public HashMap<String, String> getPublicKey() {
+  public Map<String, String> getPublicKey() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getPublicKey download " + tenantId);
 
-    HashMap<String, String> kwPublicKeyMap = new HashMap<>();
+    Map<String, String> kwPublicKeyMap = new HashMap<>();
     File file = new File(kwPublicKey);
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
@@ -1188,8 +1188,8 @@ public class EnvsClustersTenantsControllerService {
     return kwPublicKeyMap;
   }
 
-  public HashMap<String, String> getUpdateEnvStatus(String envId) {
-    HashMap<String, String> envUpdatedStatus = new HashMap<>();
+  public Map<String, String> getUpdateEnvStatus(String envId) {
+    Map<String, String> envUpdatedStatus = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
 
@@ -1226,8 +1226,8 @@ public class EnvsClustersTenantsControllerService {
   }
 
   @Cacheable(cacheNames = "tenantsinfo")
-  public HashMap<String, Integer> getTenantsInfo() {
-    HashMap<String, Integer> tenantsInfo = new HashMap<>();
+  public Map<String, Integer> getTenantsInfo() {
+    Map<String, Integer> tenantsInfo = new HashMap<>();
     tenantsInfo.put("tenants", manageDatabase.getTenantMap().size());
     tenantsInfo.put("teams", manageDatabase.getAllTeamsSize());
     tenantsInfo.put("clusters", manageDatabase.getAllClustersSize());

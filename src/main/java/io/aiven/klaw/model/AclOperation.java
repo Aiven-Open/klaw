@@ -6,7 +6,7 @@ public enum AclOperation {
 
   public final String value;
 
-  private AclOperation(String value) {
+  AclOperation(String value) {
     this.value = value;
   }
 }
