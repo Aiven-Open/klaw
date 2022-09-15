@@ -1,26 +1,31 @@
 package com.kafkamgt.uiapi.model;
 
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
 
 @Getter
 @Setter
 public class KwPropertiesModel implements Serializable {
 
-    private String kwKey;
+  private String kwKey;
 
-    private String kwValue;
+  private String kwValue;
 
-    private String kwDesc;
+  private String kwDesc;
 
-    @Override
-    public String toString() {
-        return "KwPropertiesModel{" +
-                "kwKey='" + kwKey + '\'' +
-                ", kwValue='" + kwValue + '\'' +
-                ", kwDesc='" + kwDesc + '\'' +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "KwPropertiesModel{"
+        + "kwKey='"
+        + kwKey
+        + '\''
+        + ", kwValue='"
+        + kwValue
+        + '\''
+        + ", kwDesc='"
+        + kwDesc
+        + '\''
+        + '}';
+  }
 }

@@ -1,11 +1,11 @@
 package com.kafkamgt.uiapi.model;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import java.io.Serializable;
-import java.sql.Timestamp;
 
 @ToString
 @Getter
@@ -13,11 +13,11 @@ import java.sql.Timestamp;
 @Builder
 public class KwMetadataUpdates implements Serializable {
 
-    private Integer tenantId;
+  private Integer tenantId;
 
-    private String entityType;
+  private String entityType;
 
-    private String operationType;
+  private String operationType;
 
-    private Timestamp createdTime;
+  private Timestamp createdTime;
 }

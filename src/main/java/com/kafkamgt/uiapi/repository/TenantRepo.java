@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TenantRepo extends CrudRepository<KwTenants, Integer> {
-    @Query(value ="select max(tenantid) from kwtenants", nativeQuery = true)
-    Integer getMaxTenantId();
+  @Query(value = "select max(tenantid) from kwtenants", nativeQuery = true)
+  Integer getMaxTenantId();
 }

@@ -1,5 +1,7 @@
 package com.kafkamgt.uiapi.model;
 
 public enum AclIPPrincipleType {
-    IP_ADDRESS, PRINCIPLE, USERNAME
+  IP_ADDRESS,
+  PRINCIPLE,
+  USERNAME
 }

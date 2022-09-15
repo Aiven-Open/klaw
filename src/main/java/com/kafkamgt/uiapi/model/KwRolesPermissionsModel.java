@@ -1,25 +1,24 @@
 package com.kafkamgt.uiapi.model;
 
+import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.io.Serializable;
 
 @Getter
 @Setter
 @ToString
 public class KwRolesPermissionsModel implements Serializable {
 
-    private int id;
+  private int id;
 
-    private String roleId;
+  private String roleId;
 
-    private String permission;
+  private String permission;
 
-    private String description;
+  private String description;
 
-    private String rolePermission;
+  private String rolePermission;
 
-    private String permissionEnabled;
+  private String permissionEnabled;
 }

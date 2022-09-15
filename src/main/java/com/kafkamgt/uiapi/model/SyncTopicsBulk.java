@@ -10,18 +10,15 @@ import lombok.ToString;
 @ToString
 public class SyncTopicsBulk {
 
-    private String[] topicNames;
+  private String[] topicNames;
 
-    @NonNull
-    private String sourceEnv;
+  @NonNull private String sourceEnv;
 
-    @NonNull
-    private String selectedTeam;
+  @NonNull private String selectedTeam;
 
-    @NonNull
-    private String typeOfSync;
+  @NonNull private String typeOfSync;
 
-    private Object[] topicDetails;
+  private Object[] topicDetails;
 
-    private String topicSearchFilter;
+  private String topicSearchFilter;
 }

@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class ServerConfigProperties {
 
-    private String id;
+  private String id;
 
-    private String key;
+  private String key;
 
-    private String value;
+  private String value;
 }

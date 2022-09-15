@@ -13,21 +13,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/notFound").setViewName("forward:/index.html");
-    }
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addViewController("/notFound").setViewName("forward:/index.html");
+  }
 
-    @Bean
-    public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
-        return container -> container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND,
-                "/notFound"));
-    }
+  @Bean
+  public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
+    return container -> container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
+  }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/assets/images/**")
-                .addResourceLocations("classpath:/static/assets/images/")
-                .setCachePeriod(604800); // 1 week in seconds
-    }
-
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    registry
+        .addResourceHandler("/static/assets/images/**")
+        .addResourceLocations("classpath:/static/assets/images/")
+        .setCachePeriod(604800); // 1 week in seconds
+  }
 }

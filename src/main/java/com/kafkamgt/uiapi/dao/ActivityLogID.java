@@ -1,24 +1,23 @@
 package com.kafkamgt.uiapi.dao;
 
+import java.io.Serializable;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serializable;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 public class ActivityLogID implements Serializable {
 
-    private Integer req_no;
+  private Integer req_no;
 
-    private Integer tenantId;
+  private Integer tenantId;
 
-    public ActivityLogID(){}
+  public ActivityLogID() {}
 
-    public ActivityLogID(Integer req_no, Integer tenantId){
-        this.req_no = req_no;
-        this.tenantId = tenantId;
-    }
+  public ActivityLogID(Integer req_no, Integer tenantId) {
+    this.req_no = req_no;
+    this.tenantId = tenantId;
+  }
 }
