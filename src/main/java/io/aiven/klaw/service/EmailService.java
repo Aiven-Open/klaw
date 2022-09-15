@@ -104,7 +104,7 @@ public class EmailService {
       text = headerString + text + footerString;
       message.setContent(text, "text/html");
 
-      if (emailNotificationsEnabled.equals("true")) {
+      if ("true".equals(emailNotificationsEnabled)) {
         try {
           CompletableFuture.runAsync(
                   () -> {

@@ -22,6 +22,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -107,22 +108,25 @@ public class UsersTeamsControllerService {
         manageDatabase.getRolesPermissionsPerTenant(tenantId).get(existingUserInfo.getRole());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
-      if (!getUserName().equals(newUser.getUsername())) // should be able to update same user
-      return "{\"result\":\"Not Authorized to update another SUPERADMIN user.\"}";
+      if (!Objects.equals(
+          getUserName(), newUser.getUsername())) // should be able to update same user
+      {
+        return "{\"result\":\"Not Authorized to update another SUPERADMIN user.\"}";
+      }
     }
 
     String pwdUpdated = newUser.getUserPassword();
     String existingPwd;
 
-    if (pwdUpdated.equals("*******") && authenticationType.equals("db")) {
+    if ("*******".equals(pwdUpdated) && "db".equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
-      if (!existingPwd.equals("")) newUser.setUserPassword(decodePwd(existingPwd));
+      if (!"".equals(existingPwd)) newUser.setUserPassword(decodePwd(existingPwd));
     }
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-      if (authenticationType.equals("db")) {
+      if ("db".equals(authenticationType)) {
         if (inMemoryUserDetailsManager.userExists(newUser.getUsername())) {
           inMemoryUserDetailsManager.updateUser(
               User.withUsername(newUser.getUsername())
@@ -176,7 +180,7 @@ public class UsersTeamsControllerService {
 
   private int getTenantId(String tenantName) {
     return manageDatabase.getTenantMap().entrySet().stream()
-        .filter(obj -> obj.getValue().equals(tenantName))
+        .filter(obj -> Objects.equals(obj.getValue(), tenantName))
         .findFirst()
         .get()
         .getKey();
@@ -207,7 +211,7 @@ public class UsersTeamsControllerService {
       inMemoryUserDetailsManager.updatePassword(
           updatePwdUserDetails, encoder.encode(newGeneratedPwd));
       String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
-      if (pwdUpdated.equals("success")) {
+      if ("success".equals(pwdUpdated)) {
         userMap.put("passwordSent", "true");
         mailService.sendMailResetPwd(
             username,
@@ -329,7 +333,7 @@ public class UsersTeamsControllerService {
     }
 
     // own team cannot be deleted
-    if (getMyTeamId(userDetails).equals(teamId)) return envAddResult;
+    if (Objects.equals(getMyTeamId(userDetails), teamId)) return envAddResult;
 
     try {
       String result =
@@ -337,7 +341,7 @@ public class UsersTeamsControllerService {
               .getHandleDbRequests()
               .deleteTeamRequest(teamId, commonUtilsService.getTenantId(getUserName()));
 
-      if (result.equals("success")) {
+      if ("success".equals(result)) {
         commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.DELETE);
       }
 
@@ -367,7 +371,7 @@ public class UsersTeamsControllerService {
 
     String envAddResult = "{\"result\":\"User cannot be deleted\"}";
 
-    if (userDetails.equals(userId) && isExternal) return envAddResult;
+    if (Objects.equals(userDetails, userId) && isExternal) return envAddResult;
 
     inMemoryUserDetailsManager.deleteUser(userId);
 
@@ -402,7 +406,7 @@ public class UsersTeamsControllerService {
     Map<String, String> resMap = new HashMap<>();
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
 
-    if (kwInstallationType.equals("saas")) {
+    if ("saas".equals(kwInstallationType)) {
       String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
       Pattern p = Pattern.compile(regex);
       Matcher m = p.matcher(newUser.getUsername());
@@ -439,12 +443,12 @@ public class UsersTeamsControllerService {
       return resMap;
     }
 
-    if (authenticationType.equals("ad") && adAuthRoleEnabled.equals("true")) newUser.setRole("NA");
+    if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) newUser.setRole("NA");
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-      if (authenticationType.equals("db")) {
+      if ("db".equals(authenticationType)) {
         inMemoryUserDetailsManager.createUser(
             User.withUsername(newUser.getUsername())
                 .password(encoder.encode(newUser.getUserPassword()))
@@ -463,7 +467,7 @@ public class UsersTeamsControllerService {
 
       //            log.info("pwd : "+decodePwd(newUser.getUserPassword()));
       if (isExternal) {
-        if (newUser.getUserPassword().equals(""))
+        if ("".equals(newUser.getUserPassword()))
           mailService.sendMail(
               newUser.getUsername(),
               newUser.getUserPassword(),
@@ -514,7 +518,7 @@ public class UsersTeamsControllerService {
     }
     try {
       String res = manageDatabase.getHandleDbRequests().addNewTeam(team);
-      if (res.equals("success")) {
+      if ("success".equals(res)) {
         commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.CREATE);
       }
       return "{\"result\":\"" + res + "\"}";
@@ -553,7 +557,7 @@ public class UsersTeamsControllerService {
   }
 
   public String changePwd(String changePwd) {
-    if (authenticationType.equals("ldap") || authenticationType.equals("ad")) {
+    if ("ldap".equals(authenticationType) || "ad".equals(authenticationType)) {
       return "{\"result\":\" Password cannot be updated in ldap/ad authentication mode. \"}";
     }
     String userDetails = getUserName();
@@ -596,9 +600,9 @@ public class UsersTeamsControllerService {
           UserInfoModel userInfoModel = new UserInfoModel();
           copyProperties(userListItem, userInfoModel);
           if (teamName != null && !teamName.equals("")) {
-            if (manageDatabase
-                .getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId())
-                .equals(teamName)) userInfoModels.add(userInfoModel);
+            if (Objects.equals(
+                manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()),
+                teamName)) userInfoModels.add(userInfoModel);
           } else userInfoModels.add(userInfoModel);
         });
     userInfoModels.forEach(
@@ -686,10 +690,11 @@ public class UsersTeamsControllerService {
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
-    if (userList.stream().anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
+    if (userList.stream()
+        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       throw new KlawException("User already exists.");
     } else if (userList.stream()
-        .anyMatch(user -> user.getUsername().equals(newUser.getUsername()))) {
+        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getUsername()))) {
       throw new KlawException("User already exists.");
     }
 
@@ -775,7 +780,7 @@ public class UsersTeamsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
-    if (kwInstallationType.equals("saas"))
+    if ("saas".equals(kwInstallationType))
       registerUserInfoList =
           manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfoForTenant(tenantId);
     else registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
@@ -832,7 +837,7 @@ public class UsersTeamsControllerService {
       userInfo.setRole(registerUserInfo.getRole());
       userInfo.setTenantId(tenantId);
 
-      if (authenticationType.equals("db"))
+      if ("db".equals(authenticationType))
         userInfo.setUserPassword(decodePwd(registerUserInfo.getPwd()));
       else userInfo.setUserPassword("");
       userInfo.setMailid(registerUserInfo.getMailid());
@@ -880,7 +885,7 @@ public class UsersTeamsControllerService {
   public Env getEnvDetailsFromId(String envId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }

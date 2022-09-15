@@ -177,16 +177,18 @@ public class KwAuthenticationService {
 
       // User found in AD and not in KW db
 
-      if (userAttributesObject.get("userFound").equals(Boolean.TRUE)) {
+      if (Boolean.TRUE.equals(userAttributesObject.get("userFound"))) {
         try {
           log.info("User found in AD and not in Klaw db :{}", userName);
           String existingRegistrationId =
               manageDatabase.getHandleDbRequests().getRegistrationId(userName);
 
           if (existingRegistrationId != null) {
-            if (existingRegistrationId.equals("PENDING_ACTIVATION"))
+            if ("PENDING_ACTIVATION".equals(existingRegistrationId)) {
               response.sendRedirect("registrationReview");
-            else response.sendRedirect("register?userRegistrationId=" + existingRegistrationId);
+            } else {
+              response.sendRedirect("register?userRegistrationId=" + existingRegistrationId);
+            }
           } else {
             String randomId = UUID.randomUUID().toString();
 
@@ -198,11 +200,12 @@ public class KwAuthenticationService {
             registerUserInfoModel.setPwd("");
 
             Attributes attributes = (Attributes) userAttributesObject.get("attributes");
-            if (attributes.get("mail") != null)
+            if (attributes.get("mail") != null) {
               registerUserInfoModel.setMailid((String) attributes.get("mail").get());
-            if (attributes.get("displayname") != null)
+            }
+            if (attributes.get("displayname") != null) {
               registerUserInfoModel.setFullname((String) attributes.get("displayname").get());
-
+            }
             RegisterUserInfo registerUserInfo = new RegisterUserInfo();
             copyProperties(registerUserInfoModel, registerUserInfo);
             manageDatabase.getHandleDbRequests().registerUserForAD(registerUserInfo);

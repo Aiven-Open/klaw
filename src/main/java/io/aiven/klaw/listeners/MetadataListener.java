@@ -3,6 +3,7 @@ package io.aiven.klaw.listeners;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.KwMetadataUpdates;
+import java.util.Objects;
 import javax.persistence.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class MetadataListener implements ApplicationContextAware {
   @PostRemove
   private void afterAnyUpdate(KwMetadataUpdates metadataUpdates) {
     log.info("MetadataUpdates : " + metadataUpdates);
-    if (metadataUpdates.getEntityType().equals(EntityType.TEAM.name()))
+    if (Objects.equals(metadataUpdates.getEntityType(), EntityType.TEAM.name()))
       getBean(ManageDatabase.class)
           .loadTenantTeamsForOneTenant(null, metadataUpdates.getTenantId());
   }

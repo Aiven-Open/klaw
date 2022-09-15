@@ -9,6 +9,7 @@ import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -136,12 +137,13 @@ public class UpdateDataJdbc {
     topicObj.setHistory(topicRequest.getHistory());
     topics.add(topicObj);
 
-    if (topicRequest.getTopictype().equals(TopicRequestTypes.Create.name())) {
+    if (Objects.equals(topicRequest.getTopictype(), TopicRequestTypes.Create.name())) {
       insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
-    } else if (topicRequest.getTopictype().equals(TopicRequestTypes.Update.name()))
+    } else if (Objects.equals(topicRequest.getTopictype(), TopicRequestTypes.Update.name())) {
       updateTopicSOT(topics, topicRequest.getOtherParams());
-    else if (topicRequest.getTopictype().equals(TopicRequestTypes.Delete.name()))
+    } else if (Objects.equals(topicRequest.getTopictype(), TopicRequestTypes.Delete.name())) {
       deleteDataJdbcHelper.deleteTopics(topicObj);
+    }
 
     return "success";
   }
@@ -165,12 +167,15 @@ public class UpdateDataJdbc {
     topicObj.setHistory(connectorRequest.getHistory());
     connectors.add(topicObj);
 
-    if (connectorRequest.getConnectortype().equals(TopicRequestTypes.Create.name())) {
+    if (Objects.equals(connectorRequest.getConnectortype(), TopicRequestTypes.Create.name())) {
       insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
-    } else if (connectorRequest.getConnectortype().equals(TopicRequestTypes.Update.name()))
+    } else if (Objects.equals(
+        connectorRequest.getConnectortype(), TopicRequestTypes.Update.name())) {
       updateConnectorSOT(connectors, connectorRequest.getOtherParams());
-    else if (connectorRequest.getConnectortype().equals(TopicRequestTypes.Delete.name()))
+    } else if (Objects.equals(
+        connectorRequest.getConnectortype(), TopicRequestTypes.Delete.name())) {
       deleteDataJdbcHelper.deleteConnectors(topicObj);
+    }
 
     return "success";
   }
@@ -311,7 +316,7 @@ public class UpdateDataJdbc {
     else status = "DECLINED";
     if (registerUser.isPresent()) {
       RegisterUserInfo registerUserInfo = registerUser.get();
-      if (registerUserInfo.getStatus().equals("PENDING")) {
+      if ("PENDING".equals(registerUserInfo.getStatus())) {
         registerUserInfo.setStatus(status);
         registerUserInfo.setApprover(approver);
         registerUserInfo.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
@@ -364,7 +369,7 @@ public class UpdateDataJdbc {
 
     List<KwRolesPermissions> rolePermFound;
 
-    if (addDelete.equals("DELETE")) {
+    if ("DELETE".equals(addDelete)) {
       for (KwRolesPermissions permission : permissions) {
         rolePermFound =
             kwRolesPermsRepo.findAllByRoleIdAndPermissionAndTenantId(

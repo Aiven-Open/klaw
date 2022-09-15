@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -84,7 +85,7 @@ public class UtilControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       return manageDatabase.getTenantMap().entrySet().stream()
-          .filter(obj -> obj.getKey().equals(userInfo.getTenantId()))
+          .filter(obj -> Objects.equals(obj.getKey(), userInfo.getTenantId()))
           .findFirst()
           .get()
           .getValue();
@@ -309,10 +310,10 @@ public class UtilControllerService {
         requestConnector = "NotAuthorized";
       } else requestConnector = "Authorized";
 
-      if (requestTopics.equals("Authorized")
-          || requestAcls.equals("Authorized")
-          || requestSchemas.equals("Authorized")
-          || requestConnector.equals("Authorized")) requestItems = "Authorized";
+      if ("Authorized".equals(requestTopics)
+          || "Authorized".equals(requestAcls)
+          || "Authorized".equals(requestSchemas)
+          || "Authorized".equals(requestConnector)) requestItems = "Authorized";
       else requestItems = "NotAuthorized";
 
       String approveDeclineTopics;
@@ -338,23 +339,23 @@ public class UtilControllerService {
         approveDeclineConnectors = "NotAuthorized";
       } else approveDeclineConnectors = "Authorized";
 
-      if (approveDeclineTopics.equals("Authorized")
-          || approveDeclineSubscriptions.equals("Authorized")
-          || approveDeclineSchemas.equals("Authorized")
-          || approveDeclineConnectors.equals("Authorized")
-          || addUser.equals("Authorized")) approveAtleastOneRequest = "Authorized";
+      if ("Authorized".equals(approveDeclineTopics)
+          || "Authorized".equals(approveDeclineSubscriptions)
+          || "Authorized".equals(approveDeclineSchemas)
+          || "Authorized".equals(approveDeclineConnectors)
+          || "Authorized".equals(addUser)) approveAtleastOneRequest = "Authorized";
 
       String redirectionPage = "";
-      if (approveAtleastOneRequest.equals("Authorized")) {
-        if (outstandingTopicReqsInt > 0 && approveDeclineTopics.equals("Authorized"))
+      if ("Authorized".equals(approveAtleastOneRequest)) {
+        if (outstandingTopicReqsInt > 0 && "Authorized".equals(approveDeclineTopics))
           redirectionPage = "execTopics";
-        else if (outstandingAclReqsInt > 0 && approveDeclineSubscriptions.equals("Authorized"))
+        else if (outstandingAclReqsInt > 0 && "Authorized".equals(approveDeclineSubscriptions))
           redirectionPage = "execAcls";
-        else if (outstandingSchemasReqsInt > 0 && approveDeclineSchemas.equals("Authorized"))
+        else if (outstandingSchemasReqsInt > 0 && "Authorized".equals(approveDeclineSchemas))
           redirectionPage = "execSchemas";
-        else if (outstandingConnectorReqsInt > 0 && approveDeclineConnectors.equals("Authorized"))
+        else if (outstandingConnectorReqsInt > 0 && "Authorized".equals(approveDeclineConnectors))
           redirectionPage = "execConnectors";
-        else if (outstandingUserReqsInt > 0 && addUser.equals("Authorized"))
+        else if (outstandingUserReqsInt > 0 && "Authorized".equals(addUser))
           redirectionPage = "execUsers";
       }
 
@@ -385,11 +386,13 @@ public class UtilControllerService {
       else showServerConfigEnvProperties = "NotAuthorized";
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
-          && manageDatabase
-              .getHandleDbRequests()
-              .getUsersInfo(userName)
-              .getRole()
-              .equals(SUPERADMIN.name())) // allow adding tenants only to "default"
+          && SUPERADMIN
+              .name()
+              .equals(
+                  manageDatabase
+                      .getHandleDbRequests()
+                      .getUsersInfo(userName)
+                      .getRole())) // allow adding tenants only to "default"
       addDeleteEditTenants = "Authorized";
       else addDeleteEditTenants = "NotAuthorized";
 
@@ -401,7 +404,7 @@ public class UtilControllerService {
         addDeleteEditClusters = "NotAuthorized";
       else addDeleteEditClusters = "Authorized";
 
-      if (authenticationType.equals("ad") && adAuthRoleEnabled.equals("true"))
+      if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled))
         dashboardData.put("adAuthRoleEnabled", "true");
       else dashboardData.put("adAuthRoleEnabled", "false");
 
@@ -414,7 +417,7 @@ public class UtilControllerService {
         companyInfo = "Our Organization";
       }
 
-      if (kwInstallationType.equals("saas"))
+      if ("saas".equals(kwInstallationType))
         dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
       else dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
 
@@ -516,7 +519,7 @@ public class UtilControllerService {
     Map<String, String> resultBasicInfo = new HashMap<>();
     resultBasicInfo.put("contextPath", kwContextPath);
 
-    if (ssoEnabled.equals("true")) {
+    if ("true".equals(ssoEnabled)) {
       resultBasicInfo.put("ssoServerUrl", ssoServerLoginUrl);
     }
 
@@ -528,7 +531,7 @@ public class UtilControllerService {
     try {
       tenantId =
           manageDatabase.getHandleDbRequests().getTenants().stream()
-              .filter(kwTenant -> kwTenant.getTenantName().equals(tenantName))
+              .filter(kwTenant -> Objects.equals(kwTenant.getTenantName(), tenantName))
               .findFirst()
               .get()
               .getTenantId();

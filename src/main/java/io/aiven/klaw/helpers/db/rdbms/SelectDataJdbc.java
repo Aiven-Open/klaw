@@ -7,7 +7,14 @@ import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,9 +91,11 @@ public class SelectDataJdbc {
     log.debug("selectAclRequests {}", requestor);
     List<AclRequests> aclList = new ArrayList<>();
     List<AclRequests> aclListSub;
-    if (status.equals("all"))
+    if ("all".equals(status)) {
       aclListSub = Lists.newArrayList(aclRequestsRepo.findAllByTenantId(tenantId));
-    else aclListSub = aclRequestsRepo.findAllByAclstatusAndTenantId(status, tenantId);
+    } else {
+      aclListSub = aclRequestsRepo.findAllByAclstatusAndTenantId(status, tenantId);
+    }
 
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
@@ -94,11 +103,18 @@ public class SelectDataJdbc {
       Integer teamName;
       String aclType = row.getAclType();
       if (allReqs) {
-        if (role.equals("requestor_subscriptions")) teamName = row.getRequestingteam();
-        else teamName = row.getTeamId();
+        if ("requestor_subscriptions".equals(role)) {
+          teamName = row.getRequestingteam();
+        } else {
+          teamName = row.getTeamId();
+        }
 
-        if (aclType.equals("Delete")) teamName = row.getRequestingteam();
-      } else teamName = row.getRequestingteam();
+        if ("Delete".equals(aclType)) {
+          teamName = row.getRequestingteam();
+        }
+      } else {
+        teamName = row.getRequestingteam();
+      }
 
       if (showRequestsOfAllTeams) // show all requests of all teams
       aclList.add(row);
@@ -175,7 +191,7 @@ public class SelectDataJdbc {
         return topicRepo.findAllByTenantId(tenantId);
       } else return topicRepo.findAllByEnvironmentAndTenantId(env, tenantId);
     } else {
-      if (env.equals("ALL")) return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
+      if ("ALL".equals(env)) return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
       else return topicRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
     }
   }
@@ -284,18 +300,21 @@ public class SelectDataJdbc {
       List<TopicRequest> claimTopicReqs =
           topicRequestsRepo.findAllByTopictypeAndTenantId(TopicRequestTypes.Claim.name(), tenantId);
 
-      if (status.equals("all")) {
+      if ("all".equals(status)) {
         topicRequestListSub = topicRequestsRepo.findAllByTenantId(tenantId);
         topicRequestListSub =
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !topicRequest.getTopictype().equals(TopicRequestTypes.Claim.name()))
+                        !Objects.equals(
+                            topicRequest.getTopictype(), TopicRequestTypes.Claim.name()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
             claimTopicReqs.stream()
-                .filter(claimTopicReq -> claimTopicReq.getDescription().equals("" + teamSelected))
+                .filter(
+                    claimTopicReq ->
+                        Objects.equals("" + teamSelected, claimTopicReq.getDescription()))
                 .collect(Collectors.toList());
       } else {
         topicRequestListSub = topicRequestsRepo.findAllByTopicstatusAndTenantId(status, tenantId);
@@ -303,20 +322,23 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !topicRequest.getTopictype().equals(TopicRequestTypes.Claim.name()))
+                        !Objects.equals(
+                            topicRequest.getTopictype(), TopicRequestTypes.Claim.name()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
             claimTopicReqs.stream()
                 .filter(
                     claimTopicReq ->
-                        claimTopicReq.getDescription().equals("" + teamSelected)
-                            && claimTopicReq.getTopicstatus().equals(status))
+                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected)
+                            && Objects.equals(claimTopicReq.getTopicstatus(), status))
                 .collect(Collectors.toList());
       }
 
       topicRequestListSub.addAll(claimTopicReqs);
-    } else topicRequestListSub = Lists.newArrayList(topicRequestsRepo.findAllByTenantId(tenantId));
+    } else {
+      topicRequestListSub = Lists.newArrayList(topicRequestsRepo.findAllByTenantId(tenantId));
+    }
 
     for (TopicRequest row : topicRequestListSub) {
       Integer teamName = row.getTeamId();
@@ -354,19 +376,22 @@ public class SelectDataJdbc {
           kafkaConnectorRequestsRepo.findAllByConnectortypeAndTenantId(
               TopicRequestTypes.Claim.name(), tenantId);
 
-      if (status.equals("all")) {
+      if ("all".equals(status)) {
         topicRequestListSub =
             Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
         topicRequestListSub =
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !topicRequest.getConnectortype().equals(TopicRequestTypes.Claim.name()))
+                        !Objects.equals(
+                            topicRequest.getConnectortype(), TopicRequestTypes.Claim.name()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
             claimTopicReqs.stream()
-                .filter(claimTopicReq -> claimTopicReq.getDescription().equals("" + teamSelected))
+                .filter(
+                    claimTopicReq ->
+                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected))
                 .collect(Collectors.toList());
       } else {
         topicRequestListSub =
@@ -375,15 +400,16 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !topicRequest.getConnectortype().equals(TopicRequestTypes.Claim.name()))
+                        !Objects.equals(
+                            topicRequest.getConnectortype(), TopicRequestTypes.Claim.name()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
             claimTopicReqs.stream()
                 .filter(
                     claimTopicReq ->
-                        claimTopicReq.getDescription().equals("" + teamSelected)
-                            && claimTopicReq.getConnectorStatus().equals(status))
+                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected)
+                            && Objects.equals(claimTopicReq.getConnectorStatus(), status))
                 .collect(Collectors.toList());
       }
 
@@ -403,7 +429,8 @@ public class SelectDataJdbc {
 
       if (showRequestsOfAllTeams) topicRequestList.add(row); // no team filter
       else if (teamSelected != null
-          && (teamSelected.equals(teamName) || ("" + teamSelected).equals(row.getDescription()))) {
+          && (Objects.equals(teamSelected, teamName)
+              || Objects.equals("" + teamSelected, row.getDescription()))) {
         topicRequestList.add(row);
       }
     }
@@ -512,9 +539,9 @@ public class SelectDataJdbc {
 
       Integer finalTeamId = teamId;
       Optional<Team> teamSel =
-          allTeams.stream().filter(a -> a.getTeamId().equals(finalTeamId)).findFirst();
+          allTeams.stream().filter(a -> Objects.equals(a.getTeamId(), finalTeamId)).findFirst();
 
-      if (username.equals(row.getUsername())) {
+      if (Objects.equals(username, row.getUsername())) {
         teamSel.ifPresent(teamList::add);
       }
     }
@@ -731,12 +758,18 @@ public class SelectDataJdbc {
     List<Map<String, String>> totalAclCount = new ArrayList<>();
     try {
       List<Object[]> acls;
-      if (aclType.equals("Producer")) {
-        if (teamId != null) acls = aclRepo.findAllProducerAclsForTeamId(teamId, tenantId);
-        else acls = aclRepo.findAllProducerAclsGroupByTeamId(tenantId);
+      if ("Producer".equals(aclType)) {
+        if (teamId != null) {
+          acls = aclRepo.findAllProducerAclsForTeamId(teamId, tenantId);
+        } else {
+          acls = aclRepo.findAllProducerAclsGroupByTeamId(tenantId);
+        }
       } else {
-        if (teamId != null) acls = aclRepo.findAllConsumerAclsForTeamId(teamId, tenantId);
-        else acls = aclRepo.findAllConsumerAclsGroupByTeamId(tenantId);
+        if (teamId != null) {
+          acls = aclRepo.findAllConsumerAclsForTeamId(teamId, tenantId);
+        } else {
+          acls = aclRepo.findAllConsumerAclsGroupByTeamId(tenantId);
+        }
       }
 
       Map<String, String> hashMap;
@@ -838,15 +871,13 @@ public class SelectDataJdbc {
   }
 
   public Integer getNextConnectorRequestId(String idType, int tenantId) {
-    Integer connectorId;
-    if (idType.equals("CONNECTOR_REQ_ID"))
+    Integer connectorId = null;
+    if ("CONNECTOR_REQ_ID".equals(idType)) {
       connectorId = kafkaConnectorRequestsRepo.getNextConnectorRequestId(tenantId);
-    else if (idType.equals("CONNECTOR_ID"))
+    } else if ("CONNECTOR_ID".equals(idType)) {
       connectorId = kafkaConnectorRepo.getNextConnectorRequestId(tenantId);
-    else connectorId = null;
-
-    if (connectorId == null) return 1001;
-    else return connectorId + 1;
+    }
+    return (connectorId == null) ? 1001 : connectorId + 1;
   }
 
   public List<KwTenants> getTenants() {
@@ -866,7 +897,7 @@ public class SelectDataJdbc {
   }
 
   public List<KwClusters> getAllClusters(String typeOfCluster, int tenantId) {
-    if (typeOfCluster.equals("all"))
+    if ("all".equals(typeOfCluster))
       return Lists.newArrayList(kwClusterRepo.findAllByTenantId(tenantId));
     else
       return Lists.newArrayList(
@@ -907,15 +938,16 @@ public class SelectDataJdbc {
 
   public RegisterUserInfo getRegistrationDetails(String registrationId, String status) {
     List<RegisterUserInfo> registerUserInfoList;
-    if (status.equals(""))
+    if ("".equals(status)) {
       registerUserInfoList = registerInfoRepo.findAllByRegistrationId(registrationId);
-    else
+    } else {
       registerUserInfoList =
           registerInfoRepo.findAllByRegistrationIdAndStatus(registrationId, status);
-
+    }
     if (registerUserInfoList.size() == 1) {
       return registerUserInfoList.get(0);
-    } else return null;
+    }
+    return null;
   }
 
   public List<Topic> getTopicsforTeam(Integer teamId, int tenantId) {
@@ -944,9 +976,10 @@ public class SelectDataJdbc {
         return kafkaConnectorRepo.findAllByTenantId(tenantId);
       } else return kafkaConnectorRepo.findAllByEnvironmentAndTenantId(env, tenantId);
     } else {
-      if (env.equals("ALL")) return kafkaConnectorRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-      else
-        return kafkaConnectorRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
+      if ("ALL".equals(env)) {
+        return kafkaConnectorRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
+      }
+      return kafkaConnectorRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
     }
   }
 

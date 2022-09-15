@@ -50,7 +50,7 @@ public class MetricsControllerService {
       fixedRateString = "${klaw.monitoring.metrics.collectinterval.ms:60000}",
       initialDelay = 60000)
   private void loadMetricsScheduler() {
-    if (enableMetrics.equals("false")) return;
+    if ("false".equals(enableMetrics)) return;
 
     log.info("Scheduled job : Collect metrics");
 

@@ -309,7 +309,7 @@ public class DefaultDataService {
     Map<String, String> defaultAdminPermissionsList = getDefaultAdminPermissionsList();
     Map<String, String> superAdminPermissionsList = getDefaultSuperAdminPermissionsList();
 
-    if (!kwInstallationType.equals("saas")) // on premise
+    if (!"saas".equals(kwInstallationType)) // on premise
     {
       defaultAdminPermissionsList.put("ADD_TENANT", PermissionType.ADD_TENANT.getDescription());
     }

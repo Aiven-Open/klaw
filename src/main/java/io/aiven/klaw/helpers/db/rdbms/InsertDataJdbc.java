@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,8 +103,11 @@ public class InsertDataJdbc {
     activityLog.setEnv(topicRequest.getEnvironment());
     activityLog.setTenantId(topicRequest.getTenantId());
 
-    if (insertIntoActivityLog(activityLog).equals("success")) hashMap.put("result", "success");
-    else hashMap.put("result", "failure");
+    if ("success".equals(insertIntoActivityLog(activityLog))) {
+      hashMap.put("result", "success");
+    } else {
+      hashMap.put("result", "failure");
+    }
 
     return hashMap;
   }
@@ -136,8 +140,11 @@ public class InsertDataJdbc {
     activityLog.setEnv(connectorRequest.getEnvironment());
     activityLog.setTenantId(connectorRequest.getTenantId());
 
-    if (insertIntoActivityLog(activityLog).equals("success")) hashMap.put("result", "success");
-    else hashMap.put("result", "failure");
+    if ("success".equals(insertIntoActivityLog(activityLog))) {
+      hashMap.put("result", "success");
+    } else {
+      hashMap.put("result", "failure");
+    }
 
     return hashMap;
   }
@@ -304,7 +311,7 @@ public class InsertDataJdbc {
 
     // making unique teamnames per tenant
     if (teamRepo.findAllByTenantId(team.getTenantId()).stream()
-        .anyMatch(team1 -> team1.getTeamname().equals(team.getTeamname()))) {
+        .anyMatch(team1 -> Objects.equals(team1.getTeamname(), team.getTeamname()))) {
       return "Failure. Team already exists";
     }
 
@@ -347,10 +354,10 @@ public class InsertDataJdbc {
 
     // STAGING status comes from AD users
     if (userExists.isPresent()) {
-      if (userExists.get().getStatus().equals("APPROVED")) {
+      if ("APPROVED".equals(userExists.get().getStatus())) {
         // do nothing -- user is deleted
-      } else if (!userExists.get().getStatus().equals("STAGING")
-          && !userExists.get().getStatus().equals("PENDING"))
+      } else if (!"STAGING".equals(userExists.get().getStatus())
+          && !"PENDING".equals(userExists.get().getStatus()))
         return "Failure. Registration already exists";
     }
 
@@ -384,13 +391,11 @@ public class InsertDataJdbc {
   }
 
   public Integer getNextTopicRequestId(String idType, int tenantId) {
-    Integer topicId;
-    if (idType.equals("TOPIC_REQ_ID")) topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
-    else if (idType.equals("TOPIC_ID")) topicId = topicRepo.getNextTopicRequestId(tenantId);
-    else topicId = null;
+    Integer topicId = null;
+    if ("TOPIC_REQ_ID".equals(idType)) topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
+    else if ("TOPIC_ID".equals(idType)) topicId = topicRepo.getNextTopicRequestId(tenantId);
 
-    if (topicId == null) return 1001;
-    else return topicId + 1;
+    return topicId == null ? 1001 : topicId + 1;
   }
 
   public Integer getNextConnectorRequestId(String idType, int tenantId) {
@@ -406,14 +411,14 @@ public class InsertDataJdbc {
   }
 
   public Integer getNextSchemaRequestId(String idType, int tenantId) {
-    Integer schemaReqId;
-    if (idType.equals("SCHEMA_REQ_ID"))
+    Integer schemaReqId = null;
+    if ("SCHEMA_REQ_ID".equals(idType)) {
       schemaReqId = schemaRequestRepo.getNextSchemaRequestId(tenantId);
-    else if (idType.equals("SCHEMA_ID")) schemaReqId = messageSchemaRepo.getNextSchemaId(tenantId);
-    else schemaReqId = null;
+    } else if ("SCHEMA_ID".equals(idType)) {
+      schemaReqId = messageSchemaRepo.getNextSchemaId(tenantId);
+    }
 
-    if (schemaReqId == null) return 1001;
-    else return schemaReqId + 1;
+    return schemaReqId == null ? 1001 : schemaReqId + 1;
   }
 
   public String addNewTenant(KwTenants kwTenants) {

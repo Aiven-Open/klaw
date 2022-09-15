@@ -69,7 +69,7 @@ public class AnalyticsControllerService {
   public String getEnvName(String envId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.map(Env::getName).orElse(null);
   }
@@ -91,7 +91,7 @@ public class AnalyticsControllerService {
                 .filter(
                     mapObj ->
                         allowedEnvIdList.contains(mapObj.get("cluster"))
-                            && mapObj.get("cluster").equals(sourceEnvSelected))
+                            && Objects.equals(mapObj.get("cluster"), sourceEnvSelected))
                 .collect(Collectors.toList());
 
         if (aclsPerEnvList.size() == 1) {
@@ -122,7 +122,7 @@ public class AnalyticsControllerService {
                 .filter(
                     mapObj ->
                         allowedEnvIdList.contains(mapObj.get("cluster"))
-                            && mapObj.get("cluster").equals(sourceEnvSelected))
+                            && Objects.equals(mapObj.get("cluster"), sourceEnvSelected))
                 .collect(Collectors.toList());
 
         if (topicsCountList.size() == 1) {
@@ -572,7 +572,7 @@ public class AnalyticsControllerService {
 
     // content
     for (int i = 0; i < data1.size(); i++) {
-      if (!labels.get(i).equals("")) {
+      if (!"".equals(labels.get(i))) {
         data.put(id, new Object[] {id - 1, labels.get(i), data1.get(i)});
         id++;
       }
@@ -610,7 +610,7 @@ public class AnalyticsControllerService {
         topicsPerEnv.put(
             getEnvName(env),
             topics.stream()
-                .filter(topic -> topic.getEnvironment().equals(env))
+                .filter(topic -> Objects.equals(topic.getEnvironment(), env))
                 .map(Topic::getTopicname)
                 .sorted()
                 .collect(Collectors.toList()));
@@ -622,7 +622,7 @@ public class AnalyticsControllerService {
         topicsPerEnv.put(
             getEnvName(env),
             topics.stream()
-                .filter(topic -> topic.getEnvironment().equals(env))
+                .filter(topic -> Objects.equals(topic.getEnvironment(), env))
                 .map(Topic::getTopicname)
                 .sorted()
                 .collect(Collectors.toList()));
@@ -647,7 +647,9 @@ public class AnalyticsControllerService {
         aclsPerEnv.put(
             getEnvName(env),
             acls.stream()
-                .filter(acl -> acl.getEnvironment().equals(env) && acl.getConsumergroup() != null)
+                .filter(
+                    acl ->
+                        Objects.equals(acl.getEnvironment(), env) && acl.getConsumergroup() != null)
                 .map(Acl::getConsumergroup)
                 .sorted()
                 .collect(Collectors.toList()));
@@ -659,7 +661,9 @@ public class AnalyticsControllerService {
         aclsPerEnv.put(
             getEnvName(env),
             acls.stream()
-                .filter(acl -> acl.getEnvironment().equals(env) && acl.getConsumergroup() != null)
+                .filter(
+                    acl ->
+                        Objects.equals(acl.getEnvironment(), env) && acl.getConsumergroup() != null)
                 .map(Acl::getConsumergroup)
                 .sorted()
                 .collect(Collectors.toList()));

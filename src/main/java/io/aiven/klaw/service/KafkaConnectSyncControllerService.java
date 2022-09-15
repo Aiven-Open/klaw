@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -105,18 +106,18 @@ public class KafkaConnectSyncControllerService {
 
         if (existingTopics != null) {
           for (KwKafkaConnector existingTopic : existingTopics) {
-            if (existingTopic.getEnvironment().equals(syncCluster)) {
-              if (!manageDatabase
-                      .getTeamNameFromTeamId(tenantId, existingTopic.getTeamId())
-                      .equals(topicUpdate.getTeamSelected())
-                  && !topicUpdate.getEnvSelected().equals(syncCluster)) {
+            if (Objects.equals(existingTopic.getEnvironment(), syncCluster)) {
+              if (!Objects.equals(
+                      manageDatabase.getTeamNameFromTeamId(tenantId, existingTopic.getTeamId()),
+                      topicUpdate.getTeamSelected())
+                  && !Objects.equals(topicUpdate.getEnvSelected(), syncCluster)) {
                 erroredTopics.append(topicUpdate.getConnectorName()).append(" ");
                 topicsWithDiffTeams = true;
               }
               break;
             }
           }
-        } else if (!topicUpdate.getEnvSelected().equals(syncCluster)) {
+        } else if (!Objects.equals(topicUpdate.getEnvSelected(), syncCluster)) {
           erroredTopicsExist.append(topicUpdate.getConnectorName()).append(" ");
           if (checkInPromotionOrder(
               topicUpdate.getConnectorName(), topicUpdate.getEnvSelected(), orderOfEnvs))
@@ -153,7 +154,7 @@ public class KafkaConnectSyncControllerService {
           kafkaConnectorList.add(t);
         } else {
           for (KwKafkaConnector existingTopic : existingTopics) {
-            if (existingTopic.getEnvironment().equals(topicUpdate.getEnvSelected())) {
+            if (Objects.equals(existingTopic.getEnvironment(), topicUpdate.getEnvSelected())) {
               t = existingTopic;
               t.setTeamId(
                   manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -163,11 +164,9 @@ public class KafkaConnectSyncControllerService {
               t.setExistingConnector(true);
               kafkaConnectorList.add(t);
               topicAdded = true;
-            } else if (!existingTopic
-                .getTeamId()
-                .equals(
-                    manageDatabase.getTeamIdFromTeamName(
-                        tenantId, topicUpdate.getTeamSelected()))) {
+            } else if (!Objects.equals(
+                existingTopic.getTeamId(),
+                manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()))) {
               t = existingTopic;
               t.setTeamId(
                   manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -184,7 +183,7 @@ public class KafkaConnectSyncControllerService {
         boolean envFound = false;
         if (existingTopics != null) {
           for (KwKafkaConnector existingTopic : existingTopics) {
-            if (existingTopic.getEnvironment().equals(topicUpdate.getEnvSelected())) {
+            if (Objects.equals(existingTopic.getEnvironment(), topicUpdate.getEnvSelected())) {
               envFound = true;
               break;
             }
@@ -264,7 +263,7 @@ public class KafkaConnectSyncControllerService {
       List<SyncConnectorUpdates> updatedSyncTopics, List<Integer> updatedSyncTopicsDelete) {
     List<SyncConnectorUpdates> updatedSyncTopicsUpdated = new ArrayList<>();
     for (SyncConnectorUpdates updatedSyncTopic : updatedSyncTopics) {
-      if (updatedSyncTopic.getTeamSelected().equals("REMOVE FROM KLAW")) {
+      if ("REMOVE FROM KLAW".equals(updatedSyncTopic.getTeamSelected())) {
         updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
       } else updatedSyncTopicsUpdated.add(updatedSyncTopic);
     }
@@ -353,9 +352,9 @@ public class KafkaConnectSyncControllerService {
       for (KafkaConnectorModel kafkaConnectorModel : kafkaConnectorModelSourceList) {
         if (!allConnectors.contains(kafkaConnectorModel.getConnectorName())) {
           for (KafkaConnectorModel kafkaConnectorModelCluster : kafkaConnectorModelClusterList) {
-            if (kafkaConnectorModelCluster
-                .getConnectorName()
-                .equals(kafkaConnectorModel.getConnectorName())) {
+            if (Objects.equals(
+                kafkaConnectorModelCluster.getConnectorName(),
+                kafkaConnectorModel.getConnectorName())) {
               kafkaConnectorModelCluster.setRemarks("DELETED");
               //                            kafkaConnectorModelCluster.setPossibleTeams(teamList);
               //                            possibleTeams.add("REMOVE FROM KLAW");
@@ -497,7 +496,7 @@ public class KafkaConnectSyncControllerService {
         manageDatabase
             .getKafkaConnectEnvList(commonUtilsService.getTenantId(getUserName()))
             .stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }

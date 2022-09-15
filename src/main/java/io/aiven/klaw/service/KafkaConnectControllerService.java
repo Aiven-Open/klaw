@@ -111,7 +111,7 @@ public class KafkaConnectControllerService {
 
     if (kafkaConnectorList != null
         && kafkaConnectorList.size() > 0
-        && !kafkaConnectorList.get(0).getTeamId().equals(topicRequestReq.getTeamId())) {
+        && !Objects.equals(kafkaConnectorList.get(0).getTeamId(), topicRequestReq.getTeamId())) {
       hashMapTopicReqRes.put("result", "Failure. This connector is owned by a different team.");
       return hashMapTopicReqRes;
     }
@@ -124,7 +124,7 @@ public class KafkaConnectControllerService {
         int devTopicFound =
             (int)
                 kafkaConnectorList.stream()
-                    .filter(topic -> topic.getEnvironment().equals(syncCluster))
+                    .filter(topic -> Objects.equals(topic.getEnvironment(), syncCluster))
                     .count();
         if (devTopicFound != 1) {
           if (getKafkaConnectEnvDetails(syncCluster) == null) {
@@ -140,7 +140,7 @@ public class KafkaConnectControllerService {
           return hashMapTopicReqRes;
         }
       }
-    } else if (!topicRequestReq.getEnvironment().equals(syncCluster)) {
+    } else if (!Objects.equals(topicRequestReq.getEnvironment(), syncCluster)) {
       if (promotionOrderCheck) {
         hashMapTopicReqRes.put(
             "result",
@@ -167,13 +167,14 @@ public class KafkaConnectControllerService {
     }
 
     // Ignore connector exists check if Update request
-    if (!topicRequestReq.getConnectortype().equals(TopicRequestTypes.Update.name())) {
+    if (!Objects.equals(topicRequestReq.getConnectortype(), TopicRequestTypes.Update.name())) {
       boolean topicExists = false;
       if (kafkaConnectorList != null) {
         topicExists =
             kafkaConnectorList.stream()
                 .anyMatch(
-                    topicEx -> topicEx.getEnvironment().equals(topicRequestReq.getEnvironment()));
+                    topicEx ->
+                        Objects.equals(topicEx.getEnvironment(), topicRequestReq.getEnvironment()));
       }
       if (topicExists) {
         hashMapTopicReqRes.put(
@@ -490,7 +491,7 @@ public class KafkaConnectControllerService {
       return resultMap;
     }
 
-    if (!connectorRequest.getConnectorStatus().equals(RequestStatus.created.name())) {
+    if (!Objects.equals(connectorRequest.getConnectorStatus(), RequestStatus.created.name())) {
       resultMap.put("result", "This request does not exist anymore.");
       return resultMap;
     }
@@ -504,7 +505,7 @@ public class KafkaConnectControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-    if (connectorRequest.getConnectortype().equals(TopicRequestTypes.Claim.name())) {
+    if (Objects.equals(connectorRequest.getConnectortype(), TopicRequestTypes.Claim.name())) {
       List<KwKafkaConnector> allTopics =
           getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
       for (KwKafkaConnector allTopic : allTopics) {
@@ -514,7 +515,7 @@ public class KafkaConnectControllerService {
       }
 
       updateTopicReqStatus = dbHandle.addToSyncConnectors(allTopics);
-      if (updateTopicReqStatus.equals("success"))
+      if ("success".equals(updateTopicReqStatus))
         updateTopicReqStatus = dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
     } else {
       Env envSelected =
@@ -528,8 +529,9 @@ public class KafkaConnectControllerService {
       String protocol = kwClusters.getProtocol();
       String kafkaConnectHost = kwClusters.getBootstrapServers();
 
-      if (connectorRequest.getConnectortype().equals("Update")) // only config
-      updateTopicReqStatus =
+      if ("Update".equals(connectorRequest.getConnectortype())) // only config
+      {
+        updateTopicReqStatus =
             clusterApiService.approveConnectorRequests(
                 connectorRequest.getConnectorName(),
                 protocol,
@@ -537,7 +539,7 @@ public class KafkaConnectControllerService {
                 connectorRequest.getConnectorConfig(),
                 kafkaConnectHost,
                 tenantId);
-      else
+      } else {
         updateTopicReqStatus =
             clusterApiService.approveConnectorRequests(
                 connectorRequest.getConnectorName(),
@@ -546,7 +548,7 @@ public class KafkaConnectControllerService {
                 jsonConnectorConfig,
                 kafkaConnectHost,
                 tenantId);
-
+      }
       if (Objects.equals(updateTopicReqStatus, "success")) {
         setConnectorHistory(connectorRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
@@ -573,11 +575,12 @@ public class KafkaConnectControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (connectorRequest.getConnectortype().equals(TopicRequestTypes.Update.name())) {
+      if (Objects.equals(connectorRequest.getConnectortype(), TopicRequestTypes.Update.name())) {
         List<KwKafkaConnector> existingTopicList =
             getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
         existingTopicList.stream()
-            .filter(topic -> topic.getEnvironment().equals(connectorRequest.getEnvironment()))
+            .filter(
+                topic -> Objects.equals(topic.getEnvironment(), connectorRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
         existingTopicHistory = objectMapper.readValue(existingHistory.get(), ArrayList.class);
@@ -616,7 +619,7 @@ public class KafkaConnectControllerService {
     KafkaConnectorRequest connectorRequest =
         dbHandle.selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
-    if (!connectorRequest.getConnectorStatus().equals(RequestStatus.created.name())) {
+    if (!Objects.equals(connectorRequest.getConnectorStatus(), RequestStatus.created.name())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -657,7 +660,9 @@ public class KafkaConnectControllerService {
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
 
     Integer userTeamId = getMyTeamId(userDetails);
-    if (topics != null && topics.size() > 0 && !topics.get(0).getTeamId().equals(userTeamId)) {
+    if (topics != null
+        && topics.size() > 0
+        && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
       hashMap.put(
           "result",
           "Failure. Sorry, you cannot delete this connector, as you are not part of this team.");
@@ -673,7 +678,8 @@ public class KafkaConnectControllerService {
 
     Optional<KwKafkaConnector> topicOb =
         getConnectorsFromName(connectorName, tenantId).stream()
-            .filter(topic -> topic.getEnvironment().equals(topicRequestReq.getEnvironment()))
+            .filter(
+                topic -> Objects.equals(topic.getEnvironment(), topicRequestReq.getEnvironment()))
             .findFirst();
 
     if (manageDatabase
@@ -735,10 +741,11 @@ public class KafkaConnectControllerService {
                     Comparator.comparing(KafkaConnectorRequest::getRequesttime)))
             .collect(Collectors.toList());
 
-    if (!requestsType.equals("all") && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
+    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
       topicReqs =
           topicReqs.stream()
-              .filter(topicRequest -> topicRequest.getConnectorStatus().equals(requestsType))
+              .filter(
+                  topicRequest -> Objects.equals(topicRequest.getConnectorStatus(), requestsType))
               .collect(Collectors.toList());
 
     topicReqs = getConnectorRequestsPaged(topicReqs, pageNo, currentPage);
@@ -769,7 +776,7 @@ public class KafkaConnectControllerService {
     Integer topicOwnerTeam = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
         manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId).stream()
-            .filter(user -> user.getTeamId().equals(topicOwnerTeam))
+            .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeam))
             .findFirst();
 
     Integer userTeamId = getMyTeamId(userDetails);
@@ -873,7 +880,7 @@ public class KafkaConnectControllerService {
       topicInfo.setConnectorConfig(topic.getConnectorConfig());
       topicInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
 
-      if (syncCluster != null && syncCluster.equals(topic.getEnvironment())) {
+      if (Objects.equals(syncCluster, topic.getEnvironment())) {
         topicOverview.setTopicDocumentation(topic.getDocumentation());
         topicOverview.setTopicIdForDocumentation(topic.getConnectorId());
       }
@@ -905,7 +912,7 @@ public class KafkaConnectControllerService {
 
     for (KafkaConnectorModel topicInfo : topicInfoList) {
       // show edit button only for restricted envs
-      if (topicOwnerTeam.equals(loggedInUserTeam)
+      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)
           && reqTopicsEnvsList.contains(topicInfo.getEnvironmentId())) {
         topicInfo.setShowEditConnector(true);
       }
@@ -913,7 +920,7 @@ public class KafkaConnectControllerService {
 
     topicOverview.setTopicInfoList(topicInfoList);
     try {
-      if (topicOwnerTeam.equals(loggedInUserTeam)) {
+      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
         topicOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
 
@@ -968,7 +975,7 @@ public class KafkaConnectControllerService {
       }
       connectors =
           connectors.stream()
-              .filter(topic -> topic.getEnvironment().equals(envId))
+              .filter(topic -> Objects.equals(topic.getEnvironment(), envId))
               .collect(Collectors.toList());
     }
 
@@ -990,7 +997,7 @@ public class KafkaConnectControllerService {
             .selectAllTeamsOfUsers(getUserName(), tenantId)
             .get(0)
             .getTeamname();
-    if (!loggedInUserTeam.equals(connectorModel.getTeamName())) {
+    if (!Objects.equals(loggedInUserTeam, connectorModel.getTeamName())) {
       hashMap.put("error", "Sorry, your team does not own the connector !!");
       return hashMap;
     }
@@ -1025,7 +1032,7 @@ public class KafkaConnectControllerService {
         String lastEnv = envList.get(envList.size() - 1);
         AtomicReference<String> sourceConnectorConfig = new AtomicReference<>("");
         kafkaConnectors.stream()
-            .filter(kwKafkaConnector -> kwKafkaConnector.getEnvironment().equals(lastEnv))
+            .filter(kwKafkaConnector -> Objects.equals(kwKafkaConnector.getEnvironment(), lastEnv))
             .findFirst()
             .ifPresent(a -> sourceConnectorConfig.set(a.getConnectorConfig()));
 
@@ -1073,7 +1080,7 @@ public class KafkaConnectControllerService {
 
     Integer loggedInUserTeam = getMyTeamId(getUserName());
 
-    if (topicOwnerTeam.equals(loggedInUserTeam)) {
+    if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
       saveResult.put(
           "result", manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic));
     } else saveResult.put("result", "failure");
@@ -1101,9 +1108,11 @@ public class KafkaConnectControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!topicRequestModel.getConnectorStatus().equals(RequestStatus.approved.name())) {
+        if (!Objects.equals(
+            topicRequestModel.getConnectorStatus(), RequestStatus.approved.name())) {
           if (topicRequestModel.getConnectortype() != null
-              && topicRequestModel.getConnectortype().equals(TopicRequestTypes.Claim.name())) {
+              && Objects.equals(
+                  topicRequestModel.getConnectortype(), TopicRequestTypes.Claim.name())) {
             List<KwKafkaConnector> topics =
                 getConnectorsFromName(topicRequestModel.getConnectorName(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
@@ -1134,7 +1143,8 @@ public class KafkaConnectControllerService {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
-      if (approverRoles.contains(userInfo.getRole()) && !requestor.equals(userInfo.getUsername()))
+      if (approverRoles.contains(userInfo.getRole())
+          && !Objects.equals(requestor, userInfo.getUsername()))
         approvingInfo.append(userInfo.getUsername()).append(",");
     }
 
@@ -1234,7 +1244,7 @@ public class KafkaConnectControllerService {
         manageDatabase
             .getKafkaConnectEnvList(commonUtilsService.getTenantId(getUserName()))
             .stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }
@@ -1249,7 +1259,7 @@ public class KafkaConnectControllerService {
     List<String> newEnvList = new ArrayList<>();
     for (String env : selectedEnvs) {
       for (Env env1 : allEnvs) {
-        if (env.equals(env1.getId())) {
+        if (Objects.equals(env, env1.getId())) {
           newEnvList.add(env1.getName());
           break;
         }
