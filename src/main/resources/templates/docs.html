@@ -576,7 +576,7 @@
 										After selecting <a href="topics">topics</a> all the topics are displayed from all Kafka <a href="envs">environments</a>.
 										<br>You can search for topics with topic name or selecting a team., or can be searched based on the available documentation.
 										<br><br>
-										If you do not see the topics, there could be multiple reasons. No topics have been requested through Kafkawize, or no topics are synchronized, or there is a database connection issue. Please check with your administrator for Help from tp right.
+										If you do not see the topics, there could be multiple reasons. No topics have been requested through Klaw, or no topics are synchronized, or there is a database connection issue. Please check with your administrator for Help from tp right.
 										<br><h4 class="card-title mt-4">Topic Overview</h4><br>
 										To see the details of a topic, click on any of the topics from <a href="topics">topics</a> page. Topic details are shown.
 										<br>In topic details, all topic partitions and replication factor per each environment are shown.
@@ -612,7 +612,7 @@
 										In the topic overview page, there is a Subscribe button which opens a page to request for a new subscription.
 										<br> After selecting an environment, you can select Producer or Consumer.
 										<br>If you select Producer, you would see two options. You can choose between LITERAL or PREFIXED. Optionally you can mention a transactionalId.
-										<br><b>Note:</b>For prefixed acls, it is mandatory to have atleast one topic existing in Kafkawize with that prefix.
+										<br><b>Note:</b>For prefixed acls, it is mandatory to have atleast one topic existing in Klaw with that prefix.
 										<br>If you select Consumer, consumer group should be mentioned.
 										<br>Acl can be of IP address or Principle based.
 										<br><br><b>Note</b>: Only users with REQUEST_CREATE_SUBSCRIPTIONS can submit new subscription requests. <br>
@@ -677,11 +677,11 @@
 									</div>
 									<div ng-show="synctocluster=='true'" class="card-body">
 										<h3 class="card-title mt-4">Synchronize To Cluster</h3>
-										Synchronize is available in the main menu. Topics and Subscriptions can be recreated back on Kafka cluster with data available on Kafkawize.
+										Synchronize is available in the main menu. Topics and Subscriptions can be recreated back on Kafka cluster with data available on Klaw.
 										<br>If you have any issues with Kafka cluster, and lost all your topics and acls, you can recreate all of them with one single click from here.
 										<br><h4 class="card-title mt-4">Topics to cluster</h4>
-										From <a href="syncBackTopics">here</a>, you can retrieve all the topics from selected Kafka environment from within Kafkawize (not Kafka clsuter).
-										<br>After selecting and environment, topics from that environment availablein Kafkawize are displayed. You can select a few or there is an option to select all the topics of source environment.
+										From <a href="syncBackTopics">here</a>, you can retrieve all the topics from selected Kafka environment from within Klaw (not Kafka clsuter).
+										<br>After selecting and environment, topics from that environment availablein Klaw are displayed. You can select a few or there is an option to select all the topics of source environment.
 										<br>You need select a target environment and hit the Create button, which will start to create topics on the target environment.
 										<br>A full log is displayed at the bottom of the page.
 									</div>
@@ -692,7 +692,7 @@
                                         <br>- Email Notifications content for all notifications
                                         <br>- Cluster Api connection parameters. Connection can be tested.
                                         <br>- Temporay location for downloading reports Ex : /tmp
-                                        <br>- Email id of Super admin (kafkawize.superuser.mailid), for kafkawize users to contact in caes of any issues
+                                        <br>- Email id of Super admin (kafkawize.superuser.mailid), for Klaw users to contact in caes of any issues
                                         <br>- Retrieve Avro schemas (kafkawize.getschemas.enable) true/false
                                         <br>- Names of environments (kafkawize.envs.standardnames) DEV/TST..
                                         <br>- Allowed roles when adding a new user
@@ -703,8 +703,8 @@
                                         <br><h4 class="card-title mt-4">Cache reset</h4>
                                         When a new property or server configuration is added or updated directly from Database, you can reset the cache from this page, to reflect the changes.
 
-                                        <br><h4 class="card-title mt-4">Stop Kafkawize</h4>
-                                        Kafkawize can be stopped from this page. User who has SHUTDOWN_KAFKAWIZE permission can stop.
+                                        <br><h4 class="card-title mt-4">Stop Klaw</h4>
+                                        Klaw can be stopped from this page. User who has SHUTDOWN_KAFKAWIZE permission can stop.
 
                                     </div>
 									<div ng-show="tenants=='true'" class="card-body">

@@ -594,14 +594,14 @@
 										</div>
 										<div class="col-md-6">
 											<div ng-show="sslparams=='true'">
-												<label>Copy this command and execute on your kafka broker. This gives the authorization for Kafkawize to create topics on your Kafka brokers.</label>
+												<label>Copy this command and execute on your kafka broker. This gives the authorization for Klaw to create topics on your Kafka brokers.</label>
 												<br>
 												<blockquote>
 													{{ aclCommandSsl }}
 												</blockquote>
 											</div>
 											<div ng-show="plaintextparams=='true'">
-												<label>Copy this command and execute on your kafka broker. This gives the authorization for Kafkawize to create topics on your Kafka brokers.</label>
+												<label>Copy this command and execute on your kafka broker. This gives the authorization for Klaw to create topics on your Kafka brokers.</label>
 												<br>
 												<blockquote>
 													{{ aclCommandPlaintext }}
@@ -620,7 +620,7 @@
 										</div>
 										<div class="col-md-6" ng-show="sslparams=='true' && dashboardDetails.saasEnabled == 'saas'">
 											<div class="form-group">
-												<label>Download Kafkawize public key</label>
+												<label>Download Klaw public key</label>
 												<button type="button" ng-click="downloadPubKey()"
 														class="btn waves-effect waves-light btn-block btn-success" style="float:right">Download PublicKey</button>
 											</div>
