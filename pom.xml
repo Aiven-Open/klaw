@@ -2,12 +2,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.kafkamgt.uiapi</groupId>
-    <artifactId>kafkawize</artifactId>
-    <version>5.0.3</version>
+    <groupId>io.aiven</groupId>
+    <artifactId>klaw</artifactId>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
-    <name>Kafkawize</name>
-    <description>Kafkawize SelfService - Governance Portal</description>
+    <name>Klaw</name>
+    <description>Aiven Klaw - Selfservice, Governance for Kafka</description>
+    <url>https://github.com/aiven/klaw</url>
+
+    <organization>
+        <name>Aiven Oy</name>
+        <url>https://aiven.io</url>
+    </organization>
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <id>aiven</id>
+            <name>Aiven Opensource</name>
+            <email>opensource@aiven.io</email>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com:aiven/klaw.git</connection>
+        <developerConnection>scm:git:ssh://github.com:aiven/klaw.git</developerConnection>
+        <url>https://github.com/aiven/klaw</url>
+    </scm>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -225,7 +250,7 @@
                         </goals>
                         <phase>test</phase>
                         <configuration>
-                            <mainClass>com.kafkamgt.uiapi.uglify.UglifyFiles</mainClass>
+                            <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
                         </configuration>
                     </execution>
                 </executions>

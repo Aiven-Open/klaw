@@ -1,20 +1,20 @@
 /* Postgres */
 
-Create database kafkawize;
+Create database klaw;
 
 Create user kafkauser;
 
-Alter user kafkauser with encrypted password 'kafkawize';
+Alter user kafkauser with encrypted password 'klaw';
 
-Grant all privileges on database kafkawize to kafkauser;
+Grant all privileges on database klaw to kafkauser;
 
 
 /* Mysql */
 
-Create database kafkawize;
+Create database klaw;
 
-Create user 'kafkauser'@'localhost' identified by 'kafkawize';
+Create user 'kafkauser'@'localhost' identified by 'klaw';
 
-GRANT SELECT,INSERT,UPDATE,DELETE on kafkawize.* to kafkauser@localhost;
+GRANT SELECT,INSERT,UPDATE,DELETE on klaw.* to kafkauser@localhost;
 
 Commit;

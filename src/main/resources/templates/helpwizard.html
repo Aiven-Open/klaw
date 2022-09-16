@@ -436,7 +436,7 @@
 				<div class="col-12">
 					<div class="card">
 						<div class="card-body wizard-content">
-							<h4 class="card-title">Configure Kafkawize Wizard</h4>
+							<h4 class="card-title">Configure Klaw Wizard</h4>
 
 							<form action="#" class="tab-wizard wizard-circle">
 								<!-- Step 0 -->
@@ -446,7 +446,7 @@
 										<div class="col-md-12">
 											<div class="form-group">
 												<h2 class="text-success">Congratulations !!</h2><br>
-												<h5>Kafkawize can be configured easily if you follow the next steps from here</h5><br>
+												<h5>Klaw can be configured easily if you follow the next steps from here</h5><br>
 												<h5>In these steps we are going to configure kafka clusters, environments, teams, users, roles and permissions</h5>
 												<h5>For any questions or support, please click the Help button on the top right.</h5>
 												<br>
@@ -463,7 +463,7 @@
 												<h2 class="text-success">Configure Kafka clusters !!</h2><br>
 												<h5>Configure your kafka clusters from <a class="text-primary" href="clusters">here</a>. You can add any number of clusters. Only users with SUPERADMIN roles can add.</h5><br>
 												<h5>After adding the cluster, if you have selected SSL as the protocol, download the public key and import to your kafka broker certificates.</h5><br>
-												<h5>Execute the command provided which authorizes Kafkawize to create Kafka Topis, subscriptions (acls), etc</h5>
+												<h5>Execute the command provided which authorizes Klaw to create Kafka Topis, subscriptions (acls), etc</h5>
 											</div>
 										</div>
 									</div>
@@ -491,7 +491,7 @@
 										<div class="col-md-12">
 											<div class="form-group">
 												<h2 class="text-success">Configure Environments hierarchy !!</h2><br>
-												<h5>kafkawize.tenant.config has to be configured for promotion of topics, or to keep a base environment to be a low level environment.</h5><br>
+												<h5>klaw.tenant.config has to be configured for promotion of topics, or to keep a base environment to be a low level environment.</h5><br>
 												<h5>Configure this from <a class="text-primary" href="serverConfig">here</a>. Only users with SUPERADMIN roles can add by default.</h5><br>
 											</div>
 										</div>
@@ -507,7 +507,7 @@
 												<h2 class="text-success">Test Kafka connectivity !!</h2><br>
 												<h5>After configuring kafka environments,
 													<br>1. Upload the public key of your broker keystore
-													<br>2. Import public key of kafkawize to your truststore
+													<br>2. Import public key of klaw to your truststore
 													<br>3. Execute provided acl command.
 													<br>Now you can test the connectivity with the button provided at <a class="text-primary" href="envs">here</a>.</h5><br>
 											</div>
@@ -522,7 +522,7 @@
 										<div class="col-md-12">
 											<div class="form-group">
 												<h2 class="text-success">Synchronize Topics and Acls !!</h2><br>
-												<h5>If you already have topics on your brokers, you can synchronize the topics and Producer and Consumer acls with Kafkawize.</h5><br>
+												<h5>If you already have topics on your brokers, you can synchronize the topics and Producer and Consumer acls with Klaw.</h5><br>
 												<h5>Synchronize Topics from <a class="text-primary" href="synchronizeTopics">here</a>.</h5><br>
 												<h5>Synchronize Acls from <a class="text-primary" href="synchronizeAcls">here</a>.</h5><br>
 											</div>
@@ -651,7 +651,7 @@
                 finish: "Submit"
             },
             onFinished: function (event, currentIndex) {
-                swal("Congratulations!", "You have a full setup of running Kafkawize !!");
+                swal("Congratulations!", "You have a full setup of running Klaw !!");
 
             }
         });
