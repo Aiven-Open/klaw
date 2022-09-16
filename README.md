@@ -2,12 +2,9 @@
 
 Klaw is fully opensource. 🥳 
 
-Klaw is a Self service Apache Kafka Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
+Klaw is a self-service Apache Kafka Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
 
 With several downloads every week, many more companies which did not adopt a solution, can happily move away from managing kafka configs in excelsheets, confluence, wiki pages, git etc. 
-
-[![Features](https://yt-embed.herokuapp.com/embed?v=i7nmi-lovgA)](https://www.youtube.com/watch?v=i7nmi-lovgA "Create a kafka topic")
-=======
 
 ## Built With
 
@@ -109,8 +106,6 @@ mvn clean install
 
 and follow steps defined at https://klaw-project.io/docs
 
-[![Setup steps](https://yt-embed.herokuapp.com/embed?v=LOqjwARmbBs)](https://www.youtube.com/playlist?list=PLP9lIqI_cSE72D-VxYFEHW8T7VgS1NWmP "Klaw setup")
-
 ## License
 
 Klaw is licensed under the Apache license, version 2.0.  Full license text is
@@ -122,7 +117,7 @@ License Agreement) from its contributors.
 ## Contact
 
 Bug reports and patches are very welcome, please post them as GitHub issues
-and pull requests at https://github.com/aiven/klaw .  Any possible
+and pull requests at https://github.com/aiven/klaw . Any possible
 vulnerabilities or other serious issues should be reported directly to the
 maintainers <opensource@aiven.io>.
 
@@ -141,4 +136,4 @@ Klaw (formerly Kafkawize) is maintained by, Aiven_ open source developers.
 Recent contributors are listed on the GitHub project page,
 https://github.com/aiven/klaw/graphs/contributors
 
-Copyright ⓒ 2021 Aiven Ltd.
+Copyright (c) 2022 Aiven Oy and klaw project contributors.
