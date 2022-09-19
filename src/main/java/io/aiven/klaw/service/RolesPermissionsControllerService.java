@@ -204,25 +204,23 @@ public class RolesPermissionsControllerService {
       List<Map<String, Boolean>> entryDets = permissionsListEntry.getValue();
       for (Map<String, Boolean> entryDet : entryDets) {
         for (Map.Entry<String, Boolean> stringBooleanEntry : entryDet.entrySet()) {
-          if (Objects.equals(stringBooleanEntry.getValue(), true)) {
+          if (Boolean.TRUE.equals(stringBooleanEntry.getValue())) {
             if ("SUBSCRIPTIONS".equals(requestType)
-                && Objects.equals(
-                    stringBooleanEntry.getKey(), PermissionType.APPROVE_SUBSCRIPTIONS.name())) {
+                && PermissionType.APPROVE_SUBSCRIPTIONS
+                    .name()
+                    .equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
             } else if ("TOPICS".equals(requestType)
-                && Objects.equals(
-                    stringBooleanEntry.getKey(), PermissionType.APPROVE_TOPICS.name())) {
+                && PermissionType.APPROVE_TOPICS.name().equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
             } else if ("SCHEMAS".equals(requestType)
-                && Objects.equals(
-                    stringBooleanEntry.getKey(), PermissionType.APPROVE_SCHEMAS.name())) {
+                && PermissionType.APPROVE_SCHEMAS.name().equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
             } else if ("CONNECTORS".equals(requestType)
-                && Objects.equals(
-                    stringBooleanEntry.getKey(), PermissionType.APPROVE_SCHEMAS.name())) {
+                && PermissionType.APPROVE_SCHEMAS.name().equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
             }

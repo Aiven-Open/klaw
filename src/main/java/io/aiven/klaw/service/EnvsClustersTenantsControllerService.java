@@ -888,9 +888,9 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public List<KwTenantModel> getAllTenants() {
-    if (Objects.equals(
-            manageDatabase.getHandleDbRequests().getUsersInfo(getUserName()).getRole(),
-            SUPERADMIN.name())
+    if (SUPERADMIN
+            .name()
+            .equals(manageDatabase.getHandleDbRequests().getUsersInfo(getUserName()).getRole())
         && commonUtilsService.getTenantId(getUserName()) == DEFAULT_TENANT_ID) {
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
       List<KwTenants> tenants = dbHandle.getTenants();
@@ -1257,9 +1257,7 @@ public class EnvsClustersTenantsControllerService {
 
     clusterInfo.put(
         "aivenCluster",
-        ""
-            + Objects.equals(
-                KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor()));
+        "" + KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor()));
 
     return clusterInfo;
   }

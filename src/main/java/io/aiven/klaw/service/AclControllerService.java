@@ -377,7 +377,7 @@ public class AclControllerService {
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
 
         // show approving info only before approvals
-        if (!Objects.equals(aclRequestsModel.getAclstatus(), RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(aclRequestsModel.getAclstatus())) {
           aclRequestsModel.setApprovingTeamDetails(
               updateApprovingInfo(
                   aclRequestsModel.getTopicname(),
@@ -614,7 +614,7 @@ public class AclControllerService {
     if (Objects.equals(aclReq.getUsername(), userDetails))
       return "{\"result\":\"You are not allowed to approve your own subscription requests.\"}";
 
-    if (!Objects.equals(aclReq.getAclstatus(), RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -685,7 +685,7 @@ public class AclControllerService {
     AclRequests aclReq =
         dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
-    if (!Objects.equals(aclReq.getAclstatus(), RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 

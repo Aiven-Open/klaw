@@ -306,8 +306,7 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !Objects.equals(
-                            topicRequest.getTopictype(), TopicRequestTypes.Claim.name()))
+                        !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
@@ -322,8 +321,7 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !Objects.equals(
-                            topicRequest.getTopictype(), TopicRequestTypes.Claim.name()))
+                        !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
@@ -383,8 +381,7 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !Objects.equals(
-                            topicRequest.getConnectortype(), TopicRequestTypes.Claim.name()))
+                        !TopicRequestTypes.Claim.name().equals(topicRequest.getConnectortype()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
@@ -400,8 +397,7 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !Objects.equals(
-                            topicRequest.getConnectortype(), TopicRequestTypes.Claim.name()))
+                        !TopicRequestTypes.Claim.name().equals(topicRequest.getConnectortype()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
@@ -481,7 +477,7 @@ public class SelectDataJdbc {
   }
 
   public List<Env> selectAllEnvs(String type, int tenantId) {
-    if (type.equals("all")) return Lists.newArrayList(envRepo.findAllByTenantId(tenantId));
+    if ("all".equals(type)) return Lists.newArrayList(envRepo.findAllByTenantId(tenantId));
     else return Lists.newArrayList(envRepo.findAllByTypeAndTenantId(type, tenantId));
   }
 

@@ -142,18 +142,20 @@ public class UiControllerLoginService {
       UserDetails userDetails =
           (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-      if (manageDatabase
-              .getHandleDbRequests()
-              .getUsersInfo(userDetails.getUsername())
-              .getRole()
-              .equals(SUPERADMIN.name())
+      if (SUPERADMIN
+              .name()
+              .equals(
+                  manageDatabase
+                      .getHandleDbRequests()
+                      .getUsersInfo(userDetails.getUsername())
+                      .getRole())
           && commonUtilsService.getTenantId(userDetails.getUsername())
               == KwConstants.DEFAULT_TENANT_ID) {
         return getReturningPage(uri);
       } else uri = "index";
     }
 
-    if (ssoEnabled.equals("true")) {
+    if ("true".equals(ssoEnabled)) {
       if (uri.contains("register") || uri.equals("registrationReview.html")) return uri;
       else return checkAnonymousLogin(uri, request, response);
     } else {

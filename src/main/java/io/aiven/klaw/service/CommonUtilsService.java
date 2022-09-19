@@ -308,44 +308,35 @@ public class CommonUtilsService {
   }
 
   public synchronized void updateMetadata(KwMetadataUpdates kwMetadataUpdates) {
-    if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.TEAM.name())) {
+    final EntityType entityType = EntityType.of(kwMetadataUpdates.getEntityType());
+    if (entityType == null) return;
+    final MetadataOperationType operationType =
+        MetadataOperationType.of(kwMetadataUpdates.getOperationType());
+    if (entityType == EntityType.TEAM) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.CLUSTER.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.DELETE.name()))
+    } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE)
       manageDatabase.deleteCluster(kwMetadataUpdates.getTenantId());
-    else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.CLUSTER.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.CREATE.name()))
+    else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.CREATE)
       manageDatabase.loadClustersForOneTenant(null, null, null, kwMetadataUpdates.getTenantId());
-    else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.ENVIRONMENT.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.CREATE.name())) {
+    else if (entityType == EntityType.ENVIRONMENT
+        && operationType == MetadataOperationType.CREATE) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadEnvMapForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.ENVIRONMENT.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.DELETE.name())) {
+    } else if (entityType == EntityType.ENVIRONMENT
+        && operationType == MetadataOperationType.DELETE) {
       manageDatabase.loadEnvMapForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.TENANT.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.CREATE.name())) {
+    } else if (entityType == EntityType.TENANT && operationType == MetadataOperationType.CREATE) {
       manageDatabase.updateStaticDataForTenant(kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.TENANT.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.DELETE.name())) {
+    } else if (entityType == EntityType.TENANT && operationType == MetadataOperationType.DELETE) {
       manageDatabase.deleteTenant(kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.TENANT.name())
-        && Objects.equals(
-            kwMetadataUpdates.getOperationType(), MetadataOperationType.UPDATE.name())) {
+    } else if (entityType == EntityType.TENANT && operationType == MetadataOperationType.UPDATE) {
       manageDatabase.loadOneTenant(kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(
-        kwMetadataUpdates.getEntityType(), EntityType.ROLES_PERMISSIONS.name())) {
+    } else if (entityType == EntityType.ROLES_PERMISSIONS) {
       manageDatabase.loadRolesPermissionsOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (Objects.equals(kwMetadataUpdates.getEntityType(), EntityType.PROPERTIES.name())) {
+    } else if (entityType == EntityType.PROPERTIES) {
       manageDatabase.loadKwPropsPerOneTenant(null, kwMetadataUpdates.getTenantId());
     }
   }

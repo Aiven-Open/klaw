@@ -171,7 +171,7 @@ public class TopicControllerService {
     }
 
     // Ignore topic exists check if Update request
-    if (!Objects.equals(topicRequestReq.getTopictype(), TopicRequestTypes.Update.name())) {
+    if (!TopicRequestTypes.Update.name().equals(topicRequestReq.getTopictype())) {
       boolean topicExists = false;
       if (topics != null) {
         topicExists =
@@ -622,9 +622,9 @@ public class TopicControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!Objects.equals(topicRequestModel.getTopicstatus(), RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
-              && Objects.equals(topicRequestModel.getTopictype(), TopicRequestTypes.Claim.name())) {
+              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -694,7 +694,7 @@ public class TopicControllerService {
     if (Objects.equals(topicRequest.getRequestor(), userDetails))
       return "{\"result\":\"You are not allowed to approve your own topic requests.\"}";
 
-    if (!Objects.equals(topicRequest.getTopicstatus(), RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -705,7 +705,7 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-    if (Objects.equals(topicRequest.getTopictype(), TopicRequestTypes.Claim.name())) {
+    if (TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
         allTopic.setTeamId(topicRequest.getTeamId()); // for claim reqs, team stored in description
@@ -727,7 +727,7 @@ public class TopicControllerService {
 
       updateTopicReqStatus = response.getBody();
 
-      if (Objects.equals(response.getBody(), "success")) {
+      if ("success".equals(response.getBody())) {
         setTopicHistory(topicRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userDetails);
         mailService.sendMail(
@@ -751,7 +751,7 @@ public class TopicControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (Objects.equals(topicRequest.getTopictype(), TopicRequestTypes.Update.name())) {
+      if (TopicRequestTypes.Update.name().equals(topicRequest.getTopictype())) {
         List<Topic> existingTopicList =
             getTopicFromName(topicRequest.getTopicname(), topicRequest.getTenantId());
         existingTopicList.stream()
@@ -792,7 +792,7 @@ public class TopicControllerService {
         dbHandle.selectTopicRequestsForTopic(
             Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
 
-    if (!Objects.equals(topicRequest.getTopicstatus(), RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 

@@ -109,8 +109,7 @@ public class UsersTeamsControllerService {
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       if (!Objects.equals(
-          getUserName(), newUser.getUsername())) // should be able to update same user
-      {
+          getUserName(), newUser.getUsername())) { // should be able to update same user
         return "{\"result\":\"Not Authorized to update another SUPERADMIN user.\"}";
       }
     }

@@ -167,7 +167,7 @@ public class KafkaConnectControllerService {
     }
 
     // Ignore connector exists check if Update request
-    if (!Objects.equals(topicRequestReq.getConnectortype(), TopicRequestTypes.Update.name())) {
+    if (!TopicRequestTypes.Update.name().equals(topicRequestReq.getConnectortype())) {
       boolean topicExists = false;
       if (kafkaConnectorList != null) {
         topicExists =
@@ -491,7 +491,7 @@ public class KafkaConnectControllerService {
       return resultMap;
     }
 
-    if (!Objects.equals(connectorRequest.getConnectorStatus(), RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
       resultMap.put("result", "This request does not exist anymore.");
       return resultMap;
     }
@@ -505,7 +505,7 @@ public class KafkaConnectControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-    if (Objects.equals(connectorRequest.getConnectortype(), TopicRequestTypes.Claim.name())) {
+    if (TopicRequestTypes.Claim.name().equals(connectorRequest.getConnectortype())) {
       List<KwKafkaConnector> allTopics =
           getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
       for (KwKafkaConnector allTopic : allTopics) {
@@ -575,7 +575,7 @@ public class KafkaConnectControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (Objects.equals(connectorRequest.getConnectortype(), TopicRequestTypes.Update.name())) {
+      if (TopicRequestTypes.Update.name().equals(connectorRequest.getConnectortype())) {
         List<KwKafkaConnector> existingTopicList =
             getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
         existingTopicList.stream()
@@ -619,7 +619,7 @@ public class KafkaConnectControllerService {
     KafkaConnectorRequest connectorRequest =
         dbHandle.selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
-    if (!Objects.equals(connectorRequest.getConnectorStatus(), RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -1108,11 +1108,9 @@ public class KafkaConnectControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!Objects.equals(
-            topicRequestModel.getConnectorStatus(), RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(topicRequestModel.getConnectorStatus())) {
           if (topicRequestModel.getConnectortype() != null
-              && Objects.equals(
-                  topicRequestModel.getConnectortype(), TopicRequestTypes.Claim.name())) {
+              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getConnectortype())) {
             List<KwKafkaConnector> topics =
                 getConnectorsFromName(topicRequestModel.getConnectorName(), tenantId);
             topicRequestModel.setApprovingTeamDetails(

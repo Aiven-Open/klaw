@@ -91,7 +91,7 @@ public class SchemaRegstryControllerService {
         copyProperties(schemaReq, schemaRequestModel);
 
         // show approving info only before approvals
-        if (!Objects.equals(schemaRequestModel.getTopicstatus(), RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(schemaRequestModel.getTopicstatus())) {
           schemaRequestModel.setApprovingTeamDetails(
               updateApproverInfo(
                   userList,
