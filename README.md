@@ -1,13 +1,10 @@
-# Kafkawize
+# Klaw
 
-Kafkawize is fully opensource. 🥳 All the features of the Kafkawize are available at no cost. 
+Klaw is fully opensource. 🥳 
 
-Kafkawize is a Self service Apache Kafka Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
+Klaw is a self-service Apache Kafka Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
 
 With several downloads every week, many more companies which did not adopt a solution, can happily move away from managing kafka configs in excelsheets, confluence, wiki pages, git etc. 
-
-[![Features](https://yt-embed.herokuapp.com/embed?v=i7nmi-lovgA)](https://www.youtube.com/watch?v=i7nmi-lovgA "Create a kafka topic")
-=======
 
 ## Built With
 
@@ -17,24 +14,16 @@ With several downloads every week, many more companies which did not adopt a sol
 
 ## Versioning
 
-For the versions available, see the [tags on this repository](https://github.com/muralibasani/kafkawize/tags).
-
-## Authors
-
-* **Muralidhar Basani** - [muralibasani](https://github.com/muralibasani)
-
-## License
-
-This project is licensed under the Apache License  - see the [LICENSE.md](LICENSE.md) file for details.
+For the versions available, see the [tags on this repository](https://github.com/aiven/klaw/tags).
 
 ## Architecture:
 
-![Architecture](https://github.com/muralibasani/kafkawize/blob/master/arch.png)
+![Architecture](https://github.com/aiven/klaw/blob/main/arch.png)
 
 ## Dependency project:
 
 ### ClusterApi
-https://github.com/muralibasani/kafkawizeclusterapi
+https://github.com/aiven/klaw-cluster-api
 
 ## Features:
 
@@ -58,7 +47,7 @@ https://github.com/muralibasani/kafkawizeclusterapi
 - View created, completed, declined, all Avro schema requests
 
 - Synchronization from and to kafka clusters
-- Reconciliation and email notifications on differences between Kafkawize and Clusters
+- Reconciliation and email notifications on differences between Klaw and Clusters
 - Restore configuration (topics, acls)
 
 - Login 
@@ -107,22 +96,44 @@ https://github.com/muralibasani/kafkawizeclusterapi
   - requests are created, approved, declined
   - users are created, approved
 
-- Help Wizard to setup Kafkawize
+- Help Wizard to setup Klaw
 
-- Documentation : https://kafkawize.readthedocs.io/en/latest
+- Documentation : https://klaw-project.io/docs
 
 ## Install
 
 mvn clean install
 
-and follow steps defined at https://kafkawize.readthedocs.io/en/latest
+and follow steps defined at https://klaw-project.io/docs
 
-[![Setup steps](https://yt-embed.herokuapp.com/embed?v=LOqjwARmbBs)](https://www.youtube.com/playlist?list=PLP9lIqI_cSE72D-VxYFEHW8T7VgS1NWmP "Kafkawize setup")
+## License
 
-## Support
+Klaw is licensed under the Apache license, version 2.0.  Full license text is
+available in the [LICENSE.md](LICENSE.md) file.
 
-Glad to discuss, if you are looking for any support.
+Please note that the project explicitly does not require a CLA (Contributor
+License Agreement) from its contributors.
 
-## Colloboration
+## Contact
 
-If you have some free time and like to learn and be part of this widely used project, this is an opportunity. Colloborate to the project. We are more than happy to onboard you.
+Bug reports and patches are very welcome, please post them as GitHub issues
+and pull requests at https://github.com/aiven/klaw . Any possible
+vulnerabilities or other serious issues should be reported directly to the
+maintainers <opensource@aiven.io>.
+
+## Trademark
+
+Apache Kafka is either a registered trademark or trademark of the Apache Software Foundation in the United States and/or other countries. 
+All product and service names used in this page are for identification purposes only and do not imply endorsement.
+
+## Credits
+
+Klaw (formerly Kafkawize) is maintained by, Aiven_ open source developers.
+
+
+.. _`Aiven`: https://aiven.io/
+
+Recent contributors are listed on the GitHub project page,
+https://github.com/aiven/klaw/graphs/contributors
+
+Copyright (c) 2022 Aiven Oy and klaw project contributors.

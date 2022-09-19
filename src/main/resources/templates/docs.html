@@ -583,7 +583,7 @@
 										<br>At the bottom of the topic overview page, all the subscriptions (acls are shown).
 										<br><h4 class="card-title mt-4">New topic</h4>To request for a new topic <a href="requestTopics">Request Topic</a>
 										<br>Note : You should have REQUEST_CREATE_TOPICS permission to request for a topic.
-										<br>The environments displayed here are being retrieved from team configuration, which is a subset of kafkawize.tenant.config property. A full list of request topics is configured at <a href="serverConfig">Server configuration</a> for property kafkawize.tenant.config
+										<br>The environments displayed here are being retrieved from team configuration, which is a subset of klaw.tenant.config property. A full list of request topics is configured at <a href="serverConfig">Server configuration</a> for property klaw.tenant.config
 										<br><h4 class="card-title mt-4">Promote Topic</h4>
 										If a topic exists in lower environment, it can be requested for promotion to next environment if your team is the owner of the topic from overview page.
 										<br>It is possible to select topic partitions from this page specific to that target environment.
@@ -692,11 +692,11 @@
                                         <br>- Email Notifications content for all notifications
                                         <br>- Cluster Api connection parameters. Connection can be tested.
                                         <br>- Temporay location for downloading reports Ex : /tmp
-                                        <br>- Email id of Super admin (kafkawize.superuser.mailid), for Klaw users to contact in caes of any issues
-                                        <br>- Retrieve Avro schemas (kafkawize.getschemas.enable) true/false
-                                        <br>- Names of environments (kafkawize.envs.standardnames) DEV/TST..
+                                        <br>- Email id of Super admin (klaw.superuser.mailid), for klaw users to contact in caes of any issues
+                                        <br>- Retrieve Avro schemas (klaw.getschemas.enable) true/false
+                                        <br>- Names of environments (klaw.envs.standardnames) DEV/TST..
                                         <br>- Allowed roles when adding a new user
-                                        <br>- Tenant configuration (kafkawize.tenant.config). Base Sync cluster, order of topics promotion environments, request topics environments
+                                        <br>- Tenant configuration (klaw.tenant.config). Base Sync cluster, order of topics promotion environments, request topics environments
 
                                         User who has UPDATE_SERVERCONFIG permission can update server configuration.
 
@@ -704,7 +704,7 @@
                                         When a new property or server configuration is added or updated directly from Database, you can reset the cache from this page, to reflect the changes.
 
                                         <br><h4 class="card-title mt-4">Stop Klaw</h4>
-                                        Klaw can be stopped from this page. User who has SHUTDOWN_KAFKAWIZE permission can stop.
+                                        Klaw can be stopped from this page. User who has SHUTDOWN_KLAW permission can stop.
 
                                     </div>
 									<div ng-show="tenants=='true'" class="card-body">
@@ -791,7 +791,7 @@
                                         <br>UPDATE_SERVERCONFIG
                                         <br>VIEW_EDIT_ALL_ENVS_CLUSTERS_TENANTS
 										<br>FULL_ACCESS_USERS_TEAMS_ROLES
-                                        <br>SHUTDOWN_KAFKAWIZE
+                                        <br>SHUTDOWN_KLAW
 										<br>ALL_TEAMS_REPORTS
 
 										<br><br>Permissions can be updated from <a href="permissions">Permissions</a> page

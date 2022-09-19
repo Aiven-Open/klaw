@@ -68,7 +68,7 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
         $scope.shutdownKw = function() {
                 swal({
                 		title: "Are you sure?",
-                		text: "You would like to stop Kafkawize?",
+                		text: "You would like to stop Klaw?",
                 		type: "warning",
                 		showCancelButton: true,
                 		confirmButtonColor: "#DD6B55",
@@ -83,11 +83,11 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
                                         url: "shutdownContext",
                                         headers : { 'Content-Type' : 'application/json' }
                                     }).success(function(output) {
-                                        $scope.alert = "Stopping Kafkawize ...";
+                                        $scope.alert = "Stopping Klaw ...";
                                          if(output.result == 'success'){
                                           swal({
                                         		   title: "",
-                                        		   text: "Stopping Kafkawize ...",
+                                        		   text: "Stopping Klaw ...",
                                         		   timer: 2000,
                                         		   showConfirmButton: false
                                         	   });
@@ -163,7 +163,7 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
 
                  var serviceInput = {};
 
-                 if(kwkey!='kafkawize.broadcast.text'){
+                 if(kwkey!='klaw.broadcast.text'){
                     if(!kwvalue || kwvalue.trim().length == 0)
                          {
                              $scope.alert = "Please fill in a valid value.";

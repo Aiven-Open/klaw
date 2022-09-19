@@ -47,7 +47,7 @@ app.controller("kwMetricsCtrl", function($scope, $http, $location, $window) {
                    $scope.teamname = output.teamname;
                    $scope.userrole = output.userrole;
                    $scope.myteamtopics = output.myteamtopics;
-                   $scope.kafkawizeversion = output.kafkawizeversion;
+                   $scope.klawversion = output.klawversion;
                    $scope.notifications = output.notifications;
                    $scope.notificationsAcls = output.notificationsAcls;
                    $scope.notificationsSchemas = output.notificationsSchemas;

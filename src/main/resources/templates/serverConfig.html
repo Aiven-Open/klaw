@@ -487,7 +487,7 @@
 										<td>
 											<textarea ng-model="oneEditableProp.kwvalue" class="form-control" rows="3"></textarea>
 											<br>
-											<textarea cols="87" rows="20" ng-show="oneEditableProp.kwkey=='kafkawize.tenant.config'" disabled>Example json:
+											<textarea cols="87" rows="20" ng-show="oneEditableProp.kwkey=='klaw.tenant.config'" disabled>Example json:
 {
   "tenantModel":
     {
@@ -502,7 +502,7 @@
 										<td>
 											<button ng-click="updateEditableConfig(oneEditableProp.kwkey, oneEditableProp.kwvalue);" class="btn btn-outline-info"> <i class="fas fa-save"></i>
 												Save</button> <br><br>
-											<button ng-show="oneEditableProp.kwkey=='kafkawize.clusterapi.url'" ng-click="testClusterApiConnection(oneEditableProp.kwkey, oneEditableProp.kwvalue);" class="btn btn-rounded btn-block btn-warning btn-xs"> <i class="fa fa-check"></i>
+											<button ng-show="oneEditableProp.kwkey=='klaw.clusterapi.url'" ng-click="testClusterApiConnection(oneEditableProp.kwkey, oneEditableProp.kwvalue);" class="btn btn-rounded btn-block btn-warning btn-xs"> <i class="fa fa-check"></i>
 												Test Connection</button>
 
 										</td>
