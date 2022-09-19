@@ -46,7 +46,7 @@ public class UtilControllerService {
   @Value("${kafkawize.enable.authorization.ad:false}")
   private String adAuthRoleEnabled;
 
-  @Value("${kafkawize.admin.mailid:info@kafkawize.io}")
+  @Value("${kafkawize.admin.mailid:info@klaw-project.io}")
   private String saasKwAdminMailId;
 
   @Value("${kafkawize.installation.type:onpremise}")

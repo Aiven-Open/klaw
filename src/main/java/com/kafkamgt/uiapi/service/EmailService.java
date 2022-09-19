@@ -31,10 +31,10 @@ public class EmailService {
 
   @Autowired public SimpleMailMessage template;
 
-  @Value("${spring.mail.frommailid:info@kafkawize.io}")
+  @Value("${spring.mail.frommailid:info@klaw-project.io}")
   private String fromMailId;
 
-  @Value("${spring.mail.noreplymailid:noreply@kafkawize.io}")
+  @Value("${spring.mail.noreplymailid:noreply@klaw-project.io}")
   private String noReplyMailId;
 
   private String headerString =
