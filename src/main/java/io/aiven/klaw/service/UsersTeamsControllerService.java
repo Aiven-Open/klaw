@@ -9,9 +9,21 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.EntityType;
+import io.aiven.klaw.model.MetadataOperationType;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RegisterUserInfoModel;
+import io.aiven.klaw.model.TeamModel;
+import io.aiven.klaw.model.UserInfoModel;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,9 +81,9 @@ public class UsersTeamsControllerService {
     } else return null;
   }
 
-  public HashMap<String, String> updateProfile(UserInfoModel updateUserObj) {
+  public Map<String, String> updateProfile(UserInfoModel updateUserObj) {
     log.info("updateProfile {}", updateUserObj);
-    HashMap<String, String> updateProfileResult = new HashMap<>();
+    Map<String, String> updateProfileResult = new HashMap<>();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName());
@@ -178,9 +190,9 @@ public class UsersTeamsControllerService {
     return sb.toString();
   }
 
-  public HashMap<String, String> resetPassword(String username) {
+  public Map<String, String> resetPassword(String username) {
     log.info("resetPassword {}", username);
-    HashMap<String, String> userMap = new HashMap<>();
+    Map<String, String> userMap = new HashMap<>();
     UserInfoModel userInfoModel = getUserInfoDetails(username);
     userMap.put("passwordSent", "false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -385,9 +397,9 @@ public class UsersTeamsControllerService {
     return textEncryptor;
   }
 
-  public HashMap<String, String> addNewUser(UserInfoModel newUser, boolean isExternal)
+  public Map<String, String> addNewUser(UserInfoModel newUser, boolean isExternal)
       throws KlawException {
-    HashMap<String, String> resMap = new HashMap<>();
+    Map<String, String> resMap = new HashMap<>();
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
 
     if (kwInstallationType.equals("saas")) {
@@ -642,9 +654,9 @@ public class UsersTeamsControllerService {
         SecurityContextHolder.getContext().getAuthentication().getPrincipal());
   }
 
-  HashMap<String, String> addTwoDefaultTeams(
+  Map<String, String> addTwoDefaultTeams(
       String teamContactPerson, String newTenantName, Integer tenantId) {
-    HashMap<String, String> teamAddMap = new HashMap<>();
+    Map<String, String> teamAddMap = new HashMap<>();
 
     TeamModel teamModel = new TeamModel();
     teamModel.setTenantId(tenantId);
@@ -666,10 +678,10 @@ public class UsersTeamsControllerService {
     return teamAddMap;
   }
 
-  public HashMap<String, String> registerUser(RegisterUserInfoModel newUser, boolean isExternal)
+  public Map<String, String> registerUser(RegisterUserInfoModel newUser, boolean isExternal)
       throws Exception {
     log.info("registerUser {}", newUser.getUsername());
-    HashMap<String, String> result = new HashMap<>();
+    Map<String, String> result = new HashMap<>();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     // check if user exists
@@ -825,7 +837,7 @@ public class UsersTeamsControllerService {
       else userInfo.setUserPassword("");
       userInfo.setMailid(registerUserInfo.getMailid());
 
-      HashMap<String, String> result = addNewUser(userInfo, isExternal);
+      Map<String, String> result = addNewUser(userInfo, isExternal);
       if (result.get("result").contains("success"))
         dbHandle.updateNewUserRequest(username, userDetails, true);
       else return "{\"result\":\"failure\"}";

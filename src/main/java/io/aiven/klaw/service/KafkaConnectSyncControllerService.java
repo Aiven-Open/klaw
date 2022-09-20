@@ -12,7 +12,12 @@ import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.SyncConnectorUpdates;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +36,16 @@ public class KafkaConnectSyncControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public HashMap<String, String> getConnectorDetails(String connectorName, String envId)
+  public Map<String, String> getConnectorDetails(String connectorName, String envId)
       throws KlawException {
-    HashMap<String, String> response = new HashMap<>();
+    Map<String, String> response = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
             .get(getKafkaConnectorEnvDetails(envId).getClusterId());
 
-    LinkedHashMap<String, Object> res =
+    Map<String, Object> res =
         clusterApiService.getConnectorDetails(
             connectorName, kwClusters.getBootstrapServers(), kwClusters.getProtocol(), tenantId);
 
@@ -58,11 +63,10 @@ public class KafkaConnectSyncControllerService {
     return response;
   }
 
-  public HashMap<String, String> updateSyncConnectors(
-      List<SyncConnectorUpdates> updatedSyncTopics) {
+  public Map<String, String> updateSyncConnectors(List<SyncConnectorUpdates> updatedSyncTopics) {
     log.info("updateSyncConnectors {}", updatedSyncTopics);
     String userDetails = getUserName();
-    HashMap<String, String> response = new HashMap<>();
+    Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
       response.put("result", "Not Authorized");

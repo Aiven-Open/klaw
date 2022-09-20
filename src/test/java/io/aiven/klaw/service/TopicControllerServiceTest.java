@@ -36,7 +36,7 @@ public class TopicControllerServiceTest {
 
   @Mock private UserInfo userInfo;
 
-  @Mock private HashMap<Integer, KwClusters> clustersHashMap;
+  @Mock private Map<Integer, KwClusters> clustersHashMap;
 
   @Mock private KwClusters kwClusters;
 
@@ -54,7 +54,7 @@ public class TopicControllerServiceTest {
 
   @Mock RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  @Mock HashMap<Integer, KwTenantConfigModel> tenantConfig;
+  @Mock Map<Integer, KwTenantConfigModel> tenantConfig;
 
   @Mock KwTenantConfigModel tenantConfigModel;
 
@@ -104,7 +104,7 @@ public class TopicControllerServiceTest {
   @Test
   @Order(1)
   public void createTopicsSuccess() throws KlawException {
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "success");
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
@@ -118,7 +118,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    HashMap<String, String> result = topicControllerService.createTopicsRequest(getCorrectTopic());
+    Map<String, String> result = topicControllerService.createTopicsRequest(getCorrectTopic());
 
     assertEquals("success", result.get("result"));
   }
@@ -126,7 +126,7 @@ public class TopicControllerServiceTest {
   @Test
   @Order(2)
   public void createTopicsSuccess1() throws KlawException {
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "success");
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
@@ -140,7 +140,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    HashMap<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic());
+    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic());
 
     assertEquals("success", result.get("result"));
   }
@@ -149,7 +149,7 @@ public class TopicControllerServiceTest {
   @Test
   @Order(3)
   public void createTopicsFailure() throws KlawException {
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "failure");
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
@@ -163,7 +163,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    HashMap<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
+    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
 
     assertEquals("failure", result.get("result"));
   }
@@ -183,7 +183,7 @@ public class TopicControllerServiceTest {
 
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    HashMap<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
+    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
 
     assertNull(result.get("result"));
   }
@@ -191,7 +191,7 @@ public class TopicControllerServiceTest {
   @Test
   @Order(7)
   public void updateSyncTopicsSuccess() {
-    HashMap<String, String> resultMap = new HashMap<>();
+    Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "success");
 
     stubUserInfo();
@@ -203,7 +203,7 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
 
-    HashMap<String, String> result =
+    Map<String, String> result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
     assertEquals("success", result.get("result"));
@@ -222,7 +222,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    HashMap<String, String> result = topicSyncControllerService.updateSyncTopics(topicUpdates);
+    Map<String, String> result = topicSyncControllerService.updateSyncTopics(topicUpdates);
 
     assertEquals("No record updated.", result.get("result"));
   }
@@ -234,7 +234,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    HashMap<String, String> result =
+    Map<String, String> result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
     assertEquals("Not Authorized.", result.get("result"));
@@ -414,7 +414,7 @@ public class TopicControllerServiceTest {
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
         .thenReturn(List.of("USER"));
 
-    HashMap<String, Object> topicRequests =
+    Map<String, Object> topicRequests =
         topicSyncControllerService.getSyncTopics(
             envSel, pageNo, "", topicNameSearch, "false", false);
     assertEquals(topicRequests.size(), 2);

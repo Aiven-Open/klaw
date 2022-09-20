@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class AnalyticsController {
       value = "/getTopicsCountPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getTopicsCountPerEnv(
+  public ResponseEntity<Map<String, String>> getTopicsCountPerEnv(
       @RequestParam("sourceEnvSelected") String sourceEnvSelected) {
     return new ResponseEntity<>(
         chartsProcessor.getTopicsCountPerEnv(sourceEnvSelected), HttpStatus.OK);
@@ -57,7 +58,7 @@ public class AnalyticsController {
       value = "/getAclsCountPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getAclsCountPerEnv(
+  public ResponseEntity<Map<String, String>> getAclsCountPerEnv(
       @RequestParam("sourceEnvSelected") String sourceEnvSelected) {
     return new ResponseEntity<>(
         chartsProcessor.getAclsCountPerEnv(sourceEnvSelected), HttpStatus.OK);
@@ -67,14 +68,14 @@ public class AnalyticsController {
       value = "/getKwReport",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getKwReport() {
+  public ResponseEntity<Map<String, String>> getKwReport() {
 
     File file = chartsProcessor.generateReport();
 
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
       String str = Base64.getEncoder().encodeToString(arr);
-      HashMap<String, String> map = new HashMap<>();
+      Map<String, String> map = new HashMap<>();
       map.put("data", str);
       map.put("filename", file.getName());
 

@@ -60,8 +60,7 @@ public class MetricsControllerService {
     String jmxUrl = "service:jmx:rmi:///jndi/rmi://localhost:9996/jmxrmi";
 
     try {
-      HashMap<String, String> metrics =
-          clusterApiService.retrieveMetrics(jmxUrl, metricsObjectName);
+      Map<String, String> metrics = clusterApiService.retrieveMetrics(jmxUrl, metricsObjectName);
       KwMetrics kwMetrics =
           KwMetrics.builder()
               .metricsTime(new Date().getTime() + "")
@@ -89,7 +88,7 @@ public class MetricsControllerService {
 
   private ChartsJsOverview getBrokerTopMetricsOverview() {
     int numberOfDays = 30;
-    List<HashMap<String, String>> metricsCountList;
+    List<Map<String, String>> metricsCountList;
     String title = "Messages Per Sec";
 
     //        if(teamName != null) {

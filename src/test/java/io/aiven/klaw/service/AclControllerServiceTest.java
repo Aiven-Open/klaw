@@ -2,8 +2,11 @@ package io.aiven.klaw.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -16,9 +19,17 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.SyncAclUpdates;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -49,7 +60,7 @@ public class AclControllerServiceTest {
 
   @Mock private RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  @Mock private HashMap<Integer, KwClusters> clustersHashMap;
+  @Mock private Map<Integer, KwClusters> clustersHashMap;
 
   @Mock private KwClusters kwClusters;
 
@@ -94,7 +105,7 @@ public class AclControllerServiceTest {
     copyProperties(aclRequests, aclRequestsDao);
     List<Topic> topicList = utilMethods.getTopics();
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", "success");
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
@@ -113,7 +124,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    HashMap<String, String> result =
+    Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertEquals("success", result.get("result"));
   }
@@ -124,7 +135,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    HashMap<String, String> result =
+    Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertEquals("Not Authorized.", result.get("result"));
   }
@@ -138,7 +149,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    HashMap<String, String> result =
+    Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
   }
@@ -157,7 +168,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    HashMap<String, String> result = aclControllerService.updateSyncAcls(updates);
+    Map<String, String> result = aclControllerService.updateSyncAcls(updates);
     assertEquals("No record updated.", result.get("result"));
   }
 
@@ -170,7 +181,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    HashMap<String, String> result =
+    Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
   }

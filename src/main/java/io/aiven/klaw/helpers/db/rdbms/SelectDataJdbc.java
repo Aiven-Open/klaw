@@ -180,8 +180,8 @@ public class SelectDataJdbc {
     }
   }
 
-  public HashMap<String, String> getDashboardStats(Integer teamId, int tenantId) {
-    HashMap<String, String> dashboardMap = new HashMap<>();
+  public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
+    Map<String, String> dashboardMap = new HashMap<>();
     int countProducers = 0, countConsumers = 0;
     List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId("Producer", teamId, tenantId);
     List<String> topicList = new ArrayList<>();
@@ -215,7 +215,7 @@ public class SelectDataJdbc {
 
     List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
-    HashMap<String, List<String>> topicEnvMap = new HashMap<>();
+    Map<String, List<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
     List<String> envList;
 
@@ -522,9 +522,9 @@ public class SelectDataJdbc {
     return teamList;
   }
 
-  public HashMap<String, String> getDashboardInfo(Integer teamId, int tenantId) {
+  public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
     log.debug("getDashboardInfo {}", teamId);
-    HashMap<String, String> dashboardInfo = new HashMap<>();
+    Map<String, String> dashboardInfo = new HashMap<>();
     Integer topicListSize = topicRepo.findDistinctCountTopicnameByTeamId(teamId, tenantId);
     dashboardInfo.put("myteamtopics", "" + topicListSize);
 
@@ -596,14 +596,14 @@ public class SelectDataJdbc {
     else return null;
   }
 
-  public List<HashMap<String, String>> selectActivityLogByTeam(
+  public List<Map<String, String>> selectActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
-    List<HashMap<String, String>> totalActivityLogCount = new ArrayList<>();
+    List<Map<String, String>> totalActivityLogCount = new ArrayList<>();
     try {
       List<Object[]> activityCount = activityLogRepo.findActivityLogForTeamId(teamId, tenantId);
       if (activityCount.size() > numberOfDays)
         activityCount = activityCount.subList(0, numberOfDays - 1);
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] actvty : activityCount) {
         hashMap = new HashMap<>();
         hashMap.put("dateofactivity", "" + actvty[0]);
@@ -617,15 +617,15 @@ public class SelectDataJdbc {
     return totalActivityLogCount;
   }
 
-  public List<HashMap<String, String>> selectActivityLogForLastDays(
+  public List<Map<String, String>> selectActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId) {
-    List<HashMap<String, String>> totalActivityLogCount = new ArrayList<>();
+    List<Map<String, String>> totalActivityLogCount = new ArrayList<>();
     try {
       List<Object[]> activityCount =
           activityLogRepo.findActivityLogForLastDays(envIdList, tenantId);
       if (activityCount.size() > numberOfDays)
         activityCount = activityCount.subList(0, numberOfDays - 1);
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] actvty : activityCount) {
         hashMap = new HashMap<>();
         hashMap.put("dateofactivity", "" + actvty[0]);
@@ -639,12 +639,12 @@ public class SelectDataJdbc {
     return totalActivityLogCount;
   }
 
-  public List<HashMap<String, String>> selectTopicsCountByEnv(Integer tenantId) {
-    List<HashMap<String, String>> totalTopicCount = new ArrayList<>();
+  public List<Map<String, String>> selectTopicsCountByEnv(Integer tenantId) {
+    List<Map<String, String>> totalTopicCount = new ArrayList<>();
     try {
       List<Object[]> topics = topicRepo.findAllTopicsGroupByEnv(tenantId);
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         hashMap.put("cluster", (String) topic[0]);
@@ -658,15 +658,14 @@ public class SelectDataJdbc {
     return totalTopicCount;
   }
 
-  public List<HashMap<String, String>> selectPartitionsCountByEnv(
-      Integer teamId, Integer tenantId) {
-    List<HashMap<String, String>> totalPartitionsCount = new ArrayList<>();
+  public List<Map<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId) {
+    List<Map<String, String>> totalPartitionsCount = new ArrayList<>();
     try {
       List<Object[]> topics;
       if (teamId != null) topics = topicRepo.findAllPartitionsForTeamGroupByEnv(teamId, tenantId);
       else topics = topicRepo.findAllPartitionsGroupByEnv(tenantId);
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         hashMap.put("cluster", (String) topic[0]);
@@ -680,14 +679,14 @@ public class SelectDataJdbc {
     return totalPartitionsCount;
   }
 
-  public List<HashMap<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId) {
-    List<HashMap<String, String>> totalAclsCount = new ArrayList<>();
+  public List<Map<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId) {
+    List<Map<String, String>> totalAclsCount = new ArrayList<>();
     try {
       List<Object[]> topics;
       if (teamId != null) topics = aclRepo.findAllAclsforTeamGroupByEnv(teamId, tenantId);
       else topics = aclRepo.findAllAclsGroupByEnv(tenantId);
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         hashMap.put("cluster", (String) topic[0]);
@@ -701,14 +700,14 @@ public class SelectDataJdbc {
     return totalAclsCount;
   }
 
-  public List<HashMap<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId) {
-    List<HashMap<String, String>> totalTopicCount = new ArrayList<>();
+  public List<Map<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId) {
+    List<Map<String, String>> totalTopicCount = new ArrayList<>();
     try {
       List<Object[]> topics;
       if (teamId != null) topics = topicRepo.findAllTopicsForTeam(teamId, tenantId);
       else topics = topicRepo.findAllTopicsGroupByTeamId(tenantId);
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         if (teamId != null) {
@@ -727,9 +726,9 @@ public class SelectDataJdbc {
     return totalTopicCount;
   }
 
-  public List<HashMap<String, String>> selectAclsCountByTeams(
+  public List<Map<String, String>> selectAclsCountByTeams(
       String aclType, Integer teamId, Integer tenantId) {
-    List<HashMap<String, String>> totalAclCount = new ArrayList<>();
+    List<Map<String, String>> totalAclCount = new ArrayList<>();
     try {
       List<Object[]> acls;
       if (aclType.equals("Producer")) {
@@ -740,7 +739,7 @@ public class SelectDataJdbc {
         else acls = aclRepo.findAllConsumerAclsGroupByTeamId(tenantId);
       }
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] topic : acls) {
         hashMap = new HashMap<>();
         if (teamId != null) {
@@ -759,13 +758,12 @@ public class SelectDataJdbc {
     return totalAclCount;
   }
 
-  public List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(
-      Integer teamId, int tenantId) {
-    List<HashMap<String, String>> totalTopicCount = new ArrayList<>();
+  public List<Map<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
+    List<Map<String, String>> totalTopicCount = new ArrayList<>();
     try {
       List<Object[]> topics = topicRepo.findAllTopicsForTeamGroupByEnv(teamId, tenantId);
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         if (selectEnvDetails((String) topic[0], tenantId) != null) {
@@ -780,14 +778,14 @@ public class SelectDataJdbc {
     return totalTopicCount;
   }
 
-  public List<HashMap<String, String>> selectAllMetrics(
+  public List<Map<String, String>> selectAllMetrics(
       String metricsType, String metricsName, String env) {
-    List<HashMap<String, String>> metricsCount = new ArrayList<>();
+    List<Map<String, String>> metricsCount = new ArrayList<>();
     try {
       List<Object[]> metrics =
           kwMetricsRepo.findAllByEnvAndMetricsTypeAndMetricsName(env, metricsType, metricsName);
 
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (Object[] kwMetrics : metrics) {
         hashMap = new HashMap<>();
         hashMap.put("datetime", (String) kwMetrics[0]);
@@ -800,16 +798,16 @@ public class SelectDataJdbc {
     return metricsCount;
   }
 
-  public HashMap<Integer, HashMap<String, HashMap<String, String>>> selectAllKwProperties() {
-    HashMap<Integer, HashMap<String, HashMap<String, String>>> tenantProps = new HashMap<>();
+  public Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties() {
+    Map<Integer, Map<String, Map<String, String>>> tenantProps = new HashMap<>();
 
-    HashMap<String, String> mapProps;
+    Map<String, String> mapProps;
     List<KwTenants> tenants = getTenants();
 
     for (KwTenants tenant : tenants) {
       List<KwProperties> kwProps = kwPropertiesRepo.findAllByTenantId(tenant.getTenantId());
 
-      HashMap<String, HashMap<String, String>> fullMap = new HashMap<>();
+      Map<String, Map<String, String>> fullMap = new HashMap<>();
       for (KwProperties kwProp : kwProps) {
         mapProps = new HashMap<>();
         mapProps.put("kwkey", kwProp.getKwKey());

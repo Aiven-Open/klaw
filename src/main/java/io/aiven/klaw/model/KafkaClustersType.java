@@ -7,7 +7,7 @@ public enum KafkaClustersType {
 
   public final String value;
 
-  private KafkaClustersType(String value) {
+  KafkaClustersType(String value) {
     this.value = value;
   }
 }

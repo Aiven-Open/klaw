@@ -3,14 +3,19 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.service.AclControllerService;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
@@ -24,7 +29,7 @@ public class AclController {
   }
 
   @PostMapping(value = "/updateSyncAcls")
-  public ResponseEntity<HashMap<String, String>> updateSyncAcls(
+  public ResponseEntity<Map<String, String>> updateSyncAcls(
       @RequestBody List<SyncAclUpdates> syncAclUpdates) {
     return new ResponseEntity<>(aclControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
   }
@@ -113,9 +118,9 @@ public class AclController {
   }
 
   @PostMapping(value = "/updateSyncBackAcls")
-  public ResponseEntity<HashMap<String, List<String>>> updateSyncBackAcls(
+  public ResponseEntity<Map<String, List<String>>> updateSyncBackAcls(
       @RequestBody SyncBackAcls syncBackAcls) {
-    HashMap<String, List<String>> updateSyncAclsResult =
+    Map<String, List<String>> updateSyncAclsResult =
         aclControllerService.updateSyncBackAcls(syncBackAcls);
     return new ResponseEntity<>(updateSyncAclsResult, HttpStatus.OK);
   }
@@ -143,7 +148,7 @@ public class AclController {
       value = "/getConsumerOffsets",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<HashMap<String, String>>> getConsumerOffsets(
+  public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
       @RequestParam("env") String envId,
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "consumerGroupId") String consumerGroupId)

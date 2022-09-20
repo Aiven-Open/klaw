@@ -8,6 +8,7 @@ import io.aiven.klaw.service.SaasService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -68,46 +69,45 @@ public class UsersTeamsController {
   }
 
   @PostMapping(value = "/updateProfile")
-  public ResponseEntity<HashMap<String, String>> updateProfile(
+  public ResponseEntity<Map<String, String>> updateProfile(
       @Valid @RequestBody UserInfoModel updateUserObj) {
     return new ResponseEntity<>(
         usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addNewUser")
-  public ResponseEntity<HashMap<String, String>> addNewUser(
-      @Valid @RequestBody UserInfoModel newUser) {
+  public ResponseEntity<Map<String, String>> addNewUser(@Valid @RequestBody UserInfoModel newUser) {
 
     try {
-      HashMap<String, String> response = usersTeamsControllerService.addNewUser(newUser, true);
+      Map<String, String> response = usersTeamsControllerService.addNewUser(newUser, true);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      HashMap<String, String> resMap = new HashMap<>();
+      Map<String, String> resMap = new HashMap<>();
       resMap.put("result", "Failure. Unable to create the user.");
       return new ResponseEntity<>(resMap, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PostMapping(value = "/registerUser")
-  public ResponseEntity<HashMap<String, String>> registerUser(
+  public ResponseEntity<Map<String, String>> registerUser(
       @Valid @RequestBody RegisterUserInfoModel newUser) throws Exception {
     try {
       return new ResponseEntity<>(
           usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
     } catch (Exception e) {
-      HashMap<String, String> resMap = new HashMap<>();
+      Map<String, String> resMap = new HashMap<>();
       resMap.put("result", "Failure. " + e.getMessage());
       return new ResponseEntity<>(resMap, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PostMapping(value = "/registerUserSaas")
-  public ResponseEntity<HashMap<String, String>> registerUserSaas(
+  public ResponseEntity<Map<String, String>> registerUserSaas(
       @Valid @RequestBody RegisterSaasUserInfoModel newUser) throws Exception {
     try {
       return new ResponseEntity<>(saasService.registerUserSaas(newUser), HttpStatus.OK);
     } catch (Exception e) {
-      HashMap<String, String> resMap = new HashMap<>();
+      Map<String, String> resMap = new HashMap<>();
       resMap.put("result", "Failure. Something went wrong. Please try later.");
       return new ResponseEntity<>(resMap, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -117,7 +117,7 @@ public class UsersTeamsController {
       value = "/getActivationInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getActivationInfo(
+  public ResponseEntity<Map<String, String>> getActivationInfo(
       @RequestParam("userActivationId") String userActivationId) {
     return new ResponseEntity<>(saasService.getActivationInfo(userActivationId), HttpStatus.OK);
   }
@@ -211,7 +211,7 @@ public class UsersTeamsController {
   }
 
   @PostMapping(value = "/resetPassword")
-  public ResponseEntity<HashMap<String, String>> resetPassword(
+  public ResponseEntity<Map<String, String>> resetPassword(
       @RequestParam("username") String username) {
     return new ResponseEntity<>(usersTeamsControllerService.resetPassword(username), HttpStatus.OK);
   }

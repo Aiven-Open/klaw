@@ -1,14 +1,30 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.dao.*;
-import io.aiven.klaw.repository.*;
-import java.util.HashMap;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.MessageSchema;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.repository.AclRepo;
+import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.ActivityLogRepo;
+import io.aiven.klaw.repository.EnvRepo;
+import io.aiven.klaw.repository.MessageSchemaRepo;
+import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TeamRepo;
+import io.aiven.klaw.repository.TopicRepo;
+import io.aiven.klaw.repository.TopicRequestsRepo;
+import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +89,7 @@ public class InsertDataJdbcTest {
     when(topicRequestsRepo.getNextTopicRequestId(anyInt())).thenReturn(101);
     when(activityLogRepo.getNextActivityLogRequestId(anyInt())).thenReturn(101);
 
-    HashMap<String, String> result = insertData.insertIntoRequestTopic(topicRequest);
+    Map<String, String> result = insertData.insertIntoRequestTopic(topicRequest);
     assertEquals("success", result.get("result"));
   }
 

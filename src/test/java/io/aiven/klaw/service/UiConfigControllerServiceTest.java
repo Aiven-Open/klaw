@@ -1,7 +1,9 @@
 package io.aiven.klaw.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -11,9 +13,13 @@ import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.UserInfoModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import org.junit.jupiter.api.*;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -47,9 +53,9 @@ public class UiConfigControllerServiceTest {
 
   @Mock private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
-  @Mock private HashMap<Integer, String> tenantMap;
+  @Mock private Map<Integer, String> tenantMap;
 
-  @Mock private HashMap<Integer, KwClusters> kwClustersHashMap;
+  @Mock private Map<Integer, KwClusters> kwClustersHashMap;
 
   @Mock private KwClusters kwClusters;
 

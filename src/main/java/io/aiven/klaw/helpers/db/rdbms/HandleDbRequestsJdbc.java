@@ -1,11 +1,28 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KafkaConnectorRequest;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.KwMetrics;
+import io.aiven.klaw.dao.KwProperties;
+import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.ProductDetails;
+import io.aiven.klaw.dao.RegisterUserInfo;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.RequestStatus;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,15 +47,15 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   /*--------------------Insert */
 
-  public HashMap<String, String> requestForTopic(TopicRequest topicRequest) {
+  public Map<String, String> requestForTopic(TopicRequest topicRequest) {
     return jdbcInsertHelper.insertIntoRequestTopic(topicRequest);
   }
 
-  public HashMap<String, String> requestForConnector(KafkaConnectorRequest connectorRequest) {
+  public Map<String, String> requestForConnector(KafkaConnectorRequest connectorRequest) {
     return jdbcInsertHelper.insertIntoRequestConnector(connectorRequest);
   }
 
-  public HashMap<String, String> requestForAcl(AclRequests aclReq) {
+  public Map<String, String> requestForAcl(AclRequests aclReq) {
     return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
   }
 
@@ -264,7 +281,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public HashMap<String, String> getDashboardInfo(Integer teamId, int tenantId) {
+  public Map<String, String> getDashboardInfo(Integer teamId, int tenantId) {
     return jdbcSelectHelper.getDashboardInfo(teamId, tenantId);
   }
 
@@ -362,7 +379,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public HashMap<Integer, HashMap<String, HashMap<String, String>>> selectAllKwProperties() {
+  public Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties() {
     return jdbcSelectHelper.selectAllKwProperties();
   }
 
@@ -437,7 +454,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public HashMap<String, String> getDashboardStats(Integer teamId, int tenantId) {
+  public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
     return jdbcSelectHelper.getDashboardStats(teamId, tenantId);
   }
 
@@ -448,52 +465,50 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<HashMap<String, String>> selectActivityLogForLastDays(
+  public List<Map<String, String>> selectActivityLogForLastDays(
       int numberOfDays, String[] envId, int tenantId) {
     return jdbcSelectHelper.selectActivityLogForLastDays(numberOfDays, envId, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectActivityLogByTeam(
+  public List<Map<String, String>> selectActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
     return jdbcSelectHelper.selectActivityLogByTeam(teamId, numberOfDays, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId) {
+  public List<Map<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectTopicsCountByTeams(teamId, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectTopicsCountByEnv(Integer tenantId) {
+  public List<Map<String, String>> selectTopicsCountByEnv(Integer tenantId) {
     return jdbcSelectHelper.selectTopicsCountByEnv(tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectPartitionsCountByEnv(
-      Integer teamId, Integer tenantId) {
+  public List<Map<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectPartitionsCountByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId) {
+  public List<Map<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectAclsCountByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectAclsCountByTeams(
+  public List<Map<String, String>> selectAclsCountByTeams(
       String aclType, Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectAclsCountByTeams(aclType, teamId, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectAllTopicsForTeamGroupByEnv(
-      Integer teamId, int tenantId) {
+  public List<Map<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectAllTopicsForTeamGroupByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<HashMap<String, String>> selectAllMetrics(
+  public List<Map<String, String>> selectAllMetrics(
       String metricsType, String metricsName, String env) {
     return jdbcSelectHelper.selectAllMetrics(metricsType, metricsName, env);
   }

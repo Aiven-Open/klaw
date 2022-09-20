@@ -9,13 +9,32 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.model.*;
-import java.io.*;
+import io.aiven.klaw.model.AclOperation;
+import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.AclsNativeType;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaFlavors;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.*;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
@@ -28,7 +47,11 @@ import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -189,7 +212,7 @@ public class ClusterApiService {
     return clusterStatus;
   }
 
-  public List<HashMap<String, String>> getConsumerOffsets(
+  public List<Map<String, String>> getConsumerOffsets(
       String bootstrapHost,
       String protocol,
       String clusterName,
@@ -199,7 +222,7 @@ public class ClusterApiService {
       throws KlawException {
     log.info("getConsumerOffsets {} {} {} {}", bootstrapHost, protocol, topic, consumerGroupId);
     getClusterApiProperties(tenantId);
-    List<HashMap<String, String>> offsetsMap;
+    List<Map<String, String>> offsetsMap;
     try {
       String url = "/topics/getConsumerOffsets/";
       url =
@@ -222,7 +245,7 @@ public class ClusterApiService {
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-      HttpEntity<List<HashMap<String, String>>> entity = new HttpEntity<>(headers);
+      HttpEntity<List<Map<String, String>>> entity = new HttpEntity<>(headers);
       ResponseEntity<List> resultBody =
           restTemplate.exchange(url, HttpMethod.GET, entity, List.class);
 
@@ -283,13 +306,13 @@ public class ClusterApiService {
     return eventsMap;
   }
 
-  public List<HashMap<String, String>> getAcls(
+  public List<Map<String, String>> getAcls(
       String bootstrapHost, String protocol, String clusterName, int tenantId)
       throws KlawException {
     log.info("getAcls {} {} {}", bootstrapHost, protocol, tenantId);
     getClusterApiProperties(tenantId);
 
-    List<HashMap<String, String>> aclListOriginal;
+    List<Map<String, String>> aclListOriginal;
     try {
       String URI_GET_ACLS = "/topics/getAcls/";
       String uri =
@@ -308,7 +331,7 @@ public class ClusterApiService {
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-      HttpEntity<Set<HashMap<String, String>>> entity = new HttpEntity<>(headers);
+      HttpEntity<Set<Map<String, String>>> entity = new HttpEntity<>(headers);
 
       ResponseEntity<Set> resultBody =
           restTemplate.exchange(uri, HttpMethod.GET, entity, Set.class);
@@ -320,11 +343,11 @@ public class ClusterApiService {
     return aclListOriginal;
   }
 
-  public List<HashMap<String, String>> getAllTopics(
+  public List<Map<String, String>> getAllTopics(
       String bootstrapHost, String protocol, String clusterName, int tenantId) throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
-    List<HashMap<String, String>> topicsList;
+    List<Map<String, String>> topicsList;
     try {
       String URI_GET_TOPICS = "/topics/getTopics/";
       String uriGetTopicsFull =
@@ -590,7 +613,7 @@ public class ClusterApiService {
     return response;
   }
 
-  public TreeMap<Integer, HashMap<String, Object>> getAvroSchema(
+  public TreeMap<Integer, Map<String, Object>> getAvroSchema(
       String schemaRegistryHost,
       String protocol,
       String clusterName,
@@ -599,7 +622,7 @@ public class ClusterApiService {
       throws Exception {
     log.info("getAvroSchema {} {}", schemaRegistryHost, topicName);
     getClusterApiProperties(tenantId);
-    TreeMap<Integer, HashMap<String, Object>> allVersionSchemas =
+    TreeMap<Integer, Map<String, Object>> allVersionSchemas =
         new TreeMap<>(Collections.reverseOrder());
     try {
       String URI_GET_TOPICS = "/topics/getSchema/";
@@ -624,7 +647,7 @@ public class ClusterApiService {
       ResponseEntity<TreeMap> s =
           restTemplate.exchange(uriGetTopicsFull, HttpMethod.GET, entity, TreeMap.class);
 
-      TreeMap<String, HashMap<String, Object>> schemaObjects = s.getBody();
+      TreeMap<String, Map<String, Object>> schemaObjects = s.getBody();
       for (String schemaVersion : schemaObjects.keySet()) {
         allVersionSchemas.put(Integer.parseInt(schemaVersion), schemaObjects.get(schemaVersion));
       }
@@ -636,7 +659,7 @@ public class ClusterApiService {
     }
   }
 
-  public LinkedHashMap<String, Object> getConnectorDetails(
+  public Map<String, Object> getConnectorDetails(
       String connectorName, String kafkaConnectHost, String protocol, int tenantId)
       throws KlawException {
     log.info("getConnectorDetails {} {}", connectorName, kafkaConnectHost);
@@ -688,7 +711,7 @@ public class ClusterApiService {
     }
   }
 
-  public HashMap<String, String> retrieveMetrics(String jmxUrl, String objectName)
+  public Map<String, String> retrieveMetrics(String jmxUrl, String objectName)
       throws KlawException {
     log.info("retrieveMetrics {} {}", jmxUrl, objectName);
     getClusterApiProperties(101);

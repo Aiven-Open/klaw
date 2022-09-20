@@ -661,7 +661,7 @@ public class TopicAclControllerIT {
   @Order(22)
   @Test
   public void getAclsWithSearch() throws Exception {
-    List<HashMap<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
+    List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
     when(clusterApiService.getAcls(anyString(), eq("PLAINTEXT"), anyString(), anyInt()))
         .thenReturn(aclInfo);
 
@@ -685,7 +685,7 @@ public class TopicAclControllerIT {
   @Order(23)
   @Test
   public void getAclsToBeSynced() throws Exception {
-    List<HashMap<String, String>> aclInfo = utilMethods.getClusterAcls();
+    List<Map<String, String>> aclInfo = utilMethods.getClusterAcls();
 
     when(clusterApiService.getAcls(anyString(), eq("PLAINTEXT"), anyString(), anyInt()))
         .thenReturn(aclInfo);

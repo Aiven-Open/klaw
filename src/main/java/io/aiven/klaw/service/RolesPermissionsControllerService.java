@@ -52,7 +52,7 @@ public class RolesPermissionsControllerService {
             .keySet());
   }
 
-  public HashMap<String, List<HashMap<String, Boolean>>> getPermissions(boolean isExternalCall) {
+  public Map<String, List<Map<String, Boolean>>> getPermissions(boolean isExternalCall) {
 
     if (isExternalCall
         && commonUtilsService.isNotAuthorizedUser(
@@ -68,17 +68,17 @@ public class RolesPermissionsControllerService {
 
     Collections.sort(permsList);
 
-    HashMap<String, List<String>> existingPerms =
+    Map<String, List<String>> existingPerms =
         manageDatabase.getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()));
-    HashMap<String, List<HashMap<String, Boolean>>> finalMap = new HashMap<>();
-    List<HashMap<String, Boolean>> mapList;
+    Map<String, List<Map<String, Boolean>>> finalMap = new HashMap<>();
+    List<Map<String, Boolean>> mapList;
     List<String> roles = new ArrayList<>(existingPerms.keySet());
     Collections.sort(roles);
 
     for (String role : roles) {
       mapList = new ArrayList<>();
       for (String perm : permsList) {
-        HashMap<String, Boolean> perMap = new HashMap<>();
+        Map<String, Boolean> perMap = new HashMap<>();
         if (kwInstallationType.equals("saas") && perm.equals("ADD_TENANT")) {
           // do nothing
         } else {
@@ -92,23 +92,23 @@ public class RolesPermissionsControllerService {
     return finalMap;
   }
 
-  public HashMap<String, String> getPermissionDescriptions() {
-    HashMap<String, String> hMap = new HashMap<>();
+  public Map<String, String> getPermissionDescriptions() {
+    Map<String, String> hMap = new HashMap<>();
     for (PermissionType value : PermissionType.values()) {
       hMap.put(value.name(), value.getDescription());
     }
     return hMap;
   }
 
-  public HashMap<String, String> updatePermissions(KwRolesPermissionsModel[] permissionsSet) {
-    HashMap<String, String> updatedPermsMapStatus = new HashMap<>();
+  public Map<String, String> updatePermissions(KwRolesPermissionsModel[] permissionsSet) {
+    Map<String, String> updatedPermsMapStatus = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
       updatedPermsMapStatus.put("result", "Not Authorized");
       return updatedPermsMapStatus;
     }
 
-    HashMap<String, String> uniqueMap = new HashMap<>();
+    Map<String, String> uniqueMap = new HashMap<>();
     for (KwRolesPermissionsModel kwRolesPermissionsModel : permissionsSet) {
       uniqueMap.put(
           kwRolesPermissionsModel.getRolePermission(),
@@ -147,8 +147,8 @@ public class RolesPermissionsControllerService {
     return updatedPermsMapStatus;
   }
 
-  public HashMap<String, String> deleteRole(String roleId) {
-    HashMap<String, String> deleteRoleStatus = new HashMap<>();
+  public Map<String, String> deleteRole(String roleId) {
+    Map<String, String> deleteRoleStatus = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
       deleteRoleStatus.put("result", "Not Authorized");
@@ -169,8 +169,8 @@ public class RolesPermissionsControllerService {
     return deleteRoleStatus;
   }
 
-  public HashMap<String, String> addRoleId(String roleId) {
-    HashMap<String, String> addRoleStatus = new HashMap<>();
+  public Map<String, String> addRoleId(String roleId) {
+    Map<String, String> addRoleStatus = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
       addRoleStatus.put("result", "Not Authorized");
@@ -197,12 +197,12 @@ public class RolesPermissionsControllerService {
   }
 
   protected List<String> getApproverRoles(String requestType, int tenantId) {
-    HashMap<String, List<HashMap<String, Boolean>>> existingPermissions = getPermissions(false);
+    Map<String, List<Map<String, Boolean>>> existingPermissions = getPermissions(false);
     List<String> approverRoles = new ArrayList<>();
-    for (Map.Entry<String, List<HashMap<String, Boolean>>> permissionsListEntry :
+    for (Map.Entry<String, List<Map<String, Boolean>>> permissionsListEntry :
         existingPermissions.entrySet()) {
-      List<HashMap<String, Boolean>> entryDets = permissionsListEntry.getValue();
-      for (HashMap<String, Boolean> entryDet : entryDets) {
+      List<Map<String, Boolean>> entryDets = permissionsListEntry.getValue();
+      for (Map<String, Boolean> entryDet : entryDets) {
         for (Map.Entry<String, Boolean> stringBooleanEntry : entryDet.entrySet()) {
           if (stringBooleanEntry.getValue().equals(true)) {
             if (requestType.equals("SUBSCRIPTIONS")

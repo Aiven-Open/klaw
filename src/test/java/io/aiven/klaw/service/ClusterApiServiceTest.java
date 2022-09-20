@@ -38,7 +38,7 @@ public class ClusterApiServiceTest {
 
   @Mock RestTemplate restTemplate;
 
-  @Mock private HashMap<Integer, KwClusters> clustersHashMap;
+  @Mock private Map<Integer, KwClusters> clustersHashMap;
 
   @Mock private KwClusters kwClusters;
 
@@ -98,14 +98,14 @@ public class ClusterApiServiceTest {
   @Test
   @Order(3)
   public void getAclsSuccess() throws KlawException {
-    Set<HashMap<String, String>> aclListOriginal = utilMethods.getAclsMock();
+    Set<Map<String, String>> aclListOriginal = utilMethods.getAclsMock();
     ResponseEntity<Set> response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
 
     when(restTemplate.exchange(
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenReturn(response);
 
-    List<HashMap<String, String>> result = clusterApiService.getAcls("", "PLAINTEXT", "", 1);
+    List<Map<String, String>> result = clusterApiService.getAcls("", "PLAINTEXT", "", 1);
     assertEquals(result, new ArrayList<>(aclListOriginal));
   }
 
@@ -130,7 +130,7 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenReturn(response);
 
-    List<HashMap<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT", "", 1);
+    List<Map<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT", "", 1);
     assertEquals(result, new ArrayList<>(topicsList));
   }
 

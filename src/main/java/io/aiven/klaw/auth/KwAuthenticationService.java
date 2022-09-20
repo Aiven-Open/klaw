@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
@@ -61,8 +62,8 @@ public class KwAuthenticationService {
     }
   }
 
-  HashMap<String, Object> searchUser(String username, String pwd) throws NamingException {
-    HashMap<String, Object> userObject = new HashMap<>();
+  Map<String, Object> searchUser(String username, String pwd) throws NamingException {
+    Map<String, Object> userObject = new HashMap<>();
     DirContext ctx = bindAsUser(username, pwd);
     DirContextOperations var5;
     try {
@@ -171,7 +172,7 @@ public class KwAuthenticationService {
   Authentication searchUserAttributes(HttpServletRequest request, HttpServletResponse response) {
     try {
       String userName = request.getParameter("username");
-      HashMap<String, Object> userAttributesObject =
+      Map<String, Object> userAttributesObject =
           searchUser(userName, request.getParameter("password"));
 
       // User found in AD and not in KW db

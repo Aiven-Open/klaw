@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -62,7 +63,7 @@ public class UtilControllerService {
 
   @Autowired private ConfigurableApplicationContext context;
 
-  public HashMap<String, String> getDashboardStats() {
+  public Map<String, String> getDashboardStats() {
     log.debug("getDashboardInfo");
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -101,11 +102,11 @@ public class UtilControllerService {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
-  public HashMap<String, String> getAllRequestsToBeApproved(String requestor, int tenantId) {
+  public Map<String, String> getAllRequestsToBeApproved(String requestor, int tenantId) {
     log.debug("getAllRequestsToBeApproved {}", requestor);
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
 
-    HashMap<String, String> countList = new HashMap<>();
+    Map<String, String> countList = new HashMap<>();
     String roleToSet = "";
     if (!commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
@@ -191,7 +192,7 @@ public class UtilControllerService {
     return countList;
   }
 
-  public HashMap<String, String> getAuth() {
+  public Map<String, String> getAuth() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -201,7 +202,7 @@ public class UtilControllerService {
 
       String authority = commonUtilsService.getAuthority(getPrincipal());
 
-      HashMap<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
+      Map<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
 
       String outstandingTopicReqs = outstanding.get("topics");
       int outstandingTopicReqsInt = Integer.parseInt(outstandingTopicReqs);
@@ -228,7 +229,7 @@ public class UtilControllerService {
 
       if (outstandingUserReqsInt <= 0) outstandingUserReqs = "0";
 
-      HashMap<String, String> dashboardData =
+      Map<String, String> dashboardData =
           reqsHandle.getDashboardInfo(getMyTeamId(userName), tenantId);
 
       dashboardData.put("contextPath", kwContextPath);
@@ -511,8 +512,8 @@ public class UtilControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  public HashMap<String, String> getBasicInfo() {
-    HashMap<String, String> resultBasicInfo = new HashMap<>();
+  public Map<String, String> getBasicInfo() {
+    Map<String, String> resultBasicInfo = new HashMap<>();
     resultBasicInfo.put("contextPath", kwContextPath);
 
     if (ssoEnabled.equals("true")) {

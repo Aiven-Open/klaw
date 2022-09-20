@@ -2,13 +2,17 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.service.UiConfigControllerService;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
@@ -20,7 +24,7 @@ public class UiConfigController {
       value = "/getDbAuth",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<HashMap<String, String>> getDbAuth() {
+  public ResponseEntity<Map<String, String>> getDbAuth() {
     return new ResponseEntity<>(uiConfigControllerService.getDbAuth(), HttpStatus.OK);
   }
 
@@ -33,7 +37,7 @@ public class UiConfigController {
   }
 
   @PostMapping(value = "/sendMessageToAdmin")
-  public ResponseEntity<HashMap<String, String>> sendMessageToAdmin(
+  public ResponseEntity<Map<String, String>> sendMessageToAdmin(
       @RequestParam("contactFormSubject") String contactFormSubject,
       @RequestParam("contactFormMessage") String contactFormMessage) {
     return new ResponseEntity<>(

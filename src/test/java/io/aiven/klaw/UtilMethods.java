@@ -146,8 +146,8 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
-  public List<HashMap<String, String>> getClusterAcls() {
-    Set<HashMap<String, String>> acls = new HashSet<>();
+  public List<Map<String, String>> getClusterAcls() {
+    Set<Map<String, String>> acls = new HashSet<>();
 
     HashMap<String, String> aclbindingMap = new HashMap<>();
 
@@ -180,8 +180,8 @@ public class UtilMethods {
     return new ArrayList<>(acls);
   }
 
-  public List<HashMap<String, String>> getClusterAcls2() {
-    Set<HashMap<String, String>> acls = new HashSet<>();
+  public List<Map<String, String>> getClusterAcls2() {
+    Set<Map<String, String>> acls = new HashSet<>();
 
     HashMap<String, String> aclbindingMap = new HashMap<>();
 
@@ -214,8 +214,8 @@ public class UtilMethods {
     return new ArrayList<>(acls);
   }
 
-  public Set<HashMap<String, String>> getAclsMock() {
-    Set<HashMap<String, String>> listAcls = new HashSet<>();
+  public Set<Map<String, String>> getAclsMock() {
+    Set<Map<String, String>> listAcls = new HashSet<>();
     HashMap<String, String> hsMp = new HashMap<>();
     hsMp.put("key", "val");
     listAcls.add(hsMp);
@@ -465,8 +465,8 @@ public class UtilMethods {
     return envList;
   }
 
-  public List<HashMap<String, String>> getSyncEnv() {
-    List<HashMap<String, String>> envList = new ArrayList<>();
+  public List<Map<String, String>> getSyncEnv() {
+    List<Map<String, String>> envList = new ArrayList<>();
 
     HashMap<String, String> hMap = new HashMap<>();
     hMap.put("key", "1");
@@ -500,8 +500,8 @@ public class UtilMethods {
     return aclRequest;
   }
 
-  public List<HashMap<String, String>> getClusterApiTopics(String topicPrefix, int size) {
-    List<HashMap<String, String>> listTopics = new ArrayList<>();
+  public List<Map<String, String>> getClusterApiTopics(String topicPrefix, int size) {
+    List<Map<String, String>> listTopics = new ArrayList<>();
     HashMap<String, String> hashMap;
     for (int i = 0; i < size; i++) {
       hashMap = new HashMap<>();

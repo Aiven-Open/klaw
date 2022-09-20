@@ -6,7 +6,7 @@ public enum AclType {
 
   public final String value;
 
-  private AclType(String value) {
+  AclType(String value) {
     this.value = value;
   }
 }

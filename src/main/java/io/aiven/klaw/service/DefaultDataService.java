@@ -305,9 +305,9 @@ public class DefaultDataService {
 
   public List<KwRolesPermissions> createDefaultRolesPermissions(
       int tenantId, boolean isSuperAdmin, String kwInstallationType) {
-    HashMap<String, String> defaultUserPermissionsList = getDefaultUserPermissionsList();
-    HashMap<String, String> defaultAdminPermissionsList = getDefaultAdminPermissionsList();
-    HashMap<String, String> superAdminPermissionsList = getDefaultSuperAdminPermissionsList();
+    Map<String, String> defaultUserPermissionsList = getDefaultUserPermissionsList();
+    Map<String, String> defaultAdminPermissionsList = getDefaultAdminPermissionsList();
+    Map<String, String> superAdminPermissionsList = getDefaultSuperAdminPermissionsList();
 
     if (!kwInstallationType.equals("saas")) // on premise
     {
@@ -347,8 +347,8 @@ public class DefaultDataService {
     return kwRolesPermissionsList;
   }
 
-  private static HashMap<String, String> getDefaultUserPermissionsList() {
-    HashMap<String, String> defaultUserPermissionsList = new HashMap<>();
+  private static Map<String, String> getDefaultUserPermissionsList() {
+    Map<String, String> defaultUserPermissionsList = new HashMap<>();
 
     defaultUserPermissionsList.put(
         "REQUEST_CREATE_TOPICS", PermissionType.REQUEST_CREATE_TOPICS.getDescription());
@@ -383,8 +383,8 @@ public class DefaultDataService {
     return defaultUserPermissionsList;
   }
 
-  private static HashMap<String, String> getDefaultAdminPermissionsList() {
-    HashMap<String, String> defaultAdminPermissionsList = new HashMap<>();
+  private static Map<String, String> getDefaultAdminPermissionsList() {
+    Map<String, String> defaultAdminPermissionsList = new HashMap<>();
 
     defaultAdminPermissionsList.put(
         "ADD_EDIT_DELETE_TEAMS", PermissionType.ADD_EDIT_DELETE_TEAMS.getDescription());
@@ -420,8 +420,8 @@ public class DefaultDataService {
     return defaultAdminPermissionsList;
   }
 
-  public HashMap<String, String> getDefaultSuperAdminPermissionsList() {
-    HashMap<String, String> permissionsList = new HashMap<>();
+  public Map<String, String> getDefaultSuperAdminPermissionsList() {
+    Map<String, String> permissionsList = new HashMap<>();
 
     permissionsList.put("SHUTDOWN_KLAW", PermissionType.SHUTDOWN_KLAW.getDescription());
     return permissionsList;
