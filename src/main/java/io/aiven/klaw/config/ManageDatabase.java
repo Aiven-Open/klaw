@@ -313,12 +313,9 @@ public class ManageDatabase implements ApplicationContextAware {
   }
 
   public String getTeamNameFromTeamId(int tenantId, int teamId) {
-    Optional<Map.Entry<Integer, String>> optionalTeam =
-        teamIdAndNamePerTenant.get(tenantId).entrySet().stream()
-            .filter(a -> a.getKey() == teamId)
-            .findFirst();
-    if (optionalTeam.isPresent()) return optionalTeam.get().getValue();
-    else return ""; // unknown team
+    return teamIdAndNamePerTenant
+        .getOrDefault(tenantId, Collections.emptyMap())
+        .getOrDefault(teamId, ""); // empty string in case of unknown team
   }
 
   public Map<Integer, List<String>> getEnvsOfTenantsMap() {
