@@ -1,931 +1,913 @@
 databaseChangeLog:
-- changeSet:
-    id: 1657227954622-1
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_9
-            name: aclid
-            type: INT
-        - column:
-            name: topicname
-            type: VARCHAR(150)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            constraints:
-              nullable: false
-            name: requestingteam
-            type: INT
-        - column:
-            name: appname
-            type: VARCHAR(150)
-        - column:
-            name: topictype
-            type: VARCHAR(25)
-        - column:
-            name: consumergroup
-            type: VARCHAR(150)
-        - column:
-            name: requestor
-            type: VARCHAR(300)
-        - column:
-            name: requesttime
-            type: TIMESTAMP
-        - column:
-            name: topicstatus
-            type: VARCHAR(50)
-        - column:
-            name: remarks
-            type: VARCHAR(500)
-        - column:
-            name: aclip
-            type: VARCHAR(500)
-        - column:
-            name: aclssl
-            type: CLOB
-        - column:
-            name: approver
-            type: VARCHAR(300)
-        - column:
-            name: exectime
-            type: TIMESTAMP
-        - column:
-            name: acltype
-            type: VARCHAR(10)
-        - column:
-            name: aclpatterntype
-            type: VARCHAR(20)
-        - column:
-            name: aclresourcetype
-            type: VARCHAR(15)
-        - column:
-            name: transactionalid
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_9
-            name: tenantid
-            type: INT
-        - column:
-            name: otherparams
-            type: VARCHAR(50)
-        tableName: kwaclrequests
-- changeSet:
-    id: 1657227954622-2
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_B
-            name: aclid
-            type: INT
-        - column:
-            name: topicname
-            type: VARCHAR(150)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: consumergroup
-            type: VARCHAR(150)
-        - column:
-            name: topictype
-            type: VARCHAR(25)
-        - column:
-            name: aclip
-            type: VARCHAR(150)
-        - column:
-            name: aclssl
-            type: VARCHAR(200)
-        - column:
-            name: aclpatterntype
-            type: VARCHAR(20)
-        - column:
-            name: aclresourcetype
-            type: VARCHAR(15)
-        - column:
-            name: transactionalid
-            type: VARCHAR(50)
-        - column:
-            name: otherparams
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_B
-            name: tenantid
-            type: INT
-        - column:
-            name: jsonparams
-            type: CLOB
-        tableName: kwacls
-- changeSet:
-    id: 1657227954622-3
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_D
-            name: kwreqno
-            type: INT
-        - column:
-            name: activityname
-            type: VARCHAR(25)
-        - column:
-            name: activitytype
-            type: VARCHAR(25)
-        - column:
-            name: activitytime
-            type: TIMESTAMP
-        - column:
-            name: details
-            type: VARCHAR(250)
-        - column:
-            name: userid
-            type: VARCHAR(300)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_D
-            name: tenantid
-            type: INT
-        tableName: kwactivitylog
-- changeSet:
-    id: 1657227954622-4
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_CC
-            name: avroschemaid
-            type: INT
-        - column:
-            name: topicname
-            type: VARCHAR(150)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: schemafull
-            type: CLOB
-        - column:
-            name: versionschema
-            type: VARCHAR(3)
-        - column:
-            name: jsonparams
-            type: CLOB
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_CC
-            name: tenantid
-            type: INT
-        tableName: kwavroschemas
-- changeSet:
-    id: 1657227954622-5
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_5
-            name: clusterid
-            type: INT
-        - column:
-            constraints:
-              nullable: false
-            name: clustername
-            type: VARCHAR(25)
-        - column:
-            name: bootstrapservers
-            type: VARCHAR(250)
-        - column:
-            name: protocol
-            type: VARCHAR(30)
-        - column:
-            name: clustertype
-            type: VARCHAR(20)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_5
-            name: tenantid
-            type: INT
-        - column:
-            defaultValue: 'false'
-            name: sharedcluster
-            type: VARCHAR(5)
-        - column:
-            name: publickey
-            type: CLOB
-        - column:
-            name: cstatus
-            type: VARCHAR(25)
-        tableName: kwclusters
-- changeSet:
-    id: 1657227954622-6
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_6
-            name: id
-            type: VARCHAR(3)
-        - column:
-            constraints:
-              nullable: false
-            name: envname
-            type: VARCHAR(10)
-        - column:
-            name: envtype
-            type: VARCHAR(20)
-        - column:
-            name: clusterid
-            type: INT
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_6
-            name: tenantid
-            type: INT
-        - column:
-            name: otherparams
-            type: VARCHAR(250)
-        - column:
-            name: stretchcode
-            type: VARCHAR(15)
-        - column:
-            defaultValue: 'true'
-            name: envexists
-            type: VARCHAR(5)
-        - column:
-            name: envstatus
-            type: VARCHAR(25)
-        tableName: kwenv
-- changeSet:
-    id: 1657227954622-7
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_8D
-            name: connectorid
-            type: INT
-        - column:
-            name: connectorname
-            type: VARCHAR(150)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: connectorconfig
-            type: CLOB
-        - column:
-            name: description
-            type: VARCHAR(100)
-        - column:
-            name: documentation
-            type: CLOB
-        - column:
-            name: history
-            type: CLOB
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_8D
-            name: tenantid
-            type: INT
-        tableName: kwkafkaconnector
-- changeSet:
-    id: 1657227954622-8
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_9C
-            name: connectorid
-            type: INT
-        - column:
-            name: connectorname
-            type: VARCHAR(150)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: connectortype
-            type: VARCHAR(25)
-        - column:
-            name: requestor
-            type: VARCHAR(300)
-        - column:
-            name: requesttime
-            type: TIMESTAMP
-        - column:
-            name: connectorstatus
-            type: VARCHAR(50)
-        - column:
-            name: connectorconfig
-            type: CLOB
-        - column:
-            name: approver
-            type: VARCHAR(300)
-        - column:
-            name: exectime
-            type: TIMESTAMP
-        - column:
-            name: otherparams
-            type: VARCHAR(150)
-        - column:
-            name: description
-            type: VARCHAR(100)
-        - column:
-            name: remarks
-            type: VARCHAR(500)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_9C
-            name: tenantid
-            type: INT
-        tableName: kwkafkaconnectorrequests
-- changeSet:
-    id: 1657227954622-9
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_CB
-            name: metricsid
-            type: INT
-        - column:
-            name: metricstime
-            type: VARCHAR(20)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            name: metricstype
-            type: VARCHAR(150)
-        - column:
-            name: metricsname
-            type: VARCHAR(150)
-        - column:
-            name: metricsattributes
-            type: CLOB
-        tableName: kwkafkametrics
-- changeSet:
-    id: 1657227954622-10
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_F
-            name: name
-            type: VARCHAR(9)
-        - column:
-            name: version
-            type: VARCHAR(10)
-        tableName: kwproductdetails
-- changeSet:
-    id: 1657227954622-11
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_36
-            name: kwkey
-            type: VARCHAR(75)
-        - column:
-            name: kwvalue
-            type: VARCHAR(3000)
-        - column:
-            name: kwdesc
-            type: VARCHAR(300)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_36
-            name: tenantid
-            type: INT
-        tableName: kwproperties
-- changeSet:
-    id: 1657227954622-12
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_3
-            name: userid
-            type: VARCHAR(300)
-        - column:
-            name: pwd
-            type: VARCHAR(100)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: roleid
-            type: VARCHAR(20)
-        - column:
-            name: fullname
-            type: VARCHAR(50)
-        - column:
-            name: mailid
-            type: VARCHAR(300)
-        - column:
-            name: status
-            type: VARCHAR(25)
-        - column:
-            name: registeredtime
-            type: TIMESTAMP
-        - column:
-            name: approver
-            type: VARCHAR(300)
-        - column:
-            name: registrationid
-            type: VARCHAR(100)
-        - column:
-            name: tenantid
-            type: INT
-        tableName: kwregisterusers
-- changeSet:
-    id: 1657227954622-13
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_2
-            name: id
-            type: INT
-        - column:
-            name: roleid
-            type: VARCHAR(20)
-        - column:
-            name: permission
-            type: VARCHAR(50)
-        - column:
-            name: description
-            type: VARCHAR(150)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_2
-            name: tenantid
-            type: INT
-        tableName: kwrolespermissions
-- changeSet:
-    id: 1657227954622-14
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_B8
-            name: avroschemaid
-            type: INT
-        - column:
-            name: topicname
-            type: VARCHAR(150)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: appname
-            type: VARCHAR(150)
-        - column:
-            name: requestor
-            type: VARCHAR(300)
-        - column:
-            name: requesttime
-            type: TIMESTAMP
-        - column:
-            name: topicstatus
-            type: VARCHAR(50)
-        - column:
-            name: requesttype
-            type: VARCHAR(25)
-        - column:
-            name: remarks
-            type: VARCHAR(500)
-        - column:
-            name: schemafull
-            type: CLOB
-        - column:
-            name: approver
-            type: VARCHAR(300)
-        - column:
-            name: exectime
-            type: TIMESTAMP
-        - column:
-            name: versionschema
-            type: VARCHAR(3)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_B8
-            name: tenantid
-            type: INT
-        tableName: kwschemarequests
-- changeSet:
-    id: 1657227954622-15
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_EDD_TEAM
-            name: teamid
-            type: INT
-        - column:
-            constraints:
-              nullable: false
-            name: team
-            type: VARCHAR(30)
-        - column:
-            name: app
-            type: VARCHAR(150)
-        - column:
-            name: teammail
-            type: VARCHAR(300)
-        - column:
-            name: teamphone
-            type: VARCHAR(25)
-        - column:
-            name: contactperson
-            type: VARCHAR(50)
-        - column:
-            name: requesttopicsenvs
-            type: VARCHAR(75)
-        - column:
-            name: restrictionsobj
-            type: VARCHAR(150)
-        - column:
-            name: otherparams
-            type: VARCHAR(150)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_EDD
-            name: tenantid
-            type: INT
-        tableName: kwteams
-- changeSet:
-    id: 1657227954622-16
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_ED
-            name: tenantid
-            type: INT
-        - column:
-            constraints:
-              nullable: false
-              unique: true
-              constraintName: CONSTRAINT_ED2
-            name: tenantname
-            type: VARCHAR(25)
-        - column:
-            name: tenantdesc
-            type: VARCHAR(100)
-        - column:
-            name: contactperson
-            type: VARCHAR(150)
-        - column:
-            name: intrial
-            type: VARCHAR(10)
-        - column:
-            name: isactive
-            type: VARCHAR(10)
-        - column:
-            name: orgname
-            type: VARCHAR(50)
-        - column:
-            name: licenseexpiry
-            type: TIMESTAMP
-        tableName: kwtenants
-- changeSet:
-    id: 1657227954622-17
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_8
-            name: topicid
-            type: INT
-        - column:
-            name: topicname
-            type: VARCHAR(150)
-        - column:
-            name: partitions
-            type: INT
-        - column:
-            name: replicationfactor
-            type: VARCHAR(2)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: appname
-            type: VARCHAR(150)
-        - column:
-            name: topictype
-            type: VARCHAR(25)
-        - column:
-            name: requestor
-            type: VARCHAR(300)
-        - column:
-            name: requesttime
-            type: TIMESTAMP
-        - column:
-            name: topicstatus
-            type: VARCHAR(50)
-        - column:
-            name: remarks
-            type: VARCHAR(500)
-        - column:
-            name: approver
-            type: VARCHAR(300)
-        - column:
-            name: exectime
-            type: TIMESTAMP
-        - column:
-            name: otherparams
-            type: VARCHAR(150)
-        - column:
-            name: description
-            type: VARCHAR(100)
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_8
-            name: tenantid
-            type: INT
-        tableName: kwtopicrequests
-- changeSet:
-    id: 1657227954622-18
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_C
-            name: topicid
-            type: INT
-        - column:
-            name: topicname
-            type: VARCHAR(150)
-        - column:
-            name: partitions
-            type: INT
-        - column:
-            name: replicationfactor
-            type: VARCHAR(2)
-        - column:
-            name: env
-            type: VARCHAR(50)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: appname
-            type: VARCHAR(150)
-        - column:
-            name: otherparams
-            type: VARCHAR(150)
-        - column:
-            name: description
-            type: VARCHAR(100)
-        - column:
-            name: documentation
-            type: CLOB
-        - column:
-            name: history
-            type: CLOB
-        - column:
-            name: jsonparams
-            type: CLOB
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_C
-            name: tenantid
-            type: INT
-        tableName: kwtopics
-- changeSet:
-    id: 1657227954622-19
-    author: muralibasani
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-              primaryKey: true
-              primaryKeyName: CONSTRAINT_USR
-            name: userid
-            type: VARCHAR(300)
-        - column:
-            name: pwd
-            type: VARCHAR(100)
-        - column:
-            constraints:
-              nullable: false
-            name: teamid
-            type: INT
-        - column:
-            name: roleid
-            type: VARCHAR(20)
-        - column:
-            name: fullname
-            type: VARCHAR(50)
-        - column:
-            name: mailid
-            type: VARCHAR(150)
-        - column:
-            name: otherparams
-            type: VARCHAR(150)
-        - column:
-            constraints:
-              nullable: false
-            name: tenantid
-            type: INT
-        tableName: kwusers
-- changeSet:
-      id: 27thAug2022 add column to store ip address or principle or username based
-      author: muralibasani
-      changes:
-      - addColumn:
-            tableName: kwaclrequests
-            columns:
-            - column:
-                  name: aclipprincipletype
-                  type: VARCHAR(50)
-- changeSet:
-      id: 7thSep2022 add columns to store project, servicename for aiven config
-      author: muralibasani
-      changes:
-          - addColumn:
-                tableName: kwclusters
-                columns:
-                    - column:
-                          name: projectname
-                          type: VARCHAR(100)
-                          constraints:
-                              nullable: true
-                    - column:
-                          name: servicename
-                          type: VARCHAR(250)
-                          constraints:
-                              nullable: true
-                    - column:
-                          name: kafkaflavor
-                          type: VARCHAR(100)
-                          defaultValue: 'Apache Kafka'
-                          constraints:
-                              nullable: false
-- changeSet:
-      id: 10thSep2022 add column to store extra params for acls
-      author: muralibasani
-      changes:
-          - addColumn:
-                tableName: kwaclrequests
-                columns:
-                    - column:
-                          name: jsonparams
-                          type: CLOB
-                          constraints:
-                              nullable: true
+    - changeSet:
+          id: 1657227954622-1
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_9
+                              name: aclid
+                              type: INT
+                        - column:
+                              name: topicname
+                              type: VARCHAR(150)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: requestingteam
+                              type: INT
+                        - column:
+                              name: appname
+                              type: VARCHAR(150)
+                        - column:
+                              name: topictype
+                              type: VARCHAR(25)
+                        - column:
+                              name: consumergroup
+                              type: VARCHAR(150)
+                        - column:
+                              name: requestor
+                              type: VARCHAR(300)
+                        - column:
+                              name: requesttime
+                              type: TIMESTAMP
+                        - column:
+                              name: topicstatus
+                              type: VARCHAR(50)
+                        - column:
+                              name: remarks
+                              type: VARCHAR(500)
+                        - column:
+                              name: aclip
+                              type: VARCHAR(500)
+                        - column:
+                              name: aclssl
+                              type: CLOB
+                        - column:
+                              name: approver
+                              type: VARCHAR(300)
+                        - column:
+                              name: exectime
+                              type: TIMESTAMP
+                        - column:
+                              name: acltype
+                              type: VARCHAR(10)
+                        - column:
+                              name: aclpatterntype
+                              type: VARCHAR(20)
+                        - column:
+                              name: aclresourcetype
+                              type: VARCHAR(15)
+                        - column:
+                              name: transactionalid
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_9
+                              name: tenantid
+                              type: INT
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(50)
+                        - column:
+                              name: jsonparams
+                              type: CLOB
+                              constraints:
+                                  nullable: true
+                        - column:
+                              name: aclipprincipletype
+                              type: VARCHAR(50)
+                    tableName: kwaclrequests
+    - changeSet:
+          id: 1657227954622-2
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_B
+                              name: aclid
+                              type: INT
+                        - column:
+                              name: topicname
+                              type: VARCHAR(150)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: consumergroup
+                              type: VARCHAR(150)
+                        - column:
+                              name: topictype
+                              type: VARCHAR(25)
+                        - column:
+                              name: aclip
+                              type: VARCHAR(150)
+                        - column:
+                              name: aclssl
+                              type: VARCHAR(200)
+                        - column:
+                              name: aclpatterntype
+                              type: VARCHAR(20)
+                        - column:
+                              name: aclresourcetype
+                              type: VARCHAR(15)
+                        - column:
+                              name: transactionalid
+                              type: VARCHAR(50)
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_B
+                              name: tenantid
+                              type: INT
+                        - column:
+                              name: jsonparams
+                              type: CLOB
+                        - column:
+                              name: aclipprincipletype
+                              type: VARCHAR(50)
+                    tableName: kwacls
+    - changeSet:
+          id: 1657227954622-3
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_D
+                              name: kwreqno
+                              type: INT
+                        - column:
+                              name: activityname
+                              type: VARCHAR(25)
+                        - column:
+                              name: activitytype
+                              type: VARCHAR(25)
+                        - column:
+                              name: activitytime
+                              type: TIMESTAMP
+                        - column:
+                              name: details
+                              type: VARCHAR(250)
+                        - column:
+                              name: userid
+                              type: VARCHAR(300)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_D
+                              name: tenantid
+                              type: INT
+                    tableName: kwactivitylog
+    - changeSet:
+          id: 1657227954622-4
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_CC
+                              name: avroschemaid
+                              type: INT
+                        - column:
+                              name: topicname
+                              type: VARCHAR(150)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: schemafull
+                              type: CLOB
+                        - column:
+                              name: versionschema
+                              type: VARCHAR(3)
+                        - column:
+                              name: jsonparams
+                              type: CLOB
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_CC
+                              name: tenantid
+                              type: INT
+                    tableName: kwavroschemas
+    - changeSet:
+          id: 1657227954622-5
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_5
+                              name: clusterid
+                              type: INT
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: clustername
+                              type: VARCHAR(25)
+                        - column:
+                              name: bootstrapservers
+                              type: VARCHAR(250)
+                        - column:
+                              name: protocol
+                              type: VARCHAR(30)
+                        - column:
+                              name: clustertype
+                              type: VARCHAR(20)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_5
+                              name: tenantid
+                              type: INT
+                        - column:
+                              defaultValue: 'false'
+                              name: sharedcluster
+                              type: VARCHAR(5)
+                        - column:
+                              name: publickey
+                              type: CLOB
+                        - column:
+                              name: cstatus
+                              type: VARCHAR(25)
+                        - column:
+                              name: projectname
+                              type: VARCHAR(100)
+                              constraints:
+                                  nullable: true
+                        - column:
+                              name: servicename
+                              type: VARCHAR(250)
+                              constraints:
+                                  nullable: true
+                        - column:
+                              name: kafkaflavor
+                              type: VARCHAR(100)
+                              defaultValue: 'Apache Kafka'
+                              constraints:
+                                  nullable: false
+                    tableName: kwclusters
+    - changeSet:
+          id: 1657227954622-6
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_6
+                              name: id
+                              type: VARCHAR(3)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: envname
+                              type: VARCHAR(10)
+                        - column:
+                              name: envtype
+                              type: VARCHAR(20)
+                        - column:
+                              name: clusterid
+                              type: INT
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_6
+                              name: tenantid
+                              type: INT
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(250)
+                        - column:
+                              name: stretchcode
+                              type: VARCHAR(15)
+                        - column:
+                              defaultValue: 'true'
+                              name: envexists
+                              type: VARCHAR(5)
+                        - column:
+                              name: envstatus
+                              type: VARCHAR(25)
+                    tableName: kwenv
+    - changeSet:
+          id: 1657227954622-7
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_8D
+                              name: connectorid
+                              type: INT
+                        - column:
+                              name: connectorname
+                              type: VARCHAR(150)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: connectorconfig
+                              type: CLOB
+                        - column:
+                              name: description
+                              type: VARCHAR(100)
+                        - column:
+                              name: documentation
+                              type: CLOB
+                        - column:
+                              name: history
+                              type: CLOB
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_8D
+                              name: tenantid
+                              type: INT
+                    tableName: kwkafkaconnector
+    - changeSet:
+          id: 1657227954622-8
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_9C
+                              name: connectorid
+                              type: INT
+                        - column:
+                              name: connectorname
+                              type: VARCHAR(150)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: connectortype
+                              type: VARCHAR(25)
+                        - column:
+                              name: requestor
+                              type: VARCHAR(300)
+                        - column:
+                              name: requesttime
+                              type: TIMESTAMP
+                        - column:
+                              name: connectorstatus
+                              type: VARCHAR(50)
+                        - column:
+                              name: connectorconfig
+                              type: CLOB
+                        - column:
+                              name: approver
+                              type: VARCHAR(300)
+                        - column:
+                              name: exectime
+                              type: TIMESTAMP
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(150)
+                        - column:
+                              name: description
+                              type: VARCHAR(100)
+                        - column:
+                              name: remarks
+                              type: VARCHAR(500)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_9C
+                              name: tenantid
+                              type: INT
+                    tableName: kwkafkaconnectorrequests
+    - changeSet:
+          id: 1657227954622-9
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_CB
+                              name: metricsid
+                              type: INT
+                        - column:
+                              name: metricstime
+                              type: VARCHAR(20)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              name: metricstype
+                              type: VARCHAR(150)
+                        - column:
+                              name: metricsname
+                              type: VARCHAR(150)
+                        - column:
+                              name: metricsattributes
+                              type: CLOB
+                    tableName: kwkafkametrics
+    - changeSet:
+          id: 1657227954622-10
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_F
+                              name: name
+                              type: VARCHAR(9)
+                        - column:
+                              name: version
+                              type: VARCHAR(10)
+                    tableName: kwproductdetails
+    - changeSet:
+          id: 1657227954622-11
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_36
+                              name: kwkey
+                              type: VARCHAR(75)
+                        - column:
+                              name: kwvalue
+                              type: VARCHAR(3000)
+                        - column:
+                              name: kwdesc
+                              type: VARCHAR(300)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_36
+                              name: tenantid
+                              type: INT
+                    tableName: kwproperties
+    - changeSet:
+          id: 1657227954622-12
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_3
+                              name: userid
+                              type: VARCHAR(300)
+                        - column:
+                              name: pwd
+                              type: VARCHAR(100)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: roleid
+                              type: VARCHAR(20)
+                        - column:
+                              name: fullname
+                              type: VARCHAR(50)
+                        - column:
+                              name: mailid
+                              type: VARCHAR(300)
+                        - column:
+                              name: status
+                              type: VARCHAR(25)
+                        - column:
+                              name: registeredtime
+                              type: TIMESTAMP
+                        - column:
+                              name: approver
+                              type: VARCHAR(300)
+                        - column:
+                              name: registrationid
+                              type: VARCHAR(100)
+                        - column:
+                              name: tenantid
+                              type: INT
+                    tableName: kwregisterusers
+    - changeSet:
+          id: 1657227954622-13
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_2
+                              name: id
+                              type: INT
+                        - column:
+                              name: roleid
+                              type: VARCHAR(20)
+                        - column:
+                              name: permission
+                              type: VARCHAR(50)
+                        - column:
+                              name: description
+                              type: VARCHAR(150)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_2
+                              name: tenantid
+                              type: INT
+                    tableName: kwrolespermissions
+    - changeSet:
+          id: 1657227954622-14
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_B8
+                              name: avroschemaid
+                              type: INT
+                        - column:
+                              name: topicname
+                              type: VARCHAR(150)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: appname
+                              type: VARCHAR(150)
+                        - column:
+                              name: requestor
+                              type: VARCHAR(300)
+                        - column:
+                              name: requesttime
+                              type: TIMESTAMP
+                        - column:
+                              name: topicstatus
+                              type: VARCHAR(50)
+                        - column:
+                              name: requesttype
+                              type: VARCHAR(25)
+                        - column:
+                              name: remarks
+                              type: VARCHAR(500)
+                        - column:
+                              name: schemafull
+                              type: CLOB
+                        - column:
+                              name: approver
+                              type: VARCHAR(300)
+                        - column:
+                              name: exectime
+                              type: TIMESTAMP
+                        - column:
+                              name: versionschema
+                              type: VARCHAR(3)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_B8
+                              name: tenantid
+                              type: INT
+                    tableName: kwschemarequests
+    - changeSet:
+          id: 1657227954622-15
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_EDD_TEAM
+                              name: teamid
+                              type: INT
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: team
+                              type: VARCHAR(30)
+                        - column:
+                              name: app
+                              type: VARCHAR(150)
+                        - column:
+                              name: teammail
+                              type: VARCHAR(300)
+                        - column:
+                              name: teamphone
+                              type: VARCHAR(25)
+                        - column:
+                              name: contactperson
+                              type: VARCHAR(50)
+                        - column:
+                              name: requesttopicsenvs
+                              type: VARCHAR(75)
+                        - column:
+                              name: restrictionsobj
+                              type: VARCHAR(150)
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(150)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_EDD
+                              name: tenantid
+                              type: INT
+                    tableName: kwteams
+    - changeSet:
+          id: 1657227954622-16
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_ED
+                              name: tenantid
+                              type: INT
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  unique: true
+                                  constraintName: CONSTRAINT_ED2
+                              name: tenantname
+                              type: VARCHAR(25)
+                        - column:
+                              name: tenantdesc
+                              type: VARCHAR(100)
+                        - column:
+                              name: contactperson
+                              type: VARCHAR(150)
+                        - column:
+                              name: intrial
+                              type: VARCHAR(10)
+                        - column:
+                              name: isactive
+                              type: VARCHAR(10)
+                        - column:
+                              name: orgname
+                              type: VARCHAR(50)
+                        - column:
+                              name: licenseexpiry
+                              type: TIMESTAMP
+                    tableName: kwtenants
+    - changeSet:
+          id: 1657227954622-17
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_8
+                              name: topicid
+                              type: INT
+                        - column:
+                              name: topicname
+                              type: VARCHAR(150)
+                        - column:
+                              name: partitions
+                              type: INT
+                        - column:
+                              name: replicationfactor
+                              type: VARCHAR(2)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: appname
+                              type: VARCHAR(150)
+                        - column:
+                              name: topictype
+                              type: VARCHAR(25)
+                        - column:
+                              name: requestor
+                              type: VARCHAR(300)
+                        - column:
+                              name: requesttime
+                              type: TIMESTAMP
+                        - column:
+                              name: topicstatus
+                              type: VARCHAR(50)
+                        - column:
+                              name: remarks
+                              type: VARCHAR(500)
+                        - column:
+                              name: approver
+                              type: VARCHAR(300)
+                        - column:
+                              name: exectime
+                              type: TIMESTAMP
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(150)
+                        - column:
+                              name: description
+                              type: VARCHAR(100)
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_8
+                              name: tenantid
+                              type: INT
+                    tableName: kwtopicrequests
+    - changeSet:
+          id: 1657227954622-18
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_C
+                              name: topicid
+                              type: INT
+                        - column:
+                              name: topicname
+                              type: VARCHAR(150)
+                        - column:
+                              name: partitions
+                              type: INT
+                        - column:
+                              name: replicationfactor
+                              type: VARCHAR(2)
+                        - column:
+                              name: env
+                              type: VARCHAR(50)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: appname
+                              type: VARCHAR(150)
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(150)
+                        - column:
+                              name: description
+                              type: VARCHAR(100)
+                        - column:
+                              name: documentation
+                              type: CLOB
+                        - column:
+                              name: history
+                              type: CLOB
+                        - column:
+                              name: jsonparams
+                              type: CLOB
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_C
+                              name: tenantid
+                              type: INT
+                    tableName: kwtopics
+    - changeSet:
+          id: 1657227954622-19
+          author: muralibasani
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: CONSTRAINT_USR
+                              name: userid
+                              type: VARCHAR(300)
+                        - column:
+                              name: pwd
+                              type: VARCHAR(100)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: teamid
+                              type: INT
+                        - column:
+                              name: roleid
+                              type: VARCHAR(20)
+                        - column:
+                              name: fullname
+                              type: VARCHAR(50)
+                        - column:
+                              name: mailid
+                              type: VARCHAR(150)
+                        - column:
+                              name: otherparams
+                              type: VARCHAR(150)
+                        - column:
+                              constraints:
+                                  nullable: false
+                              name: tenantid
+                              type: INT
+                    tableName: kwusers
