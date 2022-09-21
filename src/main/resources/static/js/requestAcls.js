@@ -176,6 +176,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             // set default Aiven cluster
             $scope.aivenCluster = 'false';
+            $scope.acl_ip_ssl = 'IP';
             $scope.onChangeEnvironment = function(envName){
                 $http({
                         method: "GET",
@@ -184,6 +185,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         params: {'envSelected' : envName, 'envType' : 'kafka' },
                     }).success(function(output) {
                         $scope.aivenCluster = output.aivenCluster;
+                        if($scope.aivenCluster === 'false')
+                            $scope.acl_ip_ssl = 'IP';
+                        else
+                            $scope.acl_ip_ssl = 'SSL';
                     }).error(
                         function(error)
                         {
@@ -360,7 +365,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             if($scope.addAcl.topicreqtype.value == 'Producer' && !$scope.addAcl.acl_lit_pre)
             {
-                $scope.alertnote = "Please "
+                $scope.alertnote = "Please select acl literal type."
                 $scope.showAlertToast();
                 return;
             }
@@ -382,16 +387,17 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             else
                 aclpatterntypetype = 'LITERAL';
 
-            if($scope.addAcl.acl_ip_ssl == 'IP')
-                $scope.acl_ssl = null;
-
-             else if($scope.addAcl.acl_ip_ssl == 'SSL')
-                $scope.acl_ipaddress = null;
+            if($scope.aivenCluster === 'false'){
+                if($scope.acl_ip_ssl === 'IP')
+                    $scope.acl_ssl = [""];
+                else if($scope.acl_ip_ssl === 'SSL')
+                    $scope.acl_ipaddress = [""];
+            }
 
             if(!$scope.addAcl.team || !$scope.addAcl.topicname )
             {
                 //alert("This topic is not owned by any team. Synchronize the metadata.");
-                if($scope.addAcl.acl_lit_pre == 'PREFIXED'){
+                if($scope.addAcl.acl_lit_pre === 'PREFIXED'){
                     $scope.alertnote = "There are no matching topics with this prefix. Synchronize the metadata.";
                 }
                 else
@@ -403,20 +409,20 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             if($scope.acl_ipaddress !=null){
                 for (var i = 0; i < $scope.acl_ipaddress.length; i++) {
-                    if($scope.acl_ipaddress[i].length==0)
+                    if($scope.acl_ipaddress[i].length === 0 && $scope.acl_ip_ssl === 'IP' && $scope.aivenCluster === 'false')
                     {
-                      $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
+                      $scope.alertnote = "Please fill in a valid IP address of the Producer/Consumer client";
                       $scope.showAlertToast();
                       return;
                     }
                 }
             }
 
-            if($scope.acl_ssl !=null){
+            if($scope.acl_ssl != null){
                 for (var i = 0; i < $scope.acl_ssl.length; i++) {
-                    if($scope.acl_ssl[i].length==0)
+                    if($scope.acl_ssl[i].length === 0 && $scope.acl_ip_ssl === 'SSL')
                     {
-                      $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
+                      $scope.alertnote = "Please fill in a valid Principle of the Producer/Consumer client";
                       $scope.showAlertToast();
                       return;
                     }
@@ -430,6 +436,12 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                  $scope.showAlertToast();
                 return;
              }
+
+            // reset values to null
+            if($scope.acl_ip_ssl === 'IP')
+                $scope.acl_ssl = null;
+            else if($scope.acl_ip_ssl === 'SSL')
+                $scope.acl_ipaddress = null;
 
              serviceInput['environment'] = $scope.addAcl.envName;
              serviceInput['topicname'] = $scope.addAcl.topicname;

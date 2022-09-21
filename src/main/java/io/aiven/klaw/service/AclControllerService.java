@@ -22,6 +22,7 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.SyncAclUpdates;
@@ -715,13 +716,15 @@ public class AclControllerService {
 
   private List<Map<String, String>> getAclListFromCluster(
       String bootstrapHost,
+      Env envSelected,
       String protocol,
       String clusterName,
       String topicNameSearch,
       int tenantId)
       throws KlawException {
     List<Map<String, String>> aclList;
-    aclList = clusterApiService.getAcls(bootstrapHost, protocol, clusterName, tenantId);
+    aclList =
+        clusterApiService.getAcls(bootstrapHost, envSelected, protocol, clusterName, tenantId);
     return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
   }
 
@@ -1145,22 +1148,16 @@ public class AclControllerService {
     List<Map<String, String>> aclList;
 
     Env envSelected = getEnvDetails(env, tenantId);
-    String bootstrapHost =
+    KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-            .get(envSelected.getClusterId())
-            .getBootstrapServers();
+            .get(envSelected.getClusterId());
     aclList =
         getAclListFromCluster(
-            bootstrapHost,
-            manageDatabase
-                .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                .get(envSelected.getClusterId())
-                .getProtocol(),
-            manageDatabase
-                .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                .get(envSelected.getClusterId())
-                .getClusterName(),
+            kwClusters.getBootstrapServers(),
+            envSelected,
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName(),
             topicNameSearch,
             tenantId);
 
@@ -1170,7 +1167,8 @@ public class AclControllerService {
     return getAclsList(
         pageNo,
         currentPage,
-        applyFiltersAcls(env, aclList, aclsFromSOT, isReconciliation, tenantId));
+        applyFiltersAcls(
+            env, aclList, aclsFromSOT, isReconciliation, tenantId, kwClusters.getKafkaFlavor()));
   }
 
   public List<AclInfo> getSyncBackAcls(
@@ -1231,7 +1229,8 @@ public class AclControllerService {
       List<Map<String, String>> aclList,
       List<Acl> aclsFromSOT,
       boolean isReconciliation,
-      int tenantId) {
+      int tenantId,
+      String kafkaFlavor) {
 
     List<AclInfo> aclListMap = new ArrayList<>();
     List<String> teamList = new ArrayList<>();
@@ -1266,7 +1265,9 @@ public class AclControllerService {
 
         if (acl_ssl == null || acl_ssl.equals("")) acl_ssl = "User:*";
         else {
-          if (!acl_ssl.equals("User:*") && !acl_ssl.startsWith("User:")) {
+          if (!KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kafkaFlavor)
+              && !acl_ssl.equals("User:*")
+              && !acl_ssl.startsWith("User:")) {
             acl_ssl = "User:" + acl_ssl;
           }
         }
@@ -1287,9 +1288,11 @@ public class AclControllerService {
       if (mp.getTeamname() == null) mp.setTeamname("Unknown");
 
       if (isReconciliation) {
-        if (mp.getTeamname().equals("Unknown") || mp.getTeamname().equals("")) aclListMap.add(mp);
+        if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) aclListMap.add(mp);
       } else {
         if (teamList.contains(mp.getTeamname())) aclListMap.add(mp);
+        else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname()))
+          aclListMap.add(mp);
       }
     }
     return aclListMap;
