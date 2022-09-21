@@ -715,13 +715,15 @@ public class AclControllerService {
 
   private List<Map<String, String>> getAclListFromCluster(
       String bootstrapHost,
+      Env envSelected,
       String protocol,
       String clusterName,
       String topicNameSearch,
       int tenantId)
       throws KlawException {
     List<Map<String, String>> aclList;
-    aclList = clusterApiService.getAcls(bootstrapHost, protocol, clusterName, tenantId);
+    aclList =
+        clusterApiService.getAcls(bootstrapHost, envSelected, protocol, clusterName, tenantId);
     return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
   }
 
@@ -1145,22 +1147,16 @@ public class AclControllerService {
     List<Map<String, String>> aclList;
 
     Env envSelected = getEnvDetails(env, tenantId);
-    String bootstrapHost =
+    KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-            .get(envSelected.getClusterId())
-            .getBootstrapServers();
+            .get(envSelected.getClusterId());
     aclList =
         getAclListFromCluster(
-            bootstrapHost,
-            manageDatabase
-                .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                .get(envSelected.getClusterId())
-                .getProtocol(),
-            manageDatabase
-                .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                .get(envSelected.getClusterId())
-                .getClusterName(),
+            kwClusters.getBootstrapServers(),
+            envSelected,
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName(),
             topicNameSearch,
             tenantId);
 
@@ -1287,9 +1283,11 @@ public class AclControllerService {
       if (mp.getTeamname() == null) mp.setTeamname("Unknown");
 
       if (isReconciliation) {
-        if (mp.getTeamname().equals("Unknown") || mp.getTeamname().equals("")) aclListMap.add(mp);
+        if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) aclListMap.add(mp);
       } else {
         if (teamList.contains(mp.getTeamname())) aclListMap.add(mp);
+        else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname()))
+          aclListMap.add(mp);
       }
     }
     return aclListMap;

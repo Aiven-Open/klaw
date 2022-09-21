@@ -531,19 +531,39 @@
 						<div class="card-body">
 							<table class="table table-hover color-table success-table"  style="table-layout:fixed;"  ng-show="resultPages != null">
 								<thead>
-								<tr>
-									<th>Team</th>
-									<th>TopicName</th>
-									<th>ConsumerGroup</th>
-									<th>Hosts</th>
-									<th>Principle</th>
-									<th>AclType</th>
-								</tr>
+									<tr>
+										<th>TopicName</th>
+										<th>ConsumerGroup</th>
+										<th>Hosts</th>
+										<th>Principle</th>
+										<th>AclType</th>
+										<th>Team</th>
+									</tr>
 								</thead>
 								<tbody>
 								<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
 
-									<td>
+									<td>{{ resultBrowset.topicname}}</td>
+									<td>{{ resultBrowset.consumergroup}}</td>
+									<td>{{ resultBrowset.acl_ip}}</td>
+									<td>{{ resultBrowset.acl_ssl}}</td>
+									<td width="10%" ng-show="resultBrowset.topictype == 'Producer'" >
+										<span class="badge badge-info">{{ resultBrowset.topictype}}</span></td>
+
+									<td width="10%" ng-show="resultBrowset.topictype == 'Consumer'" >
+										<span class="badge badge-warning">{{ resultBrowset.topictype}}</span></td>
+
+									<td ng-show="resultBrowset.teamname == ''">
+										<select class="form-control custom-select" ng-change="getDetails(resultBrowset.sequence, resultBrowset.req_no,
+										 resultBrowset.teamname,resultBrowset.topicname,resultBrowset.consumergroup,resultBrowset.acl_ip,
+										 resultBrowset.acl_ssl,resultBrowset.topictype)"
+												ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
+												ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
+											<option value="" selected="selected">
+												Select Team</option>
+										</select>
+									</td>
+									<td ng-show="resultBrowset.teamname != ''">
 										<select class="form-control custom-select" ng-change="getDetails(resultBrowset.sequence, resultBrowset.req_no,
 										 resultBrowset.teamname,resultBrowset.topicname,resultBrowset.consumergroup,resultBrowset.acl_ip,
 										 resultBrowset.acl_ssl,resultBrowset.topictype)"
@@ -551,16 +571,6 @@
 												ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 										</select>
 									</td>
-									<td>{{ resultBrowset.topicname}}</td>
-									<td>{{ resultBrowset.consumergroup}}</td>
-									<td>{{ resultBrowset.acl_ip}}</td>
-									<td>{{ resultBrowset.acl_ssl}}</td>
-
-									<td width="10%" ng-show="resultBrowset.topictype == 'Producer'" >
-										<span class="badge badge-info">{{ resultBrowset.topictype}}</span></td>
-
-									<td width="10%" ng-show="resultBrowset.topictype == 'Consumer'" >
-										<span class="badge badge-warning">{{ resultBrowset.topictype}}</span></td>
 								</tr>
 
 								</tbody>

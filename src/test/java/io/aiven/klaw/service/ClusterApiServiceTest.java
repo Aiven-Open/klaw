@@ -101,11 +101,15 @@ public class ClusterApiServiceTest {
     Set<Map<String, String>> aclListOriginal = utilMethods.getAclsMock();
     ResponseEntity<Set> response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
 
+    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+    when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
+
     when(restTemplate.exchange(
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenReturn(response);
 
-    List<Map<String, String>> result = clusterApiService.getAcls("", "PLAINTEXT", "", 1);
+    List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", "", 1);
     assertEquals(result, new ArrayList<>(aclListOriginal));
   }
 
@@ -117,7 +121,7 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThrows(KlawException.class, () -> clusterApiService.getAcls("", "PLAINTEXT", "", 1));
+    assertThrows(KlawException.class, () -> clusterApiService.getAcls("", env, "PLAINTEXT", "", 1));
   }
 
   @Test

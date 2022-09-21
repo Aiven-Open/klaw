@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.service.ClusterApiService;
@@ -56,10 +57,14 @@ public class TopicAclControllerIT {
   private static final String topicName = "testtopic";
   private static final int topicId = 1001;
 
+  private static Env env;
+
   @BeforeAll
   public static void setup() {
     utilMethods = new UtilMethods();
     mockMethods = new MockMethods();
+    env = new Env();
+    env.setName("DEV");
   }
 
   // Create user with USER role success
@@ -662,7 +667,7 @@ public class TopicAclControllerIT {
   @Test
   public void getAclsWithSearch() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
-    when(clusterApiService.getAcls(anyString(), eq("PLAINTEXT"), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyString(), anyInt()))
         .thenReturn(aclInfo);
 
     String res =
@@ -687,7 +692,7 @@ public class TopicAclControllerIT {
   public void getAclsToBeSynced() throws Exception {
     List<Map<String, String>> aclInfo = utilMethods.getClusterAcls();
 
-    when(clusterApiService.getAcls(anyString(), eq("PLAINTEXT"), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyString(), anyInt()))
         .thenReturn(aclInfo);
 
     String res =
