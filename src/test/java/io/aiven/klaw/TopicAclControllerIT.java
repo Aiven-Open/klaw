@@ -1,9 +1,12 @@
 package io.aiven.klaw;
 
 import static io.aiven.klaw.service.KwConstants.TENANT_CONFIG_PROPERTY;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -13,12 +16,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.EnvModel;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KwClustersModel;
+import io.aiven.klaw.model.KwPropertiesModel;
+import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.service.ClusterApiService;
-import java.util.*;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -87,7 +104,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
     jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
@@ -123,7 +140,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -138,7 +155,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<KwClustersModel> teamModel = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, teamModel.size());
+    assertThat(teamModel).hasSize(1);
   }
 
   @Test
@@ -159,7 +176,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -173,7 +190,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, clusterModels.size());
+    assertThat(clusterModels).hasSize(1);
   }
 
   @Test
@@ -205,7 +222,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // Create topic requests
@@ -227,7 +244,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // Query topic requests in created state
@@ -247,7 +264,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   // Query topic requests in created and approved state
@@ -267,7 +284,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   // approve topic - creates topic in cluster
@@ -293,7 +310,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // decline topic - topic in cluster
@@ -316,7 +333,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     login(user2, PASSWORD, "APPROVER");
 
@@ -333,7 +350,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // get team of topic
@@ -352,7 +369,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(res, CoreMatchers.containsString(INFRATEAM));
+    assertThat(res).contains(INFRATEAM);
   }
 
   // delete a topic request of his own
@@ -375,7 +392,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -389,7 +406,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // get topics from cluster
@@ -414,8 +431,8 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<List<TopicInfo>> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
-    assertEquals(1, response.get(0).size());
+    assertThat(response).hasSize(1);
+    assertThat(response.get(0)).hasSize(1);
   }
 
   // get only topic names
@@ -438,8 +455,8 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<String> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
-    assertEquals("testtopic1001", response.get(0));
+    assertThat(response).hasSize(1);
+    assertThat(response.get(0)).isEqualTo("testtopic1001");
   }
 
   // Get Acl requests before creating one
@@ -460,7 +477,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<AclRequests> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(0, response.size());
+    assertThat(response).isEmpty();
   }
 
   // Get Created Acl requests before creating one
@@ -480,7 +497,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<List<AclRequests>> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(0, response.size());
+    assertThat(response).isEmpty();
   }
 
   // Request for a acl
@@ -502,7 +519,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // Get created acl requests again
@@ -523,7 +540,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<List<AclRequests>> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   // Get acl requests again, and approve that request
@@ -565,7 +582,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(res, CoreMatchers.containsString("success"));
+    assertThat(res).contains("success");
   }
 
   // Request for a acl
@@ -587,7 +604,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // Decline acl request
@@ -624,7 +641,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(resNew, CoreMatchers.containsString("success"));
+    assertThat(resNew).contains("success");
   }
 
   // delete acl requests
@@ -659,7 +676,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(responseNew, CoreMatchers.containsString("success"));
+    assertThat(responseNew).contains("success");
   }
 
   // getacls with topic search filter
@@ -683,7 +700,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
-    assertEquals(1, response.getAclInfoList().size());
+    assertThat(response.getAclInfoList()).hasSize(1);
   }
 
   // get acls to be synced - retrieve from Source of truth
@@ -709,7 +726,7 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   private void login(String user, String pwd, String role) throws Exception {

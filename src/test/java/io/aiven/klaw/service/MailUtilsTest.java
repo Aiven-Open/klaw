@@ -1,7 +1,5 @@
 package io.aiven.klaw.service;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +20,5 @@ public class MailUtilsTest {
   }
 
   @Test
-  public void getUserDetails() {
-    assertTrue(true);
-  }
+  public void getUserDetails() {}
 }

@@ -1,18 +1,34 @@
 package io.aiven.klaw.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclIPPrincipleType;
-import java.util.*;
-import org.junit.jupiter.api.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -68,13 +84,13 @@ public class ClusterApiServiceTest {
     when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(String.class)))
         .thenReturn(response);
     String result = clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
 
     result = clusterApiService.getSchemaClusterStatus("", 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
 
     result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -86,13 +102,13 @@ public class ClusterApiServiceTest {
         .thenThrow(new RuntimeException("error"));
 
     String result = clusterApiService.getClusterApiStatus("", false, 1);
-    assertEquals("OFFLINE", result);
+    assertThat(result).isEqualTo("OFFLINE");
 
     result = clusterApiService.getSchemaClusterStatus("", 1);
-    assertEquals("OFFLINE", result);
+    assertThat(result).isEqualTo("OFFLINE");
 
     result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
-    assertEquals("NOT_KNOWN", result);
+    assertThat(result).isEqualTo("NOT_KNOWN");
   }
 
   @Test
@@ -110,7 +126,7 @@ public class ClusterApiServiceTest {
         .thenReturn(response);
 
     List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", "", 1);
-    assertEquals(result, new ArrayList<>(aclListOriginal));
+    assertThat(result).isEqualTo(new ArrayList<>(aclListOriginal));
   }
 
   @Test
@@ -121,7 +137,8 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThrows(KlawException.class, () -> clusterApiService.getAcls("", env, "PLAINTEXT", "", 1));
+    assertThatThrownBy(() -> clusterApiService.getAcls("", env, "PLAINTEXT", "", 1))
+        .isInstanceOf(KlawException.class);
   }
 
   @Test
@@ -135,7 +152,7 @@ public class ClusterApiServiceTest {
         .thenReturn(response);
 
     List<Map<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT", "", 1);
-    assertEquals(result, new ArrayList<>(topicsList));
+    assertThat(result).isEqualTo(new ArrayList<>(topicsList));
   }
 
   @Test
@@ -146,7 +163,8 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThrows(KlawException.class, () -> clusterApiService.getAllTopics("", "PLAINTEXT", "", 1));
+    assertThatThrownBy(() -> clusterApiService.getAllTopics("", "PLAINTEXT", "", 1))
+        .isInstanceOf(KlawException.class);
   }
 
   @Test
@@ -169,7 +187,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<String> response =
         clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1);
-    assertEquals(response.getBody(), "success");
+    assertThat(response.getBody()).isEqualTo("success");
   }
 
   @Test
@@ -190,9 +208,9 @@ public class ClusterApiServiceTest {
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThrows(
-        KlawException.class,
-        () -> clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1));
+    assertThatThrownBy(
+            () -> clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1))
+        .isInstanceOf(KlawException.class);
   }
 
   @Test
@@ -226,7 +244,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<Map<String, String>> response =
         clusterApiService.approveAclRequests(aclRequests, 1);
-    assertEquals(response.getBody().get("result"), "success");
+    assertThat(response.getBody()).containsEntry("result", "success");
   }
 
   @Test
@@ -260,7 +278,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<Map<String, String>> response =
         clusterApiService.approveAclRequests(aclRequests, 1);
-    assertEquals(response.getBody().get("result"), "success");
+    assertThat(response.getBody()).containsEntry("result", "success");
   }
 
   @Test
@@ -272,7 +290,8 @@ public class ClusterApiServiceTest {
     aclRequests.setTopicname("testtopic");
     aclRequests.setAclType("Create");
 
-    assertThrows(KlawException.class, () -> clusterApiService.approveAclRequests(aclRequests, 1));
+    assertThatThrownBy(() -> clusterApiService.approveAclRequests(aclRequests, 1))
+        .isInstanceOf(KlawException.class);
   }
 
   @Test
@@ -294,7 +313,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<String> result =
         clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
-    assertEquals(result.getBody(), "success");
+    assertThat(result.getBody()).isEqualTo("success");
   }
 
   @Test
@@ -309,9 +328,8 @@ public class ClusterApiServiceTest {
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThrows(
-        KlawException.class,
-        () -> clusterApiService.postSchema(schemaRequest, envSel, topicName, 1));
+    assertThatThrownBy(() -> clusterApiService.postSchema(schemaRequest, envSel, topicName, 1))
+        .isInstanceOf(KlawException.class);
   }
 
   private Set<String> getTopics() {

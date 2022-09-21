@@ -1,7 +1,9 @@
 package io.aiven.klaw.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -18,7 +20,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -78,7 +84,7 @@ public class TopicControllerTest {
             .getContentAsString();
     Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
-    assertEquals("success", actualResult.get("result"));
+    assertThat(actualResult).containsEntry("result", "success");
   }
 
   @Test
@@ -105,7 +111,7 @@ public class TopicControllerTest {
     Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
 
-    assertEquals("success", actualResult.get("result"));
+    assertThat(actualResult).containsEntry("result", "success");
   }
 
   @Test
@@ -127,7 +133,7 @@ public class TopicControllerTest {
             .getContentAsString();
 
     List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -150,7 +156,7 @@ public class TopicControllerTest {
             .getContentAsString();
     Map<String, String> resp =
         new ObjectMapper().readValue(res, new TypeReference<Map<String, String>>() {});
-    assertEquals("Team1", resp.get("team"));
+    assertThat(resp).containsEntry("team", "Team1");
   }
 
   @Test
@@ -171,7 +177,7 @@ public class TopicControllerTest {
             .getContentAsString();
 
     List<TopicRequestModel> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -190,7 +196,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -209,7 +215,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -230,7 +236,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -258,7 +264,7 @@ public class TopicControllerTest {
             .getContentAsString();
 
     List<List<TopicInfo>> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -278,7 +284,7 @@ public class TopicControllerTest {
             .getContentAsString();
 
     List<String> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(2, response.size());
+    assertThat(response).hasSize(2);
   }
 
   @Test
@@ -308,6 +314,6 @@ public class TopicControllerTest {
             .getContentAsString();
 
     HashMap response = new ObjectMapper().readValue(res, HashMap.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 }

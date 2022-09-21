@@ -1,19 +1,39 @@
 package io.aiven.klaw.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.SyncTopicUpdates;
+import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.TopicRequestTypes;
 import java.sql.Timestamp;
-import java.util.*;
-import org.junit.jupiter.api.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -120,7 +140,7 @@ public class TopicControllerServiceTest {
 
     Map<String, String> result = topicControllerService.createTopicsRequest(getCorrectTopic());
 
-    assertEquals("success", result.get("result"));
+    assertThat(result.get("result")).isEqualTo("success");
   }
 
   @Test
@@ -142,7 +162,7 @@ public class TopicControllerServiceTest {
 
     Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic());
 
-    assertEquals("success", result.get("result"));
+    assertThat(result.get("result")).isEqualTo("success");
   }
 
   // invalid partitions
@@ -165,7 +185,7 @@ public class TopicControllerServiceTest {
 
     Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
 
-    assertEquals("failure", result.get("result"));
+    assertThat(result).containsEntry("result", "failure");
   }
 
   @Test
@@ -185,7 +205,7 @@ public class TopicControllerServiceTest {
 
     Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
 
-    assertNull(result.get("result"));
+    assertThat(result).containsKey("result");
   }
 
   @Test
@@ -206,7 +226,7 @@ public class TopicControllerServiceTest {
     Map<String, String> result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-    assertEquals("success", result.get("result"));
+    assertThat(result).containsEntry("result", "success");
   }
 
   @Test
@@ -224,7 +244,7 @@ public class TopicControllerServiceTest {
 
     Map<String, String> result = topicSyncControllerService.updateSyncTopics(topicUpdates);
 
-    assertEquals("No record updated.", result.get("result"));
+    assertThat(result).containsEntry("result", "No record updated.");
   }
 
   @Test
@@ -237,7 +257,7 @@ public class TopicControllerServiceTest {
     Map<String, String> result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-    assertEquals("Not Authorized.", result.get("result"));
+    assertThat(result).containsEntry("result", "Not Authorized.");
   }
 
   @Test
@@ -259,7 +279,7 @@ public class TopicControllerServiceTest {
     List<TopicRequestModel> topicList =
         topicControllerService.getCreatedTopicRequests("1", "", "all");
 
-    assertEquals(2, topicList.size());
+    assertThat(topicList).hasSize(2);
   }
 
   @Test
@@ -284,10 +304,10 @@ public class TopicControllerServiceTest {
     List<TopicRequestModel> topicList =
         topicControllerService.getCreatedTopicRequests("1", "", "all");
 
-    assertEquals(topicList.size(), 5);
-    assertEquals(topicList.get(0).getTopicpartitions(), 2);
-    assertEquals(topicList.get(0).getTopicname(), "topic1");
-    assertEquals(topicList.get(1).getTopicname(), "topic2");
+    assertThat(topicList).hasSize(5);
+    assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
+    assertThat(topicList.get(0).getTopicname()).isEqualTo("topic1");
+    assertThat(topicList.get(1).getTopicname()).isEqualTo("topic2");
   }
 
   @Test
@@ -296,7 +316,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.deleteTopicRequest(anyInt(), anyInt())).thenReturn("success");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     String result = topicControllerService.deleteTopicRequests("1001");
-    assertEquals("{\"result\":\"success\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"success\"}");
   }
 
   @Test
@@ -317,7 +337,7 @@ public class TopicControllerServiceTest {
 
     String result = topicControllerService.approveTopicRequests(topicId + "");
 
-    assertEquals("{\"result\":\"success\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"success\"}");
   }
 
   @Test
@@ -338,7 +358,7 @@ public class TopicControllerServiceTest {
 
     String result = topicControllerService.approveTopicRequests("" + topicId);
 
-    assertEquals("{\"result\":\"failure error\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"failure error\"}");
   }
 
   @Test
@@ -351,8 +371,8 @@ public class TopicControllerServiceTest {
         .thenReturn(utilMethods.getTopics());
 
     List<String> result = topicControllerService.getAllTopics(false);
-    assertEquals(1, result.size());
-    assertEquals(result.get(0), "testtopic");
+    assertThat(result).hasSize(1);
+    assertThat(result.get(0)).isEqualTo("testtopic");
   }
 
   @Test
@@ -374,7 +394,7 @@ public class TopicControllerServiceTest {
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, null, null);
 
-    assertEquals(2, topicsList.size());
+    assertThat(topicsList).hasSize(2);
   }
 
   // topicSearch does not exist in topic names
@@ -392,7 +412,7 @@ public class TopicControllerServiceTest {
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, null, null);
 
-    assertNull(topicsList);
+    assertThat(topicsList).isNull();
   }
 
   @Test
@@ -417,7 +437,7 @@ public class TopicControllerServiceTest {
     Map<String, Object> topicRequests =
         topicSyncControllerService.getSyncTopics(
             envSel, pageNo, "", topicNameSearch, "false", false);
-    assertEquals(topicRequests.size(), 2);
+    assertThat(topicRequests).hasSize(2);
   }
 
   @Test
@@ -435,7 +455,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.declineTopicRequest(any(), anyString())).thenReturn("success");
     String result = topicControllerService.declineTopicRequests(topicId + "", "Reason");
 
-    assertEquals("{\"result\":\"" + "success" + "\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"" + "success" + "\"}");
   }
 
   @Test
@@ -452,7 +472,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestModel> listTopicRqs = topicControllerService.getTopicRequests("1", "", "all");
-    assertEquals(listTopicRqs.size(), 2);
+    assertThat(listTopicRqs).hasSize(2);
   }
 
   @Test
@@ -466,7 +486,7 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     List<Topic> topicTeam = topicControllerService.getTopicFromName(topicName, 1);
-    assertEquals(topicTeam.get(0).getTeamId(), Integer.valueOf(1));
+    assertThat(topicTeam.get(0).getTeamId()).isOne();
   }
 
   private TopicRequestModel getCorrectTopic() {

@@ -1,7 +1,6 @@
 package io.aiven.klaw;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -65,7 +63,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List<KwTenantModel> teamModel = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, teamModel.size());
+    assertThat(teamModel).hasSize(1);
   }
 
   // add tenant success
@@ -87,7 +85,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -101,7 +99,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List<KwTenantModel> teamModel = new ObjectMapper().readValue(response, List.class);
-    assertEquals(2, teamModel.size());
+    assertThat(teamModel).hasSize(2);
   }
 
   // add cluster success
@@ -123,7 +121,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -138,7 +136,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List<KwClustersModel> teamModel = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, teamModel.size());
+    assertThat(teamModel).hasSize(1);
   }
 
   // modify cluster success
@@ -158,7 +156,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, clusterModels.size());
+    assertThat(clusterModels).hasSize(1);
 
     Map<String, Integer> linkedHashMap = (Map<String, Integer>) clusterModels.get(0);
 
@@ -178,7 +176,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // getclusterdetails success
@@ -199,7 +197,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     KwClustersModel clusterModel = new ObjectMapper().readValue(response, KwClustersModel.class);
-    assertEquals("DEV_CLUSTER", clusterModel.getClusterName());
+    assertThat(clusterModel.getClusterName()).contains("DEV_CLUSTER");
   }
 
   // add cluster and delete success
@@ -221,7 +219,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -236,7 +234,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(2, clusterModels.size());
+    assertThat(clusterModels).hasSize(2);
 
     Map<String, Integer> linkedHashMap = (Map) clusterModels.get(0);
 
@@ -253,7 +251,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -268,7 +266,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, clusterModels.size());
+    assertThat(clusterModels).hasSize(1);
   }
 
   // add new env success
@@ -291,7 +289,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -305,7 +303,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, clusterModels.size());
+    assertThat(clusterModels).hasSize(1);
   }
 
   // modify env success
@@ -327,7 +325,7 @@ public class EnvsClustersTenantsControllerIT {
     List clusterModels = new ObjectMapper().readValue(response, List.class);
     Map<String, Object> envModel1 = (Map<String, Object>) clusterModels.get(0);
     String envId = (String) envModel1.get("id");
-    assertEquals(1, clusterModels.size());
+    assertThat(clusterModels).hasSize(1);
 
     String otherParams =
         "default.partitions=4,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=";
@@ -349,7 +347,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -365,7 +363,7 @@ public class EnvsClustersTenantsControllerIT {
     clusterModels = new ObjectMapper().readValue(response, List.class);
     Map<String, Object> envModel3 = (Map<String, Object>) clusterModels.get(0);
     String updatedOtherParams = (String) envModel3.get("otherParams");
-    assertEquals(otherParams, updatedOtherParams);
+    assertThat(updatedOtherParams).isEqualTo(otherParams);
   }
 
   // get envdetails success
@@ -387,7 +385,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     EnvModel envModel = new ObjectMapper().readValue(response, EnvModel.class);
-    assertEquals("DEV", envModel.getName());
+    assertThat(envModel.getName()).isEqualTo("DEV");
   }
 
   // delete env success
@@ -409,7 +407,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -423,7 +421,7 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(1, clusterModels.size());
+    assertThat(clusterModels).hasSize(1);
 
     response =
         mvc.perform(
@@ -439,7 +437,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   // get env params success
@@ -461,7 +459,7 @@ public class EnvsClustersTenantsControllerIT {
 
     HashMap clusterModels = new ObjectMapper().readValue(response, HashMap.class);
     ArrayList<String> defaultPartitions = (ArrayList) clusterModels.get("defaultPartitions");
-    assertEquals("4", defaultPartitions.get(0));
+    assertThat(defaultPartitions.get(0)).isEqualTo("4");
   }
 
   // get standard env names success
@@ -481,6 +479,6 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     List clusterModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals("ACC", clusterModels.get(0));
+    assertThat(clusterModels.get(0)).isEqualTo("ACC");
   }
 }

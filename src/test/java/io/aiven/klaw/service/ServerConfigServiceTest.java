@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.aiven.klaw.model.ServerConfigProperties;
 import java.util.List;
@@ -30,6 +30,6 @@ public class ServerConfigServiceTest {
   public void getAllProps() {
     serverConfigService.getAllProperties();
     List<ServerConfigProperties> list = serverConfigService.getAllProps();
-    assertEquals(list.size() > 0, true);
+    assertThat(list).isNotEmpty();
   }
 }

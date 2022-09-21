@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -12,7 +11,13 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
@@ -24,7 +29,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -112,7 +116,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
 
     String result = aclControllerService.createAcl(aclRequests);
-    assertEquals("{\"result\":\"success\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"success\"}");
   }
 
   @Test
@@ -126,7 +130,7 @@ public class AclControllerServiceTest {
 
     Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertEquals("success", result.get("result"));
+    assertThat(result).containsEntry("result", "success");
   }
 
   @Test
@@ -137,7 +141,7 @@ public class AclControllerServiceTest {
 
     Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertEquals("Not Authorized.", result.get("result"));
+    assertThat(result).containsEntry("result", "Not Authorized.");
   }
 
   @Test
@@ -151,7 +155,7 @@ public class AclControllerServiceTest {
 
     Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
+    assertThat(result.get("result")).contains("Failure");
   }
 
   private void stubUserInfo() {
@@ -169,7 +173,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     Map<String, String> result = aclControllerService.updateSyncAcls(updates);
-    assertEquals("No record updated.", result.get("result"));
+    assertThat(result).containsEntry("result", "No record updated.");
   }
 
   @Test
@@ -183,7 +187,7 @@ public class AclControllerServiceTest {
 
     Map<String, String> result =
         aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(result.get("result"), CoreMatchers.containsString("Failure"));
+    assertThat(result.get("result")).contains("Failure");
   }
 
   @Test
@@ -197,7 +201,7 @@ public class AclControllerServiceTest {
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
         .thenReturn(Collections.singletonList("USER"));
     List<AclRequestsModel> aclReqs = aclControllerService.getAclRequests("1", "", "all");
-    assertEquals(0, aclReqs.size());
+    assertThat(aclReqs).isEmpty();
   }
 
   @Test
@@ -210,7 +214,7 @@ public class AclControllerServiceTest {
         .thenReturn(getAclRequests("testtopic", 16));
     List<AclRequestsModel> listReqs = aclControllerService.getCreatedAclRequests("", "", "");
 
-    assertEquals(0, listReqs.size());
+    assertThat(listReqs).isEmpty();
   }
 
   @Test
@@ -219,7 +223,7 @@ public class AclControllerServiceTest {
     String req_no = "1001";
     when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1)).thenReturn("success");
     String result = aclControllerService.deleteAclRequests(req_no);
-    // assertEquals("{\"result\":\"null\"}", result);
+    // assertThat(result).isEqualTo("{\"result\":\"null\"}");
   }
 
   @Test
@@ -228,7 +232,7 @@ public class AclControllerServiceTest {
     String req_no = "1001";
     when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1)).thenReturn("failure");
     String result = aclControllerService.deleteAclRequests(req_no);
-    // assertEquals("{\"result\":\"null\"}", result);
+    // assertThat(result).isEqualTo("{\"result\":\"null\"}");
   }
 
   @Test
@@ -248,7 +252,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     String result = aclControllerService.approveAclRequests("112");
-    assertEquals("{\"result\":\"success\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"success\"}");
   }
 
   @Test
@@ -266,7 +270,7 @@ public class AclControllerServiceTest {
         .thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
 
     String result = aclControllerService.approveAclRequests(req_no);
-    assertEquals("{\"result\":\"failure\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"failure\"}");
   }
 
   @Test
@@ -287,7 +291,7 @@ public class AclControllerServiceTest {
         .thenThrow(new RuntimeException("Error"));
 
     String result = aclControllerService.approveAclRequests(req_no);
-    assertThat(result, CoreMatchers.containsString("failure"));
+    assertThat(result).contains("failure");
   }
 
   @Test
@@ -303,7 +307,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     String result = aclControllerService.approveAclRequests(req_no);
-    assertEquals("{\"result\":\"This request does not exist anymore.\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"This request does not exist anymore.\"}");
   }
 
   @Test
@@ -319,7 +323,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.declineAclRequest(any(), any())).thenReturn("success");
 
     String result = aclControllerService.declineAclRequests(req_no, "");
-    assertEquals("{\"result\":\"success\"}", result);
+    assertThat(result).isEqualTo("{\"result\":\"success\"}");
   }
 
   @Test
@@ -334,7 +338,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     String result = aclControllerService.declineAclRequests(req_no, "Reason");
-    // assertEquals("{\"result\":\"null\"}", result);
+    // assertThat(result).isEqualTo("{\"result\":\"null\"}");
   }
 
   @Test
@@ -359,11 +363,11 @@ public class AclControllerServiceTest {
 
     List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch, "").getAclInfoList();
 
-    assertEquals(1, aclList.size());
+    assertThat(aclList).hasSize(1);
 
-    assertEquals(topicNameSearch, aclList.get(0).getTopicname());
-    assertEquals("mygrp1", aclList.get(0).getConsumergroup());
-    assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
+    assertThat(aclList.get(0).getTopicname()).isEqualTo(topicNameSearch);
+    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
+    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
   }
 
   @Test
@@ -389,11 +393,11 @@ public class AclControllerServiceTest {
 
     List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch, "").getAclInfoList();
 
-    assertEquals(1, aclList.size());
+    assertThat(aclList).hasSize(1);
 
-    assertEquals(topicNameSearch, aclList.get(0).getTopicname());
-    assertEquals("mygrp1", aclList.get(0).getConsumergroup());
-    assertEquals("2.1.2.1", aclList.get(0).getAcl_ip());
+    assertThat(aclList.get(0).getTopicname()).isEqualTo(topicNameSearch);
+    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
+    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
   }
 
   @Test
@@ -418,7 +422,7 @@ public class AclControllerServiceTest {
     List<AclInfo> aclList =
         aclControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
-    assertEquals(0, aclList.size());
+    assertThat(aclList).isEmpty();
   }
 
   @Test
@@ -444,7 +448,7 @@ public class AclControllerServiceTest {
     List<AclInfo> aclList =
         aclControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
-    assertEquals(0, aclList.size());
+    assertThat(aclList).isEmpty();
   }
 
   private List<Team> getAvailableTeams() {
