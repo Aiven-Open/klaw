@@ -1,6 +1,6 @@
 package io.aiven.klaw.controller;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -9,7 +9,11 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.service.ServerConfigService;
 import java.util.List;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -54,6 +58,6 @@ public class ServerConfigControllerTest {
             .getContentAsString();
 
     List<ServerConfigProperties> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 }
