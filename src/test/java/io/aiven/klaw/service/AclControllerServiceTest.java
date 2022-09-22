@@ -357,7 +357,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
-    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch, "").getAclInfoList();
+    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch).getAclInfoList();
 
     assertEquals(1, aclList.size());
 
@@ -387,7 +387,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
-    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch, "").getAclInfoList();
+    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch).getAclInfoList();
 
     assertEquals(1, aclList.size());
 

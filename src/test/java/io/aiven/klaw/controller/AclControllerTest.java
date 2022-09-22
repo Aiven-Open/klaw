@@ -200,7 +200,7 @@ public class AclControllerTest {
   public void getAcls1() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(aclControllerService.getAcls("testtopic", "")).thenReturn(topicOverview);
+    when(aclControllerService.getAcls("testtopic")).thenReturn(topicOverview);
 
     String res =
         mvc.perform(
@@ -221,7 +221,7 @@ public class AclControllerTest {
   public void getAcls2() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(aclControllerService.getAcls(null, "")).thenReturn(topicOverview);
+    when(aclControllerService.getAcls(null)).thenReturn(topicOverview);
 
     String res =
         mvc.perform(

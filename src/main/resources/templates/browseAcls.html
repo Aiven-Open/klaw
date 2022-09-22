@@ -605,7 +605,7 @@
 																 role="tab"><span class="hidden-sm-up"><i class="ti-search"></i></span> <span
 												class="hidden-xs-down">Topic Contents</span></a>
 										</li>
-										<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#topicschema"
+										<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#topicschema" ng-click="getSchemaOfTopic()"
 																 role="tab"><span class="hidden-sm-up"><i class="ti-agenda"></i></span> <span
 												class="hidden-xs-down">Schema</span></a>
 										</li>
@@ -808,6 +808,11 @@
 									</div>
 								</div>
 								<div class="tab-pane  p-3" id="topicschema" role="tabpanel">
+
+									<div class="row">
+										<div ng-if="ShowSpinnerStatusSchemas" class="loader">
+										</div>
+									</div>
 
 									<div class="ribbon-wrapper card" ng-show="schemaExists == false">
 										<div class="ribbon ribbon-warning">Notification</div>
