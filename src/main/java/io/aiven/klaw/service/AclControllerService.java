@@ -851,7 +851,7 @@ public class AclControllerService {
     return topicsFromSOT;
   }
 
-  public TopicOverview getAcls(String topicNameSearch, String schemaVersionSearch) {
+  public TopicOverview getAcls(String topicNameSearch) {
     log.debug("getAcls {}", topicNameSearch);
     String userDetails = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
@@ -1026,9 +1026,17 @@ public class AclControllerService {
       topicOverview.setPromotionDetails(hashMap);
     }
 
+    return topicOverview;
+  }
+
+  public TopicOverview getSchemaOfTopic(String topicNameSearch, String schemaVersionSearch) {
+    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+    TopicOverview topicOverview = new TopicOverview();
+    topicOverview.setTopicExists(true);
+    boolean retrieveSchemas = true;
     updateAvroSchema(
         topicNameSearch, schemaVersionSearch, handleDb, retrieveSchemas, topicOverview, tenantId);
-
     return topicOverview;
   }
 
