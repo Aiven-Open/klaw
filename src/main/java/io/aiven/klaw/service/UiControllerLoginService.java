@@ -61,48 +61,48 @@ public class UiControllerLoginService {
 
         if (userInfo == null) {
           SecurityContextHolder.getContext().setAuthentication(null);
-          if (kwInstallationType.equals("saas")) {
+          if ("saas".equals(kwInstallationType)) {
             return "registerSaas.html";
           }
-          if (authenticationType.equals("ad")) return "registerLdap.html";
+          if ("ad".equals(authenticationType)) return "registerLdap.html";
           return "register.html";
         }
 
-        if (kwInstallationType.equals("saas")) {
+        if ("saas".equals(kwInstallationType)) {
           int tenantId = commonUtilsService.getTenantId(userDetails.getUsername());
-          if (!manageDatabase.getTenantFullConfig(tenantId).getIsActive().equals("true")) {
+          if (!"true".equals(manageDatabase.getTenantFullConfig(tenantId).getIsActive())) {
             return "tenantInfo.html";
           }
         }
 
         log.debug("Authenticated user : {}", userDetails.getUsername());
-        if (uri.equals("login.html")
-            || uri.equals("loginSaas.html")
-            || uri.equals("home.html")
-            || uri.equals("register.html")
+        if ("login.html".equals(uri)
+            || "loginSaas.html".equals(uri)
+            || "home.html".equals(uri)
+            || "register.html".equals(uri)
             || uri.contains("registrationReview")
             || uri.contains("userActivation")
-            || uri.equals("forgotPassword.html")
-            || uri.equals("newADUser.html")) return indexPage;
+            || "forgotPassword.html".equals(uri)
+            || "newADUser.html".equals(uri)) return indexPage;
         return uri;
       }
-      if (authenticationType.equals("db") && kwInstallationType.equals("saas"))
+      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType))
         return defaultPageSaas;
       else return defaultPage;
     } catch (Exception e) {
       log.error("Exception:", e);
-      if (uri.equals("login.html")
-          || uri.equals("register.html")
-          || uri.equals("registerSaas.html")
-          || uri.equals("registerLdap.html")
+      if ("login.html".equals(uri)
+          || "register.html".equals(uri)
+          || "registerSaas.html".equals(uri)
+          || "registerLdap.html".equals(uri)
           || uri.contains("registrationReview")
           || uri.contains("userActivation")
-          || uri.equals("forgotPassword.html")
-          || uri.equals("newADUser.html")
-          || uri.equals("terms.html")
-          || uri.equals("feedback.html")) return uri;
+          || "forgotPassword.html".equals(uri)
+          || "newADUser.html".equals(uri)
+          || "terms.html".equals(uri)
+          || "feedback.html".equals(uri)) return uri;
 
-      if (authenticationType.equals("db") && kwInstallationType.equals("saas"))
+      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType))
         return defaultPageSaas;
       else return defaultPage;
     }
@@ -138,22 +138,24 @@ public class UiControllerLoginService {
   }
 
   public String checkAuth(String uri, HttpServletRequest request, HttpServletResponse response) {
-    if (uri.equals("tenants.html")) {
+    if ("tenants.html".equals(uri)) {
       UserDetails userDetails =
           (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-      if (manageDatabase
-              .getHandleDbRequests()
-              .getUsersInfo(userDetails.getUsername())
-              .getRole()
-              .equals(SUPERADMIN.name())
+      if (SUPERADMIN
+              .name()
+              .equals(
+                  manageDatabase
+                      .getHandleDbRequests()
+                      .getUsersInfo(userDetails.getUsername())
+                      .getRole())
           && commonUtilsService.getTenantId(userDetails.getUsername())
               == KwConstants.DEFAULT_TENANT_ID) {
         return getReturningPage(uri);
       } else uri = "index";
     }
 
-    if (ssoEnabled.equals("true")) {
+    if ("true".equals(ssoEnabled)) {
       if (uri.contains("register") || uri.equals("registrationReview.html")) return uri;
       else return checkAnonymousLogin(uri, request, response);
     } else {
@@ -168,7 +170,7 @@ public class UiControllerLoginService {
           manageDatabase.getHandleDbRequests().getRegistrationId(userName);
 
       if (existingRegistrationId != null) {
-        if (existingRegistrationId.equals("PENDING_ACTIVATION"))
+        if ("PENDING_ACTIVATION".equals(existingRegistrationId))
           return "redirect:" + "registrationReview";
         else return "redirect:" + "register?userRegistrationId=" + existingRegistrationId;
       } else {

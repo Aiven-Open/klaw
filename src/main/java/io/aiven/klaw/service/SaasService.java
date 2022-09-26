@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,8 @@ public class SaasService {
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
-    if (userList.stream().anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
+    if (userList.stream()
+        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       resultMap.put("error", "User already exists. You may login.");
       return resultMap;
     }
@@ -70,7 +72,7 @@ public class SaasService {
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
 
         // create INFRATEAM and STAGINGTEAM
-        if (addTenantResult.get("result").equals("success")) {
+        if ("success".equals(addTenantResult.get("result"))) {
           tenantId = Integer.parseInt(addTenantResult.get("tenantId"));
 
           Map<String, String> teamAddMap =
@@ -160,7 +162,7 @@ public class SaasService {
     newUserTarget.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
     Map<String, String> userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!userRegMap.get("result").equals("success")) {
+    if (!"success".equals(userRegMap.get("result"))) {
       resultMap.put("error", "Something went wrong. Please try again.");
       return true;
     }
@@ -196,7 +198,7 @@ public class SaasService {
     String finalNewTenantName = newTenantName;
     tenantId =
         tenantMap.entrySet().stream()
-            .filter(obj -> obj.getValue().equals(finalNewTenantName))
+            .filter(obj -> Objects.equals(obj.getValue(), finalNewTenantName))
             .findFirst()
             .get()
             .getKey();
@@ -206,7 +208,7 @@ public class SaasService {
     newUserTarget.setRole(KwConstants.USER_ROLE);
     Map<String, String> userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!userRegMap.get("result").equals("success")) {
+    if (!"success".equals(userRegMap.get("result"))) {
       resultMap.put("error", "Something went wrong. Please try again.");
       return true;
     } else {
@@ -251,7 +253,8 @@ public class SaasService {
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
-    if (userList.stream().anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
+    if (userList.stream()
+        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       resultMap.put("error", "User already exists. You may login.");
       return true;
     }
@@ -259,14 +262,13 @@ public class SaasService {
     List<RegisterUserInfo> registerUserInfoList =
         manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     if (registerUserInfoList.stream()
-        .anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
+        .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       resultMap.put("error", "Registration already exists. You may login.");
       return true;
     }
 
-    if (newUser
-        .getTenantName()
-        .equals("default")) { // don't allow users to be created on default tenant
+    if ("default"
+        .equals(newUser.getTenantName())) { // don't allow users to be created on default tenant
       resultMap.put("error", "You cannot request users for default tenant.");
       return true;
     }
@@ -297,14 +299,14 @@ public class SaasService {
     if (registerUserInfoModel == null) {
       resultMap.put("result", "failure");
       return resultMap;
-    } else if (registerUserInfoModel.getStatus().equals("APPROVED")) {
+    } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
       resultMap.put("result", "already_activated");
       return resultMap;
-    } else if (registerUserInfoModel.getStatus().equals("PENDING")) {
+    } else if ("PENDING".equals(registerUserInfoModel.getStatus())) {
       Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
-        if (result.get("result").equals("success")) {
+        if ("success".equals(result.get("result"))) {
           resultMap.put("result", "success");
         } else resultMap.put("result", "othererror");
       } catch (Exception e) {

@@ -434,9 +434,9 @@ public class ClusterApiService {
       String uri;
       String URI_GET_TOPICS = "/topics/";
 
-      if (connectorType.equals("Create")) {
+      if ("Create".equals(connectorType)) {
         uri = clusterConnUrl + URI_GET_TOPICS + "postConnector";
-      } else if (connectorType.equals("Update")) {
+      } else if ("Update".equals(connectorType)) {
         uri = clusterConnUrl + URI_GET_TOPICS + "updateConnector";
       } else uri = clusterConnUrl + URI_GET_TOPICS + "deleteConnector";
 
@@ -446,7 +446,7 @@ public class ClusterApiService {
       HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
       response = restTemplate.postForEntity(uri, request, HashMap.class);
 
-      if (response.getBody().get("result").equals("success")) {
+      if ("success".equals(response.getBody().get("result"))) {
         return "success";
       } else {
         return (String) response.getBody().get("errorText");
@@ -498,11 +498,11 @@ public class ClusterApiService {
       params.add("topicName", topicName);
 
       String uri;
-      if (topicRequestType.equals("Create")) {
+      if ("Create".equals(topicRequestType)) {
         uri = clusterConnUrl + URI_CREATE_TOPICS;
         params.add("partitions", "" + topicPartitions);
         params.add("rf", replicationFactor);
-      } else if (topicRequestType.equals("Update")) {
+      } else if ("Update".equals(topicRequestType)) {
         uri = clusterConnUrl + URI_UPDATE_TOPICS;
         params.add("partitions", "" + topicPartitions);
         params.add("rf", replicationFactor);
@@ -533,7 +533,7 @@ public class ClusterApiService {
       String URI_CREATE_ACLS = "/topics/createAcls";
       String URI_DELETE_ACLS = "/topics/deleteAcls";
 
-      if (aclReq.getAclType().equals("Create")) uri = clusterConnUrl + URI_CREATE_ACLS;
+      if ("Create".equals(aclReq.getAclType())) uri = clusterConnUrl + URI_CREATE_ACLS;
       else uri = clusterConnUrl + URI_DELETE_ACLS;
 
       RestTemplate restTemplate = getRestTemplate();
@@ -548,17 +548,18 @@ public class ClusterApiService {
               .get(envSelected.getClusterId());
 
       // aiven config
-      if (KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor())) {
+      if (Objects.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor())) {
         params.add("aclsNativeType", AclsNativeType.AIVEN.name());
         params.add("projectName", kwClusters.getProjectName());
         params.add("serviceName", kwClusters.getServiceName());
         params.add("topic", aclReq.getTopicname());
         params.add("username", aclReq.getAcl_ssl());
 
-        if (aclReq.getTopictype().equals(AclType.PRODUCER.value)) params.add("permission", "write");
+        if (Objects.equals(aclReq.getTopictype(), AclType.PRODUCER.value))
+          params.add("permission", "write");
         else params.add("permission", "read");
 
-        if (AclOperation.DELETE.value.equals(aclReq.getAclType())
+        if (Objects.equals(AclOperation.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
           ObjectMapper objectMapper = new ObjectMapper();
           Map<String, String> jsonObj = objectMapper.readValue(aclReq.getJsonParams(), Map.class);

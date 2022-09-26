@@ -53,14 +53,14 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
   public Authentication attemptAuthentication(
       HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
-    if (kwInstallationType.equals("saas")) {
+    if ("saas".equals(kwInstallationType)) {
       String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
       boolean captchaResponse = validateCaptchaService.validateCaptcha(gRecaptchaResponse);
       if (!captchaResponse) throw new AuthenticationServiceException("Invalid Captcha.");
     }
 
-    if (authenticationType.equals("ad")) {
-      // Check if useer exists in kw database
+    if ("ad".equals(authenticationType)) {
+      // Check if user exists in kw database
       if (manageDatabase.getHandleDbRequests().getUsersInfo(request.getParameter("username"))
           == null) {
         return kwAuthenticationService.searchUserAttributes(request, response);

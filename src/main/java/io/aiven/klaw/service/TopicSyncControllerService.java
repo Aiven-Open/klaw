@@ -122,7 +122,7 @@ public class TopicSyncControllerService {
             .filter(
                 topicRequestModel ->
                     topicRequestModel != null
-                        && (topicRequestModel.getRemarks().equals("DELETED")
+                        && ("DELETED".equals(topicRequestModel.getRemarks())
                             || topicRequestModel.getTeamname() == null
                             || topicRequestModel.getTeamname().equals("")))
             .collect(Collectors.toList());
@@ -136,7 +136,7 @@ public class TopicSyncControllerService {
         });
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (!pageNo.equals("-1")) // scheduler call
+    if (!"-1".equals(pageNo)) // scheduler call
     topicRequestModelList =
           getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
 
@@ -159,7 +159,7 @@ public class TopicSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
-    if (!pageNo.equals("-1")) { // ignore check for scheduler
+    if (!"-1".equals(pageNo)) { // ignore check for scheduler
       if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS))
         return null;
     }
@@ -329,9 +329,9 @@ public class TopicSyncControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!topicRequestModel.getTopicstatus().equals(RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
-              && topicRequestModel.getTopictype().equals(TopicRequestTypes.Claim.name())) {
+              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -361,7 +361,8 @@ public class TopicSyncControllerService {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
-      if (approverRoles.contains(userInfo.getRole()) && !requestor.equals(userInfo.getUsername()))
+      if (approverRoles.contains(userInfo.getRole())
+          && !Objects.equals(requestor, userInfo.getUsername()))
         approvingInfo.append(userInfo.getUsername()).append(",");
     }
 
@@ -390,7 +391,9 @@ public class TopicSyncControllerService {
 
     try {
       Optional<Topic> teamUpdatedFirst =
-          topicsFromSOT.stream().filter(a -> a.getTopicname().equals(tmpTopicName)).findFirst();
+          topicsFromSOT.stream()
+              .filter(a -> Objects.equals(a.getTopicname(), tmpTopicName))
+              .findFirst();
 
       if (teamUpdatedFirst.isPresent())
         teamUpdated =
@@ -506,7 +509,7 @@ public class TopicSyncControllerService {
 
     resultMap.put("result", resultStatus);
 
-    if (syncBackTopics.getTypeOfSync().equals("SELECTED_TOPICS")) {
+    if ("SELECTED_TOPICS".equals(syncBackTopics.getTypeOfSync())) {
       for (String topicId : syncBackTopics.getTopicIds()) {
         Optional<Topic> topicFoundOptional =
             manageDatabase
@@ -564,7 +567,7 @@ public class TopicSyncControllerService {
                   + response.getBody());
       } else {
         logUpdateSyncBackTopics.add("Topic created " + topicFound.getTopicname());
-        if (!syncBackTopics.getSourceEnv().equals(syncBackTopics.getTargetEnv()))
+        if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv()))
           createAndApproveTopicRequest(syncBackTopics, topicFound, tenantId);
       }
     } catch (KlawException e) {
@@ -637,7 +640,7 @@ public class TopicSyncControllerService {
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
     List<Topic> producerConsumerTopics = new ArrayList<>();
     if (topicType != null
-        && (topicType.equals("Producer") || topicType.equals("Consumer"))
+        && ("Producer".equals(topicType) || "Consumer".equals(topicType))
         && teamName != null) {
       producerConsumerTopics =
           handleDbRequests.selectAllTopicsByTopictypeAndTeamname(
@@ -679,7 +682,7 @@ public class TopicSyncControllerService {
               topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
               filterProducerConsumerList.add(topicInfo);
             }
-          } else if (producerConsumerTopic.getTopicname().equals(topicInfo.getTopicname())
+          } else if (Objects.equals(producerConsumerTopic.getTopicname(), topicInfo.getTopicname())
               && topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
             topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
             filterProducerConsumerList.add(topicInfo);
@@ -785,7 +788,7 @@ public class TopicSyncControllerService {
     List<String> newEnvList = new ArrayList<>();
     for (String env : selectedEnvs) {
       for (Env env1 : allEnvs) {
-        if (env.equals(env1.getId())) {
+        if (Objects.equals(env, env1.getId())) {
           newEnvList.add(env1.getName());
           break;
         }
@@ -840,7 +843,7 @@ public class TopicSyncControllerService {
 
     resultMap.put("result", resultStatus);
 
-    if (syncTopicsBulk.getTypeOfSync().equals("SELECTED_TOPICS")) {
+    if ("SELECTED_TOPICS".equals(syncTopicsBulk.getTypeOfSync())) {
       Object[] topicMap = syncTopicsBulk.getTopicDetails();
       Map<String, Map<String, Object>> hashMap = new HashMap<>();
       Map<String, Object> subObj;
@@ -1022,7 +1025,7 @@ public class TopicSyncControllerService {
               break;
             }
           }
-        } else if (!topicUpdate.getEnvSelected().equals(syncCluster)) {
+        } else if (!Objects.equals(syncCluster, topicUpdate.getEnvSelected())) {
           erroredTopicsExist.append(topicUpdate.getTopicName()).append(" ");
           if (checkInPromotionOrder(
               topicUpdate.getTopicName(), topicUpdate.getEnvSelected(), orderOfEnvs))
@@ -1048,7 +1051,7 @@ public class TopicSyncControllerService {
           listTopics.add(t);
         } else {
           for (Topic existingTopic : existingTopics) {
-            if (existingTopic.getEnvironment().equals(topicUpdate.getEnvSelected())) {
+            if (Objects.equals(existingTopic.getEnvironment(), topicUpdate.getEnvSelected())) {
               t = existingTopic;
               t.setTeamId(
                   manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -1058,9 +1061,9 @@ public class TopicSyncControllerService {
               t.setTenantId(tenantId);
               listTopics.add(t);
               topicAdded = true;
-            } else if (!manageDatabase
-                .getTeamNameFromTeamId(tenantId, existingTopic.getTeamId())
-                .equals(topicUpdate.getTeamSelected())) {
+            } else if (!Objects.equals(
+                manageDatabase.getTeamNameFromTeamId(tenantId, existingTopic.getTeamId()),
+                topicUpdate.getTeamSelected())) {
               t = existingTopic;
               t.setTeamId(
                   manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -1077,7 +1080,7 @@ public class TopicSyncControllerService {
         boolean envFound = false;
         if (existingTopics != null) {
           for (Topic existingTopic : existingTopics) {
-            if (existingTopic.getEnvironment().equals(topicUpdate.getEnvSelected())) {
+            if (Objects.equals(existingTopic.getEnvironment(), topicUpdate.getEnvSelected())) {
               envFound = true;
               break;
             }
@@ -1144,7 +1147,7 @@ public class TopicSyncControllerService {
       int tenantId) {
     List<SyncTopicUpdates> updatedSyncTopicsUpdated = new ArrayList<>();
     for (SyncTopicUpdates updatedSyncTopic : updatedSyncTopics) {
-      if (updatedSyncTopic.getTeamSelected().equals("REMOVE FROM KLAW")) {
+      if ("REMOVE FROM KLAW".equals(updatedSyncTopic.getTeamSelected())) {
         updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
       } else updatedSyncTopicsUpdated.add(updatedSyncTopic);
     }
@@ -1178,7 +1181,7 @@ public class TopicSyncControllerService {
   public Env getEnvDetails(String envId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }

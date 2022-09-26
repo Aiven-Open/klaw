@@ -79,7 +79,7 @@ public class RolesPermissionsControllerService {
       mapList = new ArrayList<>();
       for (String perm : permsList) {
         Map<String, Boolean> perMap = new HashMap<>();
-        if (kwInstallationType.equals("saas") && perm.equals("ADD_TENANT")) {
+        if ("saas".equals(kwInstallationType) && "ADD_TENANT".equals(perm)) {
           // do nothing
         } else {
           perMap.put(perm, existingPerms.get(role).contains(perm));
@@ -131,8 +131,8 @@ public class RolesPermissionsControllerService {
       tmpKwRolePermModel.setRoleId(permKey.substring(0, indexOfDelimiter));
       tmpKwRolePermModel.setPermission(permKey.substring(indexOfDelimiter + 5));
 
-      if (isPermEnabled.equals("true")) kwRolesPermissionsAdd.add(tmpKwRolePermModel);
-      else if (isPermEnabled.equals("false")) kwRolesPermissionsDelete.add(tmpKwRolePermModel);
+      if ("true".equals(isPermEnabled)) kwRolesPermissionsAdd.add(tmpKwRolePermModel);
+      else if ("false".equals(isPermEnabled)) kwRolesPermissionsDelete.add(tmpKwRolePermModel);
     }
 
     if (kwRolesPermissionsAdd.size() > 0)
@@ -155,7 +155,7 @@ public class RolesPermissionsControllerService {
       return deleteRoleStatus;
     }
 
-    if (roleId.equals(KwConstants.USER_ROLE) || roleId.equals(KwConstants.SUPERADMIN_ROLE)) {
+    if (KwConstants.USER_ROLE.equals(roleId) || KwConstants.SUPERADMIN_ROLE.equals(roleId)) {
       deleteRoleStatus.put("result", "Not Allowed");
       return deleteRoleStatus;
     }
@@ -204,23 +204,23 @@ public class RolesPermissionsControllerService {
       List<Map<String, Boolean>> entryDets = permissionsListEntry.getValue();
       for (Map<String, Boolean> entryDet : entryDets) {
         for (Map.Entry<String, Boolean> stringBooleanEntry : entryDet.entrySet()) {
-          if (stringBooleanEntry.getValue().equals(true)) {
-            if (requestType.equals("SUBSCRIPTIONS")
-                && stringBooleanEntry
-                    .getKey()
-                    .equals(PermissionType.APPROVE_SUBSCRIPTIONS.name())) {
+          if (Boolean.TRUE.equals(stringBooleanEntry.getValue())) {
+            if ("SUBSCRIPTIONS".equals(requestType)
+                && PermissionType.APPROVE_SUBSCRIPTIONS
+                    .name()
+                    .equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
-            } else if (requestType.equals("TOPICS")
-                && stringBooleanEntry.getKey().equals(PermissionType.APPROVE_TOPICS.name())) {
+            } else if ("TOPICS".equals(requestType)
+                && PermissionType.APPROVE_TOPICS.name().equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
-            } else if (requestType.equals("SCHEMAS")
-                && stringBooleanEntry.getKey().equals(PermissionType.APPROVE_SCHEMAS.name())) {
+            } else if ("SCHEMAS".equals(requestType)
+                && PermissionType.APPROVE_SCHEMAS.name().equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
-            } else if (requestType.equals("CONNECTORS")
-                && stringBooleanEntry.getKey().equals(PermissionType.APPROVE_SCHEMAS.name())) {
+            } else if ("CONNECTORS".equals(requestType)
+                && PermissionType.APPROVE_SCHEMAS.name().equals(stringBooleanEntry.getKey())) {
               approverRoles.add(permissionsListEntry.getKey());
               break;
             }

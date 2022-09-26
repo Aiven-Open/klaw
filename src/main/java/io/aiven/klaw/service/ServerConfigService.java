@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
@@ -87,7 +88,7 @@ public class ServerConfigService {
 
   private boolean checkPropertyExists(List<ServerConfigProperties> props, String key) {
     for (ServerConfigProperties serverProps : props) {
-      if (serverProps.getKey().equals(key)) return true;
+      if (Objects.equals(serverProps.getKey(), key)) return true;
     }
     return false;
   }
@@ -113,7 +114,7 @@ public class ServerConfigService {
       kwVal = stringStringEntry.getValue().get("kwvalue");
       resultMap.put("kwkey", kwKey);
 
-      if (kwKey.equals(KwConstants.TENANT_CONFIG_PROPERTY)) {
+      if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
         ObjectMapper objectMapper = new ObjectMapper();
         TenantConfig dynamicObj;
         try {
@@ -169,7 +170,7 @@ public class ServerConfigService {
     }
 
     try {
-      if (kwKey.equals(KwConstants.TENANT_CONFIG_PROPERTY)) {
+      if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
         ObjectMapper objectMapper = new ObjectMapper();
         TenantConfig dynamicObj;
         try {
@@ -199,7 +200,7 @@ public class ServerConfigService {
     KwProperties kwProperties = new KwProperties();
     copyProperties(kwPropertiesModel, kwProperties);
     String res = manageDatabase.getHandleDbRequests().updateKwProperty(kwProperties, tenantId);
-    if (res.equals("success"))
+    if ("success".equals(res))
       commonUtilsService.updateMetadata(
           tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
     response.put("result", "success");
@@ -420,7 +421,7 @@ public class ServerConfigService {
   public Env getEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }
@@ -428,7 +429,7 @@ public class ServerConfigService {
   public Env getKafkaConnectEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaConnectEnvList(tenantId).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }
@@ -436,7 +437,10 @@ public class ServerConfigService {
   public Env getEnvDetailsFromName(String envName, Integer tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> env.getName().equals(envName) && env.getTenantId().equals(tenantId))
+            .filter(
+                env ->
+                    Objects.equals(env.getName(), envName)
+                        && Objects.equals(env.getTenantId(), tenantId))
             .findFirst();
     return envFound.orElse(null);
   }
@@ -459,7 +463,7 @@ public class ServerConfigService {
     Map<String, String> hashMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
-    if (clusterApiStatus.equals("ONLINE")) clusterApiStatus = "successful.";
+    if ("ONLINE".equals(clusterApiStatus)) clusterApiStatus = "successful.";
     else clusterApiStatus = "failure.";
     hashMap.put("result", clusterApiStatus);
     return hashMap;
@@ -471,7 +475,7 @@ public class ServerConfigService {
 
   private Integer getTenantIdFromName(String tenantName) {
     return manageDatabase.getTenantMap().entrySet().stream()
-        .filter(obj -> obj.getValue().equals(tenantName))
+        .filter(obj -> Objects.equals(obj.getValue(), tenantName))
         .findFirst()
         .get()
         .getKey();

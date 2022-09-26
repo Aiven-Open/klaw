@@ -35,7 +35,7 @@ public class MetadataListener implements ApplicationContextAware {
   @PostRemove
   private void afterAnyUpdate(KwMetadataUpdates metadataUpdates) {
     log.info("MetadataUpdates : " + metadataUpdates);
-    if (metadataUpdates.getEntityType().equals(EntityType.TEAM.name()))
+    if (EntityType.TEAM.name().equals(metadataUpdates.getEntityType()))
       getBean(ManageDatabase.class)
           .loadTenantTeamsForOneTenant(null, metadataUpdates.getTenantId());
   }

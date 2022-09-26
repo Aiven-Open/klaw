@@ -116,7 +116,7 @@ public class TopicControllerService {
 
     if (topics != null
         && topics.size() > 0
-        && !topics.get(0).getTeamId().equals(topicRequestReq.getTeamId())) {
+        && !Objects.equals(topics.get(0).getTeamId(), topicRequestReq.getTeamId())) {
       hashMapTopicReqRes.put("result", "Failure. This topic is owned by a different team.");
       return hashMapTopicReqRes;
     }
@@ -128,7 +128,9 @@ public class TopicControllerService {
       if (promotionOrderCheck) {
         int devTopicFound =
             (int)
-                topics.stream().filter(topic -> topic.getEnvironment().equals(syncCluster)).count();
+                topics.stream()
+                    .filter(topic -> Objects.equals(topic.getEnvironment(), syncCluster))
+                    .count();
         if (devTopicFound != 1) {
           if (getEnvDetails(syncCluster) == null) {
             hashMapTopicReqRes.put("result", "Failure. This topic does not exist in base cluster");
@@ -142,7 +144,7 @@ public class TopicControllerService {
           return hashMapTopicReqRes;
         }
       }
-    } else if (!topicRequestReq.getEnvironment().equals(syncCluster)) {
+    } else if (!Objects.equals(topicRequestReq.getEnvironment(), syncCluster)) {
       if (promotionOrderCheck) {
         hashMapTopicReqRes.put(
             "result",
@@ -169,13 +171,14 @@ public class TopicControllerService {
     }
 
     // Ignore topic exists check if Update request
-    if (!topicRequestReq.getTopictype().equals(TopicRequestTypes.Update.name())) {
+    if (!TopicRequestTypes.Update.name().equals(topicRequestReq.getTopictype())) {
       boolean topicExists = false;
       if (topics != null) {
         topicExists =
             topics.stream()
                 .anyMatch(
-                    topicEx -> topicEx.getEnvironment().equals(topicRequestReq.getEnvironment()));
+                    topicEx ->
+                        Objects.equals(topicEx.getEnvironment(), topicRequestReq.getEnvironment()));
       }
       if (topicExists) {
         hashMapTopicReqRes.put(
@@ -190,7 +193,7 @@ public class TopicControllerService {
         validateParameters(topicRequestReq, env, topicPartitions, topicRf);
     String validTopicStatus = isValidTopicMap.get("status");
 
-    if (validTopicStatus.equals("true")) {
+    if ("true".equals(validTopicStatus)) {
       TopicRequest topicRequestDao = new TopicRequest();
       copyProperties(topicRequestReq, topicRequestDao);
       topicRequestDao.setTenantId(tenantId);
@@ -284,7 +287,9 @@ public class TopicControllerService {
     List<Topic> topics = getTopicFromName(topicName, tenantId);
 
     Integer userTeamId = getMyTeamId(userDetails);
-    if (topics != null && topics.size() > 0 && !topics.get(0).getTeamId().equals(userTeamId)) {
+    if (topics != null
+        && topics.size() > 0
+        && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
       hashMap.put(
           "result",
           "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
@@ -301,7 +306,8 @@ public class TopicControllerService {
 
     Optional<Topic> topicOb =
         getTopicFromName(topicName, tenantId).stream()
-            .filter(topic -> topic.getEnvironment().equals(topicRequestReq.getEnvironment()))
+            .filter(
+                topic -> Objects.equals(topic.getEnvironment(), topicRequestReq.getEnvironment()))
             .findFirst();
 
     if (manageDatabase
@@ -383,7 +389,7 @@ public class TopicControllerService {
     Integer topicOwnerTeamId = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
         manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId).stream()
-            .filter(user -> user.getTeamId().equals(topicOwnerTeamId))
+            .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeamId))
             .findFirst();
 
     // String userTeam = dbHandle.getUsersInfo(userDetails).getTeam();
@@ -444,10 +450,10 @@ public class TopicControllerService {
             .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
             .collect(Collectors.toList());
 
-    if (!requestsType.equals("all") && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
+    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
       topicReqs =
           topicReqs.stream()
-              .filter(topicRequest -> topicRequest.getTopicstatus().equals(requestsType))
+              .filter(topicRequest -> Objects.equals(topicRequest.getTopicstatus(), requestsType))
               .collect(Collectors.toList());
 
     topicReqs = getTopicRequestsPaged(topicReqs, pageNo, currentPage);
@@ -503,7 +509,7 @@ public class TopicControllerService {
     log.debug("getTopicTeamOnly {} {}", topicName, patternType);
     Map<String, String> teamMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if (patternType.equals("PREFIXED")) {
+    if ("PREFIXED".equals(patternType)) {
       List<Topic> topics = manageDatabase.getHandleDbRequests().getAllTopics(tenantId);
 
       // tenant filtering
@@ -616,9 +622,9 @@ public class TopicControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!topicRequestModel.getTopicstatus().equals(RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
-              && topicRequestModel.getTopictype().equals(TopicRequestTypes.Claim.name())) {
+              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -648,7 +654,8 @@ public class TopicControllerService {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
-      if (approverRoles.contains(userInfo.getRole()) && !requestor.equals(userInfo.getUsername()))
+      if (approverRoles.contains(userInfo.getRole())
+          && !Objects.equals(requestor, userInfo.getUsername()))
         approvingInfo.append(userInfo.getUsername()).append(",");
     }
 
@@ -684,10 +691,10 @@ public class TopicControllerService {
             .getHandleDbRequests()
             .selectTopicRequestsForTopic(Integer.parseInt(topicId), tenantId);
 
-    if (topicRequest.getRequestor().equals(userDetails))
+    if (Objects.equals(topicRequest.getRequestor(), userDetails))
       return "{\"result\":\"You are not allowed to approve your own topic requests.\"}";
 
-    if (!topicRequest.getTopicstatus().equals(RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -698,7 +705,7 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-    if (topicRequest.getTopictype().equals(TopicRequestTypes.Claim.name())) {
+    if (TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
         allTopic.setTeamId(topicRequest.getTeamId()); // for claim reqs, team stored in description
@@ -706,7 +713,7 @@ public class TopicControllerService {
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
-      if (updateTopicReqStatus.equals("success"))
+      if ("success".equals(updateTopicReqStatus))
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userDetails);
     } else {
       ResponseEntity<String> response =
@@ -720,7 +727,7 @@ public class TopicControllerService {
 
       updateTopicReqStatus = response.getBody();
 
-      if (Objects.equals(response.getBody(), "success")) {
+      if ("success".equals(response.getBody())) {
         setTopicHistory(topicRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userDetails);
         mailService.sendMail(
@@ -744,11 +751,11 @@ public class TopicControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (topicRequest.getTopictype().equals(TopicRequestTypes.Update.name())) {
+      if (TopicRequestTypes.Update.name().equals(topicRequest.getTopictype())) {
         List<Topic> existingTopicList =
             getTopicFromName(topicRequest.getTopicname(), topicRequest.getTenantId());
         existingTopicList.stream()
-            .filter(topic -> topic.getEnvironment().equals(topicRequest.getEnvironment()))
+            .filter(topic -> Objects.equals(topic.getEnvironment(), topicRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
         existingTopicHistory = objectMapper.readValue(existingHistory.get(), ArrayList.class);
@@ -785,7 +792,7 @@ public class TopicControllerService {
         dbHandle.selectTopicRequestsForTopic(
             Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
 
-    if (!topicRequest.getTopicstatus().equals(RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -823,7 +830,7 @@ public class TopicControllerService {
       // manageDatabase.getHandleDbRequests().getUsersInfo(getUserName()).getTeam();
       topicsFromSOT =
           topicsFromSOT.stream()
-              .filter(topic -> topic.getTeamId().equals(userTeamId))
+              .filter(topic -> Objects.equals(topic.getTeamId(), userTeamId))
               .collect(Collectors.toList());
     }
 
@@ -852,7 +859,7 @@ public class TopicControllerService {
     //        String loggedInUserTeam = handleDb.selectAllTeamsOfUsers(getUserName(),
     // tenantId).get(0).getTeamname();
     Integer loggedInUserTeamId = getMyTeamId(getUserName());
-    if (topicOwnerTeamId.equals(loggedInUserTeamId)) {
+    if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
       saveResult.put(
           "result", manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic));
     } else saveResult.put("result", "failure");
@@ -895,7 +902,7 @@ public class TopicControllerService {
       }
       topics =
           topics.stream()
-              .filter(topic -> topic.getEnvironment().equals(envId))
+              .filter(topic -> Objects.equals(topic.getEnvironment(), envId))
               .collect(Collectors.toList());
     }
 
@@ -916,7 +923,7 @@ public class TopicControllerService {
             .selectAllTeamsOfUsers(getUserName(), tenantId)
             .get(0)
             .getTeamname();
-    if (!loggedInUserTeam.equals(topicInfo.getTeamname())) {
+    if (!Objects.equals(loggedInUserTeam, topicInfo.getTeamname())) {
       hashMap.put("error", "Sorry, your team does not own the topic !!");
       return hashMap;
     }
@@ -992,7 +999,7 @@ public class TopicControllerService {
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
     List<Topic> producerConsumerTopics = new ArrayList<>();
     if (topicType != null
-        && (topicType.equals("Producer") || topicType.equals("Consumer"))
+        && ("Producer".equals(topicType) || "Consumer".equals(topicType))
         && teamName != null) {
       producerConsumerTopics =
           handleDbRequests.selectAllTopicsByTopictypeAndTeamname(
@@ -1034,7 +1041,7 @@ public class TopicControllerService {
               topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
               filterProducerConsumerList.add(topicInfo);
             }
-          } else if (producerConsumerTopic.getTopicname().equals(topicInfo.getTopicname())
+          } else if (Objects.equals(producerConsumerTopic.getTopicname(), topicInfo.getTopicname())
               && topicInfo.getEnvironmentsList().contains(producerConsumerTopic.getEnvironment())) {
             topicInfo.setEnvironmentsList(producerConsumerTopic.getEnvironmentsList());
             filterProducerConsumerList.add(topicInfo);
@@ -1127,7 +1134,7 @@ public class TopicControllerService {
     List<String> newEnvList = new ArrayList<>();
     for (String env : selectedEnvs) {
       for (Env env1 : allEnvs) {
-        if (env.equals(env1.getId())) {
+        if (Objects.equals(env, env1.getId())) {
           newEnvList.add(env1.getName());
           break;
         }
@@ -1206,7 +1213,7 @@ public class TopicControllerService {
   public Env getEnvDetails(String envId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }
@@ -1214,7 +1221,10 @@ public class TopicControllerService {
   public Env getEnvDetailsFromName(String envName, Integer tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> env.getName().equals(envName) && env.getTenantId().equals(tenantId))
+            .filter(
+                env ->
+                    Objects.equals(env.getName(), envName)
+                        && Objects.equals(env.getTenantId(), tenantId))
             .findFirst();
     return envFound.orElse(null);
   }

@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +84,7 @@ public class CommonUtilsService {
   }
 
   String getAuthority(Object principal) {
-    if (enableUserAuthorizationFromAD.equals("true")) {
+    if ("true".equals(enableUserAuthorizationFromAD)) {
       if (principal instanceof DefaultOAuth2User) {
         DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
         Object[] authorities = defaultOAuth2User.getAuthorities().toArray();
@@ -158,7 +159,7 @@ public class CommonUtilsService {
         totalCount += Integer.parseInt(hashMap.get(yaxisCount));
         data.add(Integer.parseInt(hashMap.get(yaxisCount)));
 
-        if (xaxisLabel.equals("teamid"))
+        if ("teamid".equals(xaxisLabel))
           labels.add(
               manageDatabase.getTeamNameFromTeamId(
                   tenantId, Integer.parseInt(hashMap.get(xaxisLabel))));
@@ -307,36 +308,35 @@ public class CommonUtilsService {
   }
 
   public synchronized void updateMetadata(KwMetadataUpdates kwMetadataUpdates) {
-    if (kwMetadataUpdates.getEntityType().equals(EntityType.TEAM.name())) {
+    final EntityType entityType = EntityType.of(kwMetadataUpdates.getEntityType());
+    if (entityType == null) return;
+    final MetadataOperationType operationType =
+        MetadataOperationType.of(kwMetadataUpdates.getOperationType());
+    if (entityType == EntityType.TEAM) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.CLUSTER.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.DELETE.name()))
+    } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE)
       manageDatabase.deleteCluster(kwMetadataUpdates.getTenantId());
-    else if (kwMetadataUpdates.getEntityType().equals(EntityType.CLUSTER.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.CREATE.name()))
+    else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.CREATE)
       manageDatabase.loadClustersForOneTenant(null, null, null, kwMetadataUpdates.getTenantId());
-    else if (kwMetadataUpdates.getEntityType().equals(EntityType.ENVIRONMENT.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.CREATE.name())) {
+    else if (entityType == EntityType.ENVIRONMENT
+        && operationType == MetadataOperationType.CREATE) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadEnvMapForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.ENVIRONMENT.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.DELETE.name())) {
+    } else if (entityType == EntityType.ENVIRONMENT
+        && operationType == MetadataOperationType.DELETE) {
       manageDatabase.loadEnvMapForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.TENANT.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.CREATE.name())) {
+    } else if (entityType == EntityType.TENANT && operationType == MetadataOperationType.CREATE) {
       manageDatabase.updateStaticDataForTenant(kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.TENANT.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.DELETE.name())) {
+    } else if (entityType == EntityType.TENANT && operationType == MetadataOperationType.DELETE) {
       manageDatabase.deleteTenant(kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.TENANT.name())
-        && kwMetadataUpdates.getOperationType().equals(MetadataOperationType.UPDATE.name())) {
+    } else if (entityType == EntityType.TENANT && operationType == MetadataOperationType.UPDATE) {
       manageDatabase.loadOneTenant(kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.ROLES_PERMISSIONS.name())) {
+    } else if (entityType == EntityType.ROLES_PERMISSIONS) {
       manageDatabase.loadRolesPermissionsOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (kwMetadataUpdates.getEntityType().equals(EntityType.PROPERTIES.name())) {
+    } else if (entityType == EntityType.PROPERTIES) {
       manageDatabase.loadKwPropsPerOneTenant(null, kwMetadataUpdates.getTenantId());
     }
   }
@@ -351,7 +351,7 @@ public class CommonUtilsService {
   }
 
   public String getBaseUrl() {
-    if (kwContextPath.equals(""))
+    if ("".equals(kwContextPath))
       return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
     else
       return ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString()
@@ -364,7 +364,9 @@ public class CommonUtilsService {
     try {
       String tenantName =
           manageDatabase.getHandleDbRequests().getTenants().stream()
-              .filter(kwTenant -> kwTenant.getTenantId().equals(kwMetadataUpdates.getTenantId()))
+              .filter(
+                  kwTenant ->
+                      Objects.equals(kwTenant.getTenantId(), kwMetadataUpdates.getTenantId()))
               .findFirst()
               .get()
               .getTenantName();
@@ -381,7 +383,7 @@ public class CommonUtilsService {
         String basePath;
         for (String server : servers) {
 
-          if (kwContextPath.equals("")) basePath = server;
+          if ("".equals(kwContextPath)) basePath = server;
           else basePath = server + "/" + kwContextPath;
           String uri =
               basePath

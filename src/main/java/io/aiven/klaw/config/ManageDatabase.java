@@ -191,7 +191,7 @@ public class ManageDatabase implements ApplicationContextAware {
     String productName = "Klaw";
     Optional<ProductDetails> productDetails = handleDbRequests.selectProductDetails(productName);
     if (productDetails.isPresent()) {
-      if (!productDetails.get().getVersion().equals(kwVersion))
+      if (!Objects.equals(productDetails.get().getVersion(), kwVersion))
         handleDbRequests.insertProductDetails(
             defaultDataService.getProductDetails(productName, kwVersion));
     } else
@@ -208,7 +208,7 @@ public class ManageDatabase implements ApplicationContextAware {
   //    }
 
   private void checkSSOAuthentication() {
-    if (authenticationType.equals("db") && ssoEnabled.equals("true")) {
+    if ("db".equals(authenticationType) && "true".equals(ssoEnabled)) {
       log.error(
           "Error : Please configure authentication type to ad, if SSO is enabled. Shutting down..");
       shutdownApp();
@@ -280,7 +280,7 @@ public class ManageDatabase implements ApplicationContextAware {
 
   private Integer getTenantIdFromName(String tenantName) {
     return tenantMap.entrySet().stream()
-        .filter(obj -> obj.getValue().equals(tenantName))
+        .filter(obj -> Objects.equals(obj.getValue(), tenantName))
         .findFirst()
         .get()
         .getKey();
@@ -304,7 +304,7 @@ public class ManageDatabase implements ApplicationContextAware {
     if (teamName != null)
       optionalTeam =
           teamIdAndNamePerTenant.get(tenantId).entrySet().stream()
-              .filter(a -> a.getValue().equals(teamName))
+              .filter(a -> Objects.equals(a.getValue(), teamName))
               .findFirst();
     else return null;
 
@@ -363,15 +363,15 @@ public class ManageDatabase implements ApplicationContextAware {
   public void loadEnvsForOneTenant(Integer tenantId) {
     List<Env> kafkaEnvList =
         handleDbRequests.selectAllKafkaEnvs(tenantId).stream()
-            .filter(env -> env.getEnvExists().equals("true"))
+            .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> schemaEnvList =
         handleDbRequests.selectAllSchemaRegEnvs(tenantId).stream()
-            .filter(env -> env.getEnvExists().equals("true"))
+            .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> kafkaConnectEnvList =
         handleDbRequests.selectAllKafkaConnectEnvs(tenantId).stream()
-            .filter(env -> env.getEnvExists().equals("true"))
+            .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
 
     List<String> envList1 = kafkaEnvList.stream().map(Env::getId).collect(Collectors.toList());
@@ -403,7 +403,7 @@ public class ManageDatabase implements ApplicationContextAware {
 
     List<Team> teamList =
         allTeams.stream()
-            .filter(team -> team.getTenantId().equals(tenantId))
+            .filter(team -> Objects.equals(team.getTenantId(), tenantId))
             .collect(Collectors.toList());
 
     for (Team team : teamList) {
@@ -579,15 +579,15 @@ public class ManageDatabase implements ApplicationContextAware {
   public void loadEnvMapForOneTenant(Integer tenantId) {
     List<Env> kafkaEnvList =
         handleDbRequests.selectAllKafkaEnvs(tenantId).stream()
-            .filter(env -> env.getEnvExists().equals("true"))
+            .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> schemaEnvList =
         handleDbRequests.selectAllSchemaRegEnvs(tenantId).stream()
-            .filter(env -> env.getEnvExists().equals("true"))
+            .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> kafkaConnectEnvList =
         handleDbRequests.selectAllKafkaConnectEnvs(tenantId).stream()
-            .filter(env -> env.getEnvExists().equals("true"))
+            .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> allEnvList = new ArrayList<>();
     allEnvList.addAll(kafkaEnvList);
@@ -601,7 +601,7 @@ public class ManageDatabase implements ApplicationContextAware {
 
     List<Env> kafkaEnvTenantList =
         kafkaEnvList.stream()
-            .filter(kafkaEnv -> kafkaEnv.getTenantId().equals(tenantId))
+            .filter(kafkaEnv -> Objects.equals(kafkaEnv.getTenantId(), tenantId))
             .collect(Collectors.toList());
     Map<String, Map<String, List<String>>> envParamsMap = new HashMap<>();
 

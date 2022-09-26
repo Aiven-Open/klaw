@@ -27,7 +27,7 @@ public class UiConfigControllerService {
 
   public Map<String, String> getDbAuth() {
     Map<String, String> dbMap = new HashMap<>();
-    if (authenticationType.equals("db")) dbMap.put("dbauth", "true");
+    if ("db".equals(authenticationType)) dbMap.put("dbauth", "true");
     else dbMap.put("dbauth", "false");
     return dbMap;
   }
@@ -101,20 +101,20 @@ public class UiConfigControllerService {
   public String getEnvName(String envId, String activityName, int tenantId) {
     Optional<Env> envFound;
 
-    if (activityName.equals("SchemaRequest"))
+    if ("SchemaRequest".equals(activityName))
       envFound =
           manageDatabase.getSchemaRegEnvList(tenantId).stream()
-              .filter(env -> env.getId().equals(envId))
+              .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    else if (activityName.equals("ConnectorRequest"))
+    else if ("ConnectorRequest".equals(activityName))
       envFound =
           manageDatabase.getKafkaConnectEnvList(tenantId).stream()
-              .filter(env -> env.getId().equals(envId))
+              .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
     else
       envFound =
           manageDatabase.getKafkaEnvList(tenantId).stream()
-              .filter(env -> env.getId().equals(envId))
+              .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
 
     return envFound.map(Env::getName).orElse(null);

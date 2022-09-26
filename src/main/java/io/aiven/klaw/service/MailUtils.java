@@ -193,13 +193,13 @@ public class MailUtils {
             registrationRequest, registerUserInfo.getUsername(), registerUserInfo.getFullname());
 
     subject = "New User Registration request";
-    if (!registerUserInfo
-        .getMailid()
-        .equals(manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
+    if (!Objects.equals(
+        registerUserInfo.getMailid(),
+        manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
       sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
 
     // Sending to user
-    if (registerUserInfo.getTeam().equals(KwConstants.INFRATEAM)) {
+    if (KwConstants.INFRATEAM.equals(registerUserInfo.getTeam())) {
       registrationRequest =
           manageDatabase.getKwPropertyValue(REGISTER_USER_SAASADMIN_TOUSER_KEY, tenantId);
       formattedStr =
@@ -253,9 +253,9 @@ public class MailUtils {
               registerUserInfo.getRole());
 
       subject = "New User Registration request";
-      if (!registerUserInfo
-          .getMailid()
-          .equals(manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
+      if (!Objects.equals(
+          registerUserInfo.getMailid(),
+          manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
         sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
 
       // Sending to user

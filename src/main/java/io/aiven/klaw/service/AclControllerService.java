@@ -86,9 +86,9 @@ public class AclControllerService {
     boolean topicFound = false;
     String result;
 
-    if (aclReq.getAclPatternType().equals("LITERAL")) {
+    if ("LITERAL".equals(aclReq.getAclPatternType())) {
       for (Topic topic : topics) {
-        if (topic.getEnvironment().equals(aclReq.getEnvironment())) {
+        if (Objects.equals(topic.getEnvironment(), aclReq.getEnvironment())) {
           topicFound = true;
           break;
         }
@@ -97,8 +97,8 @@ public class AclControllerService {
       if (!topicFound) return "{\"result\":\"" + result + "\"}";
     }
 
-    if (aclReq.getTopictype().equals("Consumer")) {
-      if (aclReq.getAclPatternType().equals("PREFIXED")) {
+    if ("Consumer".equals(aclReq.getTopictype())) {
+      if ("PREFIXED".equals(aclReq.getAclPatternType())) {
         result = "Failure : Please change the pattern to LITERAL for topic type.";
         return "{\"result\":\"" + result + "\"}";
       }
@@ -144,7 +144,7 @@ public class AclControllerService {
     String execRes =
         manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
 
-    if (execRes.equals("success")) {
+    if ("success".equals(execRes)) {
       mailService.sendMail(
           aclReq.getTopicname(),
           aclReq.getTopictype(),
@@ -250,7 +250,7 @@ public class AclControllerService {
 
     resultMap.put("result", resultStatus);
 
-    if (syncBackAcls.getTypeOfSync().equals("SELECTED_ACLS")) {
+    if ("SELECTED_ACLS".equals(syncBackAcls.getTypeOfSync())) {
       for (String aclId : syncBackAcls.getAclIds()) {
         Acl acl =
             manageDatabase
@@ -304,7 +304,7 @@ public class AclControllerService {
       } else if (resultAclReq.contains("Acl already exists")) {
         logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
       } else {
-        if (!syncBackAcls.getSourceEnv().equals(syncBackAcls.getTargetEnv())) {
+        if (!Objects.equals(syncBackAcls.getSourceEnv(), syncBackAcls.getTargetEnv())) {
           logUpdateSyncBackTopics.add("Acl added: " + aclFound.getTopicname());
           // Create request
           Map<String, String> resultMapReq =
@@ -378,7 +378,7 @@ public class AclControllerService {
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
 
         // show approving info only before approvals
-        if (!aclRequestsModel.getAclstatus().equals(RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(aclRequestsModel.getAclstatus())) {
           aclRequestsModel.setApprovingTeamDetails(
               updateApprovingInfo(
                   aclRequestsModel.getTopicname(),
@@ -406,7 +406,7 @@ public class AclControllerService {
     if (topicTeamsList.size() > 0) {
       Integer teamId = getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
-      if (aclType.equals("Delete")) teamId = team;
+      if ("Delete".equals(aclType)) teamId = team;
       List<UserInfo> userList =
           manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId);
 
@@ -415,7 +415,8 @@ public class AclControllerService {
               "Team : " + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ", Users : ");
 
       for (UserInfo userInfo : userList) {
-        if (approverRoles.contains(userInfo.getRole()) && !requestor.equals(userInfo.getUsername()))
+        if (approverRoles.contains(userInfo.getRole())
+            && !Objects.equals(requestor, userInfo.getUsername()))
           approvingInfo.append(userInfo.getUsername()).append(",");
       }
       return String.valueOf(approvingInfo);
@@ -586,7 +587,7 @@ public class AclControllerService {
     aclReq.setJsonParams(acl.getJsonParams());
     String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq).get("result");
 
-    if (execRes.equals("success")) {
+    if ("success".equals(execRes)) {
       mailService.sendMail(
           aclReq.getTopicname(),
           aclReq.getTopictype(),
@@ -611,10 +612,10 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
-    if (aclReq.getUsername().equals(userDetails))
+    if (Objects.equals(aclReq.getUsername(), userDetails))
       return "{\"result\":\"You are not allowed to approve your own subscription requests.\"}";
 
-    if (!aclReq.getAclstatus().equals(RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -685,7 +686,7 @@ public class AclControllerService {
     AclRequests aclReq =
         dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
-    if (!aclReq.getAclstatus().equals(RequestStatus.created.name())) {
+    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
       return "{\"result\":\"This request does not exist anymore.\"}";
     }
 
@@ -734,11 +735,11 @@ public class AclControllerService {
 
     for (Map<String, String> hMapGroupItem : groupedList) {
       for (Map<String, String> hMapItem : clusterAclList) {
-        if (hMapGroupItem.get("operation").equals("READ")
-            && hMapItem.get("operation").equals("READ")
-            && hMapItem.get("resourceType").equals("GROUP")) {
-          if (hMapItem.get("host").equals(hMapGroupItem.get("host"))
-              && hMapItem.get("principle").equals(hMapGroupItem.get("principle"))) {
+        if ("READ".equals(hMapGroupItem.get("operation"))
+            && "READ".equals(hMapItem.get("operation"))
+            && "GROUP".equals(hMapItem.get("resourceType"))) {
+          if (Objects.equals(hMapItem.get("host"), hMapGroupItem.get("host"))
+              && Objects.equals(hMapItem.get("principle"), hMapGroupItem.get("principle"))) {
             Map<String, String> hashMap = new HashMap<>(hMapGroupItem);
             hashMap.put("consumerGroup", hMapItem.get("resourceName"));
             updateList.add(hashMap);
@@ -758,11 +759,11 @@ public class AclControllerService {
             hItem -> {
               if (isSync) {
                 if (topicNameSearch != null) {
-                  return hItem.get("resourceType").equals("TOPIC")
+                  return "TOPIC".equals(hItem.get("resourceType"))
                       && hItem.get("resourceName").contains(topicNameSearch);
-                } else return hItem.get("resourceType").equals("TOPIC");
+                } else return "TOPIC".equals(hItem.get("resourceType"));
               } else {
-                return hItem.get("resourceName").equals(topicNameSearch);
+                return Objects.equals(hItem.get("resourceName"), topicNameSearch);
               }
             })
         .collect(Collectors.toList());
@@ -857,7 +858,7 @@ public class AclControllerService {
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String retrieveSchemasStr = manageDatabase.getKwPropertyValue(RETRIEVE_SCHEMAS_KEY, tenantId);
-    boolean retrieveSchemas = retrieveSchemasStr.equals("true");
+    boolean retrieveSchemas = "true".equals(retrieveSchemasStr);
 
     if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
     else return null;
@@ -971,7 +972,7 @@ public class AclControllerService {
       }
 
       // show edit button only for restricted envs
-      if (topicOwnerTeam.equals(loggedInUserTeam)
+      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)
           && reqTopicsEnvsList.contains(topicInfo.getClusterId())) {
         topicInfo.setShowEditTopic(true);
       }
@@ -1005,14 +1006,15 @@ public class AclControllerService {
     topicOverview.setTopicInfoList(topicInfoList);
 
     try {
-      if (topicOwnerTeam.equals(loggedInUserTeam)) {
+      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
         topicOverview.setPromotionDetails(getTopicPromotionEnv(topicNameSearch, topics, tenantId));
 
         if (topicInfoList.size() > 0) {
           TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
           lastItem.setTopicDeletable(
               aclInfo.stream()
-                  .noneMatch(aclItem -> aclItem.getEnvironment().equals(lastItem.getCluster())));
+                  .noneMatch(
+                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getCluster())));
           lastItem.setShowDeleteTopic(true);
         }
       } else {
@@ -1253,15 +1255,15 @@ public class AclControllerService {
 
       String tmpPermType = aclListItem.get("operation");
 
-      if (tmpPermType.equals("WRITE")) mp.setTopictype("Producer");
-      else if (tmpPermType.equals("READ")) {
+      if ("WRITE".equals(tmpPermType)) mp.setTopictype("Producer");
+      else if ("READ".equals(tmpPermType)) {
         mp.setTopictype("Consumer");
         if (aclListItem.get("consumerGroup") != null)
           mp.setConsumergroup(aclListItem.get("consumerGroup"));
         else continue;
       }
 
-      if (aclListItem.get("resourceType").toLowerCase().equals("topic"))
+      if ("topic".equalsIgnoreCase(aclListItem.get("resourceType")))
         mp.setTopicname(aclListItem.get("resourceName"));
 
       mp.setAcl_ip(aclListItem.get("host"));
@@ -1274,7 +1276,7 @@ public class AclControllerService {
         if (acl_ssl == null || acl_ssl.equals("")) acl_ssl = "User:*";
         else {
           if (!KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kafkaFlavor)
-              && !acl_ssl.equals("User:*")
+              && !"User:*".equals(acl_ssl)
               && !acl_ssl.startsWith("User:")) {
             acl_ssl = "User:" + acl_ssl;
           }
@@ -1283,10 +1285,10 @@ public class AclControllerService {
         if (acl_host == null || acl_host.equals("")) acl_host = "*";
 
         if (aclSotItem.getTopicname() != null
-            && aclListItem.get("resourceName").equals(aclSotItem.getTopicname())
-            && aclListItem.get("host").equals(acl_host)
-            && aclListItem.get("principle").equals(acl_ssl)
-            && aclSotItem.getTopictype().equals(mp.getTopictype())) {
+            && Objects.equals(aclListItem.get("resourceName"), aclSotItem.getTopicname())
+            && Objects.equals(aclListItem.get("host"), acl_host)
+            && Objects.equals(aclListItem.get("principle"), acl_ssl)
+            && Objects.equals(aclSotItem.getTopictype(), mp.getTopictype())) {
           mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
           mp.setReq_no(aclSotItem.getReq_no() + "");
           break;
@@ -1320,7 +1322,9 @@ public class AclControllerService {
       List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
 
       teams =
-          teams.stream().filter(t -> t.getTenantId().equals(tenantId)).collect(Collectors.toList());
+          teams.stream()
+              .filter(t -> Objects.equals(t.getTenantId(), tenantId))
+              .collect(Collectors.toList());
       List<String> teamListUpdated = new ArrayList<>();
       for (Team teamsItem : teams) {
         teamListUpdated.add(teamsItem.getTeamname());
@@ -1378,9 +1382,9 @@ public class AclControllerService {
     List<Acl> acls = manageDatabase.getHandleDbRequests().getUniqueConsumerGroups(tenantId);
 
     for (Acl acl : acls) {
-      if (!acl.getTeamId().equals(teamId)
+      if (!Objects.equals(acl.getTeamId(), teamId)
           && acl.getConsumergroup() != null
-          && acl.getConsumergroup().equals(consumerGroup)) {
+          && Objects.equals(acl.getConsumergroup(), consumerGroup)) {
         return true;
       }
     }
@@ -1391,7 +1395,7 @@ public class AclControllerService {
 
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> env.getId().equals(envId))
+            .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
   }

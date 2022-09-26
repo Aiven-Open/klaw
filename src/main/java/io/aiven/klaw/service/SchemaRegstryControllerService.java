@@ -62,11 +62,12 @@ public class SchemaRegstryControllerService {
               .collect(Collectors.toList());
 
     // request status filtering
-    if (!requestsType.equals("all") && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
+    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
       if (schemaReqs != null) {
         schemaReqs =
             schemaReqs.stream()
-                .filter(schemaRequest -> schemaRequest.getTopicstatus().equals(requestsType))
+                .filter(
+                    schemaRequest -> Objects.equals(schemaRequest.getTopicstatus(), requestsType))
                 .collect(Collectors.toList());
       }
 
@@ -90,7 +91,7 @@ public class SchemaRegstryControllerService {
         copyProperties(schemaReq, schemaRequestModel);
 
         // show approving info only before approvals
-        if (!schemaRequestModel.getTopicstatus().equals(RequestStatus.approved.name())) {
+        if (!RequestStatus.approved.name().equals(schemaRequestModel.getTopicstatus())) {
           schemaRequestModel.setApprovingTeamDetails(
               updateApproverInfo(
                   userList,
@@ -110,7 +111,8 @@ public class SchemaRegstryControllerService {
     StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
 
     for (UserInfo userInfo : userList) {
-      if (approverRoles.contains(userInfo.getRole()) && !requestor.equals(userInfo.getUsername()))
+      if (approverRoles.contains(userInfo.getRole())
+          && !Objects.equals(requestor, userInfo.getUsername()))
         approvingInfo.append(userInfo.getUsername()).append(",");
     }
 
@@ -196,7 +198,7 @@ public class SchemaRegstryControllerService {
             .getHandleDbRequests()
             .selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
 
-    if (schemaRequest.getUsername().equals(userDetails))
+    if (Objects.equals(schemaRequest.getUsername(), userDetails))
       return "{\"result\":\"You are not allowed to approve your own schema requests.\"}";
 
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
@@ -301,7 +303,7 @@ public class SchemaRegstryControllerService {
     // tenant filtering
     Integer topicOwnerTeam = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
 
-    if (!userTeamId.equals(topicOwnerTeam)) {
+    if (!Objects.equals(userTeamId, topicOwnerTeam)) {
       return "No topic selected Or Not authorized to register schema for this topic.";
     }
 
@@ -322,8 +324,9 @@ public class SchemaRegstryControllerService {
           schemaReqs.stream()
               .filter(
                   schemaRequest1 ->
-                      schemaRequest1.getTopicstatus().equals("created")
-                          && schemaRequest1.getTopicname().equals(schemaRequest.getTopicname()))
+                      "created".equals(schemaRequest1.getTopicstatus())
+                          && Objects.equals(
+                              schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
       if (schemaReqs.size() > 0) {
         return "Failure. A request already exists for this topic.";
