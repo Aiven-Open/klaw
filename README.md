@@ -2,15 +2,15 @@
 
 Klaw is fully opensource. 🥳 
 
-Klaw is a self-service Apache Kafka Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
+Klaw is a self-service Apache Kafka® Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Apache Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
 
-With several downloads every week, many more companies which did not adopt a solution, can happily move away from managing kafka configs in excelsheets, confluence, wiki pages, git etc. 
+With several downloads every week, many more companies which did not adopt a solution, can happily move away from managing Apache Kafka configs in excelsheets, confluence, wiki pages, git etc. 
 
 ## Built With
 
 * Bootstrap UI, Angular, Javascript, HTML, CSS 
 * [Maven](https://maven.apache.org/) - Dependency Management
-* Java, Spring boot, Spring security, SQL, Kafka Admin client 
+* Java, Spring boot, Spring security, SQL, Apache Kafka Admin client 
 
 ## Versioning
 
@@ -46,7 +46,7 @@ https://github.com/aiven/klaw-cluster-api
 - View created, completed, declined, all Connector requests
 - View created, completed, declined, all Avro schema requests
 
-- Synchronization from and to kafka clusters
+- Synchronization from and to Apache Kafka clusters
 - Reconciliation and email notifications on differences between Klaw and Clusters
 - Restore configuration (topics, acls)
 
@@ -56,7 +56,7 @@ https://github.com/aiven/klaw-cluster-api
   - Based on database
   
 - Configure Clusters and Environments
-  - Clusters can be created connecting to Kafka clusters. (Cluster Management Api should be configured)
+  - Clusters can be created connecting to Apache Kafka clusters. (Cluster Management Api should be configured)
   - Environments are wrappers over clusters, enforcing flexible configs like prefix, suffix etc
 
 - Users, Teams & Authorizations
@@ -86,7 +86,7 @@ https://github.com/aiven/klaw-cluster-api
     of one tenant cannot view/access topics, acls or any from other tenants.
   - It provides an isolation avoiding any security breach.
 
-- Kafka Connectivity
+- Apache Kafka Connectivity
   - PLAINTEXT, SSL, SASL
 
 - Audit
@@ -128,10 +128,8 @@ All product and service names used in this page are for identification purposes 
 
 ## Credits
 
-Klaw (formerly Kafkawize) is maintained by, Aiven_ open source developers.
+Klaw (formerly Kafkawize) is maintained by, [Aiven](https://aiven.io/) open source developers.
 
-
-.. _`Aiven`: https://aiven.io/
 
 Recent contributors are listed on the GitHub project page,
 https://github.com/aiven/klaw/graphs/contributors
