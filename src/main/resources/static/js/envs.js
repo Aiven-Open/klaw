@@ -677,16 +677,16 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             }
                         }
 
-                        if($scope.addNewCluster.type == 'kafka')
+                        if($scope.kafkaFlavor === 'Aiven for Apache Kafka')
                         {
-                            if($scope.addNewCluster.projectName == undefined || !$scope.addNewCluster.projectName)
+                            if($scope.addNewCluster.projectName === undefined || !$scope.addNewCluster.projectName)
                             {
                                 $scope.alertnote = "Please fill in Project Name as defined in Aiven console";
                                 $scope.showAlertToast();
                                 return;
                             }
 
-                            if($scope.addNewCluster.serviceName == undefined || !$scope.addNewCluster.serviceName)
+                            if($scope.addNewCluster.serviceName === undefined || !$scope.addNewCluster.serviceName)
                             {
                                 $scope.alertnote = "Please fill in service Name as defined in Aiven console";
                                 $scope.showAlertToast();

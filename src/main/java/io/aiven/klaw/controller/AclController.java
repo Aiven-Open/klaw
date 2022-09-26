@@ -96,10 +96,19 @@ public class AclController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TopicOverview> getAcls(
+      @RequestParam(value = "topicnamesearch") String topicNameSearch) {
+    return new ResponseEntity<>(aclControllerService.getAcls(topicNameSearch), HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/getSchemaOfTopic",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<TopicOverview> getSchemaOfTopic(
       @RequestParam(value = "topicnamesearch") String topicNameSearch,
       @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
     return new ResponseEntity<>(
-        aclControllerService.getAcls(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
+        aclControllerService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
   }
 
   @RequestMapping(

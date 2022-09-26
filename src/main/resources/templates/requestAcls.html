@@ -227,15 +227,7 @@
 											<table>
 												<tr>
 													<td><i class="mdi mdi-file-document"></i></td>
-													<td><a class="dropdown-item" target="_blank" href="docs">Documentation</a></td>
-												</tr>
-											</table>
-										</li>
-										<li>
-											<table>
-												<tr>
-													<td><i class="mdi mdi-file-document"></i></td>
-													<td><a class="dropdown-item" target="_blank" href="https://klaw-project.io/docs">ReadTheDocs</a></td>
+													<td><a class="dropdown-item" target="_blank" href="https://klaw-project.io/docs">Documentation</a></td>
 												</tr>
 											</table>
 										</li>
@@ -521,11 +513,13 @@
 											<div class="form-group">
 												<label class="control-label">Topic Pattern Type</label>
 												<div class="demo-radio-button" ng-init="addAcl.acl_lit_pre='LITERAL'">
-													<input class="radio-col-orange" ng-change="onSelectAclPattern('LITERAL')" ng-model="addAcl.acl_lit_pre" name="addAcl.grouppattern"
+													<input class="radio-col-orange" ng-change="onSelectAclPattern('LITERAL')" ng-model="addAcl.acl_lit_pre"
+														   name="addAcl.grouppattern"
 														   type="radio" id="radio_lit" value="LITERAL" checked/>
 													<label for="radio_lit">LITERAL</label>
 
-													<input ng-show="enablePrefixedTopicPattern == 'true'" class="radio-col-orange" ng-change="onSelectAclPattern('PREFIXED')" ng-model="addAcl.acl_lit_pre"
+													<input ng-show="enablePrefixedTopicPattern == 'true'" class="radio-col-orange" ng-change="onSelectAclPattern('PREFIXED')"
+														   ng-model="addAcl.acl_lit_pre"
 														   name="addAcl.grouppattern" type="radio" id="radio_pre" value="PREFIXED" />
 													<label ng-show="enablePrefixedTopicPattern == 'true'" for="radio_pre">PREFIXED</label>
 												</div>
@@ -587,13 +581,13 @@
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="control-label">Acl IP or Principle Or Username based</label>
-												<div class="demo-radio-button" ng-init="addAcl.acl_ip_ssl='IP'">
-													<input class="radio-col-orange" ng-change="onSelectAcl('IP')" ng-model="addAcl.acl_ip_ssl" name="group1"
-														   type="radio" id="radio_1" value="IP" checked />
-													<label for="radio_1">IP Address</label>
-													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="addAcl.acl_ip_ssl"
-														   name="group1" type="radio" id="radio_2" value="SSL" />
-													<label for="radio_2">Principle / Username</label>
+												<div class="demo-radio-button" ng-init="acl_ip_ssl='IP'">
+													<input class="radio-col-orange" ng-change="onSelectAcl('IP')" ng-model="acl_ip_ssl" name="aclipgroup1"
+														   type="radio" id="radio_11" value="IP" checked/>
+													<label for="radio_11">IP Address</label>
+													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="acl_ip_ssl"
+														   name="aclipgroup1" type="radio" id="radio_31" value="SSL" />
+													<label for="radio_31">Principle / Username</label>
 												</div>
 
 											</div>
@@ -601,12 +595,12 @@
 									</div>
 
 									<!--/row Aiven-->
-									<div ng-show="aivenCluster=='true'" class="row">
+									<div ng-if="aivenCluster=='true'" class="row">
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="control-label">Acl Username based</label>
-												<div class="demo-radio-button" ng-init="addAcl.acl_ip_ssl='SSL'">
-													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="addAcl.acl_ip_ssl"
+												<div class="demo-radio-button" ng-init="acl_ip_ssl='SSL'">
+													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="acl_ip_ssl"
 														   name="group1" type="radio" id="radio_2" value="SSL" checked/>
 													<label for="radio_2">Username</label>
 												</div>
@@ -616,7 +610,7 @@
 									</div>
 
 									<!--/row Non Aiven-->
-									<div ng-show="aivenCluster=='false'"  class="row">
+									<div ng-if="aivenCluster=='false'"  class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>IP Address</label>
@@ -675,7 +669,7 @@
 									</div>
 
 									<!-- row Aiven-->
-									<div ng-show="aivenCluster=='true'" class="row">
+									<div ng-if="aivenCluster=='true'" class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Username</label>

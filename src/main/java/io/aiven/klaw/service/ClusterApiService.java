@@ -307,7 +307,7 @@ public class ClusterApiService {
   }
 
   public List<Map<String, String>> getAcls(
-      String bootstrapHost, String protocol, String clusterName, int tenantId)
+      String bootstrapHost, Env envSelected, String protocol, String clusterName, int tenantId)
       throws KlawException {
     log.info("getAcls {} {} {}", bootstrapHost, protocol, tenantId);
     getClusterApiProperties(tenantId);
@@ -315,16 +315,48 @@ public class ClusterApiService {
     List<Map<String, String>> aclListOriginal;
     try {
       String URI_GET_ACLS = "/topics/getAcls/";
-      String uri =
-          clusterConnUrl
-              + URI_GET_ACLS
-              + bootstrapHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterName
-              + "-"
-              + tenantId;
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+              .get(envSelected.getClusterId());
+
+      String uri;
+      // aiven config
+      if (KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor())) {
+        uri =
+            clusterConnUrl
+                + URI_GET_ACLS
+                + bootstrapHost
+                + "/"
+                + AclsNativeType.AIVEN.name()
+                + "/"
+                + protocol
+                + "/"
+                + clusterName
+                + "-"
+                + tenantId
+                + "/"
+                + kwClusters.getProjectName()
+                + "/"
+                + kwClusters.getServiceName();
+      } else {
+        uri =
+            clusterConnUrl
+                + URI_GET_ACLS
+                + bootstrapHost
+                + "/"
+                + AclsNativeType.NATIVE.name()
+                + "/"
+                + protocol
+                + "/"
+                + clusterName
+                + "-"
+                + tenantId
+                + "/"
+                + "na"
+                + "/"
+                + "na";
+      }
       RestTemplate restTemplate = getRestTemplate();
 
       HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);

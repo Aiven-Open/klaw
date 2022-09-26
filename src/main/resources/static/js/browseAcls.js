@@ -512,7 +512,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
     $scope.getVersionSchema = function(schemaVersion){
         $scope.newSchemaVersion = schemaVersion;
-        $scope.getAcls();
+        $scope.getSchemaOfTopic();
     }
 
 	$scope.getAcls = function() {
@@ -520,9 +520,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.alertTopicDelete = null;
         $scope.alert = null;
 
-        var serviceInput = {};
-
-        var envSelected, topicSelected;
+        var topicSelected;
 
         var sPageURL = window.location.search.substring(1);
         var sURLVariables = sPageURL.split('&');
@@ -539,19 +537,18 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             return;
 
 		$scope.topicSelectedParam = topicSelected;
-
 		$scope.ShowSpinnerStatusTopics = true;
+        $scope.schemaDetails = null;
 
 		$http({
 			method: "GET",
 			url: "getAcls",
             headers : { 'Content-Type' : 'application/json' },
             params: {'topicnamesearch' : topicSelected,
-             'schemaVersionSearch' : $scope.newSchemaVersion,
              }
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;
-		    if(output.topicExists == true){
+		    if(output.topicExists === true){
 		        $scope.resultBrowse = output.aclInfoList;
 		        $scope.resultBrowsePrefix = output.prefixedAclInfoList;
 		        $scope.resultBrowseTxnId = output.transactionalAclInfoList;
@@ -580,6 +577,36 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		);
 		
 	}
+
+    $scope.getSchemaOfTopic = function(){
+
+        if($scope.schemaDetails != null && $scope.newSchemaVersion === $scope.displayedSchemaVersion)
+            return;
+
+        $scope.displayedSchemaVersion = null;
+        $scope.ShowSpinnerStatusSchemas = true;
+            $http({
+                method: "GET",
+                url: "getSchemaOfTopic",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'topicnamesearch' : $scope.topicSelectedParam,
+                    'schemaVersionSearch' : $scope.newSchemaVersion,
+                }
+            }).success(function(output) {
+                $scope.ShowSpinnerStatusSchemas = false;
+                if(output.schemaDetails != null){
+                    $scope.schemaDetails = output.schemaDetails;
+                    $scope.schemaExists = output.schemaExists;
+                    $scope.displayedSchemaVersion = $scope.schemaDetails[0].version;
+                }
+            }).error(
+                function(error)
+                {
+                    $scope.ShowSpinnerStatusTopics = false;
+                    $scope.alert = error;
+                }
+            );
+        }
 
 	$scope.sendMessageToAdmin = function(){
 

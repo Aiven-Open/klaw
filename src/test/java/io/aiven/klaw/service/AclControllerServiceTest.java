@@ -357,7 +357,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
-    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch, "").getAclInfoList();
+    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch).getAclInfoList();
 
     assertEquals(1, aclList.size());
 
@@ -387,7 +387,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
-    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch, "").getAclInfoList();
+    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch).getAclInfoList();
 
     assertEquals(1, aclList.size());
 
@@ -405,7 +405,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
@@ -431,7 +431,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
