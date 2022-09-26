@@ -1,7 +1,6 @@
 package io.aiven.klaw.controller;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -12,8 +11,11 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import java.util.List;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -64,7 +66,7 @@ public class SchemaRegstryControllerTest {
             .getContentAsString();
 
     List<SchemaRequestModel> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -83,7 +85,7 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   @Test
@@ -102,7 +104,7 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   @Test
@@ -124,6 +126,6 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 }

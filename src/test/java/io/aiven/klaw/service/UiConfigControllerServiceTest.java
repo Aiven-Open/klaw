@@ -1,13 +1,17 @@
 package io.aiven.klaw.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.UserInfoModel;
@@ -106,8 +110,8 @@ public class UiConfigControllerServiceTest {
 
     List<EnvModel> envsList = envsClustersTenantsControllerService.getKafkaEnvs();
 
-    assertEquals(3, envsList.size());
-    assertEquals(null, envsList.get(0).getEnvStatus());
+    assertThat(envsList).hasSize(3);
+    assertThat(envsList.get(0).getEnvStatus()).isNull();
   }
 
   @Test
@@ -119,7 +123,7 @@ public class UiConfigControllerServiceTest {
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     List<EnvModel> envsList = envsClustersTenantsControllerService.getSchemaRegEnvs();
 
-    assertEquals(0, envsList.size());
+    assertThat(envsList).isEmpty();
   }
 
   private List<ActivityLog> getAcitivityList(int size) {

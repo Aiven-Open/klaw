@@ -1,12 +1,32 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.dao.*;
-import io.aiven.klaw.repository.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.TopicRequestID;
+import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.repository.AclRepo;
+import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.ActivityLogRepo;
+import io.aiven.klaw.repository.EnvRepo;
+import io.aiven.klaw.repository.KwPropertiesRepo;
+import io.aiven.klaw.repository.RegisterInfoRepo;
+import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TeamRepo;
+import io.aiven.klaw.repository.TopicRepo;
+import io.aiven.klaw.repository.TopicRequestsRepo;
+import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,7 +92,7 @@ public class SelectDataJdbcTest {
 
     List<AclRequests> aclRequestsActual =
         selectData.selectAclRequests(false, requestor, "", "all", false, 1);
-    assertEquals(0, aclRequestsActual.size());
+    assertThat(aclRequestsActual).isEmpty();
   }
 
   @Test
@@ -87,7 +107,7 @@ public class SelectDataJdbcTest {
     when(userInfoRepo.findByUsername(requestor)).thenReturn(java.util.Optional.of(userInfo));
 
     List<SchemaRequest> schemaRequestsActual = selectData.selectSchemaRequests(false, requestor, 1);
-    assertEquals(0, schemaRequestsActual.size());
+    assertThat(schemaRequestsActual).isEmpty();
   }
 
   @Test
@@ -98,7 +118,7 @@ public class SelectDataJdbcTest {
     when(schemaRequestRepo.findById(any())).thenReturn(java.util.Optional.of(schemaRequest));
     SchemaRequest schemaRequestActual = selectData.selectSchemaRequest(1001, 1);
 
-    assertEquals("testtopic", schemaRequestActual.getTopicname());
+    assertThat(schemaRequestActual.getTopicname()).isEqualTo("testtopic");
   }
 
   @Test
@@ -109,7 +129,7 @@ public class SelectDataJdbcTest {
     when(topicRepo.findAllByTopicnameAndTenantId(topicName, 1)).thenReturn(topicList);
     List<Topic> topic = selectData.selectTopicDetails(topicName, 1);
 
-    assertEquals(topicName, topic.get(0).getTopicname());
+    assertThat(topic.get(0).getTopicname()).isEqualTo(topicName);
   }
 
   @Test
@@ -119,7 +139,7 @@ public class SelectDataJdbcTest {
     when(topicRepo.findAllByTopicnameAndTenantId(topicName, 1)).thenReturn(topicList);
     List<Topic> topic = selectData.selectTopicDetails(topicName, 1);
 
-    assertEquals(0, topic.size());
+    assertThat(topic).isEmpty();
   }
 
   @Test
@@ -127,7 +147,7 @@ public class SelectDataJdbcTest {
     String env = "DEV";
     when(topicRepo.findAllByEnvironmentAndTenantId(env, 1)).thenReturn(utilMethods.getTopics());
     List<Topic> topicList = selectData.selectSyncTopics(env, null, 1);
-    assertEquals(1, topicList.size());
+    assertThat(topicList).hasSize(1);
   }
 
   @Test
@@ -135,7 +155,7 @@ public class SelectDataJdbcTest {
     String env = "DEV";
     when(aclRepo.findAllByEnvironmentAndTenantId(env, 1)).thenReturn(utilMethods.getAcls());
     List<Acl> topicList = selectData.selectSyncAcls(env, 1);
-    assertEquals(1, topicList.size());
+    assertThat(topicList).hasSize(1);
   }
 
   @Test
@@ -151,7 +171,7 @@ public class SelectDataJdbcTest {
 
     List<TopicRequest> topicRequestsActual =
         selectData.selectTopicRequestsByStatus(false, requestor, "", true, 1);
-    assertEquals(1, topicRequestsActual.size());
+    assertThat(topicRequestsActual).hasSize(1);
   }
 
   @Test
@@ -164,7 +184,7 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.ofNullable(utilMethods.getTopicRequest(topicId)));
 
     TopicRequest topicRequest = selectData.selectTopicRequestsForTopic(topicId, 1);
-    assertEquals("testtopic1001", topicRequest.getTopicname());
+    assertThat(topicRequest.getTopicname()).isEqualTo("testtopic1001");
   }
 
   @Test
@@ -172,7 +192,7 @@ public class SelectDataJdbcTest {
     when(teamRepo.findAllByTenantId(1)).thenReturn(utilMethods.getTeams());
     List<Team> teamList = selectData.selectAllTeams(1);
 
-    assertEquals(1, teamList.size());
+    assertThat(teamList).hasSize(1);
   }
 
   @Test
@@ -181,7 +201,7 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.ofNullable(utilMethods.getAclRequest("")));
 
     AclRequests aclRequests = selectData.selectAcl(1, 1);
-    assertEquals(Integer.valueOf(3), aclRequests.getTeamId());
+    assertThat(aclRequests.getTeamId()).isEqualTo(3);
   }
 
   @Test
@@ -191,7 +211,7 @@ public class SelectDataJdbcTest {
         .thenReturn(utilMethods.getUserInfoList(username, "ADMIN"));
     List<UserInfo> userInfoList = selectData.selectAllUsersInfo(1);
 
-    assertEquals(1, userInfoList.size());
+    assertThat(userInfoList).hasSize(1);
   }
 
   @Test
@@ -207,7 +227,7 @@ public class SelectDataJdbcTest {
 
     List<ActivityLog> activityLogs = selectData.selectActivityLog(username, env, true, 1);
 
-    assertEquals(1, activityLogs.size());
+    assertThat(activityLogs).hasSize(1);
   }
 
   @Test
@@ -222,7 +242,7 @@ public class SelectDataJdbcTest {
 
     List<ActivityLog> activityLogs = selectData.selectActivityLog(username, env, true, 1);
 
-    assertEquals(1, activityLogs.size());
+    assertThat(activityLogs).hasSize(1);
   }
 
   @Test
@@ -234,12 +254,12 @@ public class SelectDataJdbcTest {
     when(teamRepo.findAllByTenantId(anyInt())).thenReturn(utilMethods.getTeams());
 
     List<Team> teamList = selectData.selectTeamsOfUsers(username, 101);
-    assertEquals(0, teamList.size());
+    assertThat(teamList).isEmpty();
 
     when(userInfoRepo.findAllByTenantId(anyInt()))
         .thenReturn(utilMethods.getUserInfoList(username, "SUPERUSER"));
 
     teamList = selectData.selectTeamsOfUsers(username, 1);
-    assertEquals(0, teamList.size());
+    assertThat(teamList).isEmpty();
   }
 }

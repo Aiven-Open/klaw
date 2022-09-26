@@ -1,6 +1,6 @@
 package io.aiven.klaw.controller;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -68,7 +68,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -94,7 +94,7 @@ public class AclControllerTest {
     Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<Map<String, String>>() {});
 
-    assertEquals("success", actualResult.get("result"));
+    assertThat(actualResult).containsEntry("result", "success");
   }
 
   @Test
@@ -116,7 +116,7 @@ public class AclControllerTest {
             .getContentAsString();
 
     List<AclRequestsModel> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -138,7 +138,7 @@ public class AclControllerTest {
             .getContentAsString();
 
     List<List<AclRequestsModel>> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -156,7 +156,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -174,7 +174,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -193,7 +193,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -214,7 +214,7 @@ public class AclControllerTest {
             .getContentAsString();
 
     TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
-    assertEquals(1, response.getAclInfoList().size());
+    assertThat(response.getAclInfoList()).hasSize(1);
   }
 
   @Test
@@ -254,6 +254,6 @@ public class AclControllerTest {
             .getContentAsString();
 
     List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 }

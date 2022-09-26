@@ -1,8 +1,9 @@
 package io.aiven.klaw.controller;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,8 +23,11 @@ import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -97,7 +101,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<Env> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -118,8 +122,8 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<Map<String, String>> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(2, response.size());
-    assertEquals(2, response.get(0).size());
+    assertThat(response).hasSize(2);
+    assertThat(response.get(0)).hasSize(2);
   }
 
   @Test
@@ -140,7 +144,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<Env> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -161,7 +165,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<Env> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -182,7 +186,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<Team> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -203,7 +207,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<Team> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(2, response.size());
+    assertThat(response).hasSize(2);
   }
 
   @Test
@@ -225,7 +229,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -249,7 +253,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   @Test
@@ -269,7 +273,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -289,7 +293,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).contains("success");
   }
 
   @Test
@@ -313,7 +317,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   @Test
@@ -336,7 +340,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
   }
 
   @Test
@@ -356,7 +360,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("success", response);
+    assertThat(response).isEqualTo("success");
   }
 
   @Test
@@ -379,7 +383,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<UserInfo> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 
   @Test
@@ -400,7 +404,7 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     UserInfoModel response = new ObjectMapper().readValue(res, UserInfoModel.class);
-    assertEquals("Seahorses", response.getTeam());
+    assertThat(response.getTeam()).isEqualTo("Seahorses");
   }
 
   @Test
@@ -423,6 +427,6 @@ public class UiConfigControllerTest {
             .getContentAsString();
 
     List<ActivityLog> response = new ObjectMapper().readValue(res, List.class);
-    assertEquals(1, response.size());
+    assertThat(response).hasSize(1);
   }
 }

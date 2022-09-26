@@ -1,7 +1,6 @@
 package io.aiven.klaw;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -9,8 +8,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import java.util.List;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -108,7 +110,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -124,7 +126,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
 
     TeamModel teamModel = new ObjectMapper().readValue(response, TeamModel.class);
-    assertEquals(teamName, teamModel.getTeamname());
+    assertThat(teamModel.getTeamname()).isEqualTo(teamName);
   }
 
   // Create same team again, failure
@@ -146,7 +148,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("Failure. Team already exists"));
+    assertThat(response).contains("Failure. Team already exists");
   }
 
   // Create team failure, invalid team mail id
@@ -193,7 +195,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -209,7 +211,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
 
     TeamModel teamModel = new ObjectMapper().readValue(response, TeamModel.class);
-    assertEquals(emailId, teamModel.getTeammail());
+    assertThat(teamModel.getTeammail()).isEqualTo(emailId);
   }
 
   // Create team failure, not authorized
@@ -231,7 +233,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("Not Authorized"));
+    assertThat(response).contains("Not Authorized");
   }
 
   // Delete team success
@@ -254,7 +256,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -268,7 +270,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -283,7 +285,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("", response);
+    assertThat(response).isEmpty();
   }
 
   // Delete team failure
@@ -323,7 +325,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response, CoreMatchers.containsString("success"));
+    assertThat(response).contains("success");
 
     response =
         mvc.perform(
@@ -337,7 +339,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertEquals("", response);
+    assertThat(response).isEmpty();
   }
 
   // Get teams getAllTeamsSU - for superadmin gets all teams in all tenants
@@ -356,6 +358,6 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
 
     List<TeamModel> teamModels = new ObjectMapper().readValue(response, List.class);
-    assertEquals(3, teamModels.size());
+    assertThat(teamModels).hasSize(3);
   }
 }

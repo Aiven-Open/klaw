@@ -1,8 +1,10 @@
 package io.aiven.klaw.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -18,8 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.hamcrest.CoreMatchers;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -104,7 +109,7 @@ public class SchemaRegstryControllerServiceTest {
 
     List<SchemaRequestModel> listReqs =
         schemaRegstryControllerService.getSchemaRequests("1", "", "all");
-    assertEquals(listReqs.size(), 2);
+    assertThat(listReqs).hasSize(2);
   }
 
   @Test
@@ -115,7 +120,7 @@ public class SchemaRegstryControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt())).thenReturn("success");
     String result = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -127,7 +132,7 @@ public class SchemaRegstryControllerServiceTest {
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt()))
         .thenThrow(new RuntimeException("Error"));
     String result = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
-    assertThat(result, CoreMatchers.containsString("failure"));
+    assertThat(result).contains("failure");
   }
 
   @Test
@@ -154,7 +159,7 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     String result = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertEquals(result, "success");
+    assertThat(result).contains("success");
   }
 
   @Test
@@ -180,7 +185,7 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     String result = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(result, CoreMatchers.containsString("Failure"));
+    assertThat(result).contains("Failure");
   }
 
   @Test
@@ -208,7 +213,7 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     String result = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(result, CoreMatchers.containsString("Error"));
+    assertThat(result).contains("Error");
   }
 
   @Test
@@ -229,10 +234,10 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn("success");
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(Arrays.asList(topic));
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
 
     String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
-    assertEquals(result, "success");
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -253,10 +258,10 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenThrow(new RuntimeException("Error"));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(Arrays.asList(topic));
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
 
     String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
-    assertThat(result, CoreMatchers.containsString("failure"));
+    assertThat(result).contains("failure");
   }
 
   private List<SchemaRequest> getSchemasReqs() {

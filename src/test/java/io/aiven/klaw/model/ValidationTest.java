@@ -1,13 +1,13 @@
 package io.aiven.klaw.model;
 
-import static org.junit.Assert.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import java.util.ArrayList;
-import org.junit.Test;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,7 +32,7 @@ public class ValidationTest {
     topicRequest.setTopicname("newtopic");
     topicRequest.setEnvironment("dev");
 
-    assertNotNull(topicRequest);
+    assertThat(topicRequest).isNotNull();
   }
 
   @Test
@@ -47,7 +47,7 @@ public class ValidationTest {
     aclRequests.setTopicname("newtopic");
     aclRequests.setTopictype("producer");
 
-    assertNotNull(aclRequests);
+    assertThat(aclRequests).isNotNull();
   }
 
   @Test
@@ -62,6 +62,6 @@ public class ValidationTest {
     schemaRequest.setSchemaversion("1.0");
     schemaRequest.setEnvironment("dev");
 
-    assertNotNull(schemaRequest);
+    assertThat(schemaRequest).isNotNull();
   }
 }

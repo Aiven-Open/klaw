@@ -1,6 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -51,19 +51,19 @@ public class DeleteDataJdbcTest {
   @Test
   public void deleteTopicRequest() {
     String result = deleteDataJdbc.deleteTopicRequest(1001, 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void deleteSchemaRequest() {
     String result = deleteDataJdbc.deleteSchemaRequest(1001, 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void deleteAclRequest() {
     String result = deleteDataJdbc.deleteAclRequest(1001, 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -77,19 +77,19 @@ public class DeleteDataJdbcTest {
 
     when(envRepo.findById(env)).thenReturn(java.util.Optional.of(envObj));
     String result = deleteDataJdbc.deleteEnvironment("1", 101);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void deleteUserRequest() {
     String result = deleteDataJdbc.deleteUserRequest("uiuser1");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void deleteTeamRequest() {
     String result = deleteDataJdbc.deleteTeamRequest(1, 1);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -97,6 +97,6 @@ public class DeleteDataJdbcTest {
     when(aclRepo.findAllByTenantId(101)).thenReturn(utilMethods.getAllAcls());
 
     String result = deleteDataJdbc.deletePrevAclRecs(utilMethods.getAclRequest("testtopic"));
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 }

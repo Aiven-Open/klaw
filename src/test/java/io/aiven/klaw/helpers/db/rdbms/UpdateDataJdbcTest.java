@@ -1,6 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -55,7 +55,7 @@ public class UpdateDataJdbcTest {
   @Test
   public void declineTopicRequest() {
     String result = updateData.declineTopicRequest(utilMethods.getTopicRequest(1001), "uiuser2");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -64,7 +64,7 @@ public class UpdateDataJdbcTest {
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(1001);
 
     String result = updateData.updateTopicRequest(utilMethods.getTopicRequest(1001), "uiuser2");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -72,7 +72,7 @@ public class UpdateDataJdbcTest {
     when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false))).thenReturn("success");
     String result =
         updateData.updateAclRequest(utilMethods.getAclRequestCreate("testtopic"), "uiuser2", "{}");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -80,13 +80,13 @@ public class UpdateDataJdbcTest {
     when(deleteDataJdbcHelper.deletePrevAclRecs(any())).thenReturn("success");
     String result =
         updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2", "{}");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void declineAclRequest() {
     String result = updateData.declineAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -94,13 +94,13 @@ public class UpdateDataJdbcTest {
     String user = "uiuser1";
     when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
     String result = updateData.updatePassword(user, "pwd");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void updateSchemaRequest() {
     String result =
         updateData.updateSchemaRequest(utilMethods.getSchemaRequestsDao().get(0), "uiuser1");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 }

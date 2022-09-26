@@ -1,6 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -90,7 +90,7 @@ public class InsertDataJdbcTest {
     when(activityLogRepo.getNextActivityLogRequestId(anyInt())).thenReturn(101);
 
     Map<String, String> result = insertData.insertIntoRequestTopic(topicRequest);
-    assertEquals("success", result.get("result"));
+    assertThat(result).containsEntry("result", "success");
   }
 
   @Test
@@ -98,7 +98,7 @@ public class InsertDataJdbcTest {
     List<Topic> topics = utilMethods.getTopics();
     when(topicRepo.getNextTopicRequestId(anyInt())).thenReturn(101);
     String result = insertData.insertIntoTopicSOT(topics, true);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -109,7 +109,7 @@ public class InsertDataJdbcTest {
     when(jdbcSelectHelper.selectUserInfo(anyString())).thenReturn(userInfo, userInfo);
     String result =
         insertData.insertIntoRequestAcl(utilMethods.getAclRequest("testtopic")).get("result");
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -117,7 +117,7 @@ public class InsertDataJdbcTest {
     List<Acl> acls = utilMethods.getAcls();
     when(aclRepo.getNextAclId(anyInt())).thenReturn(101);
     String result = insertData.insertIntoAclsSOT(acls, true);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -129,7 +129,7 @@ public class InsertDataJdbcTest {
     when(jdbcSelectHelper.selectUserInfo(anyString())).thenReturn(userInfo, userInfo);
 
     String result = insertData.insertIntoRequestSchema(schemaRequest);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
@@ -137,26 +137,26 @@ public class InsertDataJdbcTest {
     List<MessageSchema> schemas = utilMethods.getMSchemas();
     when(messageSchemaRepo.getNextSchemaId(anyInt())).thenReturn(101);
     String result = insertData.insertIntoMessageSchemaSOT(schemas);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void insertIntoUsers() {
     String result = insertData.insertIntoUsers(utilMethods.getUserInfoMockDao());
     when(userInfoRepo.findById(anyString())).thenReturn(java.util.Optional.of(new UserInfo()));
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void insertIntoTeams() {
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     when(teamRepo.getNextTeamId(anyInt())).thenReturn(101);
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 
   @Test
   public void insertIntoEnvs() {
     String result = insertData.insertIntoEnvs(new Env());
-    assertEquals("success", result);
+    assertThat(result).isEqualTo("success");
   }
 }

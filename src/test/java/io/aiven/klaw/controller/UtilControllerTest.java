@@ -1,6 +1,6 @@
 package io.aiven.klaw.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,7 +50,7 @@ public class UtilControllerTest {
             .getContentAsString();
 
     HashMap<String, String> response = new ObjectMapper().readValue(res, HashMap.class);
-    assertEquals("Authorized", response.get("status"));
+    assertThat(response).containsEntry("status", "Authorized");
   }
 
   @Test

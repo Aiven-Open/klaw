@@ -50,6 +50,7 @@
         <!-- the list is sorted-->
         <apachecommons.version>2.11.0</apachecommons.version>
         <apachepoi.version>5.2.2</apachepoi.version>
+        <assertj-core.version>3.23.1</assertj-core.version>
         <commons-text.version>1.9</commons-text.version>
         <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
         <gson.version>2.9.0</gson.version>
@@ -147,9 +148,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-rules</artifactId>
-            <version>${system-rules.version}</version>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
 
