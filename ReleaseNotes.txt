@@ -14,7 +14,7 @@ Release Notes:
 
 - The below changes are part of release 5.0.3
 
-- ACLs can be added based on Usernames (plain text principles). Ex : alice, john
+- ACLs can be added based on Usernames (plain text principals). Ex : alice, john
     On kafka cluster, Producer acls reflects like below for user 'alice' for a topic.
     (principal=User:alice, host=*, operation=WRITE, permissionType=ALLOW)
     (principal=User:alice, host=*, operation=WRITE, permissionType=ALLOW)
@@ -29,7 +29,7 @@ Release Notes:
 
 - The below changes are part of release 5.0.1
 
-- Now users can request for multiple acls in one request. Earlier it was either one IP address or one Principle in one request.
+- Now users can request for multiple acls in one request. Earlier it was either one IP address or one principal in one request.
 - Minor bug fix
 
 -----------------------------------------------------------------------------------
