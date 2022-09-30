@@ -60,7 +60,7 @@
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <jasyptencrypt.version>3.0.4</jasyptencrypt.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
         <system-rules.version>1.19.0</system-rules.version>
         <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
