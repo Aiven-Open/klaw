@@ -63,6 +63,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ClusterApiService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @Autowired ManageDatabase manageDatabase;
 
   @Value("${server.ssl.trust-store:null}")
@@ -561,8 +562,7 @@ public class ClusterApiService {
 
         if (Objects.equals(AclOperation.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
-          ObjectMapper objectMapper = new ObjectMapper();
-          Map<String, String> jsonObj = objectMapper.readValue(aclReq.getJsonParams(), Map.class);
+          Map<String, String> jsonObj = OBJECT_MAPPER.readValue(aclReq.getJsonParams(), Map.class);
           String aivenAclKey = "aivenaclid";
           if (jsonObj.containsKey(aivenAclKey)) params.add(aivenAclKey, jsonObj.get(aivenAclKey));
           else {

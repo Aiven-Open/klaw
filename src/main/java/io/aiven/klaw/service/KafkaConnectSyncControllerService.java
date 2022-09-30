@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
@@ -29,6 +30,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaConnectSyncControllerService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
+      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   @Autowired private CommonUtilsService commonUtilsService;
 
   @Autowired ClusterApiService clusterApiService;
@@ -50,9 +54,8 @@ public class KafkaConnectSyncControllerService {
         clusterApiService.getConnectorDetails(
             connectorName, kwClusters.getBootstrapServers(), kwClusters.getProtocol(), tenantId);
 
-    ObjectMapper objectMapper = new ObjectMapper();
     try {
-      String schemaOfObj = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(res);
+      String schemaOfObj = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(res);
       response.put("result", schemaOfObj);
       return response;
     } catch (JsonProcessingException e) {
@@ -255,8 +258,7 @@ public class KafkaConnectSyncControllerService {
             .getConnectorDetails(
                 connectorName, kwClusters.getBootstrapServers(), kwClusters.getProtocol(), tenantId)
             .get("config");
-    ObjectMapper om = new ObjectMapper();
-    return om.writerWithDefaultPrettyPrinter().writeValueAsString(configMap);
+    return WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(configMap);
   }
 
   private List<SyncConnectorUpdates> handleConnectorDeletes(

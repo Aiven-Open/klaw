@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ServerConfigControllerTest {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @MockBean private ServerConfigService serverConfigService;
 
   UtilMethods utilMethods;
@@ -57,7 +58,7 @@ public class ServerConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<ServerConfigProperties> response = new ObjectMapper().readValue(res, List.class);
+    List<ServerConfigProperties> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 }

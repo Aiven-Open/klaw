@@ -49,6 +49,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TopicControllerService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -746,7 +747,6 @@ public class TopicControllerService {
 
   private void setTopicHistory(TopicRequest topicRequest, String userName, int tenantId) {
     try {
-      ObjectMapper objectMapper = new ObjectMapper();
       AtomicReference<String> existingHistory = new AtomicReference<>("");
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
@@ -758,7 +758,7 @@ public class TopicControllerService {
             .filter(topic -> Objects.equals(topic.getEnvironment(), topicRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = objectMapper.readValue(existingHistory.get(), ArrayList.class);
+        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), ArrayList.class);
         topicHistoryList.addAll(existingTopicHistory);
       }
 
@@ -775,7 +775,7 @@ public class TopicControllerService {
       topicHistory.setRemarks(topicRequest.getTopictype());
       topicHistoryList.add(topicHistory);
 
-      topicRequest.setHistory(objectMapper.writer().writeValueAsString(topicHistoryList));
+      topicRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
     } catch (Exception e) {
       log.error("Exception: ", e);
     }

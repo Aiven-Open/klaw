@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @DirtiesContext
 public class EnvsClustersTenantsControllerIT {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static MockMethods mockMethods;
   private static final String superAdmin = "superadmin";
   private static final String superAdminPwd = "kwsuperadmin123$$";
@@ -62,7 +63,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwTenantModel> teamModel = new ObjectMapper().readValue(response, List.class);
+    List<KwTenantModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(teamModel).hasSize(1);
   }
 
@@ -71,7 +72,7 @@ public class EnvsClustersTenantsControllerIT {
   @Order(2)
   public void addTenantSuccess() throws Exception {
     KwTenantModel kwTenantModel = mockMethods.getTenantModel("nltenant12345678");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(kwTenantModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwTenantModel);
 
     String response =
         mvc.perform(
@@ -98,7 +99,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwTenantModel> teamModel = new ObjectMapper().readValue(response, List.class);
+    List<KwTenantModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(teamModel).hasSize(2);
   }
 
@@ -107,7 +108,7 @@ public class EnvsClustersTenantsControllerIT {
   @Order(3)
   public void addClusterSuccess() throws Exception {
     KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(kwClustersModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
 
     String response =
         mvc.perform(
@@ -135,7 +136,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = new ObjectMapper().readValue(response, List.class);
+    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(teamModel).hasSize(1);
   }
 
@@ -155,7 +156,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(1);
 
     Map<String, Integer> linkedHashMap = (Map<String, Integer>) clusterModels.get(0);
@@ -163,7 +164,7 @@ public class EnvsClustersTenantsControllerIT {
     KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
     kwClustersModel.setClusterId(linkedHashMap.get("clusterId"));
     kwClustersModel.setBootstrapServers("localhost:9093");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(kwClustersModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
     response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/addNewCluster")
@@ -196,7 +197,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    KwClustersModel clusterModel = new ObjectMapper().readValue(response, KwClustersModel.class);
+    KwClustersModel clusterModel = OBJECT_MAPPER.readValue(response, KwClustersModel.class);
     assertThat(clusterModel.getClusterName()).contains("DEV_CLUSTER");
   }
 
@@ -205,7 +206,7 @@ public class EnvsClustersTenantsControllerIT {
   @Order(6)
   public void addAndDeleteClusterSuccess() throws Exception {
     KwClustersModel kwClustersModel = mockMethods.getClusterModel("TST_CLUSTER");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(kwClustersModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
 
     String response =
         mvc.perform(
@@ -233,7 +234,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(2);
 
     Map<String, Integer> linkedHashMap = (Map) clusterModels.get(0);
@@ -265,7 +266,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    clusterModels = new ObjectMapper().readValue(response, List.class);
+    clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(1);
   }
 
@@ -275,7 +276,7 @@ public class EnvsClustersTenantsControllerIT {
   public void addNewEnvSuccess() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("DEV");
     envModel.setClusterId(2);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(envModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
 
     String response =
         mvc.perform(
@@ -302,7 +303,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(1);
   }
 
@@ -322,7 +323,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     Map<String, Object> envModel1 = (Map<String, Object>) clusterModels.get(0);
     String envId = (String) envModel1.get("id");
     assertThat(clusterModels).hasSize(1);
@@ -333,7 +334,7 @@ public class EnvsClustersTenantsControllerIT {
     envModel.setId(envId);
     envModel.setClusterId(2);
     envModel.setOtherParams(otherParams);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(envModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
 
     response =
         mvc.perform(
@@ -360,7 +361,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    clusterModels = new ObjectMapper().readValue(response, List.class);
+    clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     Map<String, Object> envModel3 = (Map<String, Object>) clusterModels.get(0);
     String updatedOtherParams = (String) envModel3.get("otherParams");
     assertThat(updatedOtherParams).isEqualTo(otherParams);
@@ -384,7 +385,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    EnvModel envModel = new ObjectMapper().readValue(response, EnvModel.class);
+    EnvModel envModel = OBJECT_MAPPER.readValue(response, EnvModel.class);
     assertThat(envModel.getName()).isEqualTo("DEV");
   }
 
@@ -393,7 +394,7 @@ public class EnvsClustersTenantsControllerIT {
   @Order(10)
   public void deleteEnvSuccess() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("ACC");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(envModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
 
     String response =
         mvc.perform(
@@ -420,7 +421,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(1);
 
     response =
@@ -457,7 +458,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    HashMap clusterModels = new ObjectMapper().readValue(response, HashMap.class);
+    HashMap clusterModels = OBJECT_MAPPER.readValue(response, HashMap.class);
     ArrayList<String> defaultPartitions = (ArrayList) clusterModels.get("defaultPartitions");
     assertThat(defaultPartitions.get(0)).isEqualTo("4");
   }
@@ -478,7 +479,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels.get(0)).isEqualTo("ACC");
   }
 }

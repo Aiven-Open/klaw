@@ -60,6 +60,7 @@ public class TopicAclControllerIT {
 
   private static final String INFRATEAM = "INFRATEAM";
   private static final String PASSWORD = "user";
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static UtilMethods utilMethods;
 
   private static MockMethods mockMethods;
@@ -90,7 +91,7 @@ public class TopicAclControllerIT {
   public void createRequiredUsers() throws Exception {
     String role = "USER";
     UserInfoModel userInfoModel = mockMethods.getUserInfoModel(user1, role, INFRATEAM);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     String response =
         mvc.perform(
@@ -107,7 +108,7 @@ public class TopicAclControllerIT {
     assertThat(response).contains("success");
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
-    jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
+    jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     response =
         mvc.perform(
@@ -126,7 +127,7 @@ public class TopicAclControllerIT {
   @Order(2)
   public void addNewCluster() throws Exception {
     KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(kwClustersModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
 
     String response =
         mvc.perform(
@@ -154,7 +155,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = new ObjectMapper().readValue(response, List.class);
+    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(teamModel).hasSize(1);
   }
 
@@ -162,7 +163,7 @@ public class TopicAclControllerIT {
   @Order(3)
   public void createEnv() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("DEV");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(envModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
 
     String response =
         mvc.perform(
@@ -189,7 +190,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = new ObjectMapper().readValue(response, List.class);
+    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(1);
   }
 
@@ -208,7 +209,7 @@ public class TopicAclControllerIT {
             + "      \"requestTopicsEnvironmentsList\": [\"DEV\"]\n"
             + "    }\n"
             + "}");
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(kwPropertiesModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwPropertiesModel);
 
     String response =
         mvc.perform(
@@ -230,7 +231,7 @@ public class TopicAclControllerIT {
   @Order(5)
   public void createTopicRequest() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(topicId);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     login(user1, PASSWORD, "USER");
     String response =
         mvc.perform(
@@ -263,7 +264,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+    List<TopicRequest> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -283,7 +284,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+    List<TopicRequest> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -319,7 +320,7 @@ public class TopicAclControllerIT {
   public void declineTopicRequest() throws Exception {
     int topicIdLocal = 1002;
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(topicIdLocal);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     login(user1, PASSWORD, "USER");
     String response =
         mvc.perform(
@@ -378,7 +379,7 @@ public class TopicAclControllerIT {
   public void deleteTopicRequest() throws Exception {
 
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1003);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     login(user1, PASSWORD, "USER");
     String response =
         mvc.perform(
@@ -430,7 +431,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<List<TopicInfo>> response = new ObjectMapper().readValue(res, List.class);
+    List<List<TopicInfo>> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
     assertThat(response.get(0)).hasSize(1);
   }
@@ -454,7 +455,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<String> response = new ObjectMapper().readValue(res, List.class);
+    List<String> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
     assertThat(response.get(0)).isEqualTo("testtopic1001");
   }
@@ -476,7 +477,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclRequests> response = new ObjectMapper().readValue(res, List.class);
+    List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).isEmpty();
   }
 
@@ -496,7 +497,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<List<AclRequests>> response = new ObjectMapper().readValue(res, List.class);
+    List<List<AclRequests>> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).isEmpty();
   }
 
@@ -505,7 +506,7 @@ public class TopicAclControllerIT {
   @Test
   public void aclRequest() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
 
     String response =
         mvc.perform(
@@ -539,7 +540,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<List<AclRequests>> response = new ObjectMapper().readValue(res, List.class);
+    List<List<AclRequests>> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -559,7 +560,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List response = new ObjectMapper().readValue(res, List.class);
+    List response = OBJECT_MAPPER.readValue(res, List.class);
     Object obj = response.get(0);
     LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
 
@@ -590,7 +591,7 @@ public class TopicAclControllerIT {
   @Test
   public void requestAnAcl() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
 
     String response =
         mvc.perform(
@@ -623,7 +624,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List response = new ObjectMapper().readValue(res, List.class);
+    List response = OBJECT_MAPPER.readValue(res, List.class);
     Object obj = response.get(0);
     LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
     Integer reqNo = hMap.get("req_no");
@@ -660,7 +661,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclRequests> response = new ObjectMapper().readValue(res, List.class);
+    List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
     Object obj = response.get(0);
     LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
 
@@ -699,7 +700,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
+    TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
     assertThat(response.getAclInfoList()).hasSize(1);
   }
 
@@ -725,7 +726,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
+    List<AclInfo> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 

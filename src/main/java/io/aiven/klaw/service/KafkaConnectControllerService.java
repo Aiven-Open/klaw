@@ -1,21 +1,46 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.*;
+import static io.aiven.klaw.model.MailType.CONNECTOR_CLAIM_REQUESTED;
+import static io.aiven.klaw.model.MailType.CONNECTOR_CREATE_REQUESTED;
+import static io.aiven.klaw.model.MailType.CONNECTOR_DELETE_REQUESTED;
+import static io.aiven.klaw.model.MailType.CONNECTOR_REQUEST_APPROVED;
+import static io.aiven.klaw.model.MailType.CONNECTOR_REQUEST_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KafkaConnectorRequest;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.ConnectorOverview;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaConnectorModel;
+import io.aiven.klaw.model.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.model.connectorconfig.ConnectorConfig;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,6 +54,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class KafkaConnectControllerService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
+      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   @Autowired private CommonUtilsService commonUtilsService;
 
   @Autowired ClusterApiService clusterApiService;
@@ -51,11 +79,10 @@ public class KafkaConnectControllerService {
       return hashMapTopicReqRes;
     }
 
-    ObjectMapper objectMapper = new ObjectMapper();
     try {
       if (topicRequestReq.getConnectorConfig() != null
           && topicRequestReq.getConnectorConfig().trim().length() > 0) {
-        JsonNode jsonNode = objectMapper.readTree(topicRequestReq.getConnectorConfig().trim());
+        JsonNode jsonNode = OBJECT_MAPPER.readTree(topicRequestReq.getConnectorConfig().trim());
         if (!jsonNode.has("tasks.max")) {
           hashMapTopicReqRes.put("result", "Failure. Invalid config. tasks.max is not configured");
           return hashMapTopicReqRes;
@@ -69,9 +96,9 @@ public class KafkaConnectControllerService {
         }
 
         Map<String, Object> resultMap =
-            objectMapper.convertValue(jsonNode, new TypeReference<>() {});
+            OBJECT_MAPPER.convertValue(jsonNode, new TypeReference<>() {});
         topicRequestReq.setConnectorConfig(
-            objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(resultMap));
+            OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(resultMap));
       }
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
@@ -447,13 +474,12 @@ public class KafkaConnectControllerService {
     ConnectorConfig connectorConfig = new ConnectorConfig();
     connectorConfig.setName(connectorRequest.getConnectorName());
 
-    ObjectMapper om = new ObjectMapper();
     try {
-      JsonNode jsonNode = om.readTree(connectorRequest.getConnectorConfig());
+      JsonNode jsonNode = OBJECT_MAPPER.readTree(connectorRequest.getConnectorConfig());
       ObjectNode objectNode = (ObjectNode) jsonNode;
       connectorConfig.setConfig(objectNode);
 
-      return om.writerWithDefaultPrettyPrinter().writeValueAsString(connectorConfig);
+      return WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(connectorConfig);
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
       return e.toString();
@@ -570,7 +596,6 @@ public class KafkaConnectControllerService {
   private void setConnectorHistory(
       KafkaConnectorRequest connectorRequest, String userName, int tenantId) {
     try {
-      ObjectMapper objectMapper = new ObjectMapper();
       AtomicReference<String> existingHistory = new AtomicReference<>("");
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
@@ -583,7 +608,7 @@ public class KafkaConnectControllerService {
                 topic -> Objects.equals(topic.getEnvironment(), connectorRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = objectMapper.readValue(existingHistory.get(), ArrayList.class);
+        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), ArrayList.class);
         topicHistoryList.addAll(existingTopicHistory);
       }
 
@@ -601,7 +626,7 @@ public class KafkaConnectControllerService {
       topicHistory.setRemarks(connectorRequest.getConnectortype());
       topicHistoryList.add(topicHistory);
 
-      connectorRequest.setHistory(objectMapper.writer().writeValueAsString(topicHistoryList));
+      connectorRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
     } catch (Exception e) {
       log.error("setTopicDocs ", e);
     }
@@ -870,7 +895,6 @@ public class KafkaConnectControllerService {
     List<KafkaConnectorModel> topicInfoList = new ArrayList<>();
     ArrayList<TopicHistory> topicHistoryFromTopic;
     List<TopicHistory> topicHistoryList = new ArrayList<>();
-    ObjectMapper objectMapper = new ObjectMapper();
 
     for (KwKafkaConnector topic : connectors) {
       KafkaConnectorModel topicInfo = new KafkaConnectorModel();
@@ -887,7 +911,7 @@ public class KafkaConnectControllerService {
 
       if (topic.getHistory() != null) {
         try {
-          topicHistoryFromTopic = objectMapper.readValue(topic.getHistory(), ArrayList.class);
+          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), ArrayList.class);
           topicHistoryList.addAll(topicHistoryFromTopic);
         } catch (JsonProcessingException e) {
           log.error("Unable to parse topicHistory", e);

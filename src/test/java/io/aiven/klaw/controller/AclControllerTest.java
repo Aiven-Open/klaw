@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AclControllerTest {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @MockBean private AclControllerService aclControllerService;
 
   private UtilMethods utilMethods;
@@ -54,7 +55,7 @@ public class AclControllerTest {
   @Order(1)
   public void createAcl() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addAclRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
     when(aclControllerService.createAcl(any())).thenReturn("success");
 
     String response =
@@ -75,7 +76,7 @@ public class AclControllerTest {
   public void updateSyncAcls() throws Exception {
     List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
 
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(syncUpdates);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncUpdates);
     Map<String, String> result = new HashMap<>();
     result.put("result", "success");
     when(aclControllerService.updateSyncAcls(any())).thenReturn(result);
@@ -115,7 +116,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<AclRequestsModel> response = new ObjectMapper().readValue(res, List.class);
+    List<AclRequestsModel> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -137,7 +138,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<List<AclRequestsModel>> response = new ObjectMapper().readValue(res, List.class);
+    List<List<AclRequestsModel>> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -213,7 +214,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    TopicOverview response = new ObjectMapper().readValue(res, TopicOverview.class);
+    TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
     assertThat(response.getAclInfoList()).hasSize(1);
   }
 
@@ -253,7 +254,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<AclInfo> response = new ObjectMapper().readValue(res, List.class);
+    List<AclInfo> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 }

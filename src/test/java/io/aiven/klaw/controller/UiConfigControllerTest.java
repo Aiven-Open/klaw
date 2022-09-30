@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UiConfigControllerTest {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @MockBean private UiConfigControllerService uiConfigControllerService;
 
   @MockBean private EnvsClustersTenantsControllerService envsClustersTenantsControllerService;
@@ -100,7 +101,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<Env> response = new ObjectMapper().readValue(res, List.class);
+    List<Env> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -121,7 +122,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<Map<String, String>> response = new ObjectMapper().readValue(res, List.class);
+    List<Map<String, String>> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(2);
     assertThat(response.get(0)).hasSize(2);
   }
@@ -143,7 +144,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<Env> response = new ObjectMapper().readValue(res, List.class);
+    List<Env> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -164,7 +165,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<Env> response = new ObjectMapper().readValue(res, List.class);
+    List<Env> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -185,7 +186,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<Team> response = new ObjectMapper().readValue(res, List.class);
+    List<Team> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -206,7 +207,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<Team> response = new ObjectMapper().readValue(res, List.class);
+    List<Team> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(2);
   }
 
@@ -214,7 +215,7 @@ public class UiConfigControllerTest {
   @Order(8)
   public void addNewEnv() throws Exception {
     EnvModel env = utilMethods.getEnvList().get(0);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(env);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn("success");
 
     String response =
@@ -302,7 +303,7 @@ public class UiConfigControllerTest {
     Map<String, String> result = new HashMap<>();
     result.put("result", "success");
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(userInfo);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfo);
     when(usersTeamsControllerService.addNewUser(any(), anyBoolean())).thenReturn(result);
 
     String response =
@@ -324,7 +325,7 @@ public class UiConfigControllerTest {
   @Order(13)
   public void addNewTeam() throws Exception {
     Team team = utilMethods.getTeams().get(0);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(team);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(team);
     String result = "{ \"status\": \"" + "success" + "\" }";
     when(usersTeamsControllerService.addNewTeam(any(), anyBoolean())).thenReturn(result);
 
@@ -382,7 +383,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<UserInfo> response = new ObjectMapper().readValue(res, List.class);
+    List<UserInfo> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -403,7 +404,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    UserInfoModel response = new ObjectMapper().readValue(res, UserInfoModel.class);
+    UserInfoModel response = OBJECT_MAPPER.readValue(res, UserInfoModel.class);
     assertThat(response.getTeam()).isEqualTo("Seahorses");
   }
 
@@ -426,7 +427,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<ActivityLog> response = new ObjectMapper().readValue(res, List.class);
+    List<ActivityLog> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 }
