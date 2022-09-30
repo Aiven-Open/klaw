@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UtilControllerTest {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @MockBean private UtilControllerService utilControllerService;
 
   private MockMvc mvc;
@@ -49,7 +50,7 @@ public class UtilControllerTest {
             .getResponse()
             .getContentAsString();
 
-    HashMap<String, String> response = new ObjectMapper().readValue(res, HashMap.class);
+    HashMap<String, String> response = OBJECT_MAPPER.readValue(res, HashMap.class);
     assertThat(response).containsEntry("status", "Authorized");
   }
 

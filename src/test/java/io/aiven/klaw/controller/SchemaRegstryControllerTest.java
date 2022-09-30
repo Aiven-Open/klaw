@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SchemaRegstryControllerTest {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @MockBean private SchemaRegstryControllerService schemaRegstryControllerService;
 
   private SchemaRegstryController schemaRegstryController;
@@ -65,7 +66,7 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<SchemaRequestModel> response = new ObjectMapper().readValue(res, List.class);
+    List<SchemaRequestModel> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -111,7 +112,7 @@ public class SchemaRegstryControllerTest {
   @Order(4)
   public void uploadSchema() throws Exception {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(schemaRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
 
     when(schemaRegstryControllerService.uploadSchema(any())).thenReturn("success");
 

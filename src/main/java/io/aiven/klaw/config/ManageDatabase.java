@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class ManageDatabase implements ApplicationContextAware {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private HandleDbRequests handleDbRequests;
 
   private static Map<Integer, Map<String, Map<String, List<String>>>> envParamsMapPerTenant;
@@ -712,10 +713,9 @@ public class ManageDatabase implements ApplicationContextAware {
         if (kwPropertiesMapPerTenant.get(tenantId).get(TENANT_CONFIG) != null) {
           String kwTenantConfig =
               kwPropertiesMapPerTenant.get(tenantId).get(TENANT_CONFIG).get("kwvalue");
-          ObjectMapper objectMapper = new ObjectMapper();
           TenantConfig dynamicObj;
 
-          dynamicObj = objectMapper.readValue(kwTenantConfig, TenantConfig.class);
+          dynamicObj = OBJECT_MAPPER.readValue(kwTenantConfig, TenantConfig.class);
           setTenantConfig(dynamicObj);
         }
       }

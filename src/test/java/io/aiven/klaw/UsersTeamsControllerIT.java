@@ -32,6 +32,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 public class UsersTeamsControllerIT {
 
   private static final String INFRATEAM_ID = "1001";
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   private static MockMethods mockMethods;
 
@@ -57,7 +58,7 @@ public class UsersTeamsControllerIT {
   public void createRequiredUsers() throws Exception {
     String role = "USER";
     UserInfoModel userInfoModel = mockMethods.getUserInfoModel(user1, role, INFRATEAM);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     String response =
         mvc.perform(
@@ -74,7 +75,7 @@ public class UsersTeamsControllerIT {
     //        assertThat(response, CoreMatchers.containsString("success"));
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
-    jsonReq = new ObjectMapper().writer().writeValueAsString(userInfoModel);
+    jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     response =
         mvc.perform(
@@ -96,7 +97,7 @@ public class UsersTeamsControllerIT {
   @Order(1)
   public void createTeamSuccess() throws Exception {
     TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(teamModelRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
         mvc.perform(
@@ -125,7 +126,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    TeamModel teamModel = new ObjectMapper().readValue(response, TeamModel.class);
+    TeamModel teamModel = OBJECT_MAPPER.readValue(response, TeamModel.class);
     assertThat(teamModel.getTeamname()).isEqualTo(teamName);
   }
 
@@ -134,7 +135,7 @@ public class UsersTeamsControllerIT {
   @Order(2)
   public void createSameTeamAgainFailure() throws Exception {
     TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(teamModelRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
         mvc.perform(
@@ -156,7 +157,7 @@ public class UsersTeamsControllerIT {
   @Order(3)
   public void createTeamWithInvalidEmailId() throws Exception {
     TeamModel teamModelRequest = mockMethods.getTeamModelFailure(teamName);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(teamModelRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
         mvc.perform(
@@ -181,7 +182,7 @@ public class UsersTeamsControllerIT {
     teamModelRequest.setTeamId(1003);
     teamModelRequest.setTeammail(emailId);
 
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(teamModelRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
         mvc.perform(
@@ -210,7 +211,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    TeamModel teamModel = new ObjectMapper().readValue(response, TeamModel.class);
+    TeamModel teamModel = OBJECT_MAPPER.readValue(response, TeamModel.class);
     assertThat(teamModel.getTeammail()).isEqualTo(emailId);
   }
 
@@ -219,7 +220,7 @@ public class UsersTeamsControllerIT {
   @Order(6)
   public void createTeamFailureNotAuthorized() throws Exception {
     TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(teamModelRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
         mvc.perform(
@@ -242,7 +243,7 @@ public class UsersTeamsControllerIT {
   public void deleteTeamSuccess() throws Exception {
     String newTeam = "Testteam";
     TeamModel teamModelRequest = mockMethods.getTeamModel(newTeam);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(teamModelRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
         mvc.perform(
@@ -357,7 +358,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TeamModel> teamModels = new ObjectMapper().readValue(response, List.class);
+    List<TeamModel> teamModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(teamModels).hasSize(3);
   }
 }
