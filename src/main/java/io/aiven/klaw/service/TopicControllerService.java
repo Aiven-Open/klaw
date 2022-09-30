@@ -16,6 +16,8 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -679,29 +682,44 @@ public class TopicControllerService {
     return "{\"result\":\"" + deleteTopicReqStatus + "\"}";
   }
 
-  public String approveTopicRequests(String topicId) throws KlawException {
+  public ApiResponse approveTopicRequests(String topicId) throws KlawException {
     log.info("approveTopicRequests {}", topicId);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS))
-      return "{\"result\":\"Not Authorized\"}";
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
+      return ApiResponse.builder()
+          .result(ApiResultStatus.NOT_AUTHORIZED.value)
+          .status(HttpStatus.OK)
+          .build();
+    }
 
     TopicRequest topicRequest =
         manageDatabase
             .getHandleDbRequests()
             .selectTopicRequestsForTopic(Integer.parseInt(topicId), tenantId);
 
-    if (Objects.equals(topicRequest.getRequestor(), userDetails))
-      return "{\"result\":\"You are not allowed to approve your own topic requests.\"}";
+    if (Objects.equals(topicRequest.getRequestor(), userDetails)) {
+      return ApiResponse.builder()
+          .result("You are not allowed to approve your own topic requests.")
+          .status(HttpStatus.OK)
+          .build();
+    }
 
     if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
-      return "{\"result\":\"This request does not exist anymore.\"}";
+      return ApiResponse.builder()
+          .result("This request does not exist anymore.")
+          .status(HttpStatus.OK)
+          .build();
     }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (!allowedEnvIdList.contains(topicRequest.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+    if (!allowedEnvIdList.contains(topicRequest.getEnvironment())) {
+      return ApiResponse.builder()
+          .result(ApiResultStatus.NOT_AUTHORIZED.value)
+          .status(HttpStatus.OK)
+          .build();
+    }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
@@ -713,7 +731,7 @@ public class TopicControllerService {
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
-      if ("success".equals(updateTopicReqStatus))
+      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus))
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userDetails);
     } else {
       ResponseEntity<String> response =
@@ -727,7 +745,7 @@ public class TopicControllerService {
 
       updateTopicReqStatus = response.getBody();
 
-      if ("success".equals(response.getBody())) {
+      if (ApiResultStatus.SUCCESS.value.equals(response.getBody())) {
         setTopicHistory(topicRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userDetails);
         mailService.sendMail(
@@ -741,7 +759,7 @@ public class TopicControllerService {
       }
     }
 
-    return "{\"result\":\"" + updateTopicReqStatus + "\"}";
+    return ApiResponse.builder().result(updateTopicReqStatus).status(HttpStatus.OK).build();
   }
 
   private void setTopicHistory(TopicRequest topicRequest, String userName, int tenantId) {

@@ -66,12 +66,11 @@ public class ClusterApiServiceTest {
   @BeforeEach
   public void setUp() {
     utilMethods = new UtilMethods();
-    clusterApiService = new ClusterApiService();
+    clusterApiService = new ClusterApiService(manageDatabase);
     response = new ResponseEntity<>("success", HttpStatus.OK);
 
     this.env = new Env();
     env.setName("DEV");
-    ReflectionTestUtils.setField(clusterApiService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(clusterApiService, "httpRestTemplate", restTemplate);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("http://cluster");
@@ -115,14 +114,17 @@ public class ClusterApiServiceTest {
   @Order(3)
   public void getAclsSuccess() throws KlawException {
     Set<Map<String, String>> aclListOriginal = utilMethods.getAclsMock();
-    ResponseEntity<Set> response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
+    ResponseEntity response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
 
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
 
     when(restTemplate.exchange(
-            Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
+            Mockito.anyString(),
+            eq(HttpMethod.GET),
+            Mockito.any(),
+            (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
     List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", "", 1);
@@ -145,10 +147,13 @@ public class ClusterApiServiceTest {
   @Order(5)
   public void getAllTopicsSuccess() throws Exception {
     Set<String> topicsList = getTopics();
-    ResponseEntity<Set> response = new ResponseEntity<>(topicsList, HttpStatus.OK);
+    ResponseEntity response = new ResponseEntity<>(topicsList, HttpStatus.OK);
 
     when(restTemplate.exchange(
-            Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
+            Mockito.anyString(),
+            eq(HttpMethod.GET),
+            Mockito.any(),
+            (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
     List<Map<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT", "", 1);

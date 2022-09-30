@@ -11,6 +11,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -202,7 +205,9 @@ public class TopicControllerTest {
   @Test
   @Order(7)
   public void approveTopicRequests() throws Exception {
-    when(topicControllerService.approveTopicRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse =
+        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    when(topicControllerService.approveTopicRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -215,7 +220,8 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).isEqualTo("success");
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test

@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.service.TopicControllerService;
@@ -101,10 +102,18 @@ public class TopicController {
   @PostMapping(
       value = "/execTopicRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> approveTopicRequests(@RequestParam("topicId") String topicId)
-      throws KlawException {
-    return new ResponseEntity<>(
-        topicControllerService.approveTopicRequests(topicId), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> approveTopicRequests(@RequestParam("topicId") String topicId) {
+    try {
+      return new ResponseEntity<>(
+          topicControllerService.approveTopicRequests(topicId), HttpStatus.OK);
+    } catch (KlawException e) {
+      return new ResponseEntity<>(
+          ApiResponse.builder()
+              .message(e.getMessage())
+              .status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .build(),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping(

@@ -17,6 +17,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
@@ -335,9 +336,9 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    String result = topicControllerService.approveTopicRequests(topicId + "");
+    ApiResponse apiResponse = topicControllerService.approveTopicRequests(topicId + "");
 
-    assertThat(result).isEqualTo("{\"result\":\"success\"}");
+    assertThat(apiResponse.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -352,13 +353,13 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.updateTopicRequest(any(), anyString())).thenReturn("success");
     when(clusterApiService.approveTopicRequests(
             anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
-        .thenReturn(new ResponseEntity<>("failure error", HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>("failure", HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    String result = topicControllerService.approveTopicRequests("" + topicId);
+    ApiResponse apiResponse = topicControllerService.approveTopicRequests("" + topicId);
 
-    assertThat(result).isEqualTo("{\"result\":\"failure error\"}");
+    assertThat(apiResponse.getResult()).isEqualTo("failure");
   }
 
   @Test
