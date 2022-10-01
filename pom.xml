@@ -63,7 +63,7 @@
         <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
         <system-rules.version>1.19.0</system-rules.version>
-        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
+        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.27.1</spotless-maven-plugin.version>
         <swagger-annotations.version>2.1.0</swagger-annotations.version>
     </properties>
