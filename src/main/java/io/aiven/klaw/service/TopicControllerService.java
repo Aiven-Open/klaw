@@ -69,17 +69,18 @@ public class TopicControllerService {
     this.mailService = mailService;
   }
 
-  public Map<String, String> createTopicsRequest(TopicRequestModel topicRequestReq)
-      throws KlawException {
+  public ApiResponse createTopicsRequest(TopicRequestModel topicRequestReq) throws KlawException {
     log.info("createTopicsRequest {}", topicRequestReq);
     String userDetails = getUserName();
 
-    Map<String, String> hashMapTopicReqRes = new HashMap<>();
+    //    Map<String, String> hashMapTopicReqRes = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
-      hashMapTopicReqRes.put("result", "Not Authorized");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result(ApiResultStatus.NOT_AUTHORIZED.value)
+          .status(HttpStatus.OK)
+          .build();
     }
 
     topicRequestReq.setRequestor(userDetails);
@@ -92,9 +93,10 @@ public class TopicControllerService {
 
     // tenant filtering
     if (!getEnvsFromUserId(userDetails).contains(envSelected)) {
-      hashMapTopicReqRes.put(
-          "result", "Failure. Not authorized to request topic for this environment.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. Not authorized to request topic for this environment.")
+          .status(HttpStatus.OK)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -105,23 +107,28 @@ public class TopicControllerService {
       syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
     } catch (Exception e) {
       log.error("Tenant Configuration not found. " + tenantId, e);
-      hashMapTopicReqRes.put(
-          "result", "Failure. Tenant configuration in Server config is missing. Please configure.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. Tenant configuration in Server config is missing. Please configure.")
+          .status(HttpStatus.OK)
+          .build();
     }
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
 
     if (topicRequestReq.getTopicname() == null || topicRequestReq.getTopicname().length() == 0) {
-      hashMapTopicReqRes.put("result", "Failure. Please fill in topic name.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. Please fill in topic name.")
+          .status(HttpStatus.OK)
+          .build();
     }
     List<Topic> topics = getTopicFromName(topicRequestReq.getTopicname(), tenantId);
 
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(topics.get(0).getTeamId(), topicRequestReq.getTeamId())) {
-      hashMapTopicReqRes.put("result", "Failure. This topic is owned by a different team.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. This topic is owned by a different team.")
+          .status(HttpStatus.OK)
+          .build();
     }
     boolean promotionOrderCheck =
         checkInPromotionOrder(
@@ -136,25 +143,30 @@ public class TopicControllerService {
                     .count();
         if (devTopicFound != 1) {
           if (getEnvDetails(syncCluster) == null) {
-            hashMapTopicReqRes.put("result", "Failure. This topic does not exist in base cluster");
+            return ApiResponse.builder()
+                .result("Failure. This topic does not exist in base cluster.")
+                .status(HttpStatus.OK)
+                .build();
           } else {
-            hashMapTopicReqRes.put(
-                "result",
-                "Failure. This topic does not exist in "
-                    + getEnvDetails(syncCluster).getName()
-                    + " cluster.");
+            return ApiResponse.builder()
+                .result(
+                    "Failure. This topic does not exist in "
+                        + getEnvDetails(syncCluster).getName()
+                        + " cluster.")
+                .status(HttpStatus.OK)
+                .build();
           }
-          return hashMapTopicReqRes;
         }
       }
     } else if (!Objects.equals(topicRequestReq.getEnvironment(), syncCluster)) {
       if (promotionOrderCheck) {
-        hashMapTopicReqRes.put(
-            "result",
-            "Failure. Please request for a topic first in "
-                + getEnvDetails(syncCluster).getName()
-                + " cluster.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result(
+                "Failure. Please request for a topic first in "
+                    + getEnvDetails(syncCluster).getName()
+                    + " cluster.")
+            .status(HttpStatus.OK)
+            .build();
       }
     }
 
@@ -168,8 +180,10 @@ public class TopicControllerService {
                   tenantId)
               .size()
           > 0) {
-        hashMapTopicReqRes.put("result", "Failure. A topic request already exists.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result("Failure. A topic request already exists.")
+            .status(HttpStatus.OK)
+            .build();
       }
     }
 
@@ -184,9 +198,10 @@ public class TopicControllerService {
                         Objects.equals(topicEx.getEnvironment(), topicRequestReq.getEnvironment()));
       }
       if (topicExists) {
-        hashMapTopicReqRes.put(
-            "result", "Failure. This topic already exists in the selected cluster.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result("Failure. This topic already exists in the selected cluster.")
+            .status(HttpStatus.OK)
+            .build();
       }
     }
 
@@ -201,7 +216,6 @@ public class TopicControllerService {
       copyProperties(topicRequestReq, topicRequestDao);
       topicRequestDao.setTenantId(tenantId);
 
-      hashMapTopicReqRes.put("result", dbHandle.requestForTopic(topicRequestDao).get("result"));
       mailService.sendMail(
           topicRequestReq.getTopicname(),
           null,
@@ -210,10 +224,16 @@ public class TopicControllerService {
           dbHandle,
           TOPIC_CREATE_REQUESTED,
           commonUtilsService.getLoginUrl());
+      return ApiResponse.builder()
+          .result(dbHandle.requestForTopic(topicRequestDao).get("result"))
+          .status(HttpStatus.OK)
+          .build();
     } else {
-      hashMapTopicReqRes.put("result", isValidTopicMap.get("error"));
+      return ApiResponse.builder()
+          .result(isValidTopicMap.get("error"))
+          .status(HttpStatus.OK)
+          .build();
     }
-    return hashMapTopicReqRes;
   }
 
   private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {

@@ -10,14 +10,17 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.model.AclOperation;
+import io.aiven.klaw.model.AclOperationType;
 import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.AclsNativeType;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.ClusterStatus;
-import io.aiven.klaw.model.ClusterTopicRequest;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
+import io.aiven.klaw.model.cluster.ClusterAclRequest;
+import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
+import io.aiven.klaw.model.cluster.ClusterTopicRequest;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -280,7 +283,7 @@ public class ClusterApiService {
 
     List<Map<String, String>> aclListOriginal;
     try {
-      String URI_GET_ACLS = "/topics/getAcls/";
+      String uriGetAcls = "/topics/getAcls/";
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA.value, tenantId)
@@ -291,7 +294,7 @@ public class ClusterApiService {
       if (KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor())) {
         uri =
             clusterConnUrl
-                + URI_GET_ACLS
+                + uriGetAcls
                 + bootstrapHost
                 + "/"
                 + AclsNativeType.AIVEN.name()
@@ -308,7 +311,7 @@ public class ClusterApiService {
       } else {
         uri =
             clusterConnUrl
-                + URI_GET_ACLS
+                + uriGetAcls
                 + bootstrapHost
                 + "/"
                 + AclsNativeType.NATIVE.name()
@@ -380,11 +383,13 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     ResponseEntity<Map<String, String>> response;
     try {
-      MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-      params.add("env", kafkaConnectHost);
-      params.add("connectorName", connectorName);
-      params.add("connectorConfig", connectorConfig);
-      params.add("protocol", protocol);
+      ClusterConnectorRequest clusterConnectorRequest =
+          ClusterConnectorRequest.builder()
+              .env(kafkaConnectHost)
+              .connectorName(connectorName)
+              .connectorConfig(connectorConfig)
+              .protocol(protocol)
+              .build();
 
       String uri;
       String URI_GET_TOPICS = "/topics/";
@@ -395,7 +400,14 @@ public class ClusterApiService {
         uri = clusterConnUrl + URI_GET_TOPICS + "updateConnector";
       } else uri = clusterConnUrl + URI_GET_TOPICS + "deleteConnector";
 
-      response = getMapResponseEntity(params, uri);
+      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      headers.setContentType(MediaType.APPLICATION_JSON);
+
+      HttpEntity<ClusterConnectorRequest> request =
+          new HttpEntity<>(clusterConnectorRequest, headers);
+      response =
+          getRestTemplate()
+              .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
 
       if (ApiResultStatus.SUCCESS.value.equals(
           Objects.requireNonNull(response.getBody()).get("result"))) {
@@ -408,19 +420,6 @@ public class ClusterApiService {
       log.error("approveConnectorRequests {} ", connectorName, e);
       throw new KlawException("Could not approve connector request. Please contact Administrator.");
     }
-  }
-
-  private ResponseEntity<Map<String, String>> getMapResponseEntity(
-      MultiValueMap<String, String> params, String uri) {
-    ResponseEntity<Map<String, String>> response;
-    HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-    response =
-        getRestTemplate()
-            .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
-    return response;
   }
 
   public ResponseEntity<String> approveTopicRequests(
@@ -477,23 +476,20 @@ public class ClusterApiService {
     return response;
   }
 
-  public ResponseEntity<Map<String, String>> approveAclRequests(AclRequests aclReq, int tenantId)
+  public ResponseEntity<ApiResponse> approveAclRequests(AclRequests aclReq, int tenantId)
       throws KlawException {
     log.info("approveAclRequests {}", aclReq);
     getClusterApiProperties(tenantId);
-    ResponseEntity<Map<String, String>> response;
+    ResponseEntity<ApiResponse> response;
 
     try {
       String env = aclReq.getEnvironment();
       String uri;
 
-      String URI_CREATE_ACLS = "/topics/createAcls";
-      String URI_DELETE_ACLS = "/topics/deleteAcls";
+      String uriCreateAcls = "/topics/createAcls";
+      String uriDeleteAcls = "/topics/deleteAcls";
 
-      if ("Create".equals(aclReq.getAclType())) uri = clusterConnUrl + URI_CREATE_ACLS;
-      else uri = clusterConnUrl + URI_DELETE_ACLS;
-
-      MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+      ClusterAclRequest clusterAclRequest;
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
       KwClusters kwClusters =
           manageDatabase
@@ -502,23 +498,28 @@ public class ClusterApiService {
 
       // aiven config
       if (Objects.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value, kwClusters.getKafkaFlavor())) {
-        params.add("aclsNativeType", AclsNativeType.AIVEN.name());
-        params.add("projectName", kwClusters.getProjectName());
-        params.add("serviceName", kwClusters.getServiceName());
-        params.add("topic", aclReq.getTopicname());
-        params.add("username", aclReq.getAcl_ssl());
+        clusterAclRequest =
+            ClusterAclRequest.builder()
+                .aclNativeType(AclsNativeType.AIVEN.name())
+                .projectName(kwClusters.getProjectName())
+                .serviceName(kwClusters.getServiceName())
+                .topicName(aclReq.getTopicname())
+                .username(aclReq.getAcl_ssl())
+                .build();
 
         if (Objects.equals(aclReq.getTopictype(), AclType.PRODUCER.value))
-          params.add("permission", "write");
-        else params.add("permission", "read");
+          clusterAclRequest = clusterAclRequest.toBuilder().permission("write").build();
+        else clusterAclRequest = clusterAclRequest.toBuilder().permission("read").build();
 
-        if (Objects.equals(AclOperation.DELETE.value, aclReq.getAclType())
+        if (Objects.equals(AclOperationType.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
           ObjectMapper objectMapper = new ObjectMapper();
           Map<String, String> jsonObj =
               objectMapper.readValue(aclReq.getJsonParams(), new TypeReference<>() {});
           String aivenAclKey = "aivenaclid";
-          if (jsonObj.containsKey(aivenAclKey)) params.add(aivenAclKey, jsonObj.get(aivenAclKey));
+          if (jsonObj.containsKey(aivenAclKey))
+            clusterAclRequest =
+                clusterAclRequest.toBuilder().aivenAclKey(jsonObj.get(aivenAclKey)).build();
           else {
             log.error("Error from approveAclRequests : AclId - aivenaclid not found");
             throw new KlawException(
@@ -526,28 +527,46 @@ public class ClusterApiService {
           }
         }
       } else {
-        params.add("aclsNativeType", AclsNativeType.NATIVE.name());
-        params.add("env", kwClusters.getBootstrapServers());
-        params.add("protocol", kwClusters.getProtocol());
-        params.add("clusterName", kwClusters.getClusterName() + "-" + tenantId);
-        params.add("topicName", aclReq.getTopicname());
-        params.add("consumerGroup", aclReq.getConsumergroup());
-        params.add("aclType", aclReq.getTopictype());
-        params.add("acl_ip", aclReq.getAcl_ip());
-        params.add("acl_ssl", aclReq.getAcl_ssl());
-        params.add("transactionalId", aclReq.getTransactionalId());
-        params.add("aclIpPrincipleType", aclReq.getAclIpPrincipleType().name());
-
         String aclPatternType = aclReq.getAclPatternType();
-        params.add("isPrefixAcl", ("PREFIXED".equals(aclPatternType)) + "");
+        clusterAclRequest =
+            ClusterAclRequest.builder()
+                .aclNativeType(AclsNativeType.NATIVE.name())
+                .env(kwClusters.getBootstrapServers())
+                .protocol(kwClusters.getProtocol())
+                .clusterName(kwClusters.getClusterName() + "-" + tenantId)
+                .topicName(aclReq.getTopicname())
+                .consumerGroup(aclReq.getConsumergroup())
+                .aclType(aclReq.getTopictype())
+                .aclIp(aclReq.getAcl_ip())
+                .aclSsl(aclReq.getAcl_ssl())
+                .transactionalId(aclReq.getTransactionalId())
+                .aclIpPrincipleType(aclReq.getAclIpPrincipleType().name())
+                .isPrefixAcl("PREFIXED".equals(aclPatternType))
+                .build();
       }
 
-      response = getMapResponseEntity(params, uri);
+      if ("Create".equals(aclReq.getAclType())) {
+        uri = clusterConnUrl + uriCreateAcls;
+        clusterAclRequest =
+            clusterAclRequest.toBuilder().aclOperationType(AclOperationType.CREATE).build();
+      } else {
+        uri = clusterConnUrl + uriDeleteAcls;
+        clusterAclRequest =
+            clusterAclRequest.toBuilder().aclOperationType(AclOperationType.DELETE).build();
+      }
+
+      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      headers.setContentType(MediaType.APPLICATION_JSON);
+
+      HttpEntity<ClusterAclRequest> request = new HttpEntity<>(clusterAclRequest, headers);
+      response =
+          getRestTemplate()
+              .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
+      return response;
     } catch (Exception e) {
       log.error("Error from approveAclRequests", e);
       throw new KlawException("Could not approve acl request. Please contact Administrator.");
     }
-    return response;
   }
 
   ResponseEntity<String> postSchema(
@@ -772,6 +791,19 @@ public class ClusterApiService {
       return textEncryptor.decrypt(pwd);
     }
     return "";
+  }
+
+  private ResponseEntity<Map<String, String>> getMapResponseEntity(
+      MultiValueMap<String, String> params, String uri) {
+    ResponseEntity<Map<String, String>> response;
+    HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
+    response =
+        getRestTemplate()
+            .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
+    return response;
   }
 
   private HttpEntity<String> getHttpEntity() {

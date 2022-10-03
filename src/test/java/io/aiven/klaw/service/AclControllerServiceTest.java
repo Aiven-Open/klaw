@@ -22,6 +22,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -243,10 +244,10 @@ public class AclControllerServiceTest {
 
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
+
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
-        .thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenReturn("success");
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -264,10 +265,10 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "failure");
+
+    ApiResponse apiResponse = ApiResponse.builder().result("failure").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
-        .thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     String result = aclControllerService.approveAclRequests(req_no);
     assertThat(result).isEqualTo("{\"result\":\"failure\"}");
@@ -283,10 +284,10 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
+
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
-        .thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
         .thenThrow(new RuntimeException("Error"));
 

@@ -23,4 +23,6 @@ public class ApiResponse {
   private String debugMessage;
 
   private String result;
+
+  private Object data;
 }

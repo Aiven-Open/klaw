@@ -71,9 +71,9 @@ public class TopicControllerTest {
   public void createTopics() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
-    Map<String, String> resMap = new HashMap<>();
-    resMap.put("result", "success");
-    when(topicControllerService.createTopicsRequest(any())).thenReturn(resMap);
+    ApiResponse apiResponse =
+        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    when(topicControllerService.createTopicsRequest(any())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(

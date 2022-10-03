@@ -220,7 +220,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         $scope.disable_ip=true;
                         $scope.acl_ipaddress=[""];
                         $scope.alc_ipaddresslength = $scope.acl_ipaddress.length;
-                        $scope.selectedAclType="PRINCIPLE";  // Principle can be Username or CN certificate string
+                        $scope.selectedAclType="PRINCIPAL";  // Principal can be Username or CN certificate string
                     }else{
                         $scope.disable_ssl=true;
                         $scope.disable_ip=false;
@@ -422,7 +422,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 for (var i = 0; i < $scope.acl_ssl.length; i++) {
                     if($scope.acl_ssl[i].length === 0 && $scope.acl_ip_ssl === 'SSL')
                     {
-                      $scope.alertnote = "Please fill in a valid Principle of the Producer/Consumer client";
+                      $scope.alertnote = "Please fill in a valid Principal of the Producer/Consumer client";
                       $scope.showAlertToast();
                       return;
                     }
@@ -432,7 +432,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             if(($scope.acl_ipaddress !=null) ||  ($scope.acl_ssl !=null)){}
              else
              {
-                $scope.alertnote = "Please fill in a valid IP address or Principle of the Producer/Consumer client";
+                $scope.alertnote = "Please fill in a valid IP address or Principal of the Producer/Consumer client";
                  $scope.showAlertToast();
                 return;
              }

@@ -18,6 +18,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KwClustersModel;
@@ -28,7 +29,6 @@ import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -563,11 +563,9 @@ public class TopicAclControllerIT {
     Object obj = response.get(0);
     LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
 
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
-        .thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     Integer reqNo = hMap.get("req_no");
 
     res =

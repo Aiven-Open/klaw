@@ -139,9 +139,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getCorrectTopic());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getCorrectTopic());
 
-    assertThat(result.get("result")).isEqualTo("success");
+    assertThat(apiResponse.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -161,9 +161,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic());
 
-    assertThat(result.get("result")).isEqualTo("success");
+    assertThat(apiResponse.getResult()).isEqualTo("success");
   }
 
   // invalid partitions
@@ -184,9 +184,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic1());
 
-    assertThat(result).containsEntry("result", "failure");
+    assertThat(apiResponse.getResult()).contains("failure");
   }
 
   @Test
@@ -204,17 +204,14 @@ public class TopicControllerServiceTest {
 
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic1());
 
-    assertThat(result).containsKey("result");
+    assertThat(apiResponse.getResult()).isEqualTo(null);
   }
 
   @Test
   @Order(7)
   public void updateSyncTopicsSuccess() {
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-
     stubUserInfo();
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);

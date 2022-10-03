@@ -1,12 +1,12 @@
 package io.aiven.klaw.model;
 
-public enum AclOperation {
+public enum AclOperationType {
   CREATE("Create"),
   DELETE("Delete");
 
   public final String value;
 
-  AclOperation(String value) {
+  AclOperationType(String value) {
     this.value = value;
   }
 }

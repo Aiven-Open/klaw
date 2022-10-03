@@ -26,7 +26,7 @@ public class TopicController {
   @Autowired private TopicControllerService topicControllerService;
 
   @PostMapping(value = "/createTopics")
-  public ResponseEntity<Map<String, String>> createTopicsRequest(
+  public ResponseEntity<ApiResponse> createTopicsRequest(
       @Valid @RequestBody TopicRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.createTopicsRequest(addTopicRequest), HttpStatus.OK);

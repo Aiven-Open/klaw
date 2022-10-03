@@ -20,7 +20,9 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclOperationType;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.PermissionType;
@@ -287,21 +289,20 @@ public class AclControllerService {
       aclReq.setAcl_ssl(aclFound.getAclssl());
       aclReq.setEnvironment(syncBackAcls.getTargetEnv());
       aclReq.setRequestingteam(aclFound.getTeamId());
-      aclReq.setAclType("Create");
+      aclReq.setAclType(AclOperationType.CREATE.value);
       aclReq.setUsername(getUserName());
       aclReq.setTenantId(tenantId);
 
-      ResponseEntity<Map<String, String>> response =
-          clusterApiService.approveAclRequests(aclReq, tenantId);
+      ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
-      Map<String, String> responseBody = response.getBody();
-      String resultAclReq = responseBody.get("result");
-      String resultAclNullCheck = Objects.requireNonNull(responseBody).get("result");
+      ApiResponse responseBody = response.getBody();
+      //      String resultAclReq = responseBody.getResult();
+      String resultAclNullCheck = Objects.requireNonNull(responseBody).getResult();
       if (!Objects.requireNonNull(resultAclNullCheck).contains("success")) {
         log.error("Error in creating acl {} {}", aclFound, responseBody);
         logUpdateSyncBackTopics.add(
-            "Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclReq);
-      } else if (resultAclReq.contains("Acl already exists")) {
+            "Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclNullCheck);
+      } else if (resultAclNullCheck.contains("Acl already exists")) {
         logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
       } else {
         if (!Objects.equals(syncBackAcls.getSourceEnv(), syncBackAcls.getTargetEnv())) {
@@ -626,7 +627,7 @@ public class AclControllerService {
     String allIps = aclReq.getAcl_ip();
     String allSsl = aclReq.getAcl_ssl();
     if (aclReq.getReq_no() != null) {
-      ResponseEntity<Map<String, String>> response = null;
+      ResponseEntity<ApiResponse> response = null;
       if (aclReq.getAcl_ip() != null) {
         String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
         for (String s : aclListIp) {
@@ -645,16 +646,19 @@ public class AclControllerService {
       aclReq.setAcl_ip(allIps);
       aclReq.setAcl_ssl(allSsl);
 
-      String updateAclReqStatus;
+      String updateAclReqStatus = null;
 
       try {
-        Map<String, String> responseBody = response.getBody();
-        if (Objects.requireNonNull(Objects.requireNonNull(responseBody).get("result"))
-            .contains("success")) {
+        ApiResponse responseBody = Objects.requireNonNull(response).getBody();
+        if (Objects.requireNonNull(responseBody).getResult().contains("success")) {
           String jsonParams = "", aivenAclIdKey = "aivenaclid";
-          if (responseBody.containsKey(aivenAclIdKey))
-            jsonParams = "{\"" + aivenAclIdKey + "\":\"" + responseBody.get(aivenAclIdKey) + "\"}";
+          if (responseBody.getData() instanceof Map) {
+            Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
+            if (dataMap.containsKey(aivenAclIdKey))
+              jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+          }
           updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
+
         } else return "{\"result\":\"failure\"}";
       } catch (Exception e) {
         log.error("Exception ", e);

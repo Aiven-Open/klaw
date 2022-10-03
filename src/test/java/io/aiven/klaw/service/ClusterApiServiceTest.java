@@ -18,8 +18,8 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclIPPrincipleType;
+import io.aiven.klaw.model.ApiResponse;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -228,10 +228,8 @@ public class ClusterApiServiceTest {
     aclRequests.setAclType("Create");
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-    ResponseEntity<Map<String, String>> responseEntity =
-        new ResponseEntity<>(resultMap, HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -244,12 +242,11 @@ public class ClusterApiServiceTest {
             Mockito.anyString(),
             any(),
             Mockito.any(),
-            (ParameterizedTypeReference<Map<String, String>>) any()))
+            (ParameterizedTypeReference<ApiResponse>) any()))
         .thenReturn(responseEntity);
 
-    ResponseEntity<Map<String, String>> response =
-        clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody()).containsEntry("result", "success");
+    ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
+    assertThat(response.getBody().getResult()).isEqualTo("success");
   }
 
   @Test
@@ -262,10 +259,8 @@ public class ClusterApiServiceTest {
     aclRequests.setAclType("Delete");
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-    ResponseEntity<Map<String, String>> responseEntity =
-        new ResponseEntity<>(resultMap, HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -278,12 +273,11 @@ public class ClusterApiServiceTest {
             Mockito.anyString(),
             any(),
             Mockito.any(),
-            (ParameterizedTypeReference<Map<String, String>>) any()))
+            (ParameterizedTypeReference<ApiResponse>) any()))
         .thenReturn(responseEntity);
 
-    ResponseEntity<Map<String, String>> response =
-        clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody()).containsEntry("result", "success");
+    ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
+    assertThat(response.getBody().getResult()).isEqualTo("success");
   }
 
   @Test
