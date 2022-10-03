@@ -2,7 +2,6 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.service.KwConstants.CLUSTER_CONN_URL_KEY;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
@@ -52,6 +51,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.jasypt.util.text.BasicTextEncryptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -70,7 +70,14 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ClusterApiService {
 
-  final ManageDatabase manageDatabase;
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  @Autowired ManageDatabase manageDatabase;
+
+  @Value("${server.ssl.trust-store:null}")
+  private String trustStore;
+
+  @Value("${server.ssl.trust-store-password:null}")
+  private String trustStorePwd;
 
   @Value("${server.ssl.key-store:null}")
   private String keyStore;
@@ -514,9 +521,7 @@ public class ClusterApiService {
 
         if (Objects.equals(AclOperationType.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
-          ObjectMapper objectMapper = new ObjectMapper();
-          Map<String, String> jsonObj =
-              objectMapper.readValue(aclReq.getJsonParams(), new TypeReference<>() {});
+          Map<String, String> jsonObj = OBJECT_MAPPER.readValue(aclReq.getJsonParams(), Map.class);
           String aivenAclKey = "aivenaclid";
           if (jsonObj.containsKey(aivenAclKey))
             clusterAclRequest =

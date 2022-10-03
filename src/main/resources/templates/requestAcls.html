@@ -580,14 +580,14 @@
 									<div ng-show="aivenCluster=='false'" class="row">
 										<div class="col-md-12">
 											<div class="form-group">
-												<label class="control-label">Acl IP or Principle Or Username based</label>
+												<label class="control-label">Acl IP or Principal Or Username based</label>
 												<div class="demo-radio-button" ng-init="acl_ip_ssl='IP'">
 													<input class="radio-col-orange" ng-change="onSelectAcl('IP')" ng-model="acl_ip_ssl" name="aclipgroup1"
 														   type="radio" id="radio_11" value="IP" checked/>
 													<label for="radio_11">IP Address</label>
 													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="acl_ip_ssl"
 														   name="aclipgroup1" type="radio" id="radio_31" value="SSL" />
-													<label for="radio_31">Principle / Username</label>
+													<label for="radio_31">Principal / Username</label>
 												</div>
 
 											</div>
@@ -641,7 +641,7 @@
 
 										<div class="col-md-6">
 											<div class="form-group">
-												<label>Principle / Username</label>
+												<label>Principal / Username</label>
 												<table>
 													<tr valign="top" ng-repeat="onessl in acl_ssl track by $index">
 														<td width="95%">

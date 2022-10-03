@@ -9,6 +9,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
@@ -55,6 +56,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class AclControllerService {
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
+      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private final MailUtils mailService;
@@ -928,7 +932,6 @@ public class AclControllerService {
     List<TopicInfo> topicInfoList = new ArrayList<>();
     ArrayList<TopicHistory> topicHistoryFromTopic;
     List<TopicHistory> topicHistoryList = new ArrayList<>();
-    ObjectMapper objectMapper = new ObjectMapper();
 
     for (Topic topic : topics) {
       TopicInfo topicInfo = new TopicInfo();
@@ -945,7 +948,7 @@ public class AclControllerService {
 
       if (topic.getHistory() != null) {
         try {
-          topicHistoryFromTopic = objectMapper.readValue(topic.getHistory(), ArrayList.class);
+          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), ArrayList.class);
           topicHistoryList.addAll(topicHistoryFromTopic);
         } catch (JsonProcessingException e) {
           log.error("Unable to parse topicHistory");
@@ -1076,13 +1079,11 @@ public class AclControllerService {
       boolean retrieveSchemas,
       TopicOverview topicOverview,
       int tenantId) {
-    ObjectMapper objectMapper;
     if (topicOverview.isTopicExists() && retrieveSchemas) {
       List<Map<String, String>> schemaDetails = new ArrayList<>();
       Map<String, String> schemaMap = new HashMap<>();
       List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
       Object dynamicObj;
-      objectMapper = new ObjectMapper();
       Map<String, Object> hashMapSchemaObj;
       String schemaOfObj;
       for (Env schemaEnv : schemaEnvs) {
@@ -1150,9 +1151,8 @@ public class AclControllerService {
           }
 
           schemaMap.put("env", schemaEnv.getName());
-          dynamicObj = objectMapper.readValue(schemaOfObj, Object.class);
-          schemaOfObj =
-              objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dynamicObj);
+          dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
+          schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
           schemaMap.put("content", schemaOfObj);
 
           schemaDetails.add(schemaMap);

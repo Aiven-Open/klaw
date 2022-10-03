@@ -52,7 +52,7 @@
         <apachepoi.version>5.2.2</apachepoi.version>
         <assertj-core.version>3.23.1</assertj-core.version>
         <commons-text.version>1.9</commons-text.version>
-        <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
+        <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <gson.version>2.9.0</gson.version>
         <guava.version>31.1-jre</guava.version>
         <h2.version>2.1.214</h2.version>
@@ -60,11 +60,11 @@
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <jasyptencrypt.version>3.0.4</jasyptencrypt.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
+        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
         <system-rules.version>1.19.0</system-rules.version>
-        <sonar-maven-plugin.version>3.7.0.1746</sonar-maven-plugin.version>
-        <spotless-maven-plugin.version>2.23.0</spotless-maven-plugin.version>
+        <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
+        <spotless-maven-plugin.version>2.27.1</spotless-maven-plugin.version>
         <swagger-annotations.version>2.1.0</swagger-annotations.version>
     </properties>
 

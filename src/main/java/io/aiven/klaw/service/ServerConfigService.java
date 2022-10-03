@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwProperties;
@@ -31,6 +32,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ServerConfigService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
+      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   @Autowired private Environment env;
 
   @Autowired ManageDatabase manageDatabase;
@@ -115,12 +119,11 @@ public class ServerConfigService {
       resultMap.put("kwkey", kwKey);
 
       if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
-        ObjectMapper objectMapper = new ObjectMapper();
         TenantConfig dynamicObj;
         try {
-          dynamicObj = objectMapper.readValue(kwVal, TenantConfig.class);
+          dynamicObj = OBJECT_MAPPER.readValue(kwVal, TenantConfig.class);
           updateEnvNameValues(dynamicObj, tenantId);
-          kwVal = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(dynamicObj);
+          kwVal = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
           resultMap.put("kwvalue", kwVal);
           resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
 
@@ -171,13 +174,12 @@ public class ServerConfigService {
 
     try {
       if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
-        ObjectMapper objectMapper = new ObjectMapper();
         TenantConfig dynamicObj;
         try {
-          dynamicObj = objectMapper.readValue(kwVal, TenantConfig.class);
+          dynamicObj = OBJECT_MAPPER.readValue(kwVal, TenantConfig.class);
           if (validateTenantConfig(dynamicObj, tenantId)) {
             updateEnvIdValues(dynamicObj);
-            kwPropertiesModel.setKwValue(objectMapper.writeValueAsString(dynamicObj));
+            kwPropertiesModel.setKwValue(OBJECT_MAPPER.writeValueAsString(dynamicObj));
           } else {
             response.put(
                 "result",

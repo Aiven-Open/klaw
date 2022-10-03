@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TopicControllerTest {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @MockBean private TopicControllerService topicControllerService;
 
   @MockBean private TopicSyncControllerService topicSyncControllerService;
@@ -70,7 +71,7 @@ public class TopicControllerTest {
   @Order(1)
   public void createTopics() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(addTopicRequest);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     ApiResponse apiResponse =
         ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
     when(topicControllerService.createTopicsRequest(any())).thenReturn(apiResponse);
@@ -94,7 +95,7 @@ public class TopicControllerTest {
   @Order(2)
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(syncTopicUpdates);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncTopicUpdates);
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "success");
     when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(resultMap);
@@ -135,7 +136,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequest> response = new ObjectMapper().readValue(res, List.class);
+    List<TopicRequest> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -179,7 +180,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequestModel> response = new ObjectMapper().readValue(res, List.class);
+    List<TopicRequestModel> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -269,7 +270,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<List<TopicInfo>> response = new ObjectMapper().readValue(res, List.class);
+    List<List<TopicInfo>> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
   }
 
@@ -289,7 +290,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    List<String> response = new ObjectMapper().readValue(res, List.class);
+    List<String> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(2);
   }
 
@@ -319,7 +320,7 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    HashMap response = new ObjectMapper().readValue(res, HashMap.class);
+    HashMap response = OBJECT_MAPPER.readValue(res, HashMap.class);
     assertThat(response).hasSize(1);
   }
 }

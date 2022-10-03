@@ -501,7 +501,7 @@
 										<!--/span-->
 										<div class="col-md-6" ng-show="addNewCluster.clusterType == 'kafka'">
 											<div class="form-group">
-												<label>Bootstrap servers (Allowed port range 6090 - 9099)</label>
+												<label>Bootstrap servers</label>
 												<input type="text" class="form-control" required ng-model="addNewCluster.host" minlength="3" placeholder="server:9092">
 												<small class="form-control-feedback">Comma separated. Ex : server1:9092,server2:9092,server3:9092</small>
 											</div>
@@ -562,9 +562,10 @@
 												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)" ng-model="addNewCluster.protocol">
 													<option value="PLAINTEXT">PLAINTEXT</option>
 													<option value="SSL">SSL</option>
-													<option value="SASL_PLAIN">SASL_PLAIN</option>
-													<option value="SASL_SSL-PLAINMECHANISM">SASL_SSL(PLAIN-MECHANISM)</option>
-													<option value="SASL_SSL-GSSAPIMECHANISM">SASL_SSL(GSSAPI-MECHANISM)</option>
+													<option value="SASL_PLAIN">SASL/PLAIN</option>
+													<option value="SASL_SSL-PLAINMECHANISM">SASL_SSL/PLAIN</option>
+													<option value="SASL_SSL-GSSAPIMECHANISM">SASL_SSL/GSSAPI</option>
+													<option value="SASL_SSL-SCRAMMECHANISM">SASL_SSL/SCRAM-SHA-256</option>
 												</select>
 											</div>
 											<div ng-show="sslparams=='true'">
