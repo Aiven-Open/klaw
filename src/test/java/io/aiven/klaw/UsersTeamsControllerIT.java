@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import java.util.List;
@@ -233,7 +234,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("Not Authorized");
+    assertThat(response).contains(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   // Delete team success

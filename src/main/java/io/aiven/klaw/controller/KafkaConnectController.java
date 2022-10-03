@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
@@ -8,6 +9,7 @@ import io.aiven.klaw.service.KafkaConnectControllerService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class KafkaConnectController {
 
   @Autowired KafkaConnectControllerService kafkaConnectControllerService;
@@ -63,10 +66,17 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/execConnectorRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> approveTopicRequests(
-      @RequestParam("connectorId") String connectorId) throws KlawException {
-    return new ResponseEntity<>(
-        kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> approveTopicRequests(
+      @RequestParam("connectorId") String connectorId) {
+    try {
+      return new ResponseEntity<>(
+          kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
+    } catch (KlawException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(
+          ApiResponse.builder().message("Unable to create kafka connector.").build(),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping(

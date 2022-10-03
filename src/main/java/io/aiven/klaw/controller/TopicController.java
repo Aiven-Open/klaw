@@ -8,6 +8,7 @@ import io.aiven.klaw.service.TopicControllerService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,15 +22,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class TopicController {
 
   @Autowired private TopicControllerService topicControllerService;
 
   @PostMapping(value = "/createTopics")
   public ResponseEntity<ApiResponse> createTopicsRequest(
-      @Valid @RequestBody TopicRequestModel addTopicRequest) throws KlawException {
-    return new ResponseEntity<>(
-        topicControllerService.createTopicsRequest(addTopicRequest), HttpStatus.OK);
+      @Valid @RequestBody TopicRequestModel addTopicRequest) {
+    try {
+      return new ResponseEntity<>(
+          topicControllerService.createTopicsRequest(addTopicRequest), HttpStatus.OK);
+    } catch (KlawException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(
+          ApiResponse.builder().message("Unable to create a topic request").build(),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping(
@@ -107,9 +116,10 @@ public class TopicController {
       return new ResponseEntity<>(
           topicControllerService.approveTopicRequests(topicId), HttpStatus.OK);
     } catch (KlawException e) {
+      log.error(e.getMessage());
       return new ResponseEntity<>(
           ApiResponse.builder()
-              .message(e.getMessage())
+              .message("Unable to approve topics")
               .status(HttpStatus.INTERNAL_SERVER_ERROR)
               .build(),
           HttpStatus.INTERNAL_SERVER_ERROR);

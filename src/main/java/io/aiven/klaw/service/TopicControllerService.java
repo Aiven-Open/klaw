@@ -206,7 +206,6 @@ public class TopicControllerService {
     }
 
     Env env = getEnvDetails(envSelected);
-
     Map<String, String> isValidTopicMap =
         validateParameters(topicRequestReq, env, topicPartitions, topicRf);
     String validTopicStatus = isValidTopicMap.get("status");
@@ -299,7 +298,7 @@ public class TopicControllerService {
     Map<String, String> hashMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_TOPICS)) {
-      hashMap.put("result", "Not Authorized");
+      hashMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return hashMap;
     }
 

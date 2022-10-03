@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.MetadataOperationType;
 import io.aiven.klaw.model.PermissionType;
@@ -438,7 +439,7 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      resMap.put("result", "Not Authorized");
+      resMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resMap;
     }
 

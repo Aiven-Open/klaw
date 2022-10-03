@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.service.UtilControllerService;
 import java.util.HashMap;
 import org.junit.jupiter.api.*;
@@ -36,7 +37,7 @@ public class UtilControllerTest {
   @Order(1)
   public void getAuth() throws Exception {
     HashMap<String, String> hMap = new HashMap<>();
-    hMap.put("status", "Authorized");
+    hMap.put("status", ApiResultStatus.AUTHORIZED.value);
     when(utilControllerService.getAuth()).thenReturn(hMap);
 
     String res =
@@ -50,7 +51,7 @@ public class UtilControllerTest {
             .getContentAsString();
 
     HashMap<String, String> response = new ObjectMapper().readValue(res, HashMap.class);
-    assertThat(response).containsEntry("status", "Authorized");
+    assertThat(response).containsEntry("status", ApiResultStatus.AUTHORIZED.value);
   }
 
   @Test

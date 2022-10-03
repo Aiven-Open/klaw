@@ -23,6 +23,7 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclOperationType;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.PermissionType;
@@ -46,6 +47,7 @@ import java.util.SortedMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -242,7 +244,7 @@ public class AclControllerService {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
       List<String> notAuth = new ArrayList<>();
-      notAuth.add("Not Authorized");
+      notAuth.add(ApiResultStatus.NOT_AUTHORIZED.value);
       resultMap.put("result", notAuth);
       return resultMap;
     }
@@ -601,28 +603,40 @@ public class AclControllerService {
     return "{\"result\":\"" + execRes + "\"}";
   }
 
-  public String approveAclRequests(String req_no) throws KlawException {
+  public ApiResponse approveAclRequests(String req_no) throws KlawException {
     log.info("approveAclRequests {}", req_no);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return "{\"result\":\" Not Authorized. \"}";
+      return ApiResponse.builder()
+          .result(ApiResultStatus.NOT_AUTHORIZED.value)
+          .status(HttpStatus.OK)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
     if (Objects.equals(aclReq.getUsername(), userDetails))
-      return "{\"result\":\"You are not allowed to approve your own subscription requests.\"}";
+      return ApiResponse.builder()
+          .result("You are not allowed to approve your own subscription requests.")
+          .status(HttpStatus.OK)
+          .build();
 
     if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
-      return "{\"result\":\"This request does not exist anymore.\"}";
+      return ApiResponse.builder()
+          .result("This request does not exist anymore.")
+          .status(HttpStatus.OK)
+          .build();
     }
 
     // tenant filtering
     if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder()
+          .result(ApiResultStatus.NOT_AUTHORIZED.value)
+          .status(HttpStatus.OK)
+          .build();
 
     String allIps = aclReq.getAcl_ip();
     String allSsl = aclReq.getAcl_ssl();
@@ -659,10 +673,17 @@ public class AclControllerService {
           }
           updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
 
-        } else return "{\"result\":\"failure\"}";
+        } else
+          return ApiResponse.builder()
+              .result(ApiResultStatus.FAILURE.value)
+              .status(HttpStatus.OK)
+              .build();
       } catch (Exception e) {
         log.error("Exception ", e);
-        return "{\"result\":\"failure " + e.toString() + "\"}";
+        return ApiResponse.builder()
+            .result(ApiResultStatus.FAILURE.value)
+            .status(HttpStatus.OK)
+            .build();
       }
 
       mailService.sendMail(
@@ -673,8 +694,10 @@ public class AclControllerService {
           dbHandle,
           ACL_REQUEST_APPROVED,
           commonUtilsService.getLoginUrl());
-      return "{\"result\":\"" + updateAclReqStatus + "\"}";
-    } else return "{\"result\":\"Record not found !\"}";
+      return ApiResponse.builder().result(updateAclReqStatus).status(HttpStatus.OK).build();
+    } else {
+      return ApiResponse.builder().result("Record not found !").status(HttpStatus.OK).build();
+    }
   }
 
   public String declineAclRequests(String req_no, String reasonToDecline) {

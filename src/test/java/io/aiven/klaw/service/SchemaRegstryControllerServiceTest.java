@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaRequestModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -140,8 +141,9 @@ public class SchemaRegstryControllerServiceTest {
   public void execSchemaRequestsSuccess() throws KlawException {
     int schemaReqId = 1001;
 
-    ResponseEntity<String> response =
-        new ResponseEntity<>("Schema registered id\": 215", HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result("Schema registered id\": 215").build();
+
+    ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
     schemaRequest.setUsername("kwuserb");
@@ -158,8 +160,8 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    String result = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(result).contains("success");
+    ApiResponse resultResp = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
+    assertThat(resultResp.getResult()).contains("success");
   }
 
   @Test
@@ -167,7 +169,8 @@ public class SchemaRegstryControllerServiceTest {
   public void execSchemaRequestsFailure1() throws KlawException {
     int schemaReqId = 1001;
 
-    ResponseEntity<String> response = new ResponseEntity<>("Schema not registered", HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result("Schema not registered").build();
+    ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
     schemaRequest.setUsername("kwuserb");
@@ -184,17 +187,18 @@ public class SchemaRegstryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    String result = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(result).contains("Failure");
+    ApiResponse resultResp = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
+    assertThat(resultResp.getResult()).contains("Schema not registered");
   }
 
-  @Test
+  @Test()
   @Order(6)
-  public void execSchemaRequestsFailure2() throws KlawException {
+  public void execSchemaRequestsFailure2() {
     int schemaReqId = 1001;
 
-    ResponseEntity<String> response =
-        new ResponseEntity<>("Schema registered id\": 215", HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result("Schema registered id\": 215").build();
+    ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
     schemaRequest.setUsername("kwuserb");
@@ -203,17 +207,24 @@ public class SchemaRegstryControllerServiceTest {
 
     stubUserInfo();
     when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
-    when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
-        .thenReturn(response);
+    try {
+      when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
+          .thenReturn(response);
+    } catch (KlawException e) {
+      throw new RuntimeException(e);
+    }
     when(handleDbRequests.updateSchemaRequest(any(), anyString()))
-        .thenThrow(new RuntimeException("Error"));
+        .thenThrow(new RuntimeException("Error in registering"));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    String result = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(result).contains("Error");
+    try {
+      schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
+    } catch (KlawException e) {
+      assertThat(e.getMessage()).contains("Error in registering");
+    }
   }
 
   @Test

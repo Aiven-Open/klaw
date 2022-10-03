@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import java.util.List;
@@ -91,7 +92,8 @@ public class SchemaRegstryControllerTest {
   @Test
   @Order(3)
   public void execSchemaRequests() throws Exception {
-    when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(

@@ -704,7 +704,7 @@ public class EnvsClustersTenantsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
-      resultMap.put("result", "Not Authorized");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resultMap;
     }
 
@@ -831,7 +831,7 @@ public class EnvsClustersTenantsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
-      resultMap.put("result", "Not Authorized");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resultMap;
     }
 
@@ -976,7 +976,7 @@ public class EnvsClustersTenantsControllerService {
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_TENANT)) {
-      addTenantStatus.put("result", "Not Authorized");
+      addTenantStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return addTenantStatus;
     }
 
@@ -1071,12 +1071,12 @@ public class EnvsClustersTenantsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      resultMap.put("result", "Not Authorized");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resultMap;
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (tenantId == DEFAULT_TENANT_ID) {
-      resultMap.put("result", "Not Authorized");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resultMap;
     }
     String tenantName = manageDatabase.getTenantMap().get(tenantId);
@@ -1111,7 +1111,7 @@ public class EnvsClustersTenantsControllerService {
     Map<String, String> resultMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      resultMap.put("result", "Not Authorized");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resultMap;
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1138,7 +1138,7 @@ public class EnvsClustersTenantsControllerService {
     Map<String, String> resultMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      resultMap.put("result", "Not Authorized");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return resultMap;
     }
 

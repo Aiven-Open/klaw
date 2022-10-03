@@ -5,6 +5,7 @@ import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
@@ -247,44 +248,44 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS))
         canUpdatePermissions = "NotAuthorized";
-      else canUpdatePermissions = "Authorized";
+      else canUpdatePermissions = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) addEditRoles = "NotAuthorized";
-      else addEditRoles = "Authorized";
+      else addEditRoles = ApiResultStatus.AUTHORIZED.value;
 
       String canShutdownKw;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SHUTDOWN_KLAW)) {
         canShutdownKw = "NotAuthorized";
-      } else canShutdownKw = "Authorized";
+      } else canShutdownKw = ApiResultStatus.AUTHORIZED.value;
 
       String syncBackTopics, syncBackAcls;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_TOPICS)) {
         syncBackTopics = "NotAuthorized";
-      } else syncBackTopics = "Authorized";
+      } else syncBackTopics = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(
           userName, PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
         syncBackAcls = "NotAuthorized";
-      } else syncBackAcls = "Authorized";
+      } else syncBackAcls = ApiResultStatus.AUTHORIZED.value;
 
       String addUser, addTeams;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS)) {
         addUser = "NotAuthorized";
-      } else addUser = "Authorized";
+      } else addUser = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_TEAMS)) {
         addTeams = "NotAuthorized";
-      } else addTeams = "Authorized";
+      } else addTeams = ApiResultStatus.AUTHORIZED.value;
 
       String viewKafkaConnect;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_CONNECTORS)) {
         viewKafkaConnect = "NotAuthorized";
-      } else viewKafkaConnect = "Authorized";
+      } else viewKafkaConnect = ApiResultStatus.AUTHORIZED.value;
 
       String requestTopics;
       String requestAcls;
@@ -294,26 +295,27 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_TOPICS)) {
         requestTopics = "NotAuthorized";
-      } else requestTopics = "Authorized";
+      } else requestTopics = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(
           userName, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
         requestAcls = "NotAuthorized";
-      } else requestAcls = "Authorized";
+      } else requestAcls = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_SCHEMAS)) {
         requestSchemas = "NotAuthorized";
-      } else requestSchemas = "Authorized";
+      } else requestSchemas = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(
           userName, PermissionType.REQUEST_CREATE_CONNECTORS)) {
         requestConnector = "NotAuthorized";
-      } else requestConnector = "Authorized";
+      } else requestConnector = ApiResultStatus.AUTHORIZED.value;
 
-      if ("Authorized".equals(requestTopics)
-          || "Authorized".equals(requestAcls)
-          || "Authorized".equals(requestSchemas)
-          || "Authorized".equals(requestConnector)) requestItems = "Authorized";
+      if (ApiResultStatus.AUTHORIZED.value.equals(requestTopics)
+          || ApiResultStatus.AUTHORIZED.value.equals(requestAcls)
+          || ApiResultStatus.AUTHORIZED.value.equals(requestSchemas)
+          || ApiResultStatus.AUTHORIZED.value.equals(requestConnector))
+        requestItems = ApiResultStatus.AUTHORIZED.value;
       else requestItems = "NotAuthorized";
 
       String approveDeclineTopics;
@@ -325,37 +327,42 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_TOPICS)) {
         approveDeclineTopics = "NotAuthorized";
-      } else approveDeclineTopics = "Authorized";
+      } else approveDeclineTopics = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SUBSCRIPTIONS)) {
         approveDeclineSubscriptions = "NotAuthorized";
-      } else approveDeclineSubscriptions = "Authorized";
+      } else approveDeclineSubscriptions = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SCHEMAS)) {
         approveDeclineSchemas = "NotAuthorized";
-      } else approveDeclineSchemas = "Authorized";
+      } else approveDeclineSchemas = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_CONNECTORS)) {
         approveDeclineConnectors = "NotAuthorized";
-      } else approveDeclineConnectors = "Authorized";
+      } else approveDeclineConnectors = ApiResultStatus.AUTHORIZED.value;
 
-      if ("Authorized".equals(approveDeclineTopics)
-          || "Authorized".equals(approveDeclineSubscriptions)
-          || "Authorized".equals(approveDeclineSchemas)
-          || "Authorized".equals(approveDeclineConnectors)
-          || "Authorized".equals(addUser)) approveAtleastOneRequest = "Authorized";
+      if (ApiResultStatus.AUTHORIZED.value.equals(approveDeclineTopics)
+          || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSubscriptions)
+          || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSchemas)
+          || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineConnectors)
+          || ApiResultStatus.AUTHORIZED.value.equals(addUser))
+        approveAtleastOneRequest = ApiResultStatus.AUTHORIZED.value;
 
       String redirectionPage = "";
-      if ("Authorized".equals(approveAtleastOneRequest)) {
-        if (outstandingTopicReqsInt > 0 && "Authorized".equals(approveDeclineTopics))
+      if (ApiResultStatus.AUTHORIZED.value.equals(approveAtleastOneRequest)) {
+        if (outstandingTopicReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineTopics))
           redirectionPage = "execTopics";
-        else if (outstandingAclReqsInt > 0 && "Authorized".equals(approveDeclineSubscriptions))
+        else if (outstandingAclReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSubscriptions))
           redirectionPage = "execAcls";
-        else if (outstandingSchemasReqsInt > 0 && "Authorized".equals(approveDeclineSchemas))
+        else if (outstandingSchemasReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSchemas))
           redirectionPage = "execSchemas";
-        else if (outstandingConnectorReqsInt > 0 && "Authorized".equals(approveDeclineConnectors))
+        else if (outstandingConnectorReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineConnectors))
           redirectionPage = "execConnectors";
-        else if (outstandingUserReqsInt > 0 && "Authorized".equals(addUser))
+        else if (outstandingUserReqsInt > 0 && ApiResultStatus.AUTHORIZED.value.equals(addUser))
           redirectionPage = "execUsers";
       }
 
@@ -364,11 +371,11 @@ public class UtilControllerService {
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_TOPICS)
           || commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SUBSCRIPTIONS)) {
         syncTopicsAcls = "NotAuthorized";
-      } else syncTopicsAcls = "Authorized";
+      } else syncTopicsAcls = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_CONNECTORS)) {
         syncConnectors = "NotAuthorized";
-      } else syncConnectors = "Authorized";
+      } else syncConnectors = ApiResultStatus.AUTHORIZED.value;
 
       String addDeleteEditTenants;
       String addDeleteEditEnvs;
@@ -378,11 +385,11 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG))
         updateServerConfig = "NotAuthorized";
-      else updateServerConfig = "Authorized";
+      else updateServerConfig = ApiResultStatus.AUTHORIZED.value;
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
           && !commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG))
-        showServerConfigEnvProperties = "Authorized";
+        showServerConfigEnvProperties = ApiResultStatus.AUTHORIZED.value;
       else showServerConfigEnvProperties = "NotAuthorized";
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
@@ -393,16 +400,16 @@ public class UtilControllerService {
                       .getHandleDbRequests()
                       .getUsersInfo(userName)
                       .getRole())) // allow adding tenants only to "default"
-      addDeleteEditTenants = "Authorized";
+      addDeleteEditTenants = ApiResultStatus.AUTHORIZED.value;
       else addDeleteEditTenants = "NotAuthorized";
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_ENVS))
         addDeleteEditEnvs = "NotAuthorized";
-      else addDeleteEditEnvs = "Authorized";
+      else addDeleteEditEnvs = ApiResultStatus.AUTHORIZED.value;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
         addDeleteEditClusters = "NotAuthorized";
-      else addDeleteEditClusters = "Authorized";
+      else addDeleteEditClusters = ApiResultStatus.AUTHORIZED.value;
 
       if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled))
         dashboardData.put("adAuthRoleEnabled", "true");
@@ -410,7 +417,7 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_TOPICS))
         viewTopics = "NotAuthorized";
-      else viewTopics = "Authorized";
+      else viewTopics = ApiResultStatus.AUTHORIZED.value;
 
       String companyInfo = manageDatabase.getTenantFullConfig(tenantId).getOrgName();
       if (companyInfo == null || companyInfo.equals("")) {

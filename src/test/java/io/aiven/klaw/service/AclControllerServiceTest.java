@@ -252,8 +252,8 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    String result = aclControllerService.approveAclRequests("112");
-    assertThat(result).isEqualTo("{\"result\":\"success\"}");
+    ApiResponse apiResp = aclControllerService.approveAclRequests("112");
+    assertThat(apiResp.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -270,8 +270,8 @@ public class AclControllerServiceTest {
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
-    String result = aclControllerService.approveAclRequests(req_no);
-    assertThat(result).isEqualTo("{\"result\":\"failure\"}");
+    ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
+    assertThat(apiResp.getResult()).isEqualTo("failure");
   }
 
   @Test
@@ -291,8 +291,8 @@ public class AclControllerServiceTest {
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
         .thenThrow(new RuntimeException("Error"));
 
-    String result = aclControllerService.approveAclRequests(req_no);
-    assertThat(result).contains("failure");
+    ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
+    assertThat(apiResp.getResult()).isEqualTo("failure");
   }
 
   @Test
@@ -307,8 +307,8 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    String result = aclControllerService.approveAclRequests(req_no);
-    assertThat(result).isEqualTo("{\"result\":\"This request does not exist anymore.\"}");
+    ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
+    assertThat(apiResp.getResult()).isEqualTo("This request does not exist anymore.");
   }
 
   @Test

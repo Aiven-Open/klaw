@@ -8,6 +8,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.PermissionType;
@@ -70,7 +71,7 @@ public class KafkaConnectSyncControllerService {
     Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
-      response.put("result", "Not Authorized");
+      response.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return response;
     }
 

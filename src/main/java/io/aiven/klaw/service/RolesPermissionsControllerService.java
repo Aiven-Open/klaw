@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwRolesPermissionsModel;
 import io.aiven.klaw.model.PermissionType;
 import java.util.*;
@@ -104,7 +105,7 @@ public class RolesPermissionsControllerService {
     Map<String, String> updatedPermsMapStatus = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
-      updatedPermsMapStatus.put("result", "Not Authorized");
+      updatedPermsMapStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return updatedPermsMapStatus;
     }
 
@@ -151,7 +152,7 @@ public class RolesPermissionsControllerService {
     Map<String, String> deleteRoleStatus = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      deleteRoleStatus.put("result", "Not Authorized");
+      deleteRoleStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return deleteRoleStatus;
     }
 
@@ -173,7 +174,7 @@ public class RolesPermissionsControllerService {
     Map<String, String> addRoleStatus = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      addRoleStatus.put("result", "Not Authorized");
+      addRoleStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return addRoleStatus;
     }
 

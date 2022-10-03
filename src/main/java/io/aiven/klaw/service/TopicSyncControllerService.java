@@ -10,6 +10,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
@@ -499,7 +500,7 @@ public class TopicSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
       List<String> notAuth = new ArrayList<>();
-      notAuth.add("Not Authorized");
+      notAuth.add(ApiResultStatus.NOT_AUTHORIZED.value);
       resultMap.put("result", notAuth);
       return resultMap;
     }
@@ -833,7 +834,7 @@ public class TopicSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
       List<String> notAuth = new ArrayList<>();
-      notAuth.add("Not Authorized");
+      notAuth.add(ApiResultStatus.NOT_AUTHORIZED.value);
       resultMap.put("result", notAuth);
       return resultMap;
     }
@@ -971,7 +972,7 @@ public class TopicSyncControllerService {
     Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      response.put("result", "Not Authorized");
+      response.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return response;
     }
 

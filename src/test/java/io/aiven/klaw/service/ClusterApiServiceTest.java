@@ -301,18 +301,21 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
+    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenReturn(response);
 
-    ResponseEntity<String> result =
+    ResponseEntity<ApiResponse> result =
         clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
-    assertThat(result.getBody()).isEqualTo("success");
+    assertThat(result.getBody().getResult()).isEqualTo("success");
   }
 
   @Test

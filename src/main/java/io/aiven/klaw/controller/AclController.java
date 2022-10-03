@@ -6,6 +6,7 @@ import io.aiven.klaw.service.AclControllerService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class AclController {
 
   @Autowired AclControllerService aclControllerService;
@@ -71,9 +73,14 @@ public class AclController {
   }
 
   @PostMapping(value = "/execAclRequest")
-  public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no)
-      throws KlawException {
-    return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> approveAclRequests(@RequestParam("req_no") String req_no) {
+    try {
+      return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
+    } catch (KlawException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(
+          ApiResponse.builder().message("Unable to approve acl request").build(), HttpStatus.OK);
+    }
   }
 
   @PostMapping(value = "/createDeleteAclSubscriptionRequest")

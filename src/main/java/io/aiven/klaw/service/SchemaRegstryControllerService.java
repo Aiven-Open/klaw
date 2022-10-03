@@ -10,6 +10,8 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
@@ -185,12 +187,12 @@ public class SchemaRegstryControllerService {
     }
   }
 
-  public String execSchemaRequests(String avroSchemaId) throws KlawException {
+  public ApiResponse execSchemaRequests(String avroSchemaId) throws KlawException {
     log.info("execSchemaRequests {}", avroSchemaId);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     SchemaRequest schemaRequest =
@@ -199,21 +201,23 @@ public class SchemaRegstryControllerService {
             .selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
 
     if (Objects.equals(schemaRequest.getUsername(), userDetails))
-      return "{\"result\":\"You are not allowed to approve your own schema requests.\"}";
+      return ApiResponse.builder()
+          .result("You are not allowed to approve your own schema requests.")
+          .build();
 
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdList.contains(schemaRequest.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
-    ResponseEntity<String> response =
+    ResponseEntity<ApiResponse> response =
         clusterApiService.postSchema(
             schemaRequest, schemaRequest.getEnvironment(), schemaRequest.getTopicname(), tenantId);
-    String responseDb;
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    if (Objects.requireNonNull(response.getBody()).contains("id\":")) {
+    if (Objects.requireNonNull(Objects.requireNonNull(response.getBody()).getResult())
+        .contains("id\":")) {
       try {
-        responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
+        String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
         mailService.sendMail(
             schemaRequest.getTopicname(),
             null,
@@ -222,16 +226,16 @@ public class SchemaRegstryControllerService {
             dbHandle,
             SCHEMA_REQUEST_APPROVED,
             commonUtilsService.getLoginUrl());
+        return ApiResponse.builder().result(responseDb).build();
       } catch (Exception e) {
         log.error("Exception:", e);
-        return e.getMessage();
+        throw new KlawException(e.getMessage());
       }
 
-      return responseDb;
     } else {
-      String errStr = response.getBody();
+      String errStr = response.getBody().getResult();
       if (errStr.length() > 100) errStr = errStr.substring(0, 98) + "...";
-      return "Failure in uploading schema. Error : " + errStr;
+      return ApiResponse.builder().result("Failure in uploading schema. Error : " + errStr).build();
     }
   }
 
@@ -285,7 +289,7 @@ public class SchemaRegstryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return "Not Authorized";
+      return ApiResultStatus.NOT_AUTHORIZED.value;
     }
 
     try {

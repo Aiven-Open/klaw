@@ -3,6 +3,7 @@ package io.aiven.klaw.model;
 public enum ApiResultStatus {
   SUCCESS("success"),
   FAILURE("failure"),
+  AUTHORIZED("Authorized"),
   NOT_AUTHORIZED("Not Authorized"),
   ERROR("error");
 

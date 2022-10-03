@@ -47,7 +47,7 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      hashMapTopicReqRes.put("result", "Not Authorized");
+      hashMapTopicReqRes.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return hashMapTopicReqRes;
     }
 
@@ -460,15 +460,14 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public Map<String, String> approveConnectorRequests(String connectorId) throws KlawException {
+  public ApiResponse approveConnectorRequests(String connectorId) throws KlawException {
     log.info("approveConnectorRequests {}", connectorId);
     Map<String, String> resultMap = new HashMap<>();
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
-      resultMap.put("result", "Not Authorized");
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     KafkaConnectorRequest connectorRequest =
@@ -482,25 +481,23 @@ public class KafkaConnectControllerService {
       jsonConnectorConfig = createConnectorConfig(connectorRequest);
     } catch (Exception e) {
       log.error("Exception:", e);
-      resultMap.put("result", "Failure " + e.getMessage());
-      return resultMap;
+      throw new KlawException("Unable to create kafka connector.");
     }
 
     if (connectorRequest.getRequestor().equals(userDetails)) {
-      resultMap.put("result", "You are not allowed to approve your own connector requests.");
-      return resultMap;
+      return ApiResponse.builder()
+          .result("You are not allowed to approve your own connector requests.")
+          .build();
     }
 
     if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
-      resultMap.put("result", "This request does not exist anymore.");
-      return resultMap;
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
     if (!allowedEnvIdList.contains(connectorRequest.getEnvironment())) {
-      resultMap.put("result", "Not Authorized");
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -563,8 +560,7 @@ public class KafkaConnectControllerService {
       }
     }
 
-    resultMap.put("result", updateTopicReqStatus);
-    return resultMap;
+    return ApiResponse.builder().result(updateTopicReqStatus).build();
   }
 
   private void setConnectorHistory(
@@ -649,7 +645,7 @@ public class KafkaConnectControllerService {
     Map<String, String> hashMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
-      hashMap.put("result", "Not Authorized");
+      hashMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       return hashMap;
     }
 

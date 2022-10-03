@@ -1,10 +1,12 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import java.util.List;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class SchemaRegstryController {
 
   @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
@@ -59,14 +62,17 @@ public class SchemaRegstryController {
   @PostMapping(
       value = "/execSchemaRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> execSchemaRequests(
-      @RequestParam("avroSchemaReqId") String avroSchemaReqId) throws KlawException {
-
-    String updateTopicReqStatus =
-        "{\"result\":\""
-            + schemaRegstryControllerService.execSchemaRequests(avroSchemaReqId)
-            + "\"}";
-    return new ResponseEntity<>(updateTopicReqStatus, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> execSchemaRequests(
+      @RequestParam("avroSchemaReqId") String avroSchemaReqId) {
+    try {
+      return new ResponseEntity<>(
+          schemaRegstryControllerService.execSchemaRequests(avroSchemaReqId), HttpStatus.OK);
+    } catch (KlawException e) {
+      log.error(e.getMessage());
+      return new ResponseEntity<>(
+          ApiResponse.builder().message("Unable to register schema").build(),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @PostMapping(
@@ -84,10 +90,12 @@ public class SchemaRegstryController {
   }
 
   @PostMapping(value = "/uploadSchema")
-  public ResponseEntity<String> uploadSchema(
+  public ResponseEntity<ApiResponse> uploadSchema(
       @Valid @RequestBody SchemaRequestModel addSchemaRequest) {
-    String schemaaddResult =
-        "{\"result\":\"" + schemaRegstryControllerService.uploadSchema(addSchemaRequest) + "\"}";
-    return new ResponseEntity<>(schemaaddResult, HttpStatus.OK);
+    return new ResponseEntity<>(
+        ApiResponse.builder()
+            .result(schemaRegstryControllerService.uploadSchema(addSchemaRequest))
+            .build(),
+        HttpStatus.OK);
   }
 }

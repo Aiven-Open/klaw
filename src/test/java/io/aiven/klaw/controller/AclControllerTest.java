@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
@@ -161,7 +162,8 @@ public class AclControllerTest {
 
   @Test
   public void approveAclRequests() throws Exception {
-    when(aclControllerService.approveAclRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(aclControllerService.approveAclRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -174,7 +176,7 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).isEqualTo("success");
+    assertThat(response).contains("success");
   }
 
   @Test

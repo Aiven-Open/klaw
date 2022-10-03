@@ -20,6 +20,7 @@ import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
+import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
 import java.io.File;
 import java.io.FileInputStream;
@@ -127,10 +128,10 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     String clusterStatus;
     try {
-      String URI_CLUSTER_API_STATUS = "/topics/getApiStatus";
+      String uriClusterApiStatus = "/topics/getApiStatus";
       String uri;
-      if (testConnection) uri = clusterApiUrl + URI_CLUSTER_API_STATUS;
-      else uri = clusterConnUrl + URI_CLUSTER_API_STATUS; // from stored kw props
+      if (testConnection) uri = clusterApiUrl + uriClusterApiStatus;
+      else uri = clusterConnUrl + uriClusterApiStatus; // from stored kw props
 
       ResponseEntity<String> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
@@ -569,39 +570,34 @@ public class ClusterApiService {
     }
   }
 
-  ResponseEntity<String> postSchema(
+  ResponseEntity<ApiResponse> postSchema(
       SchemaRequest schemaRequest, String env, String topicName, int tenantId)
       throws KlawException {
     log.info("postSchema {} {}", topicName, env);
     getClusterApiProperties(tenantId);
-    ResponseEntity<String> response;
+    ResponseEntity<ApiResponse> response;
     try {
-      String URI_POST_SCHEMA = "/topics/postSchema";
-      String uri = clusterConnUrl + URI_POST_SCHEMA;
+      String uriPostSchema = "/topics/postSchema";
+      String uri = clusterConnUrl + uriPostSchema;
 
-      MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
-      String bootstrapHost =
+      KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
-              .get(envSelected.getClusterId())
-              .getBootstrapServers();
-      params.add(
-          "protocol",
-          manageDatabase
-              .getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
-              .get(envSelected.getClusterId())
-              .getProtocol());
-      params.add("env", bootstrapHost);
-      params.add("topicName", topicName);
-      params.add("fullSchema", schemaRequest.getSchemafull());
+              .get(envSelected.getClusterId());
+      ClusterSchemaRequest clusterSchemaRequest =
+          ClusterSchemaRequest.builder()
+              .protocol(kwClusters.getProtocol())
+              .env(kwClusters.getBootstrapServers())
+              .topicName(topicName)
+              .fullSchema(schemaRequest.getSchemafull())
+              .build();
 
-      HttpHeaders headers =
-          createHeaders(clusterApiUser, clusterApiPwd); // createHeaders("user1", "pwd");
-      headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      headers.setContentType(MediaType.APPLICATION_JSON);
 
-      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-      response = getRestTemplate().postForEntity(uri, request, String.class);
+      HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
+      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from postSchema ", e);
       throw new KlawException("Could not post schema. Please contact Administrator.");
@@ -791,19 +787,6 @@ public class ClusterApiService {
       return textEncryptor.decrypt(pwd);
     }
     return "";
-  }
-
-  private ResponseEntity<Map<String, String>> getMapResponseEntity(
-      MultiValueMap<String, String> params, String uri) {
-    ResponseEntity<Map<String, String>> response;
-    HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-    response =
-        getRestTemplate()
-            .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
-    return response;
   }
 
   private HttpEntity<String> getHttpEntity() {
