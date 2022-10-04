@@ -74,18 +74,24 @@ public class AclControllerServiceTest {
   @Mock private UserInfo userInfo;
 
   private AclControllerService aclControllerService;
+
+  private AclSyncControllerService aclSyncControllerService;
   private Env env;
 
   @BeforeEach
   public void setUp() throws Exception {
     utilMethods = new UtilMethods();
     this.aclControllerService = new AclControllerService(clusterApiService, mailService);
+    this.aclSyncControllerService = new AclSyncControllerService(clusterApiService, mailService);
 
     this.env = new Env();
     env.setName("DEV");
     env.setId("1");
     ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(aclControllerService, "commonUtilsService", commonUtilsService);
+    ReflectionTestUtils.setField(aclSyncControllerService, "manageDatabase", manageDatabase);
+    ReflectionTestUtils.setField(
+        aclSyncControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
         aclControllerService,
         "rolesPermissionsControllerService",
@@ -130,7 +136,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     Map<String, String> result =
-        aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertThat(result).containsEntry("result", "success");
   }
 
@@ -141,7 +147,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     Map<String, String> result =
-        aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertThat(result).containsEntry("result", "Not Authorized.");
   }
 
@@ -155,7 +161,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     Map<String, String> result =
-        aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertThat(result.get("result")).contains("Failure");
   }
 
@@ -173,7 +179,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    Map<String, String> result = aclControllerService.updateSyncAcls(updates);
+    Map<String, String> result = aclSyncControllerService.updateSyncAcls(updates);
     assertThat(result).containsEntry("result", "No record updated.");
   }
 
@@ -187,7 +193,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     Map<String, String> result =
-        aclControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+        aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
     assertThat(result.get("result")).contains("Failure");
   }
 
@@ -421,7 +427,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
 
     List<AclInfo> aclList =
-        aclControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
+        aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
     assertThat(aclList).isEmpty();
   }
@@ -447,7 +453,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
 
     List<AclInfo> aclList =
-        aclControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
+        aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
     assertThat(aclList).isEmpty();
   }

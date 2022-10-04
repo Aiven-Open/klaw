@@ -30,12 +30,6 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateSyncAcls")
-  public ResponseEntity<Map<String, String>> updateSyncAcls(
-      @RequestBody List<SyncAclUpdates> syncAclUpdates) {
-    return new ResponseEntity<>(aclControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
-  }
-
   @RequestMapping(
       value = "/getAclRequests",
       method = RequestMethod.GET,
@@ -116,47 +110,6 @@ public class AclController {
       @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
     return new ResponseEntity<>(
         aclControllerService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value = "/getSyncBackAcls",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclInfo>> getSyncBackAcls(
-      @RequestParam("env") String envId,
-      @RequestParam("pageNo") String pageNo,
-      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "teamName", required = false) String teamName) {
-    return new ResponseEntity<>(
-        aclControllerService.getSyncBackAcls(envId, pageNo, currentPage, topicNameSearch, teamName),
-        HttpStatus.OK);
-  }
-
-  @PostMapping(value = "/updateSyncBackAcls")
-  public ResponseEntity<Map<String, List<String>>> updateSyncBackAcls(
-      @RequestBody SyncBackAcls syncBackAcls) {
-    Map<String, List<String>> updateSyncAclsResult =
-        aclControllerService.updateSyncBackAcls(syncBackAcls);
-    return new ResponseEntity<>(updateSyncAclsResult, HttpStatus.OK);
-  }
-
-  // get acls from kafka cluster
-  @RequestMapping(
-      value = "/getSyncAcls",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclInfo>> getSyncAcls(
-      @RequestParam("env") String envId,
-      @RequestParam("pageNo") String pageNo,
-      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "showAllAcls", defaultValue = "false", required = false)
-          String showAllAcls)
-      throws KlawException {
-    return new ResponseEntity<>(
-        aclControllerService.getSyncAcls(envId, pageNo, currentPage, topicNameSearch, showAllAcls),
-        HttpStatus.OK);
   }
 
   // getConsumerOffsets from kafka cluster
