@@ -74,7 +74,8 @@ public class SchemaRegstryControllerTest {
   @Test
   @Order(2)
   public void deleteSchemaRequests() throws Exception {
-    when(schemaRegstryControllerService.deleteSchemaRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(schemaRegstryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -115,8 +116,8 @@ public class SchemaRegstryControllerTest {
   public void uploadSchema() throws Exception {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
-
-    when(schemaRegstryControllerService.uploadSchema(any())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(schemaRegstryControllerService.uploadSchema(any())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(

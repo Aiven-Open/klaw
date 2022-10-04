@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwProperties;
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -150,25 +151,23 @@ public class ServerConfigService {
     else return listMap;
   }
 
-  public Map<String, String> updateKwCustomProperty(KwPropertiesModel kwPropertiesModel) {
+  public ApiResponse updateKwCustomProperty(KwPropertiesModel kwPropertiesModel)
+      throws KlawException {
     log.info("updateKwCustomProperty {}", kwPropertiesModel);
-    Map<String, String> response = new HashMap<>();
+    //    Map<String, String> response = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String kwKey = kwPropertiesModel.getKwKey();
     String kwVal = kwPropertiesModel.getKwValue().trim();
-    response.put("resultkey", kwKey);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      response.put("result", "Not Authorized.");
-      return response;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     // SUPERADMINS filter
     if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       if (!KwConstants.allowConfigForAdmins.contains(kwKey)) {
-        response.put("result", "Not Authorized.");
-        return response;
+        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
       }
     }
 
@@ -181,32 +180,39 @@ public class ServerConfigService {
             updateEnvIdValues(dynamicObj);
             kwPropertiesModel.setKwValue(OBJECT_MAPPER.writeValueAsString(dynamicObj));
           } else {
-            response.put(
-                "result",
-                "Failure. Invalid json / incorrect name values. Check tenant and env details.");
-            return response;
+            return ApiResponse.builder()
+                .result(
+                    "Failure. Invalid json / incorrect name values. Check tenant and env details.")
+                .build();
           }
         } catch (IOException e) {
           log.error("Exception:", e);
-          response.put(
-              "result", "Failure. Invalid json values. Please check if tenant/environments exist.");
-          return response;
+          return ApiResponse.builder()
+              .result("Failure. Invalid json values. Please check if tenant/environments exist.")
+              .build();
         }
       }
     } catch (Exception e) {
       log.error("Exception:", e);
-      response.put("result", "Failure. Please check if the environment names exist.");
-      return response;
+      return ApiResponse.builder()
+          .result("Failure. Please check if the environment names exist.")
+          .build();
     }
 
-    KwProperties kwProperties = new KwProperties();
-    copyProperties(kwPropertiesModel, kwProperties);
-    String res = manageDatabase.getHandleDbRequests().updateKwProperty(kwProperties, tenantId);
-    if ("success".equals(res))
-      commonUtilsService.updateMetadata(
-          tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
-    response.put("result", "success");
-    return response;
+    try {
+      KwProperties kwProperties = new KwProperties();
+      copyProperties(kwPropertiesModel, kwProperties);
+      String res = manageDatabase.getHandleDbRequests().updateKwProperty(kwProperties, tenantId);
+      if (ApiResultStatus.SUCCESS.value.equals(res)) {
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
+        return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(kwKey).build();
+      } else {
+        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      }
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
+    }
   }
 
   private void updateEnvNameValues(TenantConfig dynamicObj, int tenantId) {

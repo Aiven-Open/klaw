@@ -310,11 +310,11 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(12)
-  public void deleteTopicRequests() {
+  public void deleteTopicRequests() throws KlawException {
     when(handleDbRequests.deleteTopicRequest(anyInt(), anyInt())).thenReturn("success");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    String result = topicControllerService.deleteTopicRequests("1001");
-    assertThat(result).isEqualTo("{\"result\":\"success\"}");
+    ApiResponse resultResp = topicControllerService.deleteTopicRequests("1001");
+    assertThat(resultResp.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -451,9 +451,9 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.declineTopicRequest(any(), anyString())).thenReturn("success");
-    String result = topicControllerService.declineTopicRequests(topicId + "", "Reason");
+    ApiResponse resultResp = topicControllerService.declineTopicRequests(topicId + "", "Reason");
 
-    assertThat(result).isEqualTo("{\"result\":\"" + "success" + "\"}");
+    assertThat(resultResp.getResult()).isEqualTo("success");
   }
 
   @Test

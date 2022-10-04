@@ -182,12 +182,12 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
                      params: {'kwPropertiesModel' : serviceInput },
                      data: serviceInput
                  }).success(function(output) {
-                     $scope.alert = "Property ("+ output.resultkey +") update status : " + output.result;
+                     $scope.alert = "Property ("+ output.data +") update status : " + output.result;
 
                      if(output.result == 'success'){
                      swal({
                              title: "",
-                             text: "Property Update status. ("+ output.resultkey +") " + output.result,
+                             text: "Property Update status. ("+ output.data +") " + output.result,
                              timer: 2000,
                              showConfirmButton: false
                          });

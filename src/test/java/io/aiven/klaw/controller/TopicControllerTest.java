@@ -187,7 +187,8 @@ public class TopicControllerTest {
   @Test
   @Order(6)
   public void deleteTopicRequests() throws Exception {
-    when(topicControllerService.deleteTopicRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(topicControllerService.deleteTopicRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -199,8 +200,9 @@ public class TopicControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(response).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -228,8 +230,9 @@ public class TopicControllerTest {
   @Test
   @Order(8)
   public void declineTopicRequests() throws Exception {
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
-        .thenReturn("success");
+        .thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -243,7 +246,8 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).isEqualTo("success");
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test

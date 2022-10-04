@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.service.UtilControllerService.handleException;
+
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaRequestModel;
@@ -49,14 +51,14 @@ public class SchemaRegstryController {
   @PostMapping(
       value = "/deleteSchemaRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> deleteSchemaRequests(
+  public ResponseEntity<ApiResponse> deleteSchemaRequests(
       @RequestParam("req_no") String avroSchemaReqId) {
-
-    String deleteTopicReqStatus =
-        schemaRegstryControllerService.deleteSchemaRequests(avroSchemaReqId);
-
-    deleteTopicReqStatus = "{\"result\":\"" + deleteTopicReqStatus + "\"}";
-    return new ResponseEntity<>(deleteTopicReqStatus, HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          schemaRegstryControllerService.deleteSchemaRequests(avroSchemaReqId), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(
@@ -68,34 +70,35 @@ public class SchemaRegstryController {
       return new ResponseEntity<>(
           schemaRegstryControllerService.execSchemaRequests(avroSchemaReqId), HttpStatus.OK);
     } catch (KlawException e) {
-      log.error(e.getMessage());
-      return new ResponseEntity<>(
-          ApiResponse.builder().message("Unable to register schema").build(),
-          HttpStatus.INTERNAL_SERVER_ERROR);
+      return handleException(e);
     }
   }
 
   @PostMapping(
       value = "/execSchemaRequestsDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> execSchemaRequestsDecline(
+  public ResponseEntity<ApiResponse> execSchemaRequestsDecline(
       @RequestParam("avroSchemaReqId") String avroSchemaReqId,
       @RequestParam("reasonForDecline") String reasonForDecline) {
-    String updateTopicReqStatus =
-        "{\"result\":\""
-            + schemaRegstryControllerService.execSchemaRequestsDecline(
-                avroSchemaReqId, reasonForDecline)
-            + "\"}";
-    return new ResponseEntity<>(updateTopicReqStatus, HttpStatus.OK);
+
+    try {
+      return new ResponseEntity<>(
+          schemaRegstryControllerService.execSchemaRequestsDecline(
+              avroSchemaReqId, reasonForDecline),
+          HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/uploadSchema")
   public ResponseEntity<ApiResponse> uploadSchema(
       @Valid @RequestBody SchemaRequestModel addSchemaRequest) {
-    return new ResponseEntity<>(
-        ApiResponse.builder()
-            .result(schemaRegstryControllerService.uploadSchema(addSchemaRequest))
-            .build(),
-        HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          schemaRegstryControllerService.uploadSchema(addSchemaRequest), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 }

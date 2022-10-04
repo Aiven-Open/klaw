@@ -168,22 +168,24 @@ public class SchemaRegstryControllerService {
     return newList;
   }
 
-  public String deleteSchemaRequests(String avroSchemaId) {
+  public ApiResponse deleteSchemaRequests(String avroSchemaId) throws KlawException {
     log.info("deleteSchemaRequests {}", avroSchemaId);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     try {
-      return manageDatabase
-          .getHandleDbRequests()
-          .deleteSchemaRequest(
-              Integer.parseInt(avroSchemaId), commonUtilsService.getTenantId(getUserName()));
+      String result =
+          manageDatabase
+              .getHandleDbRequests()
+              .deleteSchemaRequest(
+                  Integer.parseInt(avroSchemaId), commonUtilsService.getTenantId(getUserName()));
+      return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.toString() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
@@ -239,11 +241,12 @@ public class SchemaRegstryControllerService {
     }
   }
 
-  public String execSchemaRequestsDecline(String avroSchemaId, String reasonForDecline) {
+  public ApiResponse execSchemaRequestsDecline(String avroSchemaId, String reasonForDecline)
+      throws KlawException {
     log.info("execSchemaRequestsDecline {}", avroSchemaId);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -252,19 +255,22 @@ public class SchemaRegstryControllerService {
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdList.contains(schemaRequest.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
-    String responseDb = dbHandle.updateSchemaRequestDecline(schemaRequest, userDetails);
-    mailService.sendMail(
-        schemaRequest.getTopicname(),
-        null,
-        reasonForDecline,
-        schemaRequest.getUsername(),
-        dbHandle,
-        SCHEMA_REQUEST_DENIED,
-        commonUtilsService.getLoginUrl());
-
-    return responseDb;
+    try {
+      String responseDb = dbHandle.updateSchemaRequestDecline(schemaRequest, userDetails);
+      mailService.sendMail(
+          schemaRequest.getTopicname(),
+          null,
+          reasonForDecline,
+          schemaRequest.getUsername(),
+          dbHandle,
+          SCHEMA_REQUEST_DENIED,
+          commonUtilsService.getLoginUrl());
+      return ApiResponse.builder().result(responseDb).build();
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
+    }
   }
 
   private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
@@ -283,20 +289,20 @@ public class SchemaRegstryControllerService {
     return topicsFromSOT;
   }
 
-  public String uploadSchema(SchemaRequestModel schemaRequest) {
+  public ApiResponse uploadSchema(SchemaRequestModel schemaRequest) throws KlawException {
     log.info("uploadSchema {}", schemaRequest);
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResultStatus.NOT_AUTHORIZED.value;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     try {
       new ObjectMapper().readValue(schemaRequest.getSchemafull(), Object.class);
     } catch (IOException e) {
       log.error("Exception:", e);
-      return "Failure. Invalid json";
+      return ApiResponse.builder().result("Failure. Invalid json").build();
     }
 
     Integer userTeamId = getMyTeamId(userDetails);
@@ -308,7 +314,9 @@ public class SchemaRegstryControllerService {
     Integer topicOwnerTeam = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
 
     if (!Objects.equals(userTeamId, topicOwnerTeam)) {
-      return "No topic selected Or Not authorized to register schema for this topic.";
+      return ApiResponse.builder()
+          .result("No topic selected Or Not authorized to register schema for this topic.")
+          .build();
     }
 
     List<SchemaRequest> schemaReqs =
@@ -333,7 +341,9 @@ public class SchemaRegstryControllerService {
                               schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
       if (schemaReqs.size() > 0) {
-        return "Failure. A request already exists for this topic.";
+        return ApiResponse.builder()
+            .result("Failure. A request already exists for this topic.")
+            .build();
       }
     }
 
@@ -354,10 +364,10 @@ public class SchemaRegstryControllerService {
           SCHEMA_REQUESTED,
           commonUtilsService.getLoginUrl());
 
-      return responseDb;
+      return ApiResponse.builder().result(responseDb).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "failure " + e;
+      throw new KlawException(e.getMessage());
     }
   }
 

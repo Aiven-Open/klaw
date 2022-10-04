@@ -40,7 +40,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SchemaRegstryControllerServiceTest {
+public class SchemaRegistryControllerServiceTest {
 
   @Mock private UserDetails userDetails;
 
@@ -115,13 +115,13 @@ public class SchemaRegstryControllerServiceTest {
 
   @Test
   @Order(2)
-  public void deleteSchemaRequestsSuccess() {
+  public void deleteSchemaRequestsSuccess() throws KlawException {
     int schemaReqId = 1001;
 
     stubUserInfo();
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt())).thenReturn("success");
-    String result = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
-    assertThat(result).isEqualTo("success");
+    ApiResponse resultResp = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
+    assertThat(resultResp.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -131,9 +131,12 @@ public class SchemaRegstryControllerServiceTest {
 
     stubUserInfo();
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt()))
-        .thenThrow(new RuntimeException("Error"));
-    String result = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
-    assertThat(result).contains("failure");
+        .thenThrow(new RuntimeException("Error from Schema upload"));
+    try {
+      schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
+    } catch (KlawException e) {
+      assertThat(e.getMessage()).contains("Error from Schema upload");
+    }
   }
 
   @Test
@@ -229,7 +232,7 @@ public class SchemaRegstryControllerServiceTest {
 
   @Test
   @Order(7)
-  public void uploadSchemaSuccess() {
+  public void uploadSchemaSuccess() throws KlawException {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
     schemaRequest.setUsername("kwuserb");
@@ -247,8 +250,8 @@ public class SchemaRegstryControllerServiceTest {
     when(handleDbRequests.requestForSchema(any())).thenReturn("success");
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
 
-    String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
-    assertThat(result).isEqualTo("success");
+    ApiResponse resultResp = schemaRegstryControllerService.uploadSchema(schemaRequest);
+    assertThat(resultResp.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -268,11 +271,15 @@ public class SchemaRegstryControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(handleDbRequests.requestForSchema(any())).thenThrow(new RuntimeException("Error"));
+    when(handleDbRequests.requestForSchema(any()))
+        .thenThrow(new RuntimeException("Error from schema upload"));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
 
-    String result = schemaRegstryControllerService.uploadSchema(schemaRequest);
-    assertThat(result).contains("failure");
+    try {
+      schemaRegstryControllerService.uploadSchema(schemaRequest);
+    } catch (KlawException e) {
+      assertThat(e.getMessage()).contains("Error from schema upload");
+    }
   }
 
   private List<SchemaRequest> getSchemasReqs() {

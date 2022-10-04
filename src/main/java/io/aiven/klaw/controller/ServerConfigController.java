@@ -1,5 +1,9 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.service.UtilControllerService.handleException;
+
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.service.ServerConfigService;
@@ -47,10 +51,14 @@ public class ServerConfigController {
   }
 
   @PostMapping(value = "/updateKwCustomProperty")
-  public ResponseEntity<Map<String, String>> updateKwCustomProperty(
+  public ResponseEntity<ApiResponse> updateKwCustomProperty(
       @RequestBody KwPropertiesModel kwPropertiesModel) {
-    return new ResponseEntity<>(
-        serverConfigService.updateKwCustomProperty(kwPropertiesModel), HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          serverConfigService.updateKwCustomProperty(kwPropertiesModel), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @RequestMapping(

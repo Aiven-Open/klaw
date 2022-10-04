@@ -43,7 +43,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -74,14 +73,9 @@ public class TopicControllerService {
     log.info("createTopicsRequest {}", topicRequestReq);
     String userDetails = getUserName();
 
-    //    Map<String, String> hashMapTopicReqRes = new HashMap<>();
-
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
-      return ApiResponse.builder()
-          .result(ApiResultStatus.NOT_AUTHORIZED.value)
-          .status(HttpStatus.OK)
-          .build();
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     topicRequestReq.setRequestor(userDetails);
@@ -96,7 +90,6 @@ public class TopicControllerService {
     if (!getEnvsFromUserId(userDetails).contains(envSelected)) {
       return ApiResponse.builder()
           .result("Failure. Not authorized to request topic for this environment.")
-          .status(HttpStatus.OK)
           .build();
     }
 
@@ -110,16 +103,12 @@ public class TopicControllerService {
       log.error("Tenant Configuration not found. " + tenantId, e);
       return ApiResponse.builder()
           .result("Failure. Tenant configuration in Server config is missing. Please configure.")
-          .status(HttpStatus.OK)
           .build();
     }
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
 
     if (topicRequestReq.getTopicname() == null || topicRequestReq.getTopicname().length() == 0) {
-      return ApiResponse.builder()
-          .result("Failure. Please fill in topic name.")
-          .status(HttpStatus.OK)
-          .build();
+      return ApiResponse.builder().result("Failure. Please fill in topic name.").build();
     }
     List<Topic> topics = getTopicFromName(topicRequestReq.getTopicname(), tenantId);
 
@@ -128,7 +117,6 @@ public class TopicControllerService {
         && !Objects.equals(topics.get(0).getTeamId(), topicRequestReq.getTeamId())) {
       return ApiResponse.builder()
           .result("Failure. This topic is owned by a different team.")
-          .status(HttpStatus.OK)
           .build();
     }
     boolean promotionOrderCheck =
@@ -146,7 +134,6 @@ public class TopicControllerService {
           if (getEnvDetails(syncCluster) == null) {
             return ApiResponse.builder()
                 .result("Failure. This topic does not exist in base cluster.")
-                .status(HttpStatus.OK)
                 .build();
           } else {
             return ApiResponse.builder()
@@ -154,7 +141,6 @@ public class TopicControllerService {
                     "Failure. This topic does not exist in "
                         + getEnvDetails(syncCluster).getName()
                         + " cluster.")
-                .status(HttpStatus.OK)
                 .build();
           }
         }
@@ -166,7 +152,6 @@ public class TopicControllerService {
                 "Failure. Please request for a topic first in "
                     + getEnvDetails(syncCluster).getName()
                     + " cluster.")
-            .status(HttpStatus.OK)
             .build();
       }
     }
@@ -181,10 +166,7 @@ public class TopicControllerService {
                   tenantId)
               .size()
           > 0) {
-        return ApiResponse.builder()
-            .result("Failure. A topic request already exists.")
-            .status(HttpStatus.OK)
-            .build();
+        return ApiResponse.builder().result("Failure. A topic request already exists.").build();
       }
     }
 
@@ -201,7 +183,6 @@ public class TopicControllerService {
       if (topicExists) {
         return ApiResponse.builder()
             .result("Failure. This topic already exists in the selected cluster.")
-            .status(HttpStatus.OK)
             .build();
       }
     }
@@ -226,13 +207,9 @@ public class TopicControllerService {
           commonUtilsService.getLoginUrl());
       return ApiResponse.builder()
           .result(dbHandle.requestForTopic(topicRequestDao).get("result"))
-          .status(HttpStatus.OK)
           .build();
     } else {
-      return ApiResponse.builder()
-          .result(isValidTopicMap.get("error"))
-          .status(HttpStatus.OK)
-          .build();
+      return ApiResponse.builder().result(isValidTopicMap.get("error")).build();
     }
   }
 
@@ -292,15 +269,13 @@ public class TopicControllerService {
   }
 
   // create a request to delete topic.
-  public Map<String, String> createTopicDeleteRequest(String topicName, String envId) {
+  public ApiResponse createTopicDeleteRequest(String topicName, String envId) throws KlawException {
     log.info("createTopicDeleteRequest {} {}", topicName, envId);
     String userDetails = getUserName();
 
-    Map<String, String> hashMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_TOPICS)) {
-      hashMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return hashMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -313,10 +288,9 @@ public class TopicControllerService {
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
-      hashMap.put(
-          "result",
-          "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
-      return hashMap;
+      return ApiResponse.builder()
+          .result("Failure. Sorry, you cannot delete this topic, as you are not part of this team.")
+          .build();
     }
 
     topicRequestReq.setRequestor(userDetails);
@@ -342,53 +316,54 @@ public class TopicControllerService {
                 tenantId)
             .size()
         > 0) {
-      hashMap.put("result", "Failure. A delete topic request already exists.");
-      return hashMap;
+      return ApiResponse.builder()
+          .result("Failure. A delete topic request already exists.")
+          .build();
     }
 
     if (topicOb.isPresent()) {
-
       // Check if any existing subscriptions for this topic
-
       List<Acl> acls =
           manageDatabase
               .getHandleDbRequests()
               .getSyncAcls(
                   topicRequestReq.getEnvironment(), topicRequestReq.getTopicname(), tenantId);
       if (acls.size() > 0) {
-        hashMap.put(
-            "result",
-            "Failure. There are existing subscriptions for topic. Please get them deleted before.");
-        return hashMap;
+        return ApiResponse.builder()
+            .result(
+                "Failure. There are existing subscriptions for topic. Please get them deleted before.")
+            .build();
       }
 
       topicRequestReq.setTopicpartitions(topicOb.get().getNoOfPartitions());
       topicRequestReq.setReplicationfactor(topicOb.get().getNoOfReplcias());
-      mailService.sendMail(
-          topicRequestReq.getTopicname(),
-          null,
-          "",
-          userDetails,
-          dbHandle,
-          TOPIC_DELETE_REQUESTED,
-          commonUtilsService.getLoginUrl());
 
-      hashMap.put(
-          "result",
-          manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result"));
+      try {
+        mailService.sendMail(
+            topicRequestReq.getTopicname(),
+            null,
+            "",
+            userDetails,
+            dbHandle,
+            TOPIC_DELETE_REQUESTED,
+            commonUtilsService.getLoginUrl());
+
+        String result =
+            manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result");
+        return ApiResponse.builder().result(result).build();
+      } catch (Exception e) {
+        log.error(e.getMessage());
+        throw new KlawException(e.getMessage());
+      }
     } else {
       log.error("Topic not found : {}", topicName);
-      hashMap.put("result", "failure");
+      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
     }
-
-    return hashMap;
   }
 
-  public Map<String, String> createClaimTopicRequest(String topicName, String env) {
+  public ApiResponse createClaimTopicRequest(String topicName, String env) throws KlawException {
     log.info("createClaimTopicRequest {}", topicName);
     String userDetails = getUserName();
-
-    Map<String, String> resultMap = new HashMap<>();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestReq = new TopicRequest();
@@ -403,26 +378,24 @@ public class TopicControllerService {
                 tenantId)
             .size()
         > 0) {
-      resultMap.put("result", "Failure. A request already exists for this topic.");
-      return resultMap;
+      return ApiResponse.builder()
+          .result("Failure. A request already exists for this topic.")
+          .build();
     }
 
     List<Topic> topics = getTopicFromName(topicName, tenantId);
-    // String topicOwnerTeam = topics.get(0).getTeamname();
     Integer topicOwnerTeamId = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
         manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId).stream()
             .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeamId))
             .findFirst();
 
-    // String userTeam = dbHandle.getUsersInfo(userDetails).getTeam();
     Integer userTeamId = getMyTeamId(userDetails);
 
     topicRequestReq.setRequestor(userDetails);
     topicRequestReq.setUsername(userDetails);
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setTenantId(tenantId);
-    //        topicRequestReq.setTeamname(topicOwnerTeam);
     topicRequestReq.setEnvironment(getEnvDetailsFromName(env, tenantId).getId());
     topicRequestReq.setTopicname(topicName);
     topicRequestReq.setTopictype(TopicRequestTypes.Claim.name());
@@ -449,11 +422,14 @@ public class TopicControllerService {
                 TOPIC_CLAIM_REQUESTED,
                 commonUtilsService.getLoginUrl()));
 
-    resultMap.put(
-        "result",
-        manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result"));
-
-    return resultMap;
+    try {
+      String result =
+          manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result");
+      return ApiResponse.builder().result(result).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
   }
 
   public List<TopicRequestModel> getTopicRequests(
@@ -559,7 +535,6 @@ public class TopicControllerService {
       }
 
       List<Integer> stringTeamsFound = new ArrayList<>();
-
       alltopicsStartingWithPattern.forEach(top -> stringTeamsFound.add(top.getTeamId()));
 
       List<Integer> updatedTeamList =
@@ -573,7 +548,6 @@ public class TopicControllerService {
       return teamMap;
     } else {
       List<Topic> topics = manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
-
       // tenant filtering
       topics = getFilteredTopicsForTenant(topics);
 
@@ -607,7 +581,6 @@ public class TopicControllerService {
               .getCreatedTopicRequests(userDetails, requestsType, true, tenantId);
 
     createdTopicReqList = getTopicRequestsFilteredForTenant(createdTopicReqList);
-
     createdTopicReqList = getTopicRequestsPaged(createdTopicReqList, pageNo, currentPage);
 
     return updateCreateTopicReqsList(createdTopicReqList, tenantId);
@@ -685,21 +658,25 @@ public class TopicControllerService {
     return String.valueOf(approvingInfo);
   }
 
-  public String deleteTopicRequests(String topicId) {
+  public ApiResponse deleteTopicRequests(String topicId) throws KlawException {
     log.info("deleteTopicRequests {}", topicId);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
-      String res = "Not Authorized.";
-      return "{\"result\":\"" + res + "\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
-    String deleteTopicReqStatus =
-        manageDatabase
-            .getHandleDbRequests()
-            .deleteTopicRequest(
-                Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
+    try {
+      String deleteTopicReqStatus =
+          manageDatabase
+              .getHandleDbRequests()
+              .deleteTopicRequest(
+                  Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
 
-    return "{\"result\":\"" + deleteTopicReqStatus + "\"}";
+      return ApiResponse.builder().result(deleteTopicReqStatus).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
   }
 
   public ApiResponse approveTopicRequests(String topicId) throws KlawException {
@@ -707,10 +684,7 @@ public class TopicControllerService {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
-      return ApiResponse.builder()
-          .result(ApiResultStatus.NOT_AUTHORIZED.value)
-          .status(HttpStatus.OK)
-          .build();
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     TopicRequest topicRequest =
@@ -721,24 +695,17 @@ public class TopicControllerService {
     if (Objects.equals(topicRequest.getRequestor(), userDetails)) {
       return ApiResponse.builder()
           .result("You are not allowed to approve your own topic requests.")
-          .status(HttpStatus.OK)
           .build();
     }
 
     if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
-      return ApiResponse.builder()
-          .result("This request does not exist anymore.")
-          .status(HttpStatus.OK)
-          .build();
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
     if (!allowedEnvIdList.contains(topicRequest.getEnvironment())) {
-      return ApiResponse.builder()
-          .result(ApiResultStatus.NOT_AUTHORIZED.value)
-          .status(HttpStatus.OK)
-          .build();
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -779,7 +746,7 @@ public class TopicControllerService {
       }
     }
 
-    return ApiResponse.builder().result(updateTopicReqStatus).status(HttpStatus.OK).build();
+    return ApiResponse.builder().result(updateTopicReqStatus).build();
   }
 
   private void setTopicHistory(TopicRequest topicRequest, String userName, int tenantId) {
@@ -818,11 +785,12 @@ public class TopicControllerService {
     }
   }
 
-  public String declineTopicRequests(String topicId, String reasonForDecline) {
+  public ApiResponse declineTopicRequests(String topicId, String reasonForDecline)
+      throws KlawException {
     log.info("declineTopicRequests {} {}", topicId, reasonForDecline);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequest =
@@ -830,25 +798,29 @@ public class TopicControllerService {
             Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
 
     if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
-      return "{\"result\":\"This request does not exist anymore.\"}";
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
     if (!allowedEnvIdList.contains(topicRequest.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
-    String result = dbHandle.declineTopicRequest(topicRequest, userDetails);
-    mailService.sendMail(
-        topicRequest.getTopicname(),
-        null,
-        reasonForDecline,
-        topicRequest.getRequestor(),
-        dbHandle,
-        TOPIC_REQUEST_DENIED,
-        commonUtilsService.getLoginUrl());
+    try {
+      String result = dbHandle.declineTopicRequest(topicRequest, userDetails);
+      mailService.sendMail(
+          topicRequest.getTopicname(),
+          null,
+          reasonForDecline,
+          topicRequest.getRequestor(),
+          dbHandle,
+          TOPIC_REQUEST_DENIED,
+          commonUtilsService.getLoginUrl());
 
-    return "{\"result\":\"" + result + "\"}";
+      return ApiResponse.builder().result(result).build();
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
+    }
   }
 
   public List<String> getAllTopics(boolean isMyTeamTopics) {
@@ -877,9 +849,7 @@ public class TopicControllerService {
     return topicsList.stream().distinct().collect(Collectors.toList());
   }
 
-  public Map<String, String> saveTopicDocumentation(TopicInfo topicInfo) {
-    Map<String, String> saveResult = new HashMap<>();
-
+  public ApiResponse saveTopicDocumentation(TopicInfo topicInfo) throws KlawException {
     Topic topic = new Topic();
     topic.setTenantId(commonUtilsService.getTenantId(getUserName()));
     topic.setTopicid(topicInfo.getTopicid());
@@ -890,18 +860,20 @@ public class TopicControllerService {
     List<Topic> topicsSearchList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicInfo.getTopicName(), tenantId);
 
-    // tenant filtering
-    Integer topicOwnerTeamId = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
-
-    //        String loggedInUserTeam = handleDb.selectAllTeamsOfUsers(getUserName(),
-    // tenantId).get(0).getTeamname();
-    Integer loggedInUserTeamId = getMyTeamId(getUserName());
-    if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
-      saveResult.put(
-          "result", manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic));
-    } else saveResult.put("result", "failure");
-
-    return saveResult;
+    try {
+      // tenant filtering
+      Integer topicOwnerTeamId = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+      Integer loggedInUserTeamId = getMyTeamId(getUserName());
+      if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
+        return ApiResponse.builder()
+            .result(manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic))
+            .build();
+      } else {
+        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      }
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
+    }
   }
 
   public Map<String, Object> getTopicDetailsPerEnv(String envId, String topicName) {
@@ -992,8 +964,7 @@ public class TopicControllerService {
       String currentPage,
       String topicNameSearch,
       String teamName,
-      String topicType)
-      throws Exception {
+      String topicType) {
     log.debug("getTopics {}", topicNameSearch);
     List<TopicInfo> topicListUpdated =
         getTopicsPaginated(
