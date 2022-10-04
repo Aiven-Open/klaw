@@ -29,7 +29,7 @@ public class KafkaConnectController {
   @Autowired KafkaConnectControllerService kafkaConnectControllerService;
 
   @PostMapping(value = "/createConnector")
-  public ResponseEntity<Map<String, String>> createConnectorRequest(
+  public ResponseEntity<ApiResponse> createConnectorRequest(
       @Valid @RequestBody KafkaConnectorRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createConnectorRequest(addTopicRequest), HttpStatus.OK);

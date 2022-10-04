@@ -293,7 +293,7 @@ app.controller("syncBackAclsCtrl", function($scope, $http, $location, $window) {
                         $scope.alert = "Sync back acls request : "+ output.result[0];
                         if(output.result[0] == "success"){
                             $scope.resetCheckBoxes();
-                            $scope.syncbacklog = output.syncbacklog;
+                            $scope.syncbacklog = output.data;
                             $scope.alert = $scope.alert + ". Please verify logs.";
 
                             swal({

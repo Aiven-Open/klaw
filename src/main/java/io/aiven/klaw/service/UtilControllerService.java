@@ -4,7 +4,9 @@ import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.PermissionType;
@@ -24,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -32,6 +36,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class UtilControllerService {
+
+  public static final String ERROR_MSG =
+      "Unable to process the request. Please contact our Administrator !!";
 
   @Autowired ManageDatabase manageDatabase;
 
@@ -563,5 +570,11 @@ public class UtilControllerService {
     } catch (InterruptedException | ExecutionException e) {
       log.error("Error from resetCache ", e);
     }
+  }
+
+  public static ResponseEntity<ApiResponse> handleException(KlawException e) {
+    log.error(e.getMessage());
+    return new ResponseEntity<>(
+        ApiResponse.builder().message(ERROR_MSG).build(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

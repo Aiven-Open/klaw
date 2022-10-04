@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
@@ -68,14 +69,14 @@ public class KafkaConnectSyncControllerService {
     return response;
   }
 
-  public Map<String, String> updateSyncConnectors(List<SyncConnectorUpdates> updatedSyncTopics) {
+  public ApiResponse updateSyncConnectors(List<SyncConnectorUpdates> updatedSyncTopics)
+      throws KlawException {
     log.info("updateSyncConnectors {}", updatedSyncTopics);
     String userDetails = getUserName();
     Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
-      response.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return response;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     // tenant filtering
@@ -103,8 +104,7 @@ public class KafkaConnectSyncControllerService {
       for (SyncConnectorUpdates topicUpdate : updatedSyncTopics) {
         // tenant filtering
         if (!getEnvsFromUserId(userDetails).contains(topicUpdate.getEnvSelected())) {
-          response.put("result", "Not Authorized.");
-          return response;
+          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
         existingTopics = getConnectorsFromName(topicUpdate.getConnectorName(), tenantId);
 
@@ -135,10 +135,9 @@ public class KafkaConnectSyncControllerService {
                   topicUpdate.getConnectorName(), topicUpdate.getEnvSelected(), tenantId);
         } catch (KlawException | JsonProcessingException e) {
           log.error("Exception:", e);
-          response.put(
-              "result",
-              topicUpdate.getConnectorName() + " Connector config could not be retrieved.");
-          return response;
+          return ApiResponse.builder()
+              .result(topicUpdate.getConnectorName() + " Connector config could not be retrieved.")
+              .build();
         }
 
         boolean topicAdded = false;
@@ -211,40 +210,44 @@ public class KafkaConnectSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
-      response.put("result", "success");
-      return response;
+      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     }
 
     if (topicsDontExistInMainCluster) {
-      response.put(
-          "result",
-          "Failure. Please sync up the team of the following connector(s) first in"
-              + " main Sync cluster (klaw.syncdata.cluster)"
-              + " :"
-              + syncCluster
-              + ". \n Topics : "
-              + erroredTopicsExist);
-      return response;
+      return ApiResponse.builder()
+          .result(
+              "Failure. Please sync up the team of the following connector(s) first in"
+                  + " main Sync cluster (klaw.syncdata.cluster)"
+                  + " :"
+                  + syncCluster
+                  + ". \n Topics : "
+                  + erroredTopicsExist)
+          .build();
     }
 
     if (topicsWithDiffTeams) {
-      response.put(
-          "result",
-          "Failure. The following connectors are being synchronized with"
-              + " a different team, when compared to main Sync cluster (klaw.syncdata.cluster)"
-              + " :"
-              + syncCluster
-              + ". \n Topics : "
-              + erroredTopics);
-      return response;
+      return ApiResponse.builder()
+          .result(
+              "Failure. The following connectors are being synchronized with"
+                  + " a different team, when compared to main Sync cluster (klaw.syncdata.cluster)"
+                  + " :"
+                  + syncCluster
+                  + ". \n Topics : "
+                  + erroredTopics)
+          .build();
     }
 
     if (kafkaConnectorList.size() > 0) {
-      response.put(
-          "result", manageDatabase.getHandleDbRequests().addToSyncConnectors(kafkaConnectorList));
-    } else response.put("result", "No record updated.");
-
-    return response;
+      try {
+        String result =
+            manageDatabase.getHandleDbRequests().addToSyncConnectors(kafkaConnectorList);
+        return ApiResponse.builder().result(result).build();
+      } catch (Exception e) {
+        throw new KlawException(e.getMessage());
+      }
+    } else {
+      return ApiResponse.builder().result("No record updated.").build();
+    }
   }
 
   private String getConnectorConfiguration(String connectorName, String environmentId, int tenantId)

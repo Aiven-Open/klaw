@@ -16,9 +16,7 @@ import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -68,7 +66,8 @@ public class AclControllerTest {
   public void createAcl() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
-    when(aclControllerService.createAcl(any())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(aclControllerService.createAcl(any())).thenReturn(apiResponse);
 
     String response =
         mvcAcls
@@ -81,8 +80,9 @@ public class AclControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(response).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -90,9 +90,9 @@ public class AclControllerTest {
     List<SyncAclUpdates> syncUpdates = utilMethods.getSyncAclsUpdates();
 
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncUpdates);
-    Map<String, String> result = new HashMap<>();
-    result.put("result", "success");
-    when(aclSyncControllerService.updateSyncAcls(any())).thenReturn(result);
+
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(aclSyncControllerService.updateSyncAcls(any())).thenReturn(apiResponse);
 
     String response =
         mvcAclsSync
@@ -106,10 +106,9 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    Map<String, String> actualResult =
-        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
 
-    assertThat(actualResult).containsEntry("result", "success");
+    assertThat(actualResult.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -160,8 +159,8 @@ public class AclControllerTest {
 
   @Test
   public void deleteAclRequests() throws Exception {
-    when(aclControllerService.deleteAclRequests(anyString())).thenReturn("success");
-
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(aclControllerService.deleteAclRequests(anyString())).thenReturn(apiResponse);
     String response =
         mvcAcls
             .perform(
@@ -173,8 +172,8 @@ public class AclControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).isEqualTo("success");
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test
@@ -199,8 +198,8 @@ public class AclControllerTest {
 
   @Test
   public void declineAclRequests() throws Exception {
-    when(aclControllerService.declineAclRequests(anyString(), anyString())).thenReturn("success");
-
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(aclControllerService.declineAclRequests(anyString(), anyString())).thenReturn(apiResponse);
     String response =
         mvcAcls
             .perform(
@@ -213,8 +212,9 @@ public class AclControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(response).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test

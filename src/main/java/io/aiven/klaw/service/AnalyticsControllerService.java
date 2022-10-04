@@ -4,6 +4,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.TeamOverview;
@@ -95,7 +96,7 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (aclsPerEnvList.size() == 1) {
-          resultMap.put("status", "success");
+          resultMap.put("status", ApiResultStatus.SUCCESS.value);
           resultMap.put("aclsCount", aclsPerEnvList.get(0).get("aclscount"));
         }
       } catch (Exception e) {

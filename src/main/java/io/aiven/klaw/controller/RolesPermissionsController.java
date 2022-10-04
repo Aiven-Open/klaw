@@ -1,5 +1,9 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.service.UtilControllerService.handleException;
+
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwRolesPermissionsModel;
 import io.aiven.klaw.service.RolesPermissionsControllerService;
 import java.util.List;
@@ -56,21 +60,34 @@ public class RolesPermissionsController {
   }
 
   @PostMapping(value = "/deleteRole")
-  public ResponseEntity<Map<String, String>> deleteRole(@RequestParam("roleId") String roleId) {
-    return new ResponseEntity<>(
-        rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> deleteRole(@RequestParam("roleId") String roleId) {
+    try {
+      return new ResponseEntity<>(
+          rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/addRoleId")
-  public ResponseEntity<Map<String, String>> addRoleId(@RequestParam("roleId") String roleId) {
-    return new ResponseEntity<>(rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> addRoleId(@RequestParam("roleId") String roleId) {
+    try {
+      return new ResponseEntity<>(
+          rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/updatePermissions")
-  public ResponseEntity<Map<String, String>> updatePermissions(
+  public ResponseEntity<ApiResponse> updatePermissions(
       @RequestBody KwRolesPermissionsModel[] kwRolesPermissionsModels) {
-    return new ResponseEntity<>(
-        rolesPermissionsControllerService.updatePermissions(kwRolesPermissionsModels),
-        HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          rolesPermissionsControllerService.updatePermissions(kwRolesPermissionsModels),
+          HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 }

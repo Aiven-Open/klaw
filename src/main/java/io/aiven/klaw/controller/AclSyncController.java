@@ -1,12 +1,14 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.service.UtilControllerService.handleException;
+
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.SyncBackAcls;
 import io.aiven.klaw.service.AclSyncControllerService;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,10 +29,14 @@ public class AclSyncController {
   @Autowired AclSyncControllerService aclSyncControllerService;
 
   @PostMapping(value = "/updateSyncAcls")
-  public ResponseEntity<Map<String, String>> updateSyncAcls(
+  public ResponseEntity<ApiResponse> updateSyncAcls(
       @RequestBody List<SyncAclUpdates> syncAclUpdates) {
-    return new ResponseEntity<>(
-        aclSyncControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          aclSyncControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @RequestMapping(
@@ -50,11 +56,13 @@ public class AclSyncController {
   }
 
   @PostMapping(value = "/updateSyncBackAcls")
-  public ResponseEntity<Map<String, List<String>>> updateSyncBackAcls(
-      @RequestBody SyncBackAcls syncBackAcls) {
-    Map<String, List<String>> updateSyncAclsResult =
-        aclSyncControllerService.updateSyncBackAcls(syncBackAcls);
-    return new ResponseEntity<>(updateSyncAclsResult, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> updateSyncBackAcls(@RequestBody SyncBackAcls syncBackAcls) {
+    try {
+      return new ResponseEntity<>(
+          aclSyncControllerService.updateSyncBackAcls(syncBackAcls), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   // get acls from kafka cluster

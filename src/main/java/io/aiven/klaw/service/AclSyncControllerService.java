@@ -49,15 +49,13 @@ public class AclSyncControllerService {
     this.mailService = mailService;
   }
 
-  public Map<String, String> updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) {
+  public ApiResponse updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) throws KlawException {
     log.info("updateSyncAcls {}", syncAclUpdates);
     String userDetails = getUserName();
-    Map<String, String> response = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
-      response.put("result", "Not Authorized.");
-      return response;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     List<Acl> listTopics = new ArrayList<>();
@@ -79,8 +77,7 @@ public class AclSyncControllerService {
 
         // tenant filtering
         if (!getEnvsFromUserId(userDetails).contains(syncAclUpdateItem.getEnvSelected())) {
-          response.put("result", "Not Authorized.");
-          return response;
+          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
 
         t = new Acl();
@@ -101,22 +98,23 @@ public class AclSyncControllerService {
         listTopics.add(t);
       }
     } else {
-      response.put("result", "No record updated.");
-      return response;
+      return ApiResponse.builder().result("No record updated.").build();
     }
 
     try {
-      if (listTopics.size() > 0) {
-        response.put("result", manageDatabase.getHandleDbRequests().addToSyncacls(listTopics));
+      if (!listTopics.isEmpty()) {
+        return ApiResponse.builder()
+            .result(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
+            .build();
       }
+      return ApiResponse.builder().result("No record updated.").build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      response.put("result", "Failure." + e);
+      throw new KlawException(e.getMessage());
     }
-    return response;
   }
 
-  public Map<String, List<String>> updateSyncBackAcls(SyncBackAcls syncBackAcls) {
+  public ApiResponse updateSyncBackAcls(SyncBackAcls syncBackAcls) throws KlawException {
     log.info("updateSyncBackAcls {}", syncBackAcls);
     Map<String, List<String>> resultMap = new HashMap<>();
 
@@ -131,38 +129,37 @@ public class AclSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-      List<String> notAuth = new ArrayList<>();
-      notAuth.add(ApiResultStatus.NOT_AUTHORIZED.value);
-      resultMap.put("result", notAuth);
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     List<String> resultStatus = new ArrayList<>();
     resultStatus.add("success");
 
     resultMap.put("result", resultStatus);
-
-    if ("SELECTED_ACLS".equals(syncBackAcls.getTypeOfSync())) {
-      for (String aclId : syncBackAcls.getAclIds()) {
-        Acl acl =
-            manageDatabase
-                .getHandleDbRequests()
-                .selectSyncAclsFromReqNo(Integer.parseInt(aclId), tenantId);
-        if (acl != null) {
+    try {
+      if ("SELECTED_ACLS".equals(syncBackAcls.getTypeOfSync())) {
+        for (String aclId : syncBackAcls.getAclIds()) {
+          Acl acl =
+              manageDatabase
+                  .getHandleDbRequests()
+                  .selectSyncAclsFromReqNo(Integer.parseInt(aclId), tenantId);
+          if (acl != null) {
+            approveSyncBackAcls(syncBackAcls, resultMap, logArray, acl, tenantId);
+          }
+        }
+      } else {
+        List<Acl> acls =
+            manageDatabase.getHandleDbRequests().getSyncAcls(syncBackAcls.getSourceEnv(), tenantId);
+        for (Acl acl : acls) {
           approveSyncBackAcls(syncBackAcls, resultMap, logArray, acl, tenantId);
         }
       }
-    } else {
-      List<Acl> acls =
-          manageDatabase.getHandleDbRequests().getSyncAcls(syncBackAcls.getSourceEnv(), tenantId);
-      for (Acl acl : acls) {
-        approveSyncBackAcls(syncBackAcls, resultMap, logArray, acl, tenantId);
-      }
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
     }
 
-    resultMap.put("syncbacklog", logArray);
-
-    return resultMap;
+    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(logArray).build();
   }
 
   private void approveSyncBackAcls(

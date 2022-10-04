@@ -69,16 +69,14 @@ public class KafkaConnectControllerService {
 
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  public Map<String, String> createConnectorRequest(KafkaConnectorRequestModel topicRequestReq) {
+  public ApiResponse createConnectorRequest(KafkaConnectorRequestModel topicRequestReq)
+      throws KlawException {
     log.info("createConnectorRequest {}", topicRequestReq);
     String userDetails = getUserName();
 
-    Map<String, String> hashMapTopicReqRes = new HashMap<>();
-
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      hashMapTopicReqRes.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return hashMapTopicReqRes;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     try {
@@ -86,15 +84,17 @@ public class KafkaConnectControllerService {
           && topicRequestReq.getConnectorConfig().trim().length() > 0) {
         JsonNode jsonNode = OBJECT_MAPPER.readTree(topicRequestReq.getConnectorConfig().trim());
         if (!jsonNode.has("tasks.max")) {
-          hashMapTopicReqRes.put("result", "Failure. Invalid config. tasks.max is not configured");
-          return hashMapTopicReqRes;
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. tasks.max is not configured")
+              .build();
         } else if (!jsonNode.has("connector.class")) {
-          hashMapTopicReqRes.put(
-              "result", "Failure. Invalid config. connector.class is not configured");
-          return hashMapTopicReqRes;
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. connector.class is not configured")
+              .build();
         } else if (!jsonNode.has("topic")) {
-          hashMapTopicReqRes.put("result", "Failure. Invalid config. topic is not configured");
-          return hashMapTopicReqRes;
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. topic is not configured")
+              .build();
         }
 
         Map<String, Object> resultMap =
@@ -104,8 +104,7 @@ public class KafkaConnectControllerService {
       }
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
-      hashMapTopicReqRes.put("result", "Failure. Invalid config.");
-      return hashMapTopicReqRes;
+      throw new KlawException(e.getMessage());
     }
 
     topicRequestReq.setRequestor(userDetails);
@@ -118,9 +117,9 @@ public class KafkaConnectControllerService {
 
     // tenant filtering
     if (!getEnvsFromUserId(userDetails).contains(envSelected)) {
-      hashMapTopicReqRes.put(
-          "result", "Failure. Not authorized to request connector for this environment.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. Not authorized to request connector for this environment.")
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -131,7 +130,7 @@ public class KafkaConnectControllerService {
       syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncKafkaConnectCluster();
     } catch (Exception e) {
       log.error("Tenant Configuration not found. " + tenantId, e);
-      return new HashMap<>();
+      throw new KlawException(e.getMessage());
     }
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
 
@@ -141,8 +140,9 @@ public class KafkaConnectControllerService {
     if (kafkaConnectorList != null
         && kafkaConnectorList.size() > 0
         && !Objects.equals(kafkaConnectorList.get(0).getTeamId(), topicRequestReq.getTeamId())) {
-      hashMapTopicReqRes.put("result", "Failure. This connector is owned by a different team.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. This connector is owned by a different team.")
+          .build();
     }
     boolean promotionOrderCheck =
         checkInPromotionOrder(
@@ -157,26 +157,27 @@ public class KafkaConnectControllerService {
                     .count();
         if (devTopicFound != 1) {
           if (getKafkaConnectEnvDetails(syncCluster) == null) {
-            hashMapTopicReqRes.put(
-                "result", "Failure. This connector does not exist in base cluster");
+            return ApiResponse.builder()
+                .result("Failure. This connector does not exist in base cluster")
+                .build();
           } else {
-            hashMapTopicReqRes.put(
-                "result",
-                "Failure. This connector does not exist in "
-                    + getKafkaConnectEnvDetails(syncCluster).getName()
-                    + " cluster.");
+            return ApiResponse.builder()
+                .result(
+                    "Failure. This connector does not exist in "
+                        + getKafkaConnectEnvDetails(syncCluster).getName()
+                        + " cluster.")
+                .build();
           }
-          return hashMapTopicReqRes;
         }
       }
     } else if (!Objects.equals(topicRequestReq.getEnvironment(), syncCluster)) {
       if (promotionOrderCheck) {
-        hashMapTopicReqRes.put(
-            "result",
-            "Failure. Please request for a connector first in "
-                + getKafkaConnectEnvDetails(syncCluster).getName()
-                + " cluster.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result(
+                "Failure. Please request for a connector first in "
+                    + getKafkaConnectEnvDetails(syncCluster).getName()
+                    + " cluster.")
+            .build();
       }
     }
 
@@ -190,8 +191,7 @@ public class KafkaConnectControllerService {
                   tenantId)
               .size()
           > 0) {
-        hashMapTopicReqRes.put("result", "Failure. A connector request already exists.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder().result("Failure. A connector request already exists.").build();
       }
     }
 
@@ -206,9 +206,9 @@ public class KafkaConnectControllerService {
                         Objects.equals(topicEx.getEnvironment(), topicRequestReq.getEnvironment()));
       }
       if (topicExists) {
-        hashMapTopicReqRes.put(
-            "result", "Failure. This connector already exists in the selected cluster.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result("Failure. This connector already exists in the selected cluster.")
+            .build();
       }
     }
 
@@ -216,7 +216,7 @@ public class KafkaConnectControllerService {
     copyProperties(topicRequestReq, topicRequestDao);
     topicRequestDao.setTenantId(tenantId);
 
-    hashMapTopicReqRes.put("result", dbHandle.requestForConnector(topicRequestDao).get("result"));
+    String result = dbHandle.requestForConnector(topicRequestDao).get("result");
     mailService.sendMail(
         topicRequestReq.getConnectorName(),
         null,
@@ -226,7 +226,7 @@ public class KafkaConnectControllerService {
         CONNECTOR_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
 
-    return hashMapTopicReqRes;
+    return ApiResponse.builder().result(result).build();
   }
 
   public List<List<KafkaConnectorModel>> getConnectors(

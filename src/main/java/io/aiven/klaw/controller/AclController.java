@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.service.UtilControllerService.handleException;
+
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.service.AclControllerService;
@@ -26,8 +28,12 @@ public class AclController {
   @Autowired AclControllerService aclControllerService;
 
   @PostMapping(value = "/createAcl")
-  public ResponseEntity<String> createAcl(@Valid @RequestBody AclRequestsModel addAclRequest) {
-    return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> createAcl(@Valid @RequestBody AclRequestsModel addAclRequest) {
+    try {
+      return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @RequestMapping(
@@ -62,8 +68,12 @@ public class AclController {
       value = "/deleteAclRequests",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> deleteAclRequests(@RequestParam("req_no") String req_no) {
-    return new ResponseEntity<>(aclControllerService.deleteAclRequests(req_no), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> deleteAclRequests(@RequestParam("req_no") String req_no) {
+    try {
+      return new ResponseEntity<>(aclControllerService.deleteAclRequests(req_no), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/execAclRequest")
@@ -71,25 +81,31 @@ public class AclController {
     try {
       return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
     } catch (KlawException e) {
-      log.error(e.getMessage());
-      return new ResponseEntity<>(
-          ApiResponse.builder().message("Unable to approve acl request").build(), HttpStatus.OK);
+      return handleException(e);
     }
   }
 
   @PostMapping(value = "/createDeleteAclSubscriptionRequest")
-  public ResponseEntity<String> deleteAclSubscriptionRequest(
+  public ResponseEntity<ApiResponse> deleteAclSubscriptionRequest(
       @RequestParam("req_no") String req_no) {
-    return new ResponseEntity<>(
-        aclControllerService.createDeleteAclSubscriptionRequest(req_no), HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          aclControllerService.createDeleteAclSubscriptionRequest(req_no), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/execAclRequestDecline")
-  public ResponseEntity<String> declineAclRequests(
+  public ResponseEntity<ApiResponse> declineAclRequests(
       @RequestParam("req_no") String req_no,
       @RequestParam("reasonForDecline") String reasonForDecline) {
-    return new ResponseEntity<>(
-        aclControllerService.declineAclRequests(req_no, reasonForDecline), HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          aclControllerService.declineAclRequests(req_no, reasonForDecline), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @RequestMapping(
@@ -120,8 +136,7 @@ public class AclController {
   public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
       @RequestParam("env") String envId,
       @RequestParam("topicName") String topicName,
-      @RequestParam(value = "consumerGroupId") String consumerGroupId)
-      throws KlawException {
+      @RequestParam(value = "consumerGroupId") String consumerGroupId) {
     return new ResponseEntity<>(
         aclControllerService.getConsumerOffsets(envId, consumerGroupId, topicName), HttpStatus.OK);
   }

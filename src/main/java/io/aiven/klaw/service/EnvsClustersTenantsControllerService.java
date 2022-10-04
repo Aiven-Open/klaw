@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.*;
 import java.io.*;
@@ -696,7 +697,7 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public Map<String, String> addNewCluster(KwClustersModel kwClustersModel) {
+  public ApiResponse addNewCluster(KwClustersModel kwClustersModel) {
     log.info("addNewCluster {}", kwClustersModel.getClusterName());
     Map<String, String> resultMap = new HashMap<>();
 
@@ -704,8 +705,7 @@ public class EnvsClustersTenantsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
-      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     AtomicBoolean clusterNameAlreadyExists = new AtomicBoolean(false);
@@ -721,9 +721,9 @@ public class EnvsClustersTenantsControllerService {
               });
 
       if (clusterNameAlreadyExists.get()) {
-        resultMap.put(
-            "result", "Failure. Please choose a different name. This cluster name already exists.");
-        return resultMap;
+        return ApiResponse.builder()
+            .result("Failure. Please choose a different name. This cluster name already exists.")
+            .build();
       }
     }
     KwClusters kwCluster = new KwClusters();
@@ -736,17 +736,15 @@ public class EnvsClustersTenantsControllerService {
         && kwCluster.getClusterId() == null
         && "saas".equals(kwInstallationType)) {
       if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
-        resultMap.put("result", "Failure. Unable to save public key.");
-        return resultMap;
+        return ApiResponse.builder().result("Failure. Unable to save public key.").build();
       }
     }
 
     String result = manageDatabase.getHandleDbRequests().addNewCluster(kwCluster);
-    if (result.equals("success")) {
+    if (result.equals(ApiResultStatus.SUCCESS.value)) {
       commonUtilsService.updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.CREATE);
     }
-    resultMap.put("result", result);
-    return resultMap;
+    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
   }
 
   private boolean savePublicKey(
@@ -799,28 +797,31 @@ public class EnvsClustersTenantsControllerService {
     return true;
   }
 
-  public String deleteCluster(String clusterId) {
+  public ApiResponse deleteCluster(String clusterId) throws KlawException {
     log.info("deleteCluster {}", clusterId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS))
-      return "{\"result\":\"Not Authorized\"}";
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     List<Env> allEnvList = manageDatabase.getAllEnvList(tenantId);
     if (allEnvList.stream()
         .anyMatch(env -> Objects.equals(env.getClusterId(), Integer.parseInt(clusterId)))) {
-      return "{\"result\":\"Not allowed to delete this cluster, as there are associated environments.\"}";
+      return ApiResponse.builder()
+          .result("Not allowed to delete this cluster, as there are associated environments.")
+          .build();
     }
 
     try {
       String result =
           manageDatabase.getHandleDbRequests().deleteCluster(Integer.parseInt(clusterId), tenantId);
       commonUtilsService.updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.DELETE);
-      return "{\"result\":\"" + result + "\"}";
+      return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 

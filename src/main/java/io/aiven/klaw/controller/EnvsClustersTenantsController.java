@@ -1,5 +1,9 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.service.UtilControllerService.handleException;
+
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
@@ -75,13 +79,17 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/deleteCluster")
-  public ResponseEntity<String> deleteCluster(@RequestParam("clusterId") String clusterId) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> deleteCluster(@RequestParam("clusterId") String clusterId) {
+    try {
+      return new ResponseEntity<>(
+          envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/addNewCluster")
-  public ResponseEntity<Map<String, String>> addNewCluster(
+  public ResponseEntity<ApiResponse> addNewCluster(
       @Valid @RequestBody KwClustersModel kwClustersModel) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addNewCluster(kwClustersModel), HttpStatus.OK);

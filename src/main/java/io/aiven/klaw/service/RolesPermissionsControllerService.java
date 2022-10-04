@@ -2,6 +2,8 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwRolesPermissionsModel;
 import io.aiven.klaw.model.PermissionType;
@@ -101,12 +103,10 @@ public class RolesPermissionsControllerService {
     return hMap;
   }
 
-  public Map<String, String> updatePermissions(KwRolesPermissionsModel[] permissionsSet) {
-    Map<String, String> updatedPermsMapStatus = new HashMap<>();
-
+  public ApiResponse updatePermissions(KwRolesPermissionsModel[] permissionsSet)
+      throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
-      updatedPermsMapStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return updatedPermsMapStatus;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     Map<String, String> uniqueMap = new HashMap<>();
@@ -124,58 +124,60 @@ public class RolesPermissionsControllerService {
     int indexOfDelimiter;
     String isPermEnabled;
 
-    for (String permKey : uniqueMap.keySet()) {
-      isPermEnabled = uniqueMap.get(permKey);
-      indexOfDelimiter = permKey.indexOf(delimiter);
+    try {
+      for (String permKey : uniqueMap.keySet()) {
+        isPermEnabled = uniqueMap.get(permKey);
+        indexOfDelimiter = permKey.indexOf(delimiter);
 
-      tmpKwRolePermModel = new KwRolesPermissions();
-      tmpKwRolePermModel.setRoleId(permKey.substring(0, indexOfDelimiter));
-      tmpKwRolePermModel.setPermission(permKey.substring(indexOfDelimiter + 5));
+        tmpKwRolePermModel = new KwRolesPermissions();
+        tmpKwRolePermModel.setRoleId(permKey.substring(0, indexOfDelimiter));
+        tmpKwRolePermModel.setPermission(permKey.substring(indexOfDelimiter + 5));
 
-      if ("true".equals(isPermEnabled)) kwRolesPermissionsAdd.add(tmpKwRolePermModel);
-      else if ("false".equals(isPermEnabled)) kwRolesPermissionsDelete.add(tmpKwRolePermModel);
+        if ("true".equals(isPermEnabled)) kwRolesPermissionsAdd.add(tmpKwRolePermModel);
+        else if ("false".equals(isPermEnabled)) kwRolesPermissionsDelete.add(tmpKwRolePermModel);
+      }
+
+      if (kwRolesPermissionsAdd.size() > 0)
+        manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsAdd, "ADD");
+      if (kwRolesPermissionsDelete.size() > 0)
+        manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsDelete, "DELETE");
+
+      if (kwRolesPermissionsAdd.size() > 0 || kwRolesPermissionsDelete.size() > 0)
+        manageDatabase.loadRolesForAllTenants();
+      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
     }
-
-    if (kwRolesPermissionsAdd.size() > 0)
-      manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsAdd, "ADD");
-    if (kwRolesPermissionsDelete.size() > 0)
-      manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsDelete, "DELETE");
-
-    if (kwRolesPermissionsAdd.size() > 0 || kwRolesPermissionsDelete.size() > 0)
-      manageDatabase.loadRolesForAllTenants();
-
-    updatedPermsMapStatus.put("result", "success");
-    return updatedPermsMapStatus;
   }
 
-  public Map<String, String> deleteRole(String roleId) {
-    Map<String, String> deleteRoleStatus = new HashMap<>();
+  public ApiResponse deleteRole(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      deleteRoleStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return deleteRoleStatus;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     if (KwConstants.USER_ROLE.equals(roleId) || KwConstants.SUPERADMIN_ROLE.equals(roleId)) {
-      deleteRoleStatus.put("result", "Not Allowed");
-      return deleteRoleStatus;
+      return ApiResponse.builder().result("Not Allowed").build();
     }
 
-    String status =
-        manageDatabase
-            .getHandleDbRequests()
-            .deleteRole(roleId, commonUtilsService.getTenantId(getUserName()));
-    deleteRoleStatus.put("result", status);
-    manageDatabase.loadRolesForAllTenants();
-    return deleteRoleStatus;
+    try {
+      String status =
+          manageDatabase
+              .getHandleDbRequests()
+              .deleteRole(roleId, commonUtilsService.getTenantId(getUserName()));
+      manageDatabase.loadRolesForAllTenants();
+      return ApiResponse.builder().result(status).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
   }
 
-  public Map<String, String> addRoleId(String roleId) {
-    Map<String, String> addRoleStatus = new HashMap<>();
+  public ApiResponse addRoleId(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      addRoleStatus.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return addRoleStatus;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     List<KwRolesPermissions> kwRolesPermissionsAdd = new ArrayList<>();
@@ -186,11 +188,15 @@ public class RolesPermissionsControllerService {
 
     kwRolesPermissionsAdd.add(tmpKwRolePermModel);
 
-    String status =
-        manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsAdd, "ADD");
-    addRoleStatus.put("result", status);
-    manageDatabase.loadRolesForAllTenants();
-    return addRoleStatus;
+    try {
+      String status =
+          manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsAdd, "ADD");
+      manageDatabase.loadRolesForAllTenants();
+      return ApiResponse.builder().result(status).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
   }
 
   private Object getPrincipal() {
