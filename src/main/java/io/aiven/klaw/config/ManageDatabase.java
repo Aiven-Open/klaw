@@ -748,6 +748,6 @@ public class ManageDatabase implements ApplicationContextAware {
     kwSchemaRegClustersPertenant.remove(tenantId);
     kwKafkaConnectClustersPertenant.remove(tenantId);
     kwAllClustersPertenant.remove(tenantId);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 }

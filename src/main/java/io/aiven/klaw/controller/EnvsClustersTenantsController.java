@@ -144,13 +144,6 @@ public class EnvsClustersTenantsController {
     return new ResponseEntity<>(envsClustersTenantsControllerService.getSyncEnvs(), HttpStatus.OK);
   }
 
-  //    @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces =
-  // {MediaType.APPLICATION_JSON_VALUE})
-  //    public ResponseEntity<Map<String, List<EnvModel>>> getEnvsStatus() {
-  //        return new ResponseEntity<>(envsClustersTenantsControllerService.getEnvsStatus(),
-  // HttpStatus.OK);
-  //    }
-
   @RequestMapping(
       value = "/getEnvParams",
       method = RequestMethod.GET,
@@ -189,16 +182,24 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addNewEnv")
-  public ResponseEntity<String> addNewEnv(@Valid @RequestBody EnvModel newEnv) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> addNewEnv(@Valid @RequestBody EnvModel newEnv) {
+    try {
+      return new ResponseEntity<>(
+          envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/deleteEnvironmentRequest")
-  public ResponseEntity<Map<String, String>> deleteEnvironment(
+  public ResponseEntity<ApiResponse> deleteEnvironment(
       @RequestParam("envId") String envId, @RequestParam("envType") String envType) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.deleteEnvironment(envId, envType), HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          envsClustersTenantsControllerService.deleteEnvironment(envId, envType), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @RequestMapping(
@@ -220,28 +221,40 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addTenantId")
-  public ResponseEntity<Map<String, String>> addTenantId(
-      @Valid @RequestBody KwTenantModel kwTenantModel) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> addTenantId(@Valid @RequestBody KwTenantModel kwTenantModel) {
+    try {
+      return new ResponseEntity<>(
+          envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/deleteTenant")
-  public ResponseEntity<Map<String, String>> deleteTenant() {
-    return new ResponseEntity<>(envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
+  public ResponseEntity<ApiResponse> deleteTenant() {
+    try {
+      return new ResponseEntity<>(
+          envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   // Pattern a-zA-z and/or spaces.
   @PostMapping(value = "/udpateTenant")
-  public ResponseEntity<Map<String, String>> udpateTenant(
+  public ResponseEntity<ApiResponse> udpateTenant(
       @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
           String orgName) {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
+    try {
+      return new ResponseEntity<>(
+          envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
+    } catch (KlawException e) {
+      return handleException(e);
+    }
   }
 
   @PostMapping(value = "/udpateTenantExtension")
-  public ResponseEntity<Map<String, String>> udpateTenantExtension(
+  public ResponseEntity<ApiResponse> udpateTenantExtension(
       @RequestParam("selectedTenantExtensionPeriod") String selectedTenantExtensionPeriod) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.udpateTenantExtension(selectedTenantExtensionPeriod),

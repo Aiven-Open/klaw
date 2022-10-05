@@ -9,7 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.model.AclOperationType;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.AclsNativeType;
 import io.aiven.klaw.model.ApiResponse;
@@ -17,6 +17,7 @@ import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.ClusterStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
@@ -402,9 +403,9 @@ public class ClusterApiService {
       String uri;
       String URI_GET_TOPICS = "/topics/";
 
-      if ("Create".equals(connectorType)) {
+      if (RequestOperationType.CREATE.value.equals(connectorType)) {
         uri = clusterConnUrl + URI_GET_TOPICS + "postConnector";
-      } else if ("Update".equals(connectorType)) {
+      } else if (RequestOperationType.UPDATE.value.equals(connectorType)) {
         uri = clusterConnUrl + URI_GET_TOPICS + "updateConnector";
       } else uri = clusterConnUrl + URI_GET_TOPICS + "deleteConnector";
 
@@ -457,14 +458,14 @@ public class ClusterApiService {
               .build();
 
       String uri;
-      if ("Create".equals(topicRequestType)) {
+      if (RequestOperationType.CREATE.value.equals(topicRequestType)) {
         uri = clusterConnUrl + URI_CREATE_TOPICS;
         clusterTopicRequest =
             clusterTopicRequest.toBuilder()
                 .partitions(topicPartitions)
                 .replicationFactor(Short.parseShort(replicationFactor))
                 .build();
-      } else if ("Update".equals(topicRequestType)) {
+      } else if (RequestOperationType.UPDATE.value.equals(topicRequestType)) {
         uri = clusterConnUrl + URI_UPDATE_TOPICS;
         clusterTopicRequest =
             clusterTopicRequest.toBuilder()
@@ -519,7 +520,7 @@ public class ClusterApiService {
           clusterAclRequest = clusterAclRequest.toBuilder().permission("write").build();
         else clusterAclRequest = clusterAclRequest.toBuilder().permission("read").build();
 
-        if (Objects.equals(AclOperationType.DELETE.value, aclReq.getAclType())
+        if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
           Map<String, String> jsonObj = OBJECT_MAPPER.readValue(aclReq.getJsonParams(), Map.class);
           String aivenAclKey = "aivenaclid";
@@ -547,18 +548,18 @@ public class ClusterApiService {
                 .aclSsl(aclReq.getAcl_ssl())
                 .transactionalId(aclReq.getTransactionalId())
                 .aclIpPrincipleType(aclReq.getAclIpPrincipleType().name())
-                .isPrefixAcl("PREFIXED".equals(aclPatternType))
+                .isPrefixAcl(AclPatternType.PREFIXED.value.equals(aclPatternType))
                 .build();
       }
 
-      if ("Create".equals(aclReq.getAclType())) {
+      if (RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
         uri = clusterConnUrl + uriCreateAcls;
         clusterAclRequest =
-            clusterAclRequest.toBuilder().aclOperationType(AclOperationType.CREATE).build();
+            clusterAclRequest.toBuilder().requestOperationType(RequestOperationType.CREATE).build();
       } else {
         uri = clusterConnUrl + uriDeleteAcls;
         clusterAclRequest =
-            clusterAclRequest.toBuilder().aclOperationType(AclOperationType.DELETE).build();
+            clusterAclRequest.toBuilder().requestOperationType(RequestOperationType.DELETE).build();
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);

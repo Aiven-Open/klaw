@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import java.util.List;
@@ -74,7 +75,7 @@ public class SchemaRegstryControllerTest {
   @Test
   @Order(2)
   public void deleteSchemaRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegstryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
 
     String response =
@@ -88,13 +89,13 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(3)
   public void execSchemaRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
 
     String response =
@@ -108,7 +109,7 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -116,7 +117,7 @@ public class SchemaRegstryControllerTest {
   public void uploadSchema() throws Exception {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegstryControllerService.uploadSchema(any())).thenReturn(apiResponse);
 
     String response =
@@ -130,6 +131,6 @@ public class SchemaRegstryControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 }

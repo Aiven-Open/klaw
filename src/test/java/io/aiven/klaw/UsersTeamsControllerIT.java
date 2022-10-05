@@ -74,7 +74,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    //        assertThat(response, CoreMatchers.containsString("success"));
+    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
@@ -91,7 +91,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    //        assertThat(response, CoreMatchers.containsString("success"));
+    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
   }
 
   // Create team success
@@ -113,7 +113,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -199,7 +199,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -260,7 +260,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -274,7 +274,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -329,7 +329,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(

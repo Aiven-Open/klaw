@@ -83,7 +83,7 @@ public class AclControllerTest {
             .getContentAsString();
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(objectResponse.getResult()).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -92,7 +92,7 @@ public class AclControllerTest {
 
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncUpdates);
 
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclSyncControllerService.updateSyncAcls(any())).thenReturn(apiResponse);
 
     String response =
@@ -109,7 +109,7 @@ public class AclControllerTest {
 
     ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
 
-    assertThat(actualResult.getResult()).isEqualTo("success");
+    assertThat(actualResult.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -160,7 +160,7 @@ public class AclControllerTest {
 
   @Test
   public void deleteAclRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.deleteAclRequests(anyString())).thenReturn(apiResponse);
     String response =
         mvcAcls
@@ -174,12 +174,12 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void approveAclRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.approveAclRequests(anyString())).thenReturn(apiResponse);
 
     String response =
@@ -194,12 +194,12 @@ public class AclControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void declineAclRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.declineAclRequests(anyString(), anyString())).thenReturn(apiResponse);
     String response =
         mvcAcls
@@ -215,7 +215,7 @@ public class AclControllerTest {
             .getContentAsString();
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(objectResponse.getResult()).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

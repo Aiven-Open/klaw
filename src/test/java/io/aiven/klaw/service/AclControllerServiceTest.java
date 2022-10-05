@@ -21,7 +21,9 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SyncAclUpdates;
@@ -117,27 +119,27 @@ public class AclControllerServiceTest {
     copyProperties(aclRequests, aclRequestsDao);
     List<Topic> topicList = utilMethods.getTopics();
     Map<String, String> hashMap = new HashMap<>();
-    hashMap.put("result", "success");
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
-    assertThat(resultResp.getResult()).isEqualTo("success");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(2)
   public void updateSyncAcls() throws KlawException {
     stubUserInfo();
-    when(handleDbRequests.addToSyncacls(anyList())).thenReturn("success");
+    when(handleDbRequests.addToSyncacls(anyList())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(resultResp.getResult()).isEqualTo("success");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -232,7 +234,8 @@ public class AclControllerServiceTest {
   @Order(9)
   public void deleteAclRequests() throws KlawException {
     String req_no = "1001";
-    when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1)).thenReturn("success");
+    when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
     // assertThat(result).isEqualTo("{\"result\":\"null\"}");
   }
@@ -255,15 +258,16 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString())).thenReturn("success");
+    when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getResult()).isEqualTo("success");
+    assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -295,7 +299,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
@@ -331,10 +335,11 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(handleDbRequests.declineAclRequest(any(), any())).thenReturn("success");
+    when(handleDbRequests.declineAclRequest(any(), any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse resultResp = aclControllerService.declineAclRequests(req_no, "");
-    assertThat(resultResp.getResult()).isEqualTo("success");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -492,7 +497,7 @@ public class AclControllerServiceTest {
     aclReq.setAclip("2.1.2.1");
     aclReq.setAclssl(null);
     aclReq.setConsumergroup("mygrp1");
-    aclReq.setTopictype("Consumer");
+    aclReq.setTopictype(AclType.CONSUMER.value);
 
     aclList.add(aclReq);
 
@@ -510,7 +515,7 @@ public class AclControllerServiceTest {
     aclReq.setAclssl(null);
     aclReq.setEnvironment("1");
     aclReq.setConsumergroup("mygrp1");
-    aclReq.setTopictype("Consumer");
+    aclReq.setTopictype(AclType.CONSUMER.value);
 
     aclList.add(aclReq);
 
@@ -524,7 +529,7 @@ public class AclControllerServiceTest {
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
-    aclReq.setAclPatternType("LITERAL");
+    aclReq.setAclPatternType(AclPatternType.LITERAL.value);
     return aclReq;
   }
 

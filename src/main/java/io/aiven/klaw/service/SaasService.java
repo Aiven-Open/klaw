@@ -48,7 +48,7 @@ public class SaasService {
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
 
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "failure");
+    resultMap.put("result", ApiResultStatus.FAILURE.value);
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
@@ -71,19 +71,19 @@ public class SaasService {
         kwTenantModel.setContactPerson(newUser.getFullname());
         kwTenantModel.setInTrialPhase(true);
         kwTenantModel.setActiveTenant(true);
-        Map<String, String> addTenantResult =
+        ApiResponse addTenantResult =
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
 
         // create INFRATEAM and STAGINGTEAM
-        if ("success".equals(addTenantResult.get("result"))) {
-          tenantId = Integer.parseInt(addTenantResult.get("tenantId"));
+        if (ApiResultStatus.SUCCESS.value.equals(addTenantResult.getResult())) {
+          tenantId = Integer.parseInt((String) addTenantResult.getData());
 
           Map<String, String> teamAddMap =
               usersTeamsControllerService.addTwoDefaultTeams(
                   newUser.getFullname(), newTenantName, tenantId);
 
-          if (teamAddMap.get("team1result").contains("success")
-              && teamAddMap.get("team2result").contains("success")) {
+          if (teamAddMap.get("team1result").contains(ApiResultStatus.SUCCESS.value)
+              && teamAddMap.get("team2result").contains(ApiResultStatus.SUCCESS.value)) {
             // approve user
 
             ApiResponse resultApproveUser =
@@ -101,12 +101,12 @@ public class SaasService {
             return resultMap;
           }
         } else {
-          resultMap.put("error", "Failure :" + addTenantResult.get("result"));
+          resultMap.put("error", "Failure :" + addTenantResult.getResult());
           return resultMap;
         }
       }
 
-      resultMap.put("result", "success");
+      resultMap.put("result", ApiResultStatus.SUCCESS.value);
       return resultMap;
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -283,7 +283,7 @@ public class SaasService {
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {
-      resultMap.put("result", "failure");
+      resultMap.put("result", ApiResultStatus.FAILURE.value);
       return resultMap;
     } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
       resultMap.put("result", "already_activated");
@@ -292,8 +292,8 @@ public class SaasService {
       Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
-        if ("success".equals(result.get("result"))) {
-          resultMap.put("result", "success");
+        if (ApiResultStatus.SUCCESS.value.equals(result.get("result"))) {
+          resultMap.put("result", ApiResultStatus.SUCCESS.value);
         } else resultMap.put("result", "othererror");
       } catch (Exception e) {
         log.error("Exception:", e);

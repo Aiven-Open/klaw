@@ -4,6 +4,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
@@ -127,7 +128,7 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (topicsCountList.size() == 1) {
-          resultMap.put("status", "success");
+          resultMap.put("status", ApiResultStatus.SUCCESS.value);
           resultMap.put("topicsCount", topicsCountList.get(0).get("topicscount"));
         }
       }
@@ -139,7 +140,9 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getProducerAclsTeamsOverview(Integer teamId, Integer tenantId) {
     List<Map<String, String>> producerAclsPerTeamList =
-        manageDatabase.getHandleDbRequests().selectAclsCountByTeams("Producer", teamId, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .selectAclsCountByTeams(AclType.PRODUCER.value, teamId, tenantId);
 
     String title = "Producer Acls";
     if (teamId != null)
@@ -152,7 +155,9 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getConsumerAclsTeamsOverview(Integer teamId, Integer tenantId) {
     List<Map<String, String>> consumerAclsPerTeamList =
-        manageDatabase.getHandleDbRequests().selectAclsCountByTeams("Consumer", teamId, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .selectAclsCountByTeams(AclType.CONSUMER.value, teamId, tenantId);
 
     String title = "Consumer Acls";
     if (teamId != null)

@@ -19,6 +19,8 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.RequestOperationType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +69,7 @@ public class ClusterApiServiceTest {
   public void setUp() {
     utilMethods = new UtilMethods();
     clusterApiService = new ClusterApiService(manageDatabase);
-    response = new ResponseEntity<>("success", HttpStatus.OK);
+    response = new ResponseEntity<>(ApiResultStatus.SUCCESS.value, HttpStatus.OK);
 
     this.env = new Env();
     env.setName("DEV");
@@ -83,13 +85,13 @@ public class ClusterApiServiceTest {
     when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(String.class)))
         .thenReturn(response);
     String result = clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     result = clusterApiService.getSchemaClusterStatus("", 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -179,7 +181,7 @@ public class ClusterApiServiceTest {
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
     topicRequest.setEnvironment("DEV");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -191,8 +193,9 @@ public class ClusterApiServiceTest {
         .thenReturn(response);
 
     ResponseEntity<String> response =
-        clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1);
-    assertThat(response.getBody()).isEqualTo("success");
+        clusterApiService.approveTopicRequests(
+            topicName, RequestOperationType.CREATE.value, 1, "1", "", 1);
+    assertThat(response.getBody()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -202,7 +205,7 @@ public class ClusterApiServiceTest {
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
     topicRequest.setEnvironment("DEV");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -214,7 +217,9 @@ public class ClusterApiServiceTest {
         .thenThrow(new RuntimeException("error"));
 
     assertThatThrownBy(
-            () -> clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1))
+            () ->
+                clusterApiService.approveTopicRequests(
+                    topicName, RequestOperationType.CREATE.value, 1, "1", "", 1))
         .isInstanceOf(KlawException.class);
   }
 
@@ -225,10 +230,10 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType("Create");
+    aclRequests.setAclType(RequestOperationType.CREATE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -246,7 +251,7 @@ public class ClusterApiServiceTest {
         .thenReturn(responseEntity);
 
     ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody().getResult()).isEqualTo("success");
+    assertThat(response.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -256,10 +261,10 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType("Delete");
+    aclRequests.setAclType(RequestOperationType.DELETE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -277,7 +282,7 @@ public class ClusterApiServiceTest {
         .thenReturn(responseEntity);
 
     ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody().getResult()).isEqualTo("success");
+    assertThat(response.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -287,7 +292,7 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType("Create");
+    aclRequests.setAclType(RequestOperationType.CREATE.value);
 
     assertThatThrownBy(() -> clusterApiService.approveAclRequests(aclRequests, 1))
         .isInstanceOf(KlawException.class);
@@ -301,7 +306,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -315,7 +320,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<ApiResponse> result =
         clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
-    assertThat(result.getBody().getResult()).isEqualTo("success");
+    assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

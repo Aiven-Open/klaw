@@ -1,7 +1,7 @@
 package io.aiven.klaw.model.cluster;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.aiven.klaw.model.AclOperationType;
+import io.aiven.klaw.model.RequestOperationType;
 import java.io.Serializable;
 import lombok.Builder;
 
@@ -42,5 +42,5 @@ public class ClusterAclRequest implements Serializable {
 
   @JsonProperty private String aivenAclKey;
 
-  @JsonProperty private AclOperationType aclOperationType;
+  @JsonProperty private RequestOperationType requestOperationType;
 }

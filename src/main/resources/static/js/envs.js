@@ -314,7 +314,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.dismiss !== "cancel") {
                         $http({
                                 method: "POST",
                                 url: "deleteTenant",

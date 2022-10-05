@@ -2,7 +2,9 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
 import java.math.BigInteger;
@@ -109,7 +111,7 @@ public class SelectDataJdbc {
           teamName = row.getTeamId();
         }
 
-        if ("Delete".equals(aclType)) {
+        if (RequestOperationType.DELETE.value.equals(aclType)) {
           teamName = row.getRequestingteam();
         }
       } else {
@@ -199,7 +201,8 @@ public class SelectDataJdbc {
   public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
     Map<String, String> dashboardMap = new HashMap<>();
     int countProducers = 0, countConsumers = 0;
-    List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId("Producer", teamId, tenantId);
+    List<Acl> acls =
+        aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
     List<String> topicList = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicList.add(a.getTopicname()));
@@ -207,7 +210,7 @@ public class SelectDataJdbc {
     }
     dashboardMap.put("producerCount", "" + countProducers);
 
-    acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId("Consumer", teamId, tenantId);
+    acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
@@ -226,8 +229,9 @@ public class SelectDataJdbc {
     log.debug("selectAllByTopictypeAndTeamname {} {}", isProducerConsumer, teamId);
     List<Topic> topics = new ArrayList<>();
     String topicType, aclPatternType;
-    if (isProducerConsumer != null && isProducerConsumer.equals("Producer")) topicType = "Producer";
-    else topicType = "Consumer";
+    if (isProducerConsumer != null && isProducerConsumer.equals(AclType.PRODUCER.value))
+      topicType = AclType.PRODUCER.value;
+    else topicType = AclType.CONSUMER.value;
 
     List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
@@ -240,8 +244,8 @@ public class SelectDataJdbc {
       tmpTopicName = acl.getTopicname();
       aclPatternType = acl.getAclPatternType();
 
-      if (aclPatternType != null && aclPatternType.equals("PREFIXED"))
-        tmpTopicName = tmpTopicName + "--PREFIXED--";
+      if (aclPatternType != null && aclPatternType.equals(AclPatternType.PREFIXED.value))
+        tmpTopicName = tmpTopicName + "--" + AclPatternType.PREFIXED.value + "--";
 
       t.setEnvironment(acl.getEnvironment());
       t.setTopicname(tmpTopicName);
@@ -281,7 +285,8 @@ public class SelectDataJdbc {
   }
 
   public List<Acl> getPrefixedAclsSOT(String env, int tenantId) {
-    return aclRepo.findAllByEnvironmentAndAclPatternTypeAndTenantId(env, "PREFIXED", tenantId);
+    return aclRepo.findAllByEnvironmentAndAclPatternTypeAndTenantId(
+        env, AclPatternType.PREFIXED.value, tenantId);
   }
 
   public List<TopicRequest> selectTopicRequestsByStatus(
@@ -754,7 +759,7 @@ public class SelectDataJdbc {
     List<Map<String, String>> totalAclCount = new ArrayList<>();
     try {
       List<Object[]> acls;
-      if ("Producer".equals(aclType)) {
+      if (AclType.PRODUCER.value.equals(aclType)) {
         if (teamId != null) {
           acls = aclRepo.findAllProducerAclsForTeamId(teamId, tenantId);
         } else {

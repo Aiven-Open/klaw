@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -103,10 +104,10 @@ public class InsertDataJdbc {
     activityLog.setEnv(topicRequest.getEnvironment());
     activityLog.setTenantId(topicRequest.getTenantId());
 
-    if ("success".equals(insertIntoActivityLog(activityLog))) {
-      hashMap.put("result", "success");
+    if (ApiResultStatus.SUCCESS.value.equals(insertIntoActivityLog(activityLog))) {
+      hashMap.put("result", ApiResultStatus.SUCCESS.value);
     } else {
-      hashMap.put("result", "failure");
+      hashMap.put("result", ApiResultStatus.FAILURE.value);
     }
 
     return hashMap;
@@ -140,10 +141,10 @@ public class InsertDataJdbc {
     activityLog.setEnv(connectorRequest.getEnvironment());
     activityLog.setTenantId(connectorRequest.getTenantId());
 
-    if ("success".equals(insertIntoActivityLog(activityLog))) {
-      hashMap.put("result", "success");
+    if (ApiResultStatus.SUCCESS.value.equals(insertIntoActivityLog(activityLog))) {
+      hashMap.put("result", ApiResultStatus.SUCCESS.value);
     } else {
-      hashMap.put("result", "failure");
+      hashMap.put("result", ApiResultStatus.FAILURE.value);
     }
 
     return hashMap;
@@ -166,7 +167,7 @@ public class InsertDataJdbc {
           topicRepo.save(topic);
         });
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public synchronized String insertIntoConnectorSOT(
@@ -188,14 +189,14 @@ public class InsertDataJdbc {
           kafkaConnectorRepo.save(connector);
         });
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   private String insertIntoActivityLog(ActivityLog activityLog) {
     log.debug("insertIntoActivityLog {}", activityLog.getActivityName());
     activityLogRepo.save(activityLog);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   synchronized Map<String, String> insertIntoRequestAcl(AclRequests aclReq) {
@@ -237,7 +238,7 @@ public class InsertDataJdbc {
 
     // Insert into acl activity log
     insertIntoActivityLog(activityLog);
-    hashMap.put("result", "success");
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
     return hashMap;
   }
 
@@ -249,7 +250,7 @@ public class InsertDataJdbc {
           if (acl.getReq_no() == null) acl.setReq_no(getNextAclId(acl.getTenantId()));
           aclRepo.save(acl);
         });
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public synchronized String insertIntoRequestSchema(SchemaRequest schemaRequest) {
@@ -280,7 +281,7 @@ public class InsertDataJdbc {
     // Insert into acl activity log
     insertIntoActivityLog(activityLog);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public synchronized String insertIntoMessageSchemaSOT(List<MessageSchema> schemas) {
@@ -291,7 +292,7 @@ public class InsertDataJdbc {
         mSchema.setReq_no(getNextSchemaRequestId("SCHEMA_ID", mSchema.getTenantId()));
       messageSchemaRepo.save(mSchema);
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoUsers(UserInfo userInfo) {
@@ -300,7 +301,7 @@ public class InsertDataJdbc {
     if (userExists.isPresent()) return "Failure. User already exists";
 
     userInfoRepo.save(userInfo);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoTeams(Team team) {
@@ -320,14 +321,14 @@ public class InsertDataJdbc {
 
     team.setApp("");
     teamRepo.save(team);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoEnvs(Env env) {
     log.debug("insertIntoEnvs {}", env.getName());
 
     envRepo.save(env);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoClusters(KwClusters kwClusters) {
@@ -342,7 +343,7 @@ public class InsertDataJdbc {
       kwClusters.setClusterId(lastClusterId);
     }
     kwClusterRepo.save(kwClusters);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoRegisterUsers(RegisterUserInfo userInfo) {
@@ -362,7 +363,7 @@ public class InsertDataJdbc {
     }
 
     registerInfoRepo.save(userInfo);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public Integer getNextTeamId(int tenantId) {
@@ -427,12 +428,12 @@ public class InsertDataJdbc {
     else maxTenantId = maxTenantId + 1;
     kwTenants.setTenantId(maxTenantId);
     tenantRepo.save(kwTenants);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String registerUserForAD(RegisterUserInfo newUser) {
     registerInfoRepo.save(newUser);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertMetrics(KwMetrics kwMetrics) {
@@ -443,12 +444,12 @@ public class InsertDataJdbc {
     kwMetrics.setMetricsId(metricsId);
 
     metricsRepo.save(kwMetrics);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertDefaultKwProperties(List<KwProperties> kwPropertiesList) {
     kwPropertiesRepo.saveAll(kwPropertiesList);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertDefaultRolesPermissions(List<KwRolesPermissions> kwRolesPermissionsList) {
@@ -458,7 +459,7 @@ public class InsertDataJdbc {
       kwRolesPermsRepo.save(kwRolesPermissions);
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public Integer getNextRolePermissionId(int tenantId) {
@@ -471,6 +472,6 @@ public class InsertDataJdbc {
 
   public String insertProductDetails(ProductDetails productDetails) {
     productDetailsRepo.save(productDetails);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 }

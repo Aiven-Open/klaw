@@ -104,7 +104,7 @@ public class ServerConfigService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      resultMap.put("result", "Not Authorized.");
+      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
       listMap.add(resultMap);
       return listMap;
     }

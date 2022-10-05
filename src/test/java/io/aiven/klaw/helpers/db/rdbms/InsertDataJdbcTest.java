@@ -13,6 +13,7 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -90,7 +91,7 @@ public class InsertDataJdbcTest {
     when(activityLogRepo.getNextActivityLogRequestId(anyInt())).thenReturn(101);
 
     Map<String, String> result = insertData.insertIntoRequestTopic(topicRequest);
-    assertThat(result).containsEntry("result", "success");
+    assertThat(result).containsEntry("result", ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -98,7 +99,7 @@ public class InsertDataJdbcTest {
     List<Topic> topics = utilMethods.getTopics();
     when(topicRepo.getNextTopicRequestId(anyInt())).thenReturn(101);
     String result = insertData.insertIntoTopicSOT(topics, true);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -109,7 +110,7 @@ public class InsertDataJdbcTest {
     when(jdbcSelectHelper.selectUserInfo(anyString())).thenReturn(userInfo, userInfo);
     String result =
         insertData.insertIntoRequestAcl(utilMethods.getAclRequest("testtopic")).get("result");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -117,7 +118,7 @@ public class InsertDataJdbcTest {
     List<Acl> acls = utilMethods.getAcls();
     when(aclRepo.getNextAclId(anyInt())).thenReturn(101);
     String result = insertData.insertIntoAclsSOT(acls, true);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -129,7 +130,7 @@ public class InsertDataJdbcTest {
     when(jdbcSelectHelper.selectUserInfo(anyString())).thenReturn(userInfo, userInfo);
 
     String result = insertData.insertIntoRequestSchema(schemaRequest);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -137,26 +138,26 @@ public class InsertDataJdbcTest {
     List<MessageSchema> schemas = utilMethods.getMSchemas();
     when(messageSchemaRepo.getNextSchemaId(anyInt())).thenReturn(101);
     String result = insertData.insertIntoMessageSchemaSOT(schemas);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void insertIntoUsers() {
     String result = insertData.insertIntoUsers(utilMethods.getUserInfoMockDao());
     when(userInfoRepo.findById(anyString())).thenReturn(java.util.Optional.of(new UserInfo()));
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void insertIntoTeams() {
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     when(teamRepo.getNextTeamId(anyInt())).thenReturn(101);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void insertIntoEnvs() {
     String result = insertData.insertIntoEnvs(new Env());
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

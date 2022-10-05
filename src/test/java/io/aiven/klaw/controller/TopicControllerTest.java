@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SyncTopicUpdates;
@@ -88,7 +89,7 @@ public class TopicControllerTest {
             .getContentAsString();
     Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
-    assertThat(actualResult).containsEntry("result", "success");
+    assertThat(actualResult).containsEntry("result", ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -96,7 +97,7 @@ public class TopicControllerTest {
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncTopicUpdates);
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(apiResponse);
 
     String response =
@@ -113,7 +114,7 @@ public class TopicControllerTest {
 
     ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
 
-    assertThat(actualResult.getResult()).isEqualTo("success");
+    assertThat(actualResult.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -144,7 +145,8 @@ public class TopicControllerTest {
     String topicName = "testtopic";
     Map<String, String> teamMap = new HashMap<>();
     teamMap.put("team", "Team1");
-    when(topicControllerService.getTopicTeamOnly(topicName, "LITERAL")).thenReturn(teamMap);
+    when(topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL.value))
+        .thenReturn(teamMap);
 
     String res =
         mvc.perform(
@@ -185,7 +187,7 @@ public class TopicControllerTest {
   @Test
   @Order(6)
   public void deleteTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.deleteTopicRequests(anyString())).thenReturn(apiResponse);
 
     String response =
@@ -200,7 +202,7 @@ public class TopicControllerTest {
             .getContentAsString();
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(objectResponse.getResult()).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -222,13 +224,13 @@ public class TopicControllerTest {
             .getContentAsString();
 
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(8)
   public void declineTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
         .thenReturn(apiResponse);
 
@@ -245,7 +247,7 @@ public class TopicControllerTest {
             .getContentAsString();
 
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

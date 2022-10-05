@@ -830,7 +830,7 @@ public class UsersTeamsControllerService {
       userInfo.setMailid(registerUserInfo.getMailid());
 
       ApiResponse resultResp = addNewUser(userInfo, isExternal);
-      if (resultResp.getResult().contains("success"))
+      if (resultResp.getResult().contains(ApiResultStatus.SUCCESS.value))
         dbHandle.updateNewUserRequest(username, userDetails, true);
       else {
         return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();

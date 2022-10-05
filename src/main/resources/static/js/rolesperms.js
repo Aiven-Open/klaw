@@ -90,10 +90,10 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                          }).success(function(output) {
                              $scope.alert = "Tenant add status : "+ output.result;
                              $scope.addTenantId.tenantName = "";
-                             if(output.result == 'success'){
+                             if(output.result === 'success'){
                                  swal({
                                           title: "",
-                                          text: "Tenant add status : "+output.result,
+                                          text: "Tenant add status : " + output.result,
                                           timer: 2000,
                                           showConfirmButton: false
                                       });

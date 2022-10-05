@@ -131,7 +131,7 @@ public class UtilMethods {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl topicRequest = new Acl();
     topicRequest.setTeamId(3);
-    topicRequest.setTopictype("Producer");
+    topicRequest.setTopictype(AclType.PRODUCER.value);
     topicRequest.setTenantId(101);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
@@ -141,7 +141,7 @@ public class UtilMethods {
     List<AclInfo> allTopicReqs = new ArrayList<>();
     AclInfo topicRequest = new AclInfo();
     topicRequest.setTeamname("Seahorses");
-    topicRequest.setTopictype("Producer");
+    topicRequest.setTopictype(AclType.PRODUCER.value);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -153,7 +153,7 @@ public class UtilMethods {
 
     aclbindingMap.put("host", "1.1.1.1");
     aclbindingMap.put("principle", "User:*");
-    aclbindingMap.put("operation", "READ");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "GROUP");
     aclbindingMap.put("resourceName", "myconsumergroup1");
@@ -162,7 +162,7 @@ public class UtilMethods {
     aclbindingMap = new HashMap<>();
     aclbindingMap.put("host", "2.1.2.1");
     aclbindingMap.put("principle", "User:*");
-    aclbindingMap.put("operation", "READ");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "TOPIC");
     aclbindingMap.put("resourceName", "testtopic1");
@@ -171,7 +171,7 @@ public class UtilMethods {
     aclbindingMap = new HashMap<>();
     aclbindingMap.put("host", "2.1.2.1");
     aclbindingMap.put("principle", "User:*");
-    aclbindingMap.put("operation", "READ");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "GROUP");
     aclbindingMap.put("resourceName", "mygrp1");
@@ -187,7 +187,7 @@ public class UtilMethods {
 
     aclbindingMap.put("host", "1.1.1.1");
     aclbindingMap.put("principle", "User:*");
-    aclbindingMap.put("operation", "READ");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "GROUP");
     aclbindingMap.put("resourceName", "myconsumergroup1");
@@ -196,7 +196,7 @@ public class UtilMethods {
     aclbindingMap = new HashMap<>();
     aclbindingMap.put("host", "2.1.2.1");
     aclbindingMap.put("principle", "User:*");
-    aclbindingMap.put("operation", "READ");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "TOPIC");
     aclbindingMap.put("resourceName", "testtopic");
@@ -205,7 +205,7 @@ public class UtilMethods {
     aclbindingMap = new HashMap<>();
     aclbindingMap.put("host", "2.1.2.1");
     aclbindingMap.put("principle", "User:*");
-    aclbindingMap.put("operation", "READ");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "GROUP");
     aclbindingMap.put("resourceName", "mygrp1");
@@ -233,7 +233,7 @@ public class UtilMethods {
     topicRequest.setConsumergroup("congrp");
     topicRequest.setEnvironment("1");
     topicRequest.setAclip("12.22.126.21");
-    topicRequest.setTopictype("Producer");
+    topicRequest.setTopictype(AclType.PRODUCER.value);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -242,7 +242,7 @@ public class UtilMethods {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl acl = new Acl();
     acl.setTeamId(3);
-    acl.setTopictype("Producer");
+    acl.setTopictype(AclType.PRODUCER.value);
     allTopicReqs.add(acl);
 
     acl = new Acl();
@@ -250,7 +250,7 @@ public class UtilMethods {
     acl.setConsumergroup("congrp");
     acl.setEnvironment("1");
     acl.setAclip("12.22.126.21");
-    acl.setTopictype("Producer");
+    acl.setTopictype(AclType.PRODUCER.value);
     acl.setOtherParams("101");
     allTopicReqs.add(acl);
 
@@ -304,7 +304,7 @@ public class UtilMethods {
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
     topicRequest.setDescription("Test desc");
     topicRequest.setTenantId(101);
     return topicRequest;
@@ -320,7 +320,7 @@ public class UtilMethods {
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
     topicRequest.setDescription("Test desc");
     return topicRequest;
   }
@@ -331,11 +331,11 @@ public class UtilMethods {
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topicName);
     aclRequest.setUsername("kwusera");
-    aclRequest.setTopictype("Consumer");
-    aclRequest.setAclType("Delete");
+    aclRequest.setTopictype(AclType.CONSUMER.value);
+    aclRequest.setAclType(RequestOperationType.DELETE.value);
     aclRequest.setConsumergroup("congroup1");
     aclRequest.setAcl_ip("10.11.112.113");
-    aclRequest.setAclPatternType("LITERAL");
+    aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequest.setOtherParams("101");
     aclRequest.setTenantId(101);
     return aclRequest;
@@ -347,11 +347,11 @@ public class UtilMethods {
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topicName);
     aclRequest.setUsername("kwusera");
-    aclRequest.setTopictype("Consumer");
-    aclRequest.setAclType("Create");
+    aclRequest.setTopictype(AclType.CONSUMER.value);
+    aclRequest.setAclType(RequestOperationType.CREATE.value);
     aclRequest.setConsumergroup("congroup1");
     aclRequest.setAcl_ip("10.11.112.113");
-    aclRequest.setAclPatternType("LITERAL");
+    aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     return aclRequest;
   }
 
@@ -385,8 +385,8 @@ public class UtilMethods {
     AclRequestsModel aclRequests1 = new AclRequestsModel();
     aclRequests1.setTeamname("Seahorses");
     aclRequests1.setRequestingteam(2);
-    aclRequests1.setAclType("Create");
-    aclRequests1.setAclPatternType("LITERAL");
+    aclRequests1.setAclType(RequestOperationType.CREATE.value);
+    aclRequests1.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequests.add(aclRequests1);
     return aclRequests;
   }
@@ -396,8 +396,8 @@ public class UtilMethods {
     AclRequests aclRequests1 = new AclRequests();
     aclRequests1.setTeamId(3);
     aclRequests1.setRequestingteam(3);
-    aclRequests1.setAclType("Create");
-    aclRequests1.setAclPatternType("LITERAL");
+    aclRequests1.setAclType(RequestOperationType.CREATE.value);
+    aclRequests1.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequests.add(aclRequests1);
     return aclRequests;
   }
@@ -487,13 +487,13 @@ public class UtilMethods {
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topic);
     aclRequest.setUsername("kwusera");
-    aclRequest.setTopictype("Consumer");
+    aclRequest.setTopictype(AclType.CONSUMER.value);
     aclRequest.setConsumergroup("mygrp1");
     ArrayList<String> ipList = new ArrayList<>();
     ipList.add("2.1.2.1");
     aclRequest.setAcl_ip(ipList);
     aclRequest.setAcl_ssl(null);
-    aclRequest.setAclPatternType("LITERAL");
+    aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequest.setRequestingteam(1);
     aclRequest.setTeamname("INFRATEAM");
 
@@ -532,7 +532,7 @@ public class UtilMethods {
     SyncAclUpdates syncAclUpdates = new SyncAclUpdates();
     syncAclUpdates.setTopicName("testtopic");
     syncAclUpdates.setReq_no("101");
-    syncAclUpdates.setAclType("Producer");
+    syncAclUpdates.setAclType(AclType.PRODUCER.value);
     syncAclUpdates.setAclIp("12.2.4.55");
     syncAclUpdates.setTeamSelected("Team2");
     syncAclUpdates.setEnvSelected("DEV");
@@ -540,7 +540,7 @@ public class UtilMethods {
     SyncAclUpdates syncAclUpdates1 = new SyncAclUpdates();
     syncAclUpdates1.setTopicName("testtopic1");
     syncAclUpdates1.setReq_no("102");
-    syncAclUpdates1.setAclType("Consumer");
+    syncAclUpdates1.setAclType(AclType.CONSUMER.value);
     syncAclUpdates1.setAclIp("12.2.4.55");
     syncAclUpdates1.setTeamSelected("Team2");
     syncAclUpdates1.setEnvSelected("1");

@@ -10,12 +10,15 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.AclOperationType;
+import io.aiven.klaw.model.AclPatternType;
+import io.aiven.klaw.model.AclPermissionType;
+import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.SyncBackAcls;
 import java.util.ArrayList;
@@ -92,7 +95,7 @@ public class AclSyncControllerService {
             manageDatabase.getTeamIdFromTeamName(tenantId, syncAclUpdateItem.getTeamSelected()));
         t.setEnvironment(syncAclUpdateItem.getEnvSelected());
         t.setTopictype(syncAclUpdateItem.getAclType());
-        t.setAclPatternType("LITERAL");
+        t.setAclPatternType(AclPatternType.LITERAL.value);
         t.setTenantId(tenantId);
 
         listTopics.add(t);
@@ -133,7 +136,7 @@ public class AclSyncControllerService {
     }
 
     List<String> resultStatus = new ArrayList<>();
-    resultStatus.add("success");
+    resultStatus.add(ApiResultStatus.SUCCESS.value);
 
     resultMap.put("result", resultStatus);
     try {
@@ -176,16 +179,15 @@ public class AclSyncControllerService {
       aclReq.setAcl_ssl(aclFound.getAclssl());
       aclReq.setEnvironment(syncBackAcls.getTargetEnv());
       aclReq.setRequestingteam(aclFound.getTeamId());
-      aclReq.setAclType(AclOperationType.CREATE.value);
+      aclReq.setAclType(RequestOperationType.CREATE.value);
       aclReq.setUsername(getUserName());
       aclReq.setTenantId(tenantId);
 
       ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
       ApiResponse responseBody = response.getBody();
-      //      String resultAclReq = responseBody.getResult();
       String resultAclNullCheck = Objects.requireNonNull(responseBody).getResult();
-      if (!Objects.requireNonNull(resultAclNullCheck).contains("success")) {
+      if (!Objects.requireNonNull(resultAclNullCheck).contains(ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating acl {} {}", aclFound, responseBody);
         logUpdateSyncBackTopics.add(
             "Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclNullCheck);
@@ -236,8 +238,8 @@ public class AclSyncControllerService {
 
     for (Map<String, String> hMapGroupItem : groupedList) {
       for (Map<String, String> hMapItem : clusterAclList) {
-        if ("READ".equals(hMapGroupItem.get("operation"))
-            && "READ".equals(hMapItem.get("operation"))
+        if (AclPermissionType.READ.value.equals(hMapGroupItem.get("operation"))
+            && AclPermissionType.READ.value.equals(hMapItem.get("operation"))
             && "GROUP".equals(hMapItem.get("resourceType"))) {
           if (Objects.equals(hMapItem.get("host"), hMapGroupItem.get("host"))
               && Objects.equals(hMapItem.get("principle"), hMapGroupItem.get("principle"))) {
@@ -409,9 +411,10 @@ public class AclSyncControllerService {
 
       String tmpPermType = aclListItem.get("operation");
 
-      if ("WRITE".equals(tmpPermType)) mp.setTopictype("Producer");
-      else if ("READ".equals(tmpPermType)) {
-        mp.setTopictype("Consumer");
+      if (AclPermissionType.WRITE.value.equals(tmpPermType))
+        mp.setTopictype(AclType.PRODUCER.value);
+      else if (AclPermissionType.READ.value.equals(tmpPermType)) {
+        mp.setTopictype(AclType.CONSUMER.value);
         if (aclListItem.get("consumerGroup") != null)
           mp.setConsumergroup(aclListItem.get("consumerGroup"));
         else continue;

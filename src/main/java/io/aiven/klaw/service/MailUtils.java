@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.MailType;
 import java.util.*;
@@ -395,6 +396,6 @@ public class MailUtils {
         "Tenant extension : Tenant " + tenantId + " username " + userName + " period " + period;
     emailService.sendSimpleMessage(
         userName, kwSaasAdminMailId, "Tenant Extension", mailtext, tenantId, loginUrl);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 }

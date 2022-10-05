@@ -15,6 +15,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -119,9 +120,10 @@ public class SchemaRegistryControllerServiceTest {
     int schemaReqId = 1001;
 
     stubUserInfo();
-    when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt())).thenReturn("success");
+    when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse resultResp = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
-    assertThat(resultResp.getResult()).isEqualTo("success");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -157,14 +159,15 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
     when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
         .thenReturn(response);
-    when(handleDbRequests.updateSchemaRequest(any(), anyString())).thenReturn("success");
+    when(handleDbRequests.updateSchemaRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     ApiResponse resultResp = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(resultResp.getResult()).contains("success");
+    assertThat(resultResp.getResult()).contains(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -184,7 +187,8 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
     when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
         .thenReturn(response);
-    when(handleDbRequests.updateSchemaRequest(any(), anyString())).thenReturn("success");
+    when(handleDbRequests.updateSchemaRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
@@ -247,11 +251,11 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(handleDbRequests.requestForSchema(any())).thenReturn("success");
+    when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegstryControllerService.uploadSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo("success");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

@@ -3,6 +3,8 @@ package io.aiven.klaw.helpers.db.rdbms;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
@@ -82,7 +84,7 @@ public class UpdateDataJdbc {
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String declineConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
@@ -92,7 +94,7 @@ public class UpdateDataJdbc {
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateTopicRequestStatus(TopicRequest topicRequest, String approver) {
@@ -102,7 +104,7 @@ public class UpdateDataJdbc {
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateConnectorRequestStatus(
@@ -113,7 +115,7 @@ public class UpdateDataJdbc {
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateTopicRequest(TopicRequest topicRequest, String approver) {
@@ -145,7 +147,7 @@ public class UpdateDataJdbc {
       deleteDataJdbcHelper.deleteTopics(topicObj);
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
@@ -177,7 +179,7 @@ public class UpdateDataJdbc {
       deleteDataJdbcHelper.deleteConnectors(topicObj);
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   private void updateTopicSOT(List<Topic> topics, String topicId) {
@@ -223,7 +225,8 @@ public class UpdateDataJdbc {
         aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
 
-        if (aclReq.getAclType() != null && aclReq.getAclType().equals("Create")) {
+        if (aclReq.getAclType() != null
+            && RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
           acls.forEach(acl -> acl.setReq_no(null));
           insertDataJdbcHelper.insertIntoAclsSOT(acls, false);
         } else {
@@ -244,7 +247,8 @@ public class UpdateDataJdbc {
         aclObj.setAclssl(aclString);
         acls.add(aclObj);
 
-        if (aclReq.getAclType() != null && aclReq.getAclType().equals("Create")) {
+        if (aclReq.getAclType() != null
+            && RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
           acls.forEach(acl -> acl.setReq_no(null));
           insertDataJdbcHelper.insertIntoAclsSOT(acls, false);
         } else {
@@ -254,7 +258,7 @@ public class UpdateDataJdbc {
       }
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String declineAclRequest(AclRequests aclRequests, String approver) {
@@ -264,7 +268,7 @@ public class UpdateDataJdbc {
     aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     aclRequestsRepo.save(aclRequests);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updatePassword(String username, String password) {
@@ -274,9 +278,9 @@ public class UpdateDataJdbc {
       UserInfo userInfo = userRec.get();
       userInfo.setPwd(password);
       userInfoRepo.save(userInfo);
-      return "success";
+      return ApiResultStatus.SUCCESS.value;
     }
-    return "failure";
+    return ApiResultStatus.FAILURE.value;
   }
 
   public String updateSchemaRequest(SchemaRequest schemaRequest, String approver) {
@@ -294,7 +298,7 @@ public class UpdateDataJdbc {
     schemas.add(schemaObj);
     insertDataJdbcHelper.insertIntoMessageSchemaSOT(schemas);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
@@ -305,7 +309,7 @@ public class UpdateDataJdbc {
 
     schemaRequestRepo.save(schemaRequest);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public void updateNewUserRequest(String username, String approver, boolean isApprove) {
@@ -332,7 +336,7 @@ public class UpdateDataJdbc {
     if (!userExists.isPresent()) return "Failure. User doesn't exist";
 
     userInfoRepo.save(userInfo);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateTeam(Team team) {
@@ -342,7 +346,7 @@ public class UpdateDataJdbc {
     if (teamExists.isEmpty()) return "Failure. Team doesn't exist";
 
     teamRepo.save(team);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateKwProperty(KwProperties kwProperties, int tenantId) {
@@ -351,10 +355,10 @@ public class UpdateDataJdbc {
     if (!kwProp.isEmpty()) {
       kwProp.get(0).setKwValue(kwProperties.getKwValue());
       kwPropertiesRepo.save(kwProp.get(0));
-      return "success";
+      return ApiResultStatus.SUCCESS.value;
     }
 
-    return "failure";
+    return ApiResultStatus.FAILURE.value;
   }
 
   public Integer getNextRolePermissionId(int tenantId) {
@@ -383,7 +387,7 @@ public class UpdateDataJdbc {
       }
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateTopicDocumentation(Topic topic) {
@@ -395,10 +399,10 @@ public class UpdateDataJdbc {
     if (optTopic.isPresent()) {
       optTopic.get().setDocumentation(topic.getDocumentation());
       topicRepo.save(optTopic.get());
-      return "success";
+      return ApiResultStatus.SUCCESS.value;
     }
 
-    return "failure";
+    return ApiResultStatus.FAILURE.value;
   }
 
   public String updateConnectorDocumentation(KwKafkaConnector topic) {
@@ -410,10 +414,10 @@ public class UpdateDataJdbc {
     if (optTopic.isPresent()) {
       optTopic.get().setDocumentation(topic.getDocumentation());
       kafkaConnectorRepo.save(optTopic.get());
-      return "success";
+      return ApiResultStatus.SUCCESS.value;
     }
 
-    return "failure";
+    return ApiResultStatus.FAILURE.value;
   }
 
   public String setTenantActivestatus(int tenantId, boolean status) {
@@ -424,7 +428,7 @@ public class UpdateDataJdbc {
 
       tenantRepo.save(kwTenant.get());
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateTenant(int tenantId, String organizationName) {
@@ -433,7 +437,7 @@ public class UpdateDataJdbc {
       kwTenant.get().setOrgName(organizationName);
       tenantRepo.save(kwTenant.get());
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String disableTenant(int tenantId) {
@@ -442,6 +446,6 @@ public class UpdateDataJdbc {
       kwTenant.get().setIsActive("false");
       tenantRepo.save(kwTenant.get());
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 }

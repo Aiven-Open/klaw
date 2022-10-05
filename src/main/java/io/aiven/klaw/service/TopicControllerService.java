@@ -16,6 +16,8 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.AclPatternType;
+import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
@@ -508,7 +510,7 @@ public class TopicControllerService {
     log.debug("getTopicTeamOnly {} {}", topicName, patternType);
     Map<String, String> teamMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if ("PREFIXED".equals(patternType)) {
+    if (AclPatternType.PREFIXED.value.equals(patternType)) {
       List<Topic> topics = manageDatabase.getHandleDbRequests().getAllTopics(tenantId);
 
       // tenant filtering
@@ -1006,8 +1008,7 @@ public class TopicControllerService {
 
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
     List<Topic> producerConsumerTopics = new ArrayList<>();
-    if (topicType != null
-        && ("Producer".equals(topicType) || "Consumer".equals(topicType))
+    if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
         && teamName != null) {
       producerConsumerTopics =
           handleDbRequests.selectAllTopicsByTopictypeAndTeamname(

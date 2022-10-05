@@ -10,10 +10,12 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
@@ -542,13 +544,13 @@ public class TopicSyncControllerService {
       ResponseEntity<String> response =
           clusterApiService.approveTopicRequests(
               topicFound.getTopicname(),
-              "Create",
+              RequestOperationType.CREATE.value,
               topicFound.getNoOfPartitions(),
               topicFound.getNoOfReplcias(),
               syncBackTopics.getTargetEnv(),
               tenantId);
 
-      if (!Objects.equals(response.getBody(), "success")) {
+      if (!Objects.equals(response.getBody(), ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating topic {} {}", topicFound, response.getBody());
         if (response.getBody().contains("TopicExistsException"))
           logUpdateSyncBackTopics.add(
@@ -583,7 +585,7 @@ public class TopicSyncControllerService {
 
       TopicRequest topicRequest;
       topicRequest = new TopicRequest();
-      topicRequest.setTopictype("Create");
+      topicRequest.setTopictype(RequestOperationType.CREATE.value);
       topicRequest.setTopicname(topicFound.getTopicname());
       topicRequest.setEnvironment(syncBackTopics.getTargetEnv());
       topicRequest.setTopicpartitions(topicFound.getNoOfPartitions());
@@ -635,8 +637,7 @@ public class TopicSyncControllerService {
 
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
     List<Topic> producerConsumerTopics = new ArrayList<>();
-    if (topicType != null
-        && ("Producer".equals(topicType) || "Consumer".equals(topicType))
+    if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
         && teamName != null) {
       producerConsumerTopics =
           handleDbRequests.selectAllTopicsByTopictypeAndTeamname(
@@ -832,7 +833,7 @@ public class TopicSyncControllerService {
     }
 
     //    List<String> resultStatus = new ArrayList<>();
-    //    resultStatus.add("success");
+    //    resultStatus.add(ApiResultStatus.SUCCESS.value);
     //
     //    resultMap.put("result", resultStatus);
 

@@ -20,11 +20,14 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
@@ -71,7 +74,7 @@ public class AclControllerService {
   public ApiResponse createAcl(AclRequestsModel aclReq) throws KlawException {
     log.info("createAcl {}", aclReq);
     String userDetails = getUserName();
-    aclReq.setAclType("Create");
+    aclReq.setAclType(RequestOperationType.CREATE.value);
     aclReq.setUsername(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -88,7 +91,7 @@ public class AclControllerService {
     boolean topicFound = false;
     String result;
 
-    if ("LITERAL".equals(aclReq.getAclPatternType())) {
+    if (AclPatternType.LITERAL.value.equals(aclReq.getAclPatternType())) {
       for (Topic topic : topics) {
         if (Objects.equals(topic.getEnvironment(), aclReq.getEnvironment())) {
           topicFound = true;
@@ -99,8 +102,8 @@ public class AclControllerService {
       if (!topicFound) return ApiResponse.builder().result(result).build();
     }
 
-    if ("Consumer".equals(aclReq.getTopictype())) {
-      if ("PREFIXED".equals(aclReq.getAclPatternType())) {
+    if (AclType.CONSUMER.value.equals(aclReq.getTopictype())) {
+      if (AclPatternType.PREFIXED.value.equals(aclReq.getAclPatternType())) {
         result = "Failure : Please change the pattern to LITERAL for topic type.";
         return ApiResponse.builder().result(result).build();
       }
@@ -147,7 +150,7 @@ public class AclControllerService {
       String execRes =
           manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
 
-      if ("success".equals(execRes)) {
+      if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
         mailService.sendMail(
             aclReq.getTopicname(),
             aclReq.getTopictype(),
@@ -241,7 +244,7 @@ public class AclControllerService {
     if (topicTeamsList.size() > 0) {
       Integer teamId = getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
-      if ("Delete".equals(aclType)) teamId = team;
+      if (RequestOperationType.DELETE.value.equals(aclType)) teamId = team;
       List<UserInfo> userList =
           manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId);
 
@@ -408,7 +411,7 @@ public class AclControllerService {
             Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
     if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment()))
-      return ApiResponse.builder().result("failure").build();
+      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
 
     AclRequests aclReq = new AclRequests();
 
@@ -417,12 +420,12 @@ public class AclControllerService {
     aclReq.setAcl_ssl(acl.getAclssl());
 
     aclReq.setUsername(userDetails);
-    aclReq.setAclType("Delete");
+    aclReq.setAclType(RequestOperationType.DELETE.value);
     aclReq.setOtherParams(req_no);
     aclReq.setJsonParams(acl.getJsonParams());
     String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq).get("result");
 
-    if ("success".equals(execRes)) {
+    if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
       mailService.sendMail(
           aclReq.getTopicname(),
           aclReq.getTopictype(),
@@ -481,12 +484,13 @@ public class AclControllerService {
       // set back all ips, principles
       aclReq.setAcl_ip(allIps);
       aclReq.setAcl_ssl(allSsl);
-
-      String updateAclReqStatus = null;
+      String updateAclReqStatus;
 
       try {
         ApiResponse responseBody = Objects.requireNonNull(response).getBody();
-        if (Objects.requireNonNull(responseBody).getResult().contains("success")) {
+        if (Objects.requireNonNull(responseBody)
+            .getResult()
+            .contains(ApiResultStatus.SUCCESS.value)) {
           String jsonParams = "", aivenAclIdKey = "aivenaclid";
           if (responseBody.getData() instanceof Map) {
             Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
@@ -601,7 +605,6 @@ public class AclControllerService {
 
         // tenant filtering
         String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
-
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
         String lastEnv = envList.get(envList.size() - 1);
@@ -610,7 +613,7 @@ public class AclControllerService {
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
           hashMap.put("status", "NO_PROMOTION"); // PRD
         } else {
-          hashMap.put("status", "success");
+          hashMap.put("status", ApiResultStatus.SUCCESS.value);
           hashMap.put("sourceEnv", lastEnv);
           String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
           hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
@@ -621,7 +624,7 @@ public class AclControllerService {
       }
     } catch (Exception e) {
       log.error("getTopicPromotionEnv {}", e.getMessage());
-      hashMap.put("status", "failure");
+      hashMap.put("status", ApiResultStatus.FAILURE.value);
       hashMap.put("error", "Topic does not exist in any environment.");
     }
 
@@ -654,7 +657,6 @@ public class AclControllerService {
     else return null;
 
     Integer loggedInUserTeam = getMyTeamId(userDetails);
-
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
 
     // tenant filtering
