@@ -35,18 +35,20 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
     			 });
     	}
 
-    $scope.handleValidationErrors = function(error){
-        if(error.errors != null && error.errors.length > 0){
+        $scope.handleValidationErrors = function(error){
+            if(error.errors != null && error.errors.length > 0){
                 $scope.alert = error.errors[0].defaultMessage;
             }else if(error.message != null){
-                    $scope.alert = error.message;
-                    }else if(error.result != null){
-                    $scope.alert = error.result;
-                    }else $scope.alert = error;
+                $scope.alert = error.message;
+            }else if(error.result != null){
+                $scope.alert = error.result;
+            }
+            else
+                $scope.alert = "Unable to process the request. Please verify the request or contact our Administrator !!";
 
             $scope.alertnote = $scope.alert;
             $scope.showAlertToast();
-     }
+        }
 	
     $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
 

@@ -343,7 +343,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
         		closeOnConfirm: true,
         		closeOnCancel: true
         	}).then(function(isConfirm){
-        		if (isConfirm.dismiss != "cancel") {
+        		if (isConfirm.dismiss !== "cancel") {
 
         		    $scope.ShowSpinnerStatus = true;
 
@@ -354,16 +354,16 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
                         data:  serviceInput
                     }).success(function(output) {
                         $scope.ShowSpinnerStatus = false;
-                        $scope.alert = "Sync back topic request : "+ output.result[0];
-                        if(output.result[0] == "success"){
+                        $scope.alert = "Sync back topic request : "+ output.result;
+                        if(output.result === "success"){
                             $scope.resetCheckBoxes();
                             $scope.syncbacklog = output.data;
                             $scope.alert = $scope.alert + ". Errors are ignored if topics already exist on the target environment. Please verify logs.";
                         }
-                         if(output.result[0] == 'success'){
+                         if(output.result === 'success'){
                           swal({
                         		   title: "",
-                        		   text: "Sync back topic request : "+ output.result[0],
+                        		   text: "Sync back topic request : "+ output.result,
                         		   timer: 2000,
                         		   showConfirmButton: false
                         	   });

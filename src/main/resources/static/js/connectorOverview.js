@@ -46,16 +46,18 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
 
         $scope.handleValidationErrors = function(error){
             if(error.errors != null && error.errors.length > 0){
-                    $scope.alert = error.errors[0].defaultMessage;
-                }else if(error.message != null){
-                    $scope.alert = error.message;
-                    }else if(error.result != null){
-                    $scope.alert = error.result;
-                    }else $scope.alert = error;
+                $scope.alert = error.errors[0].defaultMessage;
+            }else if(error.message != null){
+                $scope.alert = error.message;
+            }else if(error.result != null){
+                $scope.alert = error.result;
+            }
+            else
+                $scope.alert = "Unable to process the request. Please verify the request or contact our Administrator !!";
 
-                $scope.alertnote = $scope.alert;
-                $scope.showAlertToast();
-         }
+            $scope.alertnote = $scope.alert;
+            $scope.showAlertToast();
+        }
 
 	$scope.getEnvs = function() {
 
@@ -198,7 +200,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                                            'env' : env},
                             }).success(function(output) {
 
-                                if(output.result == 'success'){
+                                if(output.result === 'success'){
                                     swal({
                                          title: "",
                                          text: "Connector Delete Request : "+output.result,

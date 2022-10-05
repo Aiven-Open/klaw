@@ -218,7 +218,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                                 }).success(function(output) {
                                     $scope.alert = "Acl Approve Request : "+output.result;
                                     $scope.getMyAclRequests(1, false);
-                                    if(output.result == 'success'){
+                                    if(output.result === 'success'){
                                         swal({
                                              title: "",
                                              text: "Subscription Approve Request : "+output.result,
@@ -303,7 +303,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                                          $scope.showDeclinePanel = "false";
                                          $scope.reqForDecline = "";
                                          $scope.getMyAclRequests(1, false);
-                                         if(output.result == 'success'){
+                                         if(output.result === 'success'){
                                              swal({
                                                   title: "",
                                                   text: "Subscription Decline Request : "+output.result,

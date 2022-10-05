@@ -67,7 +67,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             $scope.notificationsSchemas = output.notificationsSchemas;
             $scope.notificationsUsers = output.notificationsUsers;
 
-            if(output.viewTopics!='Authorized')
+            if(output.viewTopics!=='Authorized')
             {
                 $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/index";
             }
@@ -112,7 +112,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 
 			$scope.checkPendingApprovals = function() {
 
-				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage === '')
 					return;
 
 				var sPageURL = window.location.search.substring(1);
@@ -121,14 +121,14 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 				for (var i = 0; i < sURLVariables.length; i++)
 				{
 					var sParameterName = sURLVariables[i].split('=');
-					if (sParameterName[0] == "loggedin")
+					if (sParameterName[0] === "loggedin")
 					{
 						foundLoggedInVar  = "true";
-						if(sParameterName[1] != "true")
+						if(sParameterName[1] !== "true")
 							return;
 					}
 				}
-				if(foundLoggedInVar == "true")
+				if(foundLoggedInVar === "true")
 					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
 			}
 
@@ -161,7 +161,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         var teamSel = $scope.getTopics.team;
 
         var topicType = null;
-        if(fromSelect == "false")
+        if(fromSelect === "false")
         {
             var envSelected;
 
@@ -170,7 +170,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == "envSelected")
+                if (sParameterName[0] === "envSelected")
                 {
                     envSelected = sParameterName[1];
                     serviceInput['env'] = envSelected;
@@ -178,7 +178,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                     $scope.getTopics.envName = envSelected;
                 }else return;
             }
-        }else if(fromSelect == "true"){
+        }else if(fromSelect === "true"){
                  if(!$scope.getTopics.envName)
                         envSelected = "ALL";
                  else
@@ -194,17 +194,17 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                 for (var i = 0; i < sURLVariables.length; i++)
                     {
                         var sParameterName = sURLVariables[i].split('=');
-                        if (sParameterName[0] == "team")
+                        if (sParameterName[0] === "team")
                         {
                             teamSel = sParameterName[1];
                             window.history.pushState({}, document.title, "browseTopics");
                             $scope.getTopics.team = teamSel;
                         }
-                        else if (sParameterName[0] == "producer")
+                        else if (sParameterName[0] === "producer")
                         {
                             topicType = 'Producer';
                         }
-                        else if (sParameterName[0] == "consumer")
+                        else if (sParameterName[0] === "consumer")
                         {
                             topicType = 'Consumer';
                         }
@@ -224,7 +224,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
 		    }
 
 		    var getTopicsUrl = "";
-		    if(topicsDisplayType == 'grid')
+		    if(topicsDisplayType === 'grid')
                 getTopicsUrl = "getTopics";
             else getTopicsUrl = "getTopicsRowView";
 
@@ -241,8 +241,8 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                  }
 		}).success(function(output) {
 			$scope.resultBrowse = output;
-			if(output!=null && output.length !=0){
-			    if(topicsDisplayType == "grid"){
+			if(output!=null && output.length !==0){
+			    if(topicsDisplayType === "grid"){
 			        $scope.currentPageSelected = output[0][0].currentPage;
 			        $scope.resultPages = output[0][0].allPageNos;
 			    }
@@ -272,9 +272,9 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                 return;
             if(!$scope.contactFormMessage)
                 return;
-            if($scope.contactFormSubject.trim().length==0)
+            if($scope.contactFormSubject.trim().length===0)
                 return;
-            if($scope.contactFormMessage.trim().length==0)
+            if($scope.contactFormMessage.trim().length===0)
                 return;
 
             $http({

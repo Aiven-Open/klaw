@@ -121,7 +121,7 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                             }).success(function(output) {
                                 $scope.alert = "Schema Approve Request : " + output.result;
                                 $scope.getMySchemaRequests(1, false);
-                                if(output.result == 'success'){
+                                if(output.result === 'success'){
                                      swal({
                                           title: "",
                                           text: "Schema Approve Request : "+output.result,
@@ -205,7 +205,7 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                                     $scope.showDeclinePanel = "false";
                                     $scope.topicForDecline = "";
                                     $scope.getMySchemaRequests(1, false);
-                                    if(output.result == 'success'){
+                                    if(output.result === 'success'){
                                          swal({
                                               title: "",
                                               text: "Schema Decline Request : "+output.result,
