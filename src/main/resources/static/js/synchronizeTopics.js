@@ -495,7 +495,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
                              if(output.result == 'success'){
                                 $scope.resetCheckBoxes();
-                                $scope.syncbulklog = output.syncbulklog;
+                                $scope.syncbulklog = output.data;
                                 $scope.alertbulk = $scope.alertbulk + ". Please verify logs below.";
 
                                 swal({

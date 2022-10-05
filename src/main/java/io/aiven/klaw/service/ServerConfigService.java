@@ -154,7 +154,6 @@ public class ServerConfigService {
   public ApiResponse updateKwCustomProperty(KwPropertiesModel kwPropertiesModel)
       throws KlawException {
     log.info("updateKwCustomProperty {}", kwPropertiesModel);
-    //    Map<String, String> response = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String kwKey = kwPropertiesModel.getKwKey();
     String kwVal = kwPropertiesModel.getKwValue().trim();

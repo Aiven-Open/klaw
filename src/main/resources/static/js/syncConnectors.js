@@ -523,7 +523,7 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
 
                              if(output.result == 'success'){
                                 $scope.resetCheckBoxes();
-                                $scope.syncbulklog = output.syncbulklog;
+                                $scope.syncbulklog = output.data;
                                 $scope.alertbulk = $scope.alertbulk + ". Please verify logs below.";
 
                                 swal({

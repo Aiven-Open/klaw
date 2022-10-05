@@ -96,9 +96,8 @@ public class TopicControllerTest {
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncTopicUpdates);
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-    when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(resultMap);
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(apiResponse);
 
     String response =
         mvcSync
@@ -112,10 +111,9 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    Map<String, String> actualResult =
-        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
 
-    assertThat(actualResult).containsEntry("result", "success");
+    assertThat(actualResult.getResult()).isEqualTo("success");
   }
 
   @Test

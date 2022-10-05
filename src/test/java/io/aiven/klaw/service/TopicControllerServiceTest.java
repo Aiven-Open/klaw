@@ -18,6 +18,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
@@ -211,7 +212,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(7)
-  public void updateSyncTopicsSuccess() {
+  public void updateSyncTopicsSuccess() throws KlawException {
     stubUserInfo();
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -221,15 +222,15 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
 
-    Map<String, String> result =
+    ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-    assertThat(result).containsEntry("result", "success");
+    assertThat(result.getResult()).isEqualTo("success");
   }
 
   @Test
   @Order(8)
-  public void updateSyncTopicsNoUpdate() {
+  public void updateSyncTopicsNoUpdate() throws KlawException {
     List<SyncTopicUpdates> topicUpdates = new ArrayList<>();
 
     stubUserInfo();
@@ -240,22 +241,22 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    Map<String, String> result = topicSyncControllerService.updateSyncTopics(topicUpdates);
+    ApiResponse result = topicSyncControllerService.updateSyncTopics(topicUpdates);
 
-    assertThat(result).containsEntry("result", "No record updated.");
+    assertThat(result.getResult()).isEqualTo("No record updated.");
   }
 
   @Test
   @Order(9)
-  public void updateSyncTopicsNotAuthorized() {
+  public void updateSyncTopicsNotAuthorized() throws KlawException {
     stubUserInfo();
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    Map<String, String> result =
+    ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-    assertThat(result).containsEntry("result", "Not Authorized.");
+    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test

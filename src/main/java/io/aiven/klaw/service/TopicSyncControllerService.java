@@ -10,6 +10,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
@@ -487,7 +488,7 @@ public class TopicSyncControllerService {
     return teamList;
   }
 
-  public Map<String, List<String>> updateSyncBackTopics(SyncBackTopics syncBackTopics) {
+  public ApiResponse updateSyncBackTopics(SyncBackTopics syncBackTopics) {
     log.info("updateSyncBackTopics {}", syncBackTopics);
     Map<String, List<String>> resultMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -499,15 +500,11 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncBackTopics.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
-      List<String> notAuth = new ArrayList<>();
-      notAuth.add(ApiResultStatus.NOT_AUTHORIZED.value);
-      resultMap.put("result", notAuth);
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     List<String> resultStatus = new ArrayList<>();
-    resultStatus.add("success");
-
+    resultStatus.add(ApiResultStatus.SUCCESS.value);
     resultMap.put("result", resultStatus);
 
     if ("SELECTED_TOPICS".equals(syncBackTopics.getTypeOfSync())) {
@@ -532,9 +529,7 @@ public class TopicSyncControllerService {
       }
     }
 
-    resultMap.put("syncbacklog", logArray);
-
-    return resultMap;
+    return ApiResponse.builder().result(resultMap.get("result").get(0)).data(logArray).build();
   }
 
   private void approveSyncBackTopics(
@@ -822,9 +817,9 @@ public class TopicSyncControllerService {
     return tmpTopicList;
   }
 
-  public Map<String, List<String>> updateSyncTopicsBulk(SyncTopicsBulk syncTopicsBulk) {
+  public ApiResponse updateSyncTopicsBulk(SyncTopicsBulk syncTopicsBulk) throws KlawException {
     log.info("updateSyncTopicsBulk {}", syncTopicsBulk);
-    Map<String, List<String>> resultMap = new HashMap<>();
+    //    Map<String, List<String>> resultMap = new HashMap<>();
 
     List<String> logArray = new ArrayList<>();
 
@@ -833,16 +828,13 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncTopicsBulk.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      List<String> notAuth = new ArrayList<>();
-      notAuth.add(ApiResultStatus.NOT_AUTHORIZED.value);
-      resultMap.put("result", notAuth);
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    List<String> resultStatus = new ArrayList<>();
-    resultStatus.add("success");
-
-    resultMap.put("result", resultStatus);
+    //    List<String> resultStatus = new ArrayList<>();
+    //    resultStatus.add("success");
+    //
+    //    resultMap.put("result", resultStatus);
 
     if ("SELECTED_TOPICS".equals(syncTopicsBulk.getTypeOfSync())) {
       Object[] topicMap = syncTopicsBulk.getTopicDetails();
@@ -866,11 +858,11 @@ public class TopicSyncControllerService {
         }
       } catch (Exception e) {
         log.error("Could not retrieve topics ", e);
+        throw new KlawException(e.getMessage());
       }
     }
 
-    resultMap.put("syncbulklog", logArray);
-    return resultMap;
+    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(logArray).build();
   }
 
   private void invokeUpdateSyncAllTopics(
@@ -891,7 +883,7 @@ public class TopicSyncControllerService {
           "Topic status :"
               + hashMap.get("topicName")
               + " "
-              + updateSyncTopics(updatedSyncTopicsList).get("result"));
+              + updateSyncTopics(updatedSyncTopicsList).getResult());
     } catch (Exception e) {
       logArray.add("Topic update failed :" + hashMap.get("topicName") + " " + e.toString());
       log.error("Exception:", e);
@@ -956,24 +948,20 @@ public class TopicSyncControllerService {
     updatedSyncTopicsList.add(syncTopicUpdates);
     try {
       logArray.add(
-          "Topic status :"
-              + topicName
-              + " "
-              + updateSyncTopics(updatedSyncTopicsList).get("result"));
+          "Topic status :" + topicName + " " + updateSyncTopics(updatedSyncTopicsList).getResult());
     } catch (Exception e) {
       log.error("Exception:", e);
       logArray.add("Topic update failed :" + topicName + " " + e);
     }
   }
 
-  public Map<String, String> updateSyncTopics(List<SyncTopicUpdates> updatedSyncTopics) {
+  public ApiResponse updateSyncTopics(List<SyncTopicUpdates> updatedSyncTopics)
+      throws KlawException {
     log.info("updateSyncTopics {}", updatedSyncTopics);
     String userDetails = getUserName();
-    Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      response.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return response;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     // tenant filtering
@@ -1008,8 +996,7 @@ public class TopicSyncControllerService {
       for (SyncTopicUpdates topicUpdate : updatedSyncTopics) {
         // tenant filtering
         if (!getEnvsFromUserId(userDetails).contains(topicUpdate.getEnvSelected())) {
-          response.put("result", "Not Authorized.");
-          return response;
+          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
         existingTopics = getTopicFromName(topicUpdate.getTopicName(), tenantId);
 
@@ -1107,39 +1094,45 @@ public class TopicSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
-      response.put("result", "success");
-      return response;
+      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     }
 
     if (topicsDontExistInMainCluster) {
-      response.put(
-          "result",
-          "Failure. Please sync up the team of the following topic(s) first in"
-              + " main Sync cluster (klaw.syncdata.cluster)"
-              + " :"
-              + syncCluster
-              + ". \n Topics : "
-              + erroredTopicsExist);
-      return response;
+      return ApiResponse.builder()
+          .result(
+              "Failure. Please sync up the team of the following topic(s) first in"
+                  + " main Sync cluster (klaw.syncdata.cluster)"
+                  + " :"
+                  + syncCluster
+                  + ". \n Topics : "
+                  + erroredTopicsExist)
+          .build();
     }
 
     if (topicsWithDiffTeams) {
-      response.put(
-          "result",
-          "Failure. The following topics are being synchronized with"
-              + " a different team, when compared to main Sync cluster (klaw.syncdata.cluster)"
-              + " :"
-              + syncCluster
-              + ". \n Topics : "
-              + erroredTopics);
-      return response;
+      return ApiResponse.builder()
+          .result(
+              "Failure. The following topics are being synchronized with"
+                  + " a different team, when compared to main Sync cluster (klaw.syncdata.cluster)"
+                  + " :"
+                  + syncCluster
+                  + ". \n Topics : "
+                  + erroredTopics)
+          .build();
     }
 
     if (listTopics.size() > 0) {
-      response.put("result", manageDatabase.getHandleDbRequests().addToSynctopics(listTopics));
-    } else response.put("result", "No record updated.");
-
-    return response;
+      try {
+        return ApiResponse.builder()
+            .result(manageDatabase.getHandleDbRequests().addToSynctopics(listTopics))
+            .build();
+      } catch (Exception e) {
+        log.error(e.getMessage());
+        throw new KlawException(e.getMessage());
+      }
+    } else {
+      return ApiResponse.builder().result("No record updated.").build();
+    }
   }
 
   private List<SyncTopicUpdates> handleTopicDeletes(

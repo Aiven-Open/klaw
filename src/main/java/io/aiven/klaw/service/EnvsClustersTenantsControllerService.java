@@ -1084,10 +1084,13 @@ public class EnvsClustersTenantsControllerService {
 
     List<UserInfo> allUsers = manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId);
     for (UserInfo userInfo : allUsers) {
-      usersTeamsControllerService.deleteUser(userInfo.getUsername(), false); // internal delete
+      try {
+        usersTeamsControllerService.deleteUser(userInfo.getUsername(), false); // internal delete
+      } catch (KlawException e) {
+        throw new RuntimeException(e);
+      }
     }
     manageDatabase.getHandleDbRequests().deleteAllUsers(tenantId);
-
     manageDatabase.getHandleDbRequests().deleteAllTeams(tenantId);
     manageDatabase.getHandleDbRequests().deleteAllEnvs(tenantId);
     manageDatabase.getHandleDbRequests().deleteAllClusters(tenantId);
@@ -1097,7 +1100,7 @@ public class EnvsClustersTenantsControllerService {
 
     String result = manageDatabase.getHandleDbRequests().disableTenant(tenantId);
 
-    if ("success".equals(result)) {
+    if (ApiResultStatus.SUCCESS.value.equals(result)) {
       commonUtilsService.updateMetadata(tenantId, EntityType.TENANT, MetadataOperationType.DELETE);
       resultMap.put("result", "success");
       resultMap.put("tenantId", tenantName);

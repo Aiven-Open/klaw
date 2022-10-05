@@ -12,6 +12,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
@@ -66,7 +67,7 @@ public class AclControllerTest {
   public void createAcl() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
-    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.createAcl(any())).thenReturn(apiResponse);
 
     String response =

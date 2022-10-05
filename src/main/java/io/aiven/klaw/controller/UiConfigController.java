@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.service.UiConfigControllerService;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class UiConfigController {
   }
 
   @PostMapping(value = "/sendMessageToAdmin")
-  public ResponseEntity<Map<String, String>> sendMessageToAdmin(
+  public ResponseEntity<ApiResponse> sendMessageToAdmin(
       @RequestParam("contactFormSubject") String contactFormSubject,
       @RequestParam("contactFormMessage") String contactFormMessage) {
     return new ResponseEntity<>(

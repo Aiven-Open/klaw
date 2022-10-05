@@ -357,7 +357,7 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
                         $scope.alert = "Sync back topic request : "+ output.result[0];
                         if(output.result[0] == "success"){
                             $scope.resetCheckBoxes();
-                            $scope.syncbacklog = output.syncbacklog;
+                            $scope.syncbacklog = output.data;
                             $scope.alert = $scope.alert + ". Errors are ignored if topics already exist on the target environment. Please verify logs.";
                         }
                          if(output.result[0] == 'success'){

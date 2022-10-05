@@ -65,7 +65,6 @@ public class KafkaConnectSyncControllerService {
     }
 
     response.put("result", res.toString());
-
     return response;
   }
 
@@ -73,7 +72,6 @@ public class KafkaConnectSyncControllerService {
       throws KlawException {
     log.info("updateSyncConnectors {}", updatedSyncTopics);
     String userDetails = getUserName();
-    Map<String, String> response = new HashMap<>();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();

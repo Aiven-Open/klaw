@@ -13,6 +13,8 @@ import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.TeamModel;
@@ -260,7 +262,8 @@ public class UiConfigControllerTest {
   @Test
   @Order(10)
   public void deleteTeam() throws Exception {
-    when(usersTeamsControllerService.deleteTeam(any())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    when(usersTeamsControllerService.deleteTeam(any())).thenReturn(apiResponse);
 
     String response =
         mvcUserTeams
@@ -273,14 +276,16 @@ public class UiConfigControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(response).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test
   @Order(11)
   public void deleteUser() throws Exception {
-    when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn(apiResponse);
 
     String response =
         mvcUserTeams
@@ -294,17 +299,17 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+    assertThat(objectResponse.getResult()).isEqualTo("success");
   }
 
   @Test
   @Order(12)
   public void addNewUser() throws Exception {
-    Map<String, String> result = new HashMap<>();
-    result.put("result", "success");
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfo);
-    when(usersTeamsControllerService.addNewUser(any(), anyBoolean())).thenReturn(result);
+    when(usersTeamsControllerService.addNewUser(any(), anyBoolean())).thenReturn(apiResponse);
 
     String response =
         mvcUserTeams
@@ -326,8 +331,8 @@ public class UiConfigControllerTest {
   public void addNewTeam() throws Exception {
     Team team = utilMethods.getTeams().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(team);
-    String result = "{ \"status\": \"" + "success" + "\" }";
-    when(usersTeamsControllerService.addNewTeam(any(), anyBoolean())).thenReturn(result);
+    ApiResponse apiResponse = ApiResponse.builder().result("success").build();
+    when(usersTeamsControllerService.addNewTeam(any(), anyBoolean())).thenReturn(apiResponse);
 
     String response =
         mvcUserTeams
@@ -347,7 +352,8 @@ public class UiConfigControllerTest {
   @Test
   @Order(14)
   public void changePwd() throws Exception {
-    when(usersTeamsControllerService.changePwd(any())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
 
     String response =
         mvcUserTeams
@@ -361,7 +367,7 @@ public class UiConfigControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).isEqualTo("success");
+    assertThat(response).contains("success");
   }
 
   @Test

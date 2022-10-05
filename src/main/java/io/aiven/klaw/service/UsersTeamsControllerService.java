@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.MetadataOperationType;
@@ -83,7 +84,7 @@ public class UsersTeamsControllerService {
     } else return null;
   }
 
-  public Map<String, String> updateProfile(UserInfoModel updateUserObj) {
+  public ApiResponse updateProfile(UserInfoModel updateUserObj) throws KlawException {
     log.info("updateProfile {}", updateUserObj);
     Map<String, String> updateProfileResult = new HashMap<>();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -91,16 +92,18 @@ public class UsersTeamsControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName());
     userInfo.setFullname(updateUserObj.getFullname());
     userInfo.setMailid(updateUserObj.getMailid());
-
-    updateProfileResult.put("result", dbHandle.updateUser(userInfo));
-    return updateProfileResult;
+    try {
+      return ApiResponse.builder().result(dbHandle.updateUser(userInfo)).build();
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
+    }
   }
 
-  public String updateUser(UserInfoModel newUser) {
+  public ApiResponse updateUser(UserInfoModel newUser) throws KlawException {
     log.info("updateUser {}", newUser.getUsername());
 
     if (commonUtilsService.isNotAuthorizedUser(getUserName(), PermissionType.ADD_EDIT_DELETE_USERS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     UserInfo existingUserInfo =
         manageDatabase.getHandleDbRequests().getUsersInfo(newUser.getUsername());
@@ -111,13 +114,14 @@ public class UsersTeamsControllerService {
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       if (!Objects.equals(
           getUserName(), newUser.getUsername())) { // should be able to update same user
-        return "{\"result\":\"Not Authorized to update another SUPERADMIN user.\"}";
+        return ApiResponse.builder()
+            .result("Not Authorized to update another SUPERADMIN user.")
+            .build();
       }
     }
 
     String pwdUpdated = newUser.getUserPassword();
     String existingPwd;
-
     if ("*******".equals(pwdUpdated) && "db".equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
       if (!"".equals(existingPwd)) newUser.setUserPassword(decodePwd(existingPwd));
@@ -125,7 +129,6 @@ public class UsersTeamsControllerService {
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
       if ("db".equals(authenticationType)) {
         if (inMemoryUserDetailsManager.userExists(newUser.getUsername())) {
           inMemoryUserDetailsManager.updateUser(
@@ -151,12 +154,10 @@ public class UsersTeamsControllerService {
       userInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
       userInfo.setTenantId(tenantId);
 
-      String result = dbHandle.updateUser(userInfo);
-
-      return "{\"result\":\"" + result + "\"}";
+      return ApiResponse.builder().result(dbHandle.updateUser(userInfo)).build();
     } catch (Exception e) {
       log.error("Error from updateUser ", e);
-      return "{\"result\":\"Failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
@@ -211,7 +212,7 @@ public class UsersTeamsControllerService {
       inMemoryUserDetailsManager.updatePassword(
           updatePwdUserDetails, encoder.encode(newGeneratedPwd));
       String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
-      if ("success".equals(pwdUpdated)) {
+      if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
         userMap.put("passwordSent", "true");
         mailService.sendMailResetPwd(
             username,
@@ -302,10 +303,8 @@ public class UsersTeamsControllerService {
             .getTeamname();
 
     List<String> teams = new ArrayList<>();
-
     // tenant filtering
     List<TeamModel> teamsList = getAllTeamsSU();
-
     teams.add("All teams"); // team id 1
     teams.add(myTeamName);
 
@@ -316,24 +315,24 @@ public class UsersTeamsControllerService {
     return teams;
   }
 
-  public String deleteTeam(Integer teamId) {
+  public ApiResponse deleteTeam(Integer teamId) throws KlawException {
     log.info("deleteTeam {}", teamId);
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS))
-      return "{\"result\":\"Not Authorized\"}";
-
-    String envAddResult = "{\"result\":\"Team cannot be deleted.\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-
     if (manageDatabase.getHandleDbRequests().findAllComponentsCountForTeam(teamId, tenantId) > 0) {
-      return "{\"result\":\"Not allowed to delete this team, as there are associated topics/acls/requests..\"}";
+      return ApiResponse.builder()
+          .result("Not allowed to delete this team, as there are associated topics/acls/requests..")
+          .build();
     }
 
     // own team cannot be deleted
-    if (Objects.equals(getMyTeamId(userDetails), teamId)) return envAddResult;
+    if (Objects.equals(getMyTeamId(userDetails), teamId))
+      return ApiResponse.builder().result("Team cannot be deleted.").build();
 
     try {
       String result =
@@ -341,24 +340,24 @@ public class UsersTeamsControllerService {
               .getHandleDbRequests()
               .deleteTeamRequest(teamId, commonUtilsService.getTenantId(getUserName()));
 
-      if ("success".equals(result)) {
+      if (ApiResultStatus.SUCCESS.value.equals(result)) {
         commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.DELETE);
       }
 
-      return "{\"result\":\"" + result + "\"}";
+      return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
-  public String deleteUser(String userId, boolean isExternal) {
+  public ApiResponse deleteUser(String userId, boolean isExternal) throws KlawException {
     log.info("deleteUser {}", userId);
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     List<String> permissions =
@@ -367,21 +366,22 @@ public class UsersTeamsControllerService {
             .get(existingUserInfo.getRole());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name()))
-      return "{\"result\":\"Not Authorized. Cannot delete a user with SUPERADMIN access.\"}";
+      return ApiResponse.builder()
+          .result("Not Authorized. Cannot delete a user with SUPERADMIN access.")
+          .build();
 
     String envAddResult = "{\"result\":\"User cannot be deleted\"}";
-
-    if (Objects.equals(userDetails, userId) && isExternal) return envAddResult;
-
-    inMemoryUserDetailsManager.deleteUser(userId);
+    if (Objects.equals(userDetails, userId) && isExternal)
+      return ApiResponse.builder().result(envAddResult).build();
 
     try {
-      return "{\"result\":\""
-          + manageDatabase.getHandleDbRequests().deleteUserRequest(userId)
-          + "\"}";
+      inMemoryUserDetailsManager.deleteUser(userId);
+      return ApiResponse.builder()
+          .result(manageDatabase.getHandleDbRequests().deleteUserRequest(userId))
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
@@ -401,9 +401,7 @@ public class UsersTeamsControllerService {
     return textEncryptor;
   }
 
-  public Map<String, String> addNewUser(UserInfoModel newUser, boolean isExternal)
-      throws KlawException {
-    Map<String, String> resMap = new HashMap<>();
+  public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
 
     if ("saas".equals(kwInstallationType)) {
@@ -411,16 +409,14 @@ public class UsersTeamsControllerService {
       Pattern p = Pattern.compile(regex);
       Matcher m = p.matcher(newUser.getUsername());
       if (!m.matches()) {
-        resMap.put("result", "Invalid mail id");
-        return resMap;
+        return ApiResponse.builder().result("Invalid mail id").build();
       }
     } else {
       String regex = "^[a-zA-Z0-9]{3,}$";
       Pattern p = Pattern.compile(regex);
       Matcher m = p.matcher(newUser.getUsername());
       if (!m.matches()) {
-        resMap.put("result", "Invalid username");
-        return resMap;
+        return ApiResponse.builder().result("Invalid username").build();
       }
     }
 
@@ -439,8 +435,7 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      resMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      return resMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) newUser.setRole("NA");
@@ -480,13 +475,11 @@ public class UsersTeamsControllerService {
               dbHandle,
               commonUtilsService.getLoginUrl());
       }
-      resMap.put("result", result);
-      return resMap;
+      return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       inMemoryUserDetailsManager.deleteUser(newUser.getUsername());
       if (e.getMessage().contains("should not exist")) {
-        resMap.put("result", "Failure. User already exists.");
-        return resMap;
+        return ApiResponse.builder().result("Failure. User already exists.").build();
       } else {
         log.error("Error ", e);
         throw new KlawException("Unable to create the user.");
@@ -494,13 +487,13 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public String addNewTeam(TeamModel newTeam, boolean isExternal) {
+  public ApiResponse addNewTeam(TeamModel newTeam, boolean isExternal) throws KlawException {
     log.info("addNewTeam {}", newTeam);
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     int tenantId;
     if (isExternal) {
@@ -510,30 +503,30 @@ public class UsersTeamsControllerService {
 
     Team team = new Team();
     copyProperties(newTeam, team);
-
     String envListStrCommaSeperated;
+
     if (newTeam.getEnvList() != null && newTeam.getEnvList().size() > 0) {
       envListStrCommaSeperated = String.join(",", newTeam.getEnvList().toArray(new String[0]));
       team.setRequestTopicsEnvs(envListStrCommaSeperated);
     }
     try {
       String res = manageDatabase.getHandleDbRequests().addNewTeam(team);
-      if ("success".equals(res)) {
+      if (ApiResultStatus.SUCCESS.value.equals(res)) {
         commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.CREATE);
       }
-      return "{\"result\":\"" + res + "\"}";
+      return ApiResponse.builder().result(res).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
-  public String updateTeam(TeamModel updatedTeam) {
+  public ApiResponse updateTeam(TeamModel updatedTeam) throws KlawException {
     log.info("updateTeam {}", updatedTeam);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Team team = new Team();
@@ -549,22 +542,22 @@ public class UsersTeamsControllerService {
     try {
       String res = manageDatabase.getHandleDbRequests().updateTeam(team);
       commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.UPDATE);
-      return "{\"result\":\"" + res + "\"}";
+      return ApiResponse.builder().result(res).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
-  public String changePwd(String changePwd) {
+  public ApiResponse changePwd(String changePwd) throws KlawException {
     if ("ldap".equals(authenticationType) || "ad".equals(authenticationType)) {
-      return "{\"result\":\" Password cannot be updated in ldap/ad authentication mode. \"}";
+      return ApiResponse.builder()
+          .result("Password cannot be updated in ldap/ad authentication mode.")
+          .build();
     }
     String userDetails = getUserName();
-
     GsonJsonParser jsonParser = new GsonJsonParser();
     Map<String, Object> pwdMap = jsonParser.parseMap(changePwd);
-
     String pwdChange = (String) pwdMap.get("pwd");
 
     try {
@@ -573,12 +566,15 @@ public class UsersTeamsControllerService {
       UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(userDetails);
       inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(pwdChange));
 
-      return "{\"result\":\""
-          + manageDatabase.getHandleDbRequests().updatePassword(userDetails, encodePwd(pwdChange))
-          + "\"}";
+      return ApiResponse.builder()
+          .result(
+              manageDatabase
+                  .getHandleDbRequests()
+                  .updatePassword(userDetails, encodePwd(pwdChange)))
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure " + e.getMessage() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
@@ -659,7 +655,7 @@ public class UsersTeamsControllerService {
   }
 
   Map<String, String> addTwoDefaultTeams(
-      String teamContactPerson, String newTenantName, Integer tenantId) {
+      String teamContactPerson, String newTenantName, Integer tenantId) throws KlawException {
     Map<String, String> teamAddMap = new HashMap<>();
 
     TeamModel teamModel = new TeamModel();
@@ -668,8 +664,8 @@ public class UsersTeamsControllerService {
     teamModel.setTeamname(KwConstants.INFRATEAM);
     teamModel.setContactperson(teamContactPerson);
 
-    String addTeamRes = addNewTeam(teamModel, false);
-    teamAddMap.put("team1result", addTeamRes);
+    ApiResponse addTeamRes = addNewTeam(teamModel, false);
+    teamAddMap.put("team1result", addTeamRes.getResult());
 
     TeamModel teamModel1 = new TeamModel();
     teamModel1.setTenantId(tenantId);
@@ -677,25 +673,24 @@ public class UsersTeamsControllerService {
     teamModel1.setTeamname(KwConstants.STAGINGTEAM);
     teamModel1.setContactperson(teamContactPerson);
 
-    String addTeamRes2 = addNewTeam(teamModel1, false);
-    teamAddMap.put("team2result", addTeamRes2);
+    ApiResponse addTeamRes2 = addNewTeam(teamModel1, false);
+    teamAddMap.put("team2result", addTeamRes2.getResult());
     return teamAddMap;
   }
 
-  public Map<String, String> registerUser(RegisterUserInfoModel newUser, boolean isExternal)
+  public ApiResponse registerUser(RegisterUserInfoModel newUser, boolean isExternal)
       throws Exception {
     log.info("registerUser {}", newUser.getUsername());
-    Map<String, String> result = new HashMap<>();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
-      throw new KlawException("User already exists.");
+      return ApiResponse.builder().result("User already exists.").build();
     } else if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getUsername()))) {
-      throw new KlawException("User already exists.");
+      return ApiResponse.builder().result("User already exists.").build();
     }
 
     // check if registration exists
@@ -703,10 +698,10 @@ public class UsersTeamsControllerService {
         manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
-      throw new KlawException("User already exists.");
+      return ApiResponse.builder().result("User already exists.").build();
     } else if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getUsername()))) {
-      throw new KlawException("User already exists.");
+      return ApiResponse.builder().result("User already exists.").build();
     }
 
     try {
@@ -753,27 +748,25 @@ public class UsersTeamsControllerService {
             }
           } catch (Exception e) {
             log.error("Exception:", e);
-            throw new KlawException("Invalid tenant provided.");
+            return ApiResponse.builder().result("Invalid tenant provided.").build();
           }
         }
       }
 
       String resultRegister = dbHandle.registerUser(registerUserInfo);
-
       if (resultRegister.contains("Failure"))
-        throw new KlawException("Registration already exists.");
-
-      result.put("result", resultRegister);
+        return ApiResponse.builder().result("Registration already exists.").build();
 
       if (isExternal) {
         mailService.sendMailRegisteredUser(
             registerUserInfo, dbHandle, commonUtilsService.getLoginUrl());
       }
+
+      return ApiResponse.builder().result(resultRegister).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException("Failure. Something went wrong. Please try later.");
     }
-    return result;
   }
 
   public List<RegisterUserInfoModel> getNewUserRequests() {
@@ -801,15 +794,15 @@ public class UsersTeamsControllerService {
     return registerUserInfoModels;
   }
 
-  public String approveNewUserRequests(
-      String username, boolean isExternal, int tenantId, String teamName) {
+  public ApiResponse approveNewUserRequests(
+      String username, boolean isExternal, int tenantId, String teamName) throws KlawException {
     log.info("approveNewUserRequests {}", username);
     String userDetails = getUserName();
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
@@ -819,12 +812,6 @@ public class UsersTeamsControllerService {
         registerUserInfo.setTenantId(tenantId);
         registerUserInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, teamName));
       }
-      //            if(kwInstallationType.equals("saas")){ //from saas new user requests for not
-      // tenant owners - join thru tenant id
-      //                tenantId = registerUserInfo.getTenantId();
-      //                registerUserInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId,
-      // STAGINGTEAM));
-      //            }
 
       tenantId = registerUserInfo.getTenantId();
 
@@ -842,32 +829,34 @@ public class UsersTeamsControllerService {
       else userInfo.setUserPassword("");
       userInfo.setMailid(registerUserInfo.getMailid());
 
-      Map<String, String> result = addNewUser(userInfo, isExternal);
-      if (result.get("result").contains("success"))
+      ApiResponse resultResp = addNewUser(userInfo, isExternal);
+      if (resultResp.getResult().contains("success"))
         dbHandle.updateNewUserRequest(username, userDetails, true);
-      else return "{\"result\":\"failure\"}";
-      return "{\"result\":\"success\"}";
+      else {
+        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      }
+      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
-  public String declineNewUserRequests(String username) {
+  public ApiResponse declineNewUserRequests(String username) throws KlawException {
     log.info("declineNewUserRequests {}", username);
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
       dbHandle.updateNewUserRequest(username, userDetails, false);
-      return "{\"result\":\"success\"}";
+      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      return "{\"result\":\"failure\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 

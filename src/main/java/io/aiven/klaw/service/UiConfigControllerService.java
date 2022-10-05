@@ -3,6 +3,8 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.PermissionType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,12 +122,8 @@ public class UiConfigControllerService {
     return envFound.map(Env::getName).orElse(null);
   }
 
-  public Map<String, String> sendMessageToAdmin(
-      String contactFormSubject, String contactFormMessage) {
+  public ApiResponse sendMessageToAdmin(String contactFormSubject, String contactFormMessage) {
     String userName = getUserName();
-
-    Map<String, String> hashMap = new HashMap<>();
-    hashMap.put("result", "success");
 
     contactFormMessage = "From " + userName + ":  \n" + contactFormMessage;
     mailService.sendMailToAdmin(
@@ -133,7 +131,7 @@ public class UiConfigControllerService {
         contactFormMessage,
         commonUtilsService.getTenantId(getUserName()),
         commonUtilsService.getLoginUrl());
-    return hashMap;
+    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
   }
 
   public List<String> getRequestTypeStatuses() {
