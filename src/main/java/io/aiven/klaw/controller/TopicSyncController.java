@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncBackTopics;
@@ -30,24 +28,16 @@ public class TopicSyncController {
 
   @PostMapping(value = "/updateSyncTopics")
   public ResponseEntity<ApiResponse> updateSyncTopics(
-      @RequestBody List<SyncTopicUpdates> syncTopicUpdates) {
-    try {
-      return new ResponseEntity<>(
-          topicSyncControllerService.updateSyncTopics(syncTopicUpdates), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestBody List<SyncTopicUpdates> syncTopicUpdates) throws KlawException {
+    return new ResponseEntity<>(
+        topicSyncControllerService.updateSyncTopics(syncTopicUpdates), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updateSyncTopicsBulk")
   public ResponseEntity<ApiResponse> updateSyncTopicsBulk(
-      @RequestBody SyncTopicsBulk syncTopicsBulk) {
-    try {
-      return new ResponseEntity<>(
-          topicSyncControllerService.updateSyncTopicsBulk(syncTopicsBulk), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestBody SyncTopicsBulk syncTopicsBulk) throws KlawException {
+    return new ResponseEntity<>(
+        topicSyncControllerService.updateSyncTopicsBulk(syncTopicsBulk), HttpStatus.OK);
   }
 
   // sync back topics
@@ -61,9 +51,7 @@ public class TopicSyncController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "teamName", required = false) String teamName,
-      @RequestParam(value = "topicType", required = false) String topicType)
-      throws Exception {
-
+      @RequestParam(value = "topicType", required = false) String topicType) {
     return new ResponseEntity<>(
         topicSyncControllerService.getTopicsRowView(
             envId, pageNo, currentPage, topicNameSearch, teamName, topicType),

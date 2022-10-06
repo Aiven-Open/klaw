@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
@@ -79,13 +77,10 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/deleteCluster")
-  public ResponseEntity<ApiResponse> deleteCluster(@RequestParam("clusterId") String clusterId) {
-    try {
-      return new ResponseEntity<>(
-          envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> deleteCluster(@RequestParam("clusterId") String clusterId)
+      throws KlawException {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addNewCluster")
@@ -182,24 +177,18 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addNewEnv")
-  public ResponseEntity<ApiResponse> addNewEnv(@Valid @RequestBody EnvModel newEnv) {
-    try {
-      return new ResponseEntity<>(
-          envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> addNewEnv(@Valid @RequestBody EnvModel newEnv)
+      throws KlawException {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteEnvironmentRequest")
   public ResponseEntity<ApiResponse> deleteEnvironment(
-      @RequestParam("envId") String envId, @RequestParam("envType") String envType) {
-    try {
-      return new ResponseEntity<>(
-          envsClustersTenantsControllerService.deleteEnvironment(envId, envType), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("envId") String envId, @RequestParam("envType") String envType)
+      throws KlawException {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.deleteEnvironment(envId, envType), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -221,36 +210,25 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addTenantId")
-  public ResponseEntity<ApiResponse> addTenantId(@Valid @RequestBody KwTenantModel kwTenantModel) {
-    try {
-      return new ResponseEntity<>(
-          envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> addTenantId(@Valid @RequestBody KwTenantModel kwTenantModel)
+      throws KlawException {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteTenant")
-  public ResponseEntity<ApiResponse> deleteTenant() {
-    try {
-      return new ResponseEntity<>(
-          envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> deleteTenant() throws KlawException {
+    return new ResponseEntity<>(envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
   }
 
   // Pattern a-zA-z and/or spaces.
   @PostMapping(value = "/udpateTenant")
   public ResponseEntity<ApiResponse> udpateTenant(
       @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
-          String orgName) {
-    try {
-      return new ResponseEntity<>(
-          envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+          String orgName)
+      throws KlawException {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
   }
 
   @PostMapping(value = "/udpateTenantExtension")

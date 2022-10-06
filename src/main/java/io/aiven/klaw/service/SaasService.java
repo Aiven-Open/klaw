@@ -89,9 +89,9 @@ public class SaasService {
             ApiResponse resultApproveUser =
                 usersTeamsControllerService.approveNewUserRequests(
                     newUser.getUsername(), false, tenantId, KwConstants.INFRATEAM);
-            if (resultApproveUser.getResult().contains(ApiResultStatus.SUCCESS.value))
+            if (resultApproveUser.getResult().contains(ApiResultStatus.SUCCESS.value)) {
               updateStaticData(newUser, tenantId);
-            else {
+            } else {
               resultMap.put("error", "Something went wrong. Please try again.");
               return resultMap;
             }
@@ -122,8 +122,9 @@ public class SaasService {
     Map<String, String> resultMap = new HashMap<>();
 
     try {
-      if (handleValidations(newUser, tenantMap, resultMap))
+      if (handleValidations(newUser, tenantMap, resultMap)) {
         return ApiResponse.builder().result(resultMap.get("result")).build();
+      }
 
       RegisterUserInfoModel newUserTarget = new RegisterUserInfoModel();
       copyProperties(newUser, newUserTarget);
@@ -134,8 +135,9 @@ public class SaasService {
 
       if (newUser.getTenantName() == null || newUser.getTenantName().equals("")) {
         // new user
-        if (createNewUserForActivation(resultMap, newUserTarget))
+        if (createNewUserForActivation(resultMap, newUserTarget)) {
           return ApiResponse.builder().result(resultMap.get("error")).build();
+        }
       } else if (!tenantMap.containsValue(newUser.getTenantName())) {
         resultMap.put("error", "Tenant does not exist.");
         return ApiResponse.builder()
@@ -144,8 +146,9 @@ public class SaasService {
             .build();
       } else {
         // create user for existing tenant
-        if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget))
+        if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget)) {
           return ApiResponse.builder().result(resultMap.get("error")).build();
+        }
       }
 
       return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();

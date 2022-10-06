@@ -56,7 +56,9 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
     if ("saas".equals(kwInstallationType)) {
       String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
       boolean captchaResponse = validateCaptchaService.validateCaptcha(gRecaptchaResponse);
-      if (!captchaResponse) throw new AuthenticationServiceException("Invalid Captcha.");
+      if (!captchaResponse) {
+        throw new AuthenticationServiceException("Invalid Captcha.");
+      }
     }
 
     if ("ad".equals(authenticationType)) {
@@ -68,7 +70,9 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
         // User in KW db
         return super.attemptAuthentication(request, response);
       }
-    } else return super.attemptAuthentication(request, response);
+    } else {
+      return super.attemptAuthentication(request, response);
+    }
   }
 
   @Override

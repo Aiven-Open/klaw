@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorOverview;
@@ -59,26 +57,18 @@ public class KafkaConnectController {
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteConnectorRequests(
-      @RequestParam("connectorId") String connectorId) {
-    try {
-      return new ResponseEntity<>(
-          kafkaConnectControllerService.deleteConnectorRequests(connectorId), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("connectorId") String connectorId) throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.deleteConnectorRequests(connectorId), HttpStatus.OK);
   }
 
   @PostMapping(
       value = "/execConnectorRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> approveTopicRequests(
-      @RequestParam("connectorId") String connectorId) {
-    try {
-      return new ResponseEntity<>(
-          kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("connectorId") String connectorId) throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
   }
 
   @PostMapping(
@@ -86,28 +76,22 @@ public class KafkaConnectController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> declineConnectorRequests(
       @RequestParam("connectorId") String connectorId,
-      @RequestParam("reasonForDecline") String reasonForDecline) {
-    try {
-      return new ResponseEntity<>(
-          kafkaConnectControllerService.declineConnectorRequests(connectorId, reasonForDecline),
-          HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("reasonForDecline") String reasonForDecline)
+      throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.declineConnectorRequests(connectorId, reasonForDecline),
+        HttpStatus.OK);
   }
 
   @PostMapping(
       value = "/createConnectorDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createConnectorDeleteRequest(
-      @RequestParam("connectorName") String topicName, @RequestParam("env") String envId) {
-    try {
-      return new ResponseEntity<>(
-          kafkaConnectControllerService.createConnectorDeleteRequest(topicName, envId),
-          HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("connectorName") String topicName, @RequestParam("env") String envId)
+      throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.createConnectorDeleteRequest(topicName, envId),
+        HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -154,14 +138,11 @@ public class KafkaConnectController {
       value = "/createClaimConnectorRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createClaimConnectorRequest(
-      @RequestParam("connectorName") String connectorName, @RequestParam("env") String envId) {
-    try {
-      return new ResponseEntity<>(
-          kafkaConnectControllerService.createClaimConnectorRequest(connectorName, envId),
-          HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("connectorName") String connectorName, @RequestParam("env") String envId)
+      throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.createClaimConnectorRequest(connectorName, envId),
+        HttpStatus.OK);
   }
 
   @PostMapping(value = "/saveConnectorDocumentation")

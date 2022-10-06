@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.RegisterSaasUserInfoModel;
@@ -53,74 +51,50 @@ public class UsersTeamsController {
   }
 
   @PostMapping(value = "/deleteTeamRequest")
-  public ResponseEntity<ApiResponse> deleteTeam(@RequestParam("teamId") Integer teamId) {
-    try {
-      return new ResponseEntity<>(usersTeamsControllerService.deleteTeam(teamId), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> deleteTeam(@RequestParam("teamId") Integer teamId)
+      throws KlawException {
+    return new ResponseEntity<>(usersTeamsControllerService.deleteTeam(teamId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteUserRequest")
-  public ResponseEntity<ApiResponse> deleteUser(@RequestParam("userId") String userId) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.deleteUser(userId, true), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> deleteUser(@RequestParam("userId") String userId)
+      throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.deleteUser(userId, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updateUser")
-  public ResponseEntity<ApiResponse> updateUser(@Valid @RequestBody UserInfoModel updateUserObj) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.updateUser(updateUserObj), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> updateUser(@Valid @RequestBody UserInfoModel updateUserObj)
+      throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.updateUser(updateUserObj), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updateProfile")
-  public ResponseEntity<ApiResponse> updateProfile(
-      @Valid @RequestBody UserInfoModel updateUserObj) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> updateProfile(@Valid @RequestBody UserInfoModel updateUserObj)
+      throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addNewUser")
-  public ResponseEntity<ApiResponse> addNewUser(@Valid @RequestBody UserInfoModel newUser) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.addNewUser(newUser, true), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> addNewUser(@Valid @RequestBody UserInfoModel newUser)
+      throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.addNewUser(newUser, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/registerUser")
   public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody RegisterUserInfoModel newUser)
-      throws Exception {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/registerUserSaas")
   public ResponseEntity<ApiResponse> registerUserSaas(
       @Valid @RequestBody RegisterSaasUserInfoModel newUser) throws Exception {
-    try {
-      return new ResponseEntity<>(saasService.registerUserSaas(newUser), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+    return new ResponseEntity<>(saasService.registerUserSaas(newUser), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -153,44 +127,29 @@ public class UsersTeamsController {
 
   @PostMapping(value = "/execNewUserRequestApprove")
   public ResponseEntity<ApiResponse> approveNewUserRequests(
-      @RequestParam("username") String username) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.approveNewUserRequests(username, true, 0, ""), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("username") String username) throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.approveNewUserRequests(username, true, 0, ""), HttpStatus.OK);
   }
 
   @PostMapping(value = "/execNewUserRequestDecline")
   public ResponseEntity<ApiResponse> declineNewUserRequests(
-      @RequestParam("username") String username) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.declineNewUserRequests(username), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestParam("username") String username) throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.declineNewUserRequests(username), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addNewTeam")
-  public ResponseEntity<ApiResponse> addNewTeam(@Valid @RequestBody TeamModel newTeam) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.addNewTeam(newTeam, true), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> addNewTeam(@Valid @RequestBody TeamModel newTeam)
+      throws KlawException {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.addNewTeam(newTeam, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updateTeam")
-  public ResponseEntity<ApiResponse> updateTeam(@Valid @RequestBody TeamModel updateTeam) {
-    try {
-      return new ResponseEntity<>(
-          usersTeamsControllerService.updateTeam(updateTeam), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> updateTeam(@Valid @RequestBody TeamModel updateTeam)
+      throws KlawException {
+    return new ResponseEntity<>(usersTeamsControllerService.updateTeam(updateTeam), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -205,12 +164,9 @@ public class UsersTeamsController {
   }
 
   @PostMapping(value = "/chPwd")
-  public ResponseEntity<ApiResponse> changePwd(@RequestParam("changePwd") String changePwd) {
-    try {
-      return new ResponseEntity<>(usersTeamsControllerService.changePwd(changePwd), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> changePwd(@RequestParam("changePwd") String changePwd)
+      throws KlawException {
+    return new ResponseEntity<>(usersTeamsControllerService.changePwd(changePwd), HttpStatus.OK);
   }
 
   @RequestMapping(

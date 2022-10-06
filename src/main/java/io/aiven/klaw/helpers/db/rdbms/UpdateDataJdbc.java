@@ -316,8 +316,11 @@ public class UpdateDataJdbc {
     log.debug("updateNewUserRequest {} {} {}", username, approver, isApprove);
     Optional<RegisterUserInfo> registerUser = registerInfoRepo.findById(username);
     String status;
-    if (isApprove) status = "APPROVED";
-    else status = "DECLINED";
+    if (isApprove) {
+      status = "APPROVED";
+    } else {
+      status = "DECLINED";
+    }
     if (registerUser.isPresent()) {
       RegisterUserInfo registerUserInfo = registerUser.get();
       if ("PENDING".equals(registerUserInfo.getStatus())) {
@@ -333,7 +336,9 @@ public class UpdateDataJdbc {
   public String updateUser(UserInfo userInfo) {
     log.debug("updateUser {}", userInfo.getUsername());
     Optional<UserInfo> userExists = userInfoRepo.findById(userInfo.getUsername());
-    if (!userExists.isPresent()) return "Failure. User doesn't exist";
+    if (userExists.isEmpty()) {
+      return "Failure. User doesn't exist";
+    }
 
     userInfoRepo.save(userInfo);
     return ApiResultStatus.SUCCESS.value;
@@ -343,7 +348,9 @@ public class UpdateDataJdbc {
     log.debug("updateTeam {}", team);
     TeamID teamID = new TeamID(team.getTeamId(), team.getTenantId());
     Optional<Team> teamExists = teamRepo.findById(teamID);
-    if (teamExists.isEmpty()) return "Failure. Team doesn't exist";
+    if (teamExists.isEmpty()) {
+      return "Failure. Team doesn't exist";
+    }
 
     teamRepo.save(team);
     return ApiResultStatus.SUCCESS.value;
@@ -363,7 +370,6 @@ public class UpdateDataJdbc {
 
   public Integer getNextRolePermissionId(int tenantId) {
     Integer maxId = kwRolesPermsRepo.getMaxRolePermissionId(tenantId);
-
     if (maxId == null) maxId = 1;
 
     return maxId + 1;
@@ -423,8 +429,11 @@ public class UpdateDataJdbc {
   public String setTenantActivestatus(int tenantId, boolean status) {
     Optional<KwTenants> kwTenant = tenantRepo.findById(tenantId);
     if (kwTenant.isPresent()) {
-      if (status) kwTenant.get().setIsActive("true");
-      else kwTenant.get().setIsActive("false");
+      if (status) {
+        kwTenant.get().setIsActive("true");
+      } else {
+        kwTenant.get().setIsActive("false");
+      }
 
       tenantRepo.save(kwTenant.get());
     }

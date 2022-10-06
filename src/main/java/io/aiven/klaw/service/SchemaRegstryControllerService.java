@@ -57,14 +57,15 @@ public class SchemaRegstryControllerService {
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (schemaReqs != null)
+    if (schemaReqs != null) {
       schemaReqs =
           schemaReqs.stream()
               .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
               .collect(Collectors.toList());
+    }
 
     // request status filtering
-    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
+    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType)) {
       if (schemaReqs != null) {
         schemaReqs =
             schemaReqs.stream()
@@ -72,6 +73,7 @@ public class SchemaRegstryControllerService {
                     schemaRequest -> Objects.equals(schemaRequest.getTopicstatus(), requestsType))
                 .collect(Collectors.toList());
       }
+    }
 
     Integer userTeamId = getMyTeamId(userDetails);
     List<UserInfo> userList =
@@ -114,8 +116,9 @@ public class SchemaRegstryControllerService {
 
     for (UserInfo userInfo : userList) {
       if (approverRoles.contains(userInfo.getRole())
-          && !Objects.equals(requestor, userInfo.getUsername()))
+          && !Objects.equals(requestor, userInfo.getUsername())) {
         approvingInfo.append(userInfo.getUsername()).append(",");
+      }
     }
 
     return String.valueOf(approvingInfo);
@@ -209,8 +212,9 @@ public class SchemaRegstryControllerService {
 
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
 
-    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment()))
+    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     ResponseEntity<ApiResponse> response =
         clusterApiService.postSchema(
@@ -236,7 +240,9 @@ public class SchemaRegstryControllerService {
 
     } else {
       String errStr = response.getBody().getResult();
-      if (errStr.length() > 100) errStr = errStr.substring(0, 98) + "...";
+      if (errStr.length() > 100) {
+        errStr = errStr.substring(0, 98) + "...";
+      }
       return ApiResponse.builder().result("Failure in uploading schema. Error : " + errStr).build();
     }
   }
@@ -254,8 +260,9 @@ public class SchemaRegstryControllerService {
         dbHandle.selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
 
-    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment()))
+    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     try {
       String responseDb = dbHandle.updateSchemaRequestDecline(schemaRequest, userDetails);
@@ -277,11 +284,12 @@ public class SchemaRegstryControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null)
+      if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
                 .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();

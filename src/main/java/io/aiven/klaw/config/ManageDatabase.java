@@ -68,12 +68,6 @@ public class ManageDatabase implements ApplicationContextAware {
   // key tenantId, sub key clusterid Pertenant
   private static Map<Integer, Map<Integer, KwClusters>> kwKafkaConnectClustersPertenant;
 
-  //    private static List<Env> kafkaEnvList;
-
-  //    private static List<Env> kafkaConnectEnvList;
-  //
-  //    private static List<Env> schemaEnvList;
-
   private static Map<Integer, List<Env>> kafkaEnvListPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> schemaRegEnvListPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> kafkaConnectEnvListPerTenant = new HashMap<>();
@@ -136,9 +130,10 @@ public class ManageDatabase implements ApplicationContextAware {
   private void loadStaticDataToDb() {
     // add tenant
     Optional<KwTenants> kwTenants = handleDbRequests.getMyTenants(KwConstants.DEFAULT_TENANT_ID);
-    if (kwTenants.isEmpty())
+    if (kwTenants.isEmpty()) {
       handleDbRequests.addNewTenant(
           defaultDataService.getDefaultTenant(KwConstants.DEFAULT_TENANT_ID));
+    }
 
     // add teams
     String infraTeam = "INFRATEAM", stagingTeam = "STAGINGTEAM";
@@ -192,21 +187,15 @@ public class ManageDatabase implements ApplicationContextAware {
     String productName = "Klaw";
     Optional<ProductDetails> productDetails = handleDbRequests.selectProductDetails(productName);
     if (productDetails.isPresent()) {
-      if (!Objects.equals(productDetails.get().getVersion(), kwVersion))
+      if (!Objects.equals(productDetails.get().getVersion(), kwVersion)) {
         handleDbRequests.insertProductDetails(
             defaultDataService.getProductDetails(productName, kwVersion));
-    } else
+      }
+    } else {
       handleDbRequests.insertProductDetails(
           defaultDataService.getProductDetails(productName, kwVersion));
+    }
   }
-
-  //    @Autowired
-  //    private CreateBulkTests createBulkTests;
-  //    private void runPerfTests() {
-  //        createBulkTests.createTopicRequests();
-  ////        createBulkTests.approveTopicRequests();
-  ////        createBulkTests.getTopics();
-  //    }
 
   private void checkSSOAuthentication() {
     if ("db".equals(authenticationType) && "true".equals(ssoEnabled)) {
@@ -252,22 +241,30 @@ public class ManageDatabase implements ApplicationContextAware {
   }
 
   public List<Env> getKafkaEnvList(int tenantId) {
-    if (kafkaEnvListPerTenant.get(tenantId).isEmpty()) return new ArrayList<>();
+    if (kafkaEnvListPerTenant.get(tenantId).isEmpty()) {
+      return new ArrayList<>();
+    }
     return kafkaEnvListPerTenant.get(tenantId);
   }
 
   public List<Env> getSchemaRegEnvList(int tenantId) {
-    if (schemaRegEnvListPerTenant.get(tenantId).isEmpty()) return new ArrayList<>();
+    if (schemaRegEnvListPerTenant.get(tenantId).isEmpty()) {
+      return new ArrayList<>();
+    }
     return schemaRegEnvListPerTenant.get(tenantId);
   }
 
   public List<Env> getKafkaConnectEnvList(int tenantId) {
-    if (kafkaConnectEnvListPerTenant.get(tenantId).isEmpty()) return new ArrayList<>();
+    if (kafkaConnectEnvListPerTenant.get(tenantId).isEmpty()) {
+      return new ArrayList<>();
+    }
     return kafkaConnectEnvListPerTenant.get(tenantId);
   }
 
   public List<Env> getAllEnvList(int tenantId) {
-    if (allEnvListPerTenant.get(tenantId).isEmpty()) return new ArrayList<>();
+    if (allEnvListPerTenant.get(tenantId).isEmpty()) {
+      return new ArrayList<>();
+    }
     return allEnvListPerTenant.get(tenantId);
   }
 
@@ -302,12 +299,14 @@ public class ManageDatabase implements ApplicationContextAware {
 
   public Integer getTeamIdFromTeamName(int tenantId, String teamName) {
     Optional<Map.Entry<Integer, String>> optionalTeam;
-    if (teamName != null)
+    if (teamName != null) {
       optionalTeam =
           teamIdAndNamePerTenant.get(tenantId).entrySet().stream()
               .filter(a -> Objects.equals(a.getValue(), teamName))
               .findFirst();
-    else return null;
+    } else {
+      return null;
+    }
 
     // unknown team
     return optionalTeam.map(Map.Entry::getKey).orElse(null);
@@ -345,14 +344,15 @@ public class ManageDatabase implements ApplicationContextAware {
   }
 
   public String getKwPropertyValue(String kwKey, int tenantId) {
-    if (kwPropertiesMapPerTenant.get(tenantId) != null)
+    if (kwPropertiesMapPerTenant.get(tenantId) != null) {
       return kwPropertiesMapPerTenant.get(tenantId).get(kwKey).get("kwvalue");
-    else return "";
+    } else {
+      return "";
+    }
   }
 
   private void loadEnvsForAllTenants() {
     envsOfTenantsMap = new HashMap<>(); // key is tenantid, value is list of envs
-
     for (Integer tenantId : tenantMap.keySet()) {
       loadEnvsForOneTenant(tenantId);
     }
@@ -394,7 +394,9 @@ public class ManageDatabase implements ApplicationContextAware {
   }
 
   public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
-    if (allTeams == null) allTeams = handleDbRequests.selectAllTeams(tenantId);
+    if (allTeams == null) {
+      allTeams = handleDbRequests.selectAllTeams(tenantId);
+    }
 
     Map<Integer, List<String>> teamsAndAllowedEnvs = new HashMap<>();
     Map<Integer, String> teamsAndNames = new HashMap<>();
@@ -420,8 +422,9 @@ public class ManageDatabase implements ApplicationContextAware {
 
   public void setTenantConfig(TenantConfig config) {
     KwTenantConfigModel tenantModel = config.getTenantModel();
-    if (tenantModel != null)
+    if (tenantModel != null) {
       tenantConfig.put(getTenantIdFromName(tenantModel.getTenantName()), tenantModel);
+    }
   }
 
   private void loadKwPropertiesforAllTenants() {
@@ -439,10 +442,11 @@ public class ManageDatabase implements ApplicationContextAware {
 
   public void loadKwPropsPerOneTenant(
       Map<Integer, Map<String, Map<String, String>>> kwPropertiesMap, Integer tenantId) {
-    if (kwPropertiesMap == null) kwPropertiesMap = handleDbRequests.selectAllKwProperties();
+    if (kwPropertiesMap == null) {
+      kwPropertiesMap = handleDbRequests.selectAllKwProperties();
+    }
 
     kwPropertiesMapPerTenant.put(tenantId, kwPropertiesMap.get(tenantId));
-
     updateKwTenantConfigPerTenant(tenantId);
   }
 
@@ -497,14 +501,17 @@ public class ManageDatabase implements ApplicationContextAware {
       List<KwClusters> schemaRegistryClusters,
       List<KwClusters> kafkaConnectClusters,
       Integer tenantId) {
-    if (kafkaClusters == null)
+    if (kafkaClusters == null) {
       kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA.value, tenantId);
-    if (schemaRegistryClusters == null)
+    }
+    if (schemaRegistryClusters == null) {
       schemaRegistryClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
-    if (kafkaConnectClusters == null)
+    }
+    if (kafkaConnectClusters == null) {
       kafkaConnectClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
+    }
 
     Map<Integer, KwClusters> kwKafkaClusters = new HashMap<>();
     Map<Integer, KwClusters> kwSchemaRegClusters = new HashMap<>();
@@ -531,7 +538,6 @@ public class ManageDatabase implements ApplicationContextAware {
           kwAllClusters.put(cluster.getClusterId(), cluster);
         });
     kwKafkaConnectClustersPertenant.put(tenantId, kwKafkaConnectClusters);
-
     kwAllClustersPertenant.put(tenantId, kwAllClusters);
   }
 
@@ -622,9 +628,11 @@ public class ManageDatabase implements ApplicationContextAware {
           List<String> partitions = new ArrayList<>();
 
           for (int i = 1; i < maxPartitionsInt + 1; i++) {
-            if (defaultPartitions != null && defaultPartitions.equals(i + ""))
+            if (defaultPartitions != null && defaultPartitions.equals(i + "")) {
               partitions.add(i + " (default)");
-            else partitions.add(i + "");
+            } else {
+              partitions.add(i + "");
+            }
           }
           oneEnvParamsMap.put("partitionsList", partitions);
         } else if (param.startsWith("default.replication.factor")) {
@@ -638,8 +646,11 @@ public class ManageDatabase implements ApplicationContextAware {
           List<String> rf = new ArrayList<>();
 
           for (int i = 1; i < maxRfInt + 1; i++) {
-            if (defaultRf != null && defaultRf.equals(i + "")) rf.add(i + " (default)");
-            else rf.add(i + "");
+            if (defaultRf != null && defaultRf.equals(i + "")) {
+              rf.add(i + " (default)");
+            } else {
+              rf.add(i + "");
+            }
           }
 
           oneEnvParamsMap.put("replicationFactorList", rf);

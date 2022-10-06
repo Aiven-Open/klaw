@@ -76,7 +76,9 @@ public class EnvsClustersTenantsControllerService {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       // tenant filtering
-      if (!getEnvsFromUserId().contains(envSelected)) return null;
+      if (!getEnvsFromUserId().contains(envSelected)) {
+        return null;
+      }
     }
 
     Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envSelected, tenantId);
@@ -146,7 +148,9 @@ public class EnvsClustersTenantsControllerService {
       copyProperties(userInfo, userInfoModel);
       userInfoModel.setUserPassword("*******");
       return userInfoModel;
-    } else return null;
+    } else {
+      return null;
+    }
   }
 
   public List<KwClustersModel> getClusters(String typeOfCluster) {
@@ -273,9 +277,11 @@ public class EnvsClustersTenantsControllerService {
       hMap = new HashMap<>();
       hMap.put("id", env.getId());
       String baseClusterDropDownStr = " (Base Sync cluster)";
-      if (Objects.equals(syncCluster, env.getId()))
+      if (Objects.equals(syncCluster, env.getId())) {
         hMap.put("name", env.getName() + baseClusterDropDownStr);
-      else hMap.put("name", env.getName());
+      } else {
+        hMap.put("name", env.getName());
+      }
 
       envsOnly.add(hMap);
     }
@@ -318,9 +324,7 @@ public class EnvsClustersTenantsControllerService {
   public List<EnvModel> getKafkaEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
-
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
-
     List<EnvModel> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA.value, tenantId);
     envModelList.forEach(
         envModel ->
@@ -473,7 +477,9 @@ public class EnvsClustersTenantsControllerService {
                 .get(envModel.getClusterId())
                 .getClusterName());
         envModelList.add(envModel);
-      } else log.error("Error : Environment/cluster not loaded :{}", listEnv);
+      } else {
+        log.error("Error : Environment/cluster not loaded :{}", listEnv);
+      }
     }
     return envModelList;
   }
@@ -575,7 +581,9 @@ public class EnvsClustersTenantsControllerService {
                     .get(oneEnv.getClusterId())
                     .getBootstrapServers(),
                 tenantId);
-      else status = "NOT_KNOWN";
+      else {
+        status = "NOT_KNOWN";
+      }
       oneEnv.setEnvStatus(status);
       newListEnvs.add(oneEnv);
     }
@@ -586,17 +594,21 @@ public class EnvsClustersTenantsControllerService {
   public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException {
     log.info("addNewEnv {}", newEnv);
     int tenantId = getUserDetails(getUserName()).getTenantId();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS))
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     newEnv.setTenantId(tenantId);
 
-    if (newEnv.getClusterId() == null)
+    if (newEnv.getClusterId() == null) {
       return ApiResponse.builder().result("Please select a cluster.").build();
+    }
 
     if (newEnv.getName().length() > 3
-        && Objects.equals(newEnv.getType(), KafkaClustersType.KAFKA.value))
+        && Objects.equals(newEnv.getType(), KafkaClustersType.KAFKA.value)) {
       newEnv.setName(newEnv.getName().substring(0, 3));
+    }
 
     newEnv.setName(newEnv.getName().toUpperCase());
     String envIdAlreadyExistsInDeleteStatus = "";
@@ -616,7 +628,9 @@ public class EnvsClustersTenantsControllerService {
       if (updatedList.isPresent()) {
         int nextId = updatedList.get() + 1;
         newEnv.setId(String.valueOf(nextId));
-      } else newEnv.setId("1");
+      } else {
+        newEnv.setId("1");
+      }
 
       // Same name per type (kafka, kafkaconnect) in tenant not posssible.
       List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
@@ -649,14 +663,17 @@ public class EnvsClustersTenantsControllerService {
                             && en.getTenantId().equals(newEnv.getTenantId())
                             && en.getEnvExists().equals("false"))
                 .findFirst();
-        if (envAlreadyExistsInDeleted.isPresent())
+        if (envAlreadyExistsInDeleted.isPresent()) {
           envIdAlreadyExistsInDeleteStatus = envAlreadyExistsInDeleted.get().getId();
+        }
       }
     }
 
     Env env = new Env();
     copyProperties(newEnv, env);
-    if (!"".equals(envIdAlreadyExistsInDeleteStatus)) env.setId(envIdAlreadyExistsInDeleteStatus);
+    if (!"".equals(envIdAlreadyExistsInDeleteStatus)) {
+      env.setId(envIdAlreadyExistsInDeleteStatus);
+    }
     env.setEnvExists("true");
 
     try {
@@ -733,7 +750,9 @@ public class EnvsClustersTenantsControllerService {
       if (pubKeyFileCreated) {
         return commonUtilsService.addPublicKeyToTrustStore(
             kwCluster.getClusterName().toUpperCase(), tenantId);
-      } else return false;
+      } else {
+        return false;
+      }
     } catch (Exception e) {
       log.error(
           tenantId + " tenantId. Error in adding cluster --" + kwClustersModel.getClusterName(), e);
@@ -748,7 +767,9 @@ public class EnvsClustersTenantsControllerService {
     try {
       clientCertFile = new File(clientCertsLocation + "/" + fileName);
 
-      if (clientCertFile.exists()) clientCertFile.delete();
+      if (clientCertFile.exists()) {
+        clientCertFile.delete();
+      }
 
       outputStream = new FileOutputStream(clientCertFile);
       outputStream.write(Base64.getDecoder().decode(publicKey));
@@ -762,7 +783,9 @@ public class EnvsClustersTenantsControllerService {
       return false;
     } finally {
       try {
-        if (outputStream != null) outputStream.close();
+        if (outputStream != null) {
+          outputStream.close();
+        }
       } catch (Exception ex) {
         log.error("Error in closing the BufferedWriter ", ex);
       }
@@ -948,18 +971,24 @@ public class EnvsClustersTenantsControllerService {
     kwTenants.setInTrial(kwTenantModel.isInTrialPhase() + "");
     kwTenants.setContactPerson(kwTenantModel.getContactPerson());
     kwTenants.setOrgName("Our Organization");
-    if (isExternal) kwTenantModel.setActiveTenant(true);
+    if (isExternal) {
+      kwTenantModel.setActiveTenant(true);
+    }
 
-    if (kwTenantModel.isActiveTenant()) kwTenants.setIsActive("true");
-    else kwTenants.setIsActive("false");
+    if (kwTenantModel.isActiveTenant()) {
+      kwTenants.setIsActive("true");
+    } else {
+      kwTenants.setIsActive("false");
+    }
 
-    if ("saas".equals(kwInstallationType))
+    if ("saas".equals(kwInstallationType)) {
       kwTenants.setLicenseExpiry(
           new Timestamp(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_TRIAL_PERIOD)));
-    else
+    } else {
       kwTenants.setLicenseExpiry(
           new Timestamp(
               System.currentTimeMillis() + TimeUnit.DAYS.toMillis(DAYS_EXPIRY_DEFAULT_TENANT)));
+    }
 
     try {
       String addNewTenantStatus = manageDatabase.getHandleDbRequests().addNewTenant(kwTenants);
@@ -1020,7 +1049,9 @@ public class EnvsClustersTenantsControllerService {
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
         kwTenantModel.setAuthorizedToDelete(false);
-      } else kwTenantModel.setAuthorizedToDelete(true);
+      } else {
+        kwTenantModel.setAuthorizedToDelete(true);
+      }
     }
     return kwTenantModel;
   }
@@ -1204,7 +1235,9 @@ public class EnvsClustersTenantsControllerService {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       // tenant filtering
-      if (!getEnvsFromUserId().contains(envSelected)) return null;
+      if (!getEnvsFromUserId().contains(envSelected)) {
+        return null;
+      }
     }
 
     Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envSelected, tenantId);

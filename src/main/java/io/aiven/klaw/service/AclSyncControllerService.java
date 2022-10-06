@@ -264,7 +264,9 @@ public class AclSyncControllerService {
                 if (topicNameSearch != null) {
                   return "TOPIC".equals(hItem.get("resourceType"))
                       && hItem.get("resourceName").contains(topicNameSearch);
-                } else return "TOPIC".equals(hItem.get("resourceType"));
+                } else {
+                  return "TOPIC".equals(hItem.get("resourceType"));
+                }
               } else {
                 return Objects.equals(hItem.get("resourceName"), topicNameSearch);
               }
@@ -306,10 +308,13 @@ public class AclSyncControllerService {
     boolean isReconciliation = !Boolean.parseBoolean(showAllAcls);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
+    if (topicNameSearch != null) {
+      topicNameSearch = topicNameSearch.trim();
+    }
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS))
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
       return null;
+    }
 
     List<Map<String, String>> aclList;
 
@@ -345,13 +350,17 @@ public class AclSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) return null;
+        getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
+      return null;
+    }
 
     List<Acl> aclsFromSOT;
 
-    if (topicNameSearch != null && topicNameSearch.trim().length() > 0)
+    if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
       aclsFromSOT = getAclsFromSOT(envId, topicNameSearch, false, tenantId);
-    else aclsFromSOT = getAclsFromSOT(envId, topicNameSearch, true, tenantId);
+    } else {
+      aclsFromSOT = getAclsFromSOT(envId, topicNameSearch, true, tenantId);
+    }
 
     List<AclInfo> aclInfoList;
     Integer loggedInUserTeam = getMyTeamId(getUserName());
@@ -385,7 +394,9 @@ public class AclSyncControllerService {
       if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam))
         mp.setShowDeleteAcl(true);
 
-      if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) aclList.add(mp);
+      if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
+        aclList.add(mp);
+      }
     }
     return aclList;
   }
@@ -405,23 +416,25 @@ public class AclSyncControllerService {
     for (Map<String, String> aclListItem : aclList) {
       AclInfo mp = new AclInfo();
       mp.setEnvironment(env);
-
       mp.setPossibleTeams(teamList);
       mp.setTeamname("");
 
       String tmpPermType = aclListItem.get("operation");
 
-      if (AclPermissionType.WRITE.value.equals(tmpPermType))
+      if (AclPermissionType.WRITE.value.equals(tmpPermType)) {
         mp.setTopictype(AclType.PRODUCER.value);
-      else if (AclPermissionType.READ.value.equals(tmpPermType)) {
+      } else if (AclPermissionType.READ.value.equals(tmpPermType)) {
         mp.setTopictype(AclType.CONSUMER.value);
-        if (aclListItem.get("consumerGroup") != null)
+        if (aclListItem.get("consumerGroup") != null) {
           mp.setConsumergroup(aclListItem.get("consumerGroup"));
-        else continue;
+        } else {
+          continue;
+        }
       }
 
-      if ("topic".equalsIgnoreCase(aclListItem.get("resourceType")))
+      if ("topic".equalsIgnoreCase(aclListItem.get("resourceType"))) {
         mp.setTopicname(aclListItem.get("resourceName"));
+      }
 
       mp.setAcl_ip(aclListItem.get("host"));
       mp.setAcl_ssl(aclListItem.get("principle"));
@@ -430,8 +443,9 @@ public class AclSyncControllerService {
         String acl_ssl = aclSotItem.getAclssl();
         String acl_host = aclSotItem.getAclip();
 
-        if (acl_ssl == null || acl_ssl.equals("")) acl_ssl = "User:*";
-        else {
+        if (acl_ssl == null || acl_ssl.equals("")) {
+          acl_ssl = "User:*";
+        } else {
           if (!KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kafkaFlavor)
               && !"User:*".equals(acl_ssl)
               && !acl_ssl.startsWith("User:")) {
@@ -439,7 +453,9 @@ public class AclSyncControllerService {
           }
         }
 
-        if (acl_host == null || acl_host.equals("")) acl_host = "*";
+        if (acl_host == null || acl_host.equals("")) {
+          acl_host = "*";
+        }
 
         if (aclSotItem.getTopicname() != null
             && Objects.equals(aclListItem.get("resourceName"), aclSotItem.getTopicname())
@@ -452,14 +468,19 @@ public class AclSyncControllerService {
         }
       }
 
-      if (mp.getTeamname() == null) mp.setTeamname("Unknown");
+      if (mp.getTeamname() == null) {
+        mp.setTeamname("Unknown");
+      }
 
       if (isReconciliation) {
-        if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) aclListMap.add(mp);
+        if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) {
+          aclListMap.add(mp);
+        }
       } else {
         if (teamList.contains(mp.getTeamname())) aclListMap.add(mp);
-        else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname()))
+        else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) {
           aclListMap.add(mp);
+        }
       }
     }
     return aclListMap;
@@ -475,9 +496,7 @@ public class AclSyncControllerService {
             getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
-
       List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
-
       teams =
           teams.stream()
               .filter(t -> Objects.equals(t.getTenantId(), tenantId))

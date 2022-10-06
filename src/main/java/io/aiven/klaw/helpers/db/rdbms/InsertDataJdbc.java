@@ -247,7 +247,9 @@ public class InsertDataJdbc {
     acls.forEach(
         acl -> {
           log.debug("insertIntoAclsSOT {}", acl.getTopicname());
-          if (acl.getReq_no() == null) acl.setReq_no(getNextAclId(acl.getTenantId()));
+          if (acl.getReq_no() == null) {
+            acl.setReq_no(getNextAclId(acl.getTenantId()));
+          }
           aclRepo.save(acl);
         });
     return ApiResultStatus.SUCCESS.value;
@@ -288,8 +290,9 @@ public class InsertDataJdbc {
 
     for (MessageSchema mSchema : schemas) {
       log.debug("insertIntoMessageSchemaSOT {}", mSchema.getTopicname());
-      if (mSchema.getReq_no() == null)
+      if (mSchema.getReq_no() == null) {
         mSchema.setReq_no(getNextSchemaRequestId("SCHEMA_ID", mSchema.getTenantId()));
+      }
       messageSchemaRepo.save(mSchema);
     }
     return ApiResultStatus.SUCCESS.value;
@@ -298,7 +301,9 @@ public class InsertDataJdbc {
   public String insertIntoUsers(UserInfo userInfo) {
     log.debug("insertIntoUsers {}", userInfo.getUsername());
     Optional<UserInfo> userExists = userInfoRepo.findById(userInfo.getUsername());
-    if (userExists.isPresent()) return "Failure. User already exists";
+    if (userExists.isPresent()) {
+      return "Failure. User already exists";
+    }
 
     userInfoRepo.save(userInfo);
     return ApiResultStatus.SUCCESS.value;
@@ -317,7 +322,9 @@ public class InsertDataJdbc {
     }
 
     Optional<Team> teamExists = teamRepo.findById(teamID);
-    if (teamExists.isPresent()) return "Failure. Team already exists";
+    if (teamExists.isPresent()) {
+      return "Failure. Team already exists";
+    }
 
     team.setApp("");
     teamRepo.save(team);
@@ -337,8 +344,11 @@ public class InsertDataJdbc {
     if (kwClusters.getClusterId() == null) {
       lastClusterId = kwClusterRepo.getNextClusterId(kwClusters.getTenantId());
 
-      if (lastClusterId == null) lastClusterId = 1;
-      else lastClusterId = lastClusterId + 1;
+      if (lastClusterId == null) {
+        lastClusterId = 1;
+      } else {
+        lastClusterId = lastClusterId + 1;
+      }
 
       kwClusters.setClusterId(lastClusterId);
     }
@@ -369,46 +379,65 @@ public class InsertDataJdbc {
   public Integer getNextTeamId(int tenantId) {
     Integer teamId = teamRepo.getNextTeamId(tenantId);
     if (teamId == null) return 1001;
-    else return teamId + 1;
+    else {
+      return teamId + 1;
+    }
   }
 
   public Integer getNextAclRequestId(int tenantId) {
     Integer aclReqId = aclRequestsRepo.getNextAclRequestId(tenantId);
-    if (aclReqId == null) return 1001;
-    else return aclReqId + 1;
+    if (aclReqId == null) {
+      return 1001;
+    } else {
+      return aclReqId + 1;
+    }
   }
 
   public Integer getNextAclId(int tenantId) {
     Integer aclId = aclRepo.getNextAclId(tenantId);
-    if (aclId == null) return 1001;
-    else return aclId + 1;
+    if (aclId == null) {
+      return 1001;
+    } else {
+      return aclId + 1;
+    }
   }
 
   public synchronized Integer getNextActivityLogRequestId(int tenantId) {
     Integer activityLogId = activityLogRepo.getNextActivityLogRequestId(tenantId);
 
-    if (activityLogId == null) return 1001;
-    else return activityLogId + 1;
+    if (activityLogId == null) {
+      return 1001;
+    } else {
+      return activityLogId + 1;
+    }
   }
 
   public Integer getNextTopicRequestId(String idType, int tenantId) {
     Integer topicId = null;
-    if ("TOPIC_REQ_ID".equals(idType)) topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
-    else if ("TOPIC_ID".equals(idType)) topicId = topicRepo.getNextTopicRequestId(tenantId);
+    if ("TOPIC_REQ_ID".equals(idType)) {
+      topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
+    } else if ("TOPIC_ID".equals(idType)) {
+      topicId = topicRepo.getNextTopicRequestId(tenantId);
+    }
 
     return topicId == null ? 1001 : topicId + 1;
   }
 
   public Integer getNextConnectorRequestId(String idType, int tenantId) {
     Integer topicId;
-    if (idType.equals("CONNECTOR_REQ_ID"))
+    if (idType.equals("CONNECTOR_REQ_ID")) {
       topicId = kafkaConnectorRequestsRepo.getNextConnectorRequestId(tenantId);
-    else if (idType.equals("CONNECTOR_ID"))
+    } else if (idType.equals("CONNECTOR_ID")) {
       topicId = kafkaConnectorRepo.getNextConnectorRequestId(tenantId);
-    else topicId = null;
+    } else {
+      topicId = null;
+    }
 
-    if (topicId == null) return 1001;
-    else return topicId + 1;
+    if (topicId == null) {
+      return 1001;
+    } else {
+      return topicId + 1;
+    }
   }
 
   public Integer getNextSchemaRequestId(String idType, int tenantId) {
@@ -424,8 +453,11 @@ public class InsertDataJdbc {
 
   public String addNewTenant(KwTenants kwTenants) {
     Integer maxTenantId = tenantRepo.getMaxTenantId();
-    if (maxTenantId == null) maxTenantId = 101;
-    else maxTenantId = maxTenantId + 1;
+    if (maxTenantId == null) {
+      maxTenantId = 101;
+    } else {
+      maxTenantId = maxTenantId + 1;
+    }
     kwTenants.setTenantId(maxTenantId);
     tenantRepo.save(kwTenants);
     return ApiResultStatus.SUCCESS.value;
@@ -438,8 +470,11 @@ public class InsertDataJdbc {
 
   public String insertMetrics(KwMetrics kwMetrics) {
     Integer metricsId = metricsRepo.getNextId();
-    if (metricsId == null) metricsId = 1001;
-    else metricsId += 1;
+    if (metricsId == null) {
+      metricsId = 1001;
+    } else {
+      metricsId += 1;
+    }
 
     kwMetrics.setMetricsId(metricsId);
 
@@ -464,8 +499,9 @@ public class InsertDataJdbc {
 
   public Integer getNextRolePermissionId(int tenantId) {
     Integer maxId = kwRolesPermsRepo.getMaxRolePermissionId(tenantId);
-
-    if (maxId == null) maxId = 1;
+    if (maxId == null) {
+      maxId = 1;
+    }
 
     return maxId + 1;
   }

@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwRolesPermissionsModel;
@@ -60,34 +58,23 @@ public class RolesPermissionsController {
   }
 
   @PostMapping(value = "/deleteRole")
-  public ResponseEntity<ApiResponse> deleteRole(@RequestParam("roleId") String roleId) {
-    try {
-      return new ResponseEntity<>(
-          rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> deleteRole(@RequestParam("roleId") String roleId)
+      throws KlawException {
+    return new ResponseEntity<>(
+        rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addRoleId")
-  public ResponseEntity<ApiResponse> addRoleId(@RequestParam("roleId") String roleId) {
-    try {
-      return new ResponseEntity<>(
-          rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> addRoleId(@RequestParam("roleId") String roleId)
+      throws KlawException {
+    return new ResponseEntity<>(rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updatePermissions")
   public ResponseEntity<ApiResponse> updatePermissions(
-      @RequestBody KwRolesPermissionsModel[] kwRolesPermissionsModels) {
-    try {
-      return new ResponseEntity<>(
-          rolesPermissionsControllerService.updatePermissions(kwRolesPermissionsModels),
-          HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestBody KwRolesPermissionsModel[] kwRolesPermissionsModels) throws KlawException {
+    return new ResponseEntity<>(
+        rolesPermissionsControllerService.updatePermissions(kwRolesPermissionsModels),
+        HttpStatus.OK);
   }
 }

@@ -269,7 +269,9 @@ public class KafkaConnectSyncControllerService {
     for (SyncConnectorUpdates updatedSyncTopic : updatedSyncTopics) {
       if ("REMOVE FROM KLAW".equals(updatedSyncTopic.getTeamSelected())) {
         updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
-      } else updatedSyncTopicsUpdated.add(updatedSyncTopic);
+      } else {
+        updatedSyncTopicsUpdated.add(updatedSyncTopic);
+      }
     }
 
     // delete topic
@@ -468,11 +470,12 @@ public class KafkaConnectSyncControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (connectorsFromSOT != null)
+      if (connectorsFromSOT != null) {
         connectorsFromSOT =
             connectorsFromSOT.stream()
                 .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();

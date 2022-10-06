@@ -333,8 +333,11 @@ public class MailUtils {
 
           String emailIdTeam;
           try {
-            if (registrationRequest) emailId = otherMailId;
-            else emailId = dbHandle.getUsersInfo(username).getMailid();
+            if (registrationRequest) {
+              emailId = otherMailId;
+            } else {
+              emailId = dbHandle.getUsersInfo(username).getMailid();
+            }
 
             try {
               emailIdTeam = dbHandle.selectAllTeamsOfUsers(username, tenantId).get(0).getTeammail();
@@ -346,7 +349,9 @@ public class MailUtils {
             if (emailId != null) {
               emailService.sendSimpleMessage(
                   emailId, emailIdTeam, subject, formattedStr, tenantId, loginUrl);
-            } else log.error("Email id not found. Notification not sent !!");
+            } else {
+              log.error("Email id not found. Notification not sent !!");
+            }
           } catch (Exception e) {
             log.error("Email id not found. Notification not sent !! ", e);
           }

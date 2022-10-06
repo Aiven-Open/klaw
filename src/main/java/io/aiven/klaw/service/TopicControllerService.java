@@ -451,14 +451,14 @@ public class TopicControllerService {
             .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
             .collect(Collectors.toList());
 
-    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
+    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType)) {
       topicReqs =
           topicReqs.stream()
               .filter(topicRequest -> Objects.equals(topicRequest.getTopicstatus(), requestsType))
               .collect(Collectors.toList());
+    }
 
     topicReqs = getTopicRequestsPaged(topicReqs, pageNo, currentPage);
-
     return getTopicRequestModels(topicReqs, true);
   }
 
@@ -576,11 +576,12 @@ public class TopicControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getCreatedTopicRequests(userDetails, requestsType, false, tenantId);
-    } else
+    } else {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedTopicRequests(userDetails, requestsType, true, tenantId);
+    }
 
     createdTopicReqList = getTopicRequestsFilteredForTenant(createdTopicReqList);
     createdTopicReqList = getTopicRequestsPaged(createdTopicReqList, pageNo, currentPage);
@@ -632,13 +633,14 @@ public class TopicControllerService {
                     manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
                     approverRoles,
                     topicRequestModel.getRequestor()));
-          } else
+          } else {
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
                     userList,
                     manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId),
                     approverRoles,
                     topicRequestModel.getRequestor()));
+          }
         }
       }
 
@@ -653,8 +655,9 @@ public class TopicControllerService {
 
     for (UserInfo userInfo : userList) {
       if (approverRoles.contains(userInfo.getRole())
-          && !Objects.equals(requestor, userInfo.getUsername()))
+          && !Objects.equals(requestor, userInfo.getUsername())) {
         approvingInfo.append(userInfo.getUsername()).append(",");
+      }
     }
 
     return String.valueOf(approvingInfo);
@@ -720,8 +723,9 @@ public class TopicControllerService {
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
-      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus))
+      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)) {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userDetails);
+      }
     } else {
       ResponseEntity<ApiResponse> response =
           clusterApiService.approveTopicRequests(
@@ -791,8 +795,9 @@ public class TopicControllerService {
       throws KlawException {
     log.info("declineTopicRequests {} {}", topicId, reasonForDecline);
     String userDetails = getUserName();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS))
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequest =
@@ -805,8 +810,9 @@ public class TopicControllerService {
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (!allowedEnvIdList.contains(topicRequest.getEnvironment()))
+    if (!allowedEnvIdList.contains(topicRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     try {
       String result = dbHandle.declineTopicRequest(topicRequest, userDetails);
@@ -837,8 +843,6 @@ public class TopicControllerService {
 
     if (isMyTeamTopics) {
       Integer userTeamId = getMyTeamId(getUserName());
-      //            String teamId =
-      // manageDatabase.getHandleDbRequests().getUsersInfo(getUserName()).getTeam();
       topicsFromSOT =
           topicsFromSOT.stream()
               .filter(topic -> Objects.equals(topic.getTeamId(), userTeamId))
@@ -857,7 +861,6 @@ public class TopicControllerService {
     topic.setTopicid(topicInfo.getTopicid());
     topic.setDocumentation(topicInfo.getDocumentation());
 
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<Topic> topicsSearchList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicInfo.getTopicName(), tenantId);
@@ -1129,7 +1132,9 @@ public class TopicControllerService {
       i++;
     }
 
-    if (innerList.size() > 0) newList.add(innerList);
+    if (innerList.size() > 0) {
+      newList.add(innerList);
+    }
 
     return newList;
   }
@@ -1168,7 +1173,9 @@ public class TopicControllerService {
     int requestPageNo = Integer.parseInt(pageNo);
 
     List<TopicInfo> topicsListMap = null;
-    if (totalRecs > 0) topicsListMap = new ArrayList<>();
+    if (totalRecs > 0) {
+      topicsListMap = new ArrayList<>();
+    }
 
     int startVar = (requestPageNo - 1) * recsPerPage;
     int lastVar = (requestPageNo) * (recsPerPage);
@@ -1252,11 +1259,12 @@ public class TopicControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null)
+      if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
                 .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();
@@ -1269,11 +1277,12 @@ public class TopicControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (createdTopicReqList != null)
+      if (createdTopicReqList != null) {
         createdTopicReqList =
             createdTopicReqList.stream()
                 .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();

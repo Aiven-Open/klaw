@@ -168,7 +168,9 @@ public class DeleteDataJdbc {
       //            env.get().setEnvExists("false");
       envRepo.delete(env.get());
       return ApiResultStatus.SUCCESS.value;
-    } else return ApiResultStatus.FAILURE.value;
+    } else {
+      return ApiResultStatus.FAILURE.value;
+    }
   }
 
   public String deleteCluster(int clusterId, int tenantId) {
@@ -186,7 +188,9 @@ public class DeleteDataJdbc {
       kwClusterRepo.delete(clusters);
       envRepo.deleteAll(allAssociatedEnvs);
       return ApiResultStatus.SUCCESS.value;
-    } else return ApiResultStatus.FAILURE.value;
+    } else {
+      return ApiResultStatus.FAILURE.value;
+    }
   }
 
   public String deleteUserRequest(String userId) {

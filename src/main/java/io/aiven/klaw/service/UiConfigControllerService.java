@@ -29,8 +29,11 @@ public class UiConfigControllerService {
 
   public Map<String, String> getDbAuth() {
     Map<String, String> dbMap = new HashMap<>();
-    if ("db".equals(authenticationType)) dbMap.put("dbauth", "true");
-    else dbMap.put("dbauth", "false");
+    if ("db".equals(authenticationType)) {
+      dbMap.put("dbauth", "true");
+    } else {
+      dbMap.put("dbauth", "false");
+    }
     return dbMap;
   }
 
@@ -45,16 +48,17 @@ public class UiConfigControllerService {
     List<ActivityLog> origActivityList;
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS))
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
               .selectActivityLog(userName, env, false, tenantId); // only your team reqs
-    else
+    } else {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
               .selectActivityLog(userName, env, true, tenantId); // all teams reqs
+    }
 
     return getActivityLogsPaginated(pageNo, origActivityList, currentPage, tenantId);
   }
@@ -103,21 +107,22 @@ public class UiConfigControllerService {
   public String getEnvName(String envId, String activityName, int tenantId) {
     Optional<Env> envFound;
 
-    if ("SchemaRequest".equals(activityName))
+    if ("SchemaRequest".equals(activityName)) {
       envFound =
           manageDatabase.getSchemaRegEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    else if ("ConnectorRequest".equals(activityName))
+    } else if ("ConnectorRequest".equals(activityName)) {
       envFound =
           manageDatabase.getKafkaConnectEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    else
+    } else {
       envFound =
           manageDatabase.getKafkaEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
+    }
 
     return envFound.map(Env::getName).orElse(null);
   }
@@ -136,14 +141,6 @@ public class UiConfigControllerService {
 
   public List<String> getRequestTypeStatuses() {
     return manageDatabase.getRequestStatusList();
-    //        if(userType.equals("USER"))
-    //            return manageDatabase.getRequestStatusList();
-    //        else {
-    //            ArrayList<String> apprvrList = new
-    // ArrayList<>(manageDatabase.getRequestStatusList());
-    //            apprvrList.remove("deleted");
-    //            return apprvrList;
-    //        }
   }
 
   private Object getPrincipal() {

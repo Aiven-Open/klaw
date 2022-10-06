@@ -69,16 +69,19 @@ public class ServerConfigService {
 
             ServerConfigProperties props = new ServerConfigProperties();
             props.setKey(key);
-            if (key.contains("password") || key.contains("license")) props.setValue("*******");
-            else
+            if (key.contains("password") || key.contains("license")) {
+              props.setValue("*******");
+            } else {
               props.setValue(WordUtils.wrap(propertySource.getProperty(key) + "", 125, "\n", true));
-
+            }
             if (!checkPropertyExists(listProps, key)
                 && !key.toLowerCase().contains("path")
                 && !key.contains("secretkey")
                 && !key.contains("password")
                 && !key.contains("username")) {
-              if (allowedKeys.stream().anyMatch(key::startsWith)) listProps.add(props);
+              if (allowedKeys.stream().anyMatch(key::startsWith)) {
+                listProps.add(props);
+              }
             }
           }
         }
@@ -93,7 +96,9 @@ public class ServerConfigService {
 
   private boolean checkPropertyExists(List<ServerConfigProperties> props, String key) {
     for (ServerConfigProperties serverProps : props) {
-      if (Objects.equals(serverProps.getKey(), key)) return true;
+      if (Objects.equals(serverProps.getKey(), key)) {
+        return true;
+      }
     }
     return false;
   }
@@ -144,11 +149,13 @@ public class ServerConfigService {
       }
     }
 
-    if (tenantId != KwConstants.DEFAULT_TENANT_ID)
+    if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       return listMap.stream()
           .filter(item -> KwConstants.allowConfigForAdmins.contains(item.get("kwkey")))
           .collect(Collectors.toList());
-    else return listMap;
+    } else {
+      return listMap;
+    }
   }
 
   public ApiResponse updateKwCustomProperty(KwPropertiesModel kwPropertiesModel)
@@ -219,14 +226,16 @@ public class ServerConfigService {
       KwTenantConfigModel tenant = dynamicObj.getTenantModel();
 
       // syncClusterName update
-      if (tenant.getBaseSyncEnvironment() != null)
+      if (tenant.getBaseSyncEnvironment() != null) {
         tenant.setBaseSyncEnvironment(
             getEnvDetails(tenant.getBaseSyncEnvironment(), tenantId).getName());
+      }
 
       // syncClusterKafkaConnectName update
-      if (tenant.getBaseSyncKafkaConnectCluster() != null)
+      if (tenant.getBaseSyncKafkaConnectCluster() != null) {
         tenant.setBaseSyncKafkaConnectCluster(
             getKafkaConnectEnvDetails(tenant.getBaseSyncKafkaConnectCluster(), tenantId).getName());
+      }
 
       // kafka
       if (tenant.getOrderOfTopicPromotionEnvsList() != null) {
@@ -248,8 +257,9 @@ public class ServerConfigService {
             .getOrderOfConnectorsPromotionEnvsList()
             .forEach(
                 a -> {
-                  if (getKafkaConnectEnvDetails(a, tenantId) != null)
+                  if (getKafkaConnectEnvDetails(a, tenantId) != null) {
                     tmpOrderList1.add(getKafkaConnectEnvDetails(a, tenantId).getName());
+                  }
                 });
         tenant.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
@@ -261,8 +271,9 @@ public class ServerConfigService {
             .getRequestTopicsEnvironmentsList()
             .forEach(
                 a -> {
-                  if (getEnvDetails(a, tenantId) != null)
+                  if (getEnvDetails(a, tenantId) != null) {
                     tmpReqTopicList.add(getEnvDetails(a, tenantId).getName());
+                  }
                 });
         tenant.setRequestTopicsEnvironmentsList(tmpReqTopicList);
       }
@@ -274,8 +285,9 @@ public class ServerConfigService {
             .getRequestConnectorsEnvironmentsList()
             .forEach(
                 a -> {
-                  if (getKafkaConnectEnvDetails(a, tenantId) != null)
+                  if (getKafkaConnectEnvDetails(a, tenantId) != null) {
                     tmpReqTopicList1.add(getKafkaConnectEnvDetails(a, tenantId).getName());
+                  }
                 });
         tenant.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
       }
@@ -287,20 +299,22 @@ public class ServerConfigService {
       KwTenantConfigModel tenantModel = dynamicObj.getTenantModel();
 
       // syncClusterName update
-      if (tenantModel.getBaseSyncEnvironment() != null)
+      if (tenantModel.getBaseSyncEnvironment() != null) {
         tenantModel.setBaseSyncEnvironment(
             getEnvDetailsFromName(
                     tenantModel.getBaseSyncEnvironment(),
                     getTenantIdFromName(tenantModel.getTenantName()))
                 .getId());
+      }
 
       // syncClusterKafkaConnectName update
-      if (tenantModel.getBaseSyncKafkaConnectCluster() != null)
+      if (tenantModel.getBaseSyncKafkaConnectCluster() != null) {
         tenantModel.setBaseSyncKafkaConnectCluster(
             getKafkaConnectEnvDetailsFromName(
                     tenantModel.getBaseSyncKafkaConnectCluster(),
                     getTenantIdFromName(tenantModel.getTenantName()))
                 .getId());
+      }
 
       // kafka
       if (tenantModel.getOrderOfTopicPromotionEnvsList() != null) {
@@ -391,7 +405,9 @@ public class ServerConfigService {
         // orderOfenvs check
         if (tenantModel.getOrderOfTopicPromotionEnvsList() != null) {
           for (String orderOfTopicPromotionEnv : tenantModel.getOrderOfTopicPromotionEnvsList()) {
-            if (!envListStr.contains(orderOfTopicPromotionEnv)) return false;
+            if (!envListStr.contains(orderOfTopicPromotionEnv)) {
+              return false;
+            }
           }
         }
 
@@ -399,21 +415,27 @@ public class ServerConfigService {
         if (tenantModel.getOrderOfConnectorsPromotionEnvsList() != null) {
           for (String orderOfConnectorsPromotionEnv :
               tenantModel.getOrderOfConnectorsPromotionEnvsList()) {
-            if (!envListKafkaConnectStr.contains(orderOfConnectorsPromotionEnv)) return false;
+            if (!envListKafkaConnectStr.contains(orderOfConnectorsPromotionEnv)) {
+              return false;
+            }
           }
         }
 
         // requestTopics check
         if (tenantModel.getRequestTopicsEnvironmentsList() != null) {
           for (String requestTopicEnvs : tenantModel.getRequestTopicsEnvironmentsList()) {
-            if (!envListStr.contains(requestTopicEnvs)) return false;
+            if (!envListStr.contains(requestTopicEnvs)) {
+              return false;
+            }
           }
         }
 
         // requestConnectors check
         if (tenantModel.getRequestConnectorsEnvironmentsList() != null) {
           for (String requestConnectorEnvs : tenantModel.getRequestConnectorsEnvironmentsList()) {
-            if (!envListKafkaConnectStr.contains(requestConnectorEnvs)) return false;
+            if (!envListKafkaConnectStr.contains(requestConnectorEnvs)) {
+              return false;
+            }
           }
         }
       }
@@ -470,8 +492,11 @@ public class ServerConfigService {
     Map<String, String> hashMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
-    if ("ONLINE".equals(clusterApiStatus)) clusterApiStatus = "successful.";
-    else clusterApiStatus = "failure.";
+    if ("ONLINE".equals(clusterApiStatus)) {
+      clusterApiStatus = "successful.";
+    } else {
+      clusterApiStatus = "failure.";
+    }
     hashMap.put("result", clusterApiStatus);
     return hashMap;
   }

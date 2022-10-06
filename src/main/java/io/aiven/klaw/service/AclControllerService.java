@@ -99,7 +99,9 @@ public class AclControllerService {
         }
       }
       result = "Failure : Topic not found on target environment.";
-      if (!topicFound) return ApiResponse.builder().result(result).build();
+      if (!topicFound) {
+        return ApiResponse.builder().result(result).build();
+      }
     }
 
     if (AclType.CONSUMER.value.equals(aclReq.getTopictype())) {
@@ -128,7 +130,9 @@ public class AclControllerService {
       for (int i = 0; i < aclReq.getAcl_ip().size(); i++) {
         if (i == 0) {
           aclStr.append(aclReq.getAcl_ip().get(i));
-        } else aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ip().get(i));
+        } else {
+          aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ip().get(i));
+        }
       }
       aclRequestsDao.setAcl_ip(aclStr.toString());
     }
@@ -137,13 +141,16 @@ public class AclControllerService {
       for (int i = 0; i < aclReq.getAcl_ssl().size(); i++) {
         if (i == 0) {
           aclStr.append(aclReq.getAcl_ssl().get(i));
-        } else aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ssl().get(i));
+        } else {
+          aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ssl().get(i));
+        }
       }
       aclRequestsDao.setAcl_ssl(aclStr.toString());
     }
 
-    if (aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null"))
+    if (aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null")) {
       aclRequestsDao.setAcl_ssl("User:*");
+    }
 
     aclRequestsDao.setTenantId(tenantId);
     try {
@@ -254,8 +261,9 @@ public class AclControllerService {
 
       for (UserInfo userInfo : userList) {
         if (approverRoles.contains(userInfo.getRole())
-            && !Objects.equals(requestor, userInfo.getUsername()))
+            && !Objects.equals(requestor, userInfo.getUsername())) {
           approvingInfo.append(userInfo.getUsername()).append(",");
+        }
       }
       return String.valueOf(approvingInfo);
     }
@@ -343,16 +351,17 @@ public class AclControllerService {
 
     // get requests relevant to your teams or all teams
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedAclRequestsByStatus(userDetails, requestsType, false, tenantId);
-    else
+    } else {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedAclRequestsByStatus(userDetails, requestsType, true, tenantId);
+    }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
@@ -410,8 +419,9 @@ public class AclControllerService {
         dbHandle.selectSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
-    if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment()))
+    if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    }
 
     AclRequests aclReq = new AclRequests();
 
@@ -450,18 +460,20 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
-    if (Objects.equals(aclReq.getUsername(), userDetails))
+    if (Objects.equals(aclReq.getUsername(), userDetails)) {
       return ApiResponse.builder()
           .result("You are not allowed to approve your own subscription requests.")
           .build();
+    }
 
     if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment()))
+    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     String allIps = aclReq.getAcl_ip();
     String allSsl = aclReq.getAcl_ssl();
@@ -494,12 +506,14 @@ public class AclControllerService {
           String jsonParams = "", aivenAclIdKey = "aivenaclid";
           if (responseBody.getData() instanceof Map) {
             Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
-            if (dataMap.containsKey(aivenAclIdKey))
+            if (dataMap.containsKey(aivenAclIdKey)) {
               jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+            }
           }
           updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
-
-        } else return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        } else {
+          return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        }
       } catch (Exception e) {
         log.error("Exception ", e);
         return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
@@ -538,8 +552,9 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment()))
+    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     String updateAclReqStatus;
 
@@ -568,10 +583,10 @@ public class AclControllerService {
   private List<Acl> getAclsFromSOT(
       String env, String topicNameSearch, boolean regex, int tenantId) {
     List<Acl> aclsFromSOT;
-    if (!regex)
+    if (!regex) {
       aclsFromSOT =
           manageDatabase.getHandleDbRequests().getSyncAcls(env, topicNameSearch, tenantId);
-    else {
+    } else {
       aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env, tenantId);
       List<Acl> topicFilteredList = aclsFromSOT;
       // Filter topics on topic name for search
@@ -592,8 +607,9 @@ public class AclControllerService {
       String topicSearch, List<Topic> topics, int tenantId) {
     Map<String, String> hashMap = new HashMap<>();
     try {
-      if (topics == null)
+      if (topics == null) {
         topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
+      }
 
       hashMap.put("topicName", topicSearch);
 
@@ -635,11 +651,12 @@ public class AclControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null)
+      if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
                 .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception exception) {
       log.error("No environments/clusters found.");
       return new ArrayList<>();
@@ -653,8 +670,11 @@ public class AclControllerService {
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
-    else return null;
+    if (topicNameSearch != null) {
+      topicNameSearch = topicNameSearch.trim();
+    } else {
+      return null;
+    }
 
     Integer loggedInUserTeam = getMyTeamId(userDetails);
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
@@ -671,7 +691,9 @@ public class AclControllerService {
     if (topics.size() == 0) {
       topicOverview.setTopicExists(false);
       return topicOverview;
-    } else topicOverview.setTopicExists(true);
+    } else {
+      topicOverview.setTopicExists(true);
+    }
 
     String syncCluster;
     String[] reqTopicsEnvs;
@@ -750,7 +772,9 @@ public class AclControllerService {
               .collect(Collectors.groupingBy(AclInfo::getTopicname))
               .get(topicNameSearch);
 
-      if (tmpAcl != null) aclInfo.addAll(tmpAcl);
+      if (tmpAcl != null) {
+        aclInfo.addAll(tmpAcl);
+      }
 
       allPrefixedAcls = handleDb.getPrefixedAclsSOT(topicInfo.getClusterId(), tenantId);
       if (allPrefixedAcls != null && allPrefixedAcls.size() > 0) {
@@ -771,7 +795,6 @@ public class AclControllerService {
     }
 
     aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
-
     List<AclInfo> transactionalAcls =
         aclInfo.stream()
             .filter(aclRec -> aclRec.getTransactionalId() != null)

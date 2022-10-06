@@ -140,9 +140,10 @@ public class TopicSyncControllerService {
         });
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (!"-1".equals(pageNo)) // scheduler call
-    topicRequestModelList =
+    if (!"-1".equals(pageNo)) { // scheduler call
+      topicRequestModelList =
           getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
+    }
 
     syncTopicsObjectMap.put("resultSet", topicRequestModelList);
     syncTopicsObjectMap.put("allTopicsCount", allTopicsCount);
@@ -164,8 +165,9 @@ public class TopicSyncControllerService {
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
     if (!"-1".equals(pageNo)) { // ignore check for scheduler
-      if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS))
+      if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
         return null;
+      }
     }
 
     List<Map<String, String>> topicFilteredList = getTopicsFromKafkaCluster(env, topicNameSearch);
@@ -177,7 +179,6 @@ public class TopicSyncControllerService {
             .collect(Collectors.toList());
 
     List<TopicRequestModel> deletedTopicsFromClusterList = new ArrayList<>();
-
     List<Integer> sizeOfTopics = new ArrayList<>();
 
     if (isReconciliation) {
@@ -223,17 +224,19 @@ public class TopicSyncControllerService {
     List<String> teamList = new ArrayList<>();
     teamList = tenantFilterTeams(teamList);
 
-    if (!isBulkOption)
+    if (!isBulkOption) {
       updateClusterDeletedTopicsList(
           topicsList, deletedTopicsFromClusterList, topicsFromSOT, teamList, tenantId);
+    }
 
     List<TopicRequest> topicsListMap = new ArrayList<>();
 
     for (int i = 0; i < topicsList.size(); i++) {
       counterInc = counterIncrement();
       TopicRequest mp = new TopicRequest();
-      if (createTopicRequest(topicsList, topicsFromSOT, teamList, i, counterInc, mp, tenantId))
+      if (createTopicRequest(topicsList, topicsFromSOT, teamList, i, counterInc, mp, tenantId)) {
         topicsListMap.add(mp);
+      }
     }
     // topics which exist on cluster and not in kw, with no recon option.
     List<TopicRequestModel> topicRequestModelList =
@@ -297,16 +300,20 @@ public class TopicSyncControllerService {
     teamList = tenantFilterTeams(teamList);
     int counterInc;
 
-    if (!isBulkOption)
+    if (!isBulkOption) {
       updateClusterDeletedTopicsList(
           clusterTopicsList, deletedTopicsFromClusterList, topicsFromSOT, teamList, tenantId);
+    }
 
     for (int i = 0; i < clusterTopicsList.size(); i++) {
       counterInc = counterIncrement();
       TopicRequest mp = new TopicRequest();
       if (createTopicRequest(
-          clusterTopicsList, topicsFromSOT, teamList, i, counterInc, mp, tenantId))
-        if (mp.getTeamId().equals(0) || mp.getTeamId() == null) topicsListMap.add(mp);
+          clusterTopicsList, topicsFromSOT, teamList, i, counterInc, mp, tenantId)) {
+        if (mp.getTeamId().equals(0) || mp.getTeamId() == null) {
+          topicsListMap.add(mp);
+        }
+      }
     }
 
     // topics which exist in cluster and not in kw.
@@ -345,13 +352,14 @@ public class TopicSyncControllerService {
                     manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
                     approverRoles,
                     topicRequestModel.getRequestor()));
-          } else
+          } else {
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
                     userList,
                     manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId),
                     approverRoles,
                     topicRequestModel.getRequestor()));
+          }
         }
       }
 
@@ -366,8 +374,9 @@ public class TopicSyncControllerService {
 
     for (UserInfo userInfo : userList) {
       if (approverRoles.contains(userInfo.getRole())
-          && !Objects.equals(requestor, userInfo.getUsername()))
+          && !Objects.equals(requestor, userInfo.getUsername())) {
         approvingInfo.append(userInfo.getUsername()).append(",");
+      }
     }
 
     return String.valueOf(approvingInfo);
@@ -399,18 +408,21 @@ public class TopicSyncControllerService {
               .filter(a -> Objects.equals(a.getTopicname(), tmpTopicName))
               .findFirst();
 
-      if (teamUpdatedFirst.isPresent())
+      if (teamUpdatedFirst.isPresent()) {
         teamUpdated =
             manageDatabase.getTeamNameFromTeamId(tenantId, teamUpdatedFirst.get().getTeamId());
+      }
     } catch (Exception e) {
       log.error("Error from getSyncTopicList ", e);
     }
 
     if (teamUpdated != null && !teamUpdated.equals("undefined")) {
       mp.setPossibleTeams(teamList);
-      if (teamList.contains(teamUpdated))
+      if (teamList.contains(teamUpdated)) {
         mp.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, teamUpdated));
-      else return false; // belongs to different tenant
+      } else {
+        return false; // belongs to different tenant
+      }
     } else {
       mp.setPossibleTeams(teamList);
       mp.setTeamId(0);
@@ -453,8 +465,10 @@ public class TopicSyncControllerService {
         topicRequestModel.setRemarks("DELETED");
 
         // tenant teams
-        if (teamList.contains(manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId())))
+        if (teamList.contains(
+            manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()))) {
           sotTopics.put(topicObj.getTopicname(), topicRequestModel);
+        }
       }
 
       List<String> deletedTopicsFromClusterListTmp =
@@ -478,9 +492,7 @@ public class TopicSyncControllerService {
             getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
-
       List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
-
       List<String> teamListUpdated = new ArrayList<>();
       for (Team teamsItem : teams) {
         teamListUpdated.add(teamsItem.getTeamname());
@@ -553,17 +565,20 @@ public class TopicSyncControllerService {
       if (!Objects.equals(
           Objects.requireNonNull(response.getBody()).getResult(), ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating topic {} {}", topicFound, response.getBody());
-        if (Objects.requireNonNull(response.getBody()).getResult().contains("TopicExistsException"))
+        if (Objects.requireNonNull(response.getBody())
+            .getResult()
+            .contains("TopicExistsException")) {
           logUpdateSyncBackTopics.add(
               "Error in Topic creation. Topic:"
                   + topicFound.getTopicname()
                   + " already exists. TopicExistsException");
-        else
+        } else {
           logUpdateSyncBackTopics.add(
               "Error in Topic creation. Topic:"
                   + topicFound.getTopicname()
                   + " "
                   + response.getBody());
+        }
       } else {
         logUpdateSyncBackTopics.add("Topic created " + topicFound.getTopicname());
         if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv()))
@@ -619,7 +634,9 @@ public class TopicSyncControllerService {
         getTopicsPaginated(
             env, pageNo, currentPage, topicNameSearch, teamName, topicType, tenantId);
 
-    if (topicListUpdated != null && topicListUpdated.size() > 0) return topicListUpdated;
+    if (topicListUpdated != null && topicListUpdated.size() > 0) {
+      return topicListUpdated;
+    }
 
     return new ArrayList<>();
   }
@@ -833,11 +850,6 @@ public class TopicSyncControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    //    List<String> resultStatus = new ArrayList<>();
-    //    resultStatus.add(ApiResultStatus.SUCCESS.value);
-    //
-    //    resultMap.put("result", resultStatus);
-
     if ("SELECTED_TOPICS".equals(syncTopicsBulk.getTypeOfSync())) {
       Object[] topicMap = syncTopicsBulk.getTopicDetails();
       Map<String, Map<String, Object>> hashMap = new HashMap<>();
@@ -894,7 +906,9 @@ public class TopicSyncControllerService {
 
   private List<Map<String, String>> getTopicsFromKafkaCluster(String env, String topicNameSearch)
       throws Exception {
-    if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
+    if (topicNameSearch != null) {
+      topicNameSearch = topicNameSearch.trim();
+    }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env envSelected = getEnvDetails(env);
     String bootstrapHost =
@@ -1018,8 +1032,9 @@ public class TopicSyncControllerService {
         } else if (!Objects.equals(syncCluster, topicUpdate.getEnvSelected())) {
           erroredTopicsExist.append(topicUpdate.getTopicName()).append(" ");
           if (checkInPromotionOrder(
-              topicUpdate.getTopicName(), topicUpdate.getEnvSelected(), orderOfEnvs))
+              topicUpdate.getTopicName(), topicUpdate.getEnvSelected(), orderOfEnvs)) {
             topicsDontExistInMainCluster = true;
+          }
         }
 
         boolean topicAdded = false;
@@ -1145,7 +1160,9 @@ public class TopicSyncControllerService {
     for (SyncTopicUpdates updatedSyncTopic : updatedSyncTopics) {
       if ("REMOVE FROM KLAW".equals(updatedSyncTopic.getTeamSelected())) {
         updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
-      } else updatedSyncTopicsUpdated.add(updatedSyncTopic);
+      } else {
+        updatedSyncTopicsUpdated.add(updatedSyncTopic);
+      }
     }
 
     // delete topic
@@ -1196,11 +1213,12 @@ public class TopicSyncControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null)
+      if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
                 .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();

@@ -137,8 +137,11 @@ public class ClusterApiService {
     try {
       String uriClusterApiStatus = "/topics/getApiStatus";
       String uri;
-      if (testConnection) uri = clusterApiUrl + uriClusterApiStatus;
-      else uri = clusterConnUrl + uriClusterApiStatus; // from stored kw props
+      if (testConnection) {
+        uri = clusterApiUrl + uriClusterApiStatus;
+      } else {
+        uri = clusterConnUrl + uriClusterApiStatus; // from stored kw props
+      }
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
@@ -350,10 +353,10 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     List<Map<String, String>> topicsList;
     try {
-      String URI_GET_TOPICS = "/topics/getTopics/";
+      String uriGetTopics = "/topics/getTopics/";
       String uriGetTopicsFull =
           clusterConnUrl
-              + URI_GET_TOPICS
+              + uriGetTopics
               + bootstrapHost
               + "/"
               + protocol
@@ -397,13 +400,15 @@ public class ClusterApiService {
               .build();
 
       String uri;
-      String URI_GET_TOPICS = "/topics/";
+      String uriGetTopics = "/topics/";
 
       if (RequestOperationType.CREATE.value.equals(connectorType)) {
-        uri = clusterConnUrl + URI_GET_TOPICS + "postConnector";
+        uri = clusterConnUrl + uriGetTopics + "postConnector";
       } else if (RequestOperationType.UPDATE.value.equals(connectorType)) {
-        uri = clusterConnUrl + URI_GET_TOPICS + "updateConnector";
-      } else uri = clusterConnUrl + URI_GET_TOPICS + "deleteConnector";
+        uri = clusterConnUrl + uriGetTopics + "updateConnector";
+      } else {
+        uri = clusterConnUrl + uriGetTopics + "deleteConnector";
+      }
 
       HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
       headers.setContentType(MediaType.APPLICATION_JSON);
@@ -468,7 +473,9 @@ public class ClusterApiService {
                 .partitions(topicPartitions)
                 .replicationFactor(Short.parseShort(replicationFactor))
                 .build();
-      } else uri = clusterConnUrl + URI_DELETE_TOPICS;
+      } else {
+        uri = clusterConnUrl + URI_DELETE_TOPICS;
+      }
 
       HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
       headers.setContentType(MediaType.APPLICATION_JSON);
@@ -512,18 +519,20 @@ public class ClusterApiService {
                 .username(aclReq.getAcl_ssl())
                 .build();
 
-        if (Objects.equals(aclReq.getTopictype(), AclType.PRODUCER.value))
+        if (Objects.equals(aclReq.getTopictype(), AclType.PRODUCER.value)) {
           clusterAclRequest = clusterAclRequest.toBuilder().permission("write").build();
-        else clusterAclRequest = clusterAclRequest.toBuilder().permission("read").build();
+        } else {
+          clusterAclRequest = clusterAclRequest.toBuilder().permission("read").build();
+        }
 
         if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
           Map<String, String> jsonObj = OBJECT_MAPPER.readValue(aclReq.getJsonParams(), Map.class);
           String aivenAclKey = "aivenaclid";
-          if (jsonObj.containsKey(aivenAclKey))
+          if (jsonObj.containsKey(aivenAclKey)) {
             clusterAclRequest =
                 clusterAclRequest.toBuilder().aivenAclKey(jsonObj.get(aivenAclKey)).build();
-          else {
+          } else {
             log.error("Error from approveAclRequests : AclId - aivenaclid not found");
             throw new KlawException(
                 "Could not approve acl request. AclId - Aiven acl id not found.");
@@ -658,9 +667,9 @@ public class ClusterApiService {
     log.info("getConnectorDetails {} {}", connectorName, kafkaConnectHost);
     getClusterApiProperties(tenantId);
     try {
-      String URI_GET_TOPICS =
+      String uriGetTopics =
           "/topics/getConnectorDetails/" + connectorName + "/" + kafkaConnectHost + "/" + protocol;
-      String uriGetConnectorsFull = clusterConnUrl + URI_GET_TOPICS;
+      String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<LinkedHashMap<String, Object>> s =
           getRestTemplate()
@@ -682,8 +691,8 @@ public class ClusterApiService {
     log.info("getAllKafkaConnectors {}", kafkaConnectHost);
     getClusterApiProperties(tenantId);
     try {
-      String URI_GET_TOPICS = "/topics/getAllConnectors/" + kafkaConnectHost;
-      String uriGetConnectorsFull = clusterConnUrl + URI_GET_TOPICS;
+      String uriGetTopics = "/topics/getAllConnectors/" + kafkaConnectHost;
+      String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<ArrayList<String>> s =
           getRestTemplate()
@@ -705,12 +714,12 @@ public class ClusterApiService {
     log.info("retrieveMetrics {} {}", jmxUrl, objectName);
     getClusterApiProperties(101);
     try {
-      String URI_GET_TOPICS = "/metrics/getMetrics";
+      String uriGetTopics = "/metrics/getMetrics";
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
       params.add("jmxUrl", jmxUrl);
       params.add("objectName", objectName);
 
-      String uriGetTopicsFull = clusterConnUrl + URI_GET_TOPICS;
+      String uriGetTopicsFull = clusterConnUrl + uriGetTopics;
       RestTemplate restTemplate = getRestTemplate();
 
       HttpHeaders headers =

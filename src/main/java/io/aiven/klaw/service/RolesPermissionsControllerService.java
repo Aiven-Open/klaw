@@ -40,7 +40,9 @@ public class RolesPermissionsControllerService {
           getPrincipal(), PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES))
         return Arrays.asList(
             manageDatabase.getKwPropertyValue("klaw.adduser.roles", tenantId).split(","));
-      else return new ArrayList<>(manageDatabase.getRolesPermissionsPerTenant(tenantId).keySet());
+      else {
+        return new ArrayList<>(manageDatabase.getRolesPermissionsPerTenant(tenantId).keySet());
+      }
     } catch (Exception e) {
       log.error("Exception:", e);
       return Arrays.asList(
@@ -133,17 +135,23 @@ public class RolesPermissionsControllerService {
         tmpKwRolePermModel.setRoleId(permKey.substring(0, indexOfDelimiter));
         tmpKwRolePermModel.setPermission(permKey.substring(indexOfDelimiter + 5));
 
-        if ("true".equals(isPermEnabled)) kwRolesPermissionsAdd.add(tmpKwRolePermModel);
-        else if ("false".equals(isPermEnabled)) kwRolesPermissionsDelete.add(tmpKwRolePermModel);
+        if ("true".equals(isPermEnabled)) {
+          kwRolesPermissionsAdd.add(tmpKwRolePermModel);
+        } else if ("false".equals(isPermEnabled)) {
+          kwRolesPermissionsDelete.add(tmpKwRolePermModel);
+        }
       }
 
-      if (kwRolesPermissionsAdd.size() > 0)
+      if (kwRolesPermissionsAdd.size() > 0) {
         manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsAdd, "ADD");
-      if (kwRolesPermissionsDelete.size() > 0)
+      }
+      if (kwRolesPermissionsDelete.size() > 0) {
         manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsDelete, "DELETE");
+      }
 
-      if (kwRolesPermissionsAdd.size() > 0 || kwRolesPermissionsDelete.size() > 0)
+      if (kwRolesPermissionsAdd.size() > 0 || kwRolesPermissionsDelete.size() > 0) {
         manageDatabase.loadRolesForAllTenants();
+      }
       return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error(e.getMessage());

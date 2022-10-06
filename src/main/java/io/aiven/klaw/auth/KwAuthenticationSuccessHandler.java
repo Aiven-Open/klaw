@@ -32,14 +32,21 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     if (urlFromAddressBar != null) {
       urlFromAddressBar = urlFromAddressBar.replace(contextPath + "/", "");
 
-      if (urlFromAddressBar.contains("login")) urlFromAddressBar = "index";
-
-      if (!urlFromAddressBar.contains("loggedin=true")) {
-        if (urlFromAddressBar.contains("?")) urlFromAddressBar += "&loggedin=true";
-        else urlFromAddressBar += "?loggedin=true";
+      if (urlFromAddressBar.contains("login")) {
+        urlFromAddressBar = "index";
       }
 
-    } else urlFromAddressBar = "";
+      if (!urlFromAddressBar.contains("loggedin=true")) {
+        if (urlFromAddressBar.contains("?")) {
+          urlFromAddressBar += "&loggedin=true";
+        } else {
+          urlFromAddressBar += "?loggedin=true";
+        }
+      }
+
+    } else {
+      urlFromAddressBar = "";
+    }
 
     return urlFromAddressBar;
   }

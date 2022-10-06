@@ -81,7 +81,9 @@ public class UsersTeamsControllerService {
           manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfoModel.getTeamId()));
       userInfoModel.setUserPassword("*******");
       return userInfoModel;
-    } else return null;
+    } else {
+      return null;
+    }
   }
 
   public ApiResponse updateProfile(UserInfoModel updateUserObj) throws KlawException {
@@ -102,8 +104,10 @@ public class UsersTeamsControllerService {
   public ApiResponse updateUser(UserInfoModel newUser) throws KlawException {
     log.info("updateUser {}", newUser.getUsername());
 
-    if (commonUtilsService.isNotAuthorizedUser(getUserName(), PermissionType.ADD_EDIT_DELETE_USERS))
+    if (commonUtilsService.isNotAuthorizedUser(
+        getUserName(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     UserInfo existingUserInfo =
         manageDatabase.getHandleDbRequests().getUsersInfo(newUser.getUsername());
@@ -124,7 +128,9 @@ public class UsersTeamsControllerService {
     String existingPwd;
     if ("*******".equals(pwdUpdated) && "db".equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
-      if (!"".equals(existingPwd)) newUser.setUserPassword(decodePwd(existingPwd));
+      if (!"".equals(existingPwd)) {
+        newUser.setUserPassword(decodePwd(existingPwd));
+      }
     }
 
     try {
@@ -170,8 +176,9 @@ public class UsersTeamsControllerService {
     if (teamDao != null) {
       TeamModel teamModel = new TeamModel();
       copyProperties(teamDao, teamModel);
-      if (teamDao.getRequestTopicsEnvs() != null)
+      if (teamDao.getRequestTopicsEnvs() != null) {
         teamModel.setEnvList(Arrays.asList(teamDao.getRequestTopicsEnvs().split("\\s*,\\s*")));
+      }
       teamModel.setTenantName(tenantName);
       teamModel.setTenantId(getTenantId(tenantName));
       return teamModel;
@@ -191,7 +198,9 @@ public class UsersTeamsControllerService {
     String chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghi" + "jklmnopqrstuvwxyz";
     Random rnd = new Random();
     StringBuilder sb = new StringBuilder(len);
-    for (int i = 0; i < len; i++) sb.append(chars.charAt(rnd.nextInt(chars.length())));
+    for (int i = 0; i < len; i++) {
+      sb.append(chars.charAt(rnd.nextInt(chars.length())));
+    }
     return sb.toString();
   }
 
@@ -202,8 +211,9 @@ public class UsersTeamsControllerService {
     userMap.put("passwordSent", "false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
-    if (userInfoModel == null) userMap.put("userFound", "false");
-    else {
+    if (userInfoModel == null) {
+      userMap.put("userFound", "false");
+    } else {
       userMap.put("userFound", "true");
       String newGeneratedPwd = generateRandomWord(15);
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -235,9 +245,9 @@ public class UsersTeamsControllerService {
     for (Team team : teams) {
       teamModel = new TeamModel();
       copyProperties(team, teamModel);
-      if (team.getRequestTopicsEnvs() == null || team.getRequestTopicsEnvs().length() == 0)
+      if (team.getRequestTopicsEnvs() == null || team.getRequestTopicsEnvs().length() == 0) {
         teamModel.setEnvList(allList);
-      else {
+      } else {
         teamModel.setEnvList(Arrays.asList(team.getRequestTopicsEnvs().split("\\s*,\\s*")));
         tmpConvertedList = new ArrayList<>();
         try {
@@ -309,7 +319,9 @@ public class UsersTeamsControllerService {
     teams.add(myTeamName);
 
     for (TeamModel team : teamsList) {
-      if (!team.getTeamname().equals(myTeamName)) teams.add(team.getTeamname());
+      if (!team.getTeamname().equals(myTeamName)) {
+        teams.add(team.getTeamname());
+      }
     }
 
     return teams;
@@ -320,8 +332,9 @@ public class UsersTeamsControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS))
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (manageDatabase.getHandleDbRequests().findAllComponentsCountForTeam(teamId, tenantId) > 0) {
@@ -331,8 +344,9 @@ public class UsersTeamsControllerService {
     }
 
     // own team cannot be deleted
-    if (Objects.equals(getMyTeamId(userDetails), teamId))
+    if (Objects.equals(getMyTeamId(userDetails), teamId)) {
       return ApiResponse.builder().result("Team cannot be deleted.").build();
+    }
 
     try {
       String result =
@@ -356,8 +370,9 @@ public class UsersTeamsControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     List<String> permissions =
@@ -365,14 +380,16 @@ public class UsersTeamsControllerService {
             .getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()))
             .get(existingUserInfo.getRole());
     if (permissions != null
-        && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name()))
+        && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       return ApiResponse.builder()
           .result("Not Authorized. Cannot delete a user with SUPERADMIN access.")
           .build();
+    }
 
     String envAddResult = "{\"result\":\"User cannot be deleted\"}";
-    if (Objects.equals(userDetails, userId) && isExternal)
+    if (Objects.equals(userDetails, userId) && isExternal) {
       return ApiResponse.builder().result(envAddResult).build();
+    }
 
     try {
       inMemoryUserDetailsManager.deleteUser(userId);
@@ -390,8 +407,11 @@ public class UsersTeamsControllerService {
   }
 
   private String decodePwd(String pwd) {
-    if (pwd != null) return getJasyptEncryptor().decrypt(pwd);
-    else return "";
+    if (pwd != null) {
+      return getJasyptEncryptor().decrypt(pwd);
+    } else {
+      return "";
+    }
   }
 
   private BasicTextEncryptor getJasyptEncryptor() {
@@ -422,8 +442,11 @@ public class UsersTeamsControllerService {
 
     int tenantId;
     if (isExternal) {
-      if (newUser.getTenantId() == 0) tenantId = commonUtilsService.getTenantId(getUserName());
-      else tenantId = newUser.getTenantId();
+      if (newUser.getTenantId() == 0) {
+        tenantId = commonUtilsService.getTenantId(getUserName());
+      } else {
+        tenantId = newUser.getTenantId();
+      }
 
       newUser.setTenantId(tenantId);
 
@@ -438,7 +461,9 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) newUser.setRole("NA");
+    if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
+      newUser.setRole("NA");
+    }
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -462,18 +487,19 @@ public class UsersTeamsControllerService {
 
       //            log.info("pwd : "+decodePwd(newUser.getUserPassword()));
       if (isExternal) {
-        if ("".equals(newUser.getUserPassword()))
+        if ("".equals(newUser.getUserPassword())) {
           mailService.sendMail(
               newUser.getUsername(),
               newUser.getUserPassword(),
               dbHandle,
               commonUtilsService.getLoginUrl());
-        else
+        } else {
           mailService.sendMail(
               newUser.getUsername(),
               decodePwd(newUser.getUserPassword()),
               dbHandle,
               commonUtilsService.getLoginUrl());
+        }
       }
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
@@ -492,14 +518,17 @@ public class UsersTeamsControllerService {
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS))
+            getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     int tenantId;
     if (isExternal) {
       tenantId = commonUtilsService.getTenantId(getUserName());
       newTeam.setTenantId(tenantId);
-    } else tenantId = newTeam.getTenantId();
+    } else {
+      tenantId = newTeam.getTenantId();
+    }
 
     Team team = new Team();
     copyProperties(newTeam, team);
@@ -525,8 +554,9 @@ public class UsersTeamsControllerService {
     log.info("updateTeam {}", updatedTeam);
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS))
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Team team = new Team();
@@ -598,8 +628,12 @@ public class UsersTeamsControllerService {
           if (teamName != null && !teamName.equals("")) {
             if (Objects.equals(
                 manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()),
-                teamName)) userInfoModels.add(userInfoModel);
-          } else userInfoModels.add(userInfoModel);
+                teamName)) {
+              userInfoModels.add(userInfoModel);
+            }
+          } else {
+            userInfoModels.add(userInfoModel);
+          }
         });
     userInfoModels.forEach(
         userInfoModel -> {
@@ -679,7 +713,7 @@ public class UsersTeamsControllerService {
   }
 
   public ApiResponse registerUser(RegisterUserInfoModel newUser, boolean isExternal)
-      throws Exception {
+      throws KlawException {
     log.info("registerUser {}", newUser.getUsername());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
@@ -754,8 +788,9 @@ public class UsersTeamsControllerService {
       }
 
       String resultRegister = dbHandle.registerUser(registerUserInfo);
-      if (resultRegister.contains("Failure"))
+      if (resultRegister.contains("Failure")) {
         return ApiResponse.builder().result("Registration already exists.").build();
+      }
 
       if (isExternal) {
         mailService.sendMailRegisteredUser(
@@ -773,10 +808,12 @@ public class UsersTeamsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
-    if ("saas".equals(kwInstallationType))
+    if ("saas".equals(kwInstallationType)) {
       registerUserInfoList =
           manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfoForTenant(tenantId);
-    else registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
+    } else {
+      registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
+    }
 
     List<RegisterUserInfoModel> registerUserInfoModels = new ArrayList<>();
     RegisterUserInfoModel registerUserInfoModel;
@@ -801,14 +838,14 @@ public class UsersTeamsControllerService {
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
+            getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
       RegisterUserInfo registerUserInfo = dbHandle.getRegisterUsersInfo(username);
-      if (!isExternal) // from saas new user requests for tenant owners
-      {
+      if (!isExternal) { // from saas new user requests for tenant owners
         registerUserInfo.setTenantId(tenantId);
         registerUserInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, teamName));
       }
@@ -824,15 +861,17 @@ public class UsersTeamsControllerService {
       userInfo.setRole(registerUserInfo.getRole());
       userInfo.setTenantId(tenantId);
 
-      if ("db".equals(authenticationType))
+      if ("db".equals(authenticationType)) {
         userInfo.setUserPassword(decodePwd(registerUserInfo.getPwd()));
-      else userInfo.setUserPassword("");
+      } else {
+        userInfo.setUserPassword("");
+      }
       userInfo.setMailid(registerUserInfo.getMailid());
 
       ApiResponse resultResp = addNewUser(userInfo, isExternal);
-      if (resultResp.getResult().contains(ApiResultStatus.SUCCESS.value))
+      if (resultResp.getResult().contains(ApiResultStatus.SUCCESS.value)) {
         dbHandle.updateNewUserRequest(username, userDetails, true);
-      else {
+      } else {
         return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
       }
       return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
@@ -847,8 +886,9 @@ public class UsersTeamsControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS))
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
@@ -868,7 +908,9 @@ public class UsersTeamsControllerService {
       RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
       copyProperties(registerUserInfo, registerUserInfoModel);
       return registerUserInfoModel;
-    } else return null;
+    } else {
+      return null;
+    }
   }
 
   public Env getEnvDetailsFromId(String envId) {

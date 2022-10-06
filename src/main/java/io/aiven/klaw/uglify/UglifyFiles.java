@@ -48,8 +48,11 @@ public class UglifyFiles {
   private void executeCommand(Runtime rt, String commandToExec, String osName) {
     String commandPrefix = "";
 
-    if (osName.startsWith("Windows")) commandPrefix = "cmd.exe /c ";
-    else commandPrefix = "";
+    if (osName.startsWith("Windows")) {
+      commandPrefix = "cmd.exe /c ";
+    } else {
+      commandPrefix = "";
+    }
 
     commandToExec = commandPrefix + commandToExec;
 

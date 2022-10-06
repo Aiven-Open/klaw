@@ -83,12 +83,16 @@ public class UiControllerLoginService {
             || uri.contains("registrationReview")
             || uri.contains("userActivation")
             || "forgotPassword.html".equals(uri)
-            || "newADUser.html".equals(uri)) return indexPage;
+            || "newADUser.html".equals(uri)) {
+          return indexPage;
+        }
         return uri;
       }
-      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType))
+      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType)) {
         return defaultPageSaas;
-      else return defaultPage;
+      } else {
+        return defaultPage;
+      }
     } catch (Exception e) {
       log.error("Exception:", e);
       if ("login.html".equals(uri)
@@ -102,9 +106,11 @@ public class UiControllerLoginService {
           || "terms.html".equals(uri)
           || "feedback.html".equals(uri)) return uri;
 
-      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType))
+      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType)) {
         return defaultPageSaas;
-      else return defaultPage;
+      } else {
+        return defaultPage;
+      }
     }
   }
 
@@ -129,8 +135,11 @@ public class UiControllerLoginService {
           authorizedClientService.loadAuthorizedClient(
               ssoClientRegistrationId,
               (String) defaultOAuth2User.getAttributes().get("preferred_username"));
-      if (client == null) return oauthLoginPage;
-      else return uri;
+      if (client == null) {
+        return oauthLoginPage;
+      } else {
+        return uri;
+      }
     } catch (Exception e) {
       log.error("Exception:", e);
       return oauthLoginPage;
@@ -152,12 +161,17 @@ public class UiControllerLoginService {
           && commonUtilsService.getTenantId(userDetails.getUsername())
               == KwConstants.DEFAULT_TENANT_ID) {
         return getReturningPage(uri);
-      } else uri = "index";
+      } else {
+        uri = "index";
+      }
     }
 
     if ("true".equals(ssoEnabled)) {
-      if (uri.contains("register") || uri.equals("registrationReview.html")) return uri;
-      else return checkAnonymousLogin(uri, request, response);
+      if (uri.contains("register") || uri.equals("registrationReview.html")) {
+        return uri;
+      } else {
+        return checkAnonymousLogin(uri, request, response);
+      }
     } else {
       return getReturningPage(uri);
     }
@@ -170,9 +184,11 @@ public class UiControllerLoginService {
           manageDatabase.getHandleDbRequests().getRegistrationId(userName);
 
       if (existingRegistrationId != null) {
-        if ("PENDING_ACTIVATION".equals(existingRegistrationId))
+        if ("PENDING_ACTIVATION".equals(existingRegistrationId)) {
           return "redirect:" + "registrationReview";
-        else return "redirect:" + "register?userRegistrationId=" + existingRegistrationId;
+        } else {
+          return "redirect:" + "register?userRegistrationId=" + existingRegistrationId;
+        }
       } else {
         String randomId = UUID.randomUUID().toString();
 

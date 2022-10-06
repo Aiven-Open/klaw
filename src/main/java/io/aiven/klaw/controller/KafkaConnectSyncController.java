@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KafkaConnectorModel;
@@ -28,13 +26,9 @@ public class KafkaConnectSyncController {
 
   @PostMapping(value = "/updateSyncConnectors")
   public ResponseEntity<ApiResponse> updateSyncConnectors(
-      @RequestBody List<SyncConnectorUpdates> syncConnectorUpdates) {
-    try {
-      return new ResponseEntity<>(
-          kafkaConnectControllerService.updateSyncConnectors(syncConnectorUpdates), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestBody List<SyncConnectorUpdates> syncConnectorUpdates) throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.updateSyncConnectors(syncConnectorUpdates), HttpStatus.OK);
   }
 
   @RequestMapping(

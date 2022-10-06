@@ -90,7 +90,9 @@ public class CommonUtilsService {
         Object[] authorities = defaultOAuth2User.getAuthorities().toArray();
         if (authorities.length > 0) {
           return (String) authorities[0];
-        } else return "";
+        } else {
+          return "";
+        }
       } else if (principal instanceof String) {
         return manageDatabase.getHandleDbRequests().getUsersInfo((String) principal).getRole();
       } else if (principal instanceof UserDetails) {
@@ -98,13 +100,20 @@ public class CommonUtilsService {
         if (authorities.length > 0) {
           SimpleGrantedAuthority sag = (SimpleGrantedAuthority) authorities[0];
           return sag.getAuthority();
-        } else return "";
+        } else {
+          return "";
+        }
 
-      } else return "";
+      } else {
+        return "";
+      }
     } else {
       UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName(principal));
-      if (userInfo != null) return userInfo.getRole();
-      else return null;
+      if (userInfo != null) {
+        return userInfo.getRole();
+      } else {
+        return null;
+      }
     }
   }
 
@@ -159,11 +168,13 @@ public class CommonUtilsService {
         totalCount += Integer.parseInt(hashMap.get(yaxisCount));
         data.add(Integer.parseInt(hashMap.get(yaxisCount)));
 
-        if ("teamid".equals(xaxisLabel))
+        if ("teamid".equals(xaxisLabel)) {
           labels.add(
               manageDatabase.getTeamNameFromTeamId(
                   tenantId, Integer.parseInt(hashMap.get(xaxisLabel))));
-        else labels.add(hashMap.get(xaxisLabel));
+        } else {
+          labels.add(hashMap.get(xaxisLabel));
+        }
 
         colors.add("Green");
       }
@@ -180,23 +191,6 @@ public class CommonUtilsService {
     title1.setFontColor("red");
 
     options.setTitle(title1);
-
-    //        Scales scales = new Scales();
-    //        List<YAx> yAxList = new ArrayList<>();
-    //        List<YAx> xAxList = new ArrayList<>();
-    //
-    //        YAx yAx = new YAx();
-    //        yAx.setDisplay(true);
-    //        yAx.setId("hello");
-    //        yAx.setPosition("bottom");
-    //        yAx.setType("linear");
-    //        yAxList.add(yAx);
-    //
-    //
-    //        scales.setYAxes(yAxList);
-    //        scales.setXAxes(xAxList);
-    //
-    //        options.setScales(scales);
     chartsJsOverview.setOptions(options);
     chartsJsOverview.setTitleForReport(title);
 
@@ -309,17 +303,19 @@ public class CommonUtilsService {
 
   public synchronized void updateMetadata(KwMetadataUpdates kwMetadataUpdates) {
     final EntityType entityType = EntityType.of(kwMetadataUpdates.getEntityType());
-    if (entityType == null) return;
+    if (entityType == null) {
+      return;
+    }
     final MetadataOperationType operationType =
         MetadataOperationType.of(kwMetadataUpdates.getOperationType());
     if (entityType == EntityType.TEAM) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
-    } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE)
+    } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE) {
       manageDatabase.deleteCluster(kwMetadataUpdates.getTenantId());
-    else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.CREATE)
+    } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.CREATE) {
       manageDatabase.loadClustersForOneTenant(null, null, null, kwMetadataUpdates.getTenantId());
-    else if (entityType == EntityType.ENVIRONMENT
+    } else if (entityType == EntityType.ENVIRONMENT
         && operationType == MetadataOperationType.CREATE) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadEnvMapForOneTenant(kwMetadataUpdates.getTenantId());

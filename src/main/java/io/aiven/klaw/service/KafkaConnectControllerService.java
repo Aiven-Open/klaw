@@ -262,7 +262,9 @@ public class KafkaConnectControllerService {
       i++;
     }
 
-    if (innerList.size() > 0) newList.add(innerList);
+    if (innerList.size() > 0) {
+      newList.add(innerList);
+    }
 
     return newList;
   }
@@ -270,14 +272,17 @@ public class KafkaConnectControllerService {
   private void updateTeamNamesForDisplay(List<KafkaConnectorModel> topicListUpdated) {
     topicListUpdated.forEach(
         topicInfo -> {
-          if (topicInfo.getTeamName().length() > 9)
+          if (topicInfo.getTeamName().length() > 9) {
             topicInfo.setTeamName(topicInfo.getTeamName().substring(0, 8) + "...");
+          }
         });
   }
 
   private List<KafkaConnectorModel> getConnectorsPaginated(
       String env, String pageNo, String currentPage, String connectorNameSearch, String teamName) {
-    if (connectorNameSearch != null) connectorNameSearch = connectorNameSearch.trim();
+    if (connectorNameSearch != null) {
+      connectorNameSearch = connectorNameSearch.trim();
+    }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
@@ -344,7 +349,9 @@ public class KafkaConnectControllerService {
     int requestPageNo = Integer.parseInt(pageNo);
 
     List<KafkaConnectorModel> topicsListMap = null;
-    if (totalRecs > 0) topicsListMap = new ArrayList<>();
+    if (totalRecs > 0) {
+      topicsListMap = new ArrayList<>();
+    }
 
     int startVar = (requestPageNo - 1) * recsPerPage;
     int lastVar = (requestPageNo) * (recsPerPage);
@@ -543,8 +550,9 @@ public class KafkaConnectControllerService {
       }
 
       updateTopicReqStatus = dbHandle.addToSyncConnectors(allTopics);
-      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus))
+      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)) {
         updateTopicReqStatus = dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
+      }
     } else {
       Env envSelected =
           manageDatabase
@@ -638,8 +646,9 @@ public class KafkaConnectControllerService {
       throws KlawException {
     log.info("declineConnectorRequests {} {}", connectorId, reasonForDecline);
     String userDetails = getUserName();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS))
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -653,8 +662,9 @@ public class KafkaConnectControllerService {
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (!allowedEnvIdList.contains(connectorRequest.getEnvironment()))
+    if (!allowedEnvIdList.contains(connectorRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     try {
       String result = dbHandle.declineConnectorRequest(connectorRequest, userDetails);
@@ -870,8 +880,11 @@ public class KafkaConnectControllerService {
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (connectorNamesearch != null) connectorNamesearch = connectorNamesearch.trim();
-    else return null;
+    if (connectorNamesearch != null) {
+      connectorNamesearch = connectorNamesearch.trim();
+    } else {
+      return null;
+    }
 
     Integer loggedInUserTeam = getMyTeamId(userDetails);
 
@@ -889,7 +902,9 @@ public class KafkaConnectControllerService {
     if (connectors.size() == 0) {
       topicOverview.setConnectorExists(false);
       return topicOverview;
-    } else topicOverview.setConnectorExists(true);
+    } else {
+      topicOverview.setConnectorExists(true);
+    }
 
     String syncCluster;
     String[] reqTopicsEnvs;
@@ -1122,7 +1137,9 @@ public class KafkaConnectControllerService {
       return ApiResponse.builder()
           .result(manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic))
           .build();
-    } else return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    } else {
+      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    }
   }
 
   private List<KafkaConnectorRequestModel> getConnectorRequestModels(
@@ -1179,8 +1196,9 @@ public class KafkaConnectControllerService {
 
     for (UserInfo userInfo : userList) {
       if (approverRoles.contains(userInfo.getRole())
-          && !Objects.equals(requestor, userInfo.getUsername()))
+          && !Objects.equals(requestor, userInfo.getUsername())) {
         approvingInfo.append(userInfo.getUsername()).append(",");
+      }
     }
 
     return String.valueOf(approvingInfo);
@@ -1236,11 +1254,12 @@ public class KafkaConnectControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (createdTopicReqList != null)
+      if (createdTopicReqList != null) {
         createdTopicReqList =
             createdTopicReqList.stream()
                 .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();
@@ -1253,11 +1272,12 @@ public class KafkaConnectControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (connectorsFromSOT != null)
+      if (connectorsFromSOT != null) {
         connectorsFromSOT =
             connectorsFromSOT.stream()
                 .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();

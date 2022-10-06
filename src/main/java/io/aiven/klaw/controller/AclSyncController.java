@@ -1,7 +1,5 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.service.UtilControllerService.handleException;
-
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
@@ -30,13 +28,9 @@ public class AclSyncController {
 
   @PostMapping(value = "/updateSyncAcls")
   public ResponseEntity<ApiResponse> updateSyncAcls(
-      @RequestBody List<SyncAclUpdates> syncAclUpdates) {
-    try {
-      return new ResponseEntity<>(
-          aclSyncControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+      @RequestBody List<SyncAclUpdates> syncAclUpdates) throws KlawException {
+    return new ResponseEntity<>(
+        aclSyncControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -56,13 +50,10 @@ public class AclSyncController {
   }
 
   @PostMapping(value = "/updateSyncBackAcls")
-  public ResponseEntity<ApiResponse> updateSyncBackAcls(@RequestBody SyncBackAcls syncBackAcls) {
-    try {
-      return new ResponseEntity<>(
-          aclSyncControllerService.updateSyncBackAcls(syncBackAcls), HttpStatus.OK);
-    } catch (KlawException e) {
-      return handleException(e);
-    }
+  public ResponseEntity<ApiResponse> updateSyncBackAcls(@RequestBody SyncBackAcls syncBackAcls)
+      throws KlawException {
+    return new ResponseEntity<>(
+        aclSyncControllerService.updateSyncBackAcls(syncBackAcls), HttpStatus.OK);
   }
 
   // get acls from kafka cluster
