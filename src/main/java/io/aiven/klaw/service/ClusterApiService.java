@@ -134,21 +134,19 @@ public class ClusterApiService {
     log.info(
         "getClusterApiStatus clusterApiUrl {} testConnection{}", clusterApiUrl, testConnection);
     getClusterApiProperties(tenantId);
-    String clusterStatus;
     try {
       String uriClusterApiStatus = "/topics/getApiStatus";
       String uri;
       if (testConnection) uri = clusterApiUrl + uriClusterApiStatus;
       else uri = clusterConnUrl + uriClusterApiStatus; // from stored kw props
 
-      ResponseEntity<String> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
-      clusterStatus = resultBody.getBody();
+      ResponseEntity<ClusterStatus> resultBody =
+          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+      return Objects.requireNonNull(resultBody.getBody()).value;
     } catch (Exception e) {
       log.error("Error from getClusterApiStatus ", e);
       return ClusterStatus.OFFLINE.value;
     }
-    return clusterStatus;
   }
 
   String getSchemaClusterStatus(String host, int tenantId) {
@@ -157,14 +155,13 @@ public class ClusterApiService {
     String clusterStatus;
     try {
       String uri = host + "/subjects";
-      ResponseEntity<String> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
-      clusterStatus = resultBody.getBody();
+      ResponseEntity<ClusterStatus> resultBody =
+          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+      return Objects.requireNonNull(resultBody.getBody()).value;
     } catch (Exception e) {
       log.error("Error from getSchemaClusterStatus ", e);
       return ClusterStatus.OFFLINE.value;
     }
-    return clusterStatus;
   }
 
   String getKafkaClusterStatus(
@@ -188,14 +185,13 @@ public class ClusterApiService {
               + "/"
               + clusterType;
 
-      ResponseEntity<String> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), String.class);
-      clusterStatus = resultBody.getBody();
+      ResponseEntity<ClusterStatus> resultBody =
+          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
+      return Objects.requireNonNull(resultBody.getBody()).value;
     } catch (Exception e) {
       log.error("Error from getKafkaClusterStatus ", e);
       return ClusterStatus.NOT_KNOWN.value;
     }
-    return clusterStatus;
   }
 
   public List<Map<String, String>> getConsumerOffsets(
@@ -431,7 +427,7 @@ public class ClusterApiService {
     }
   }
 
-  public ResponseEntity<String> approveTopicRequests(
+  public ResponseEntity<ApiResponse> approveTopicRequests(
       String topicName,
       String topicRequestType,
       int topicPartitions,
@@ -441,7 +437,7 @@ public class ClusterApiService {
       throws KlawException {
     log.info("approveTopicRequests {} {}", topicName, topicEnvId);
     getClusterApiProperties(tenantId);
-    ResponseEntity<String> response;
+    ResponseEntity<ApiResponse> response;
     ClusterTopicRequest clusterTopicRequest;
     try {
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicEnvId, tenantId);
@@ -477,7 +473,7 @@ public class ClusterApiService {
       HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
       headers.setContentType(MediaType.APPLICATION_JSON);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
-      response = getRestTemplate().postForEntity(uri, request, String.class);
+      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
       throw new KlawException("Could not approve topic request. Please contact Administrator.");

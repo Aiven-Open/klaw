@@ -541,7 +541,7 @@ public class TopicSyncControllerService {
       Topic topicFound,
       int tenantId) {
     try {
-      ResponseEntity<String> response =
+      ResponseEntity<ApiResponse> response =
           clusterApiService.approveTopicRequests(
               topicFound.getTopicname(),
               RequestOperationType.CREATE.value,
@@ -550,9 +550,10 @@ public class TopicSyncControllerService {
               syncBackTopics.getTargetEnv(),
               tenantId);
 
-      if (!Objects.equals(response.getBody(), ApiResultStatus.SUCCESS.value)) {
+      if (!Objects.equals(
+          Objects.requireNonNull(response.getBody()).getResult(), ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating topic {} {}", topicFound, response.getBody());
-        if (response.getBody().contains("TopicExistsException"))
+        if (Objects.requireNonNull(response.getBody()).getResult().contains("TopicExistsException"))
           logUpdateSyncBackTopics.add(
               "Error in Topic creation. Topic:"
                   + topicFound.getTopicname()

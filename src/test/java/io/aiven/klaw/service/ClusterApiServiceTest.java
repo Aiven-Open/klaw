@@ -20,11 +20,13 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.ClusterStatus;
 import io.aiven.klaw.model.RequestOperationType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -82,16 +84,18 @@ public class ClusterApiServiceTest {
   @Order(1)
   public void getStatusSuccess() {
 
-    when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(String.class)))
+    ResponseEntity<ClusterStatus> response =
+        new ResponseEntity<>(ClusterStatus.ONLINE, HttpStatus.OK);
+    when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(ClusterStatus.class)))
         .thenReturn(response);
     String result = clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
     result = clusterApiService.getSchemaClusterStatus("", 1);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
     result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
   }
 
   @Test
@@ -177,6 +181,11 @@ public class ClusterApiServiceTest {
   @Test
   @Order(7)
   public void approveTopicRequestsSuccess() throws KlawException {
+    ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> response =
+        new ResponseEntity<>(
+            ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
+
     String topicName = "testtopic";
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
@@ -189,18 +198,19 @@ public class ClusterApiServiceTest {
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
+    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenReturn(response);
 
-    ResponseEntity<String> response =
+    ResponseEntity<ApiResponse> response1 =
         clusterApiService.approveTopicRequests(
             topicName, RequestOperationType.CREATE.value, 1, "1", "", 1);
-    assertThat(response.getBody()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(Objects.requireNonNull(response1.getBody()).getResult())
+        .isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(8)
-  public void approveTopicRequestsFailure() throws KlawException {
+  public void approveTopicRequestsFailure() {
     String topicName = "testtopic";
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
@@ -213,7 +223,7 @@ public class ClusterApiServiceTest {
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
+    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenThrow(new RuntimeException("error"));
 
     assertThatThrownBy(

@@ -297,10 +297,11 @@ public class TopicAclControllerIT {
     String topicName = this.topicName + topicId;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn("ONLINE");
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     when(clusterApiService.approveTopicRequests(
             topicName, RequestOperationType.CREATE.value, 2, "1", "1", 101))
-        .thenReturn(new ResponseEntity<>(ApiResultStatus.SUCCESS.value, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     String response =
         mvc.perform(

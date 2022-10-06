@@ -688,7 +688,7 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    KafkaConnectorRequest topicRequestReq = new KafkaConnectorRequest();
+    KafkaConnectorRequest kafkaConnectorRequest = new KafkaConnectorRequest();
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
 
     Integer userTeamId = getMyTeamId(userDetails);
@@ -701,24 +701,26 @@ public class KafkaConnectControllerService {
           .build();
     }
 
-    topicRequestReq.setRequestor(userDetails);
-    topicRequestReq.setUsername(userDetails);
-    topicRequestReq.setTeamId(userTeamId);
-    topicRequestReq.setEnvironment(envId);
-    topicRequestReq.setConnectorName(connectorName);
-    topicRequestReq.setConnectortype(TopicRequestTypes.Delete.name());
+    kafkaConnectorRequest.setRequestor(userDetails);
+    kafkaConnectorRequest.setUsername(userDetails);
+    kafkaConnectorRequest.setTeamId(userTeamId);
+    kafkaConnectorRequest.setEnvironment(envId);
+    kafkaConnectorRequest.setConnectorName(connectorName);
+    kafkaConnectorRequest.setConnectortype(TopicRequestTypes.Delete.name());
+    kafkaConnectorRequest.setTenantId(tenantId);
 
     Optional<KwKafkaConnector> topicOb =
         getConnectorsFromName(connectorName, tenantId).stream()
             .filter(
-                topic -> Objects.equals(topic.getEnvironment(), topicRequestReq.getEnvironment()))
+                topic ->
+                    Objects.equals(topic.getEnvironment(), kafkaConnectorRequest.getEnvironment()))
             .findFirst();
 
     if (manageDatabase
             .getHandleDbRequests()
             .selectConnectorRequests(
-                topicRequestReq.getConnectorName(),
-                topicRequestReq.getEnvironment(),
+                kafkaConnectorRequest.getConnectorName(),
+                kafkaConnectorRequest.getEnvironment(),
                 RequestStatus.created.name(),
                 tenantId)
             .size()
@@ -730,9 +732,9 @@ public class KafkaConnectControllerService {
 
     if (topicOb.isPresent()) {
 
-      topicRequestReq.setConnectorConfig(topicOb.get().getConnectorConfig());
+      kafkaConnectorRequest.setConnectorConfig(topicOb.get().getConnectorConfig());
       mailService.sendMail(
-          topicRequestReq.getConnectorName(),
+          kafkaConnectorRequest.getConnectorName(),
           null,
           "",
           userDetails,
@@ -742,7 +744,10 @@ public class KafkaConnectControllerService {
 
       try {
         String result =
-            manageDatabase.getHandleDbRequests().requestForConnector(topicRequestReq).get("result");
+            manageDatabase
+                .getHandleDbRequests()
+                .requestForConnector(kafkaConnectorRequest)
+                .get("result");
         return ApiResponse.builder().result(result).build();
       } catch (Exception e) {
         log.error(e.getMessage());

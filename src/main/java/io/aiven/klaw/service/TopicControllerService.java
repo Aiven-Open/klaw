@@ -723,7 +723,7 @@ public class TopicControllerService {
       if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus))
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userDetails);
     } else {
-      ResponseEntity<String> response =
+      ResponseEntity<ApiResponse> response =
           clusterApiService.approveTopicRequests(
               topicRequest.getTopicname(),
               topicRequest.getTopictype(),
@@ -732,9 +732,9 @@ public class TopicControllerService {
               topicRequest.getEnvironment(),
               tenantId);
 
-      updateTopicReqStatus = response.getBody();
+      updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getResult();
 
-      if (ApiResultStatus.SUCCESS.value.equals(response.getBody())) {
+      if (ApiResultStatus.SUCCESS.value.equals(response.getBody().getResult())) {
         setTopicHistory(topicRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userDetails);
         mailService.sendMail(

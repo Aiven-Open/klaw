@@ -326,6 +326,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -333,13 +334,13 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
             anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
-        .thenReturn(new ResponseEntity<>(ApiResultStatus.SUCCESS.value, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    ApiResponse apiResponse = topicControllerService.approveTopicRequests(topicId + "");
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
 
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -348,6 +349,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1", env = "1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -355,11 +357,11 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
             anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
-        .thenReturn(new ResponseEntity<>("failure", HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    ApiResponse apiResponse = topicControllerService.approveTopicRequests("" + topicId);
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
 
     assertThat(apiResponse.getResult()).isEqualTo("failure");
   }
