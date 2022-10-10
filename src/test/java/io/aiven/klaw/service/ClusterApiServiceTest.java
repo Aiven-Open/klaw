@@ -16,7 +16,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
@@ -50,9 +50,9 @@ public class ClusterApiServiceTest {
 
   private UtilMethods utilMethods;
 
-  @Mock HandleDbRequests handleDbRequests;
+  @Mock HandleDbRequestsJdbc handleDbRequests;
 
-  @Mock MailUtils mailService;
+  @Mock MailUtils çƒç;
 
   @Mock ManageDatabase manageDatabase;
 

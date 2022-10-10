@@ -1,35 +1,52 @@
 package io.aiven.klaw.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.dao.*;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwProperties;
+import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.ProductDetails;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.helpers.db.rdbms.JdbcDataSourceCondition;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.EnvModel;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.service.DefaultDataService;
 import io.aiven.klaw.service.KwConstants;
-import io.aiven.klaw.service.MailUtils;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class ManageDatabase implements ApplicationContextAware {
+public class ManageDatabase implements ApplicationContextAware, InitializingBean, DisposableBean {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  private HandleDbRequests handleDbRequests;
+
+  @Autowired HandleDbRequestsJdbc handleDbRequests;
 
   private static Map<Integer, Map<String, Map<String, List<String>>>> envParamsMapPerTenant;
 
@@ -74,13 +91,10 @@ public class ManageDatabase implements ApplicationContextAware {
   private static Map<Integer, List<Env>> allEnvListPerTenant = new HashMap<>();
 
   private static Map<Integer, KwTenantConfigModel> tenantConfig = new HashMap<>();
-  ;
 
   private static List<String> reqStatusList;
 
   private static boolean isTrialLicense;
-
-  @Autowired private MailUtils utils;
 
   @Autowired private DefaultDataService defaultDataService;
 
@@ -119,13 +133,37 @@ public class ManageDatabase implements ApplicationContextAware {
     ((ConfigurableApplicationContext) contextApp).close();
   }
 
-  @PostConstruct
-  public void loadDb() throws Exception {
-    handleDbRequests = handleJdbc();
-    loadStaticDataToDb();
-    updateStaticDataToMemory();
-    checkSSOAuthentication();
+  @Override
+  public void afterPropertiesSet() throws KlawException {
+    loadDb();
   }
+
+  @Override
+  public void destroy() throws Exception {
+    shutdownApp();
+  }
+
+  public void loadDb() throws KlawException {
+    try {
+      loadStaticDataToDb();
+      updateStaticDataToMemory();
+      checkSSOAuthentication();
+    } catch (Exception e) {
+      e.printStackTrace();
+      log.error("Error in starting the application. {}", e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
+  }
+
+  public HandleDbRequestsJdbc getHandleDbRequests() {
+    return handleDbRequests;
+  }
+
+  //  @Bean()
+  //  @Conditional(JdbcDataSourceCondition.class)
+  //  HandleDbRequestsJdbc handleJdbc() {
+  //    return new HandleDbRequestsJdbc();
+  //  }
 
   private void loadStaticDataToDb() {
     // add tenant
@@ -203,16 +241,6 @@ public class ManageDatabase implements ApplicationContextAware {
           "Error : Please configure authentication type to ad, if SSO is enabled. Shutting down..");
       shutdownApp();
     }
-  }
-
-  public HandleDbRequests getHandleDbRequests() {
-    return handleDbRequests;
-  }
-
-  @Bean()
-  @Conditional(JdbcDataSourceCondition.class)
-  HandleDbRequestsJdbc handleJdbc() {
-    return new HandleDbRequestsJdbc();
   }
 
   public List<UserInfo> selectAllUsersInfo() {
