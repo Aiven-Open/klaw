@@ -149,8 +149,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       updateStaticDataToMemory();
       checkSSOAuthentication();
     } catch (Exception e) {
-      e.printStackTrace();
-      log.error("Error in starting the application. {}", e.getMessage());
+      log.error("Error in starting the application. ", e);
       throw new KlawException(e.getMessage());
     }
   }
@@ -158,12 +157,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public HandleDbRequestsJdbc getHandleDbRequests() {
     return handleDbRequests;
   }
-
-  //  @Bean()
-  //  @Conditional(JdbcDataSourceCondition.class)
-  //  HandleDbRequestsJdbc handleJdbc() {
-  //    return new HandleDbRequestsJdbc();
-  //  }
 
   private void loadStaticDataToDb() {
     // add tenant

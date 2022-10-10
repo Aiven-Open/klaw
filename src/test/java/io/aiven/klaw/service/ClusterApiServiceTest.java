@@ -52,8 +52,6 @@ public class ClusterApiServiceTest {
 
   @Mock HandleDbRequestsJdbc handleDbRequests;
 
-  @Mock MailUtils çƒç;
-
   @Mock ManageDatabase manageDatabase;
 
   @Mock RestTemplate restTemplate;
