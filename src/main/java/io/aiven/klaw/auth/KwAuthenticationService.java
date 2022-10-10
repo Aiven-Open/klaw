@@ -110,8 +110,11 @@ public class KwAuthenticationService {
     String searchRoot =
         this.adRootDn != null ? this.adRootDn : this.searchRootFromPrincipal(bindPrincipal);
     String searchFilterUpdated;
-    if (adFilter != null && !adFilter.equals("")) searchFilterUpdated = adFilter;
-    else searchFilterUpdated = searchFilter;
+    if (adFilter != null && !adFilter.equals("")) {
+      searchFilterUpdated = adFilter;
+    } else {
+      searchFilterUpdated = searchFilter;
+    }
 
     try {
       return SpringSecurityLdapTemplate.searchForSingleEntryInternal(

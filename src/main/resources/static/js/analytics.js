@@ -139,7 +139,7 @@ app.controller("showAnalyticsCtrl", function($scope, $http, $location, $window) 
 
 			$scope.checkPendingApprovals = function() {
 
-				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
+				if($scope.dashboardDetails.pendingApprovalsRedirectionPage === '')
 					return;
 
 				var sPageURL = window.location.search.substring(1);
@@ -148,14 +148,14 @@ app.controller("showAnalyticsCtrl", function($scope, $http, $location, $window) 
 				for (var i = 0; i < sURLVariables.length; i++)
 				{
 					var sParameterName = sURLVariables[i].split('=');
-					if (sParameterName[0] == "loggedin")
+					if (sParameterName[0] === "loggedin")
 					{
 						foundLoggedInVar  = "true";
-						if(sParameterName[1] != "true")
+						if(sParameterName[1] !== "true")
 							return;
 					}
 				}
-				if(foundLoggedInVar == "true")
+				if(foundLoggedInVar === "true")
 					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
 			}
 
@@ -180,9 +180,9 @@ app.controller("showAnalyticsCtrl", function($scope, $http, $location, $window) 
                     return;
                 if(!$scope.contactFormMessage)
                     return;
-                if($scope.contactFormSubject.trim().length==0)
+                if($scope.contactFormSubject.trim().length===0)
                     return;
-                if($scope.contactFormMessage.trim().length==0)
+                if($scope.contactFormMessage.trim().length===0)
                     return;
 
                 $http({

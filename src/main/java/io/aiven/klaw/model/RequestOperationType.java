@@ -1,12 +1,13 @@
 package io.aiven.klaw.model;
 
-public enum AclOperation {
+public enum RequestOperationType {
   CREATE("Create"),
+  UPDATE("Update"),
   DELETE("Delete");
 
   public final String value;
 
-  AclOperation(String value) {
+  RequestOperationType(String value) {
     this.value = value;
   }
 }

@@ -25,18 +25,20 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 			 });
 	}
 
-	$scope.handleValidationErrors = function(error){
+    $scope.handleValidationErrors = function(error){
         if(error.errors != null && error.errors.length > 0){
-                $scope.alert = error.errors[0].defaultMessage;
-            }else if(error.message != null){
-                    $scope.alert = error.message;
-                    }else if(error.result != null){
-                    $scope.alert = error.result;
-                    }else $scope.alert = "Sorry, unable to process the request.";
+            $scope.alert = error.errors[0].defaultMessage;
+        }else if(error.message != null){
+            $scope.alert = error.message;
+        }else if(error.result != null){
+            $scope.alert = error.result;
+        }
+        else
+            $scope.alert = "Unable to process the request. Please verify the request or contact our Administrator !!";
 
-            $scope.alertnote = $scope.alert;
-            $scope.showAlertToast();
-     }
+        $scope.alertnote = $scope.alert;
+        $scope.showAlertToast();
+    }
 
 	$scope.showAlertToast = function() {
               var x = document.getElementById("alertbar");
@@ -237,7 +239,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
                             $scope.alert = "User Approve Request : "+output.result;
                             $scope.getUserRequests();
-                            if(output.result == 'success'){
+                            if(output.result === 'success'){
                                 swal({
                                      title: "",
                                      text: "User Approve Request : "+output.result,
@@ -266,7 +268,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
 
                                 $scope.alert = "User decline Request : "+output.result;
                                 $scope.getUserRequests();
-                                if(output.result == 'success'){
+                                if(output.result === 'success'){
                                     swal({
                                          title: "",
                                          text: "User decline Request : "+output.result,
@@ -380,7 +382,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                 headers : { 'Content-Type' : 'application/json' },
                 data: serviceInput
             }).success(function(output) {
-                if(output.result == 'success'){
+                if(output.result === 'success'){
                     swal({
                          title: "",
                          text: "Registration Request : "+output.result,
@@ -476,7 +478,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                        headers : { 'Content-Type' : 'application/json' },
                        data: serviceInput
                    }).success(function(output) {
-                       if(output.result == 'success'){
+                       if(output.result === 'success'){
                             $scope.alert = "Registration Request : "+output.result;
                            swal({
                                 title: "",

@@ -80,7 +80,9 @@ public class EmailService {
     try {
       MimeMessage message = emailSender.createMimeMessage();
       message.setRecipients(Message.RecipientType.TO, to);
-      if (cc != null) message.setRecipients(Message.RecipientType.CC, cc);
+      if (cc != null) {
+        message.setRecipients(Message.RecipientType.CC, cc);
+      }
 
       message.setSubject(subject);
       Address address = new InternetAddress(noReplyMailId);

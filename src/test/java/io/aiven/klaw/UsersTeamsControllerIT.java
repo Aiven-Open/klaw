@@ -5,6 +5,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import java.util.List;
@@ -72,7 +74,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    //        assertThat(response, CoreMatchers.containsString("success"));
+    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
@@ -89,7 +91,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    //        assertThat(response, CoreMatchers.containsString("success"));
+    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
   }
 
   // Create team success
@@ -111,7 +113,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -148,8 +150,9 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(response).contains("Failure. Team already exists");
+    assertThat(objectResponse.getResult()).contains("Failure. Team already exists");
   }
 
   // Create team failure, invalid team mail id
@@ -196,7 +199,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -234,7 +237,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("Not Authorized");
+    assertThat(response).contains(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   // Delete team success
@@ -257,7 +260,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -271,7 +274,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -326,7 +329,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(

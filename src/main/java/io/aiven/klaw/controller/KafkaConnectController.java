@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
@@ -8,6 +9,7 @@ import io.aiven.klaw.service.KafkaConnectControllerService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,12 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class KafkaConnectController {
 
   @Autowired KafkaConnectControllerService kafkaConnectControllerService;
 
   @PostMapping(value = "/createConnector")
-  public ResponseEntity<Map<String, String>> createConnectorRequest(
+  public ResponseEntity<ApiResponse> createConnectorRequest(
       @Valid @RequestBody KafkaConnectorRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createConnectorRequest(addTopicRequest), HttpStatus.OK);
@@ -43,7 +46,6 @@ public class KafkaConnectController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
-
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
             pageNo, currentPage, requestsType),
@@ -54,8 +56,8 @@ public class KafkaConnectController {
       value = "/deleteConnectorRequests",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> deleteConnectorRequests(
-      @RequestParam("connectorId") String connectorId) {
+  public ResponseEntity<ApiResponse> deleteConnectorRequests(
+      @RequestParam("connectorId") String connectorId) throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.deleteConnectorRequests(connectorId), HttpStatus.OK);
   }
@@ -63,7 +65,7 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/execConnectorRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> approveTopicRequests(
+  public ResponseEntity<ApiResponse> approveTopicRequests(
       @RequestParam("connectorId") String connectorId) throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
@@ -72,11 +74,10 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/execConnectorRequestsDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> declineConnectorRequests(
+  public ResponseEntity<ApiResponse> declineConnectorRequests(
       @RequestParam("connectorId") String connectorId,
       @RequestParam("reasonForDecline") String reasonForDecline)
       throws KlawException {
-
     return new ResponseEntity<>(
         kafkaConnectControllerService.declineConnectorRequests(connectorId, reasonForDecline),
         HttpStatus.OK);
@@ -85,8 +86,9 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/createConnectorDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> createConnectorDeleteRequest(
-      @RequestParam("connectorName") String topicName, @RequestParam("env") String envId) {
+  public ResponseEntity<ApiResponse> createConnectorDeleteRequest(
+      @RequestParam("connectorName") String topicName, @RequestParam("env") String envId)
+      throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createConnectorDeleteRequest(topicName, envId),
         HttpStatus.OK);
@@ -116,7 +118,6 @@ public class KafkaConnectController {
       @RequestParam(value = "connectornamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "teamName", required = false) String teamName)
       throws Exception {
-
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectors(
             envId, pageNo, currentPage, topicNameSearch, teamName),
@@ -136,19 +137,19 @@ public class KafkaConnectController {
   @PostMapping(
       value = "/createClaimConnectorRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> createClaimConnectorRequest(
-      @RequestParam("connectorName") String connectorName, @RequestParam("env") String envId) {
+  public ResponseEntity<ApiResponse> createClaimConnectorRequest(
+      @RequestParam("connectorName") String connectorName, @RequestParam("env") String envId)
+      throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createClaimConnectorRequest(connectorName, envId),
         HttpStatus.OK);
   }
 
   @PostMapping(value = "/saveConnectorDocumentation")
-  public ResponseEntity<Map<String, String>> saveConnectorDocumentation(
+  public ResponseEntity<ApiResponse> saveConnectorDocumentation(
       @RequestBody KafkaConnectorModel topicInfo) {
-    Map<String, String> saveTopicDocumentationResult =
-        kafkaConnectControllerService.saveConnectorDocumentation(topicInfo);
-    return new ResponseEntity<>(saveTopicDocumentationResult, HttpStatus.OK);
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.saveConnectorDocumentation(topicInfo), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -157,9 +158,7 @@ public class KafkaConnectController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, Object>> getConnectorDetailsPerEnv(
       @RequestParam("envSelected") String envId,
-      @RequestParam("connectorName") String connectorName)
-      throws Exception {
-
+      @RequestParam("connectorName") String connectorName) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorDetailsPerEnv(envId, connectorName),
         HttpStatus.OK);

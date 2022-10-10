@@ -45,7 +45,9 @@ public class ValidateCaptchaService {
     // by the recaptcha client-side integration on your site.
     params.add("response", captchaResponse);
 
-    if (!validateRecaptcha) return true;
+    if (!validateRecaptcha) {
+      return true;
+    }
 
     CaptchaResponse apiResponse = null;
     try {

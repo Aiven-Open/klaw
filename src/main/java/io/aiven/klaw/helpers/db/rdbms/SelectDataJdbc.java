@@ -2,7 +2,9 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
 import java.math.BigInteger;
@@ -109,16 +111,18 @@ public class SelectDataJdbc {
           teamName = row.getTeamId();
         }
 
-        if ("Delete".equals(aclType)) {
+        if (RequestOperationType.DELETE.value.equals(aclType)) {
           teamName = row.getRequestingteam();
         }
       } else {
         teamName = row.getRequestingteam();
       }
 
-      if (showRequestsOfAllTeams) // show all requests of all teams
-      aclList.add(row);
-      else if (teamSelected != null && teamSelected.equals(teamName)) aclList.add(row);
+      if (showRequestsOfAllTeams) { // show all requests of all teams
+        aclList.add(row);
+      } else if (teamSelected != null && teamSelected.equals(teamName)) {
+        aclList.add(row);
+      }
 
       try {
         row.setRequesttimestring(
@@ -144,9 +148,7 @@ public class SelectDataJdbc {
 
     for (SchemaRequest row : schemaListSub) {
       Integer teamId = row.getTeamId();
-
       Integer teamSelected = selectUserInfo(requestor).getTeamId();
-
       try {
         row.setRequesttimestring(
             (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
@@ -154,7 +156,9 @@ public class SelectDataJdbc {
       } catch (Exception ignored) {
       }
 
-      if (teamSelected != null && teamSelected.equals(teamId)) schemaList.add(row);
+      if (teamSelected != null && teamSelected.equals(teamId)) {
+        schemaList.add(row);
+      }
     }
 
     return schemaList;
@@ -170,16 +174,22 @@ public class SelectDataJdbc {
   public List<Topic> selectTopicDetails(String topic, int tenantId) {
     List<Topic> topicOpt = topicRepo.findAllByTopicnameAndTenantId(topic, tenantId);
 
-    if (topicOpt.size() > 0) return topicOpt;
-    else return new ArrayList<>();
+    if (topicOpt.size() > 0) {
+      return topicOpt;
+    } else {
+      return new ArrayList<>();
+    }
   }
 
   public List<KwKafkaConnector> selectConnectorDetails(String connectorName, int tenantId) {
     List<KwKafkaConnector> topicOpt =
         kafkaConnectorRepo.findAllByConnectorNameAndTenantId(connectorName, tenantId);
 
-    if (topicOpt.size() > 0) return topicOpt;
-    else return new ArrayList<>();
+    if (topicOpt.size() > 0) {
+      return topicOpt;
+    } else {
+      return new ArrayList<>();
+    }
   }
 
   // "All teams"
@@ -189,17 +199,23 @@ public class SelectDataJdbc {
     if (teamId == null || teamId.equals(1)) {
       if (env == null || env.equals("ALL")) {
         return topicRepo.findAllByTenantId(tenantId);
-      } else return topicRepo.findAllByEnvironmentAndTenantId(env, tenantId);
+      } else {
+        return topicRepo.findAllByEnvironmentAndTenantId(env, tenantId);
+      }
     } else {
-      if ("ALL".equals(env)) return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-      else return topicRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
+      if ("ALL".equals(env)) {
+        return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
+      } else {
+        return topicRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
+      }
     }
   }
 
   public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
     Map<String, String> dashboardMap = new HashMap<>();
     int countProducers = 0, countConsumers = 0;
-    List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId("Producer", teamId, tenantId);
+    List<Acl> acls =
+        aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
     List<String> topicList = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicList.add(a.getTopicname()));
@@ -207,7 +223,7 @@ public class SelectDataJdbc {
     }
     dashboardMap.put("producerCount", "" + countProducers);
 
-    acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId("Consumer", teamId, tenantId);
+    acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
@@ -226,8 +242,11 @@ public class SelectDataJdbc {
     log.debug("selectAllByTopictypeAndTeamname {} {}", isProducerConsumer, teamId);
     List<Topic> topics = new ArrayList<>();
     String topicType, aclPatternType;
-    if (isProducerConsumer != null && isProducerConsumer.equals("Producer")) topicType = "Producer";
-    else topicType = "Consumer";
+    if (isProducerConsumer != null && isProducerConsumer.equals(AclType.PRODUCER.value)) {
+      topicType = AclType.PRODUCER.value;
+    } else {
+      topicType = AclType.CONSUMER.value;
+    }
 
     List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
@@ -240,8 +259,8 @@ public class SelectDataJdbc {
       tmpTopicName = acl.getTopicname();
       aclPatternType = acl.getAclPatternType();
 
-      if (aclPatternType != null && aclPatternType.equals("PREFIXED"))
-        tmpTopicName = tmpTopicName + "--PREFIXED--";
+      if (aclPatternType != null && aclPatternType.equals(AclPatternType.PREFIXED.value))
+        tmpTopicName = tmpTopicName + "--" + AclPatternType.PREFIXED.value + "--";
 
       t.setEnvironment(acl.getEnvironment());
       t.setTopicname(tmpTopicName);
@@ -281,7 +300,8 @@ public class SelectDataJdbc {
   }
 
   public List<Acl> getPrefixedAclsSOT(String env, int tenantId) {
-    return aclRepo.findAllByEnvironmentAndAclPatternTypeAndTenantId(env, "PREFIXED", tenantId);
+    return aclRepo.findAllByEnvironmentAndAclPatternTypeAndTenantId(
+        env, AclPatternType.PREFIXED.value, tenantId);
   }
 
   public List<TopicRequest> selectTopicRequestsByStatus(
@@ -347,8 +367,9 @@ public class SelectDataJdbc {
       } catch (Exception ignored) {
       }
 
-      if (showRequestsOfAllTeams) topicRequestList.add(row); // no team filter
-      else if (teamSelected != null
+      if (showRequestsOfAllTeams) {
+        topicRequestList.add(row); // no team filter
+      } else if (teamSelected != null
           && (teamSelected.equals(teamName) || ("" + teamSelected).equals(row.getDescription()))) {
         topicRequestList.add(row);
       }
@@ -410,9 +431,10 @@ public class SelectDataJdbc {
       }
 
       topicRequestListSub.addAll(claimTopicReqs);
-    } else
+    } else {
       topicRequestListSub =
           Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
+    }
 
     for (KafkaConnectorRequest row : topicRequestListSub) {
       Integer teamName = row.getTeamId();
@@ -423,8 +445,9 @@ public class SelectDataJdbc {
       } catch (Exception ignored) {
       }
 
-      if (showRequestsOfAllTeams) topicRequestList.add(row); // no team filter
-      else if (teamSelected != null
+      if (showRequestsOfAllTeams) {
+        topicRequestList.add(row); // no team filter
+      } else if (teamSelected != null
           && (Objects.equals(teamSelected, teamName)
               || Objects.equals("" + teamSelected, row.getDescription()))) {
         topicRequestList.add(row);
@@ -477,8 +500,11 @@ public class SelectDataJdbc {
   }
 
   public List<Env> selectAllEnvs(String type, int tenantId) {
-    if ("all".equals(type)) return Lists.newArrayList(envRepo.findAllByTenantId(tenantId));
-    else return Lists.newArrayList(envRepo.findAllByTypeAndTenantId(type, tenantId));
+    if ("all".equals(type)) {
+      return Lists.newArrayList(envRepo.findAllByTenantId(tenantId));
+    } else {
+      return Lists.newArrayList(envRepo.findAllByTypeAndTenantId(type, tenantId));
+    }
   }
 
   public Env selectEnvDetails(String environmentId, int tenantId) {
@@ -502,15 +528,18 @@ public class SelectDataJdbc {
     UserInfo userInfo = selectUserInfo(username);
 
     if (allReqs) {
-      if (env == null || env.equals(""))
+      if (env == null || env.equals("")) {
         activityList = Lists.newArrayList(activityLogRepo.findAllByTenantId(tenantId));
-      else activityList = activityLogRepo.findAllByEnvAndTenantId(env, tenantId);
+      } else {
+        activityList = activityLogRepo.findAllByEnvAndTenantId(env, tenantId);
+      }
     } else {
-      if (env == null || env.equals(""))
+      if (env == null || env.equals("")) {
         activityList = activityLogRepo.findAllByTeamIdAndTenantId(userInfo.getTeamId(), tenantId);
-      else
+      } else {
         activityList =
             activityLogRepo.findAllByEnvAndTeamIdAndTenantId(env, userInfo.getTeamId(), tenantId);
+      }
     }
 
     for (ActivityLog row : activityList) {
@@ -565,14 +594,20 @@ public class SelectDataJdbc {
 
   public List<Topic> getTopics(String topicName, boolean allTopics, int tenantId) {
     log.debug("getTopics {} {}", topicName, allTopics);
-    if (allTopics) return Lists.newArrayList(topicRepo.findAllByTenantId(tenantId));
-    else return topicRepo.findAllByTopicnameAndTenantId(topicName, tenantId);
+    if (allTopics) {
+      return Lists.newArrayList(topicRepo.findAllByTenantId(tenantId));
+    } else {
+      return topicRepo.findAllByTopicnameAndTenantId(topicName, tenantId);
+    }
   }
 
   public List<KwKafkaConnector> getConnectors(String topicName, boolean allTopics, int tenantId) {
     log.debug("getConnectors {} {}", topicName, allTopics);
-    if (allTopics) return Lists.newArrayList(kafkaConnectorRepo.findAllByTenantId(tenantId));
-    else return kafkaConnectorRepo.findAllByConnectorNameAndTenantId(topicName, tenantId);
+    if (allTopics) {
+      return Lists.newArrayList(kafkaConnectorRepo.findAllByTenantId(tenantId));
+    } else {
+      return kafkaConnectorRepo.findAllByConnectorNameAndTenantId(topicName, tenantId);
+    }
   }
 
   public Optional<Topic> getTopicFromId(int topicId, int tenantId) {
@@ -615,8 +650,11 @@ public class SelectDataJdbc {
 
   public Team selectTeamDetailsFromName(String teamName, int tenantId) {
     List<Team> teamList = teamRepo.findAllByTenantIdAndTeamname(tenantId, teamName);
-    if (!teamList.isEmpty()) return teamList.get(0);
-    else return null;
+    if (!teamList.isEmpty()) {
+      return teamList.get(0);
+    } else {
+      return null;
+    }
   }
 
   public List<Map<String, String>> selectActivityLogByTeam(
@@ -646,8 +684,9 @@ public class SelectDataJdbc {
     try {
       List<Object[]> activityCount =
           activityLogRepo.findActivityLogForLastDays(envIdList, tenantId);
-      if (activityCount.size() > numberOfDays)
+      if (activityCount.size() > numberOfDays) {
         activityCount = activityCount.subList(0, numberOfDays - 1);
+      }
       Map<String, String> hashMap;
       for (Object[] actvty : activityCount) {
         hashMap = new HashMap<>();
@@ -685,8 +724,11 @@ public class SelectDataJdbc {
     List<Map<String, String>> totalPartitionsCount = new ArrayList<>();
     try {
       List<Object[]> topics;
-      if (teamId != null) topics = topicRepo.findAllPartitionsForTeamGroupByEnv(teamId, tenantId);
-      else topics = topicRepo.findAllPartitionsGroupByEnv(tenantId);
+      if (teamId != null) {
+        topics = topicRepo.findAllPartitionsForTeamGroupByEnv(teamId, tenantId);
+      } else {
+        topics = topicRepo.findAllPartitionsGroupByEnv(tenantId);
+      }
 
       Map<String, String> hashMap;
       for (Object[] topic : topics) {
@@ -706,8 +748,11 @@ public class SelectDataJdbc {
     List<Map<String, String>> totalAclsCount = new ArrayList<>();
     try {
       List<Object[]> topics;
-      if (teamId != null) topics = aclRepo.findAllAclsforTeamGroupByEnv(teamId, tenantId);
-      else topics = aclRepo.findAllAclsGroupByEnv(tenantId);
+      if (teamId != null) {
+        topics = aclRepo.findAllAclsforTeamGroupByEnv(teamId, tenantId);
+      } else {
+        topics = aclRepo.findAllAclsGroupByEnv(tenantId);
+      }
 
       Map<String, String> hashMap;
       for (Object[] topic : topics) {
@@ -727,8 +772,11 @@ public class SelectDataJdbc {
     List<Map<String, String>> totalTopicCount = new ArrayList<>();
     try {
       List<Object[]> topics;
-      if (teamId != null) topics = topicRepo.findAllTopicsForTeam(teamId, tenantId);
-      else topics = topicRepo.findAllTopicsGroupByTeamId(tenantId);
+      if (teamId != null) {
+        topics = topicRepo.findAllTopicsForTeam(teamId, tenantId);
+      } else {
+        topics = topicRepo.findAllTopicsGroupByTeamId(tenantId);
+      }
 
       Map<String, String> hashMap;
       for (Object[] topic : topics) {
@@ -754,7 +802,7 @@ public class SelectDataJdbc {
     List<Map<String, String>> totalAclCount = new ArrayList<>();
     try {
       List<Object[]> acls;
-      if ("Producer".equals(aclType)) {
+      if (AclType.PRODUCER.value.equals(aclType)) {
         if (teamId != null) {
           acls = aclRepo.findAllProducerAclsForTeamId(teamId, tenantId);
         } else {
@@ -799,7 +847,9 @@ public class SelectDataJdbc {
           hashMap.put("cluster", selectEnvDetails((String) topic[0], tenantId).getName());
           hashMap.put("topicscount", "" + ((BigInteger) topic[1]).intValue());
           totalTopicCount.add(hashMap);
-        } else log.error("Error: Environment not found for env {}", topic[0]);
+        } else {
+          log.error("Error: Environment not found for env {}", topic[0]);
+        }
       }
     } catch (Exception e) {
       log.error("Error from selectAllTopicsForTeamGroupByEnv ", e);
@@ -858,12 +908,19 @@ public class SelectDataJdbc {
 
   public Integer getNextTopicRequestId(String idType, int tenantId) {
     Integer topicId;
-    if (idType.equals("TOPIC_REQ_ID")) topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
-    else if (idType.equals("TOPIC_ID")) topicId = topicRepo.getNextTopicRequestId(tenantId);
-    else topicId = null;
+    if (idType.equals("TOPIC_REQ_ID")) {
+      topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
+    } else if (idType.equals("TOPIC_ID")) {
+      topicId = topicRepo.getNextTopicRequestId(tenantId);
+    } else {
+      topicId = null;
+    }
 
-    if (topicId == null) return 1001;
-    else return topicId + 1;
+    if (topicId == null) {
+      return 1001;
+    } else {
+      return topicId + 1;
+    }
   }
 
   public Integer getNextConnectorRequestId(String idType, int tenantId) {
@@ -893,11 +950,12 @@ public class SelectDataJdbc {
   }
 
   public List<KwClusters> getAllClusters(String typeOfCluster, int tenantId) {
-    if ("all".equals(typeOfCluster))
+    if ("all".equals(typeOfCluster)) {
       return Lists.newArrayList(kwClusterRepo.findAllByTenantId(tenantId));
-    else
+    } else {
       return Lists.newArrayList(
           kwClusterRepo.findAllByClusterTypeAndTenantId(typeOfCluster, tenantId));
+    }
   }
 
   public KwClusters getClusterDetails(int id, int tenantId) {
@@ -927,9 +985,13 @@ public class SelectDataJdbc {
         registerInfoRepo.findAllByUsernameAndStatus(userId, "STAGING");
     List<RegisterUserInfo> registerInfoList1 =
         registerInfoRepo.findAllByUsernameAndStatus(userId, "PENDING");
-    if (registerInfoList.size() > 0) return registerInfoList.get(0).getRegistrationId();
-    else if (registerInfoList1.size() > 0) return "PENDING_ACTIVATION";
-    else return null;
+    if (registerInfoList.size() > 0) {
+      return registerInfoList.get(0).getRegistrationId();
+    } else if (registerInfoList1.size() > 0) {
+      return "PENDING_ACTIVATION";
+    } else {
+      return null;
+    }
   }
 
   public RegisterUserInfo getRegistrationDetails(String registrationId, String status) {
@@ -970,7 +1032,9 @@ public class SelectDataJdbc {
     if (teamId == null || teamId.equals(1)) {
       if (env == null || env.equals("ALL")) {
         return kafkaConnectorRepo.findAllByTenantId(tenantId);
-      } else return kafkaConnectorRepo.findAllByEnvironmentAndTenantId(env, tenantId);
+      } else {
+        return kafkaConnectorRepo.findAllByEnvironmentAndTenantId(env, tenantId);
+      }
     } else {
       if ("ALL".equals(env)) {
         return kafkaConnectorRepo.findAllByTeamIdAndTenantId(teamId, tenantId);

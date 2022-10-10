@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.SyncConnectorUpdates;
 import io.aiven.klaw.service.KafkaConnectSyncControllerService;
@@ -24,11 +25,10 @@ public class KafkaConnectSyncController {
   @Autowired KafkaConnectSyncControllerService kafkaConnectControllerService;
 
   @PostMapping(value = "/updateSyncConnectors")
-  public ResponseEntity<Map<String, String>> updateSyncTopics(
-      @RequestBody List<SyncConnectorUpdates> syncConnectorUpdates) {
-    Map<String, String> updateSyncConnectorsResult =
-        kafkaConnectControllerService.updateSyncConnectors(syncConnectorUpdates);
-    return new ResponseEntity<>(updateSyncConnectorsResult, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> updateSyncConnectors(
+      @RequestBody List<SyncConnectorUpdates> syncConnectorUpdates) throws KlawException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.updateSyncConnectors(syncConnectorUpdates), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -54,14 +54,9 @@ public class KafkaConnectSyncController {
       @RequestParam(value = "isBulkOption", defaultValue = "false", required = false)
           String isBulkOption)
       throws Exception {
-    //        if(Boolean.parseBoolean(showAllTopics))
     return new ResponseEntity<>(
         kafkaConnectControllerService.getSyncConnectors(
             envId, pageNo, currentPage, connectorNameSearch, Boolean.parseBoolean(isBulkOption)),
         HttpStatus.OK);
-    //        else
-    //            return new ResponseEntity<>(topicSyncControllerService.getReconTopics(envId,
-    // pageNo, currentPage, topicNameSearch,
-    //                    showAllTopics, Boolean.parseBoolean(isBulkOption)), HttpStatus.OK);
   }
 }

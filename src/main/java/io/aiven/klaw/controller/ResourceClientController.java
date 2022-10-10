@@ -33,9 +33,13 @@ public class ResourceClientController {
   @Value("${spring.security.oauth2.client.provider.klaw.user-info-uri:testResourceUrl}")
   private String userInfoUri;
 
+  private static final String authorizationRequestBaseUri = "oauth2/authorize-client";
+  Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
   @Autowired private OAuth2AuthorizedClientService authorizedClientService;
 
   @Autowired private WebClient webClient;
+
+  @Autowired private ClientRegistrationRepository clientRegistrationRepository;
 
   @GetMapping("/resources")
   public String getFoos(
@@ -72,11 +76,6 @@ public class ResourceClientController {
       return ("redirect:oauthLogin");
     }
   }
-
-  private static final String authorizationRequestBaseUri = "oauth2/authorize-client";
-  Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
-
-  @Autowired private ClientRegistrationRepository clientRegistrationRepository;
 
   @GetMapping("/oauthLogin")
   public String getLoginPage(

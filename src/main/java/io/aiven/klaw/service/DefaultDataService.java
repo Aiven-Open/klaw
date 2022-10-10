@@ -247,38 +247,6 @@ public class DefaultDataService {
             "Standard names of environments");
     kwPropertiesList.add(kwProperties24);
 
-    //        KwProperties kwProperties25 = new KwProperties("klaw.mail.transport.protocol",
-    //                tenantId, MAIL_PROTOCOL,"Smtp Config Mail transport protocol");
-    //        kwPropertiesList.add(kwProperties25);
-    //
-    //        KwProperties kwProperties26 = new KwProperties("klaw.mail.host",
-    //                tenantId, MAIL_HOST,"Smtp Config Mail host");
-    //        kwPropertiesList.add(kwProperties26);
-    //
-    //        KwProperties kwProperties27 = new KwProperties("klaw.mail.port",
-    //                tenantId, MAIL_PORT,"Smtp Config Mail port");
-    //        kwPropertiesList.add(kwProperties27);
-    //
-    //        KwProperties kwProperties28 = new KwProperties("klaw.mail.username",
-    //                tenantId, MAIL_USERNAME,"Smtp Config Mail username");
-    //        kwPropertiesList.add(kwProperties28);
-    //
-    //        KwProperties kwProperties29 = new KwProperties("klaw.mail.password",
-    //                tenantId, MAIL_PASSWORD,"Smtp Config Mail password");
-    //        kwPropertiesList.add(kwProperties29);
-    //
-    //        KwProperties kwProperties30 = new KwProperties("klaw.mail.smtp.auth",
-    //                tenantId, MAIL_SMTP_AUTH,"Smtp Config Mail Smtp Auth true/false");
-    //        kwPropertiesList.add(kwProperties30);
-    //
-    //        KwProperties kwProperties31 = new KwProperties("klaw.mail.smtp.starttls.enable",
-    //                tenantId, MAIL_SMTP_TLS,"Smtp Config Mail Smtp TLS enable true/false");
-    //        kwPropertiesList.add(kwProperties31);
-    //
-    //        KwProperties kwProperties32 = new KwProperties("klaw.mail.debug",
-    //                tenantId, MAIL_DEBUG,"Smtp Config Mail debug");
-    //        kwPropertiesList.add(kwProperties32);
-
     KwProperties kwProperties19 =
         new KwProperties(
             "klaw.mail.notifications.enable",

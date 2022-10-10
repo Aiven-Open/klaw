@@ -4,6 +4,8 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.TeamOverview;
@@ -95,7 +97,7 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (aclsPerEnvList.size() == 1) {
-          resultMap.put("status", "success");
+          resultMap.put("status", ApiResultStatus.SUCCESS.value);
           resultMap.put("aclsCount", aclsPerEnvList.get(0).get("aclscount"));
         }
       } catch (Exception e) {
@@ -126,7 +128,7 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (topicsCountList.size() == 1) {
-          resultMap.put("status", "success");
+          resultMap.put("status", ApiResultStatus.SUCCESS.value);
           resultMap.put("topicsCount", topicsCountList.get(0).get("topicscount"));
         }
       }
@@ -138,12 +140,16 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getProducerAclsTeamsOverview(Integer teamId, Integer tenantId) {
     List<Map<String, String>> producerAclsPerTeamList =
-        manageDatabase.getHandleDbRequests().selectAclsCountByTeams("Producer", teamId, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .selectAclsCountByTeams(AclType.PRODUCER.value, teamId, tenantId);
 
     String title = "Producer Acls";
-    if (teamId != null)
+    if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
-    else title += " (all teams)";
+    } else {
+      title += " (all teams)";
+    }
 
     return commonUtilsService.getChartsJsOverview(
         producerAclsPerTeamList, title, "aclscount", "teamid", "Teams", "Producer Acls", tenantId);
@@ -151,12 +157,16 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getConsumerAclsTeamsOverview(Integer teamId, Integer tenantId) {
     List<Map<String, String>> consumerAclsPerTeamList =
-        manageDatabase.getHandleDbRequests().selectAclsCountByTeams("Consumer", teamId, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .selectAclsCountByTeams(AclType.CONSUMER.value, teamId, tenantId);
 
     String title = "Consumer Acls";
-    if (teamId != null)
+    if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
-    else title += " (all teams)";
+    } else {
+      title += " (all teams)";
+    }
 
     return commonUtilsService.getChartsJsOverview(
         consumerAclsPerTeamList, title, "aclscount", "teamid", "Teams", "Consumer Acls", tenantId);
@@ -167,9 +177,11 @@ public class AnalyticsControllerService {
     List<Map<String, String>> teamCountList =
         manageDatabase.getHandleDbRequests().selectTopicsCountByTeams(teamId, tenantId);
     String title = "Topics in all clusters";
-    if (teamId != null)
+    if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
-    else title += " (all teams)";
+    } else {
+      title += " (all teams)";
+    }
 
     return commonUtilsService.getChartsJsOverview(
         teamCountList, title, "topicscount", "teamid", "Teams", "Topics", tenantId);
@@ -229,8 +241,9 @@ public class AnalyticsControllerService {
     List<Map<String, String>> partitionsCountList =
         manageDatabase.getHandleDbRequests().selectPartitionsCountByEnv(teamId, tenantId);
     String title = "Partitions per cluster";
-    if (teamId != null)
+    if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
+    }
 
     // tenant filtering
     try {
@@ -263,8 +276,9 @@ public class AnalyticsControllerService {
     List<Map<String, String>> aclsPerEnvList =
         manageDatabase.getHandleDbRequests().selectAclsCountByEnv(teamId, tenantId);
     String title = "Acls per cluster";
-    if (teamId != null)
+    if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
+    }
 
     // tenant filtering
     try {
@@ -329,38 +343,6 @@ public class AnalyticsControllerService {
 
     Integer userTeamId = getMyTeamId(getUserName());
 
-    // All tenant reports
-    //        if(!commonUtilsService.isNotAuthorizedUser(getPrincipal(),
-    // PermissionType.ALL_TENANTS_REPORTS)) {
-    //            Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
-    //            for (Integer uniqueTenantId : tenantMap.keySet()) {
-    //                teamOverview = new TeamOverview();
-    //                teamOverview.setTenantName(manageDatabase.getTenantMap().get(uniqueTenantId));
-    //
-    //                teamOverview.setTopicsPerEnvOverview(getTopicsEnvOverview(uniqueTenantId,
-    // PermissionType.ALL_TENANTS_REPORTS));
-    //                teamOverview.setPartitionsPerEnvOverview(getPartitionsEnvOverview(null,
-    // uniqueTenantId));
-    //                teamOverview.setAclsPerEnvOverview(getAclsEnvOverview(null, uniqueTenantId));
-    //
-    //                teamOverview.setTopicsPerTeamsOverview(getTopicsTeamsOverview(null,
-    // uniqueTenantId));
-    //
-    //
-    // teamOverview.setProducerAclsPerTeamsOverview(getProducerAclsTeamsOverview(null,
-    // uniqueTenantId));
-    //
-    // teamOverview.setConsumerAclsPerTeamsOverview(getConsumerAclsTeamsOverview(null,
-    // uniqueTenantId));
-    //
-    //                teamOverview.setActivityLogOverview(getActivityLogOverview(null,
-    // uniqueTenantId));
-    //
-    //                listTeamOverview.add(teamOverview);
-    //            }
-    //        }
-    //        else
-
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -404,8 +386,9 @@ public class AnalyticsControllerService {
 
     teamOverview.setTopicsPerTeamPerEnvOverview(
         getTopicsPerTeamEnvOverview(commonUtilsService.getTenantId(getUserName())));
-    if (forTeam != null && forTeam.equals("true"))
+    if (forTeam != null && forTeam.equals("true")) {
       teamOverview.setActivityLogOverview(getActivityLogOverview(userTeamId, 101));
+    }
 
     return teamOverview;
   }
@@ -434,9 +417,11 @@ public class AnalyticsControllerService {
 
     String actualFileName;
     for (TeamOverview totalOverview : totalOverviewList) {
-      if (totalOverview.getTenantName() != null)
+      if (totalOverview.getTenantName() != null) {
         actualFileName = "Klaw-" + totalOverview.getTenantName() + ".xlsx";
-      else actualFileName = "KlawReport" + ".xlsx";
+      } else {
+        actualFileName = "KlawReport" + ".xlsx";
+      }
 
       String fileName = kwReportsLocation + actualFileName;
       File reportFile = new File(fileName);
@@ -509,7 +494,9 @@ public class AnalyticsControllerService {
     List<List<String>> allTopicLists = new ArrayList<>();
     for (String envName : envNames) {
       allTopicLists.add(topicNames.get(envName));
-      if (topicNames.get(envName).size() > maxSize) maxSize = topicNames.get(envName).size();
+      if (topicNames.get(envName).size() > maxSize) {
+        maxSize = topicNames.get(envName).size();
+      }
     }
 
     // set content
@@ -517,8 +504,11 @@ public class AnalyticsControllerService {
     for (int i = 0; i < maxSize; i++) {
       rowValList = new ArrayList<>();
       for (List<String> allTopicList : allTopicLists) {
-        if (allTopicList.size() > i) rowValList.add(allTopicList.get(i));
-        else rowValList.add("");
+        if (allTopicList.size() > i) {
+          rowValList.add(allTopicList.get(i));
+        } else {
+          rowValList.add("");
+        }
       }
       data.put(id, new Object[] {id - 1, rowValList});
       id++;

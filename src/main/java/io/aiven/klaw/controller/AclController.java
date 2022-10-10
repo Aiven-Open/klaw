@@ -6,6 +6,7 @@ import io.aiven.klaw.service.AclControllerService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,19 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class AclController {
 
   @Autowired AclControllerService aclControllerService;
 
   @PostMapping(value = "/createAcl")
-  public ResponseEntity<String> createAcl(@Valid @RequestBody AclRequestsModel addAclRequest) {
+  public ResponseEntity<ApiResponse> createAcl(@Valid @RequestBody AclRequestsModel addAclRequest)
+      throws KlawException {
     return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
-  }
-
-  @PostMapping(value = "/updateSyncAcls")
-  public ResponseEntity<Map<String, String>> updateSyncAcls(
-      @RequestBody List<SyncAclUpdates> syncAclUpdates) {
-    return new ResponseEntity<>(aclControllerService.updateSyncAcls(syncAclUpdates), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -66,27 +63,29 @@ public class AclController {
       value = "/deleteAclRequests",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> deleteAclRequests(@RequestParam("req_no") String req_no) {
+  public ResponseEntity<ApiResponse> deleteAclRequests(@RequestParam("req_no") String req_no)
+      throws KlawException {
     return new ResponseEntity<>(aclControllerService.deleteAclRequests(req_no), HttpStatus.OK);
   }
 
   @PostMapping(value = "/execAclRequest")
-  public ResponseEntity<String> approveAclRequests(@RequestParam("req_no") String req_no)
+  public ResponseEntity<ApiResponse> approveAclRequests(@RequestParam("req_no") String req_no)
       throws KlawException {
     return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
   }
 
   @PostMapping(value = "/createDeleteAclSubscriptionRequest")
-  public ResponseEntity<String> deleteAclSubscriptionRequest(
-      @RequestParam("req_no") String req_no) {
+  public ResponseEntity<ApiResponse> deleteAclSubscriptionRequest(
+      @RequestParam("req_no") String req_no) throws KlawException {
     return new ResponseEntity<>(
         aclControllerService.createDeleteAclSubscriptionRequest(req_no), HttpStatus.OK);
   }
 
   @PostMapping(value = "/execAclRequestDecline")
-  public ResponseEntity<String> declineAclRequests(
+  public ResponseEntity<ApiResponse> declineAclRequests(
       @RequestParam("req_no") String req_no,
-      @RequestParam("reasonForDecline") String reasonForDecline) {
+      @RequestParam("reasonForDecline") String reasonForDecline)
+      throws KlawException {
     return new ResponseEntity<>(
         aclControllerService.declineAclRequests(req_no, reasonForDecline), HttpStatus.OK);
   }
@@ -111,47 +110,6 @@ public class AclController {
         aclControllerService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
   }
 
-  @RequestMapping(
-      value = "/getSyncBackAcls",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclInfo>> getSyncBackAcls(
-      @RequestParam("env") String envId,
-      @RequestParam("pageNo") String pageNo,
-      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "teamName", required = false) String teamName) {
-    return new ResponseEntity<>(
-        aclControllerService.getSyncBackAcls(envId, pageNo, currentPage, topicNameSearch, teamName),
-        HttpStatus.OK);
-  }
-
-  @PostMapping(value = "/updateSyncBackAcls")
-  public ResponseEntity<Map<String, List<String>>> updateSyncBackAcls(
-      @RequestBody SyncBackAcls syncBackAcls) {
-    Map<String, List<String>> updateSyncAclsResult =
-        aclControllerService.updateSyncBackAcls(syncBackAcls);
-    return new ResponseEntity<>(updateSyncAclsResult, HttpStatus.OK);
-  }
-
-  // get acls from kafka cluster
-  @RequestMapping(
-      value = "/getSyncAcls",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclInfo>> getSyncAcls(
-      @RequestParam("env") String envId,
-      @RequestParam("pageNo") String pageNo,
-      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "showAllAcls", defaultValue = "false", required = false)
-          String showAllAcls)
-      throws KlawException {
-    return new ResponseEntity<>(
-        aclControllerService.getSyncAcls(envId, pageNo, currentPage, topicNameSearch, showAllAcls),
-        HttpStatus.OK);
-  }
-
   // getConsumerOffsets from kafka cluster
   @RequestMapping(
       value = "/getConsumerOffsets",
@@ -160,8 +118,7 @@ public class AclController {
   public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
       @RequestParam("env") String envId,
       @RequestParam("topicName") String topicName,
-      @RequestParam(value = "consumerGroupId") String consumerGroupId)
-      throws KlawException {
+      @RequestParam(value = "consumerGroupId") String consumerGroupId) {
     return new ResponseEntity<>(
         aclControllerService.getConsumerOffsets(envId, consumerGroupId, topicName), HttpStatus.OK);
   }

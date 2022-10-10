@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,19 +52,19 @@ public class DeleteDataJdbcTest {
   @Test
   public void deleteTopicRequest() {
     String result = deleteDataJdbc.deleteTopicRequest(1001, 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void deleteSchemaRequest() {
     String result = deleteDataJdbc.deleteSchemaRequest(1001, 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void deleteAclRequest() {
     String result = deleteDataJdbc.deleteAclRequest(1001, 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -77,19 +78,19 @@ public class DeleteDataJdbcTest {
 
     when(envRepo.findById(env)).thenReturn(java.util.Optional.of(envObj));
     String result = deleteDataJdbc.deleteEnvironment("1", 101);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void deleteUserRequest() {
     String result = deleteDataJdbc.deleteUserRequest("uiuser1");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void deleteTeamRequest() {
     String result = deleteDataJdbc.deleteTeamRequest(1, 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -97,6 +98,6 @@ public class DeleteDataJdbcTest {
     when(aclRepo.findAllByTenantId(101)).thenReturn(utilMethods.getAllAcls());
 
     String result = deleteDataJdbc.deletePrevAclRecs(utilMethods.getAclRequest("testtopic"));
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

@@ -16,13 +16,17 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclIPPrincipleType;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.ClusterStatus;
+import io.aiven.klaw.model.RequestOperationType;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -46,9 +50,7 @@ public class ClusterApiServiceTest {
 
   private UtilMethods utilMethods;
 
-  @Mock HandleDbRequests handleDbRequests;
-
-  @Mock MailUtils mailService;
+  @Mock HandleDbRequestsJdbc handleDbRequests;
 
   @Mock ManageDatabase manageDatabase;
 
@@ -66,12 +68,11 @@ public class ClusterApiServiceTest {
   @BeforeEach
   public void setUp() {
     utilMethods = new UtilMethods();
-    clusterApiService = new ClusterApiService();
-    response = new ResponseEntity<>("success", HttpStatus.OK);
+    clusterApiService = new ClusterApiService(manageDatabase);
+    response = new ResponseEntity<>(ApiResultStatus.SUCCESS.value, HttpStatus.OK);
 
     this.env = new Env();
     env.setName("DEV");
-    ReflectionTestUtils.setField(clusterApiService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(clusterApiService, "httpRestTemplate", restTemplate);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("http://cluster");
@@ -81,16 +82,18 @@ public class ClusterApiServiceTest {
   @Order(1)
   public void getStatusSuccess() {
 
-    when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(String.class)))
+    ResponseEntity<ClusterStatus> response =
+        new ResponseEntity<>(ClusterStatus.ONLINE, HttpStatus.OK);
+    when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(ClusterStatus.class)))
         .thenReturn(response);
     String result = clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
     result = clusterApiService.getSchemaClusterStatus("", 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
     result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
   }
 
   @Test
@@ -115,14 +118,17 @@ public class ClusterApiServiceTest {
   @Order(3)
   public void getAclsSuccess() throws KlawException {
     Set<Map<String, String>> aclListOriginal = utilMethods.getAclsMock();
-    ResponseEntity<Set> response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
+    ResponseEntity response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
 
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
 
     when(restTemplate.exchange(
-            Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
+            Mockito.anyString(),
+            eq(HttpMethod.GET),
+            Mockito.any(),
+            (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
     List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", "", 1);
@@ -145,10 +151,13 @@ public class ClusterApiServiceTest {
   @Order(5)
   public void getAllTopicsSuccess() throws Exception {
     Set<String> topicsList = getTopics();
-    ResponseEntity<Set> response = new ResponseEntity<>(topicsList, HttpStatus.OK);
+    ResponseEntity response = new ResponseEntity<>(topicsList, HttpStatus.OK);
 
     when(restTemplate.exchange(
-            Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
+            Mockito.anyString(),
+            eq(HttpMethod.GET),
+            Mockito.any(),
+            (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
     List<Map<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT", "", 1);
@@ -170,11 +179,16 @@ public class ClusterApiServiceTest {
   @Test
   @Order(7)
   public void approveTopicRequestsSuccess() throws KlawException {
+    ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> response =
+        new ResponseEntity<>(
+            ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
+
     String topicName = "testtopic";
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
     topicRequest.setEnvironment("DEV");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -182,22 +196,24 @@ public class ClusterApiServiceTest {
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
+    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenReturn(response);
 
-    ResponseEntity<String> response =
-        clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1);
-    assertThat(response.getBody()).isEqualTo("success");
+    ResponseEntity<ApiResponse> response1 =
+        clusterApiService.approveTopicRequests(
+            topicName, RequestOperationType.CREATE.value, 1, "1", "", 1);
+    assertThat(Objects.requireNonNull(response1.getBody()).getResult())
+        .isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(8)
-  public void approveTopicRequestsFailure() throws KlawException {
+  public void approveTopicRequestsFailure() {
     String topicName = "testtopic";
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
     topicRequest.setEnvironment("DEV");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -205,11 +221,13 @@ public class ClusterApiServiceTest {
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
+    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenThrow(new RuntimeException("error"));
 
     assertThatThrownBy(
-            () -> clusterApiService.approveTopicRequests(topicName, "Create", 1, "1", "", 1))
+            () ->
+                clusterApiService.approveTopicRequests(
+                    topicName, RequestOperationType.CREATE.value, 1, "1", "", 1))
         .isInstanceOf(KlawException.class);
   }
 
@@ -220,13 +238,11 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType("Create");
+    aclRequests.setAclType(RequestOperationType.CREATE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-    ResponseEntity<Map<String, String>> responseEntity =
-        new ResponseEntity<>(resultMap, HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -239,12 +255,11 @@ public class ClusterApiServiceTest {
             Mockito.anyString(),
             any(),
             Mockito.any(),
-            (ParameterizedTypeReference<Map<String, String>>) any()))
+            (ParameterizedTypeReference<ApiResponse>) any()))
         .thenReturn(responseEntity);
 
-    ResponseEntity<Map<String, String>> response =
-        clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody()).containsEntry("result", "success");
+    ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
+    assertThat(response.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -254,13 +269,11 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType("Delete");
+    aclRequests.setAclType(RequestOperationType.DELETE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-    ResponseEntity<Map<String, String>> responseEntity =
-        new ResponseEntity<>(resultMap, HttpStatus.OK);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
@@ -273,12 +286,11 @@ public class ClusterApiServiceTest {
             Mockito.anyString(),
             any(),
             Mockito.any(),
-            (ParameterizedTypeReference<Map<String, String>>) any()))
+            (ParameterizedTypeReference<ApiResponse>) any()))
         .thenReturn(responseEntity);
 
-    ResponseEntity<Map<String, String>> response =
-        clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody()).containsEntry("result", "success");
+    ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
+    assertThat(response.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -288,7 +300,7 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType("Create");
+    aclRequests.setAclType(RequestOperationType.CREATE.value);
 
     assertThatThrownBy(() -> clusterApiService.approveAclRequests(aclRequests, 1))
         .isInstanceOf(KlawException.class);
@@ -302,18 +314,21 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
+    when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenReturn(response);
 
-    ResponseEntity<String> result =
+    ResponseEntity<ApiResponse> result =
         clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
-    assertThat(result.getBody()).isEqualTo("success");
+    assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

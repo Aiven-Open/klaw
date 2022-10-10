@@ -5,6 +5,7 @@ import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
@@ -90,7 +91,9 @@ public class UtilControllerService {
           .get()
           .getValue();
 
-    } else return null;
+    } else {
+      return null;
+    }
   }
 
   private List<String> getEnvsFromUserId(String userDetails) {
@@ -187,8 +190,11 @@ public class UtilControllerService {
     countList.put("connectors", allConnectorReqs.size() + "");
 
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) countList.put("users", "0");
-    else countList.put("users", allUserReqs.size() + "");
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+      countList.put("users", "0");
+    } else {
+      countList.put("users", allUserReqs.size() + "");
+    }
 
     return countList;
   }
@@ -198,11 +204,8 @@ public class UtilControllerService {
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
     if (userName != null) {
-
       String teamName = manageDatabase.getTeamNameFromTeamId(tenantId, getMyTeamId(userName));
-
       String authority = commonUtilsService.getAuthority(getPrincipal());
-
       Map<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
 
       String outstandingTopicReqs = outstanding.get("topics");
@@ -220,15 +223,25 @@ public class UtilControllerService {
       String outstandingUserReqs = outstanding.get("users");
       int outstandingUserReqsInt = Integer.parseInt(outstandingUserReqs);
 
-      if (outstandingTopicReqsInt <= 0) outstandingTopicReqs = "0";
+      if (outstandingTopicReqsInt <= 0) {
+        outstandingTopicReqs = "0";
+      }
 
-      if (outstandingAclReqsInt <= 0) outstandingAclReqs = "0";
+      if (outstandingAclReqsInt <= 0) {
+        outstandingAclReqs = "0";
+      }
 
-      if (outstandingSchemasReqsInt <= 0) outstandingSchemasReqs = "0";
+      if (outstandingSchemasReqsInt <= 0) {
+        outstandingSchemasReqs = "0";
+      }
 
-      if (outstandingConnectorReqsInt <= 0) outstandingConnectorReqs = "0";
+      if (outstandingConnectorReqsInt <= 0) {
+        outstandingConnectorReqs = "0";
+      }
 
-      if (outstandingUserReqsInt <= 0) outstandingUserReqs = "0";
+      if (outstandingUserReqsInt <= 0) {
+        outstandingUserReqs = "0";
+      }
 
       Map<String, String> dashboardData =
           reqsHandle.getDashboardInfo(getMyTeamId(userName), tenantId);
@@ -245,46 +258,64 @@ public class UtilControllerService {
 
       String canUpdatePermissions, addEditRoles;
 
-      if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS))
+      if (commonUtilsService.isNotAuthorizedUser(
+          getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
         canUpdatePermissions = "NotAuthorized";
-      else canUpdatePermissions = "Authorized";
+      } else {
+        canUpdatePermissions = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) addEditRoles = "NotAuthorized";
-      else addEditRoles = "Authorized";
+          getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
+        addEditRoles = "NotAuthorized";
+      } else {
+        addEditRoles = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String canShutdownKw;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SHUTDOWN_KLAW)) {
         canShutdownKw = "NotAuthorized";
-      } else canShutdownKw = "Authorized";
+      } else {
+        canShutdownKw = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String syncBackTopics, syncBackAcls;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_TOPICS)) {
         syncBackTopics = "NotAuthorized";
-      } else syncBackTopics = "Authorized";
+      } else {
+        syncBackTopics = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(
           userName, PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
         syncBackAcls = "NotAuthorized";
-      } else syncBackAcls = "Authorized";
+      } else {
+        syncBackAcls = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String addUser, addTeams;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_USERS)) {
         addUser = "NotAuthorized";
-      } else addUser = "Authorized";
+      } else {
+        addUser = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_TEAMS)) {
         addTeams = "NotAuthorized";
-      } else addTeams = "Authorized";
+      } else {
+        addTeams = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String viewKafkaConnect;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_CONNECTORS)) {
         viewKafkaConnect = "NotAuthorized";
-      } else viewKafkaConnect = "Authorized";
+      } else {
+        viewKafkaConnect = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String requestTopics;
       String requestAcls;
@@ -294,27 +325,38 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_TOPICS)) {
         requestTopics = "NotAuthorized";
-      } else requestTopics = "Authorized";
+      } else {
+        requestTopics = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(
           userName, PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
         requestAcls = "NotAuthorized";
-      } else requestAcls = "Authorized";
+      } else {
+        requestAcls = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.REQUEST_CREATE_SCHEMAS)) {
         requestSchemas = "NotAuthorized";
-      } else requestSchemas = "Authorized";
+      } else {
+        requestSchemas = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(
           userName, PermissionType.REQUEST_CREATE_CONNECTORS)) {
         requestConnector = "NotAuthorized";
-      } else requestConnector = "Authorized";
+      } else {
+        requestConnector = ApiResultStatus.AUTHORIZED.value;
+      }
 
-      if ("Authorized".equals(requestTopics)
-          || "Authorized".equals(requestAcls)
-          || "Authorized".equals(requestSchemas)
-          || "Authorized".equals(requestConnector)) requestItems = "Authorized";
-      else requestItems = "NotAuthorized";
+      if (ApiResultStatus.AUTHORIZED.value.equals(requestTopics)
+          || ApiResultStatus.AUTHORIZED.value.equals(requestAcls)
+          || ApiResultStatus.AUTHORIZED.value.equals(requestSchemas)
+          || ApiResultStatus.AUTHORIZED.value.equals(requestConnector)) {
+        requestItems = ApiResultStatus.AUTHORIZED.value;
+      } else {
+        requestItems = "NotAuthorized";
+      }
 
       String approveDeclineTopics;
       String approveDeclineSubscriptions;
@@ -325,38 +367,53 @@ public class UtilControllerService {
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_TOPICS)) {
         approveDeclineTopics = "NotAuthorized";
-      } else approveDeclineTopics = "Authorized";
+      } else {
+        approveDeclineTopics = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SUBSCRIPTIONS)) {
         approveDeclineSubscriptions = "NotAuthorized";
-      } else approveDeclineSubscriptions = "Authorized";
+      } else {
+        approveDeclineSubscriptions = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_SCHEMAS)) {
         approveDeclineSchemas = "NotAuthorized";
-      } else approveDeclineSchemas = "Authorized";
+      } else {
+        approveDeclineSchemas = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.APPROVE_CONNECTORS)) {
         approveDeclineConnectors = "NotAuthorized";
-      } else approveDeclineConnectors = "Authorized";
+      } else {
+        approveDeclineConnectors = ApiResultStatus.AUTHORIZED.value;
+      }
 
-      if ("Authorized".equals(approveDeclineTopics)
-          || "Authorized".equals(approveDeclineSubscriptions)
-          || "Authorized".equals(approveDeclineSchemas)
-          || "Authorized".equals(approveDeclineConnectors)
-          || "Authorized".equals(addUser)) approveAtleastOneRequest = "Authorized";
+      if (ApiResultStatus.AUTHORIZED.value.equals(approveDeclineTopics)
+          || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSubscriptions)
+          || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSchemas)
+          || ApiResultStatus.AUTHORIZED.value.equals(approveDeclineConnectors)
+          || ApiResultStatus.AUTHORIZED.value.equals(addUser)) {
+        approveAtleastOneRequest = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String redirectionPage = "";
-      if ("Authorized".equals(approveAtleastOneRequest)) {
-        if (outstandingTopicReqsInt > 0 && "Authorized".equals(approveDeclineTopics))
+      if (ApiResultStatus.AUTHORIZED.value.equals(approveAtleastOneRequest)) {
+        if (outstandingTopicReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineTopics)) {
           redirectionPage = "execTopics";
-        else if (outstandingAclReqsInt > 0 && "Authorized".equals(approveDeclineSubscriptions))
+        } else if (outstandingAclReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSubscriptions)) {
           redirectionPage = "execAcls";
-        else if (outstandingSchemasReqsInt > 0 && "Authorized".equals(approveDeclineSchemas))
+        } else if (outstandingSchemasReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineSchemas)) {
           redirectionPage = "execSchemas";
-        else if (outstandingConnectorReqsInt > 0 && "Authorized".equals(approveDeclineConnectors))
+        } else if (outstandingConnectorReqsInt > 0
+            && ApiResultStatus.AUTHORIZED.value.equals(approveDeclineConnectors)) {
           redirectionPage = "execConnectors";
-        else if (outstandingUserReqsInt > 0 && "Authorized".equals(addUser))
+        } else if (outstandingUserReqsInt > 0 && ApiResultStatus.AUTHORIZED.value.equals(addUser)) {
           redirectionPage = "execUsers";
+        }
       }
 
       String syncTopicsAcls, syncConnectors;
@@ -364,11 +421,15 @@ public class UtilControllerService {
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_TOPICS)
           || commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SUBSCRIPTIONS)) {
         syncTopicsAcls = "NotAuthorized";
-      } else syncTopicsAcls = "Authorized";
+      } else {
+        syncTopicsAcls = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_CONNECTORS)) {
         syncConnectors = "NotAuthorized";
-      } else syncConnectors = "Authorized";
+      } else {
+        syncConnectors = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String addDeleteEditTenants;
       String addDeleteEditEnvs;
@@ -376,14 +437,19 @@ public class UtilControllerService {
       String updateServerConfig, showServerConfigEnvProperties;
       String viewTopics;
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG))
+      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG)) {
         updateServerConfig = "NotAuthorized";
-      else updateServerConfig = "Authorized";
+      } else {
+        updateServerConfig = ApiResultStatus.AUTHORIZED.value;
+      }
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
-          && !commonUtilsService.isNotAuthorizedUser(userName, PermissionType.UPDATE_SERVERCONFIG))
-        showServerConfigEnvProperties = "Authorized";
-      else showServerConfigEnvProperties = "NotAuthorized";
+          && !commonUtilsService.isNotAuthorizedUser(
+              userName, PermissionType.UPDATE_SERVERCONFIG)) {
+        showServerConfigEnvProperties = ApiResultStatus.AUTHORIZED.value;
+      } else {
+        showServerConfigEnvProperties = "NotAuthorized";
+      }
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
           && SUPERADMIN
@@ -392,34 +458,47 @@ public class UtilControllerService {
                   manageDatabase
                       .getHandleDbRequests()
                       .getUsersInfo(userName)
-                      .getRole())) // allow adding tenants only to "default"
-      addDeleteEditTenants = "Authorized";
-      else addDeleteEditTenants = "NotAuthorized";
+                      .getRole())) { // allow adding tenants only to "default"
+        addDeleteEditTenants = ApiResultStatus.AUTHORIZED.value;
+      } else {
+        addDeleteEditTenants = "NotAuthorized";
+      }
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_ENVS))
+      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_ENVS)) {
         addDeleteEditEnvs = "NotAuthorized";
-      else addDeleteEditEnvs = "Authorized";
+      } else {
+        addDeleteEditEnvs = ApiResultStatus.AUTHORIZED.value;
+      }
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_CLUSTERS))
+      if (commonUtilsService.isNotAuthorizedUser(
+          userName, PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
         addDeleteEditClusters = "NotAuthorized";
-      else addDeleteEditClusters = "Authorized";
+      } else {
+        addDeleteEditClusters = ApiResultStatus.AUTHORIZED.value;
+      }
 
-      if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled))
+      if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
         dashboardData.put("adAuthRoleEnabled", "true");
-      else dashboardData.put("adAuthRoleEnabled", "false");
+      } else {
+        dashboardData.put("adAuthRoleEnabled", "false");
+      }
 
-      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_TOPICS))
+      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_TOPICS)) {
         viewTopics = "NotAuthorized";
-      else viewTopics = "Authorized";
+      } else {
+        viewTopics = ApiResultStatus.AUTHORIZED.value;
+      }
 
       String companyInfo = manageDatabase.getTenantFullConfig(tenantId).getOrgName();
       if (companyInfo == null || companyInfo.equals("")) {
         companyInfo = "Our Organization";
       }
 
-      if ("saas".equals(kwInstallationType))
+      if ("saas".equals(kwInstallationType)) {
         dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
-      else dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
+      } else {
+        dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
+      }
 
       // broadcast text
       String broadCastText = "";
@@ -429,8 +508,9 @@ public class UtilControllerService {
           manageDatabase.getKwPropertyValue(
               KwConstants.broadCastTextProperty, KwConstants.DEFAULT_TENANT_ID);
 
-      if (broadCastTextLocal != null && !broadCastTextLocal.equals(""))
+      if (broadCastTextLocal != null && !broadCastTextLocal.equals("")) {
         broadCastText = "Announcement : " + broadCastTextLocal;
+      }
       if (broadCastTextGlobal != null
           && !broadCastTextGlobal.equals("")
           && tenantId != KwConstants.DEFAULT_TENANT_ID) {
@@ -438,12 +518,10 @@ public class UtilControllerService {
       }
 
       dashboardData.put("broadcastText", broadCastText);
-
       dashboardData.put("saasEnabled", kwInstallationType);
       dashboardData.put(
           "tenantActiveStatus",
           manageDatabase.getTenantFullConfig(tenantId).getIsActive()); // true/false
-
       dashboardData.put("username", userName);
       dashboardData.put("authenticationType", authenticationType);
       dashboardData.put("teamname", teamName);
@@ -486,9 +564,6 @@ public class UtilControllerService {
       dashboardData.put("showAddDeleteTenants", addDeleteEditTenants);
       dashboardData.put("addDeleteEditClusters", addDeleteEditClusters);
       dashboardData.put("addDeleteEditEnvs", addDeleteEditEnvs);
-      //            if(manageDatabase.getIsTrialLicense())
-      //                dashboardData.put("larit","(Trial) ");
-      //            else
       dashboardData.put("larit", "");
 
       return dashboardData;
@@ -497,13 +572,16 @@ public class UtilControllerService {
 
   public void getLogoutPage(HttpServletRequest request, HttpServletResponse response) {
     Authentication authentication = commonUtilsService.getAuthentication();
-    if (authentication != null)
+    if (authentication != null) {
       new SecurityContextLogoutHandler().logout(request, response, authentication);
+    }
   }
 
   public void shutdownContext() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if (tenantId != KwConstants.DEFAULT_TENANT_ID) return;
+    if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
+      return;
+    }
 
     if (!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SHUTDOWN_KLAW)) {
       log.info("Klaw Shutdown requested by {}", getUserName());

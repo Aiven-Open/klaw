@@ -3,7 +3,6 @@ package io.aiven.klaw.config;
 import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.service.MailUtils;
 import java.util.*;
 import javax.naming.directory.Attributes;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +34,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Autowired private ManageDatabase manageTopics;
-
-  @Autowired private MailUtils utils;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -136,12 +133,13 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
     http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
   }
 
-  @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    if (authenticationType != null && authenticationType.equals("db")) dbAuthentication(auth);
-    else if (authenticationType != null && authenticationType.equals("ldap"))
+  @Override
+  public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    if (authenticationType != null && authenticationType.equals("db")) {
+      dbAuthentication(auth);
+    } else if (authenticationType != null && authenticationType.equals("ldap")) {
       ldapAuthentication(auth);
-    else if (authenticationType != null && authenticationType.equals("ad")) {
+    } else if (authenticationType != null && authenticationType.equals("ad")) {
       auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
           .userDetailsService(userDetailsService());
     } else {
@@ -177,14 +175,18 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
     provider.setConvertSubErrorCodesToExceptions(true);
     provider.setUseAuthenticationRequestCredentials(true);
 
-    if (adFilter != null && !adFilter.equals("")) provider.setSearchFilter(adFilter);
+    if (adFilter != null && !adFilter.equals("")) {
+      provider.setSearchFilter(adFilter);
+    }
     return provider;
   }
 
   private void ldapAuthentication(AuthenticationManagerBuilder auth) throws Exception {
     try {
       log.info("Ldap authentication configured.");
-      if (!checkLdapConnectivity()) throw new KlawException("Cannot connect to Ldap !!");
+      if (!checkLdapConnectivity()) {
+        throw new KlawException("Cannot connect to Ldap !!");
+      }
 
       if (encryptionType != null && encryptionType.equals("bcrypt")) {
         auth.ldapAuthentication()
@@ -217,7 +219,6 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
     final Properties globalUsers = new Properties();
     if (authenticationType != null && authenticationType.equals("db")) {
       log.info("Loading all users !!");
-
       List<UserInfo> users;
 
       try {
@@ -240,8 +241,11 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
         userInfo = iter.next();
         try {
           String secPwd = userInfo.getPwd();
-          if (secPwd != null && secPwd.equals("")) secPwd = "gfGF%64GFDd766hfgfHFD$%#453";
-          else secPwd = decodePwd(secPwd);
+          if (secPwd != null && secPwd.equals("")) {
+            secPwd = "gfGF%64GFDd766hfgfHFD$%#453";
+          } else {
+            secPwd = decodePwd(secPwd);
+          }
           globalUsers.put(
               userInfo.getUsername(),
               encoder.encode(secPwd) + "," + userInfo.getRole() + ",enabled");

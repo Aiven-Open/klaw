@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
@@ -55,38 +56,40 @@ public class UpdateDataJdbcTest {
   @Test
   public void declineTopicRequest() {
     String result = updateData.declineTopicRequest(utilMethods.getTopicRequest(1001), "uiuser2");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void updateTopicRequest() {
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false))).thenReturn("success");
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(1001);
 
     String result = updateData.updateTopicRequest(utilMethods.getTopicRequest(1001), "uiuser2");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void updateAclRequest() {
-    when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false))).thenReturn("success");
+    when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false)))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     String result =
         updateData.updateAclRequest(utilMethods.getAclRequestCreate("testtopic"), "uiuser2", "{}");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void updateAclRequest1() {
-    when(deleteDataJdbcHelper.deletePrevAclRecs(any())).thenReturn("success");
+    when(deleteDataJdbcHelper.deletePrevAclRecs(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     String result =
         updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2", "{}");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void declineAclRequest() {
     String result = updateData.declineAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -94,13 +97,13 @@ public class UpdateDataJdbcTest {
     String user = "uiuser1";
     when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
     String result = updateData.updatePassword(user, "pwd");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void updateSchemaRequest() {
     String result =
         updateData.updateSchemaRequest(utilMethods.getSchemaRequestsDao().get(0), "uiuser1");
-    assertThat(result).isEqualTo("success");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

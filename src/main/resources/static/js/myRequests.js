@@ -25,18 +25,20 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
     			 });
     	}
 
-    	$scope.handleValidationErrors = function(error){
-                if(error.errors != null && error.errors.length > 0){
-                        $scope.alert = error.errors[0].defaultMessage;
-                    }else if(error.message != null){
-                    $scope.alert = error.message;
-                    }else if(error.result != null){
-                    $scope.alert = error.result;
-                    }else $scope.alert = error;
+        $scope.handleValidationErrors = function(error){
+            if(error.errors != null && error.errors.length > 0){
+                $scope.alert = error.errors[0].defaultMessage;
+            }else if(error.message != null){
+                $scope.alert = error.message;
+            }else if(error.result != null){
+                $scope.alert = error.result;
+            }
+            else
+                $scope.alert = "Unable to process the request. Please verify the request or contact our Administrator !!";
 
-                    $scope.alertnote = $scope.alert;
-                    $scope.showAlertToast();
-             }
+            $scope.alertnote = $scope.alert;
+            $scope.showAlertToast();
+        }
 
 	$scope.refreshPage = function(){
             $window.location.reload();
@@ -410,7 +412,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                               data: {'connectorId' : topicId }
                           }).success(function(output) {
                               $scope.alert = "Request deleted : " + output.result;
-                              if(output.result == 'success'){
+                              if(output.result === 'success'){
                                   swal({
                                        title: "",
                                        text: "Request deleted : "+output.result,
@@ -454,7 +456,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                         }).success(function(output) {
                             $scope.alert = "Request deleted : "+output.result;
                             $scope.getMyAclRequests(1, true);
-                            if(output.result == 'success'){
+                            if(output.result === 'success'){
                                   swal({
                                        title: "",
                                        text: "Request deleted : "+output.result,
@@ -496,7 +498,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                         }).success(function(output) {
                             $scope.alert = "Request deleted : "+output.result;
                             $scope.getMySchemaRequests(1, true);
-                            if(output.result == 'success'){
+                            if(output.result === 'success'){
                                   swal({
                                        title: "",
                                        text: "Request deleted : "+output.result,

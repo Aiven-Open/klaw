@@ -1,12 +1,14 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.service.TopicControllerService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,12 +22,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/")
+@Slf4j
 public class TopicController {
 
   @Autowired private TopicControllerService topicControllerService;
 
   @PostMapping(value = "/createTopics")
-  public ResponseEntity<Map<String, String>> createTopicsRequest(
+  public ResponseEntity<ApiResponse> createTopicsRequest(
       @Valid @RequestBody TopicRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.createTopicsRequest(addTopicRequest), HttpStatus.OK);
@@ -34,8 +37,9 @@ public class TopicController {
   @PostMapping(
       value = "/createTopicDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> createTopicDeleteRequest(
-      @RequestParam("topicName") String topicName, @RequestParam("env") String envId) {
+  public ResponseEntity<ApiResponse> createTopicDeleteRequest(
+      @RequestParam("topicName") String topicName, @RequestParam("env") String envId)
+      throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.createTopicDeleteRequest(topicName, envId), HttpStatus.OK);
   }
@@ -43,8 +47,9 @@ public class TopicController {
   @PostMapping(
       value = "/createClaimTopicRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> createClaimTopicRequest(
-      @RequestParam("topicName") String topicName, @RequestParam("env") String envId) {
+  public ResponseEntity<ApiResponse> createClaimTopicRequest(
+      @RequestParam("topicName") String topicName, @RequestParam("env") String envId)
+      throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.createClaimTopicRequest(topicName, envId), HttpStatus.OK);
   }
@@ -84,7 +89,6 @@ public class TopicController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
-
     return new ResponseEntity<>(
         topicControllerService.getCreatedTopicRequests(pageNo, currentPage, requestsType),
         HttpStatus.OK);
@@ -94,14 +98,15 @@ public class TopicController {
       value = "/deleteTopicRequests",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> deleteTopicRequests(@RequestParam("topicId") String topicId) {
+  public ResponseEntity<ApiResponse> deleteTopicRequests(@RequestParam("topicId") String topicId)
+      throws KlawException {
     return new ResponseEntity<>(topicControllerService.deleteTopicRequests(topicId), HttpStatus.OK);
   }
 
   @PostMapping(
       value = "/execTopicRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> approveTopicRequests(@RequestParam("topicId") String topicId)
+  public ResponseEntity<ApiResponse> approveTopicRequests(@RequestParam("topicId") String topicId)
       throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.approveTopicRequests(topicId), HttpStatus.OK);
@@ -110,11 +115,10 @@ public class TopicController {
   @PostMapping(
       value = "/execTopicRequestsDecline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<String> declineTopicRequests(
+  public ResponseEntity<ApiResponse> declineTopicRequests(
       @RequestParam("topicId") String topicId,
       @RequestParam("reasonForDecline") String reasonForDecline)
       throws KlawException {
-
     return new ResponseEntity<>(
         topicControllerService.declineTopicRequests(topicId, reasonForDecline), HttpStatus.OK);
   }
@@ -129,8 +133,7 @@ public class TopicController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "teamName", required = false) String teamName,
-      @RequestParam(value = "topicType", required = false) String topicType)
-      throws Exception {
+      @RequestParam(value = "topicType", required = false) String topicType) {
 
     return new ResponseEntity<>(
         topicControllerService.getTopics(
@@ -143,8 +146,7 @@ public class TopicController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<String>> getTopicsOnly(
-      @RequestParam(value = "isMyTeamTopics", defaultValue = "false") String isMyTeamTopics)
-      throws Exception {
+      @RequestParam(value = "isMyTeamTopics", defaultValue = "false") String isMyTeamTopics) {
     return new ResponseEntity<>(
         topicControllerService.getAllTopics(Boolean.parseBoolean(isMyTeamTopics)), HttpStatus.OK);
   }
@@ -154,19 +156,16 @@ public class TopicController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, Object>> getTopicDetailsPerEnv(
-      @RequestParam("envSelected") String envId, @RequestParam("topicname") String topicName)
-      throws Exception {
-
+      @RequestParam("envSelected") String envId, @RequestParam("topicname") String topicName) {
     return new ResponseEntity<>(
         topicControllerService.getTopicDetailsPerEnv(envId, topicName), HttpStatus.OK);
   }
 
   @PostMapping(value = "/saveTopicDocumentation")
-  public ResponseEntity<Map<String, String>> saveTopicDocumentation(
-      @RequestBody TopicInfo topicInfo) {
-    Map<String, String> saveTopicDocumentationResult =
-        topicControllerService.saveTopicDocumentation(topicInfo);
-    return new ResponseEntity<>(saveTopicDocumentationResult, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> saveTopicDocumentation(@RequestBody TopicInfo topicInfo)
+      throws KlawException {
+    return new ResponseEntity<>(
+        topicControllerService.saveTopicDocumentation(topicInfo), HttpStatus.OK);
   }
 
   // getTopic Events from kafka cluster

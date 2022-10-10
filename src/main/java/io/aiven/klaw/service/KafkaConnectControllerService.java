@@ -21,11 +21,14 @@ import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicRequestTypes;
@@ -67,16 +70,14 @@ public class KafkaConnectControllerService {
 
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  public Map<String, String> createConnectorRequest(KafkaConnectorRequestModel topicRequestReq) {
+  public ApiResponse createConnectorRequest(KafkaConnectorRequestModel topicRequestReq)
+      throws KlawException {
     log.info("createConnectorRequest {}", topicRequestReq);
     String userDetails = getUserName();
 
-    Map<String, String> hashMapTopicReqRes = new HashMap<>();
-
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      hashMapTopicReqRes.put("result", "Not Authorized");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     try {
@@ -84,15 +85,17 @@ public class KafkaConnectControllerService {
           && topicRequestReq.getConnectorConfig().trim().length() > 0) {
         JsonNode jsonNode = OBJECT_MAPPER.readTree(topicRequestReq.getConnectorConfig().trim());
         if (!jsonNode.has("tasks.max")) {
-          hashMapTopicReqRes.put("result", "Failure. Invalid config. tasks.max is not configured");
-          return hashMapTopicReqRes;
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. tasks.max is not configured")
+              .build();
         } else if (!jsonNode.has("connector.class")) {
-          hashMapTopicReqRes.put(
-              "result", "Failure. Invalid config. connector.class is not configured");
-          return hashMapTopicReqRes;
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. connector.class is not configured")
+              .build();
         } else if (!jsonNode.has("topic")) {
-          hashMapTopicReqRes.put("result", "Failure. Invalid config. topic is not configured");
-          return hashMapTopicReqRes;
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. topic is not configured")
+              .build();
         }
 
         Map<String, Object> resultMap =
@@ -102,8 +105,7 @@ public class KafkaConnectControllerService {
       }
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
-      hashMapTopicReqRes.put("result", "Failure. Invalid config.");
-      return hashMapTopicReqRes;
+      throw new KlawException(e.getMessage());
     }
 
     topicRequestReq.setRequestor(userDetails);
@@ -116,9 +118,9 @@ public class KafkaConnectControllerService {
 
     // tenant filtering
     if (!getEnvsFromUserId(userDetails).contains(envSelected)) {
-      hashMapTopicReqRes.put(
-          "result", "Failure. Not authorized to request connector for this environment.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. Not authorized to request connector for this environment.")
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -129,7 +131,7 @@ public class KafkaConnectControllerService {
       syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncKafkaConnectCluster();
     } catch (Exception e) {
       log.error("Tenant Configuration not found. " + tenantId, e);
-      return new HashMap<>();
+      throw new KlawException(e.getMessage());
     }
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
 
@@ -139,8 +141,9 @@ public class KafkaConnectControllerService {
     if (kafkaConnectorList != null
         && kafkaConnectorList.size() > 0
         && !Objects.equals(kafkaConnectorList.get(0).getTeamId(), topicRequestReq.getTeamId())) {
-      hashMapTopicReqRes.put("result", "Failure. This connector is owned by a different team.");
-      return hashMapTopicReqRes;
+      return ApiResponse.builder()
+          .result("Failure. This connector is owned by a different team.")
+          .build();
     }
     boolean promotionOrderCheck =
         checkInPromotionOrder(
@@ -155,26 +158,27 @@ public class KafkaConnectControllerService {
                     .count();
         if (devTopicFound != 1) {
           if (getKafkaConnectEnvDetails(syncCluster) == null) {
-            hashMapTopicReqRes.put(
-                "result", "Failure. This connector does not exist in base cluster");
+            return ApiResponse.builder()
+                .result("Failure. This connector does not exist in base cluster")
+                .build();
           } else {
-            hashMapTopicReqRes.put(
-                "result",
-                "Failure. This connector does not exist in "
-                    + getKafkaConnectEnvDetails(syncCluster).getName()
-                    + " cluster.");
+            return ApiResponse.builder()
+                .result(
+                    "Failure. This connector does not exist in "
+                        + getKafkaConnectEnvDetails(syncCluster).getName()
+                        + " cluster.")
+                .build();
           }
-          return hashMapTopicReqRes;
         }
       }
     } else if (!Objects.equals(topicRequestReq.getEnvironment(), syncCluster)) {
       if (promotionOrderCheck) {
-        hashMapTopicReqRes.put(
-            "result",
-            "Failure. Please request for a connector first in "
-                + getKafkaConnectEnvDetails(syncCluster).getName()
-                + " cluster.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result(
+                "Failure. Please request for a connector first in "
+                    + getKafkaConnectEnvDetails(syncCluster).getName()
+                    + " cluster.")
+            .build();
       }
     }
 
@@ -188,8 +192,7 @@ public class KafkaConnectControllerService {
                   tenantId)
               .size()
           > 0) {
-        hashMapTopicReqRes.put("result", "Failure. A connector request already exists.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder().result("Failure. A connector request already exists.").build();
       }
     }
 
@@ -204,9 +207,9 @@ public class KafkaConnectControllerService {
                         Objects.equals(topicEx.getEnvironment(), topicRequestReq.getEnvironment()));
       }
       if (topicExists) {
-        hashMapTopicReqRes.put(
-            "result", "Failure. This connector already exists in the selected cluster.");
-        return hashMapTopicReqRes;
+        return ApiResponse.builder()
+            .result("Failure. This connector already exists in the selected cluster.")
+            .build();
       }
     }
 
@@ -214,7 +217,7 @@ public class KafkaConnectControllerService {
     copyProperties(topicRequestReq, topicRequestDao);
     topicRequestDao.setTenantId(tenantId);
 
-    hashMapTopicReqRes.put("result", dbHandle.requestForConnector(topicRequestDao).get("result"));
+    String result = dbHandle.requestForConnector(topicRequestDao).get("result");
     mailService.sendMail(
         topicRequestReq.getConnectorName(),
         null,
@@ -224,7 +227,7 @@ public class KafkaConnectControllerService {
         CONNECTOR_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
 
-    return hashMapTopicReqRes;
+    return ApiResponse.builder().result(result).build();
   }
 
   public List<List<KafkaConnectorModel>> getConnectors(
@@ -259,7 +262,9 @@ public class KafkaConnectControllerService {
       i++;
     }
 
-    if (innerList.size() > 0) newList.add(innerList);
+    if (innerList.size() > 0) {
+      newList.add(innerList);
+    }
 
     return newList;
   }
@@ -267,14 +272,17 @@ public class KafkaConnectControllerService {
   private void updateTeamNamesForDisplay(List<KafkaConnectorModel> topicListUpdated) {
     topicListUpdated.forEach(
         topicInfo -> {
-          if (topicInfo.getTeamName().length() > 9)
+          if (topicInfo.getTeamName().length() > 9) {
             topicInfo.setTeamName(topicInfo.getTeamName().substring(0, 8) + "...");
+          }
         });
   }
 
   private List<KafkaConnectorModel> getConnectorsPaginated(
       String env, String pageNo, String currentPage, String connectorNameSearch, String teamName) {
-    if (connectorNameSearch != null) connectorNameSearch = connectorNameSearch.trim();
+    if (connectorNameSearch != null) {
+      connectorNameSearch = connectorNameSearch.trim();
+    }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
@@ -341,7 +349,9 @@ public class KafkaConnectControllerService {
     int requestPageNo = Integer.parseInt(pageNo);
 
     List<KafkaConnectorModel> topicsListMap = null;
-    if (totalRecs > 0) topicsListMap = new ArrayList<>();
+    if (totalRecs > 0) {
+      topicsListMap = new ArrayList<>();
+    }
 
     int startVar = (requestPageNo - 1) * recsPerPage;
     int lastVar = (requestPageNo) * (recsPerPage);
@@ -413,21 +423,24 @@ public class KafkaConnectControllerService {
     return tmpTopicList;
   }
 
-  public String deleteConnectorRequests(String topicId) {
+  public ApiResponse deleteConnectorRequests(String topicId) throws KlawException {
     log.info("deleteConnectorRequests {}", topicId);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      String res = "Not Authorized.";
-      return "{\"result\":\"" + res + "\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
-    String deleteTopicReqStatus =
-        manageDatabase
-            .getHandleDbRequests()
-            .deleteConnectorRequest(
-                Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
+    try {
+      String deleteTopicReqStatus =
+          manageDatabase
+              .getHandleDbRequests()
+              .deleteConnectorRequest(
+                  Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
 
-    return "{\"result\":\"" + deleteTopicReqStatus + "\"}";
+      return ApiResponse.builder().result(deleteTopicReqStatus).build();
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
+    }
   }
 
   public List<KafkaConnectorRequestModel> getCreatedConnectorRequests(
@@ -486,15 +499,13 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public Map<String, String> approveConnectorRequests(String connectorId) throws KlawException {
+  public ApiResponse approveConnectorRequests(String connectorId) throws KlawException {
     log.info("approveConnectorRequests {}", connectorId);
-    Map<String, String> resultMap = new HashMap<>();
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
-      resultMap.put("result", "Not Authorized");
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     KafkaConnectorRequest connectorRequest =
@@ -508,25 +519,23 @@ public class KafkaConnectControllerService {
       jsonConnectorConfig = createConnectorConfig(connectorRequest);
     } catch (Exception e) {
       log.error("Exception:", e);
-      resultMap.put("result", "Failure " + e.getMessage());
-      return resultMap;
+      throw new KlawException("Unable to create kafka connector.");
     }
 
     if (connectorRequest.getRequestor().equals(userDetails)) {
-      resultMap.put("result", "You are not allowed to approve your own connector requests.");
-      return resultMap;
+      return ApiResponse.builder()
+          .result("You are not allowed to approve your own connector requests.")
+          .build();
     }
 
     if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
-      resultMap.put("result", "This request does not exist anymore.");
-      return resultMap;
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
     if (!allowedEnvIdList.contains(connectorRequest.getEnvironment())) {
-      resultMap.put("result", "Not Authorized");
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -541,8 +550,9 @@ public class KafkaConnectControllerService {
       }
 
       updateTopicReqStatus = dbHandle.addToSyncConnectors(allTopics);
-      if ("success".equals(updateTopicReqStatus))
+      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)) {
         updateTopicReqStatus = dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
+      }
     } else {
       Env envSelected =
           manageDatabase
@@ -555,7 +565,8 @@ public class KafkaConnectControllerService {
       String protocol = kwClusters.getProtocol();
       String kafkaConnectHost = kwClusters.getBootstrapServers();
 
-      if ("Update".equals(connectorRequest.getConnectortype())) // only config
+      if (RequestOperationType.UPDATE.value.equals(
+          connectorRequest.getConnectortype())) // only config
       {
         updateTopicReqStatus =
             clusterApiService.approveConnectorRequests(
@@ -575,7 +586,7 @@ public class KafkaConnectControllerService {
                 kafkaConnectHost,
                 tenantId);
       }
-      if (Objects.equals(updateTopicReqStatus, "success")) {
+      if (Objects.equals(updateTopicReqStatus, ApiResultStatus.SUCCESS.value)) {
         setConnectorHistory(connectorRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
         mailService.sendMail(
@@ -589,8 +600,7 @@ public class KafkaConnectControllerService {
       }
     }
 
-    resultMap.put("result", updateTopicReqStatus);
-    return resultMap;
+    return ApiResponse.builder().result(updateTopicReqStatus).build();
   }
 
   private void setConnectorHistory(
@@ -632,11 +642,13 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public String declineConnectorRequests(String connectorId, String reasonForDecline) {
+  public ApiResponse declineConnectorRequests(String connectorId, String reasonForDecline)
+      throws KlawException {
     log.info("declineConnectorRequests {} {}", connectorId, reasonForDecline);
     String userDetails = getUserName();
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS))
-      return "{\"result\":\"Not Authorized\"}";
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -645,86 +657,94 @@ public class KafkaConnectControllerService {
         dbHandle.selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
     if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
-      return "{\"result\":\"This request does not exist anymore.\"}";
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (!allowedEnvIdList.contains(connectorRequest.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+    if (!allowedEnvIdList.contains(connectorRequest.getEnvironment())) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
-    String result = dbHandle.declineConnectorRequest(connectorRequest, userDetails);
-    mailService.sendMail(
-        connectorRequest.getConnectorName(),
-        null,
-        reasonForDecline,
-        connectorRequest.getRequestor(),
-        dbHandle,
-        CONNECTOR_REQUEST_DENIED,
-        commonUtilsService.getLoginUrl());
+    try {
+      String result = dbHandle.declineConnectorRequest(connectorRequest, userDetails);
+      mailService.sendMail(
+          connectorRequest.getConnectorName(),
+          null,
+          reasonForDecline,
+          connectorRequest.getRequestor(),
+          dbHandle,
+          CONNECTOR_REQUEST_DENIED,
+          commonUtilsService.getLoginUrl());
 
-    return "{\"result\":\"" + result + "\"}";
+      return ApiResponse.builder().result(result).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
   }
 
   // create a request to delete connector.
-  public Map<String, String> createConnectorDeleteRequest(String connectorName, String envId) {
+  public ApiResponse createConnectorDeleteRequest(String connectorName, String envId)
+      throws KlawException {
     log.info("createConnectorDeleteRequest {} {}", connectorName, envId);
     String userDetails = getUserName();
 
-    Map<String, String> hashMap = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
-      hashMap.put("result", "Not Authorized");
-      return hashMap;
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    KafkaConnectorRequest topicRequestReq = new KafkaConnectorRequest();
+    KafkaConnectorRequest kafkaConnectorRequest = new KafkaConnectorRequest();
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
 
     Integer userTeamId = getMyTeamId(userDetails);
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
-      hashMap.put(
-          "result",
-          "Failure. Sorry, you cannot delete this connector, as you are not part of this team.");
-      return hashMap;
+      return ApiResponse.builder()
+          .result(
+              "Failure. Sorry, you cannot delete this connector, as you are not part of this team.")
+          .build();
     }
 
-    topicRequestReq.setRequestor(userDetails);
-    topicRequestReq.setUsername(userDetails);
-    topicRequestReq.setTeamId(userTeamId);
-    topicRequestReq.setEnvironment(envId);
-    topicRequestReq.setConnectorName(connectorName);
-    topicRequestReq.setConnectortype(TopicRequestTypes.Delete.name());
+    kafkaConnectorRequest.setRequestor(userDetails);
+    kafkaConnectorRequest.setUsername(userDetails);
+    kafkaConnectorRequest.setTeamId(userTeamId);
+    kafkaConnectorRequest.setEnvironment(envId);
+    kafkaConnectorRequest.setConnectorName(connectorName);
+    kafkaConnectorRequest.setConnectortype(TopicRequestTypes.Delete.name());
+    kafkaConnectorRequest.setTenantId(tenantId);
 
     Optional<KwKafkaConnector> topicOb =
         getConnectorsFromName(connectorName, tenantId).stream()
             .filter(
-                topic -> Objects.equals(topic.getEnvironment(), topicRequestReq.getEnvironment()))
+                topic ->
+                    Objects.equals(topic.getEnvironment(), kafkaConnectorRequest.getEnvironment()))
             .findFirst();
 
     if (manageDatabase
             .getHandleDbRequests()
             .selectConnectorRequests(
-                topicRequestReq.getConnectorName(),
-                topicRequestReq.getEnvironment(),
+                kafkaConnectorRequest.getConnectorName(),
+                kafkaConnectorRequest.getEnvironment(),
                 RequestStatus.created.name(),
                 tenantId)
             .size()
         > 0) {
-      hashMap.put("result", "Failure. A delete connector request already exists.");
-      return hashMap;
+      return ApiResponse.builder()
+          .result("Failure. A delete connector request already exists.")
+          .build();
     }
 
     if (topicOb.isPresent()) {
 
-      topicRequestReq.setConnectorConfig(topicOb.get().getConnectorConfig());
+      kafkaConnectorRequest.setConnectorConfig(topicOb.get().getConnectorConfig());
       mailService.sendMail(
-          topicRequestReq.getConnectorName(),
+          kafkaConnectorRequest.getConnectorName(),
           null,
           "",
           userDetails,
@@ -732,15 +752,21 @@ public class KafkaConnectControllerService {
           CONNECTOR_DELETE_REQUESTED,
           commonUtilsService.getLoginUrl());
 
-      hashMap.put(
-          "result",
-          manageDatabase.getHandleDbRequests().requestForConnector(topicRequestReq).get("result"));
+      try {
+        String result =
+            manageDatabase
+                .getHandleDbRequests()
+                .requestForConnector(kafkaConnectorRequest)
+                .get("result");
+        return ApiResponse.builder().result(result).build();
+      } catch (Exception e) {
+        log.error(e.getMessage());
+        throw new KlawException(e.getMessage());
+      }
     } else {
       log.error("Connector not found : {}", connectorName);
-      hashMap.put("result", "failure");
+      return ApiResponse.builder().result("Failure : Connector not found" + connectorName).build();
     }
-
-    return hashMap;
   }
 
   private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {
@@ -778,11 +804,10 @@ public class KafkaConnectControllerService {
     return getConnectorRequestModels(topicReqs, true);
   }
 
-  public Map<String, String> createClaimConnectorRequest(String connectorName, String envId) {
+  public ApiResponse createClaimConnectorRequest(String connectorName, String envId)
+      throws KlawException {
     log.info("createClaimConnectorRequest {}", connectorName);
     String userDetails = getUserName();
-
-    Map<String, String> resultMap = new HashMap<>();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     KafkaConnectorRequest connectorRequest = new KafkaConnectorRequest();
@@ -793,8 +818,9 @@ public class KafkaConnectControllerService {
             .selectConnectorRequests(connectorName, envId, RequestStatus.created.name(), tenantId)
             .size()
         > 0) {
-      resultMap.put("result", "Failure. A request already exists for this connector.");
-      return resultMap;
+      return ApiResponse.builder()
+          .result("Failure. A request already exists for this connector.")
+          .build();
     }
 
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
@@ -837,11 +863,14 @@ public class KafkaConnectControllerService {
                 CONNECTOR_CLAIM_REQUESTED,
                 commonUtilsService.getLoginUrl()));
 
-    resultMap.put(
-        "result",
-        manageDatabase.getHandleDbRequests().requestForConnector(connectorRequest).get("result"));
-
-    return resultMap;
+    try {
+      String res =
+          manageDatabase.getHandleDbRequests().requestForConnector(connectorRequest).get("result");
+      return ApiResponse.builder().result(res).build();
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
   }
 
   public ConnectorOverview getConnectorOverview(String connectorNamesearch) {
@@ -851,8 +880,11 @@ public class KafkaConnectControllerService {
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (connectorNamesearch != null) connectorNamesearch = connectorNamesearch.trim();
-    else return null;
+    if (connectorNamesearch != null) {
+      connectorNamesearch = connectorNamesearch.trim();
+    } else {
+      return null;
+    }
 
     Integer loggedInUserTeam = getMyTeamId(userDetails);
 
@@ -870,7 +902,9 @@ public class KafkaConnectControllerService {
     if (connectors.size() == 0) {
       topicOverview.setConnectorExists(false);
       return topicOverview;
-    } else topicOverview.setConnectorExists(true);
+    } else {
+      topicOverview.setConnectorExists(true);
+    }
 
     String syncCluster;
     String[] reqTopicsEnvs;
@@ -1065,7 +1099,7 @@ public class KafkaConnectControllerService {
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
           hashMap.put("status", "NO_PROMOTION"); // PRD
         } else {
-          hashMap.put("status", "success");
+          hashMap.put("status", ApiResultStatus.SUCCESS.value);
           hashMap.put("sourceEnv", lastEnv);
           hashMap.put("sourceConnectorConfig", sourceConnectorConfig.get());
           String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
@@ -1077,21 +1111,18 @@ public class KafkaConnectControllerService {
       }
     } catch (Exception e) {
       log.error("getConnectorPromotionEnv ", e);
-      hashMap.put("status", "failure");
+      hashMap.put("status", ApiResultStatus.FAILURE.value);
       hashMap.put("error", "Connector does not exist in any environment.");
     }
 
     return hashMap;
   }
 
-  public Map<String, String> saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
-    Map<String, String> saveResult = new HashMap<>();
-
+  public ApiResponse saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
     KwKafkaConnector topic = new KwKafkaConnector();
     topic.setConnectorId(topicInfo.getConnectorId());
     topic.setDocumentation(topicInfo.getDocumentation());
 
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
     List<KwKafkaConnector> topicsSearchList =
         manageDatabase
             .getHandleDbRequests()
@@ -1099,17 +1130,16 @@ public class KafkaConnectControllerService {
                 topicInfo.getConnectorName(), commonUtilsService.getTenantId(getUserName()));
 
     // tenant filtering
-    int tenantId = commonUtilsService.getTenantId(getUserName());
     Integer topicOwnerTeam = getFilteredConnectorsForTenant(topicsSearchList).get(0).getTeamId();
-
     Integer loggedInUserTeam = getMyTeamId(getUserName());
 
     if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
-      saveResult.put(
-          "result", manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic));
-    } else saveResult.put("result", "failure");
-
-    return saveResult;
+      return ApiResponse.builder()
+          .result(manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic))
+          .build();
+    } else {
+      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    }
   }
 
   private List<KafkaConnectorRequestModel> getConnectorRequestModels(
@@ -1166,8 +1196,9 @@ public class KafkaConnectControllerService {
 
     for (UserInfo userInfo : userList) {
       if (approverRoles.contains(userInfo.getRole())
-          && !Objects.equals(requestor, userInfo.getUsername()))
+          && !Objects.equals(requestor, userInfo.getUsername())) {
         approvingInfo.append(userInfo.getUsername()).append(",");
+      }
     }
 
     return String.valueOf(approvingInfo);
@@ -1223,11 +1254,12 @@ public class KafkaConnectControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (createdTopicReqList != null)
+      if (createdTopicReqList != null) {
         createdTopicReqList =
             createdTopicReqList.stream()
                 .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();
@@ -1240,11 +1272,12 @@ public class KafkaConnectControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (connectorsFromSOT != null)
+      if (connectorsFromSOT != null) {
         connectorsFromSOT =
             connectorsFromSOT.stream()
                 .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       return new ArrayList<>();

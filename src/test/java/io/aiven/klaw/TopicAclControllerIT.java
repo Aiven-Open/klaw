@@ -18,17 +18,19 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwPropertiesModel;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +107,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
@@ -141,7 +143,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -177,7 +179,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -223,7 +225,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // Create topic requests
@@ -245,7 +247,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // Query topic requests in created state
@@ -295,9 +297,11 @@ public class TopicAclControllerIT {
     String topicName = this.topicName + topicId;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn("ONLINE");
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
-    when(clusterApiService.approveTopicRequests(topicName, "Create", 2, "1", "1", 101))
-        .thenReturn(new ResponseEntity<>("success", HttpStatus.OK));
+    when(clusterApiService.approveTopicRequests(
+            topicName, RequestOperationType.CREATE.value, 2, "1", "1", 101))
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     String response =
         mvc.perform(
@@ -311,7 +315,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // decline topic - topic in cluster
@@ -334,7 +338,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     login(user2, PASSWORD, "APPROVER");
 
@@ -351,7 +355,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // get team of topic
@@ -393,7 +397,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -407,7 +411,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // get topics from cluster
@@ -520,7 +524,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // Get created acl requests again
@@ -564,11 +568,9 @@ public class TopicAclControllerIT {
     Object obj = response.get(0);
     LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
 
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
-        .thenReturn(new ResponseEntity<>(resultMap, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     Integer reqNo = hMap.get("req_no");
 
     res =
@@ -583,7 +585,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(res).contains("success");
+    assertThat(res).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // Request for a acl
@@ -605,7 +607,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // Decline acl request
@@ -642,7 +644,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(resNew).contains("success");
+    assertThat(resNew).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // delete acl requests
@@ -677,7 +679,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(responseNew).contains("success");
+    assertThat(responseNew).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // getacls with topic search filter

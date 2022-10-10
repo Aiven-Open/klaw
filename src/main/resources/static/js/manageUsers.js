@@ -30,10 +30,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     $scope.alert = error.errors[0].defaultMessage;
                 }else if(error.message != null){
                     $scope.alert = error.message;
-                    }else if(error.result != null){
+                }else if(error.result != null){
                     $scope.alert = error.result;
-                    }
-                    else $scope.alert = "Unable to process the request.";
+                }
+                else
+                    $scope.alert = "Unable to process the request. Please verify the request or contact our Administrator !!";
 
                 $scope.alertnote = $scope.alert;
                 $scope.showAlertToast();
@@ -140,7 +141,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                             data: {'changePwd' : serviceInput}
                         }).success(function(output) {
                             $scope.alert = "Password changed : "+output.result;
-                            if(output.result == 'success'){
+                            if(output.result === 'success'){
                                 swal({
                                      title: "",
                                      text: "Password changed : "+output.result,
@@ -184,7 +185,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         }).success(function(output) {
 
                             $scope.alert = "Delete Team Request : "+output.result;
-                            if(output.result == 'success'){
+                            if(output.result === 'success'){
                                 swal({
                                      title: "",
                                      text: "Delete Team Request : "+output.result,
@@ -228,7 +229,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         data: {'userId' : idval}
                     }).success(function(output) {
                         $scope.alert = "Delete User Request : "+output.result;
-                        if(output.result == 'success'){
+                        if(output.result === 'success'){
                             swal({
                                  title: "",
                                  text: "Delete User Request : "+output.result,
@@ -278,7 +279,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 data: serviceInput
             }).success(function(output) {
                 $scope.alert = "Update User Request : "+output.result;
-                if(output.result == 'success'){
+                if(output.result === 'success'){
                         swal({
                              title: "",
                              text: "Update User Request : "+output.result,
@@ -489,7 +490,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     $scope.addNewUser.pwd = "";
                     $scope.addNewUser.reppwd = "";
                     $scope.addNewUser.emailid = "";
-                    if(output.result == 'success'){
+                    if(output.result === 'success'){
                             swal({
                                  title: "",
                                  text: "New User Request : "+output.result,
@@ -555,7 +556,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         data: serviceInput
                     }).success(function(output) {
                         $scope.alert = "New User Request : "+output.result;
-                        if(output.result == 'success'){
+                        if(output.result === 'success'){
                             $scope.addNewUser.username = "";
                             $scope.addNewUser.fullname = "";
                             $scope.addNewUser.emailid = "";

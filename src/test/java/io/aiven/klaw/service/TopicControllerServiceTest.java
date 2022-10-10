@@ -16,8 +16,11 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
@@ -62,7 +65,7 @@ public class TopicControllerServiceTest {
 
   @Mock private ManageDatabase manageDatabase;
 
-  @Mock private HandleDbRequests handleDbRequests;
+  @Mock private HandleDbRequestsJdbc handleDbRequests;
 
   @Mock CommonUtilsService commonUtilsService;
 
@@ -125,7 +128,7 @@ public class TopicControllerServiceTest {
   @Order(1)
   public void createTopicsSuccess() throws KlawException {
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
+    resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -138,16 +141,16 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getCorrectTopic());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getCorrectTopic());
 
-    assertThat(result.get("result")).isEqualTo("success");
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(2)
   public void createTopicsSuccess1() throws KlawException {
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
+    resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -160,9 +163,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic());
 
-    assertThat(result.get("result")).isEqualTo("success");
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // invalid partitions
@@ -183,9 +186,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic1());
 
-    assertThat(result).containsEntry("result", "failure");
+    assertThat(apiResponse.getResult()).contains("failure");
   }
 
   @Test
@@ -203,17 +206,14 @@ public class TopicControllerServiceTest {
 
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    Map<String, String> result = topicControllerService.createTopicsRequest(getFailureTopic1());
+    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic1());
 
-    assertThat(result).containsKey("result");
+    assertThat(apiResponse.getResult()).isEqualTo(null);
   }
 
   @Test
   @Order(7)
-  public void updateSyncTopicsSuccess() {
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-
+  public void updateSyncTopicsSuccess() throws KlawException {
     stubUserInfo();
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -221,17 +221,17 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(handleDbRequests.addToSynctopics(any())).thenReturn("success");
+    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
 
-    Map<String, String> result =
+    ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-    assertThat(result).containsEntry("result", "success");
+    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(8)
-  public void updateSyncTopicsNoUpdate() {
+  public void updateSyncTopicsNoUpdate() throws KlawException {
     List<SyncTopicUpdates> topicUpdates = new ArrayList<>();
 
     stubUserInfo();
@@ -242,22 +242,22 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    Map<String, String> result = topicSyncControllerService.updateSyncTopics(topicUpdates);
+    ApiResponse result = topicSyncControllerService.updateSyncTopics(topicUpdates);
 
-    assertThat(result).containsEntry("result", "No record updated.");
+    assertThat(result.getResult()).isEqualTo("No record updated.");
   }
 
   @Test
   @Order(9)
-  public void updateSyncTopicsNotAuthorized() {
+  public void updateSyncTopicsNotAuthorized() throws KlawException {
     stubUserInfo();
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    Map<String, String> result =
+    ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
 
-    assertThat(result).containsEntry("result", "Not Authorized.");
+    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -312,11 +312,12 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(12)
-  public void deleteTopicRequests() {
-    when(handleDbRequests.deleteTopicRequest(anyInt(), anyInt())).thenReturn("success");
+  public void deleteTopicRequests() throws KlawException {
+    when(handleDbRequests.deleteTopicRequest(anyInt(), anyInt()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    String result = topicControllerService.deleteTopicRequests("1001");
-    assertThat(result).isEqualTo("{\"result\":\"success\"}");
+    ApiResponse resultResp = topicControllerService.deleteTopicRequests("1001");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -325,19 +326,21 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
-    when(handleDbRequests.updateTopicRequest(any(), anyString())).thenReturn("success");
+    when(handleDbRequests.updateTopicRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
             anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
-        .thenReturn(new ResponseEntity<>("success", HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    String result = topicControllerService.approveTopicRequests(topicId + "");
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
 
-    assertThat(result).isEqualTo("{\"result\":\"success\"}");
+    assertThat(apiResponse1.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -346,19 +349,21 @@ public class TopicControllerServiceTest {
     String topicName = "topic1", env = "1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
-    when(handleDbRequests.updateTopicRequest(any(), anyString())).thenReturn("success");
+    when(handleDbRequests.updateTopicRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
             anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
-        .thenReturn(new ResponseEntity<>("failure error", HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    String result = topicControllerService.approveTopicRequests("" + topicId);
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
 
-    assertThat(result).isEqualTo("{\"result\":\"failure error\"}");
+    assertThat(apiResponse.getResult()).isEqualTo("failure");
   }
 
   @Test
@@ -452,10 +457,11 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(handleDbRequests.declineTopicRequest(any(), anyString())).thenReturn("success");
-    String result = topicControllerService.declineTopicRequests(topicId + "", "Reason");
+    when(handleDbRequests.declineTopicRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    ApiResponse resultResp = topicControllerService.declineTopicRequests(topicId + "", "Reason");
 
-    assertThat(result).isEqualTo("{\"result\":\"" + "success" + "\"}");
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -553,7 +559,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTeamId(101);
     topicRequest.setTopicstatus("created");
     topicRequest.setRequestor("kwuserb");
-    topicRequest.setTopictype("Create");
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
     return topicRequest;
   }
 

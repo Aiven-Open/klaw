@@ -194,7 +194,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                             $scope.updatedSyncArray = [];
 
 //                            $scope.getAcls(1);
-                             if(output.result == 'success'){
+                             if(output.result === 'success'){
                               swal({
                             		   title: "",
                             		   text: "Acl Sync Request : "+output.result,

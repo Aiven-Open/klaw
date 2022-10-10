@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -103,10 +104,10 @@ public class InsertDataJdbc {
     activityLog.setEnv(topicRequest.getEnvironment());
     activityLog.setTenantId(topicRequest.getTenantId());
 
-    if ("success".equals(insertIntoActivityLog(activityLog))) {
-      hashMap.put("result", "success");
+    if (ApiResultStatus.SUCCESS.value.equals(insertIntoActivityLog(activityLog))) {
+      hashMap.put("result", ApiResultStatus.SUCCESS.value);
     } else {
-      hashMap.put("result", "failure");
+      hashMap.put("result", ApiResultStatus.FAILURE.value);
     }
 
     return hashMap;
@@ -140,10 +141,10 @@ public class InsertDataJdbc {
     activityLog.setEnv(connectorRequest.getEnvironment());
     activityLog.setTenantId(connectorRequest.getTenantId());
 
-    if ("success".equals(insertIntoActivityLog(activityLog))) {
-      hashMap.put("result", "success");
+    if (ApiResultStatus.SUCCESS.value.equals(insertIntoActivityLog(activityLog))) {
+      hashMap.put("result", ApiResultStatus.SUCCESS.value);
     } else {
-      hashMap.put("result", "failure");
+      hashMap.put("result", ApiResultStatus.FAILURE.value);
     }
 
     return hashMap;
@@ -166,7 +167,7 @@ public class InsertDataJdbc {
           topicRepo.save(topic);
         });
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public synchronized String insertIntoConnectorSOT(
@@ -188,14 +189,14 @@ public class InsertDataJdbc {
           kafkaConnectorRepo.save(connector);
         });
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   private String insertIntoActivityLog(ActivityLog activityLog) {
     log.debug("insertIntoActivityLog {}", activityLog.getActivityName());
     activityLogRepo.save(activityLog);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   synchronized Map<String, String> insertIntoRequestAcl(AclRequests aclReq) {
@@ -237,7 +238,7 @@ public class InsertDataJdbc {
 
     // Insert into acl activity log
     insertIntoActivityLog(activityLog);
-    hashMap.put("result", "success");
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
     return hashMap;
   }
 
@@ -246,10 +247,12 @@ public class InsertDataJdbc {
     acls.forEach(
         acl -> {
           log.debug("insertIntoAclsSOT {}", acl.getTopicname());
-          if (acl.getReq_no() == null) acl.setReq_no(getNextAclId(acl.getTenantId()));
+          if (acl.getReq_no() == null) {
+            acl.setReq_no(getNextAclId(acl.getTenantId()));
+          }
           aclRepo.save(acl);
         });
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public synchronized String insertIntoRequestSchema(SchemaRequest schemaRequest) {
@@ -280,27 +283,30 @@ public class InsertDataJdbc {
     // Insert into acl activity log
     insertIntoActivityLog(activityLog);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public synchronized String insertIntoMessageSchemaSOT(List<MessageSchema> schemas) {
 
     for (MessageSchema mSchema : schemas) {
       log.debug("insertIntoMessageSchemaSOT {}", mSchema.getTopicname());
-      if (mSchema.getReq_no() == null)
+      if (mSchema.getReq_no() == null) {
         mSchema.setReq_no(getNextSchemaRequestId("SCHEMA_ID", mSchema.getTenantId()));
+      }
       messageSchemaRepo.save(mSchema);
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoUsers(UserInfo userInfo) {
     log.debug("insertIntoUsers {}", userInfo.getUsername());
     Optional<UserInfo> userExists = userInfoRepo.findById(userInfo.getUsername());
-    if (userExists.isPresent()) return "Failure. User already exists";
+    if (userExists.isPresent()) {
+      return "Failure. User already exists";
+    }
 
     userInfoRepo.save(userInfo);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoTeams(Team team) {
@@ -316,18 +322,20 @@ public class InsertDataJdbc {
     }
 
     Optional<Team> teamExists = teamRepo.findById(teamID);
-    if (teamExists.isPresent()) return "Failure. Team already exists";
+    if (teamExists.isPresent()) {
+      return "Failure. Team already exists";
+    }
 
     team.setApp("");
     teamRepo.save(team);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoEnvs(Env env) {
     log.debug("insertIntoEnvs {}", env.getName());
 
     envRepo.save(env);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoClusters(KwClusters kwClusters) {
@@ -336,13 +344,16 @@ public class InsertDataJdbc {
     if (kwClusters.getClusterId() == null) {
       lastClusterId = kwClusterRepo.getNextClusterId(kwClusters.getTenantId());
 
-      if (lastClusterId == null) lastClusterId = 1;
-      else lastClusterId = lastClusterId + 1;
+      if (lastClusterId == null) {
+        lastClusterId = 1;
+      } else {
+        lastClusterId = lastClusterId + 1;
+      }
 
       kwClusters.setClusterId(lastClusterId);
     }
     kwClusterRepo.save(kwClusters);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertIntoRegisterUsers(RegisterUserInfo userInfo) {
@@ -362,52 +373,71 @@ public class InsertDataJdbc {
     }
 
     registerInfoRepo.save(userInfo);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public Integer getNextTeamId(int tenantId) {
     Integer teamId = teamRepo.getNextTeamId(tenantId);
     if (teamId == null) return 1001;
-    else return teamId + 1;
+    else {
+      return teamId + 1;
+    }
   }
 
   public Integer getNextAclRequestId(int tenantId) {
     Integer aclReqId = aclRequestsRepo.getNextAclRequestId(tenantId);
-    if (aclReqId == null) return 1001;
-    else return aclReqId + 1;
+    if (aclReqId == null) {
+      return 1001;
+    } else {
+      return aclReqId + 1;
+    }
   }
 
   public Integer getNextAclId(int tenantId) {
     Integer aclId = aclRepo.getNextAclId(tenantId);
-    if (aclId == null) return 1001;
-    else return aclId + 1;
+    if (aclId == null) {
+      return 1001;
+    } else {
+      return aclId + 1;
+    }
   }
 
   public synchronized Integer getNextActivityLogRequestId(int tenantId) {
     Integer activityLogId = activityLogRepo.getNextActivityLogRequestId(tenantId);
 
-    if (activityLogId == null) return 1001;
-    else return activityLogId + 1;
+    if (activityLogId == null) {
+      return 1001;
+    } else {
+      return activityLogId + 1;
+    }
   }
 
   public Integer getNextTopicRequestId(String idType, int tenantId) {
     Integer topicId = null;
-    if ("TOPIC_REQ_ID".equals(idType)) topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
-    else if ("TOPIC_ID".equals(idType)) topicId = topicRepo.getNextTopicRequestId(tenantId);
+    if ("TOPIC_REQ_ID".equals(idType)) {
+      topicId = topicRequestsRepo.getNextTopicRequestId(tenantId);
+    } else if ("TOPIC_ID".equals(idType)) {
+      topicId = topicRepo.getNextTopicRequestId(tenantId);
+    }
 
     return topicId == null ? 1001 : topicId + 1;
   }
 
   public Integer getNextConnectorRequestId(String idType, int tenantId) {
     Integer topicId;
-    if (idType.equals("CONNECTOR_REQ_ID"))
+    if (idType.equals("CONNECTOR_REQ_ID")) {
       topicId = kafkaConnectorRequestsRepo.getNextConnectorRequestId(tenantId);
-    else if (idType.equals("CONNECTOR_ID"))
+    } else if (idType.equals("CONNECTOR_ID")) {
       topicId = kafkaConnectorRepo.getNextConnectorRequestId(tenantId);
-    else topicId = null;
+    } else {
+      topicId = null;
+    }
 
-    if (topicId == null) return 1001;
-    else return topicId + 1;
+    if (topicId == null) {
+      return 1001;
+    } else {
+      return topicId + 1;
+    }
   }
 
   public Integer getNextSchemaRequestId(String idType, int tenantId) {
@@ -423,32 +453,38 @@ public class InsertDataJdbc {
 
   public String addNewTenant(KwTenants kwTenants) {
     Integer maxTenantId = tenantRepo.getMaxTenantId();
-    if (maxTenantId == null) maxTenantId = 101;
-    else maxTenantId = maxTenantId + 1;
+    if (maxTenantId == null) {
+      maxTenantId = 101;
+    } else {
+      maxTenantId = maxTenantId + 1;
+    }
     kwTenants.setTenantId(maxTenantId);
     tenantRepo.save(kwTenants);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String registerUserForAD(RegisterUserInfo newUser) {
     registerInfoRepo.save(newUser);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertMetrics(KwMetrics kwMetrics) {
     Integer metricsId = metricsRepo.getNextId();
-    if (metricsId == null) metricsId = 1001;
-    else metricsId += 1;
+    if (metricsId == null) {
+      metricsId = 1001;
+    } else {
+      metricsId += 1;
+    }
 
     kwMetrics.setMetricsId(metricsId);
 
     metricsRepo.save(kwMetrics);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertDefaultKwProperties(List<KwProperties> kwPropertiesList) {
     kwPropertiesRepo.saveAll(kwPropertiesList);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String insertDefaultRolesPermissions(List<KwRolesPermissions> kwRolesPermissionsList) {
@@ -458,19 +494,20 @@ public class InsertDataJdbc {
       kwRolesPermsRepo.save(kwRolesPermissions);
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public Integer getNextRolePermissionId(int tenantId) {
     Integer maxId = kwRolesPermsRepo.getMaxRolePermissionId(tenantId);
-
-    if (maxId == null) maxId = 1;
+    if (maxId == null) {
+      maxId = 1;
+    }
 
     return maxId + 1;
   }
 
   public String insertProductDetails(ProductDetails productDetails) {
     productDetailsRepo.save(productDetails);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 }

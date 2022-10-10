@@ -290,15 +290,15 @@ app.controller("syncBackAclsCtrl", function($scope, $http, $location, $window) {
                         data:  serviceInput
                     }).success(function(output) {
                         $scope.ShowSpinnerStatus = false;
-                        $scope.alert = "Sync back acls request : "+ output.result[0];
-                        if(output.result[0] == "success"){
+                        $scope.alert = "Sync back acls request : "+ output.result;
+                        if(output.result === "success"){
                             $scope.resetCheckBoxes();
-                            $scope.syncbacklog = output.syncbacklog;
+                            $scope.syncbacklog = output.data;
                             $scope.alert = $scope.alert + ". Please verify logs.";
 
                             swal({
                             		   title: "",
-                            		   text: "Sync back subscriptions request : "+ output.result[0],
+                            		   text: "Sync back subscriptions request : "+ output.result,
                             		   timer: 2000,
                             		   showConfirmButton: false
                             	   });

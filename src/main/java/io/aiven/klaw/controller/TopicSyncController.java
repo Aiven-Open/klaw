@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
@@ -25,19 +27,17 @@ public class TopicSyncController {
   @Autowired private TopicSyncControllerService topicSyncControllerService;
 
   @PostMapping(value = "/updateSyncTopics")
-  public ResponseEntity<Map<String, String>> updateSyncTopics(
-      @RequestBody List<SyncTopicUpdates> syncTopicUpdates) {
-    Map<String, String> updateSyncTopicsResult =
-        topicSyncControllerService.updateSyncTopics(syncTopicUpdates);
-    return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> updateSyncTopics(
+      @RequestBody List<SyncTopicUpdates> syncTopicUpdates) throws KlawException {
+    return new ResponseEntity<>(
+        topicSyncControllerService.updateSyncTopics(syncTopicUpdates), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updateSyncTopicsBulk")
-  public ResponseEntity<Map<String, List<String>>> updateSyncTopicsBulk(
-      @RequestBody SyncTopicsBulk syncTopicsBulk) {
-    Map<String, List<String>> updateSyncTopicsBulkResult =
-        topicSyncControllerService.updateSyncTopicsBulk(syncTopicsBulk);
-    return new ResponseEntity<>(updateSyncTopicsBulkResult, HttpStatus.OK);
+  public ResponseEntity<ApiResponse> updateSyncTopicsBulk(
+      @RequestBody SyncTopicsBulk syncTopicsBulk) throws KlawException {
+    return new ResponseEntity<>(
+        topicSyncControllerService.updateSyncTopicsBulk(syncTopicsBulk), HttpStatus.OK);
   }
 
   // sync back topics
@@ -51,9 +51,7 @@ public class TopicSyncController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
       @RequestParam(value = "teamName", required = false) String teamName,
-      @RequestParam(value = "topicType", required = false) String topicType)
-      throws Exception {
-
+      @RequestParam(value = "topicType", required = false) String topicType) {
     return new ResponseEntity<>(
         topicSyncControllerService.getTopicsRowView(
             envId, pageNo, currentPage, topicNameSearch, teamName, topicType),
@@ -61,11 +59,10 @@ public class TopicSyncController {
   }
 
   @PostMapping(value = "/updateSyncBackTopics")
-  public ResponseEntity<Map<String, List<String>>> updateSyncBackTopics(
+  public ResponseEntity<ApiResponse> updateSyncBackTopics(
       @RequestBody SyncBackTopics syncBackTopics) {
-    Map<String, List<String>> updateSyncTopicsResult =
-        topicSyncControllerService.updateSyncBackTopics(syncBackTopics);
-    return new ResponseEntity<>(updateSyncTopicsResult, HttpStatus.OK);
+    return new ResponseEntity<>(
+        topicSyncControllerService.updateSyncBackTopics(syncBackTopics), HttpStatus.OK);
   }
 
   @RequestMapping(

@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KwClustersModel;
@@ -86,7 +87,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -122,7 +123,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -177,7 +178,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // getclusterdetails success
@@ -220,7 +221,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -252,7 +253,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -290,7 +291,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -348,7 +349,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -408,7 +409,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
 
     response =
         mvc.perform(
@@ -438,7 +439,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains("success");
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
   }
 
   // get env params success

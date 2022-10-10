@@ -5,6 +5,9 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.RegisterUserInfoModel;
@@ -45,7 +48,7 @@ public class SaasService {
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
 
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "failure");
+    resultMap.put("result", ApiResultStatus.FAILURE.value);
 
     // check if user exists
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
@@ -68,26 +71,27 @@ public class SaasService {
         kwTenantModel.setContactPerson(newUser.getFullname());
         kwTenantModel.setInTrialPhase(true);
         kwTenantModel.setActiveTenant(true);
-        Map<String, String> addTenantResult =
+        ApiResponse addTenantResult =
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
 
         // create INFRATEAM and STAGINGTEAM
-        if ("success".equals(addTenantResult.get("result"))) {
-          tenantId = Integer.parseInt(addTenantResult.get("tenantId"));
+        if (ApiResultStatus.SUCCESS.value.equals(addTenantResult.getResult())) {
+          tenantId = Integer.parseInt((String) addTenantResult.getData());
 
           Map<String, String> teamAddMap =
               usersTeamsControllerService.addTwoDefaultTeams(
                   newUser.getFullname(), newTenantName, tenantId);
 
-          if (teamAddMap.get("team1result").contains("success")
-              && teamAddMap.get("team2result").contains("success")) {
+          if (teamAddMap.get("team1result").contains(ApiResultStatus.SUCCESS.value)
+              && teamAddMap.get("team2result").contains(ApiResultStatus.SUCCESS.value)) {
             // approve user
 
-            String resultApproveUser =
+            ApiResponse resultApproveUser =
                 usersTeamsControllerService.approveNewUserRequests(
                     newUser.getUsername(), false, tenantId, KwConstants.INFRATEAM);
-            if (resultApproveUser.contains("success")) updateStaticData(newUser, tenantId);
-            else {
+            if (resultApproveUser.getResult().contains(ApiResultStatus.SUCCESS.value)) {
+              updateStaticData(newUser, tenantId);
+            } else {
               resultMap.put("error", "Something went wrong. Please try again.");
               return resultMap;
             }
@@ -97,12 +101,12 @@ public class SaasService {
             return resultMap;
           }
         } else {
-          resultMap.put("error", "Failure :" + addTenantResult.get("result"));
+          resultMap.put("error", "Failure :" + addTenantResult.getResult());
           return resultMap;
         }
       }
 
-      resultMap.put("result", "success");
+      resultMap.put("result", ApiResultStatus.SUCCESS.value);
       return resultMap;
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -112,43 +116,45 @@ public class SaasService {
   }
 
   // TO DO transactions
-  public Map<String, String> registerUserSaas(RegisterSaasUserInfoModel newUser) throws Exception {
+  public ApiResponse registerUserSaas(RegisterSaasUserInfoModel newUser) throws Exception {
     log.info("registerUserSaas {} / {}", newUser.getFullname(), newUser.getMailid());
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
-
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "failure");
 
     try {
-      if (handleValidations(newUser, tenantMap, resultMap)) return resultMap;
+      if (handleValidations(newUser, tenantMap, resultMap)) {
+        return ApiResponse.builder().result(resultMap.get("result")).build();
+      }
 
       RegisterUserInfoModel newUserTarget = new RegisterUserInfoModel();
       copyProperties(newUser, newUserTarget);
-
       String userName = newUser.getMailid();
-
       newUserTarget.setUsername(userName);
       String pwd = usersTeamsControllerService.generateRandomWord(10);
       newUserTarget.setPwd(pwd);
 
       if (newUser.getTenantName() == null || newUser.getTenantName().equals("")) {
         // new user
-        if (createNewUserForActivation(resultMap, newUserTarget)) return resultMap;
+        if (createNewUserForActivation(resultMap, newUserTarget)) {
+          return ApiResponse.builder().result(resultMap.get("error")).build();
+        }
       } else if (!tenantMap.containsValue(newUser.getTenantName())) {
         resultMap.put("error", "Tenant does not exist.");
-        return resultMap;
+        return ApiResponse.builder()
+            .result("Tenant does not exist.")
+            .message("Tenant does not exist.")
+            .build();
       } else {
         // create user for existing tenant
-        if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget))
-          return resultMap;
+        if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget)) {
+          return ApiResponse.builder().result(resultMap.get("error")).build();
+        }
       }
 
-      resultMap.put("result", "success");
-      return resultMap;
+      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      resultMap.put("error", "Something went wrong. Please try again.");
-      return resultMap;
+      throw new KlawException(e.getMessage());
     }
   }
 
@@ -160,9 +166,9 @@ public class SaasService {
     newUserTarget.setTeam(KwConstants.INFRATEAM);
     newUserTarget.setRegistrationId(randomId);
     newUserTarget.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
-    Map<String, String> userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
+    ApiResponse userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!"success".equals(userRegMap.get("result"))) {
+    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getResult())) {
       resultMap.put("error", "Something went wrong. Please try again.");
       return true;
     }
@@ -195,10 +201,9 @@ public class SaasService {
     String newTenantName = newUser.getTenantName();
     Integer tenantId;
     // register user
-    String finalNewTenantName = newTenantName;
     tenantId =
         tenantMap.entrySet().stream()
-            .filter(obj -> Objects.equals(obj.getValue(), finalNewTenantName))
+            .filter(obj -> Objects.equals(obj.getValue(), newTenantName))
             .findFirst()
             .get()
             .getKey();
@@ -206,16 +211,14 @@ public class SaasService {
     newUserTarget.setTenantId(tenantId);
     newUserTarget.setTeam(KwConstants.STAGINGTEAM);
     newUserTarget.setRole(KwConstants.USER_ROLE);
-    Map<String, String> userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
+    ApiResponse userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!"success".equals(userRegMap.get("result"))) {
+    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getResult())) {
       resultMap.put("error", "Something went wrong. Please try again.");
       return true;
     } else {
       RegisterUserInfo registerUserInfo = new RegisterUserInfo();
-
       copyProperties(newUserTarget, registerUserInfo);
-
       mailService.sendMailRegisteredUserSaas(
           registerUserInfo,
           manageDatabase.getHandleDbRequests(),
@@ -224,21 +227,7 @@ public class SaasService {
           newUserTarget.getTeam(),
           "activationUrl",
           commonUtilsService.getLoginUrl());
-
-      //            String resultApproveUser = usersTeamsControllerService
-      //                    .approveNewUserRequests(newUserTarget.getUsername(), false, tenantId,
-      // STAGINGTEAM);
-      //            if(resultApproveUser.contains("success")){
-      //                RegisterUserInfo registerUserInfo = new RegisterUserInfo();
-      //                copyProperties(newUserTarget, registerUserInfo);
-      //
-      //                mailService.sendMailRegisteredUserSaas(registerUserInfo,
-      // manageDatabase.getHandleDbRequests(), newTenantName,
-      //                        tenantId, newUserTarget.getTeam(), "activationUrl",
-      // commonUtilsService.getLoginUrl());
-      //            }
     }
-
     return false;
   }
 
@@ -297,7 +286,7 @@ public class SaasService {
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {
-      resultMap.put("result", "failure");
+      resultMap.put("result", ApiResultStatus.FAILURE.value);
       return resultMap;
     } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
       resultMap.put("result", "already_activated");
@@ -306,8 +295,8 @@ public class SaasService {
       Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
-        if ("success".equals(result.get("result"))) {
-          resultMap.put("result", "success");
+        if (ApiResultStatus.SUCCESS.value.equals(result.get("result"))) {
+          resultMap.put("result", ApiResultStatus.SUCCESS.value);
         } else resultMap.put("result", "othererror");
       } catch (Exception e) {
         log.error("Exception:", e);

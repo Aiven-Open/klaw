@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwRolesPermissionsModel;
 import io.aiven.klaw.service.RolesPermissionsControllerService;
 import java.util.List;
@@ -56,19 +58,21 @@ public class RolesPermissionsController {
   }
 
   @PostMapping(value = "/deleteRole")
-  public ResponseEntity<Map<String, String>> deleteRole(@RequestParam("roleId") String roleId) {
+  public ResponseEntity<ApiResponse> deleteRole(@RequestParam("roleId") String roleId)
+      throws KlawException {
     return new ResponseEntity<>(
         rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addRoleId")
-  public ResponseEntity<Map<String, String>> addRoleId(@RequestParam("roleId") String roleId) {
+  public ResponseEntity<ApiResponse> addRoleId(@RequestParam("roleId") String roleId)
+      throws KlawException {
     return new ResponseEntity<>(rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/updatePermissions")
-  public ResponseEntity<Map<String, String>> updatePermissions(
-      @RequestBody KwRolesPermissionsModel[] kwRolesPermissionsModels) {
+  public ResponseEntity<ApiResponse> updatePermissions(
+      @RequestBody KwRolesPermissionsModel[] kwRolesPermissionsModels) throws KlawException {
     return new ResponseEntity<>(
         rolesPermissionsControllerService.updatePermissions(kwRolesPermissionsModels),
         HttpStatus.OK);

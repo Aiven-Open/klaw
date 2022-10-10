@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
@@ -75,13 +77,14 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/deleteCluster")
-  public ResponseEntity<String> deleteCluster(@RequestParam("clusterId") String clusterId) {
+  public ResponseEntity<ApiResponse> deleteCluster(@RequestParam("clusterId") String clusterId)
+      throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
   }
 
   @PostMapping(value = "/addNewCluster")
-  public ResponseEntity<Map<String, String>> addNewCluster(
+  public ResponseEntity<ApiResponse> addNewCluster(
       @Valid @RequestBody KwClustersModel kwClustersModel) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addNewCluster(kwClustersModel), HttpStatus.OK);
@@ -136,13 +139,6 @@ public class EnvsClustersTenantsController {
     return new ResponseEntity<>(envsClustersTenantsControllerService.getSyncEnvs(), HttpStatus.OK);
   }
 
-  //    @RequestMapping(value = "/getEnvsStatus", method = RequestMethod.GET, produces =
-  // {MediaType.APPLICATION_JSON_VALUE})
-  //    public ResponseEntity<Map<String, List<EnvModel>>> getEnvsStatus() {
-  //        return new ResponseEntity<>(envsClustersTenantsControllerService.getEnvsStatus(),
-  // HttpStatus.OK);
-  //    }
-
   @RequestMapping(
       value = "/getEnvParams",
       method = RequestMethod.GET,
@@ -181,14 +177,16 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addNewEnv")
-  public ResponseEntity<String> addNewEnv(@Valid @RequestBody EnvModel newEnv) {
+  public ResponseEntity<ApiResponse> addNewEnv(@Valid @RequestBody EnvModel newEnv)
+      throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteEnvironmentRequest")
-  public ResponseEntity<Map<String, String>> deleteEnvironment(
-      @RequestParam("envId") String envId, @RequestParam("envType") String envType) {
+  public ResponseEntity<ApiResponse> deleteEnvironment(
+      @RequestParam("envId") String envId, @RequestParam("envType") String envType)
+      throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.deleteEnvironment(envId, envType), HttpStatus.OK);
   }
@@ -212,28 +210,29 @@ public class EnvsClustersTenantsController {
   }
 
   @PostMapping(value = "/addTenantId")
-  public ResponseEntity<Map<String, String>> addTenantId(
-      @Valid @RequestBody KwTenantModel kwTenantModel) {
+  public ResponseEntity<ApiResponse> addTenantId(@Valid @RequestBody KwTenantModel kwTenantModel)
+      throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteTenant")
-  public ResponseEntity<Map<String, String>> deleteTenant() {
+  public ResponseEntity<ApiResponse> deleteTenant() throws KlawException {
     return new ResponseEntity<>(envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
   }
 
   // Pattern a-zA-z and/or spaces.
   @PostMapping(value = "/udpateTenant")
-  public ResponseEntity<Map<String, String>> udpateTenant(
+  public ResponseEntity<ApiResponse> udpateTenant(
       @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
-          String orgName) {
+          String orgName)
+      throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
   }
 
   @PostMapping(value = "/udpateTenantExtension")
-  public ResponseEntity<Map<String, String>> udpateTenantExtension(
+  public ResponseEntity<ApiResponse> udpateTenantExtension(
       @RequestParam("selectedTenantExtensionPeriod") String selectedTenantExtensionPeriod) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.udpateTenantExtension(selectedTenantExtensionPeriod),

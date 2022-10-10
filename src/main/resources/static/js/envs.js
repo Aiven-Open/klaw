@@ -53,18 +53,20 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 			 });
 	}
 
-	$scope.handleValidationErrors = function(error){
-        if(error.errors != null && error.errors.length > 0){
+        $scope.handleValidationErrors = function(error){
+            if(error.errors != null && error.errors.length > 0){
                 $scope.alert = error.errors[0].defaultMessage;
             }else if(error.message != null){
-                        $scope.alert = error.message;
-                    }else if(error.result != null){
-                        $scope.alert = error.result;
-                    }else $scope.alert = "Unable to process the request.";
+                $scope.alert = error.message;
+            }else if(error.result != null){
+                $scope.alert = error.result;
+            }
+            else
+                $scope.alert = "Unable to process the request. Please verify the request or contact our Administrator !!";
 
             $scope.alertnote = $scope.alert;
             $scope.showAlertToast();
-     }
+        }
 
 	$scope.showAlertToast = function() {
                var x = document.getElementById("alertbar");
@@ -138,7 +140,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                          showConfirmButton: false
                      });
 
-                     if(output.result == 'success'){
+                     if(output.result === 'success'){
                          $scope.getEnvsPaginated(1);
                          $scope.getSchemaRegEnvs();
                          $scope.getKafkaConnectEnvs();
@@ -312,14 +314,14 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.dismiss !== "cancel") {
                         $http({
                                 method: "POST",
                                 url: "deleteTenant",
                                 headers : { 'Content-Type' : 'application/json' }
                             }).success(function(output) {
                                 $scope.alert = "Delete Tenant Request : "+output.result;
-                                if(output.result=='success'){
+                                if(output.result==='success'){
                                     swal({
                                          title: "",
                                          text: "Delete Tenant Request : "+output.result,
@@ -378,7 +380,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 data: {'orgName' : orgName}
             }).success(function(output) {
                     $scope.alert = "Update Tenant Request : "+output.result;
-                    if(output.result=='success'){
+                    if(output.result==='success'){
                         swal({
                              title: "",
                              text: "Update Tenant Request : "+output.result,
@@ -418,7 +420,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     data: {'selectedTenantExtensionPeriod' : $scope.selectedTenantExtensionPeriod}
                 }).success(function(output) {
                         $scope.alert = "Update Tenant extension Request : "+output.result;
-                        if(output.result=='success'){
+                        if(output.result==='success'){
                             swal({
                                  title: "",
                                  text: "Update Tenant extension Request : "+output.result + ". You will hear from us very soon. Thank you !!",
@@ -557,7 +559,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 data: {'clusterId' : idval}
                             }).success(function(output) {
                                 $scope.alert = "Delete Cluster Request : "+output.result;
-                                if(output.result=='success'){
+                                if(output.result==='success'){
                                     swal({
                                          title: "",
                                          text: "Delete Cluster Request : "+output.result,
@@ -601,7 +603,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 data: {'envId' : idval}
                             }).success(function(output) {
                                 $scope.alert = "Delete Environment Request : "+output.result;
-                                if(output.result=='success'){
+                                if(output.result==='success'){
                                     swal({
                                          title: "",
                                          text: "Delete Environment Request : "+output.result,
@@ -717,7 +719,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             $scope.addNewCluster.envname = "";
                             $scope.addNewCluster.host = "";
                             $scope.addNewCluster.pubKeyFile = "";
-                            if(output.result=='success'){
+                            if(output.result==='success'){
                                 swal({
                                      title: "",
                                      text: "New cluster added : "+output.result,

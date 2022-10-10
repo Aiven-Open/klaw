@@ -4,10 +4,10 @@ import static io.aiven.klaw.model.MailType.ACL_DELETE_REQUESTED;
 import static io.aiven.klaw.model.MailType.ACL_REQUESTED;
 import static io.aiven.klaw.model.MailType.ACL_REQUEST_APPROVED;
 import static io.aiven.klaw.model.MailType.ACL_REQUEST_DENIED;
-import static io.aiven.klaw.service.KwConstants.RETRIEVE_SCHEMAS_KEY;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
@@ -15,19 +15,20 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
-import io.aiven.klaw.model.SyncAclUpdates;
-import io.aiven.klaw.model.SyncBackAcls;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
@@ -70,10 +71,10 @@ public class AclControllerService {
     this.mailService = mailService;
   }
 
-  public String createAcl(AclRequestsModel aclReq) {
+  public ApiResponse createAcl(AclRequestsModel aclReq) throws KlawException {
     log.info("createAcl {}", aclReq);
     String userDetails = getUserName();
-    aclReq.setAclType("Create");
+    aclReq.setAclType(RequestOperationType.CREATE.value);
     aclReq.setUsername(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -82,7 +83,7 @@ public class AclControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-      return "{\"result\":\"Not Authorized\"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     List<Topic> topics =
@@ -90,7 +91,7 @@ public class AclControllerService {
     boolean topicFound = false;
     String result;
 
-    if ("LITERAL".equals(aclReq.getAclPatternType())) {
+    if (AclPatternType.LITERAL.value.equals(aclReq.getAclPatternType())) {
       for (Topic topic : topics) {
         if (Objects.equals(topic.getEnvironment(), aclReq.getEnvironment())) {
           topicFound = true;
@@ -98,18 +99,20 @@ public class AclControllerService {
         }
       }
       result = "Failure : Topic not found on target environment.";
-      if (!topicFound) return "{\"result\":\"" + result + "\"}";
+      if (!topicFound) {
+        return ApiResponse.builder().result(result).build();
+      }
     }
 
-    if ("Consumer".equals(aclReq.getTopictype())) {
-      if ("PREFIXED".equals(aclReq.getAclPatternType())) {
+    if (AclType.CONSUMER.value.equals(aclReq.getTopictype())) {
+      if (AclPatternType.PREFIXED.value.equals(aclReq.getAclPatternType())) {
         result = "Failure : Please change the pattern to LITERAL for topic type.";
-        return "{\"result\":\"" + result + "\"}";
+        return ApiResponse.builder().result(result).build();
       }
       if (validateTeamConsumerGroup(
           aclReq.getRequestingteam(), aclReq.getConsumergroup(), tenantId)) {
         result = "Failure : Consumer group " + aclReq.getConsumergroup() + " used by another team.";
-        return "{\"result\":\"" + result + "\"}";
+        return ApiResponse.builder().result(result).build();
       }
     }
 
@@ -122,12 +125,14 @@ public class AclControllerService {
     AclRequests aclRequestsDao = new AclRequests();
     copyProperties(aclReq, aclRequestsDao);
     StringBuilder aclStr = new StringBuilder();
-    String seperatorAcl = "<ACL>";
+    String separatorAcl = "<ACL>";
     if (aclReq.getAcl_ip() != null) {
       for (int i = 0; i < aclReq.getAcl_ip().size(); i++) {
         if (i == 0) {
           aclStr.append(aclReq.getAcl_ip().get(i));
-        } else aclStr = new StringBuilder(aclStr + seperatorAcl + aclReq.getAcl_ip().get(i));
+        } else {
+          aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ip().get(i));
+        }
       }
       aclRequestsDao.setAcl_ip(aclStr.toString());
     }
@@ -136,199 +141,35 @@ public class AclControllerService {
       for (int i = 0; i < aclReq.getAcl_ssl().size(); i++) {
         if (i == 0) {
           aclStr.append(aclReq.getAcl_ssl().get(i));
-        } else aclStr = new StringBuilder(aclStr + seperatorAcl + aclReq.getAcl_ssl().get(i));
+        } else {
+          aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ssl().get(i));
+        }
       }
       aclRequestsDao.setAcl_ssl(aclStr.toString());
     }
 
-    if (aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null"))
+    if (aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null")) {
       aclRequestsDao.setAcl_ssl("User:*");
+    }
 
     aclRequestsDao.setTenantId(tenantId);
-    String execRes =
-        manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
-
-    if ("success".equals(execRes)) {
-      mailService.sendMail(
-          aclReq.getTopicname(),
-          aclReq.getTopictype(),
-          "",
-          userDetails,
-          manageDatabase.getHandleDbRequests(),
-          ACL_REQUESTED,
-          commonUtilsService.getLoginUrl());
-    }
-    return "{\"result\":\"" + execRes + "\"}";
-  }
-
-  public Map<String, String> updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) {
-    log.info("updateSyncAcls {}", syncAclUpdates);
-    String userDetails = getUserName();
-    Map<String, String> response = new HashMap<>();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
-      response.put("result", "Not Authorized.");
-      return response;
-    }
-
-    List<Acl> listTopics = new ArrayList<>();
-    Acl t;
-
-    if (syncAclUpdates != null && syncAclUpdates.size() > 0) {
-
-      Map<String, SyncAclUpdates> stringSyncAclUpdatesHashMap = new HashMap<>();
-
-      // remove duplicates
-      for (SyncAclUpdates syncAclUpdateItem : syncAclUpdates) {
-        stringSyncAclUpdatesHashMap.remove(syncAclUpdateItem.getSequence());
-        stringSyncAclUpdatesHashMap.put(syncAclUpdateItem.getSequence(), syncAclUpdateItem);
-      }
-
-      for (Map.Entry<String, SyncAclUpdates> stringSyncAclUpdatesEntry :
-          stringSyncAclUpdatesHashMap.entrySet()) {
-        SyncAclUpdates syncAclUpdateItem = stringSyncAclUpdatesEntry.getValue();
-
-        // tenant filtering
-        if (!getEnvsFromUserId(userDetails).contains(syncAclUpdateItem.getEnvSelected())) {
-          response.put("result", "Not Authorized.");
-          return response;
-        }
-
-        t = new Acl();
-
-        if (syncAclUpdateItem.getReq_no() != null)
-          t.setReq_no(Integer.parseInt(syncAclUpdateItem.getReq_no()));
-        t.setTopicname(syncAclUpdateItem.getTopicName());
-        t.setConsumergroup(syncAclUpdateItem.getConsumerGroup());
-        t.setAclip(syncAclUpdateItem.getAclIp());
-        t.setAclssl(syncAclUpdateItem.getAclSsl());
-        t.setTeamId(
-            manageDatabase.getTeamIdFromTeamName(tenantId, syncAclUpdateItem.getTeamSelected()));
-        t.setEnvironment(syncAclUpdateItem.getEnvSelected());
-        t.setTopictype(syncAclUpdateItem.getAclType());
-        t.setAclPatternType("LITERAL");
-        t.setTenantId(tenantId);
-
-        listTopics.add(t);
-      }
-    } else {
-      response.put("result", "No record updated.");
-      return response;
-    }
-
     try {
-      if (listTopics.size() > 0) {
-        response.put("result", manageDatabase.getHandleDbRequests().addToSyncacls(listTopics));
+      String execRes =
+          manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
+
+      if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
+        mailService.sendMail(
+            aclReq.getTopicname(),
+            aclReq.getTopictype(),
+            "",
+            userDetails,
+            manageDatabase.getHandleDbRequests(),
+            ACL_REQUESTED,
+            commonUtilsService.getLoginUrl());
       }
+      return ApiResponse.builder().result(execRes).build();
     } catch (Exception e) {
-      log.error("Exception:", e);
-      response.put("result", "Failure." + e);
-    }
-    return response;
-  }
-
-  public Map<String, List<String>> updateSyncBackAcls(SyncBackAcls syncBackAcls) {
-    log.info("updateSyncBackAcls {}", syncBackAcls);
-    Map<String, List<String>> resultMap = new HashMap<>();
-
-    List<String> logArray = new ArrayList<>();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-
-    logArray.add(
-        "Source Environment " + getEnvDetails(syncBackAcls.getSourceEnv(), tenantId).getName());
-    logArray.add(
-        "Target Environment " + getEnvDetails(syncBackAcls.getTargetEnv(), tenantId).getName());
-    logArray.add("Type of Sync " + syncBackAcls.getTypeOfSync());
-
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-      List<String> notAuth = new ArrayList<>();
-      notAuth.add("Not Authorized");
-      resultMap.put("result", notAuth);
-      return resultMap;
-    }
-
-    List<String> resultStatus = new ArrayList<>();
-    resultStatus.add("success");
-
-    resultMap.put("result", resultStatus);
-
-    if ("SELECTED_ACLS".equals(syncBackAcls.getTypeOfSync())) {
-      for (String aclId : syncBackAcls.getAclIds()) {
-        Acl acl =
-            manageDatabase
-                .getHandleDbRequests()
-                .selectSyncAclsFromReqNo(Integer.parseInt(aclId), tenantId);
-        if (acl != null) {
-          approveSyncBackAcls(syncBackAcls, resultMap, logArray, acl, tenantId);
-        }
-      }
-    } else {
-      List<Acl> acls =
-          manageDatabase.getHandleDbRequests().getSyncAcls(syncBackAcls.getSourceEnv(), tenantId);
-      for (Acl acl : acls) {
-        approveSyncBackAcls(syncBackAcls, resultMap, logArray, acl, tenantId);
-      }
-    }
-
-    resultMap.put("syncbacklog", logArray);
-
-    return resultMap;
-  }
-
-  private void approveSyncBackAcls(
-      SyncBackAcls syncBackAcls,
-      Map<String, List<String>> resultMap,
-      List<String> logUpdateSyncBackTopics,
-      Acl aclFound,
-      int tenantId) {
-    try {
-      AclRequests aclReq = new AclRequests();
-      copyProperties(aclFound, aclReq);
-      aclReq.setReq_no(null);
-      aclReq.setAcl_ip(aclFound.getAclip());
-      aclReq.setAcl_ssl(aclFound.getAclssl());
-      aclReq.setEnvironment(syncBackAcls.getTargetEnv());
-      aclReq.setRequestingteam(aclFound.getTeamId());
-      aclReq.setAclType("Create");
-      aclReq.setUsername(getUserName());
-      aclReq.setTenantId(tenantId);
-
-      ResponseEntity<Map<String, String>> response =
-          clusterApiService.approveAclRequests(aclReq, tenantId);
-
-      Map<String, String> responseBody = response.getBody();
-      String resultAclReq = responseBody.get("result");
-      String resultAclNullCheck = Objects.requireNonNull(responseBody).get("result");
-      if (!Objects.requireNonNull(resultAclNullCheck).contains("success")) {
-        log.error("Error in creating acl {} {}", aclFound, responseBody);
-        logUpdateSyncBackTopics.add(
-            "Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclReq);
-      } else if (resultAclReq.contains("Acl already exists")) {
-        logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
-      } else {
-        if (!Objects.equals(syncBackAcls.getSourceEnv(), syncBackAcls.getTargetEnv())) {
-          logUpdateSyncBackTopics.add("Acl added: " + aclFound.getTopicname());
-          // Create request
-          Map<String, String> resultMapReq =
-              manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
-          if (resultMapReq.containsKey("aclId")) {
-            Integer aclId = Integer.parseInt(resultMapReq.get("aclId"));
-            aclReq.setReq_no(aclId);
-            // Approve request
-            String emptyJsonParams = "{}";
-            manageDatabase
-                .getHandleDbRequests()
-                .updateAclRequest(aclReq, getUserName(), emptyJsonParams);
-          }
-        }
-      }
-    } catch (KlawException e) {
-      log.error("Error in creating acl {} {}", e.getMessage(), aclFound);
-      List<String> resultStatus = new ArrayList<>();
-      resultStatus.add("Error :" + e.getMessage());
-      resultMap.put("result", resultStatus);
+      throw new KlawException(e.getMessage());
     }
   }
 
@@ -410,7 +251,7 @@ public class AclControllerService {
     if (topicTeamsList.size() > 0) {
       Integer teamId = getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
-      if ("Delete".equals(aclType)) teamId = team;
+      if (RequestOperationType.DELETE.value.equals(aclType)) teamId = team;
       List<UserInfo> userList =
           manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId);
 
@@ -420,8 +261,9 @@ public class AclControllerService {
 
       for (UserInfo userInfo : userList) {
         if (approverRoles.contains(userInfo.getRole())
-            && !Objects.equals(requestor, userInfo.getUsername()))
+            && !Objects.equals(requestor, userInfo.getUsername())) {
           approvingInfo.append(userInfo.getUsername()).append(",");
+        }
       }
       return String.valueOf(approvingInfo);
     }
@@ -509,16 +351,17 @@ public class AclControllerService {
 
     // get requests relevant to your teams or all teams
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS))
+        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedAclRequestsByStatus(userDetails, requestsType, false, tenantId);
-    else
+    } else {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedAclRequestsByStatus(userDetails, requestsType, true, tenantId);
+    }
 
     // tenant filtering
     List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
@@ -542,32 +385,32 @@ public class AclControllerService {
     return aclRequestsModels;
   }
 
-  public String deleteAclRequests(String req_no) {
+  public ApiResponse deleteAclRequests(String req_no) throws KlawException {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-        return "{\"result\":\" Not Authorized. \"}";
+        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
       }
       log.info("deleteAclRequests {}", req_no);
-      return "{\"result\":\""
-          + manageDatabase
+      String result =
+          manageDatabase
               .getHandleDbRequests()
               .deleteAclRequest(
-                  Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()))
-          + "\"}";
+                  Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
+      return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception ", e);
-      return "{\"result\":\"failure " + e.toString() + "\"}";
+      throw new KlawException(e.getMessage());
     }
   }
 
   // this will create a delete subscription request
-  public String createDeleteAclSubscriptionRequest(String req_no) {
+  public ApiResponse createDeleteAclSubscriptionRequest(String req_no) throws KlawException {
     log.info("createDeleteAclSubscriptionRequest {}", req_no);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
-      return "{\"result\":\" Not Authorized. \"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -576,8 +419,9 @@ public class AclControllerService {
         dbHandle.selectSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
-    if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment()))
-      return "{\"result\":\"failure\"}";
+    if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
+      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    }
 
     AclRequests aclReq = new AclRequests();
 
@@ -586,12 +430,12 @@ public class AclControllerService {
     aclReq.setAcl_ssl(acl.getAclssl());
 
     aclReq.setUsername(userDetails);
-    aclReq.setAclType("Delete");
+    aclReq.setAclType(RequestOperationType.DELETE.value);
     aclReq.setOtherParams(req_no);
     aclReq.setJsonParams(acl.getJsonParams());
     String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq).get("result");
 
-    if ("success".equals(execRes)) {
+    if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
       mailService.sendMail(
           aclReq.getTopicname(),
           aclReq.getTopictype(),
@@ -601,36 +445,40 @@ public class AclControllerService {
           ACL_DELETE_REQUESTED,
           commonUtilsService.getLoginUrl());
     }
-    return "{\"result\":\"" + execRes + "\"}";
+    return ApiResponse.builder().result(execRes).build();
   }
 
-  public String approveAclRequests(String req_no) throws KlawException {
+  public ApiResponse approveAclRequests(String req_no) throws KlawException {
     log.info("approveAclRequests {}", req_no);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return "{\"result\":\" Not Authorized. \"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
-    if (Objects.equals(aclReq.getUsername(), userDetails))
-      return "{\"result\":\"You are not allowed to approve your own subscription requests.\"}";
+    if (Objects.equals(aclReq.getUsername(), userDetails)) {
+      return ApiResponse.builder()
+          .result("You are not allowed to approve your own subscription requests.")
+          .build();
+    }
 
     if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
-      return "{\"result\":\"This request does not exist anymore.\"}";
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     String allIps = aclReq.getAcl_ip();
     String allSsl = aclReq.getAcl_ssl();
     if (aclReq.getReq_no() != null) {
-      ResponseEntity<Map<String, String>> response = null;
+      ResponseEntity<ApiResponse> response = null;
       if (aclReq.getAcl_ip() != null) {
         String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
         for (String s : aclListIp) {
@@ -648,21 +496,27 @@ public class AclControllerService {
       // set back all ips, principles
       aclReq.setAcl_ip(allIps);
       aclReq.setAcl_ssl(allSsl);
-
       String updateAclReqStatus;
 
       try {
-        Map<String, String> responseBody = response.getBody();
-        if (Objects.requireNonNull(Objects.requireNonNull(responseBody).get("result"))
-            .contains("success")) {
+        ApiResponse responseBody = Objects.requireNonNull(response).getBody();
+        if (Objects.requireNonNull(responseBody)
+            .getResult()
+            .contains(ApiResultStatus.SUCCESS.value)) {
           String jsonParams = "", aivenAclIdKey = "aivenaclid";
-          if (responseBody.containsKey(aivenAclIdKey))
-            jsonParams = "{\"" + aivenAclIdKey + "\":\"" + responseBody.get(aivenAclIdKey) + "\"}";
+          if (responseBody.getData() instanceof Map) {
+            Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
+            if (dataMap.containsKey(aivenAclIdKey)) {
+              jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+            }
+          }
           updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
-        } else return "{\"result\":\"failure\"}";
+        } else {
+          return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        }
       } catch (Exception e) {
         log.error("Exception ", e);
-        return "{\"result\":\"failure " + e.toString() + "\"}";
+        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
       }
 
       mailService.sendMail(
@@ -673,17 +527,20 @@ public class AclControllerService {
           dbHandle,
           ACL_REQUEST_APPROVED,
           commonUtilsService.getLoginUrl());
-      return "{\"result\":\"" + updateAclReqStatus + "\"}";
-    } else return "{\"result\":\"Record not found !\"}";
+      return ApiResponse.builder().result(updateAclReqStatus).build();
+    } else {
+      return ApiResponse.builder().result("Record not found !").build();
+    }
   }
 
-  public String declineAclRequests(String req_no, String reasonToDecline) {
+  public ApiResponse declineAclRequests(String req_no, String reasonToDecline)
+      throws KlawException {
     log.info("declineAclRequests {}", req_no);
 
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return "{\"result\":\" Not Authorized. \"}";
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -691,12 +548,13 @@ public class AclControllerService {
         dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
     if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
-      return "{\"result\":\"This request does not exist anymore.\"}";
+      return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment()))
-      return "{\"result\":\"Not Authorized\"}";
+    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     String updateAclReqStatus;
 
@@ -712,74 +570,23 @@ public class AclControllerService {
             ACL_REQUEST_DENIED,
             commonUtilsService.getLoginUrl());
 
-        return "{\"result\":\"" + updateAclReqStatus + "\"}";
+        return ApiResponse.builder().result(updateAclReqStatus).build();
       } catch (Exception e) {
-        return "{\"result\":\"failure " + e.toString() + "\"}";
+        log.error(e.getMessage());
+        throw new KlawException(e.getMessage());
       }
-    } else return "{\"result\":\"Record not found !\"}";
-  }
-
-  private List<Map<String, String>> getAclListFromCluster(
-      String bootstrapHost,
-      Env envSelected,
-      String protocol,
-      String clusterName,
-      String topicNameSearch,
-      int tenantId)
-      throws KlawException {
-    List<Map<String, String>> aclList;
-    aclList =
-        clusterApiService.getAcls(bootstrapHost, envSelected, protocol, clusterName, tenantId);
-    return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
-  }
-
-  private List<Map<String, String>> updateConsumerGroups(
-      List<Map<String, String>> groupedList, List<Map<String, String>> clusterAclList) {
-    List<Map<String, String>> updateList = new ArrayList<>(groupedList);
-
-    for (Map<String, String> hMapGroupItem : groupedList) {
-      for (Map<String, String> hMapItem : clusterAclList) {
-        if ("READ".equals(hMapGroupItem.get("operation"))
-            && "READ".equals(hMapItem.get("operation"))
-            && "GROUP".equals(hMapItem.get("resourceType"))) {
-          if (Objects.equals(hMapItem.get("host"), hMapGroupItem.get("host"))
-              && Objects.equals(hMapItem.get("principle"), hMapGroupItem.get("principle"))) {
-            Map<String, String> hashMap = new HashMap<>(hMapGroupItem);
-            hashMap.put("consumerGroup", hMapItem.get("resourceName"));
-            updateList.add(hashMap);
-            break;
-          }
-        }
-      }
+    } else {
+      return ApiResponse.builder().result("Record not found !").build();
     }
-    return updateList;
-  }
-
-  private List<Map<String, String>> groupAcls(
-      List<Map<String, String>> aclList, String topicNameSearch, boolean isSync) {
-
-    return aclList.stream()
-        .filter(
-            hItem -> {
-              if (isSync) {
-                if (topicNameSearch != null) {
-                  return "TOPIC".equals(hItem.get("resourceType"))
-                      && hItem.get("resourceName").contains(topicNameSearch);
-                } else return "TOPIC".equals(hItem.get("resourceType"));
-              } else {
-                return Objects.equals(hItem.get("resourceName"), topicNameSearch);
-              }
-            })
-        .collect(Collectors.toList());
   }
 
   private List<Acl> getAclsFromSOT(
       String env, String topicNameSearch, boolean regex, int tenantId) {
     List<Acl> aclsFromSOT;
-    if (!regex)
+    if (!regex) {
       aclsFromSOT =
           manageDatabase.getHandleDbRequests().getSyncAcls(env, topicNameSearch, tenantId);
-    else {
+    } else {
       aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env, tenantId);
       List<Acl> topicFilteredList = aclsFromSOT;
       // Filter topics on topic name for search
@@ -800,8 +607,9 @@ public class AclControllerService {
       String topicSearch, List<Topic> topics, int tenantId) {
     Map<String, String> hashMap = new HashMap<>();
     try {
-      if (topics == null)
+      if (topics == null) {
         topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
+      }
 
       hashMap.put("topicName", topicSearch);
 
@@ -813,7 +621,6 @@ public class AclControllerService {
 
         // tenant filtering
         String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
-
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
         String lastEnv = envList.get(envList.size() - 1);
@@ -822,7 +629,7 @@ public class AclControllerService {
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
           hashMap.put("status", "NO_PROMOTION"); // PRD
         } else {
-          hashMap.put("status", "success");
+          hashMap.put("status", ApiResultStatus.SUCCESS.value);
           hashMap.put("sourceEnv", lastEnv);
           String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
           hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
@@ -833,7 +640,7 @@ public class AclControllerService {
       }
     } catch (Exception e) {
       log.error("getTopicPromotionEnv {}", e.getMessage());
-      hashMap.put("status", "failure");
+      hashMap.put("status", ApiResultStatus.FAILURE.value);
       hashMap.put("error", "Topic does not exist in any environment.");
     }
 
@@ -844,11 +651,12 @@ public class AclControllerService {
     // tenant filtering
     try {
       List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null)
+      if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
                 .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
+      }
     } catch (Exception exception) {
       log.error("No environments/clusters found.");
       return new ArrayList<>();
@@ -861,14 +669,14 @@ public class AclControllerService {
     String userDetails = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    String retrieveSchemasStr = manageDatabase.getKwPropertyValue(RETRIEVE_SCHEMAS_KEY, tenantId);
-    boolean retrieveSchemas = "true".equals(retrieveSchemasStr);
 
-    if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
-    else return null;
+    if (topicNameSearch != null) {
+      topicNameSearch = topicNameSearch.trim();
+    } else {
+      return null;
+    }
 
     Integer loggedInUserTeam = getMyTeamId(userDetails);
-
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
 
     // tenant filtering
@@ -883,7 +691,9 @@ public class AclControllerService {
     if (topics.size() == 0) {
       topicOverview.setTopicExists(false);
       return topicOverview;
-    } else topicOverview.setTopicExists(true);
+    } else {
+      topicOverview.setTopicExists(true);
+    }
 
     String syncCluster;
     String[] reqTopicsEnvs;
@@ -921,7 +731,8 @@ public class AclControllerService {
 
       if (topic.getHistory() != null) {
         try {
-          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), ArrayList.class);
+          topicHistoryFromTopic =
+              OBJECT_MAPPER.readValue(topic.getHistory(), new TypeReference<>() {});
           topicHistoryList.addAll(topicHistoryFromTopic);
         } catch (JsonProcessingException e) {
           log.error("Unable to parse topicHistory");
@@ -961,7 +772,9 @@ public class AclControllerService {
               .collect(Collectors.groupingBy(AclInfo::getTopicname))
               .get(topicNameSearch);
 
-      if (tmpAcl != null) aclInfo.addAll(tmpAcl);
+      if (tmpAcl != null) {
+        aclInfo.addAll(tmpAcl);
+      }
 
       allPrefixedAcls = handleDb.getPrefixedAclsSOT(topicInfo.getClusterId(), tenantId);
       if (allPrefixedAcls != null && allPrefixedAcls.size() > 0) {
@@ -982,7 +795,6 @@ public class AclControllerService {
     }
 
     aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
-
     List<AclInfo> transactionalAcls =
         aclInfo.stream()
             .filter(aclRec -> aclRec.getTransactionalId() != null)
@@ -1101,7 +913,8 @@ public class AclControllerService {
               schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
             }
           } else {
-            hashMapSchemaObj = schemaObjects.get(Integer.parseInt(schemaVersionSearch));
+            hashMapSchemaObj =
+                schemaObjects.get(Integer.parseInt(Objects.requireNonNull(schemaVersionSearch)));
             schemaOfObj = (String) hashMapSchemaObj.get("schema");
             schemaMap.put("isLatest", "false");
             schemaMap.put("id", hashMapSchemaObj.get("id") + "");
@@ -1139,74 +952,6 @@ public class AclControllerService {
     }
   }
 
-  public List<AclInfo> getSyncAcls(
-      String env, String pageNo, String currentPage, String topicNameSearch, String showAllAcls)
-      throws KlawException {
-    log.info(
-        "getSyncAcls env: {} topicNameSearch: {} showAllAcls:{}",
-        env,
-        topicNameSearch,
-        showAllAcls);
-    boolean isReconciliation = !Boolean.parseBoolean(showAllAcls);
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-
-    if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
-
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS))
-      return null;
-
-    List<Map<String, String>> aclList;
-
-    Env envSelected = getEnvDetails(env, tenantId);
-    KwClusters kwClusters =
-        manageDatabase
-            .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-            .get(envSelected.getClusterId());
-    aclList =
-        getAclListFromCluster(
-            kwClusters.getBootstrapServers(),
-            envSelected,
-            kwClusters.getProtocol(),
-            kwClusters.getClusterName(),
-            topicNameSearch,
-            tenantId);
-
-    List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true, tenantId);
-
-    topicCounter = 0;
-    return getAclsList(
-        pageNo,
-        currentPage,
-        applyFiltersAcls(
-            env, aclList, aclsFromSOT, isReconciliation, tenantId, kwClusters.getKafkaFlavor()));
-  }
-
-  public List<AclInfo> getSyncBackAcls(
-      String envId, String pageNo, String currentPage, String topicNameSearch, String teamName) {
-    log.info("getSyncBackAcls {} {} {} {}", envId, pageNo, topicNameSearch, teamName);
-    if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
-
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) return null;
-
-    List<Acl> aclsFromSOT;
-
-    if (topicNameSearch != null && topicNameSearch.trim().length() > 0)
-      aclsFromSOT = getAclsFromSOT(envId, topicNameSearch, false, tenantId);
-    else aclsFromSOT = getAclsFromSOT(envId, topicNameSearch, true, tenantId);
-
-    List<AclInfo> aclInfoList;
-    Integer loggedInUserTeam = getMyTeamId(getUserName());
-
-    aclInfoList =
-        getAclsList(
-            pageNo, currentPage, applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId));
-
-    return aclInfoList;
-  }
-
   private List<AclInfo> applyFiltersAclsForSOT(
       Integer loggedInUserTeam, List<Acl> aclsFromSOT, int tenantId) {
 
@@ -1232,145 +977,6 @@ public class AclControllerService {
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) aclList.add(mp);
     }
     return aclList;
-  }
-
-  private List<AclInfo> applyFiltersAcls(
-      String env,
-      List<Map<String, String>> aclList,
-      List<Acl> aclsFromSOT,
-      boolean isReconciliation,
-      int tenantId,
-      String kafkaFlavor) {
-
-    List<AclInfo> aclListMap = new ArrayList<>();
-    List<String> teamList = new ArrayList<>();
-    teamList = tenantFiltering(teamList);
-
-    for (Map<String, String> aclListItem : aclList) {
-      AclInfo mp = new AclInfo();
-      mp.setEnvironment(env);
-
-      mp.setPossibleTeams(teamList);
-      mp.setTeamname("");
-
-      String tmpPermType = aclListItem.get("operation");
-
-      if ("WRITE".equals(tmpPermType)) mp.setTopictype("Producer");
-      else if ("READ".equals(tmpPermType)) {
-        mp.setTopictype("Consumer");
-        if (aclListItem.get("consumerGroup") != null)
-          mp.setConsumergroup(aclListItem.get("consumerGroup"));
-        else continue;
-      }
-
-      if ("topic".equalsIgnoreCase(aclListItem.get("resourceType")))
-        mp.setTopicname(aclListItem.get("resourceName"));
-
-      mp.setAcl_ip(aclListItem.get("host"));
-      mp.setAcl_ssl(aclListItem.get("principle"));
-
-      for (Acl aclSotItem : aclsFromSOT) {
-        String acl_ssl = aclSotItem.getAclssl();
-        String acl_host = aclSotItem.getAclip();
-
-        if (acl_ssl == null || acl_ssl.equals("")) acl_ssl = "User:*";
-        else {
-          if (!KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kafkaFlavor)
-              && !"User:*".equals(acl_ssl)
-              && !acl_ssl.startsWith("User:")) {
-            acl_ssl = "User:" + acl_ssl;
-          }
-        }
-
-        if (acl_host == null || acl_host.equals("")) acl_host = "*";
-
-        if (aclSotItem.getTopicname() != null
-            && Objects.equals(aclListItem.get("resourceName"), aclSotItem.getTopicname())
-            && Objects.equals(aclListItem.get("host"), acl_host)
-            && Objects.equals(aclListItem.get("principle"), acl_ssl)
-            && Objects.equals(aclSotItem.getTopictype(), mp.getTopictype())) {
-          mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
-          mp.setReq_no(aclSotItem.getReq_no() + "");
-          break;
-        }
-      }
-
-      if (mp.getTeamname() == null) mp.setTeamname("Unknown");
-
-      if (isReconciliation) {
-        if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) aclListMap.add(mp);
-      } else {
-        if (teamList.contains(mp.getTeamname())) aclListMap.add(mp);
-        else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname()))
-          aclListMap.add(mp);
-      }
-    }
-    return aclListMap;
-  }
-
-  private List<String> tenantFiltering(List<String> teamList) {
-    if (!commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)
-        || !commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)
-        || !commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)
-        || !commonUtilsService.isNotAuthorizedUser(
-            getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
-      // tenant filtering
-      int tenantId = commonUtilsService.getTenantId(getUserName());
-
-      List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
-
-      teams =
-          teams.stream()
-              .filter(t -> Objects.equals(t.getTenantId(), tenantId))
-              .collect(Collectors.toList());
-      List<String> teamListUpdated = new ArrayList<>();
-      for (Team teamsItem : teams) {
-        teamListUpdated.add(teamsItem.getTeamname());
-      }
-      teamList = teamListUpdated;
-    }
-    return teamList;
-  }
-
-  private List<AclInfo> getAclsList(String pageNo, String currentPage, List<AclInfo> aclListMap) {
-    List<AclInfo> aclListMapUpdated = new ArrayList<>();
-
-    int totalRecs = aclListMap.size();
-    int recsPerPage = 20;
-    int totalPages =
-        aclListMap.size() / recsPerPage + (aclListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < totalRecs; i++) {
-      int counterInc = counterIncrement();
-      if (i >= startVar && i < lastVar) {
-        AclInfo mp = aclListMap.get(i);
-        mp.setSequence(counterInc + "");
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setCurrentPage(pageNo);
-        mp.setAllPageNos(numList);
-
-        aclListMapUpdated.add(mp);
-      }
-    }
-    return aclListMapUpdated;
-  }
-
-  private int topicCounter = 0;
-
-  private int counterIncrement() {
-    topicCounter++;
-    return topicCounter;
   }
 
   private String getUserName() {

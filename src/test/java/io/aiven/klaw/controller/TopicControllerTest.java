@@ -11,6 +11,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.model.AclPatternType;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
@@ -27,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -69,9 +73,9 @@ public class TopicControllerTest {
   public void createTopics() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    Map<String, String> resMap = new HashMap<>();
-    resMap.put("result", "success");
-    when(topicControllerService.createTopicsRequest(any())).thenReturn(resMap);
+    ApiResponse apiResponse =
+        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    when(topicControllerService.createTopicsRequest(any())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -85,7 +89,7 @@ public class TopicControllerTest {
             .getContentAsString();
     Map<String, String> actualResult =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
-    assertThat(actualResult).containsEntry("result", "success");
+    assertThat(actualResult).containsEntry("result", ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -93,9 +97,8 @@ public class TopicControllerTest {
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncTopicUpdates);
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", "success");
-    when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(resultMap);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(apiResponse);
 
     String response =
         mvcSync
@@ -109,10 +112,9 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    Map<String, String> actualResult =
-        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
 
-    assertThat(actualResult).containsEntry("result", "success");
+    assertThat(actualResult.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -143,7 +145,8 @@ public class TopicControllerTest {
     String topicName = "testtopic";
     Map<String, String> teamMap = new HashMap<>();
     teamMap.put("team", "Team1");
-    when(topicControllerService.getTopicTeamOnly(topicName, "LITERAL")).thenReturn(teamMap);
+    when(topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL.value))
+        .thenReturn(teamMap);
 
     String res =
         mvc.perform(
@@ -184,7 +187,8 @@ public class TopicControllerTest {
   @Test
   @Order(6)
   public void deleteTopicRequests() throws Exception {
-    when(topicControllerService.deleteTopicRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    when(topicControllerService.deleteTopicRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -196,14 +200,17 @@ public class TopicControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(response).isEqualTo("success");
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(7)
   public void approveTopicRequests() throws Exception {
-    when(topicControllerService.approveTopicRequests(anyString())).thenReturn("success");
+    ApiResponse apiResponse =
+        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    when(topicControllerService.approveTopicRequests(anyString())).thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -216,14 +223,16 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).isEqualTo("success");
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(8)
   public void declineTopicRequests() throws Exception {
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
-        .thenReturn("success");
+        .thenReturn(apiResponse);
 
     String response =
         mvc.perform(
@@ -237,7 +246,8 @@ public class TopicControllerTest {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).isEqualTo("success");
+    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

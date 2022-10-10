@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import java.util.List;
 import java.util.Optional;
@@ -91,7 +92,7 @@ public class DeleteDataJdbc {
       topicReq.get().setConnectorStatus("deleted");
       kafkaConnectorRequestsRepo.save(topicReq.get());
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteTopicRequest(int topicId, int tenantId) {
@@ -106,7 +107,7 @@ public class DeleteDataJdbc {
       topicReq.get().setTopicstatus("deleted");
       topicRequestsRepo.save(topicReq.get());
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteTopic(int topicId, int tenantId) {
@@ -117,7 +118,7 @@ public class DeleteDataJdbc {
 
     Optional<Topic> topicReq = topicRepo.findById(topicID);
     topicReq.ifPresent(topic -> topicRepo.delete(topic));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteConnector(int topicId, int tenantId) {
@@ -128,7 +129,7 @@ public class DeleteDataJdbc {
 
     Optional<KwKafkaConnector> topicReq = kafkaConnectorRepo.findById(kwKafkaConnectorID);
     topicReq.ifPresent(topic -> kafkaConnectorRepo.delete(topic));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteSchemaRequest(int avroSchemaId, int tenantId) {
@@ -139,7 +140,7 @@ public class DeleteDataJdbc {
       schemaReq.get().setTopicstatus("deleted");
       schemaRequestRepo.save(schemaReq.get());
     }
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAclRequest(int aclId, int tenantId) {
@@ -153,7 +154,7 @@ public class DeleteDataJdbc {
       aclRequestsRepo.save(optAclRequests.get());
     }
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteEnvironment(String envId, int tenantId) {
@@ -166,8 +167,10 @@ public class DeleteDataJdbc {
     if (env.isPresent()) {
       //            env.get().setEnvExists("false");
       envRepo.delete(env.get());
-      return "success";
-    } else return "failure";
+      return ApiResultStatus.SUCCESS.value;
+    } else {
+      return ApiResultStatus.FAILURE.value;
+    }
   }
 
   public String deleteCluster(int clusterId, int tenantId) {
@@ -184,8 +187,10 @@ public class DeleteDataJdbc {
     if (kwClusterRepo.findById(kwClusterID).isPresent()) {
       kwClusterRepo.delete(clusters);
       envRepo.deleteAll(allAssociatedEnvs);
-      return "success";
-    } else return "failure";
+      return ApiResultStatus.SUCCESS.value;
+    } else {
+      return ApiResultStatus.FAILURE.value;
+    }
   }
 
   public String deleteUserRequest(String userId) {
@@ -193,7 +198,7 @@ public class DeleteDataJdbc {
     UserInfo user = new UserInfo();
     user.setUsername(userId);
     userInfoRepo.delete(user);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteTeamRequest(Integer teamId, int tenantId) {
@@ -203,7 +208,7 @@ public class DeleteDataJdbc {
     team.setTenantId(tenantId);
 
     teamRepo.delete(team);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   // the actual req of Acl stored in otherParams of AclReq
@@ -217,7 +222,7 @@ public class DeleteDataJdbc {
     Optional<Acl> acl = aclRepo.findById(aclID);
     acl.ifPresent(value -> aclRepo.delete(value));
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAclSubscriptionRequest(int req_no, int tenantId) {
@@ -229,7 +234,7 @@ public class DeleteDataJdbc {
     Optional<Acl> aclRec = aclRepo.findById(aclID);
     aclRec.ifPresent(acl -> aclRepo.delete(acl));
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public void deleteTopics(Topic topic) {
@@ -253,45 +258,45 @@ public class DeleteDataJdbc {
         kwRolesPermsRepo.findAllByRoleIdAndTenantId(roleId, tenantId);
     kwRolesPermsRepo.deleteAll(rolePerms);
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAllUsers(int tenantId) {
     userInfoRepo.deleteAll(userInfoRepo.findAllByTenantId(tenantId));
     registerInfoRepo.deleteAll(registerInfoRepo.findAllByTenantId(tenantId));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAllTeams(int tenantId) {
     teamRepo.deleteAll(teamRepo.findAllByTenantId(tenantId));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAllEnvs(int tenantId) {
     envRepo.deleteAll(envRepo.findAllByTenantId(tenantId));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAllClusters(int tenantId) {
     kwClusterRepo.deleteAll(kwClusterRepo.findAllByTenantId(tenantId));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAllRolesPerms(int tenantId) {
     kwRolesPermsRepo.deleteAll(kwRolesPermsRepo.findAllByTenantId(tenantId));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteAllKwProps(int tenantId) {
     kwPropertiesRepo.deleteAll(kwPropertiesRepo.findAllByTenantId(tenantId));
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteTenant(int tenantId) {
     KwTenants kwTenants = new KwTenants();
     kwTenants.setTenantId(tenantId);
     tenantRepo.delete(kwTenants);
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 
   public String deleteTxnData(int tenantId) {
@@ -307,6 +312,6 @@ public class DeleteDataJdbc {
     kafkaConnectorRepo.deleteAll(kafkaConnectorRepo.findAllByTenantId(tenantId));
     kafkaConnectorRequestsRepo.deleteAll(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
 
-    return "success";
+    return ApiResultStatus.SUCCESS.value;
   }
 }

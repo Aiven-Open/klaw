@@ -261,7 +261,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                             $scope.alert = "Topic Sync Request : "+output.result;
                             $scope.updatedSyncArray = [];
 
-                             if(output.result == 'success'){
+                             if(output.result === 'success'){
                               swal({
                             		   title: "",
                             		   text: "Topic Sync Request : "+output.result,
@@ -493,9 +493,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                             $scope.alertbulk = "Topic Sync Bulk Request : "+output.result;
                             $scope.updatedSyncArray = [];
 
-                             if(output.result == 'success'){
+                             if(output.result === 'success'){
                                 $scope.resetCheckBoxes();
-                                $scope.syncbulklog = output.syncbulklog;
+                                $scope.syncbulklog = output.data;
                                 $scope.alertbulk = $scope.alertbulk + ". Please verify logs below.";
 
                                 swal({

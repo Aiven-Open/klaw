@@ -3,6 +3,8 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.PermissionType;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,8 +29,11 @@ public class UiConfigControllerService {
 
   public Map<String, String> getDbAuth() {
     Map<String, String> dbMap = new HashMap<>();
-    if ("db".equals(authenticationType)) dbMap.put("dbauth", "true");
-    else dbMap.put("dbauth", "false");
+    if ("db".equals(authenticationType)) {
+      dbMap.put("dbauth", "true");
+    } else {
+      dbMap.put("dbauth", "false");
+    }
     return dbMap;
   }
 
@@ -43,16 +48,17 @@ public class UiConfigControllerService {
     List<ActivityLog> origActivityList;
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS))
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
               .selectActivityLog(userName, env, false, tenantId); // only your team reqs
-    else
+    } else {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
               .selectActivityLog(userName, env, true, tenantId); // all teams reqs
+    }
 
     return getActivityLogsPaginated(pageNo, origActivityList, currentPage, tenantId);
   }
@@ -101,31 +107,28 @@ public class UiConfigControllerService {
   public String getEnvName(String envId, String activityName, int tenantId) {
     Optional<Env> envFound;
 
-    if ("SchemaRequest".equals(activityName))
+    if ("SchemaRequest".equals(activityName)) {
       envFound =
           manageDatabase.getSchemaRegEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    else if ("ConnectorRequest".equals(activityName))
+    } else if ("ConnectorRequest".equals(activityName)) {
       envFound =
           manageDatabase.getKafkaConnectEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
-    else
+    } else {
       envFound =
           manageDatabase.getKafkaEnvList(tenantId).stream()
               .filter(env -> Objects.equals(env.getId(), envId))
               .findFirst();
+    }
 
     return envFound.map(Env::getName).orElse(null);
   }
 
-  public Map<String, String> sendMessageToAdmin(
-      String contactFormSubject, String contactFormMessage) {
+  public ApiResponse sendMessageToAdmin(String contactFormSubject, String contactFormMessage) {
     String userName = getUserName();
-
-    Map<String, String> hashMap = new HashMap<>();
-    hashMap.put("result", "success");
 
     contactFormMessage = "From " + userName + ":  \n" + contactFormMessage;
     mailService.sendMailToAdmin(
@@ -133,19 +136,11 @@ public class UiConfigControllerService {
         contactFormMessage,
         commonUtilsService.getTenantId(getUserName()),
         commonUtilsService.getLoginUrl());
-    return hashMap;
+    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
   }
 
   public List<String> getRequestTypeStatuses() {
     return manageDatabase.getRequestStatusList();
-    //        if(userType.equals("USER"))
-    //            return manageDatabase.getRequestStatusList();
-    //        else {
-    //            ArrayList<String> apprvrList = new
-    // ArrayList<>(manageDatabase.getRequestStatusList());
-    //            apprvrList.remove("deleted");
-    //            return apprvrList;
-    //        }
   }
 
   private Object getPrincipal() {

@@ -128,7 +128,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
 
                                         $scope.alert = "Connector Approve Request : "+output.result;
                                         $scope.getMyConnectorRequests(1, false);
-                                        if(output.result == 'success'){
+                                        if(output.result === 'success'){
                                             swal({
                                                  title: "",
                                                  text: "Connector Approve Request : "+output.result,
@@ -212,7 +212,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                                         $scope.showDeclinePanel = "false";
                                         $scope.topicForDecline = "";
                                         $scope.getMyConnectorRequests(1, false);
-                                        if(output.result == 'success'){
+                                        if(output.result === 'success'){
                                             swal({
                                                  title: "",
                                                  text: "Connector Decline Request : "+output.result,
