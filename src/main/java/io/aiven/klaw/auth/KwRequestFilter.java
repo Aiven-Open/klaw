@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -36,7 +37,7 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
 
   @Autowired KwAuthenticationService kwAuthenticationService;
 
-  @Autowired private AuthenticationManager authenticationManager;
+  @Lazy private AuthenticationManager authenticationManager;
 
   @Autowired private KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
 
@@ -44,7 +45,7 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
 
   @Override
   @Autowired
-  public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+  public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {
     super.setAuthenticationManager(authenticationManager);
   }
 

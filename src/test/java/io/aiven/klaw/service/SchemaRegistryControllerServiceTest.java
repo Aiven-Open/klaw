@@ -13,7 +13,7 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
@@ -45,7 +45,7 @@ public class SchemaRegistryControllerServiceTest {
 
   @Mock private UserDetails userDetails;
 
-  @Mock private HandleDbRequests handleDbRequests;
+  @Mock private HandleDbRequestsJdbc handleDbRequests;
 
   @Mock private MailUtils mailService;
 

@@ -12,7 +12,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.UserInfoModel;
 import java.sql.Timestamp;
@@ -39,7 +39,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UiConfigControllerServiceTest {
 
-  @Mock private HandleDbRequests handleDbRequests;
+  @Mock private HandleDbRequestsJdbc handleDbRequests;
 
   @Mock private ClusterApiService clusterApiService;
 

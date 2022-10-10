@@ -3,7 +3,6 @@ package io.aiven.klaw.config;
 import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.service.MailUtils;
 import java.util.*;
 import javax.naming.directory.Attributes;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +34,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Autowired private ManageDatabase manageTopics;
-
-  @Autowired private MailUtils utils;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -136,8 +133,8 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
     http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
   }
 
-  @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+  @Override
+  public void configure(AuthenticationManagerBuilder auth) throws Exception {
     if (authenticationType != null && authenticationType.equals("db")) {
       dbAuthentication(auth);
     } else if (authenticationType != null && authenticationType.equals("ldap")) {

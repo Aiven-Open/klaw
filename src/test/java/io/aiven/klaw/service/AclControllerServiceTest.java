@@ -19,7 +19,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
@@ -60,7 +60,7 @@ public class AclControllerServiceTest {
 
   @Mock private ClusterApiService clusterApiService;
 
-  @Mock private HandleDbRequests handleDbRequests;
+  @Mock private HandleDbRequestsJdbc handleDbRequests;
 
   @Mock private ManageDatabase manageDatabase;
 
