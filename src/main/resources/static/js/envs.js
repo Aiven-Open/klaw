@@ -74,6 +74,12 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
              }
 
+        $scope.showSuccessToast = function() {
+            var x = document.getElementById("successbar");
+            x.className = "show";
+            setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
+        }
+
         $scope.cancelRequest = function() {
             $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/envs";
         }
@@ -1049,6 +1055,23 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     $scope.alert = error;
                 }
             );
+        }
+
+        $scope.copyClusterIdToClipboard = function(clusterType, clusterName, clusterId) {
+            // Get the text field
+            let copyText = document.getElementById(clusterType + "" + clusterName + "" + clusterId);
+
+            // Select the text field
+            copyText.focus();
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // For mobile devices
+
+            // Copy the text inside the text field
+            navigator.clipboard.writeText(copyText.value.toLowerCase());
+
+            // Alert the copied text
+            $scope.alert = "Copied cluster id to clipboard: " + copyText.value.toLowerCase();
+            $scope.showSuccessToast();
         }
 
         $scope.refreshPage = function(){

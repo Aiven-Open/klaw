@@ -227,8 +227,7 @@ public class AclSyncControllerService {
       int tenantId)
       throws KlawException {
     List<Map<String, String>> aclList;
-    aclList =
-        clusterApiService.getAcls(bootstrapHost, envSelected, protocol, clusterName, tenantId);
+    aclList = clusterApiService.getAcls(bootstrapHost, envSelected, protocol, tenantId);
     return updateConsumerGroups(groupAcls(aclList, topicNameSearch, true), aclList);
   }
 

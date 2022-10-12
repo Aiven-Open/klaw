@@ -168,7 +168,11 @@ public class ClusterApiService {
   }
 
   String getKafkaClusterStatus(
-      String bootstrapHost, String protocol, String clusterName, String clusterType, int tenantId) {
+      String bootstrapHost,
+      String protocol,
+      String clusterIdentification,
+      String clusterType,
+      int tenantId) {
     log.debug("getKafkaClusterStatus {} {}", bootstrapHost, protocol);
     String clusterStatus;
     getClusterApiProperties(tenantId);
@@ -182,9 +186,7 @@ public class ClusterApiService {
               + "/"
               + protocol
               + "/"
-              + clusterName
-              + "-"
-              + tenantId
+              + clusterIdentification
               + "/"
               + clusterType;
 
@@ -200,7 +202,7 @@ public class ClusterApiService {
   public List<Map<String, String>> getConsumerOffsets(
       String bootstrapHost,
       String protocol,
-      String clusterName,
+      String clusterIdentification,
       String topic,
       String consumerGroupId,
       int tenantId)
@@ -217,9 +219,7 @@ public class ClusterApiService {
               + "/"
               + protocol
               + "/"
-              + clusterName
-              + "-"
-              + tenantId
+              + clusterIdentification
               + "/"
               + consumerGroupId
               + "/"
@@ -241,7 +241,7 @@ public class ClusterApiService {
   public Map<String, String> getTopicEvents(
       String bootstrapHost,
       String protocol,
-      String clusterName,
+      String clusterIdentification,
       String topic,
       String offsetId,
       String consumerGroupId,
@@ -260,9 +260,7 @@ public class ClusterApiService {
               + "/"
               + protocol
               + "/"
-              + clusterName
-              + "-"
-              + tenantId
+              + clusterIdentification
               + "/"
               + consumerGroupId
               + "/"
@@ -284,8 +282,7 @@ public class ClusterApiService {
   }
 
   public List<Map<String, String>> getAcls(
-      String bootstrapHost, Env envSelected, String protocol, String clusterName, int tenantId)
-      throws KlawException {
+      String bootstrapHost, Env envSelected, String protocol, int tenantId) throws KlawException {
     log.info("getAcls {} {} {}", bootstrapHost, protocol, tenantId);
     getClusterApiProperties(tenantId);
 
@@ -309,9 +306,8 @@ public class ClusterApiService {
                 + "/"
                 + protocol
                 + "/"
-                + clusterName
-                + "-"
-                + tenantId
+                + kwClusters.getClusterName()
+                + kwClusters.getClusterId()
                 + "/"
                 + kwClusters.getProjectName()
                 + "/"
@@ -326,9 +322,8 @@ public class ClusterApiService {
                 + "/"
                 + protocol
                 + "/"
-                + clusterName
-                + "-"
-                + tenantId
+                + kwClusters.getClusterName()
+                + kwClusters.getClusterId()
                 + "/"
                 + "na"
                 + "/"
@@ -348,7 +343,8 @@ public class ClusterApiService {
   }
 
   public List<Map<String, String>> getAllTopics(
-      String bootstrapHost, String protocol, String clusterName, int tenantId) throws Exception {
+      String bootstrapHost, String protocol, String clusterIdentification, int tenantId)
+      throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
     List<Map<String, String>> topicsList;
@@ -361,9 +357,7 @@ public class ClusterApiService {
               + "/"
               + protocol
               + "/"
-              + clusterName
-              + "-"
-              + tenantId;
+              + clusterIdentification;
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<Set<Map<String, String>>> s =
@@ -454,7 +448,7 @@ public class ClusterApiService {
           ClusterTopicRequest.builder()
               .env(kwClusters.getBootstrapServers())
               .protocol(kwClusters.getProtocol())
-              .clusterName(kwClusters.getClusterName() + "-" + tenantId)
+              .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
               .topicName(topicName)
               .build();
 
@@ -545,7 +539,7 @@ public class ClusterApiService {
                 .aclNativeType(AclsNativeType.NATIVE.name())
                 .env(kwClusters.getBootstrapServers())
                 .protocol(kwClusters.getProtocol())
-                .clusterName(kwClusters.getClusterName() + "-" + tenantId)
+                .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
                 .topicName(aclReq.getTopicname())
                 .consumerGroup(aclReq.getConsumergroup())
                 .aclType(aclReq.getTopictype())

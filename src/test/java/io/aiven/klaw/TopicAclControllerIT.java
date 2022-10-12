@@ -687,7 +687,7 @@ public class TopicAclControllerIT {
   @Test
   public void getAclsWithSearch() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
-    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyInt()))
         .thenReturn(aclInfo);
 
     String res =
@@ -712,7 +712,7 @@ public class TopicAclControllerIT {
   public void getAclsToBeSynced() throws Exception {
     List<Map<String, String>> aclInfo = utilMethods.getClusterAcls();
 
-    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyInt()))
         .thenReturn(aclInfo);
 
     String res =

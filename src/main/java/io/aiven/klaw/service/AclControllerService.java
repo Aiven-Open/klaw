@@ -1018,22 +1018,15 @@ public class AclControllerService {
     List<Map<String, String>> consumerOffsetInfoList = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
-      String bootstrapHost =
+      KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-              .get(getEnvDetails(envId, tenantId).getClusterId())
-              .getBootstrapServers();
+              .get(getEnvDetails(envId, tenantId).getClusterId());
       consumerOffsetInfoList =
           clusterApiService.getConsumerOffsets(
-              bootstrapHost,
-              manageDatabase
-                  .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                  .get(getEnvDetails(envId, tenantId).getClusterId())
-                  .getProtocol(),
-              manageDatabase
-                  .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                  .get(getEnvDetails(envId, tenantId).getClusterId())
-                  .getClusterName(),
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
               topicName,
               consumerGroupId,
               tenantId);

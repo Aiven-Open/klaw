@@ -495,7 +495,6 @@
 
 										<td> {{ allenv.protocol}} </td>
 
-
 										<td ng-show="allenv.clusterType == 'kafka'" >
 											<span class="badge badge-success">{{ allenv.clusterType }}</span></td>
 
@@ -519,6 +518,13 @@
 												</button>
 											</a>
 
+											<input type="text" value="{{ allenv.clusterName }}{{ allenv.clusterId }}" id="kafka{{ allenv.clusterName }}{{ allenv.clusterId }}" ng-show="false">
+
+											<button type="button" ng-click="copyClusterIdToClipboard('kafka', allenv.clusterName, allenv.clusterId)"
+													class="btn btn-sm btn-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ allenv.clusterName }}{{ allenv.clusterId }} Cluster id to setup connectivity">
+												<i class="fa fa-clipboard"></i>
+											</button>
+
 											<button ng-show="allenv.showDeleteCluster == true" type="button" ng-click="deleteCluster(allenv.clusterId)"
 													class="btn btn-sm btn-outline-danger btn-circle">
 												<i class="fas fa-times"></i>
@@ -533,6 +539,13 @@
 												</button>
 											</a>
 
+											<input type="text" value="{{ allenv.clusterName }}{{ allenv.clusterId }}" id="sr{{ allenv.clusterName }}{{ allenv.clusterId }}" ng-show="false">
+
+											<button type="button" ng-click="copyClusterIdToClipboard('sr', allenv.clusterName, allenv.clusterId)"
+													class="btn btn-sm btn-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ allenv.clusterName }}{{ allenv.clusterId }} Cluster id to setup connectivity">
+												<i class="fa fa-clipboard"></i>
+											</button>
+
 											<button ng-show="allenv.showDeleteCluster == true" type="button" ng-click="deleteCluster(allenv.clusterId)"
 													class="btn btn-sm btn-outline-danger btn-circle">
 												<i class="fas fa-times"></i>
@@ -546,6 +559,13 @@
 													<i class="fas fa-edit"></i>
 												</button>
 											</a>
+
+											<input type="text" value="{{ allenv.clusterName }}{{ allenv.clusterId }}" id="kc{{ allenv.clusterName }}{{ allenv.clusterId }}" ng-show="false">
+
+											<button type="button" ng-click="copyClusterIdToClipboard('kc', allenv.clusterName, allenv.clusterId)"
+													class="btn btn-sm btn-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ allenv.clusterName }}{{ allenv.clusterId }} Cluster id to setup connectivity">
+												<i class="fa fa-clipboard"></i>
+											</button>
 
 											<button ng-show="allenv.showDeleteCluster == true" type="button" ng-click="deleteCluster(allenv.clusterId)"
 													class="btn btn-sm btn-outline-danger btn-circle">
@@ -577,7 +597,8 @@
 					</li>
 				</ul>
 			</div>
-
+			<div id="successbar">{{ alert }}</div>
+			<div id="alertbar">{{ alertnote }}</div>
 			<!-- ============================================================== -->
 			<!-- End Right sidebar -->
 			<!-- ============================================================== -->

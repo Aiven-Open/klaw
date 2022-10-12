@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,20 +80,13 @@ public class EnvControllerService {
 
   private void updateEnvStatusPerEnv(Integer tenantId, Env env) {
     String status;
+    KwClusters kwClusters =
+        manageDatabase.getClusters(env.getType(), tenantId).get(env.getClusterId());
     status =
         clusterApiService.getKafkaClusterStatus(
-            manageDatabase
-                .getClusters(env.getType(), tenantId)
-                .get(env.getClusterId())
-                .getBootstrapServers(),
-            manageDatabase
-                .getClusters(env.getType(), tenantId)
-                .get(env.getClusterId())
-                .getProtocol(),
-            manageDatabase
-                .getClusters(env.getType(), tenantId)
-                .get(env.getClusterId())
-                .getClusterName(),
+            kwClusters.getBootstrapServers(),
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName() + kwClusters.getClusterId(),
             env.getType(),
             tenantId);
 
