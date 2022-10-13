@@ -248,7 +248,8 @@ public class ClusterApiService {
               + url
               + bootstrapHost
               + URL_DELIMITER
-              + String.join(URL_DELIMITER, protocol, clusterIdentification, consumerGroupId, topic, offsetId);
+              + String.join(
+                  URL_DELIMITER, protocol, clusterIdentification, consumerGroupId, topic, offsetId);
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate()
@@ -632,7 +633,11 @@ public class ClusterApiService {
     try {
       String uriGetTopics =
           String.join(
-                  URL_DELIMITER, "/topics/getConnectorDetails", connectorName, kafkaConnectHost, protocol);
+              URL_DELIMITER,
+              "/topics/getConnectorDetails",
+              connectorName,
+              kafkaConnectHost,
+              protocol);
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<LinkedHashMap<String, Object>> s =
