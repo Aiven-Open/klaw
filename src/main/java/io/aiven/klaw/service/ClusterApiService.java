@@ -181,6 +181,7 @@ public class ClusterApiService {
       String uri =
           clusterConnUrl
               + uriEnvStatus
+              + bootstrapHost
               + String.join("/", protocol, clusterIdentification, clusterType);
 
       ResponseEntity<ClusterStatus> resultBody =
