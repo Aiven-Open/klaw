@@ -72,6 +72,7 @@ import org.springframework.web.client.RestTemplate;
 public class ClusterApiService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String URL_DELIMITER = "/";
   @Autowired ManageDatabase manageDatabase;
 
   @Value("${server.ssl.trust-store:null}")
@@ -182,7 +183,8 @@ public class ClusterApiService {
           clusterConnUrl
               + uriEnvStatus
               + bootstrapHost
-              + String.join("/", protocol, clusterIdentification, clusterType);
+              + URL_DELIMITER
+              + String.join(URL_DELIMITER, protocol, clusterIdentification, clusterType);
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
@@ -210,7 +212,8 @@ public class ClusterApiService {
           clusterConnUrl
               + url
               + bootstrapHost
-              + String.join("/", protocol, clusterIdentification, consumerGroupId, topic);
+              + URL_DELIMITER
+              + String.join(URL_DELIMITER, protocol, clusterIdentification, consumerGroupId, topic);
 
       ResponseEntity<List<Map<String, String>>> resultBody =
           getRestTemplate()
@@ -244,7 +247,8 @@ public class ClusterApiService {
           clusterConnUrl
               + url
               + bootstrapHost
-              + String.join("/", protocol, clusterIdentification, consumerGroupId, topic, offsetId);
+              + URL_DELIMITER
+              + String.join(URL_DELIMITER, protocol, clusterIdentification, consumerGroupId, topic, offsetId);
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate()
@@ -279,8 +283,9 @@ public class ClusterApiService {
             clusterConnUrl
                 + uriGetAcls
                 + bootstrapHost
+                + URL_DELIMITER
                 + String.join(
-                    "/",
+                    URL_DELIMITER,
                     AclsNativeType.AIVEN.name(),
                     protocol,
                     kwClusters.getClusterName() + kwClusters.getClusterId(),
@@ -291,8 +296,9 @@ public class ClusterApiService {
             clusterConnUrl
                 + uriGetAcls
                 + bootstrapHost
+                + URL_DELIMITER
                 + String.join(
-                    "/",
+                    URL_DELIMITER,
                     AclsNativeType.NATIVE.name(),
                     protocol,
                     kwClusters.getClusterName() + kwClusters.getClusterId(),
@@ -324,7 +330,8 @@ public class ClusterApiService {
           clusterConnUrl
               + uriGetTopics
               + bootstrapHost
-              + String.join("/", protocol, clusterIdentification);
+              + URL_DELIMITER
+              + String.join(URL_DELIMITER, protocol, clusterIdentification);
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<Set<Map<String, String>>> s =
@@ -593,7 +600,8 @@ public class ClusterApiService {
           clusterConnUrl
               + uriGetSchema
               + schemaRegistryHost
-              + String.join("/", protocol, clusterName, topicName);
+              + URL_DELIMITER
+              + String.join(URL_DELIMITER, protocol, clusterName, topicName);
 
       ResponseEntity<TreeMap<String, Map<String, Object>>> treeMapResponseEntity =
           getRestTemplate()
@@ -623,7 +631,8 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     try {
       String uriGetTopics =
-          "/topics/getConnectorDetails/" + connectorName + "/" + kafkaConnectHost + "/" + protocol;
+          String.join(
+                  URL_DELIMITER, "/topics/getConnectorDetails", connectorName, kafkaConnectHost, protocol);
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<LinkedHashMap<String, Object>> s =
