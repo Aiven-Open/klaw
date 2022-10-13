@@ -174,21 +174,14 @@ public class ClusterApiService {
       String clusterType,
       int tenantId) {
     log.debug("getKafkaClusterStatus {} {}", bootstrapHost, protocol);
-    String clusterStatus;
     getClusterApiProperties(tenantId);
 
     try {
-      String URI_ENV_STATUS = "/topics/getStatus/";
+      String uriEnvStatus = "/topics/getStatus/";
       String uri =
           clusterConnUrl
-              + URI_ENV_STATUS
-              + bootstrapHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterIdentification
-              + "/"
-              + clusterType;
+              + uriEnvStatus
+              + String.join("/", protocol, clusterIdentification, clusterType);
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
@@ -216,14 +209,7 @@ public class ClusterApiService {
           clusterConnUrl
               + url
               + bootstrapHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterIdentification
-              + "/"
-              + consumerGroupId
-              + "/"
-              + topic;
+              + String.join("/", protocol, clusterIdentification, consumerGroupId, topic);
 
       ResponseEntity<List<Map<String, String>>> resultBody =
           getRestTemplate()
@@ -257,16 +243,7 @@ public class ClusterApiService {
           clusterConnUrl
               + url
               + bootstrapHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterIdentification
-              + "/"
-              + consumerGroupId
-              + "/"
-              + topic
-              + "/"
-              + offsetId;
+              + String.join("/", protocol, clusterIdentification, consumerGroupId, topic, offsetId);
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate()
@@ -301,33 +278,25 @@ public class ClusterApiService {
             clusterConnUrl
                 + uriGetAcls
                 + bootstrapHost
-                + "/"
-                + AclsNativeType.AIVEN.name()
-                + "/"
-                + protocol
-                + "/"
-                + kwClusters.getClusterName()
-                + kwClusters.getClusterId()
-                + "/"
-                + kwClusters.getProjectName()
-                + "/"
-                + kwClusters.getServiceName();
+                + String.join(
+                    "/",
+                    AclsNativeType.AIVEN.name(),
+                    protocol,
+                    kwClusters.getClusterName() + kwClusters.getClusterId(),
+                    kwClusters.getProjectName(),
+                    kwClusters.getServiceName());
       } else {
         uri =
             clusterConnUrl
                 + uriGetAcls
                 + bootstrapHost
-                + "/"
-                + AclsNativeType.NATIVE.name()
-                + "/"
-                + protocol
-                + "/"
-                + kwClusters.getClusterName()
-                + kwClusters.getClusterId()
-                + "/"
-                + "na"
-                + "/"
-                + "na";
+                + String.join(
+                    "/",
+                    AclsNativeType.NATIVE.name(),
+                    protocol,
+                    kwClusters.getClusterName() + kwClusters.getClusterId(),
+                    "na",
+                    "na");
       }
 
       ResponseEntity<Set<Map<String, String>>> resultBody =
@@ -354,10 +323,7 @@ public class ClusterApiService {
           clusterConnUrl
               + uriGetTopics
               + bootstrapHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterIdentification;
+              + String.join("/", protocol, clusterIdentification);
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<Set<Map<String, String>>> s =
@@ -491,7 +457,6 @@ public class ClusterApiService {
     try {
       String env = aclReq.getEnvironment();
       String uri;
-
       String uriCreateAcls = "/topics/createAcls";
       String uriDeleteAcls = "/topics/deleteAcls";
 
@@ -622,17 +587,12 @@ public class ClusterApiService {
     TreeMap<Integer, Map<String, Object>> allVersionSchemas =
         new TreeMap<>(Collections.reverseOrder());
     try {
-      String URI_GET_TOPICS = "/topics/getSchema/";
+      String uriGetSchema = "/topics/getSchema/";
       String uriGetTopicsFull =
           clusterConnUrl
-              + URI_GET_TOPICS
+              + uriGetSchema
               + schemaRegistryHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterName
-              + "/"
-              + topicName;
+              + String.join("/", protocol, clusterName, topicName);
 
       ResponseEntity<TreeMap<String, Map<String, Object>>> treeMapResponseEntity =
           getRestTemplate()
