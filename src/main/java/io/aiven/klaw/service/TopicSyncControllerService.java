@@ -4,6 +4,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
@@ -911,23 +912,16 @@ public class TopicSyncControllerService {
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env envSelected = getEnvDetails(env);
-    String bootstrapHost =
+    KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-            .get(envSelected.getClusterId())
-            .getBootstrapServers();
+            .get(envSelected.getClusterId());
 
     List<Map<String, String>> topicsList =
         clusterApiService.getAllTopics(
-            bootstrapHost,
-            manageDatabase
-                .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                .get(envSelected.getClusterId())
-                .getProtocol(),
-            manageDatabase
-                .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                .get(envSelected.getClusterId())
-                .getClusterName(),
+            kwClusters.getBootstrapServers(),
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName() + kwClusters.getClusterId(),
             tenantId);
 
     topicCounter = 0;

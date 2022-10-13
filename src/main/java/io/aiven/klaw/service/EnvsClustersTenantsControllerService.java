@@ -1186,20 +1186,13 @@ public class EnvsClustersTenantsControllerService {
 
     String status;
     try {
+      KwClusters kwClusters =
+          manageDatabase.getClusters(env.getType(), tenantId).get(env.getClusterId());
       status =
           clusterApiService.getKafkaClusterStatus(
-              manageDatabase
-                  .getClusters(env.getType(), tenantId)
-                  .get(env.getClusterId())
-                  .getBootstrapServers(),
-              manageDatabase
-                  .getClusters(env.getType(), tenantId)
-                  .get(env.getClusterId())
-                  .getProtocol(),
-              manageDatabase
-                  .getClusters(env.getType(), tenantId)
-                  .get(env.getClusterId())
-                  .getClusterName(),
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
               env.getType(),
               tenantId);
     } catch (Exception e) {

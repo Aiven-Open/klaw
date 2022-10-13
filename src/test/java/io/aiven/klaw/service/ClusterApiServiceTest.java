@@ -131,7 +131,7 @@ public class ClusterApiServiceTest {
             (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
-    List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", "", 1);
+    List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", 1);
     assertThat(result).isEqualTo(new ArrayList<>(aclListOriginal));
   }
 
@@ -143,7 +143,7 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThatThrownBy(() -> clusterApiService.getAcls("", env, "PLAINTEXT", "", 1))
+    assertThatThrownBy(() -> clusterApiService.getAcls("", env, "PLAINTEXT", 1))
         .isInstanceOf(KlawException.class);
   }
 

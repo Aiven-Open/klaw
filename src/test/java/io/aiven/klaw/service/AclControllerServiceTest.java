@@ -426,7 +426,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
@@ -452,7 +452,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());

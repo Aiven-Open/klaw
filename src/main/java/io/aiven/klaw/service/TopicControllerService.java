@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -1296,22 +1297,15 @@ public class TopicControllerService {
     Map<String, String> topicEvents = new TreeMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
-      String bootstrapHost =
+      KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-              .get(getEnvDetails(envId).getClusterId())
-              .getBootstrapServers();
+              .get(getEnvDetails(envId).getClusterId());
       topicEvents =
           clusterApiService.getTopicEvents(
-              bootstrapHost,
-              manageDatabase
-                  .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                  .get(getEnvDetails(envId).getClusterId())
-                  .getProtocol(),
-              manageDatabase
-                  .getClusters(KafkaClustersType.KAFKA.value, tenantId)
-                  .get(getEnvDetails(envId).getClusterId())
-                  .getClusterName(),
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
               topicName,
               offsetId,
               consumerGroupId,
