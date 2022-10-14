@@ -125,6 +125,7 @@ public class RolesPermissionsControllerService {
     String delimiter = "-----";
     int indexOfDelimiter;
     String isPermEnabled;
+    int tenantId = commonUtilsService.getTenantId(getUserName());
 
     try {
       for (String permKey : uniqueMap.keySet()) {
@@ -134,6 +135,7 @@ public class RolesPermissionsControllerService {
         tmpKwRolePermModel = new KwRolesPermissions();
         tmpKwRolePermModel.setRoleId(permKey.substring(0, indexOfDelimiter));
         tmpKwRolePermModel.setPermission(permKey.substring(indexOfDelimiter + 5));
+        tmpKwRolePermModel.setTenantId(tenantId);
 
         if ("true".equals(isPermEnabled)) {
           kwRolesPermissionsAdd.add(tmpKwRolePermModel);
