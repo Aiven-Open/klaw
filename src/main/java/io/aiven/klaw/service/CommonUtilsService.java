@@ -20,7 +20,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -359,11 +358,9 @@ public class CommonUtilsService {
     log.info("invokeResetEndpoints");
     try {
       String tenantName =
-          manageDatabase.getHandleDbRequests().getTenants().stream()
-              .filter(
-                  kwTenant ->
-                      Objects.equals(kwTenant.getTenantId(), kwMetadataUpdates.getTenantId()))
-              .findFirst()
+          manageDatabase
+              .getHandleDbRequests()
+              .getMyTenants(kwMetadataUpdates.getTenantId())
               .get()
               .getTenantName();
 
