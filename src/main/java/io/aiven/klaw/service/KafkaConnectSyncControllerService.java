@@ -49,7 +49,7 @@ public class KafkaConnectSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     KwClusters kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
+            .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
             .get(getKafkaConnectorEnvDetails(envId).getClusterId());
 
     Map<String, Object> res =
@@ -252,7 +252,7 @@ public class KafkaConnectSyncControllerService {
       throws KlawException, JsonProcessingException {
     KwClusters kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
+            .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
             .get(getKafkaConnectorEnvDetails(environmentId).getClusterId());
 
     Object configMap =
@@ -325,7 +325,7 @@ public class KafkaConnectSyncControllerService {
     List<KafkaConnectorModel> kafkaConnectorModelClusterList = new ArrayList<>();
     String bootstrapHost =
         manageDatabase
-            .getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
+            .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
             .get(envSelected.getClusterId())
             .getBootstrapServers();
     try {

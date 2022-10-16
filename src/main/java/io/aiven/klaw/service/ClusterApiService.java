@@ -274,7 +274,7 @@ public class ClusterApiService {
       String uriGetAcls = "/topics/getAcls/";
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(envSelected.getClusterId());
 
       String uri;
@@ -417,7 +417,7 @@ public class ClusterApiService {
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicEnvId, tenantId);
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(envSelected.getClusterId());
       clusterTopicRequest =
           ClusterTopicRequest.builder()
@@ -473,7 +473,7 @@ public class ClusterApiService {
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(envSelected.getClusterId());
 
       // aiven config
@@ -562,7 +562,7 @@ public class ClusterApiService {
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
+              .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
               .get(envSelected.getClusterId());
       ClusterSchemaRequest clusterSchemaRequest =
           ClusterSchemaRequest.builder()

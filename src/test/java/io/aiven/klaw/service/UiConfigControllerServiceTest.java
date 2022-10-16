@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.EnvModel;
+import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.UserInfoModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -105,7 +106,8 @@ public class UiConfigControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
     when(tenantMap.get(anyInt())).thenReturn("1");
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(kwClustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     List<EnvModel> envsList = envsClustersTenantsControllerService.getKafkaEnvs();

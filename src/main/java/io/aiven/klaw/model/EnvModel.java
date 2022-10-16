@@ -53,4 +53,8 @@ public class EnvModel implements Serializable {
 
   private String totalNoPages;
   private List<String> allPageNos;
+
+  public void setClusterType(KafkaClustersType type) {
+    this.type = type.value;
+  }
 }

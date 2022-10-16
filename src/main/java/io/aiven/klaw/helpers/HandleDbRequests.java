@@ -18,6 +18,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.KafkaClustersType;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -197,7 +198,7 @@ public interface HandleDbRequests {
 
   List<KwRolesPermissions> getRolesPermissionsPerTenant(int tenantId);
 
-  List<KwClusters> getAllClusters(String typeOfCluster, int tenantId);
+  List<KwClusters> getAllClusters(KafkaClustersType typeOfCluster, int tenantId);
 
   KwClusters getClusterDetails(int id, int tenantId);
 

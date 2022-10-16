@@ -65,7 +65,7 @@ public class MockMethods {
     envModel.setName(envName);
     envModel.setTenantId(101);
     envModel.setClusterId(1);
-    envModel.setType(KafkaClustersType.KAFKA.value);
+    envModel.setClusterType(KafkaClustersType.KAFKA);
     envModel.setOtherParams(
         "default.partitions=2,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=");
 

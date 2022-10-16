@@ -350,22 +350,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   @Override
   public List<Env> selectAllEnvs(int tenantId) {
-    return jdbcSelectHelper.selectAllEnvs("all", tenantId);
+    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.ALL, tenantId);
   }
 
   @Override
   public List<Env> selectAllKafkaEnvs(int tenantId) {
-    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA.value, tenantId);
+    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA, tenantId);
   }
 
   @Override
   public List<Env> selectAllSchemaRegEnvs(int tenantId) {
-    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
+    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.SCHEMA_REGISTRY, tenantId);
   }
 
   @Override
   public List<Env> selectAllKafkaConnectEnvs(int tenantId) {
-    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
+    return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA_CONNECT, tenantId);
   }
 
   @Override
@@ -434,7 +434,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<KwClusters> getAllClusters(String typeOfCluster, int tenantId) {
+  public List<KwClusters> getAllClusters(KafkaClustersType typeOfCluster, int tenantId) {
     return jdbcSelectHelper.getAllClusters(typeOfCluster, tenantId);
   }
 
