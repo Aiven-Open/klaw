@@ -576,8 +576,7 @@ public class EnvsClustersTenantsControllerService {
       if (manageDatabase
           .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
           .get(oneEnv.getClusterId())
-          .getProtocol()
-          .equals(KafkaSupportedProtocol.PLAINTEXT))
+          .getProtocol() == KafkaSupportedProtocol.PLAINTEXT)
         status =
             clusterApiService.getSchemaClusterStatus(
                 manageDatabase
@@ -726,7 +725,7 @@ public class EnvsClustersTenantsControllerService {
     kwCluster.setClusterName(kwCluster.getClusterName().toUpperCase());
 
     // only for new cluster requests on saas
-    if (KafkaSupportedProtocol.SSL.equals(kwCluster.getProtocol())
+    if (KafkaSupportedProtocol.SSL == kwCluster.getProtocol()
         && kwCluster.getClusterId() == null
         && "saas".equals(kwInstallationType)) {
       if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
