@@ -114,6 +114,14 @@ https://github.com/aiven/klaw-cluster-api
 
 ## Install
 
+### Manual
+
+1. Clone this repo with submodules: `git clone --recursive git@github.com:aiven/klaw.git`
+2. In the `klaw` directory, run `mvn clean install`
+3. In the `cluster-api` directory, run `mvn clean install`
+
+### With `make`
+
 1. Clone this repo with submodules: `git clone --recursive git@github.com:aiven/klaw.git`
 2. Run `make` to install dependencies and setup both Klaw and the Klaw-Cluster-API
 3. [Optional] edit any configs using `make edit-config` for Klaw or `make edit-api-config` for Klaw-Cluster-API
