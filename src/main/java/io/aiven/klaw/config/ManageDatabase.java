@@ -480,10 +480,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public void loadOneTenant(int tenantId) {
-    Optional<KwTenants> tenants =
-        handleDbRequests.getTenants().stream()
-            .filter(tenant -> tenant.getTenantId() == tenantId)
-            .findFirst();
+    Optional<KwTenants> tenants = handleDbRequests.getMyTenants(tenantId);
     tenants.ifPresent(
         kwTenants -> {
           tenantFullMap.put(kwTenants.getTenantId(), kwTenants);
