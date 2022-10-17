@@ -26,6 +26,7 @@ import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.SyncAclUpdates;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -426,7 +427,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
@@ -452,7 +453,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), anyString(), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());

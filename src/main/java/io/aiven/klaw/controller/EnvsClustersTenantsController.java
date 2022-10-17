@@ -306,4 +306,13 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getClusterInfoFromEnv(envSelected, envType),
         HttpStatus.OK);
   }
+
+  @RequestMapping(
+      value = "/getKafkaProtocols",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<Map<String, String>>> getSupportedKafkaProtocols() {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getSupportedKafkaProtocols(), HttpStatus.OK);
+  }
 }

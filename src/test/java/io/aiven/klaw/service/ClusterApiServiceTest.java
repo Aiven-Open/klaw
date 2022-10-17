@@ -21,6 +21,7 @@ import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.ClusterStatus;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.RequestOperationType;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -92,7 +93,8 @@ public class ClusterApiServiceTest {
     result = clusterApiService.getSchemaClusterStatus("", 1);
     assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
-    result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
+    result =
+        clusterApiService.getKafkaClusterStatus("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
     assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
   }
 
@@ -110,7 +112,8 @@ public class ClusterApiServiceTest {
     result = clusterApiService.getSchemaClusterStatus("", 1);
     assertThat(result).isEqualTo("OFFLINE");
 
-    result = clusterApiService.getKafkaClusterStatus("", "PLAINTEXT", "", "", 1);
+    result =
+        clusterApiService.getKafkaClusterStatus("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
     assertThat(result).isEqualTo("NOT_KNOWN");
   }
 
@@ -131,7 +134,8 @@ public class ClusterApiServiceTest {
             (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
-    List<Map<String, String>> result = clusterApiService.getAcls("", env, "PLAINTEXT", 1);
+    List<Map<String, String>> result =
+        clusterApiService.getAcls("", env, KafkaSupportedProtocol.PLAINTEXT, 1);
     assertThat(result).isEqualTo(new ArrayList<>(aclListOriginal));
   }
 
@@ -143,7 +147,8 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThatThrownBy(() -> clusterApiService.getAcls("", env, "PLAINTEXT", 1))
+    assertThatThrownBy(
+            () -> clusterApiService.getAcls("", env, KafkaSupportedProtocol.PLAINTEXT, 1))
         .isInstanceOf(KlawException.class);
   }
 
@@ -160,7 +165,8 @@ public class ClusterApiServiceTest {
             (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
-    List<Map<String, String>> result = clusterApiService.getAllTopics("", "PLAINTEXT", "", 1);
+    List<Map<String, String>> result =
+        clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", 1);
     assertThat(result).isEqualTo(new ArrayList<>(topicsList));
   }
 
@@ -172,7 +178,8 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(Set.class)))
         .thenThrow(new RuntimeException("error"));
 
-    assertThatThrownBy(() -> clusterApiService.getAllTopics("", "PLAINTEXT", "", 1))
+    assertThatThrownBy(
+            () -> clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", 1))
         .isInstanceOf(KlawException.class);
   }
 
@@ -194,7 +201,7 @@ public class ClusterApiServiceTest {
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenReturn(response);
@@ -219,7 +226,7 @@ public class ClusterApiServiceTest {
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenThrow(new RuntimeException("error"));
@@ -248,7 +255,7 @@ public class ClusterApiServiceTest {
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
     when(restTemplate.exchange(
@@ -279,7 +286,7 @@ public class ClusterApiServiceTest {
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
     when(restTemplate.exchange(
@@ -321,7 +328,7 @@ public class ClusterApiServiceTest {
     when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
         .thenReturn(response);

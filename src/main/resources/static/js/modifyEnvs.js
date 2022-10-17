@@ -694,8 +694,22 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                      $scope.handleValidationErrors(error);
                 }
             );
-
         };
+
+        $scope.getKafkaSupportedProtocols = function() {
+            $http({
+                method: "GET",
+                url: "getKafkaProtocols",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.kafkaProtocols = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
 
         $scope.refreshPage = function(){
                 $window.location.reload();

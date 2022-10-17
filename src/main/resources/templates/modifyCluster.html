@@ -450,7 +450,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="loadClusterDetails();">
+			<div class="row" ng-init="loadClusterDetails();getKafkaSupportedProtocols();">
 				<div ng-if="dashboardDetails.addDeleteEditClusters=='Authorized'" class="col-lg-12">
 					<div ng-if="clusterTypeToEdit=='kafka'" class="card card-outline-success">
 						<div class="card-body">
@@ -495,13 +495,9 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Protocol</label>
-												<select required class="form-control custom-select" ng-change="onChangeProtocol(clusterDetails.protocol)" ng-model="clusterDetails.protocol">
-													<option value="PLAINTEXT">PLAINTEXT</option>
-													<option value="SSL">SSL</option>
-													<option value="SASL_PLAIN">SASL_PLAIN</option>
-													<option value="SASL_SSL-PLAINMECHANISM">SASL_SSL/PLAIN</option>
-													<option value="SASL_SSL-GSSAPIMECHANISM">SASL_SSL/GSSAPI</option>
-													<option value="SASL_SSL-SCRAMMECHANISM">SASL_SSL/SCRAM-SHA-256</option>
+												<select required class="form-control custom-select" ng-change="onChangeProtocol(clusterDetails.protocol)"
+														ng-model="clusterDetails.protocol"
+														ng-options="kafkaProtocol.name as kafkaProtocol.value for kafkaProtocol in kafkaProtocols">
 												</select>
 											</div>
 											<div ng-show="sslparams=='true'">
@@ -510,8 +506,6 @@
 										</div>
 										<!--/span-->
 										<div class="col-md-6">
-
-
 										</div>
 										<!--/span-->
 									</div>
@@ -525,7 +519,7 @@
 										</div>
 									</div>
 
-									<div class="row" ng-show="clusterDetails.projectName!=''">
+									<div class="row" ng-show="clusterDetails.projectName!='' && clusterDetails.projectName!=null">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Project Name</label>

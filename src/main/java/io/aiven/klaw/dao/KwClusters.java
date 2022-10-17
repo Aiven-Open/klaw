@@ -1,5 +1,6 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import java.io.Serializable;
 import javax.persistence.*;
 import lombok.Getter;
@@ -29,7 +30,8 @@ public class KwClusters implements Serializable {
   private String bootstrapServers;
 
   @Column(name = "protocol")
-  private String protocol;
+  @Enumerated(EnumType.STRING)
+  private KafkaSupportedProtocol protocol;
 
   @Column(name = "clustertype")
   private String clusterType;

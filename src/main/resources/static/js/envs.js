@@ -813,7 +813,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                // Prefix and suffix validations
+                // Prefix and suffix validation
 
                 if($scope.addNewEnv.topicprefix && $scope.addNewEnv.topicprefix.length > 0)
                 	$scope.addNewEnv.topicprefix = $scope.addNewEnv.topicprefix.trim();
@@ -1042,7 +1042,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
         }
 
         $scope.getKafkaConnectEnvs = function() {
-
             $http({
                 method: "GET",
                 url: "getKafkaConnectEnvs",
@@ -1072,6 +1071,21 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             // Alert the copied text
             $scope.alert = "Copied cluster id to clipboard: " + copyText.value.toLowerCase();
             $scope.showSuccessToast();
+        }
+
+        $scope.getKafkaSupportedProtocols = function() {
+            $http({
+                method: "GET",
+                url: "getKafkaProtocols",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.kafkaProtocols = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
         }
 
         $scope.refreshPage = function(){

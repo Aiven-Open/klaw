@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.validation.KafkaClusterValidator;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import lombok.ToString;
 @ToString
 @Getter
 @Setter
+@KafkaClusterValidator
 public class KwClustersModel implements Serializable {
 
   private Integer clusterId;
@@ -26,7 +28,7 @@ public class KwClustersModel implements Serializable {
   private String bootstrapServers;
 
   @NotNull(message = "Protocol cannot be null")
-  private String protocol;
+  private KafkaSupportedProtocol protocol;
 
   @NotNull private String clusterType;
 

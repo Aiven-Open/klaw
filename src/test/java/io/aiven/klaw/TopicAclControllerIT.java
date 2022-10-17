@@ -22,6 +22,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.RequestOperationType;
@@ -418,7 +419,8 @@ public class TopicAclControllerIT {
   @Order(12)
   @Test
   public void getTopicsFromCluster() throws Exception {
-    when(clusterApiService.getAllTopics(anyString(), eq("PLAINTEXT"), anyString(), anyInt()))
+    when(clusterApiService.getAllTopics(
+            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterApiTopics(topicName, 10));
 
     String res =
@@ -444,7 +446,8 @@ public class TopicAclControllerIT {
   @Order(13)
   @Test
   public void getOnlyTopicNames() throws Exception {
-    when(clusterApiService.getAllTopics(anyString(), eq("PLAINTEXT"), anyString(), anyInt()))
+    when(clusterApiService.getAllTopics(
+            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterApiTopics(topicName, 10));
 
     String res =
@@ -687,7 +690,8 @@ public class TopicAclControllerIT {
   @Test
   public void getAclsWithSearch() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
-    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyInt()))
+    when(clusterApiService.getAcls(
+            anyString(), any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyInt()))
         .thenReturn(aclInfo);
 
     String res =
@@ -712,7 +716,8 @@ public class TopicAclControllerIT {
   public void getAclsToBeSynced() throws Exception {
     List<Map<String, String>> aclInfo = utilMethods.getClusterAcls();
 
-    when(clusterApiService.getAcls(anyString(), any(), eq("PLAINTEXT"), anyInt()))
+    when(clusterApiService.getAcls(
+            anyString(), any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyInt()))
         .thenReturn(aclInfo);
 
     String res =

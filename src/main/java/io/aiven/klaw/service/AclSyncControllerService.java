@@ -17,6 +17,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaFlavors;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.SyncAclUpdates;
@@ -221,7 +222,7 @@ public class AclSyncControllerService {
   private List<Map<String, String>> getAclListFromCluster(
       String bootstrapHost,
       Env envSelected,
-      String protocol,
+      KafkaSupportedProtocol protocol,
       String clusterName,
       String topicNameSearch,
       int tenantId)

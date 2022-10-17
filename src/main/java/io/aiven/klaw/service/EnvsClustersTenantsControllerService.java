@@ -210,7 +210,11 @@ public class EnvsClustersTenantsControllerService {
       List<KwClustersModel> envListMap3 =
           kwClustersModelList.stream()
               .filter(
-                  env -> env.getProtocol().toLowerCase().contains(searchClusterParam.toLowerCase()))
+                  env ->
+                      env.getProtocol()
+                          .getName()
+                          .toLowerCase()
+                          .contains(searchClusterParam.toLowerCase()))
               .collect(Collectors.toList());
       envListMap1.addAll(envListMap2);
       envListMap1.addAll(envListMap3);
@@ -573,7 +577,7 @@ public class EnvsClustersTenantsControllerService {
           .getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
           .get(oneEnv.getClusterId())
           .getProtocol()
-          .equalsIgnoreCase("plaintext"))
+          .equals(KafkaSupportedProtocol.PLAINTEXT))
         status =
             clusterApiService.getSchemaClusterStatus(
                 manageDatabase
@@ -688,7 +692,7 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public ApiResponse addNewCluster(KwClustersModel kwClustersModel) {
-    log.info("addNewCluster {}", kwClustersModel.getClusterName());
+    log.info("addNewCluster {}", kwClustersModel);
     Map<String, String> resultMap = new HashMap<>();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -722,7 +726,7 @@ public class EnvsClustersTenantsControllerService {
     kwCluster.setClusterName(kwCluster.getClusterName().toUpperCase());
 
     // only for new cluster requests on saas
-    if ("SSL".equals(kwCluster.getProtocol())
+    if (KafkaSupportedProtocol.SSL.equals(kwCluster.getProtocol())
         && kwCluster.getClusterId() == null
         && "saas".equals(kwInstallationType)) {
       if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
@@ -1242,5 +1246,17 @@ public class EnvsClustersTenantsControllerService {
         "" + KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor()));
 
     return clusterInfo;
+  }
+
+  public List<Map<String, String>> getSupportedKafkaProtocols() {
+    List<Map<String, String>> supportedProtocols = new ArrayList<>();
+    for (KafkaSupportedProtocol kafkaSupportedProtocol : KafkaSupportedProtocol.values()) {
+      Map<String, String> protocolValues = new HashMap<>();
+      protocolValues.put("name", kafkaSupportedProtocol.getName());
+      protocolValues.put("value", kafkaSupportedProtocol.getValue());
+      supportedProtocols.add(protocolValues);
+    }
+
+    return supportedProtocols;
   }
 }
