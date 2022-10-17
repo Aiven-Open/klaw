@@ -5,8 +5,7 @@ klaw:
 	mvn clean verify
 
 api:
-	cd cluster-api && mvn clean install
-	cd cluster-api && mvn clean package
+	cd cluster-api && mvn clean verify
 
 edit-config:
 	${EDITOR} target/classes/application.properties
