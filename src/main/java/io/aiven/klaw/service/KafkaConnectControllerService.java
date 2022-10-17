@@ -561,7 +561,7 @@ public class KafkaConnectControllerService {
               .selectEnvDetails(connectorRequest.getEnvironment(), tenantId);
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId)
+              .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
               .get(envSelected.getClusterId());
       KafkaSupportedProtocol protocol = kwClusters.getProtocol();
       String kafkaConnectHost = kwClusters.getBootstrapServers();

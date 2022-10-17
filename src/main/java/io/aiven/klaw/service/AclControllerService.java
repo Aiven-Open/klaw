@@ -875,7 +875,7 @@ public class AclControllerService {
         try {
           KwClusters kwClusters =
               manageDatabase
-                  .getClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId)
+                  .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
                   .get(schemaEnv.getClusterId());
           SortedMap<Integer, Map<String, Object>> schemaObjects =
               clusterApiService.getAvroSchema(
@@ -1020,7 +1020,7 @@ public class AclControllerService {
     try {
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId, tenantId).getClusterId());
       consumerOffsetInfoList =
           clusterApiService.getConsumerOffsets(

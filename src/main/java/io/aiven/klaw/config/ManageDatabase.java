@@ -347,13 +347,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return tenantMap;
   }
 
-  public Map<Integer, KwClusters> getClusters(String clusterType, int tenantId) {
+  public Map<Integer, KwClusters> getClusters(KafkaClustersType clusterType, int tenantId) {
     switch (clusterType) {
-      case "schemaregistry":
+      case SCHEMA_REGISTRY:
         return kwSchemaRegClustersPertenant.get(tenantId);
-      case "kafkaconnect":
+      case KAFKA_CONNECT:
         return kwKafkaConnectClustersPertenant.get(tenantId);
-      case "kafka":
+      case KAFKA:
         return kwKafkaClustersPertenant.get(tenantId);
       default:
         return kwAllClustersPertenant.get(tenantId);
@@ -480,10 +480,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public void loadOneTenant(int tenantId) {
-    Optional<KwTenants> tenants =
-        handleDbRequests.getTenants().stream()
-            .filter(tenant -> tenant.getTenantId() == tenantId)
-            .findFirst();
+    Optional<KwTenants> tenants = handleDbRequests.getMyTenants(tenantId);
     tenants.ifPresent(
         kwTenants -> {
           tenantFullMap.put(kwTenants.getTenantId(), kwTenants);
@@ -506,11 +503,11 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     kwAllClustersPertenant = new HashMap<>();
 
     for (Integer tenantId : tenantMap.keySet()) {
-      kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA.value, tenantId);
+      kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, tenantId);
       schemaRegistryClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
+          handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId);
       kafkaConnectClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
+          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT, tenantId);
 
       loadClustersForOneTenant(
           kafkaClusters, schemaRegistryClusters, kafkaConnectClusters, tenantId);
@@ -523,15 +520,15 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       List<KwClusters> kafkaConnectClusters,
       Integer tenantId) {
     if (kafkaClusters == null) {
-      kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA.value, tenantId);
+      kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, tenantId);
     }
     if (schemaRegistryClusters == null) {
       schemaRegistryClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY.value, tenantId);
+          handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId);
     }
     if (kafkaConnectClusters == null) {
       kafkaConnectClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT.value, tenantId);
+          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT, tenantId);
     }
 
     Map<Integer, KwClusters> kwKafkaClusters = new HashMap<>();

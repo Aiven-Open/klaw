@@ -1299,7 +1299,7 @@ public class TopicControllerService {
     try {
       KwClusters kwClusters =
           manageDatabase
-              .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId).getClusterId());
       topicEvents =
           clusterApiService.getTopicEvents(

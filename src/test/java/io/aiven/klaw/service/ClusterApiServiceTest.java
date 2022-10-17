@@ -22,6 +22,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.ClusterStatus;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.RequestOperationType;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -123,7 +124,8 @@ public class ClusterApiServiceTest {
     Set<Map<String, String>> aclListOriginal = utilMethods.getAclsMock();
     ResponseEntity response = new ResponseEntity<>(aclListOriginal, HttpStatus.OK);
 
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getKafkaFlavor()).thenReturn("Apache Kafka");
 
@@ -198,7 +200,8 @@ public class ClusterApiServiceTest {
     topicRequest.setTopictype(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
@@ -223,7 +226,8 @@ public class ClusterApiServiceTest {
     topicRequest.setTopictype(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
@@ -252,7 +256,8 @@ public class ClusterApiServiceTest {
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
@@ -283,7 +288,8 @@ public class ClusterApiServiceTest {
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
@@ -325,7 +331,8 @@ public class ClusterApiServiceTest {
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);

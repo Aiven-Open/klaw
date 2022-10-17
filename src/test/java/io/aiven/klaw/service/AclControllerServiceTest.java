@@ -27,6 +27,7 @@ import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.SyncAclUpdates;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -432,7 +433,8 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
@@ -458,7 +460,8 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
-    when(manageDatabase.getClusters(anyString(), anyInt())).thenReturn(clustersHashMap);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");

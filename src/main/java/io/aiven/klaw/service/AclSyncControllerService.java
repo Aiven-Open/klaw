@@ -321,7 +321,7 @@ public class AclSyncControllerService {
     Env envSelected = getEnvDetails(env, tenantId);
     KwClusters kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+            .getClusters(KafkaClustersType.KAFKA, tenantId)
             .get(envSelected.getClusterId());
     aclList =
         getAclListFromCluster(

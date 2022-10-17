@@ -914,7 +914,7 @@ public class TopicSyncControllerService {
     Env envSelected = getEnvDetails(env);
     KwClusters kwClusters =
         manageDatabase
-            .getClusters(KafkaClustersType.KAFKA.value, tenantId)
+            .getClusters(KafkaClustersType.KAFKA, tenantId)
             .get(envSelected.getClusterId());
 
     List<Map<String, String>> topicsList =
