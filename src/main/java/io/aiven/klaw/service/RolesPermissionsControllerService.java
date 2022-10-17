@@ -10,7 +10,6 @@ import io.aiven.klaw.model.PermissionType;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -19,14 +18,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class RolesPermissionsControllerService {
 
-  @Autowired private CommonUtilsService commonUtilsService;
+  private final CommonUtilsService commonUtilsService;
 
-  @Autowired ManageDatabase manageDatabase;
+  final ManageDatabase manageDatabase;
 
-  @Autowired private MailUtils mailService;
+  private final MailUtils mailService;
 
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
+
+  public RolesPermissionsControllerService(
+      CommonUtilsService commonUtilsService, ManageDatabase manageDatabase, MailUtils mailService) {
+    this.commonUtilsService = commonUtilsService;
+    this.manageDatabase = manageDatabase;
+    this.mailService = mailService;
+  }
 
   private String getUserName() {
     return mailService.getUserName(
@@ -125,6 +131,7 @@ public class RolesPermissionsControllerService {
     String delimiter = "-----";
     int indexOfDelimiter;
     String isPermEnabled;
+    int tenantId = commonUtilsService.getTenantId(getUserName());
 
     try {
       for (String permKey : uniqueMap.keySet()) {
@@ -134,6 +141,7 @@ public class RolesPermissionsControllerService {
         tmpKwRolePermModel = new KwRolesPermissions();
         tmpKwRolePermModel.setRoleId(permKey.substring(0, indexOfDelimiter));
         tmpKwRolePermModel.setPermission(permKey.substring(indexOfDelimiter + 5));
+        tmpKwRolePermModel.setTenantId(tenantId);
 
         if ("true".equals(isPermEnabled)) {
           kwRolesPermissionsAdd.add(tmpKwRolePermModel);

@@ -71,4 +71,23 @@ public class MockMethods {
 
     return envModel;
   }
+
+  protected KwRolesPermissionsModel[] getPermissions(String role) {
+    KwRolesPermissionsModel[] permissionsList = new KwRolesPermissionsModel[3];
+    KwRolesPermissionsModel kwRolesPermissionsModel1 = new KwRolesPermissionsModel();
+    kwRolesPermissionsModel1.setRolePermission(role + "-----ADD_EDIT_DELETE_CLUSTERS");
+    kwRolesPermissionsModel1.setPermissionEnabled("true");
+    permissionsList[0] = kwRolesPermissionsModel1;
+
+    KwRolesPermissionsModel kwRolesPermissionsModel2 = new KwRolesPermissionsModel();
+    kwRolesPermissionsModel2.setRolePermission(role + "-----ADD_EDIT_DELETE_ENVS");
+    kwRolesPermissionsModel2.setPermissionEnabled("true");
+    permissionsList[1] = kwRolesPermissionsModel2;
+
+    KwRolesPermissionsModel kwRolesPermissionsModel3 = new KwRolesPermissionsModel();
+    kwRolesPermissionsModel3.setRolePermission(role + "-----VIEW_TOPICS");
+    kwRolesPermissionsModel3.setPermissionEnabled("false");
+    permissionsList[2] = kwRolesPermissionsModel3;
+    return permissionsList;
+  }
 }
