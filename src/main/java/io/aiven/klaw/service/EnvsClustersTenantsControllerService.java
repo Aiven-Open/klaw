@@ -574,9 +574,10 @@ public class EnvsClustersTenantsControllerService {
       String status;
 
       if (manageDatabase
-          .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-          .get(oneEnv.getClusterId())
-          .getProtocol() == KafkaSupportedProtocol.PLAINTEXT)
+              .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+              .get(oneEnv.getClusterId())
+              .getProtocol()
+          == KafkaSupportedProtocol.PLAINTEXT)
         status =
             clusterApiService.getSchemaClusterStatus(
                 manageDatabase
