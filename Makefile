@@ -2,8 +2,7 @@
 all: klaw api
 
 klaw:
-	mvn clean install
-	mvn clean package
+	mvn clean verify
 
 api:
 	cd cluster-api && mvn clean install
