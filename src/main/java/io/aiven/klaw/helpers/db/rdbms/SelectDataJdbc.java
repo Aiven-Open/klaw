@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
@@ -499,11 +500,11 @@ public class SelectDataJdbc {
     return userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
   }
 
-  public List<Env> selectAllEnvs(String type, int tenantId) {
-    if ("all".equals(type)) {
-      return Lists.newArrayList(envRepo.findAllByTenantId(tenantId));
+  public List<Env> selectAllEnvs(KafkaClustersType type, int tenantId) {
+    if (KafkaClustersType.ALL == type) {
+      return envRepo.findAllByTenantId(tenantId);
     } else {
-      return Lists.newArrayList(envRepo.findAllByTypeAndTenantId(type, tenantId));
+      return envRepo.findAllByTypeAndTenantId(type.value, tenantId);
     }
   }
 
@@ -949,12 +950,11 @@ public class SelectDataJdbc {
     return kwRolesPermsRepo.findAllByTenantId(tenantId);
   }
 
-  public List<KwClusters> getAllClusters(String typeOfCluster, int tenantId) {
-    if ("all".equals(typeOfCluster)) {
-      return Lists.newArrayList(kwClusterRepo.findAllByTenantId(tenantId));
+  public List<KwClusters> getAllClusters(KafkaClustersType typeOfCluster, int tenantId) {
+    if (KafkaClustersType.ALL == typeOfCluster) {
+      return kwClusterRepo.findAllByTenantId(tenantId);
     } else {
-      return Lists.newArrayList(
-          kwClusterRepo.findAllByClusterTypeAndTenantId(typeOfCluster, tenantId));
+      return kwClusterRepo.findAllByClusterTypeAndTenantId(typeOfCluster.value, tenantId);
     }
   }
 
