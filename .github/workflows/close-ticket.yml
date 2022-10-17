@@ -68,15 +68,6 @@ jobs:
           JIRA_USER_EMAIL: ${{ steps.email_extraction.outputs.email }}
           JIRA_API_TOKEN: ${{ steps.token_extraction.outputs.token }}
           
-      - name: Update issue
-        uses: actions-cool/issues-helper@v3
-        with:
-          actions: 'update-issue'
-          token: ${{ github.token }}
-          issue-number: ${{ github.event.issue.number }}
-          state: 'closed'
-          update-mode: 'replace'
-          labels: 'done'
 
       - name: Transition issue
         id: transition

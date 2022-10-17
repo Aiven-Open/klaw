@@ -63,7 +63,7 @@ jobs:
       id: create
       uses: atlassian/gajira-create@v2.0.1
       with:
-        project: OSS
+        project: KLAW
         issuetype: Task
         summary: ${{ github.event.issue.title }}
         description: ${{ github.event.issue.body }}
