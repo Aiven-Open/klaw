@@ -167,15 +167,6 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getKafkaConnectEnvs(), HttpStatus.OK);
   }
 
-  @RequestMapping(
-      value = "/getSchemaRegEnvsStatus",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getSchemaRegEnvsStatus() {
-    return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getSchemaRegEnvsStatus(), HttpStatus.OK);
-  }
-
   @PostMapping(value = "/addNewEnv")
   public ResponseEntity<ApiResponse> addNewEnv(@Valid @RequestBody EnvModel newEnv)
       throws KlawException {

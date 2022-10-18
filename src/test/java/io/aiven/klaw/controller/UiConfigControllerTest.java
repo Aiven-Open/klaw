@@ -151,27 +151,6 @@ public class UiConfigControllerTest {
 
   @Test
   @Order(5)
-  public void getSchemaRegEnvsStatus() throws Exception {
-    List<EnvModel> envList = utilMethods.getEnvList();
-    when(envsClustersTenantsControllerService.getSchemaRegEnvsStatus()).thenReturn(envList);
-
-    String res =
-        mvcEnvs
-            .perform(
-                MockMvcRequestBuilders.get("/getSchemaRegEnvsStatus")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Env> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
-  }
-
-  @Test
-  @Order(6)
   public void getAllTeamsSU() throws Exception {
     List<TeamModel> teamList = utilMethods.getTeamsModel();
     when(usersTeamsControllerService.getAllTeamsSU()).thenReturn(teamList);
@@ -192,7 +171,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(7)
+  @Order(6)
   public void getAllTeamsSUOnly() throws Exception {
     List<String> teamList = utilMethods.getAllTeamsSUOnly();
     when(usersTeamsControllerService.getAllTeamsSUOnly()).thenReturn(teamList);
@@ -213,7 +192,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(8)
+  @Order(7)
   public void addNewEnv() throws Exception {
     EnvModel env = utilMethods.getEnvList().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
@@ -237,7 +216,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(9)
+  @Order(8)
   public void deleteEnv() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.deleteEnvironment(anyString(), anyString()))
@@ -261,7 +240,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(10)
+  @Order(9)
   public void deleteTeam() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteTeam(any())).thenReturn(apiResponse);
@@ -283,7 +262,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(11)
+  @Order(10)
   public void deleteUser() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn(apiResponse);
@@ -305,7 +284,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(12)
+  @Order(11)
   public void addNewUser() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
@@ -328,7 +307,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(13)
+  @Order(12)
   public void addNewTeam() throws Exception {
     Team team = utilMethods.getTeams().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(team);
@@ -351,7 +330,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(14)
+  @Order(13)
   public void changePwd() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
@@ -372,7 +351,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(15)
+  @Order(14)
   public void showUsers() throws Exception {
     List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
     when(usersTeamsControllerService.showUsers(any(), any(), any())).thenReturn(userList);
@@ -395,7 +374,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(16)
+  @Order(15)
   public void getMyProfileInfo() throws Exception {
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     when(usersTeamsControllerService.getMyProfileInfo()).thenReturn(userInfo);
@@ -416,7 +395,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(17)
+  @Order(16)
   public void showActivityLog() throws Exception {
     List<ActivityLog> activityLogs = utilMethods.getLogs();
     when(uiConfigControllerService.showActivityLog(anyString(), anyString(), anyString()))

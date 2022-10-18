@@ -8,25 +8,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-  gtag('config', 'G-YQB8J8J690');
-</script>
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-YQB8J8J690');
-</script>
+        gtag('config', 'G-YQB8J8J690');
+    </script>
 
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
@@ -35,15 +25,19 @@
 
     <!-- Custom CSS -->
     <link href="assets/css/style.css" rel="stylesheet">
-    <link href="assets/css/custom.css" rel="stylesheet">
     <!-- You can change the theme colors from here -->
     <link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
     <link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 
+
     <script src="lib/angular.min.js"></script>
     <script src="lib/angular-route.min.js"></script>
-    <script src="assets/js/ng-google-charts.js"></script>
+    <!--    <script src="lib/angular-cookies.js"></script>-->
+    <!--    <script src="lib/angular-cookies.min.js"></script>-->
     <script src="js/index.js"></script>
+    <script src="js/dist/Chart.js"></script>
+    <script src="js/angular-chart/angular-chart.js"></script>
+    <link rel="stylesheet" href="assets/css/custom.css" />
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -55,6 +49,7 @@
 </head>
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth()">
+
 <!-- ============================================================== -->
 <!-- Preloader - style you can find in spinners.css -->
 <!-- ============================================================== -->
@@ -76,9 +71,9 @@
             <!-- ============================================================== -->
             <div class="navbar-header">
                 <a class="navbar-brand" href="index">
-	<h4 style="color:white;">{{ companyinfo }}</h4>
-</a>
-				<!-- <a href="index"><img src="assets/images/clients/logo.jpg" width="100%" /></a> -->
+                    <h4 style="color:white;">{{ companyinfo }}</h4>
+                </a>
+                <!-- <a href="index"><img src="assets/images/clients/logo.jpg" width="100%" /></a> -->
             </div>
             <!-- ============================================================== -->
             <!-- End Logo -->
@@ -107,6 +102,7 @@
                     <!-- ============================================================== -->
                     <!-- Comment -->
                     <!-- ============================================================== -->
+
                     <li class="nav-item d-none d-md-block search-box"> <a
                             class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
                             href="requestTopics"><i class="mdi mdi-plus"></i></a>
@@ -202,7 +198,7 @@
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
-                                 <li><a href="tenantInfo"><i class="ti-package"></i> My Tenant Info</a></li>
+                                <li><a href="tenantInfo"><i class="ti-package"></i> My Tenant Info</a></li>
                                 <li ng-show="dashboardDetails.authenticationType=='db'"><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
@@ -239,8 +235,24 @@
                                         <li>
                                             <table>
                                                 <tr>
+                                                    <td><i class="mdi mdi-file-document"></i></td>
+                                                    <td><a class="dropdown-item" target="_blank" href="https://klaw-project.io/docs">Documentation</a></td>
+                                                </tr>
+                                            </table>
+                                        </li>
+                                        <li>
+                                            <table>
+                                                <tr>
                                                     <td><i class="mdi mdi-blinds"></i></td>
                                                     <td><a class="dropdown-item" target="_blank" href="{{ dashboardDetails.supportlink }}">Raise a git issue</a></td>
+                                                </tr>
+                                            </table>
+                                        </li>
+                                        <li>
+                                            <table>
+                                                <tr>
+                                                    <td><i class="mdi mdi-hexagon"></i></td>
+                                                    <td><a class="dropdown-item" target="_blank" href="helpwizard">Starting Wizard</a></td>
                                                 </tr>
                                             </table>
                                         </li>
@@ -284,7 +296,7 @@
                             <td width="100%">
                                 <li class="nav-item d-none d-md-block search-box">
                                     <button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-                                            style="width:200px;background-color:#016BA7;border:0;">
+                                            id="userbackground">
                                         {{userlogged}}</button>
                                 </li>
                             </td>
@@ -294,7 +306,7 @@
                             <td width="100%">
                                 <li class="nav-item d-none d-md-block search-box">
                                     <button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
-                                            style="width:200px;background-color:#016BA7;border:0;">
+                                            id="userbackground">
                                         {{teamname}} | {{userrole}}</button>
 
                                 </li>
@@ -326,22 +338,22 @@
                             <li><a href="serverConfig">Settings</a></li>
                         </ul>
                     </li>
-                    <li>
+                    <li ng-show="dashboardDetails.viewTopics=='Authorized'">
                         <a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
                     </li>
-                                           					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
-						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Apache Kafka Connect</span></a>
-					</li>
-					<li class="two-column" ng-show="dashboardDetails.requestItems=='Authorized'">
+                    <li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+                        <a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Apache Kafka Connect</span></a>
+                    </li>
+                    <li class="two-column" ng-show="dashboardDetails.requestItems=='Authorized'">
                         <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
                         <ul aria-expanded="false" class="collapse">
                             <li><a href="requestTopics">Request Topic</a></li>
-					<li><a href="requestConnector">Request Connector</a></li>
+                            <li><a href="requestConnector">Request Connector</a></li>
 
                             <li><a href="myTopicRequests">My Topic Requests</a></li>
                             <li><a href="myAclRequests">My Acl Requests</a></li>
-							<li><a href="mySchemaRequests">My Schema Requests</a></li>
-					<li><a href="myConnectorRequests">My Connector Requests</a></li>
+                            <li><a href="mySchemaRequests">My Schema Requests</a></li>
+                            <li><a href="myConnectorRequests">My Connector Requests</a></li>
                         </ul>
                     </li>
                     <li class="nav-devider"></li>
@@ -391,7 +403,7 @@
                             <li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
                             <li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
                             <li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
-					        <li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
+                            <li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
                             <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
                         </ul>
                     </li>
@@ -399,6 +411,9 @@
                 </ul>
             </nav>
             <!-- End Sidebar navigation -->
+        </div>
+        <div class="notificationbar" ng-show="dashboardDetails.broadcastText != ''">
+            <marquee>{{ dashboardDetails.broadcastText }}</marquee>
         </div>
         <!-- End Sidebar scroll-->
     </aside>
@@ -419,8 +434,8 @@
             <div class="row">
                 <!-- col -->
 
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-info">
+                <div class="col-lg-3 col-md-12">
+                    <div class="card card-inverse bg-info">
                         <div class="card-body">
                             <a href="browseTopics?team={{teamname}}">
                                 <div class="carousel-item active flex-column">
@@ -435,40 +450,7 @@
                             </a>
                         </div>
                     </div>
-                </div>
-
-                <!-- col -->
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-info">
-                        <div class="card-body">
-                            <a href="users?team={{teamname}}">
-                                <div class="carousel-item active flex-column">
-                                    <i class="fas fa-user fa-2x text-white"></i>
-                                    <p class="text-white">{{ teamname }}</p>
-                                    <h3 class="text-white font-light">My Team <span class="font-bold">Members</span><br>
-                                        {{ teamMembersCount }}</h3>
-                                    <div class="text-white mt-3">
-                                        <i></i>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <!-- col -->
-                <div class="col-lg-6 col-md-6">
-                    <div google-chart chart="activitylogchart">
-
-                    </div>
-                </div>
-                <!-- col -->
-
-                <!-- col -->
-            </div>
-
-            <div class="row">
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-primary">
+                    <div class="card card-inverse bg-primary">
                         <div class="card-body">
                             <a href="browseTopics?team={{teamname}}&producer=true">
                                 <div class="carousel-item active flex-column">
@@ -483,9 +465,26 @@
                             </a>
                         </div>
                     </div>
+
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="card bg-primary">
+                <div class="col-lg-3 col-md-12">
+                    <div class="card card-inverse bg-info">
+                        <div class="card-body">
+                            <a href="users?team={{teamname}}&tenant={{tenantName}}">
+                                <div class="carousel-item active flex-column">
+                                    <i class="fas fa-user fa-2x text-white"></i>
+                                    <p class="text-white">{{ teamname }}</p>
+                                    <h3 class="text-white font-light">My Team <span class="font-bold">Members</span><br>
+                                        {{ teamMembersCount }}</h3>
+                                    <div class="text-white mt-3">
+                                        <i></i>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card card-inverse bg-primary">
                         <div class="card-body">
                             <a href="browseTopics?team={{teamname}}&consumer=true">
                                 <div class="carousel-item active flex-column">
@@ -502,25 +501,24 @@
                     </div>
                 </div>
                 <!-- col -->
-
-
-                <div class="col-lg-6 col-md-6">
-                    <div google-chart chart="topicsperteamchart">
-
+                <div class="col-lg-6 col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="pie" class="chart chart-line"
+                                    chart-data="activitylogchart.data"
+                                    chart-options="activitylogchart.options"
+                                    chart-labels="activitylogchart.labels"></canvas>
+                        </div>
                     </div>
                 </div>
                 <!-- col -->
+
+                <!-- col -->
             </div>
 
-            <!-- Row -->
-
-            <!-- Row -->
-
             <div class="row">
-                <!-- Column -->
 
-                <!-- Column -->
-                <div class="col-lg-2">
+                <div class="col-lg-3 col-md-12">
                     <a href="execTopics" ng-show="dashboardDetails.approveDeclineTopics=='Authorized'">
                         <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
@@ -529,7 +527,7 @@
                             </div>
                         </div>
                     </a>
-                    <a href="myTopicRequests" ng-show="dashboardDetails.approveDeclineTopics!='Authorized'">
+                    <a href="myTopicRequests?reqsType=created" ng-show="dashboardDetails.approveDeclineTopics!='Authorized'">
                         <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notifications }} </h1>
@@ -537,9 +535,7 @@
                             </div>
                         </div>
                     </a>
-                </div>
-                <!-- Column -->
-                <div class="col-lg-2">
+
                     <a href="execAcls" ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'">
                         <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
@@ -556,9 +552,7 @@
                             </div>
                         </div>
                     </a>
-                </div>
-                <!-- Column -->
-                <div class="col-lg-2">
+
                     <a href="execSchemas" ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'">
                         <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
@@ -567,7 +561,7 @@
                             </div>
                         </div>
                     </a>
-                    <a href="myAclRequests" ng-show="dashboardDetails.approveDeclineSchemas!='Authorized'">
+                    <a href="mySchemaRequests" ng-show="dashboardDetails.approveDeclineSchemas!='Authorized'">
                         <div class="card card-inverse card-success">
                             <div class="p-2 rounded text-center">
                                 <h1 class="font-light text-white">{{ notificationsSchemas }}</h1>
@@ -656,37 +650,22 @@
                     </div>
                 </div>
 
-            </div>
-
-
-            <!-- Row -->
-
-            <div class="row"  ng-init="getEnvs();getSchemaRegEnvs();">
-                <!-- Column -->
-
-                <div ng-repeat="allenv in allenvs" class="col-lg-2 col-md-6">
+                <div class="col-lg-6 col-md-12">
                     <div class="card">
-                        <div class="d-flex flex-row">
-                            <div class="p-3 bg-megna">
-                                <h3 class="text-white box mb-0"><i class="ti-wallet"></i></h3>
-                            </div>
-                            <div class="align-self-center ml-3">
-                                <h3 class="mb-0 text-megna">{{ allenv.name }}</h3>
-
-                                <h5 ng-show="allenv.envStatus == 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-info">ONLINE</span>
-                                </h5>
-                                <h5 ng-show="allenv.envStatus != 'ONLINE'" class="text-muted mb-0">
-                                    <span class="badge badge-warning">{{allenv.envStatus}}</span>
-                                </h5>
-
-                            </div>
+                        <div class="card-body">
+                            <canvas id="pie1" class="chart chart-bar"
+                                    chart-data="topicsperteamchart.data"
+                                    chart-options="topicsperteamchart.options"
+                                    chart-labels="topicsperteamchart.labels"></canvas>
                         </div>
                     </div>
                 </div>
-                <!-- Column -->
 
             </div>
+
+            <!-- Row -->
+            <div id="successbar">{{ alert }}</div>
+
 
             <!-- End Right sidebar -->
             <!-- ============================================================== -->
@@ -694,7 +673,7 @@
         <!-- footer -->
         <!-- ============================================================== -->
         <footer class="footer">
-            © 2021 Klaw by <a href="https://klaw-project.io">klaw-project.io</a>  [Licensed to {{companyinfo}}]
+            <a href="https://klaw-project.io">klaw-project.io</a>
         </footer>
         <!-- ============================================================== -->
         <!-- End footer -->
@@ -720,6 +699,7 @@
 <script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
 <script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
 <!--Custom JavaScript -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 <script src="assets/js/custom.min.js"></script>
 </body>
 

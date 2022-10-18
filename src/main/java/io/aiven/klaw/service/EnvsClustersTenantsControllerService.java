@@ -557,44 +557,6 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModel> getSchemaRegEnvsStatus() {
-    List<Env> listEnvs =
-        manageDatabase
-            .getHandleDbRequests()
-            .selectAllSchemaRegEnvs(commonUtilsService.getTenantId(getUserName()));
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<String> allowedEnvIdList = getEnvsFromUserId();
-    listEnvs =
-        listEnvs.stream()
-            .filter(env -> allowedEnvIdList.contains(env.getId()))
-            .collect(Collectors.toList());
-
-    List<Env> newListEnvs = new ArrayList<>();
-    for (Env oneEnv : listEnvs) {
-      String status;
-
-      if (manageDatabase
-              .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-              .get(oneEnv.getClusterId())
-              .getProtocol()
-          == KafkaSupportedProtocol.PLAINTEXT)
-        status =
-            clusterApiService.getSchemaClusterStatus(
-                manageDatabase
-                    .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-                    .get(oneEnv.getClusterId())
-                    .getBootstrapServers(),
-                tenantId);
-      else {
-        status = "NOT_KNOWN";
-      }
-      oneEnv.setEnvStatus(status);
-      newListEnvs.add(oneEnv);
-    }
-
-    return getEnvModels(newListEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
-  }
-
   public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException {
     log.info("addNewEnv {}", newEnv);
     int tenantId = getUserDetails(getUserName()).getTenantId();
