@@ -1,0 +1,75 @@
+name: add comment to jira issue
+on:
+  issue_comment:
+    types:
+      [created, edited]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: add new comment
+    steps:
+    - name: checkout repo content
+      uses: actions/checkout@v2 # checkout the repository content to github runner.
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8 #install the python needed
+
+    - name: adjust_secret_key
+      id: adjust_secret_key
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.actor }}
+    - name: print secret key
+      run: echo ${{ steps.adjust_secret_key.outputs.uppercase }}
+
+    - name: adjust_github_name
+      id: adjust_github_name
+      run: |
+        output=$(python .github/workflows/fix_githubname.py ${{ steps.adjust_secret_key.outputs.uppercase }})
+        echo "::set-output name=githubsecret::$output"
+    - name: print adjusted secret key
+      run: echo ${{ steps.adjust_github_name.outputs.githubsecret }}
+
+    - name: user_email
+      env:
+        USER_DATA: ${{ secrets[format('{0}', steps.adjust_github_name.outputs.githubsecret)] }}
+      run: |
+        output=$(python .github/workflows/jira_login.py '''email''')
+        echo "::set-output name=email::$output"
+      id: email_extraction
+    - name: Print email
+      run: echo "${{ steps.email_extraction.outputs.email }}"
+
+    - name: user_token
+      env:
+        USER_DATA: ${{ secrets[format('{0}', steps.adjust_github_name.outputs.githubsecret)] }}
+      run: |
+        output=$(python .github/workflows/jira_login.py '''token''')
+        echo "::set-output name=token::$output"
+      id: token_extraction
+    - name: Print token
+      run: echo "${{ steps.token_extraction.outputs.token }}"
+
+    - name: Login
+      uses: atlassian/gajira-login@master
+      env:
+        JIRA_BASE_URL: https://aiven.atlassian.net
+        JIRA_USER_EMAIL: ${{ steps.email_extraction.outputs.email }}
+        JIRA_API_TOKEN: ${{ steps.token_extraction.outputs.token }}
+
+    - name: ticket_num
+      run: |
+        output=$(python .github/workflows/ticket_number.py "${{ github.event.issue.title }}")
+        echo "::set-output name=ticket::$output"
+      id: ticket_extraction
+    - name: Print ticket number
+      run: echo "${{ steps.ticket_extraction.outputs.ticket }}"
+
+    - name: Comment on issue
+      if: ${{ github.event.comment.body != 'in progress' && github.event.comment.body != 'selected for development' && github.event.comment.body != 'waiting for upstream'}}
+      uses: atlassian/gajira-comment@master
+      with:
+        issue: ${{ steps.ticket_extraction.outputs.ticket }}
+        comment: ${{ github.event.comment.body }}
