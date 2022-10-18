@@ -64,10 +64,10 @@ The structure is inspired in big parts by:
     │   │   ├── LayoutForOneThing.test.tsx
     │   │   ├── ...
     │   │   ├── index.ts
-    │   │   └── pages/
-    │   │       ├── page-one
-    │   │       ├── ...
-    │   │       └── index.ts
+    │   │── pages/
+    │   │   ├── page-one
+    │   │   ├── ...
+    │   │   └── index.ts
     │   └── router.tsx
     ├── domain/
     │   ├── name-of-domain-one/
@@ -78,7 +78,7 @@ The structure is inspired in big parts by:
     │       ├── api
     │       ├── types
     │       └── index.ts
-    └── servies/
+    └── services /
         ├── http-client/
         │   ├── some-file.tsx
         │   ├── some-file.test.tsx
@@ -111,7 +111,7 @@ Contains different domains wee need to describe the UI application. They are spe
 
 Contains assets like scss and images.
 
-#### `components` (alternative `ui-elements`?)
+#### `components`
 
 Contains all UI elements in form of React components that we use in different places of the app. The components should be simple and easy to reuse. They have to be agnostic from any business logic.
 
