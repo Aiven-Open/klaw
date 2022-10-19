@@ -15,7 +15,8 @@
     "test": "jest",
     "preview": "vite preview",
     "lint": "prettier --check src && eslint .",
-    "reformat": "prettier --write src"
+    "reformat": "prettier --write src",
+    "test-dev": "jest --watch"
   },
   "dependencies": {
     "react": "^18.2.0",
