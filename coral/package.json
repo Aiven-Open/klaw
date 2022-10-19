@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "test": "jest",
     "preview": "vite preview",
     "lint": "prettier --check src && eslint .",
     "reformat": "prettier --write src"
@@ -21,11 +22,17 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/jest": "^29.2.0",
+    "@types/node": "*",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
     "@typescript-eslint/eslint-plugin": "^5.40.1",
     "@typescript-eslint/parser": "^5.40.1",
     "@vitejs/plugin-react": "^2.1.0",
+    "jest": "^29.2.1",
+    "jest-environment-jsdom": "^29.2.1",
+    "ts-jest": "^29.0.3",
+    "ts-node": "^10.9.1",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.10",
