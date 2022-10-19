@@ -76,6 +76,12 @@ public class ClusterApiServiceTest {
     this.env = new Env();
     env.setName("DEV");
     ReflectionTestUtils.setField(clusterApiService, "httpRestTemplate", restTemplate);
+    ReflectionTestUtils.setField(clusterApiService, "clusterApiUser", "testuser");
+    ReflectionTestUtils.setField(
+        clusterApiService,
+        "clusterApiAccessBase64Secret",
+        "dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ=="); // any base64 string
+
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("http://cluster");
   }

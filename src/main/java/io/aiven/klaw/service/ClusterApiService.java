@@ -23,11 +23,13 @@ import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -35,8 +37,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,15 +49,16 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
+import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -72,15 +78,13 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ClusterApiService {
 
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final String URL_DELIMITER = "/";
-  @Autowired ManageDatabase manageDatabase;
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final String URL_DELIMITER = "/";
 
-  @Value("${server.ssl.trust-store:null}")
-  private String trustStore;
-
-  @Value("${server.ssl.trust-store-password:null}")
-  private String trustStorePwd;
+  private static final String URI_CREATE_TOPICS = "/topics/createTopics";
+  private static final String URI_UPDATE_TOPICS = "/topics/updateTopics";
+  private static final String URI_DELETE_TOPICS = "/topics/deleteTopics";
+  @Autowired private ManageDatabase manageDatabase;
 
   @Value("${server.ssl.key-store:null}")
   private String keyStore;
@@ -91,28 +95,19 @@ public class ClusterApiService {
   @Value("${server.ssl.key-store-type:JKS}")
   private String keyStoreType;
 
-  protected static HttpComponentsClientHttpRequestFactory requestFactory;
-
-  static String URI_CREATE_TOPICS = "/topics/createTopics";
-  static String URI_UPDATE_TOPICS = "/topics/updateTopics";
-  static String URI_DELETE_TOPICS = "/topics/deleteTopics";
-
-  @Value("${klaw.jasypt.encryptor.secretkey}")
-  private String encryptorSecretKey;
-
   @Value("${klaw.clusterapi.access.username}")
   private String clusterApiUser;
 
-  @Value("${klaw.clusterapi.access.password}")
-  private String clusterApiPwd;
+  @Value("${klaw.clusterapi.access.base64.secret:null}")
+  private String clusterApiAccessBase64Secret;
 
   private static String clusterConnUrl;
+  protected static HttpComponentsClientHttpRequestFactory requestFactory;
+  RestTemplate httpRestTemplate, httpsRestTemplate;
 
   public ClusterApiService(ManageDatabase manageDatabase) {
     this.manageDatabase = manageDatabase;
   }
-
-  RestTemplate httpRestTemplate, httpsRestTemplate;
 
   private RestTemplate getRestTemplate() {
     if (clusterConnUrl.toLowerCase().startsWith("https")) {
@@ -390,7 +385,7 @@ public class ClusterApiService {
         uri = clusterConnUrl + uriGetTopics + "deleteConnector";
       }
 
-      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterConnectorRequest> request =
@@ -457,7 +452,7 @@ public class ClusterApiService {
         uri = clusterConnUrl + URI_DELETE_TOPICS;
       }
 
-      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_JSON);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
@@ -546,7 +541,7 @@ public class ClusterApiService {
             clusterAclRequest.toBuilder().requestOperationType(RequestOperationType.DELETE).build();
       }
 
-      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterAclRequest> request = new HttpEntity<>(clusterAclRequest, headers);
@@ -583,7 +578,7 @@ public class ClusterApiService {
               .fullSchema(schemaRequest.getSchemafull())
               .build();
 
-      HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+      HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
@@ -702,8 +697,7 @@ public class ClusterApiService {
       String uriGetTopicsFull = clusterConnUrl + uriGetTopics;
       RestTemplate restTemplate = getRestTemplate();
 
-      HttpHeaders headers =
-          createHeaders(clusterApiUser, clusterApiPwd); // createHeaders("user1", "pwd");
+      HttpHeaders headers = createHeaders(clusterApiUser);
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
 
@@ -717,16 +711,6 @@ public class ClusterApiService {
       log.error("Error from  retrieveMetrics {} ", jmxUrl, e);
       throw new KlawException("Could not get metrics.");
     }
-  }
-
-  private HttpHeaders createHeaders(String username, String password) {
-    HttpHeaders httpHeaders = new HttpHeaders();
-    String auth = username + ":" + decodePwd(password);
-    byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
-    String authHeader = "Basic " + new String(encodedAuth);
-    httpHeaders.set("Authorization", authHeader);
-
-    return httpHeaders;
   }
 
   // to connect to cluster api if https
@@ -770,18 +754,33 @@ public class ClusterApiService {
     return store;
   }
 
-  private String decodePwd(String pwd) {
-    if (pwd != null) {
-      BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-      textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
+  private HttpHeaders createHeaders(String username) {
+    HttpHeaders httpHeaders = new HttpHeaders();
+    String authHeader = "Bearer " + generateToken(username);
+    httpHeaders.set("Authorization", authHeader);
 
-      return textEncryptor.decrypt(pwd);
-    }
-    return "";
+    return httpHeaders;
+  }
+
+  private String generateToken(String username) {
+    Key hmacKey =
+        new SecretKeySpec(
+            Base64.decodeBase64(clusterApiAccessBase64Secret),
+            SignatureAlgorithm.HS256.getJcaName());
+    Instant now = Instant.now();
+
+    return Jwts.builder()
+        .claim("name", username)
+        .setSubject(username)
+        .setId(UUID.randomUUID().toString())
+        .setIssuedAt(Date.from(now))
+        .setExpiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
+        .signWith(hmacKey)
+        .compact();
   }
 
   private HttpEntity<String> getHttpEntity() {
-    HttpHeaders headers = createHeaders(clusterApiUser, clusterApiPwd);
+    HttpHeaders headers = createHeaders(clusterApiUser);
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
