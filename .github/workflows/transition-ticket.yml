@@ -82,9 +82,9 @@ jobs:
           issue: ${{ steps.ticket_extraction.outputs.ticket }}
           transition: "In progress"    
 
-  transition_ticket_waiting_for_up_stream:
+  transition_ticket_review:
     runs-on: ubuntu-latest
-    if: ${{ github.event.label.name == 'waiting for upstream'}}
+    if: ${{ github.event.label.name == 'review'}}
     steps:
       - name: Wait for ticket to be created
         continue-on-error: true
@@ -160,7 +160,7 @@ jobs:
         uses: atlassian/gajira-transition@master
         with:
           issue: ${{ steps.ticket_extraction.outputs.ticket }}
-          transition: "waiting for upstream release"      
+          transition: "review"      
 
   transition_ticket_selected_for_dev:
     runs-on: ubuntu-latest
