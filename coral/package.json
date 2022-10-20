@@ -20,7 +20,7 @@
     "test-dev": "jest --watch"
   },
   "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
+    "**/*.{ts,tsx}": [
       "pnpm tsc --jsx preserve --noEmit",
       "pnpm lint"
     ]
