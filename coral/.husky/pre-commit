@@ -1,8 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-cd coral || return
-pnpm lint-staged
-pnpm test --bail
+STAGED_FILES=$(git diff --staged --name-only)
 
-
+if echo "$STAGED_FILES" | grep -q coral;
+then
+  echo 'Files on coral staged'
+    cd coral || return
+    pnpm lint-staged
+    pnpm test --bail
+fi
