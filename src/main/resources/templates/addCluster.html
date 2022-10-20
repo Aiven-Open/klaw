@@ -419,7 +419,7 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid" ng-init="getAclCommand()">
+		<div class="container-fluid" ng-init="getAclCommand();getKafkaSupportedProtocols();">
 			<div class="row page-titles">
 			</div>
 
@@ -559,13 +559,9 @@
 										<div class="col-md-6" ng-show="dashboardDetails.saasEnabled != 'saas'">
 											<div class="form-group">
 												<label>Protocol</label>
-												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)" ng-model="addNewCluster.protocol">
-													<option value="PLAINTEXT">PLAINTEXT</option>
-													<option value="SSL">SSL</option>
-													<option value="SASL_PLAIN">SASL/PLAIN</option>
-													<option value="SASL_SSL-PLAINMECHANISM">SASL_SSL/PLAIN</option>
-													<option value="SASL_SSL-GSSAPIMECHANISM">SASL_SSL/GSSAPI</option>
-													<option value="SASL_SSL-SCRAMMECHANISM">SASL_SSL/SCRAM-SHA-256</option>
+												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)"
+														ng-model="addNewCluster.protocol"
+														ng-options="kafkaProtocol.name as kafkaProtocol.value for kafkaProtocol in kafkaProtocols">
 												</select>
 											</div>
 											<div ng-show="sslparams=='true'">
@@ -575,12 +571,9 @@
 										<div class="col-md-6"  ng-show="dashboardDetails.saasEnabled == 'saas'">
 											<div class="form-group">
 												<label>Protocol</label>
-												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)" ng-model="addNewCluster.protocol">
-													<option value="PLAINTEXT">PLAINTEXT</option>
-													<option value="SSL">SSL</option>
-<!--													<option value="SASL_PLAIN">SASL_PLAIN</option>-->
-<!--													<option value="SASL_SSL-PLAINMECHANISM">SASL_SSL(PLAIN-MECHANISM)</option>-->
-<!--													<option value="SASL_SSL-GSSAPIMECHANISM">SASL_SSL(GSSAPI-MECHANISM)</option>-->
+												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)"
+														ng-model="addNewCluster.protocol"
+														ng-options="kafkaProtocol.name as kafkaProtocol.value for kafkaProtocol in kafkaProtocols">
 												</select>
 											</div>
 

@@ -211,7 +211,11 @@ public class EnvsClustersTenantsControllerService {
       List<KwClustersModel> envListMap3 =
           kwClustersModelList.stream()
               .filter(
-                  env -> env.getProtocol().toLowerCase().contains(searchClusterParam.toLowerCase()))
+                  env ->
+                      env.getProtocol()
+                          .getName()
+                          .toLowerCase()
+                          .contains(searchClusterParam.toLowerCase()))
               .collect(Collectors.toList());
       envListMap1.addAll(envListMap2);
       envListMap1.addAll(envListMap3);
@@ -553,44 +557,6 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModel> getSchemaRegEnvsStatus() {
-    List<Env> listEnvs =
-        manageDatabase
-            .getHandleDbRequests()
-            .selectAllSchemaRegEnvs(commonUtilsService.getTenantId(getUserName()));
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<String> allowedEnvIdList = getEnvsFromUserId();
-    listEnvs =
-        listEnvs.stream()
-            .filter(env -> allowedEnvIdList.contains(env.getId()))
-            .collect(Collectors.toList());
-
-    List<Env> newListEnvs = new ArrayList<>();
-    for (Env oneEnv : listEnvs) {
-      String status;
-
-      if (manageDatabase
-          .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-          .get(oneEnv.getClusterId())
-          .getProtocol()
-          .equalsIgnoreCase("plaintext"))
-        status =
-            clusterApiService.getSchemaClusterStatus(
-                manageDatabase
-                    .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-                    .get(oneEnv.getClusterId())
-                    .getBootstrapServers(),
-                tenantId);
-      else {
-        status = "NOT_KNOWN";
-      }
-      oneEnv.setEnvStatus(status);
-      newListEnvs.add(oneEnv);
-    }
-
-    return getEnvModels(newListEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
-  }
-
   public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException {
     log.info("addNewEnv {}", newEnv);
     int tenantId = getUserDetails(getUserName()).getTenantId();
@@ -688,7 +654,7 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public ApiResponse addNewCluster(KwClustersModel kwClustersModel) {
-    log.info("addNewCluster {}", kwClustersModel.getClusterName());
+    log.info("addNewCluster {}", kwClustersModel);
     Map<String, String> resultMap = new HashMap<>();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -722,7 +688,7 @@ public class EnvsClustersTenantsControllerService {
     kwCluster.setClusterName(kwCluster.getClusterName().toUpperCase());
 
     // only for new cluster requests on saas
-    if ("SSL".equals(kwCluster.getProtocol())
+    if (KafkaSupportedProtocol.SSL == kwCluster.getProtocol()
         && kwCluster.getClusterId() == null
         && "saas".equals(kwInstallationType)) {
       if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
@@ -1244,5 +1210,19 @@ public class EnvsClustersTenantsControllerService {
         "" + KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor()));
 
     return clusterInfo;
+  }
+
+  public List<Map<String, String>> getSupportedKafkaProtocols() {
+    List<Map<String, String>> supportedProtocols = new ArrayList<>();
+    for (KafkaSupportedProtocol kafkaSupportedProtocol : KafkaSupportedProtocol.values()) {
+      supportedProtocols.add(
+          Map.of(
+              "name",
+              kafkaSupportedProtocol.getName(),
+              "value",
+              kafkaSupportedProtocol.getValue()));
+    }
+
+    return supportedProtocols;
   }
 }

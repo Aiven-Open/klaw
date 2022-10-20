@@ -20,6 +20,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.SyncTopicUpdates;
@@ -428,7 +429,8 @@ public class TopicControllerServiceTest {
 
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAllTopics(anyString(), anyString(), anyString(), anyInt()))
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterApiTopics("topic", 10));
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
@@ -436,7 +438,7 @@ public class TopicControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(kwClusters.getProtocol()).thenReturn("PLAINTEXT");
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
         .thenReturn(List.of("USER"));

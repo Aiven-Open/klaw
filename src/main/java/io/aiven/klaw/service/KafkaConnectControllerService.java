@@ -27,6 +27,7 @@ import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
@@ -562,7 +563,7 @@ public class KafkaConnectControllerService {
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
               .get(envSelected.getClusterId());
-      String protocol = kwClusters.getProtocol();
+      KafkaSupportedProtocol protocol = kwClusters.getProtocol();
       String kafkaConnectHost = kwClusters.getBootstrapServers();
 
       if (RequestOperationType.UPDATE.value.equals(

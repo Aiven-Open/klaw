@@ -60,24 +60,6 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $ro
             $scope.showProgressBar = "true";
         }
 
-        $scope.getSchemaRegEnvs = function() {
-
-
-            $http({
-                method: "GET",
-                url: "getSchemaRegEnvsStatus",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.allschenvs = output;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
-
-          }
-
           $scope.onClickRefresh = function(){
                 $scope.showServerStatus = "false";
                 $scope.showProgressBar = "false";

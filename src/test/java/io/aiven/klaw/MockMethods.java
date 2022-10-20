@@ -52,7 +52,7 @@ public class MockMethods {
     KwClustersModel kwClustersModel = new KwClustersModel();
     kwClustersModel.setClusterName(dev_cluster);
     kwClustersModel.setBootstrapServers("localhost:9092");
-    kwClustersModel.setProtocol("PLAINTEXT");
+    kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
     kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
     kwClustersModel.setKafkaFlavor("Apache Kafka");
 
