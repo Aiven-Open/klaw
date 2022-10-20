@@ -2,6 +2,7 @@
 . "$(dirname "$0")/_/husky.sh"
 
 cd coral || return
-pnpm tsc
-pnpm lint
-pnpm test
+pnpm lint-staged
+pnpm test --bail
+
+

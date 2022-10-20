@@ -19,6 +19,12 @@
     "test": "jest",
     "test-dev": "jest --watch"
   },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "pnpm tsc --jsx preserve --noEmit",
+      "pnpm lint"
+    ]
+  },
   "dependencies": {
     "@aivenio/design-system": "^18.4.3",
     "react": "^18.2.0",
