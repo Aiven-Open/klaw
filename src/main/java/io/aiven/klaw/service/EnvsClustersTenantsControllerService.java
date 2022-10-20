@@ -1215,10 +1215,12 @@ public class EnvsClustersTenantsControllerService {
   public List<Map<String, String>> getSupportedKafkaProtocols() {
     List<Map<String, String>> supportedProtocols = new ArrayList<>();
     for (KafkaSupportedProtocol kafkaSupportedProtocol : KafkaSupportedProtocol.values()) {
-      Map<String, String> protocolValues = new HashMap<>();
-      protocolValues.put("name", kafkaSupportedProtocol.getName());
-      protocolValues.put("value", kafkaSupportedProtocol.getValue());
-      supportedProtocols.add(protocolValues);
+      supportedProtocols.add(
+          Map.of(
+              "name",
+              kafkaSupportedProtocol.getName(),
+              "value",
+              kafkaSupportedProtocol.getValue()));
     }
 
     return supportedProtocols;
