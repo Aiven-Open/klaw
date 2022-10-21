@@ -4,7 +4,7 @@
 
 Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community.
 
-Please read through this document before submitting any issues or pull requests. This ensures we have all necessary information to respond to your bug report or contribution.
+Please read through this document before submitting any issues or pull requests. This ensures all parties have all necessary information to respond to your bug report or contribution.
 
 
 ## ❤️ Code of Conduct 
@@ -13,7 +13,7 @@ This project has adopted the [Contributor Covenant Code of Conduct](CODE_OF_COND
 
 For more information see the [Code of Conduct FAQ](https://www.contributor-covenant.org/faq/).
 
-### Guideline commit messages
+## Guideline commit messages
 
 We uses the [Conventional Commits](https://www.conventionalcommits.org/) specification. It helps us creating a helpful and explicit git history. 
 
@@ -64,11 +64,11 @@ The first line (`<description>`) should be a short description of your change. L
 
 **⛔️ Don't**
 `fix: Removed the newline that caused a linting error`
--> _"If applied, this commit will removed the newline that caused a linting error"_
+-> _"If applied, this commit will_ removed the newline that caused a linting error"
 
 **️✅ Do**
 `fix: Remove the newline that caused a linting error`
--> _"If applied, this commit will remove the newline that caused a linting error"_
+-> _"If applied, this commit will_ remove the newline that caused a linting error"
 
 **3. Separate your description with a new line from the body.**
 If you add an body, add an empty line between your description to separate it from the body. This makes the message more readable. It also makes `git log --oneline` or `git shortlog` more useable.
