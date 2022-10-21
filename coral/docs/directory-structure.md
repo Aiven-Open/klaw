@@ -113,7 +113,7 @@ Contains assets like scss and images.
 
 #### `components`
 
-Contains all UI elements in form of React components that we use in different places of the app. The components should be simple and easy to reuse. They have to be agnostic from any business logic.
+Contains all UI elements in form of React components that we use in different places of the app. The components should be clean, and uncomplicated to reuse. They have to be agnostic from any business logic.
 
 - top level `index.ts` file to export components and act as an public API.
 
