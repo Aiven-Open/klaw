@@ -8,4 +8,11 @@ describe("App.tsx", () => {
 
     expect(heading).toBeVisible();
   });
+
+  it("informs user that it uses the aiven design system ", () => {
+    render(<App />);
+    const text = screen.getByText("This uses the aiven design system!");
+
+    expect(text).toBeVisible();
+  });
 });
