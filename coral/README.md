@@ -1,22 +1,28 @@
-# 🪸 Klaw frontend app
+# 🪸 Klaw's new frontend app
 
-- Please be aware of our [Code of Conduct](../CODE_OF_CONDUCT.md)
+- Please be aware of our [Code of Conduct](../CODE_OF_CONDUCT.md) ❤️
 
-## Installation and usage
- 
+## About
+
+`/coral` contains a React app. It's the rewrite of the existing Klaw frontend. 
+
+## Installation and usage 
+
+ℹ️ Coral uses `pnpm` as a package manager. Read in their official documentation [how to install](https://pnpm.io/installation) it. 
+
 - navigate to this directory
 - run `pnpm install`
-- run `pnpm dev` to start the app in development mode
+- run `pnpm dev` to start the frontend app in development mode
 
-## Usage: How to run the app
+### Usage: How to run the app
 
 ℹ️ You can see all our scripts in the [`package.json`](package.json).
 You can also run `pnpm` in your console to get a list of all available scripts.
 
-### Scripts used and what they execute
+#### Scripts used and what they execute
 
-- `build`: builds the klaw frontend app for production
-- `dev`: starts the klaw frontend app for development
+- `build`: builds the frontend app for production
+- `dev`: starts the frontend app for development
 - `lint`: runs a code format check and if no error is found, lints the code. 
   - the linting script does not mutate your code. See [Linting and code formatting](#linting-and-code-formatting) for more info.
 - `preview`: builds a preview production build _locally_
@@ -50,6 +56,19 @@ The script `lint` runs a prettier check and eslint after. It does not mutate you
 2. After that: `pnpm eslint --fix` (eslint in fix mode)
 
 ℹ️ It's convenient to let prettier and eslint auto-format your code "on save" by your IDE or editor.
+
+## Styling 
+
+We use the component library of Aiven's design system:
+  - 📃 [documentation](https://aiven-ds.netlify.app/)
+  - the repository is open source, but `private` at the moment
+
+As a rule, please don't use css classes from the design system. All styles should be created by using the existing components and their properties. 
+
+__🔄 Work in progress related to styles__
+- We plan adding css variables based on the design system's tokens.
+- We plan having a custom theme for Klaw. This will be used instead of the Aiven theme.
+
 
 ## More detailed documentation
 
