@@ -1,12 +1,12 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+FRONTEND_ROOT="coral"
+GIT_ROOT=$(git rev-parse --show-toplevel)
 STAGED_FILES=$(git diff --staged --name-only)
 
-if echo "$STAGED_FILES" | grep -q coral;
+if echo "$STAGED_FILES" | grep -q "$FRONTEND_ROOT";
 then
-  echo 'Files on coral staged'
-    cd coral || return
-    pnpm lint-staged
-    pnpm test --bail
+    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged
+    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" test --bail
 fi
