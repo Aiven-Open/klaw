@@ -18,6 +18,7 @@
     "reformat": "prettier --write src",
     "test": "jest",
     "test-dev": "jest --watch",
+    "typecheck": "tsc --noEmit --pretty",
     "lint-staged": "lint-staged",
     "tsc": "tsc"
   },
