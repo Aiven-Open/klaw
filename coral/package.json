@@ -10,13 +10,22 @@
     "npm": "❗Please use pnpm to assure a consistent package management."
   },
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
-    "test": "jest",
-    "preview": "vite preview",
+    "dev": "vite",
     "lint": "prettier --check src && eslint .",
+    "prepare": "cd .. && husky install coral/.husky",
+    "preview": "vite preview",
     "reformat": "prettier --write src",
-    "test-dev": "jest --watch"
+    "test": "jest",
+    "test-dev": "jest --watch",
+    "lint-staged": "lint-staged",
+    "tsc": "tsc"
+  },
+  "lint-staged": {
+    "**/*.ts?(x)": [
+      "prettier --check",
+      "eslint"
+    ]
   },
   "dependencies": {
     "@aivenio/design-system": "^18.4.3",
@@ -38,8 +47,10 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-react": "^7.31.10",
     "identity-obj-proxy": "^3.0.0",
+    "husky": "^8.0.1",
     "jest": "^29.2.1",
     "jest-environment-jsdom": "^29.2.1",
+    "lint-staged": "^13.0.3",
     "lodash": "4.x",
     "prettier": "^2.7.1",
     "ts-jest": "^29.0.3",
