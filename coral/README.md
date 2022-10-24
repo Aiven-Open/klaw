@@ -20,7 +20,6 @@
 You can also run `pnpm` in your console to get a list of all available scripts.
 
 #### Scripts used and what they execute
-- `check-language`: _optional_ script to highlight potentially insensitive or inconsiderate writing in text files
 - `build`: builds the frontend app for production
 - `dev`: starts the frontend app for development
 - `lint`: runs a code format check and if no error is found, lints the code. 
@@ -73,9 +72,11 @@ __🔄 Work in progress related to styles__
 
 We've a more detailed document about our thinking about [Docmentation](docs/documentation.md). 
 
-We added `alex` ( 📃 [documentation]( https://alexjs.com/) | 🐙 [repository](https://github.com/get-alex/alex)) as an **optional** linting tool. It checks text documents and highlights language that potentially could be insensitive or inconsiderate. It is not part of any automated process. 
+### Tip
+You can use `alex` ( 📃 [documentation]( https://alexjs.com/) | 🐙 [repository](https://github.com/get-alex/alex)) as an **optional** linting tool. It checks text documents and highlights language that potentially could be insensitive or inconsiderate. 
 
-- run `pnpm alex` to lint text files.
+- run it with `pnpm --silent dlx alex` to lint text files.  
+
 
 ## More detailed documentation
 
