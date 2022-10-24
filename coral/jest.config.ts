@@ -9,8 +9,8 @@ export default {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ['<rootDir>/test-setup/setup-files-after-env.ts'],
   moduleNameMapper: {
-    ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2|svg)$":
-        "jest-transform-stub",
+    ".+\\.(png|jpg|ttf|woff|woff2|svg)$": "jest-transform-stub",
+    "\\.css$": "identity-obj-proxy",
     "^@/(.*)$": "<rootDir>/src/$1",
   },
 };
