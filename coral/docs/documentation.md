@@ -17,7 +17,7 @@ First things first - what kind of work would this add for us:
 That's it for now! We can iterate over that in the process and see where we want to make tweaks.
 
 
-## Users and use cases for documenation
+## Users and use cases for documentation
 
 - external companies and developer
     - they use klaw as a product
@@ -66,7 +66,7 @@ That's it for now! We can iterate over that in the process and see where we want
 
 ### Manual checks
 - write-good linter
-- AlexJS linter
+- ✅ AlexJS linter optional
 - Hemingway Editor
 
 ### Useful links for later

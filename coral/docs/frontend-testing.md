@@ -24,7 +24,7 @@ We use [Jest](hhttps://jestjs.io/docs/) as test runner in Frontend in general an
 
 **⚠️ We use and need this library only for testing React components.**
 
-`Dom testing library` is an opinionated library, which makes it easy to follow a specific way to write test. It’s best used with jest-dom and the custom [jest-dom matchers](https://github.com/testing-library/jest-dom#readme). The combination of both leads to nice readable tests!
+`Dom testing library` is an opinionated library, which supports a specific way of writing test. It is well documented and supports us in having a consistent code base. It’s best used with jest-dom and the custom [jest-dom matchers](https://github.com/testing-library/jest-dom#readme). The combination of both leads to nice readable tests!
 
 [react-testing-library](https://testing-library.com/docs/react-testing-library/intro) is a react-adapter for the [DOM testing-library](https://testing-library.com/docs/). 
 
