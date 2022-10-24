@@ -18,12 +18,13 @@
     "reformat": "prettier --write src",
     "test": "jest",
     "test-dev": "jest --watch",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged",
+    "tsc": "tsc"
   },
   "lint-staged": {
-    "**/*.{ts,tsx}": [
-      "pnpm tsc --jsx preserve --noEmit",
-      "pnpm lint"
+    "**/*.ts?(x)": [
+      "prettier --check",
+      "eslint"
     ]
   },
   "dependencies": {
