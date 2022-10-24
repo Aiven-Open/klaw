@@ -13,13 +13,12 @@
     "build": "tsc && vite build",
     "dev": "vite",
     "lint": "prettier --check src && eslint .",
+    "lint-staged": "lint-staged",
     "prepare": "cd .. && husky install coral/.husky",
     "preview": "vite preview",
     "reformat": "prettier --write src",
     "test": "jest",
     "test-dev": "jest --watch",
-    "typecheck": "tsc --noEmit --pretty",
-    "lint-staged": "lint-staged",
     "tsc": "tsc"
   },
   "lint-staged": {

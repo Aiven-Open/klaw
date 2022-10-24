@@ -8,7 +8,7 @@
 
 ## Installation and usage 
 
-ℹ️ Coral uses `pnpm` as a package manager. Read in their official documentation [how to install](https://pnpm.io/installation) it. 
+ℹ️ Coral uses `pnpm run` as a package manager. Read in their official documentation [how to install](https://pnpm.io/installation) it. 
 
 - navigate to this directory
 - run `pnpm install`
@@ -28,7 +28,7 @@ You can also run `pnpm` in your console to get a list of all available scripts.
 - `reformat`: runs the code formatter (prettier) and reformat all code
 - `test-dev`: runs all test tests related to changed files in a watch mode
 - `test`: runs all tests one time
-- `typecheck`: runs the TypeScript compiler (tsc)
+- `tsc`: runs the TypeScript compiler
 
 ## Tech stack
 
