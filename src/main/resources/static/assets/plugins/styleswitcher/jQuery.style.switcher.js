@@ -27,7 +27,7 @@ function store(name, val) {
 
 });
  /*function get(name) {
-    
+
   }*/
 /*
 $(document).ready(function(){

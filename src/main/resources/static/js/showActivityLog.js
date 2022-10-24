@@ -1,21 +1,21 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('showActivityLogApp',[]);
 
 app.controller("showActivityLogCtrl", function($scope, $http, $location, $window) {
-	
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
 	//$http.defaults.headers.common['Accept'] = 'application/json';
-	
+
 
 	$scope.getEnvs = function() {
 
@@ -140,7 +140,7 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
 
 		//serviceInput['clusterType'] = $scope.getTopics.clusterType.value;
 		serviceInput['env'] = $scope.getActivityLog.envId;
-		
+
 		$http({
 			method: "GET",
 			url: "getActivityLogPerEnv",
@@ -155,14 +155,14 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
                 $scope.resultPageSelected = output[0].currentPage;
             }
 		}).error(
-			function(error) 
+			function(error)
 			{
 				$scope.alert = error;
 				$scope.resultPages = null;
                 $scope.resultPageSelected = null;
 			}
 		);
-		
+
 	}
 
 	$scope.sendMessageToAdmin = function(){

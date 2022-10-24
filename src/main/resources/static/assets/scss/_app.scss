@@ -1,5 +1,5 @@
-/******************* 
-Global Styles 
+/*******************
+Global Styles
 *******************/
 * {
     outline: none;
@@ -379,7 +379,7 @@ Buttons
 .btn{
     &.btn-warning {
         color: $white;
-    }   
+    }
 }
 
 .btn-md{
@@ -585,7 +585,7 @@ Notify
 
 
 /*******************
-File Upload 
+File Upload
 ******************/
 
 .fileupload {
@@ -615,10 +615,10 @@ Megamenu
         width: 100%;
         padding: 30px;
         margin-top: 0px;
-        
+
     }
     ul{ padding: 0px;
-        
+
         li{
             list-style: none;
         }
@@ -674,7 +674,7 @@ Layouts
     .sidebar-footer{
         background:$sidebar-alt;
     }
-    
+
     .sidebar-nav>ul>li>a.active{
         background:$white;
     }
@@ -747,7 +747,7 @@ Layouts
 }
 
 // For Table Responsive Page
-.tablesaw, 
+.tablesaw,
 .fixed-table-container {
     [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
         position: relative;

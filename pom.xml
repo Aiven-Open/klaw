@@ -302,6 +302,24 @@
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>${spotless-maven-plugin.version}</version>
                 <configuration>
+                    <formats>
+                        <!-- you can define as many formats as you want, each is independent -->
+                        <format>
+                            <!-- define the files to apply to -->
+                            <includes>
+                                <include>*.md</include>
+                                <include>.gitignore</include>
+                                <include>src/**/*.css</include>
+                                <include>src/**/*.java</include>
+                                <include>src/**/*.js</include>
+                                <include>src/**/*.scss</include>
+                                <include>src/**/*.svg</include>
+                            </includes>
+                            <!-- define the steps to apply to those files -->
+                            <trimTrailingWhitespace/>
+                            <endWithNewline/>
+                        </format>
+                    </formats>
                     <java>
                         <googleJavaFormat>
                             <version>${google-java-format.version}</version>

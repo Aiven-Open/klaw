@@ -1,7 +1,7 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('envsApp',[]);
@@ -41,7 +41,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
     	$scope.showSubmitFailed = function(title, text){

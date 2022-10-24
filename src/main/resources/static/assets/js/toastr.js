@@ -13,7 +13,7 @@ $(function() {
             position: 'top-right',
             loaderBg:'#ff6849',
             icon: 'info',
-            hideAfter: 3000, 
+            hideAfter: 3000,
             stack: 6
           });
 
@@ -26,7 +26,7 @@ $(function() {
             position: 'top-right',
             loaderBg:'#ff6849',
             icon: 'warning',
-            hideAfter: 3500, 
+            hideAfter: 3500,
             stack: 6
           });
 
@@ -38,7 +38,7 @@ $(function() {
             position: 'top-right',
             loaderBg:'#ff6849',
             icon: 'success',
-            hideAfter: 3500, 
+            hideAfter: 3500,
             stack: 6
           });
 
@@ -52,9 +52,8 @@ $(function() {
             loaderBg:'#ff6849',
             icon: 'error',
             hideAfter: 3500
-            
+
           });
 
      });
 });
-          

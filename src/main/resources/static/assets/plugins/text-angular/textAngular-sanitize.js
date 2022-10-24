@@ -539,7 +539,7 @@ function validStyles(styleAttr){
             value === 'underline'
             || value === 'line-through'
         )
-      || 
+      ||
         key === 'font-weight' && (
             value === 'bold'
         )

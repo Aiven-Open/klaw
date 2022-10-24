@@ -31,4 +31,3 @@ We generally **aren't** interested in the following issues:
 * Clickjacking on pages with no sensitive actions
 * Theoretical vulnerabilities where you can't demonstrate a significant
   security impact with a proof of concept.
-

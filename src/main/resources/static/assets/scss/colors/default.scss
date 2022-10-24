@@ -18,7 +18,7 @@ $themecolor-alt: #26c6da;
     .navbar-header{
         background: rgba(0, 0, 0, 0.05);
     }
-    
+
     .top-navbar .navbar-header .navbar-brand .dark-logo{
         display: none;
     }
@@ -28,7 +28,7 @@ $themecolor-alt: #26c6da;
     }
     .navbar-light .navbar-nav .nav-item > {
         a.nav-link {
-           
+
             color: $white!important;
             &:hover,
             &:focus {
@@ -143,7 +143,7 @@ a.link {
     }
     > ul > li {
         &.active > a, &.active:hover > a {
-            
+
             color: $white;
             background: $themecolor-alt;
             i {
@@ -155,10 +155,10 @@ a.link {
         }
     }
     > ul > li > a {
-        
+
         &.active,
         &:hover {
-            
+
             i {
                 color: $themecolor-alt;
             }

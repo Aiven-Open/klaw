@@ -1,7 +1,7 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('synchronizeAclsApp',[]);
@@ -249,14 +249,14 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                 $scope.currentPageSelected = output[0].currentPage;
             }
 		}).error(
-			function(error) 
+			function(error)
 			{
 			    $scope.ShowSpinnerStatusAcls = false;
 			    $scope.resultBrowse = [];
 				$scope.handleErrorMessage(error);
 			}
 		);
-		
+
 	}
 
 	$scope.sendMessageToAdmin = function(){

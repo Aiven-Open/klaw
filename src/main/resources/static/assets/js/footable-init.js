@@ -30,7 +30,7 @@ $(window).on('load', function() {
 	$('#demo-foo-pagination').footable();
 
 	$('#demo-foo-addrow').footable();
-	
+
     var addrow = $('#demo-foo-addrow2');
 	addrow.footable().on('click', '.delete-row-btn', function() {
 

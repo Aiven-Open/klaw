@@ -18,7 +18,7 @@ $(function () {
         , height: '100%'
         , color: '#dcdcdc'
      });
-    
+
     var cht = function () {
             var topOffset = 445;
             var height = ((window.innerHeight > 0) ? window.innerHeight : this.screen.height) - 1;
@@ -27,8 +27,8 @@ $(function () {
     };
     $(window).ready(cht);
     $(window).on("resize", cht);
-    
-    
+
+
 
     // this is for the left-aside-fix in content area with scroll
     var chtin = function () {
@@ -39,8 +39,8 @@ $(function () {
     };
     $(window).ready(chtin);
     $(window).on("resize", chtin);
-    
-    
+
+
 
 
     $(".open-panel").on("click", function () {

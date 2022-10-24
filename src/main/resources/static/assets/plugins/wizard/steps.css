@@ -79,7 +79,7 @@ File: css
 .wizard-content .wizard>.steps>ul>li.current .step {
     border-color: #009efb ;
     background-color: #fff;
-    color: #009efb 
+    color: #009efb
 }
 
 .wizard-content .wizard>.steps>ul>li.disabled a,
@@ -223,7 +223,7 @@ File: css
     top: 45px;
     width: 50%;
     height: 3px;
-    background-color: #009efb 
+    background-color: #009efb
 }
 
 .wizard-content .wizard.wizard-circle>.steps>ul>li.current:after,
@@ -246,7 +246,7 @@ File: css
     top: 39px;
     width: 50%;
     height: 2px;
-    background-color: #009efb 
+    background-color: #009efb
 }
 
 .wizard-content .wizard.wizard-notification>.steps>ul>li.current .step {
@@ -257,7 +257,7 @@ File: css
 
 .wizard-content .wizard.wizard-notification>.steps>ul>li.current .step:after,
 .wizard-content .wizard.wizard-notification>.steps>ul>li.done .step:after {
-    border-top-color: #009efb 
+    border-top-color: #009efb
 }
 
 .wizard-content .wizard.wizard-notification>.steps>ul>li.current:after,
@@ -330,7 +330,7 @@ File: css
     }
     .wizard-content .wizard>.steps>ul>li:last-child:after {
         content: '';
-        background-color: #009efb 
+        background-color: #009efb
     }
     .wizard-content .wizard.vertical>.steps {
         width: 15%
@@ -342,7 +342,7 @@ File: css
         width: 100%
     }
     .wizard-content .wizard>.steps>ul>li.current:after {
-        background-color: #009efb 
+        background-color: #009efb
     }
      .wizard-content .wizard.vertical>.steps>ul>li {
         display: block;

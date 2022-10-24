@@ -1,19 +1,19 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('browseAclsApp',['textAngular']);
 
 app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
-	
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.envSelectedParam;
 
@@ -571,13 +571,13 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		    else
 		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
 		}).error(
-			function(error) 
+			function(error)
 			{
 			    $scope.ShowSpinnerStatusTopics = false;
 				$scope.alert = error;
 			}
 		);
-		
+
 	}
 
     $scope.getSchemaOfTopic = function(){

@@ -1,7 +1,7 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('kwMetricsApp',['chart.js']);

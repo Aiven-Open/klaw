@@ -1,19 +1,19 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('requestAclsApp',[]);
 
 app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
-	
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
 	$http.defaults.headers.common['Accept'] = 'application/json';
 
 	$scope.disable_ssl=true;
@@ -49,7 +49,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.alertnote = $scope.alert;
             $scope.showAlertToast();
         }
-	
+
     $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
 
         $scope.refreshPage = function(){

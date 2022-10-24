@@ -1,16 +1,16 @@
 # Klaw
 
-Klaw is fully opensource. 🥳 
+Klaw is fully opensource. 🥳
 
 Klaw is a self-service Apache Kafka® Topic Management/Governance tool/portal. It is a web application which automates the process of creating and browsing Apache Kafka topics, acls, avro schemas, connectors by introducing roles/authorizations to users of various teams of an organization.
 
-With several downloads every week, many more companies which did not adopt a solution, can happily move away from managing Apache Kafka configs in excelsheets, confluence, wiki pages, git etc. 
+With several downloads every week, many more companies which did not adopt a solution, can happily move away from managing Apache Kafka configs in excelsheets, confluence, wiki pages, git etc.
 
 ## Built With
 
-* Bootstrap UI, Angular, Javascript, HTML, CSS 
+* Bootstrap UI, Angular, Javascript, HTML, CSS
 * [Maven](https://maven.apache.org/) - Dependency Management
-* Java, Spring boot, Spring security, SQL, Apache Kafka Admin client 
+* Java, Spring boot, Spring security, SQL, Apache Kafka Admin client
 
 ## Versioning
 
@@ -30,7 +30,7 @@ https://github.com/aiven/klaw-cluster-api
 - Topics (approval): Create, Update, Delete, Promote
 - Acls (approval):  Create,Delete
 - Connectors (approval): Create
-  - Any connector can be created as long as the required plugin libraries are installed on the server.  
+  - Any connector can be created as long as the required plugin libraries are installed on the server.
 - Avro Schemas (approval): Create
   - View all available versions of the subjects per topic
 - Topic Overview :
@@ -50,11 +50,11 @@ https://github.com/aiven/klaw-cluster-api
 - Reconciliation and email notifications on differences between Klaw and Clusters
 - Restore configuration (topics, acls)
 
-- Login 
+- Login
   - Active directory integration
   - Single Sign-on (OAuth2)
   - Based on database
-  
+
 - Configure Clusters and Environments
   - Clusters can be created connecting to Apache Kafka clusters. (Cluster Management Api should be configured)
   - Environments are wrappers over clusters, enforcing flexible configs like prefix, suffix etc
@@ -123,7 +123,7 @@ maintainers <opensource@aiven.io>.
 
 ## Trademark
 
-Apache Kafka is either a registered trademark or trademark of the Apache Software Foundation in the United States and/or other countries. 
+Apache Kafka is either a registered trademark or trademark of the Apache Software Foundation in the United States and/or other countries.
 All product and service names used in this page are for identification purposes only and do not imply endorsement.
 
 ## Credits

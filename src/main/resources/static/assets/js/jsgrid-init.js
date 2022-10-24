@@ -2,7 +2,7 @@
     "use strict";
     var Site = window.Site;
     $(document).ready(function($) {
-            
+
         }), jsGrid.setDefaults({
             tableClass: "jsgrid-table table table-striped table-hover"
         }), jsGrid.setDefaults("text", {
@@ -114,7 +114,7 @@
                 }]
             })
         }(),
-        
+
         function() {
             $("#exampleSorting").jsGrid({
                 height: "500px",
@@ -150,7 +150,7 @@
                 $("#exampleSorting").jsGrid("sort", field)
             })
         }(),
-        
+
         function() {
             var MyDateField = function(config) {
                 jsGrid.Field.call(this, config)

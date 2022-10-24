@@ -8,9 +8,9 @@ File: scss
 @import url('https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap');
 
 
-// 
+//
 // Theme Colors
-// 
+//
 
 $topbar: #2196f3;
 $sidebar: #fff;
@@ -34,7 +34,7 @@ $orange: #fb8c00 !default;
 $yellow: #ffb22b !default;
 $green: #21c1d6 !default;
 $inverse: #2f3d4a !default;
-$extra-light: #ebf3f5; 
+$extra-light: #ebf3f5;
 $megna: #00897b !default;
 $purple: #7460ee !default;
 
@@ -56,20 +56,20 @@ $danger: $red !default;
 $light: #f2f4f8 !default;
 $dark: #212529 !default;
 
-// 
+//
 // Light Colors
-// 
+//
 $light-danger: #f9e7eb;
 $light-success: #e8fdeb;
 $light-warning: #fff8ec;
 $light-primary: #f1effd;
 $light-info: #cfecfe;
 $light-inverse: #f6f6f6;
-$light-megna: #e0f2f4; 
+$light-megna: #e0f2f4;
 
-// 
+//
 // Dark Colors
-// 
+//
 $danger-dark: #e6294b;
 $success-dark: #1eacbe;
 $warning-dark: #e9ab2e;
@@ -104,22 +104,22 @@ $theme-colors: map-merge(("primary": $primary,
 
 $text-muted: #99abb4 !default;
 
-// 
+//
 // Extra Variables
-// 
+//
 $rgt: right;
 $lft: left;
 $dark-text: #848a96;
 
-// 
+//
 // Border
-// 
+//
 $border-color: rgba(120, 130, 140, 0.13);
 $radius: 4px;
 
-// 
+//
 // Preloader
-// 
+//
 .preloader{
     width: 100%;
     height: 100%;
@@ -134,23 +134,23 @@ $radius: 4px;
     }
 }
 
-// 
+//
 // Font weight Settings Here
-// 
+//
 $font-weight-light: 300 !default;
 $font-weight-normal: 400 !default;
 $font-weight-bold: 700 !default;
 $font-size-base: 0.875rem !default;
 $font-weight-base: 300 !default;
 
-// 
+//
 // Card
-// 
+//
 $card-border-width: 0px !default;
 
-// 
+//
 // Global font setting
-// 
+//
 $font-family-sans-serif: 'Poppins',
 sans-serif !default;
 $body-color: #67757c !default;
@@ -159,9 +159,9 @@ $headings-color: #455a64 !default;
 $headings-font-weight: 400 !default;
 $body-bg: #eef5f9 !default;
 
-// 
+//
 // Font size
-// 
+//
 $h1-font-size: 36px !default;
 $h2-font-size: 24px !default;
 $h3-font-size: 21px !default;
@@ -170,9 +170,9 @@ $h5-font-size: 16px !default;
 $h6-font-size: 14px !default;
 
 
-// 
+//
 // Button Shadow & Hover
-// 
+//
 $enable-shadows: true !default;
 $btn-box-shadow:  0 1px 0 rgba($white, .15) !default;
 
@@ -186,9 +186,9 @@ $btn-box-shadow:  0 1px 0 rgba($white, .15) !default;
   }
 }
 
-// 
+//
 // Table
-// 
+//
 $table-border-color: #f3f1f1 !default;
 $table-hover-bg: $light !default;
 
@@ -200,9 +200,9 @@ $badge-padding-y : 3px !default;
 $badge-padding-x : 10px !default;
 $badge-font-size: 12px !default;
 
-// 
+//
 // Button
-// 
+//
 $btn-padding-y: 7px !default;
 $btn-padding-x: 12px !default;
 $btn-padding-y-lg: .75rem !default;
@@ -210,16 +210,16 @@ $btn-padding-x-lg: 1.5rem !default;
 $btn-padding-y-sm: .25rem !default;
 $btn-padding-x-sm: .5rem !default;
 
-// 
+//
 // Dropdown
-// 
+//
 $dropdown-item-padding-y : 8px !default;
 $dropdown-item-padding-x : 1rem !default;
 $dropdown-link-color: $body-color !default;
 
-// 
+//
 // Form
-// 
+//
 $input-border-color: #d9d9d9 !default;
 $input-color: $body-color !default;
 $input-font-size: 1rem !default;

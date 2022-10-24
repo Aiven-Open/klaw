@@ -105,7 +105,7 @@ $material-colors: ( red: #fb3a3a, pink: #E91E63, purple: #7460ee, deep-purple: #
 /* Focused styles */
 [type="radio"].tabbed:focus + label:before {
   box-shadow: 0 0 0 10px rgba(0, 0, 0, 0.1);
- animation: ripple 0.2s linear forwards;    
+ animation: ripple 0.2s linear forwards;
 }
 
 /* Disabled Radio With gap */
@@ -124,7 +124,7 @@ $material-colors: ( red: #fb3a3a, pink: #E91E63, purple: #7460ee, deep-purple: #
 [type="radio"]:disabled:checked + label:before {
   background-color: transparent;
   border-color: rgba(0, 0, 0, 0.26);
- animation: ripple 0.2s linear forwards;    
+ animation: ripple 0.2s linear forwards;
 }
 
 [type="radio"]:disabled + label {
@@ -430,7 +430,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
 
 
 
-.scale-up{ 
+.scale-up{
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
     -webkit-transform: scale(0);
@@ -438,7 +438,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
     display:inline-block;
     transform-origin: right 0px;
 }
-.scale-up-left{ 
+.scale-up-left{
     -webkit-transition: all 0.3s ease;
     transition: all 0.3s ease;
     -webkit-transform: scale(0);
@@ -456,8 +456,8 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
 }
 /*panels*/
 .card{
-   box-shadow:$box-shadow; 
-   border-radius:$radius;  
+   box-shadow:$box-shadow;
+   border-radius:$radius;
 }
 
 .well, pre{
@@ -510,7 +510,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
         padding-left: 26px;
         height: 25px;
         line-height: 21px;
-        
+
         font-weight: normal;
     }
 
@@ -521,7 +521,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
                 left: -2px;
                 width: 11px;
                 height: 19px;
-                
+
             }
         }
     }
@@ -563,7 +563,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
                 &:after {
                     border: 2px solid $val;
                     background-color: $val;
-                    
+
                 }
             }
         }
@@ -576,7 +576,7 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
             padding-left: 26px;
             height: 25px;
             line-height: 25px;
-            
+
             font-weight: normal;
         }
     }
@@ -586,9 +586,9 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
             padding-left: 26px;
             height: 25px;
             line-height: 25px;
-            
+
             font-weight: normal;
-            
+
         }
     }
 }

@@ -2,11 +2,11 @@
 // =========================
 //
 // Usage:
-// 
+//
 // Short form:
 //   wm.invoke('pub.flow:tracePipeline', { some: 'pipeline' })
 //
-// 
+//
 // Long form:
 //   wm.invoke({
 //     host: 'host'
@@ -27,7 +27,7 @@
 // promise.error(function(error) {
 //     console.log(error);
 // });
-// 
+//
 
 angular.module('angular-webmethods', [])
 // angular.module('wm', ['$http', '$location'])
@@ -38,7 +38,7 @@ angular.module('angular-webmethods', [])
     .factory('wm', ['$http', '$location', function($http, $location) {
 
 	    var wm = {};
-	    
+
 	    wm.invoke = function(optionsOrService, pipeline) {
 
 	        // If short form wm.invoke(service, pipeline) was used, then re-invoke same function
@@ -58,14 +58,14 @@ angular.module('angular-webmethods', [])
 
 	        // Set a flag indicating whether we should use relative or absolute URIs.
 	        // We use absolute URIs if the caller specified protocol, host, or port
-	        // in the options. Otherwise, a relative URI is used (/invoke/...), which 
-	        // will implicitly use whatever protocol, host, and port this page was 
+	        // in the options. Otherwise, a relative URI is used (/invoke/...), which
+	        // will implicitly use whatever protocol, host, and port this page was
 	        // retrieved from.
-	        var useAbsoluteURI = options.protocol !== undefined 
+	        var useAbsoluteURI = options.protocol !== undefined
 	            || options.host !== undefined
 	            || options.port !== undefined;
 
-	        // Set Options Defaults        
+	        // Set Options Defaults
 	        options.protocol = options.protocol || 'http';
 	        options.host = options.host || $location.host();
 	        options.port = (options.port || '5555') + ''; // +'' coersces numbers to strings
@@ -77,24 +77,24 @@ angular.module('angular-webmethods', [])
 	        var httpParams = {};
 	        httpParams.method = 'POST';
 
-	        // If invoke is on same host (indicated by config.host not being specified), 
+	        // If invoke is on same host (indicated by config.host not being specified),
 	        // then we only use a relative URI. If a host was specivied, then we
 	        // construct the absolute URI with protocol://host:port
 	        httpParams.url = '/invoke/' + options.service;
 	        if (useAbsoluteURI) {
-	            httpParams.url = options.protocol + "://" 
-	                                    + options.host 
-	                                    + ':' 
+	            httpParams.url = options.protocol + "://"
+	                                    + options.host
+	                                    + ':'
 	                                    + options.port
 	                                    + httpParams.url;
-	        } 
+	        }
 
 	        // Here we need to foil undesirable IE caching of XMLHTTPRequests.
 	        // To do this, we add a t parameter to the query string, with a value
 	        // that will be different for every invocation.
 	        // NOTE: This has the side effect of adding an additional t variable to the pipeline.
 	        // TODO: Need to find a better way to do this, or make it an option
-	        httpParams.params = { 't': new Date().getTime() }; 
+	        httpParams.params = { 't': new Date().getTime() };
 	        httpParams.headers = { Accept: 'application/json' };
 	        httpParams.data = options.pipeline;
 
@@ -108,4 +108,3 @@ angular.module('angular-webmethods', [])
 	}]) // end of factory 'wm'
 
 ; // end of module definition
-

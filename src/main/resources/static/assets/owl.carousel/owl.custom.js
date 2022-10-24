@@ -1,19 +1,19 @@
 jQuery(document).ready(function($) {
                 //owl carousel
       $("#owl-demo").owlCarousel({
-     
+
           navigation : true, // Show next and prev buttons
           slideSpeed : 300,
           paginationSpeed : 400,
           //singleItem:true
-     
+
           // "singleItem:true" is a shortcut for:
-           items : 1, 
+           items : 1,
           // itemsDesktop : false,
           // itemsDesktopSmall : false,
           // itemsTablet: false,
           // itemsMobile : false
-     
+
       });
                 $('#owl-demo2').owlCarousel({
 				    margin:20,

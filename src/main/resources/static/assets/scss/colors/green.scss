@@ -16,7 +16,7 @@ $themecolor-alt: #26c6da;
 
 .topbar {
     background: $topbar;
-    
+
     .top-navbar .navbar-header .navbar-brand .dark-logo{
         display: none;
     }
@@ -141,7 +141,7 @@ a.link {
     }
     > ul > li {
         &.active > a, &.active:hover > a {
-            
+
             color: $white;
             background: $themecolor-alt;
             i {
@@ -153,10 +153,10 @@ a.link {
         }
     }
     > ul > li > a {
-        
+
         &.active,
         &:hover {
-            
+
             i {
                 color: $themecolor-alt;
             }
