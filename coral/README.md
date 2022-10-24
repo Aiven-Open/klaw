@@ -79,7 +79,7 @@ We added `alex` ( 📃 [documentation]( https://alexjs.com/) | 🐙 [repository]
 
 ## More detailed documentation
 
-We provided more documentation on:
+We provide more documentation on:
 
 - Our commitment to [Accessibility](docs/accessibility.md)
 - Detailed overview of the [Directory Structure](docs/directory-structure.md)
