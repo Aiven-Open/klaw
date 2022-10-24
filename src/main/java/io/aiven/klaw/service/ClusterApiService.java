@@ -98,7 +98,7 @@ public class ClusterApiService {
   @Value("${klaw.clusterapi.access.username}")
   private String clusterApiUser;
 
-  @Value("${klaw.clusterapi.access.base64.secret:null}")
+  @Value("${klaw.clusterapi.access.base64.secret:#{''}}")
   private String clusterApiAccessBase64Secret;
 
   private static String clusterConnUrl;
