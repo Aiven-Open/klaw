@@ -1,0 +1,93 @@
+openapi: 3.0.3
+info:
+  title: Klaw - OpenAPI
+  version: 1.0.0
+  description: >
+    This specification is still a work in progess and is not yet implemented in any API. The purpose of this specification is to facilitate developers discussions. 
+  contact:
+    email: info@klaw-project.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Klaw documentation
+  url: https://www.klaw-project.io/docs
+tags:
+  - name: User
+    description: User API endpoints
+paths:
+  /user/authenticate:
+    summary: User authentication
+    description: User can authenticate themselves with their username and password
+    post:
+      operationId: userAuthentication
+      summary: Authenticate user
+      description: >
+        Exchange username and password to an authentication token. 
+        The token can be later used as authentication mechanism for other API endpoints.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuthenticationRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserAuthenticationResponse'
+        '403':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/CommonError'
+              example:
+                message: Username and password did not match
+                
+components:
+  schemas:
+    CommonError:
+      type: object
+      properties:
+        message:
+          title: message
+          description: Description for user why a certain operation failed
+          type: string
+    UserAuthenticationRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          title: username
+          description: Username
+          example: john.doe@klaw-project.io
+        password:
+          title: password
+          type: string
+          example: password123
+    UserAuthenticationResponse:
+      type: object
+      required:
+        - token
+        - tokenType
+      properties:
+        token:
+          title: token
+          description: Klaw authentication token
+          type: string
+          minLength: 256
+          maxLength: 2048
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        tokenType:
+          title: Token type
+          example: JWT
+          type: string
+          enum: [JWT]
