@@ -30,3 +30,12 @@ hs_err_pid*
 
 .idea
 target
+
+# OS generated files
+.DS_Store
+**/.DS_Store
+
+# Node
+node_modules/
+**/node_modules/
+
