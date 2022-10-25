@@ -46,6 +46,7 @@
     "@vitejs/plugin-react": "^2.1.0",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-no-relative-import-paths": "^1.4.0",
     "eslint-plugin-react": "^7.31.10",
     "husky": "^8.0.1",
     "identity-obj-proxy": "^3.0.0",

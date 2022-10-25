@@ -19,7 +19,8 @@ module.exports = {
     },
     "plugins": [
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "no-relative-import-paths"
     ],
     "settings": {
         "react": {
@@ -27,5 +28,9 @@ module.exports = {
         }
     },
     "rules": {
+        "no-relative-import-paths/no-relative-import-paths": [
+            "warn",
+            { "allowSameFolder": true, "rootDir": "src" }
+        ]
     }
 }
