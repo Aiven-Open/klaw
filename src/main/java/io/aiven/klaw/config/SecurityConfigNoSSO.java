@@ -1,8 +1,12 @@
 package io.aiven.klaw.config;
 
+import io.aiven.klaw.auth.JwtAuthenticationFilter;
+import io.aiven.klaw.auth.JwtAuthorizationFilter;
 import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.HttpLogoutHandler;
+import io.aiven.klaw.service.JwtTokenUtilService;
 import java.util.*;
 import javax.naming.directory.Attributes;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
@@ -18,17 +23,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
 @Slf4j
 public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
@@ -37,6 +47,9 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
+
+  @Value("${klaw.login.token.authentication:false}")
+  private boolean tokenAuthentication;
 
   @Value("${spring.ldap.base:@null}")
   private String ldapBase;
@@ -81,13 +94,31 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Autowired private KwRequestFilter kwRequestFilterup;
 
+  @Lazy @Autowired private UserDetailsService userDetailsService;
+
+  private final JwtTokenUtilService jwtTokenUtilService;
+  private final HttpLogoutHandler httpLogoutHandler;
+
+  public SecurityConfigNoSSO(
+      JwtTokenUtilService jwtTokenUtilService, HttpLogoutHandler httpLogoutHandler) {
+    this.jwtTokenUtilService = jwtTokenUtilService;
+    this.httpLogoutHandler = httpLogoutHandler;
+  }
+
   private void shutdownApp() {
     // ((ConfigurableApplicationContext) contextApp).close();
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    if (tokenAuthentication) {
+      tokenBasedHttpSecurity(http);
+    } else {
+      defaultSpringHttpSecurity(http);
+    }
+  }
 
+  private void defaultSpringHttpSecurity(HttpSecurity http) throws Exception {
     String[] staticResources = {
       "/lib/**",
       "/assets/**",
@@ -128,9 +159,49 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
         .and()
         .logout()
         .logoutSuccessUrl("/login");
-
     //         Add a filter to validate the username/pwd with every request
     http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
+  }
+
+  private void tokenBasedHttpSecurity(HttpSecurity http) throws Exception {
+    String[] staticResourcesHtml = {
+      "/home",
+      "/home/**",
+      "/register**",
+      "/authenticate",
+      "/login**",
+      "/terms**",
+      "/registrationReview**",
+      "/forgotPassword",
+      "/getDbAuth",
+      "/feedback**",
+      "/resetPassword",
+      "/getRoles",
+      "/getTenantsInfo",
+      "/getBasicInfo",
+      "/getAllTeamsSUFromRegisterUsers",
+      "/registerUser",
+      "/resetMemoryCache/**",
+      "/userActivation**",
+      "/getActivationInfo**"
+    };
+
+    http.csrf().disable();
+    http.authorizeRequests().antMatchers(staticResourcesHtml).permitAll();
+    http.authorizeRequests().anyRequest().authenticated();
+    http.logout()
+        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+        .logoutSuccessHandler(httpLogoutHandler)
+        .and()
+        // Authentication filter, this will intercept request path for login ("/login").
+        .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenUtilService))
+        // Authorization filter to check jwt validity.
+        .addFilter(
+            new JwtAuthorizationFilter(
+                authenticationManager(), userDetailsService, jwtTokenUtilService))
+        // This disables session creation on Spring Security
+        .sessionManagement()
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
   }
 
   @Override
