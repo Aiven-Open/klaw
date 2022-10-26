@@ -2,26 +2,95 @@
 
 🎉 First off: Thank you for your interest in contributing to our project 🥳
 
-Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community.
+Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. GitHubs Open Source guides have a great source about ways to [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/).
 
 Please read through this document before submitting any issues or pull requests. This ensures all parties have all the necessary information to respond to your bug report or contribution.
 
-## Content
-* [❤️ Code of Conduct ](#-code-of-conduct)
-* [Guideline commit messages](#guideline-commit-messages)
-  + [ℹ️ Semantic prefixes for commit messages](#-semantic-prefixes-for-commit-messages)
-  + [✍️ Writing a great commit message](#-writing-a-great-commit-message)
-    - [1. Add a short description as the first line](#1-add-a-short-description-as-the-first-line)
-    - [2. Use the "imperative mood" in the first line](#2-use-the-imperative-mood-in-the-first-line)
-    - [3. Separate your description with a new line from the body](#3-separate-your-description-with-a-new-line-from-the-body)
-    - [4. Use an optional body to explain why not how.](#4-use-an-optional-body-to-explain-why-not-how)
+## Content 
 
-    
+- [❤️ Code of Conduct](#code-of-conduct)
+- [Opening an issue](#opening-an-issue)
+- [How to work on an issue](#how-to-work-on-an-issue)
+- [How to make a pull request](#how-to-make-a-pull-request)
+  - [When is your pull request ready to be merged?](#when-is-your-pull-request-ready-to-be-merged)
+- [Guideline commit messages](#guideline-commit-messages)
+  - [ℹ️ Semantic prefixes for commit messages](#-semantic-prefixes-for-commit-messages)
+  - [✍️ Writing a great commit message](#-writing-a-great-commit-message)
+
 ## ❤️ Code of Conduct
 
 This project has adopted the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). Before contributing, please take the time to read our COC. Everyone participating is expected to uphold this code. Please report unacceptable behavior to us!
 
 For more information see the [Code of Conduct FAQ](https://www.contributor-covenant.org/faq/).
+
+
+## Opening an issue
+You should open an issue when you
+- checked that there is no issue open already related to your topic
+- want to report an error that you can't resolve by yourself
+- want to propose a new feature
+- want to discuss an idea to improve a higher-level topic, for example about community, documentation
+
+__What information does an issue need?__
+The more information an issue includes, the better! For example:
+
+- If it's a bug, describe in detail how to reproduce it. You an add screenshots or screen recordings for visual bugs.
+- If it's a feature, create a user story. What problem does that feature solve? What value does it add?
+
+
+## How to work on an issue
+
+- Comment on the issue to inform that you will work on it.
+- Set yourself as assignee and add the __in progress__ label.
+- [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Klaw repository.
+- On your fork, create a branch named after the issue you're working on.
+- Make all of your changes 🧑‍💻
+- For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
+- Check if it would be helpful to update documentation related to your change. If yes, please do so!
+- Make sure you added tests for your changes.
+- If you fixed a bug, add a regression test.
+- When you're finished and pushed all your changes to github, open a pull request.
+
+
+## How to make a pull request
+
+GitHub has a detailed documentation [how to create a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) if you want to have more information. If you're not sure what to do, please feel free to reach out to our community!
+
+Be conscious about the scope for one PR. Sometimes it is tempting to get side tracked and for example refactor some unrelated code. But this should be a separate PR. Only add changes related to and contributing to the issue you're solving.
+
+
+### When is your pull request ready to be merged?
+
+Every pull request has to be reviewed before merging. This code review is meant to assure quality for the product. It is also a great tool to give and receive feedback in the community and learn from each other.
+
+Your pull request should meet following criteria to be ready for review:
+
+__1. Every PR has to be releasable__
+
+- Every PR that is merged on `main` should be treated like we release it into production right away. 
+- The `main` branch should always be in a state where it can be deployed and used right away.
+
+__2. Clear goal with a small scope__
+
+- Make small and incremental PRs. 
+- The code changes relate to one specific topic. 
+- Every PR should have one specific goal (and if you add that goal in your description - all the better). 
+- Rather do multiple smaller PRs than one big one! PRs with a lot of changes are harder to review. It's also harder to give constructive feedback for them.
+
+__3. Add meaningful information__
+
+- A descriptive title and detailed description of your changes helps reviewer gaining context 
+- Include links to relevant issues. 
+- If you followed a recommended approach e.g. from an article, link it in the PR. 
+- Especially for UI changes it can be helpful to add screenshots or recordings of your changes
+- If you have questions, don't hesitate to add them!
+
+__4. Keep a clear git history in mind__
+
+- If you do multiple commits, try to make every commit cover a scope of your changes. 
+- Your commit messages should follow our [guideline](#guideline-commit-messages). 
+- If you add changes after a review, don't force push in your existing PR, but add new commits. That way, reviewers can pick up the review again.
+
 
 ## Guideline commit messages
 
