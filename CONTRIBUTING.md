@@ -48,7 +48,7 @@ For more information read this article: [How to Write a Git Commit Message](http
 
 ```
 
-**1. Add a short description as first line**
+##### 1. Add a short description as first line
 The first line (`<description>`) should be a short description of your change. Limit it to preferably 50 characters. It never should be longer than 72 characters.
 
 **⛔️ Don't**
@@ -59,7 +59,7 @@ The first line (`<description>`) should be a short description of your change. L
 
 `Add first iteration for contribution guide`
 
-**2. Use the "imperative mood" in first line**
+##### 2. Use the "imperative mood" in first line
 "Imperative mood" means you form a sentence as if you were giving a command. You can image your commit message completing the sentence _"If applied, this commit will... <do your change>"_.
 
 **⛔️ Don't**
@@ -70,10 +70,12 @@ The first line (`<description>`) should be a short description of your change. L
 `fix: Remove the newline that caused a linting error`
 -> _"If applied, this commit will_ remove the newline that caused a linting error"
 
-**3. Separate your description with a new line from the body.**
+
+##### 3. Separate your description with a new line from the body
 If you add an body, add an empty line between your description to separate it from the body. This makes the message more readable. It also makes `git log --oneline` or `git shortlog` more useable.
 
-**4. Use an optional body to explain why, not how.**
+
+##### 4. Use an optional body to explain why, not how.
 You don't need to explain the code! The commit message has a changeset that contains this information. Use the body to explain _why_ you made a change. Not every commit needs to have a body. Often the code change itself is explanation enough.  
 
 **⛔️ Don't**
@@ -90,5 +92,5 @@ Change "optoinal" "to optional"
 Remove "just" from description, because it can make people feel inadequate. 
 ```
 
-**5. Wrap your body at 72 characters**
+##### 5. Wrap your body at 72 characters
 Git does not wrap text, so you have to take care of margins. Editors and IDEs can help with that.
