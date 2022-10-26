@@ -34,14 +34,14 @@ You should open an issue when you
 __What information does an issue need?__
 The more information an issue includes, the better! For example:
 
-- If it's a bug, describe in detail how to reproduce it. You an add screenshots or screen recordings for visual bugs.
+- If it's a bug, describe in detail how to reproduce it. You can add screenshots or screen recordings for visual bugs.
 - If it's a feature, create a user story. What problem does that feature solve? What value does it add?
 
 
 ## How to work on an issue
 
 - Comment on the issue to inform that you will work on it.
-- Set yourself as assignee and add the __in progress__ label.
+- If you have the rights: set yourself as assignee and add the __in progress__ label.
 - [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Klaw repository.
 - On your fork, create a branch named after the issue you're working on.
 - Make all of your changes 🧑‍💻
@@ -61,7 +61,7 @@ Be conscious about the scope for one PR. Sometimes it is tempting to get side tr
 
 ### When is your pull request ready to be merged?
 
-Every pull request has to be reviewed before merging. This code review is meant to assure quality for the product. It is also a great tool to give and receive feedback in the community and learn from each other.
+Every pull request has to be reviewed before merging. At least on maintainer need to approve it. This code review is meant to assure quality for the product. It is also a great tool to give and receive feedback in the community and learn from each other.
 
 Your pull request should meet following criteria to be ready for review:
 
