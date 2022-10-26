@@ -29,8 +29,7 @@ module.exports = {
     },
     "rules": {
         "no-relative-import-paths/no-relative-import-paths": [
-            "warn",
-            { "allowSameFolder": true, "rootDir": "src" }
+            "error"
         ]
     }
 }

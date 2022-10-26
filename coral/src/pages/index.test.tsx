@@ -1,4 +1,4 @@
-import HomePage from "./index";
+import HomePage from "src/pages/index";
 import { render, cleanup, screen } from "@testing-library/react";
 
 describe("HomePage", () => {
