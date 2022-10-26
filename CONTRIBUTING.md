@@ -2,11 +2,11 @@
 
 🎉 First off: Thank you for your interest in contributing to our project 🥳
 
-Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. GitHubs Open Source guides have a great source about ways to [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/).
+Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community. GitHub Open Source guides have a great source about ways to [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/).
 
 Please read through this document before submitting any issues or pull requests. This ensures all parties have all the necessary information to respond to your bug report or contribution.
 
-## Content 
+## Content
 
 - [❤️ Code of Conduct](#code-of-conduct)
 - [Opening an issue](#opening-an-issue)
@@ -41,54 +41,55 @@ The more information an issue includes, the better! For example:
 ## How to work on an issue
 
 - Comment on the issue to inform that you will work on it.
-- If you have the rights: set yourself as assignee and add the __in progress__ label.
+- If you have the rights: set yourself as an assignee and add the __in progress__ label.
 - [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Klaw repository.
-- On your fork, create a branch named after the issue you're working on.
+- On your fork, [create a branch](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/making-changes-in-a-branch/managing-branches#creating-a-branch) named after the issue you're working on.
 - Make all of your changes 🧑‍💻
 - For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
-- Check if it would be helpful to update documentation related to your change. If yes, please do so!
-- Make sure you added tests for your changes.
-- If you fixed a bug, add a regression test.
-- When you're finished and pushed all your changes to github, open a pull request.
+- Check if it would be helpful to update documentation related to your change. If yes, please do so 🤗!
+- Make sure you add tests for your changes.
+- If you fix a bug, add a regression test.
+
+- When you're finished and pushed all your changes to GitHub, you're ready to create a pull request 🎉
 
 
 ## How to make a pull request
 
-GitHub has a detailed documentation [how to create a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) if you want to have more information. If you're not sure what to do, please feel free to reach out to our community!
+GitHub has detailed documentation on [how to create a PR](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) if you want to have more information. If you're not sure what to do, please feel free to reach out to our community!
 
-Be conscious about the scope for one PR. Sometimes it is tempting to get side tracked and for example refactor some unrelated code. But this should be a separate PR. Only add changes related to and contributing to the issue you're solving.
+Be conscious of the scope of one PR. Sometimes it is tempting to get sidetracked for example by refactoring some unrelated code. We've all been there! But this should be a separate PR. Only add changes to your PR related and contribute to the issue you're solving.
 
 
-### When is your pull request ready to be merged?
+### ✅ When is your pull request ready to be merged?
 
-Every pull request has to be reviewed before merging. At least on maintainer need to approve it. This code review is meant to assure quality for the product. It is also a great tool to give and receive feedback in the community and learn from each other.
+Every pull request has to be reviewed before merging. At least one maintainer needs to approve it. This is meant to assure the quality of the product. It is also a great tool to give and receive feedback in the community and learn from each other.
 
-Your pull request should meet following criteria to be ready for review:
+Your pull request should meet the following criteria to be ready for review:
 
 __1. Every PR has to be releasable__
 
-- Every PR that is merged on `main` should be treated like we release it into production right away. 
+- Every PR that is merged on `main` should be treated like we release it into production right away.
 - The `main` branch should always be in a state where it can be deployed and used right away.
 
-__2. Clear goal with a small scope__
+__2. A clear goal with a small scope__
 
-- Make small and incremental PRs. 
-- The code changes relate to one specific topic. 
-- Every PR should have one specific goal (and if you add that goal in your description - all the better). 
-- Rather do multiple smaller PRs than one big one! PRs with a lot of changes are harder to review. It's also harder to give constructive feedback for them.
+- Make small and incremental PRs.
+- The code changes relate to one specific topic.
+- Every PR should have one specific goal (and if you add that goal in your description - all the better).
+- Rather do multiple smaller PRs than one big one! PRs with a lot of changes are harder to review. It's also harder to give constructive feedback to them.
 
 __3. Add meaningful information__
 
-- A descriptive title and detailed description of your changes helps reviewer gaining context 
-- Include links to relevant issues. 
-- If you followed a recommended approach e.g. from an article, link it in the PR. 
+- A descriptive title and detailed description of your changes help the reviewer gaining context.
+- Include links to relevant issues.
+- If you followed a recommended approach e.g. from an article, link it in the PR.
 - Especially for UI changes it can be helpful to add screenshots or recordings of your changes
 - If you have questions, don't hesitate to add them!
 
 __4. Keep a clear git history in mind__
 
-- If you do multiple commits, try to make every commit cover a scope of your changes. 
-- Your commit messages should follow our [guideline](#guideline-commit-messages). 
+- If you do multiple commits, try to make every commit cover the scope of your changes.
+- Your commit messages should follow our [guideline](#guideline-commit-messages).
 - If you add changes after a review, don't force push in your existing PR, but add new commits. That way, reviewers can pick up the review again.
 
 
