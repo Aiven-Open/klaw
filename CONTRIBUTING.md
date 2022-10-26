@@ -4,7 +4,7 @@
 
 Whether it's a bug report, new feature, correction, or additional documentation, we greatly value feedback and contributions from our community.
 
-Please read through this document before submitting any issues or pull requests. This ensures all parties have all necessary information to respond to your bug report or contribution.
+Please read through this document before submitting any issues or pull requests. This ensures all parties have all the necessary information to respond to your bug report or contribution.
 
 
 ## ❤️ Code of Conduct 
@@ -15,7 +15,7 @@ For more information see the [Code of Conduct FAQ](https://www.contributor-coven
 
 ## Guideline commit messages
 
-We uses the [Conventional Commits](https://www.conventionalcommits.org/) specification. It helps us creating a helpful and explicit git history. 
+We use the [Conventional Commits](https://www.conventionalcommits.org/) specification. It helps us to create a helpful and explicit git history. 
 
 ### ℹ️ Semantic prefixes for commit messages
 
@@ -34,7 +34,7 @@ Example: `refactor: Update footer from kafkawize.io to klaw-project.io`
 
 ### ✍️ Writing a great commit message
 
-A "great" commit message enables others to gain more context about a code change. While the `diff` is telling you **what** has changes, the commit message can tell you **why** it has changed.  
+A "great" commit message enables others to gain more context about a code change. While the `diff` is telling you **what** has changed, the commit message can tell you **why** it has changed.  
 
 For more information read this article: [How to Write a Git Commit Message](https://cbea.ms/git-commit/). We used it as a base for our rules.
 
@@ -48,7 +48,7 @@ For more information read this article: [How to Write a Git Commit Message](http
 
 ```
 
-##### 1. Add a short description as first line
+##### 1. Add a short description as the first line
 The first line (`<description>`) should be a short description of your change. Limit it to preferably 50 characters. It never should be longer than 72 characters.
 
 **⛔️ Don't**
@@ -57,9 +57,9 @@ The first line (`<description>`) should be a short description of your change. L
 
 **️✅ Do**
 
-`Add first iteration for contribution guide`
+`Add the first iteration for contribution guide`
 
-##### 2. Use the "imperative mood" in first line
+##### 2. Use the "imperative mood" in the first line
 "Imperative mood" means you form a sentence as if you were giving a command. You can image your commit message completing the sentence _"If applied, this commit will... <do your change>"_.
 
 **⛔️ Don't**
@@ -72,10 +72,10 @@ The first line (`<description>`) should be a short description of your change. L
 
 
 ##### 3. Separate your description with a new line from the body
-If you add an body, add an empty line between your description to separate it from the body. This makes the message more readable. It also makes `git log --oneline` or `git shortlog` more useable.
+If you add a body, add an empty line between your description to separate it from the body. This makes the message more readable. It also makes `git log --oneline` or `git shortlog` more usable.
 
 
-##### 4. Use an optional body to explain why, not how.
+##### 4. Use an optional body to explain why not how.
 You don't need to explain the code! The commit message has a changeset that contains this information. Use the body to explain _why_ you made a change. Not every commit needs to have a body. Often the code change itself is explanation enough.  
 
 **⛔️ Don't**
@@ -89,7 +89,7 @@ Change "optoinal" "to optional"
 **️✅ Do**
 ```fix: Remove word
 
-Remove "just" from description, because it can make people feel inadequate. 
+Remove "just" from the description, because it can make people feel inadequate. 
 ```
 
 ##### 5. Wrap your body at 72 characters
