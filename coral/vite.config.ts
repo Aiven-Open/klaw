@@ -2,10 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { resolve } from "path";
 
-const rootPath = resolve(__dirname);
 // https://vitejs.dev/config/
-
-// console.log("rootPath", rootPath);
 export default defineConfig({
   plugins: [react()],
   define: {
@@ -22,7 +19,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": resolve(rootPath, "./src"),
+      src: resolve(resolve(__dirname), "./src"),
     },
   },
 });
