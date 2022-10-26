@@ -14,6 +14,7 @@ specifiers:
   '@vitejs/plugin-react': ^2.1.0
   eslint: ^8.25.0
   eslint-config-prettier: ^8.5.0
+  eslint-plugin-no-relative-import-paths: ^1.4.0
   eslint-plugin-react: ^7.31.10
   husky: ^8.0.1
   identity-obj-proxy: ^3.0.0
@@ -49,6 +50,7 @@ devDependencies:
   '@vitejs/plugin-react': 2.1.0_vite@3.1.8
   eslint: 8.25.0
   eslint-config-prettier: 8.5.0_eslint@8.25.0
+  eslint-plugin-no-relative-import-paths: 1.4.0
   eslint-plugin-react: 7.31.10_eslint@8.25.0
   husky: 8.0.1
   identity-obj-proxy: 3.0.0
@@ -2133,6 +2135,10 @@ packages:
       eslint: '>=7.0.0'
     dependencies:
       eslint: 8.25.0
+    dev: true
+
+  /eslint-plugin-no-relative-import-paths/1.4.0:
+    resolution: {integrity: sha512-J/ok26KqJM+20VsxNEcHc9kyW0dcFHBlihOO5FFv/GQqwcW+G1UngbHLpnPAdOQ1dJg5Ljk/40csqfZ3mnneUw==}
     dev: true
 
   /eslint-plugin-react/7.31.10_eslint@8.25.0:
