@@ -76,7 +76,7 @@ __2. A clear goal with a small scope__
 - Make small and incremental PRs.
 - The code changes relate to one specific topic.
 - Every PR should have one specific goal (and if you add that goal in your description - all the better).
-- Rather do multiple smaller PRs than one big one! PRs with a lot of changes are harder to review. It's also harder to give constructive feedback to them.
+- Rather do multiple smaller PRs than one big one! PRs with a lot of changes are difficult to review. It's also more demanding to give constructive feedback to them.
 
 __3. Add meaningful information__
 
