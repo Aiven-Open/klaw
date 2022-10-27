@@ -1,4 +1,4 @@
-import HelloPage from "src/pages/hello";
+import HelloPage from "src/app/pages/hello";
 import { render, cleanup, screen } from "@testing-library/react";
 
 describe("HelloPage", () => {

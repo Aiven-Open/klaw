@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import router from "src/router";
+import router from "src/app/router";
 
 import "@aivenio/design-system/dist/styles.css";
 
