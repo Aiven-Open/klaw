@@ -39,3 +39,5 @@ target
 node_modules/
 **/node_modules/
 
+# Coral build artefacts
+coral/dist*
