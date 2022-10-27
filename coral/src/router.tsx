@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
+/* eslint-disable no-restricted-imports */
 import HomePage from "src/pages";
 import HelloPage from "src/pages/hello";
+/* eslint-enable */
 
 const routes: Array<RouteObject> = [
   {

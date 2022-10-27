@@ -30,6 +30,12 @@ module.exports = {
     "rules": {
         "no-relative-import-paths/no-relative-import-paths": [
             "error"
-        ]
+        ],
+        "no-restricted-imports": ["error", {
+            "patterns": [{
+              "group": ["src/pages*"],
+              "message": "Pages should be only imported from '/src/router.tsx'"
+            }]
+        }]
     }
 }
