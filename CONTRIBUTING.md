@@ -95,7 +95,7 @@ __4. Keep a clear git history in mind__
 
 ## Guideline commit messages
 
-We use the [Conventional Commits](https://www.conventionalcommits.org/) specification. It helps us to create a helpful and explicit git history.
+We use the [Conventional Commits](https://www.conventionalcommits.org/) specification. It helps to create a meaningful and explicit git history.
 
 ### ℹ️ Semantic prefixes for commit messages
 
