@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.service.jwt.util.JwtConstant.ACCESS_TOKEN_EXPIRATION;
+
 import io.aiven.klaw.service.jwt.util.JwtConstant;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -18,11 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import static io.aiven.klaw.service.jwt.util.JwtConstant.ACCESS_TOKEN_EXPIRATION;
-
 @Service
-public class JwtTokenUtilService implements Serializable {
-  private static final long serialVersionUID = -2020300565626007488L;
+public class JwtTokenUtilService{
 
   @Value("${klaw.access.base64.secret}")
   private String secret;

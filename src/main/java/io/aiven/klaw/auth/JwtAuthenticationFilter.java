@@ -2,8 +2,8 @@ package io.aiven.klaw.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.AuthenticationRequest;
+import io.aiven.klaw.model.AuthenticationResponse;
 import io.aiven.klaw.service.JwtTokenUtilService;
-import io.aiven.klaw.service.jwt.util.JwtConstant;
 import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +23,7 @@ This filter authenticates the users based on the credentials provided in the req
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  public static final String LOGIN_URL = "/authenticate";
+  public static final String LOGIN_URL = "/user/authenticate";
   private final AuthenticationManager authManager;
   private final JwtTokenUtilService jwtTokenUtilService;
 
@@ -56,11 +56,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     try {
       SecurityContextHolder.getContext().setAuthentication(auth);
       this.jwtTokenUtilService.generateToken((UserDetails) auth.getPrincipal());
-      // Add token to authorization header.
-      response.addHeader(
-          JwtConstant.AUTHORIZATION_HEADER_STRING,
-          JwtConstant.TOKEN_BEARER_PREFIX
-              + this.jwtTokenUtilService.generateToken((UserDetails) auth.getPrincipal()));
+      // Add token to response body
+      AuthenticationResponse authenticationResponse =
+          AuthenticationResponse.builder()
+              .token(this.jwtTokenUtilService.generateToken((UserDetails) auth.getPrincipal()))
+              .tokenType("JWT")
+              .build();
+      String authenticationResponseAsJson =
+          new ObjectMapper().writeValueAsString(authenticationResponse);
+      response.getOutputStream().write(authenticationResponseAsJson.getBytes());
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
