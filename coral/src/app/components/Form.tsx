@@ -23,6 +23,7 @@ import {
   UseFormProps as _UseFormProps,
   UseFormReturn,
 } from "react-hook-form";
+import { ZodSchema } from "zod";
 
 // ts-jest can't use the import statement for "lodash/get"
 // using required makes us able to still use get without
@@ -46,9 +47,7 @@ type UseFormProps<T extends FieldValues = FieldValues> = Omit<
   _UseFormProps<T>,
   "resolver"
 > & {
-  //@TODO fix typing
-  //eslint-disable-next-line @typescript-eslint/no-explicit-any
-  schema?: any;
+  schema?: ZodSchema;
 };
 
 export const useForm = <T extends FieldValues = FieldValues>({
@@ -98,9 +97,6 @@ function _TextInput<T extends FieldValues>({
       type="text"
       {...form.register(name)}
       valid={error ? false : undefined}
-      // @TODO fix typing
-      //  eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       error={error}
     />
   );
@@ -132,7 +128,6 @@ function _SubmitButton<T extends FieldValues>({
 
 const SubmitButtonMemo = memo(
   _SubmitButton,
-  // @TODO fix typing
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (_prev: FormRegisterProps, _next: FormRegisterProps) => {
     return false;

@@ -15,10 +15,10 @@ import {
   TextInput,
   useForm,
 } from "src/app/components/Form";
-import { z } from "zod";
+import { z, ZodSchema } from "zod";
 
 type WrapperProps<T extends FieldValues> = {
-  schema: any;
+  schema: ZodSchema;
   defaultValues?: DeepPartial<T>;
   onSubmit: SubmitHandler<T>;
   onError: SubmitErrorHandler<T>;
@@ -57,7 +57,10 @@ describe("Form", () => {
 
   const renderForm = <T extends FieldValues>(
     children: React.ReactNode,
-    { schema, defaultValues }: { schema: any; defaultValues?: DeepPartial<T> }
+    {
+      schema,
+      defaultValues,
+    }: { schema: ZodSchema; defaultValues?: DeepPartial<T> }
   ) => {
     return render(
       <Wrapper<T>
@@ -82,7 +85,7 @@ describe("Form", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
   };
 
-  const assertSubmitted = (data: any) => {
+  const assertSubmitted = (data: Record<string, string>) => {
     expect(onSubmit).toHaveBeenCalledWith(data, expect.anything());
   };
 
