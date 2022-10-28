@@ -90,6 +90,9 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 
+  @Value("${klaw.coral.enabled:false}")
+  private boolean coralEnabled;
+
   @Autowired LdapTemplate ldapTemplate;
 
   @Autowired private KwRequestFilter kwRequestFilterup;
@@ -164,30 +167,35 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   }
 
   private void tokenBasedHttpSecurity(HttpSecurity http) throws Exception {
-    String[] staticResourcesHtml = {
-      "/home",
-      "/home/**",
-      "/register**",
-      "/authenticate",
-      "/login**",
-      "/terms**",
-      "/registrationReview**",
-      "/forgotPassword",
-      "/getDbAuth",
-      "/feedback**",
-      "/resetPassword",
-      "/getRoles",
-      "/getTenantsInfo",
-      "/getBasicInfo",
-      "/getAllTeamsSUFromRegisterUsers",
-      "/registerUser",
-      "/resetMemoryCache/**",
-      "/userActivation**",
-      "/getActivationInfo**"
-    };
+    List<String> staticResourcesHtmlArray =
+        new ArrayList<>(
+            List.of(
+                "/home",
+                "/home/**",
+                "/register**",
+                "/authenticate",
+                "/login**",
+                "/terms**",
+                "/registrationReview**",
+                "/forgotPassword",
+                "/getDbAuth",
+                "/feedback**",
+                "/resetPassword",
+                "/getRoles",
+                "/getTenantsInfo",
+                "/getBasicInfo",
+                "/getAllTeamsSUFromRegisterUsers",
+                "/registerUser",
+                "/resetMemoryCache/**",
+                "/userActivation**",
+                "/getActivationInfo**"));
+
+    if (coralEnabled) staticResourcesHtmlArray.add("/coral/**");
 
     http.csrf().disable();
-    http.authorizeRequests().antMatchers(staticResourcesHtml).permitAll();
+    http.authorizeRequests()
+        .antMatchers(staticResourcesHtmlArray.toArray(new String[0]))
+        .permitAll();
     http.authorizeRequests().anyRequest().authenticated();
     http.logout()
         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
