@@ -89,6 +89,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
 
     String[] staticResources = {
+      "/coral/**",
       "/lib/**",
       "/assets/**",
       "/js/**",
