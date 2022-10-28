@@ -24,12 +24,7 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 import { ZodSchema } from "zod";
-
-// ts-jest can't use the import statement for "lodash/get"
-// using required makes us able to still use get without
-// having to add babel to jest
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const get = require("lodash/get");
+import get from "lodash/get";
 
 type FormInputProps<T extends FieldValues = FieldValues> = {
   name: FieldPath<T>;
@@ -90,7 +85,7 @@ function _TextInput<T extends FieldValues>({
   ...props
 }: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
   const { errors } = form.formState;
-  const error = get(errors, name)?.message;
+  const error = get(errors, name)?.message as string;
   return (
     <BaseInput
       {...props}
