@@ -77,6 +77,9 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 
+  @Value("${klaw.coral.enabled:false}")
+  private boolean coralEnabled;
+
   @Autowired LdapTemplate ldapTemplate;
 
   @Autowired private KwRequestFilter kwRequestFilterup;
@@ -87,35 +90,41 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    List<String> staticResourcesHtmlArray =
+        new ArrayList<>(
+            List.of(
+                "/assets/**",
+                "/lib/**",
+                "/js/**",
+                "/home",
+                "/home/**",
+                "/register**",
+                "/authenticate",
+                "/login**",
+                "/terms**",
+                "/registrationReview**",
+                "/forgotPassword",
+                "/getDbAuth",
+                "/feedback**",
+                "/resetPassword",
+                "/getRoles",
+                "/getTenantsInfo",
+                "/getBasicInfo",
+                "/getAllTeamsSUFromRegisterUsers",
+                "/registerUser",
+                "/resetMemoryCache/**",
+                "/userActivation**",
+                "/getActivationInfo**"));
 
-    String[] staticResources = {
-      "/lib/**",
-      "/assets/**",
-      "/js/**",
-      "/home",
-      "/home/**",
-      "/register**",
-      "/login**",
-      "/terms**",
-      "/registrationReview**",
-      "/forgotPassword",
-      "/getDbAuth",
-      "/feedback**",
-      "/resetPassword",
-      "/getRoles",
-      "/getTenantsInfo",
-      "/getBasicInfo",
-      "/getAllTeamsSUFromRegisterUsers",
-      "/registerUser",
-      "/resetMemoryCache/**",
-      "/userActivation**",
-      "/getActivationInfo**"
-    };
+    if (coralEnabled) {
+      staticResourcesHtmlArray.add("/coral/**");
+      staticResourcesHtmlArray.add("/assets/coral/**");
+    }
 
     http.csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers(staticResources)
+        .antMatchers(staticResourcesHtmlArray.toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .fullyAuthenticated()
