@@ -41,3 +41,5 @@ node_modules/
 
 # Coral build artefacts
 coral/dist*
+src/main/resources/static/assets/coral*
+src/main/resources/templates/coral*
