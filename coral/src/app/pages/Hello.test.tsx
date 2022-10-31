@@ -1,9 +1,9 @@
-import HelloPage from "src/app/pages/hello";
+import Hello from "src/app/pages/Hello";
 import { render, cleanup, screen } from "@testing-library/react";
 
-describe("HelloPage", () => {
+describe("Hello", () => {
   beforeEach(() => {
-    render(<HelloPage />);
+    render(<Hello />);
   });
 
   afterEach(() => {

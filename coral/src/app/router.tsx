@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 import HomePage from "src/app/pages";
-import HelloPage from "src/app/pages/hello";
+import Hello from "src/app/pages/Hello";
 
 const routes: Array<RouteObject> = [
   {
@@ -9,7 +9,7 @@ const routes: Array<RouteObject> = [
   },
   {
     path: "/hello",
-    element: <HelloPage />,
+    element: <Hello />,
   },
   {
     path: "*",

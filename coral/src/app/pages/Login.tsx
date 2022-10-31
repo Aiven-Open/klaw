@@ -14,7 +14,7 @@ const formSchema = z.object({
 
 type Schema = z.infer<typeof formSchema>;
 
-const LoginPage = () => {
+const Login = () => {
   const form = useForm<Schema>({
     schema: formSchema,
   });
@@ -40,4 +40,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;
