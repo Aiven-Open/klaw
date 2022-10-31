@@ -82,8 +82,8 @@ module.exports = {
             "error"
         ],
         "no-unused-vars": "off",
+        "no-restricted-imports": strip_ids_from_no_restricted_imports(NO_RESTRICTED_IMPORTS_RULES),
         "@typescript-eslint/no-unused-vars": "error",
-        "no-restricted-imports": strip_ids_from_no_restricted_imports(NO_RESTRICTED_IMPORTS_RULES)
         "@typescript-eslint/no-explicit-any": "error"
     }
 }
