@@ -44,12 +44,13 @@ public class ServerConfigService {
 
   @Autowired private ClusterApiService clusterApiService;
 
-  @Autowired private CommonUtilsService commonUtilsService;
+  private final CommonUtilsService commonUtilsService;
 
   private static List<ServerConfigProperties> listProps;
 
-  public ServerConfigService(Environment env) {
+  public ServerConfigService(Environment env, CommonUtilsService commonUtilsService) {
     this.env = env;
+    this.commonUtilsService = commonUtilsService;
   }
 
   @PostConstruct
@@ -58,18 +59,21 @@ public class ServerConfigService {
     log.info("All server properties being loaded");
 
     List<ServerConfigProperties> listProps = new ArrayList<>();
-    List<String> allowedKeys =
-        Arrays.asList(
-            "spring.", "java.", "klaw.", "server.", "logging.", "management.", "endpoints.");
+    List<String> allowedKeys = Arrays.asList("spring.", "klaw.");
 
     if (env instanceof ConfigurableEnvironment) {
-      for (PropertySource propertySource : ((ConfigurableEnvironment) env).getPropertySources()) {
+      for (PropertySource<?> propertySource :
+          ((ConfigurableEnvironment) env).getPropertySources()) {
         if (propertySource instanceof EnumerablePropertySource) {
-          for (String key : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
+          for (String key : ((EnumerablePropertySource<?>) propertySource).getPropertyNames()) {
 
             ServerConfigProperties props = new ServerConfigProperties();
             props.setKey(key);
-            if (key.contains("password") || key.contains("license")) {
+            if (key.contains("password")
+                || key.contains("license")
+                || key.contains("pwd")
+                || key.contains("cert")
+                || key.contains("secret")) {
               props.setValue("*******");
             } else {
               props.setValue(WordUtils.wrap(propertySource.getProperty(key) + "", 125, "\n", true));
@@ -91,6 +95,10 @@ public class ServerConfigService {
   }
 
   public List<ServerConfigProperties> getAllProps() {
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
+      return new ArrayList<>();
+    }
     return listProps;
   }
 
