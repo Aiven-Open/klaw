@@ -1,7 +1,3 @@
-// ❗️ This implementation mirrors the Aiven core and is kept up to date with it.
-// The Aiven core solution will be its own open source package soon.
-// we're mirroring the implementation as it is, using only the components we actively use in coral.
-// ❗️The Aiven core code base is the source of truth for this component.
 import {
   PrimaryButton,
   Input as BaseInput,
