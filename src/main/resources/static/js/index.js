@@ -20,11 +20,12 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $ro
 	$scope.showServerStatus = "false";
 
         $scope.getChartOverviewChart = function() {
+            var token = localStorage.getItem("token");
 
                     $http({
                         method: "GET",
                         url: "getActivityLogForTeamOverview",
-                        headers : { 'Content-Type' : 'application/json' },
+                        headers : { 'Content-Type' : 'application/json' , 'Authorization' : 'Bearer ' + token},
                         params: {'activityLogForTeam' : 'true' },
                     }).success(function(output) {
                         $scope.activitylogchart = output.activityLogOverview;
@@ -70,10 +71,11 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $ro
               }
 
            $scope.getAuth = function() {
+               var token = localStorage.getItem("token");
            	$http({
                    method: "GET",
                    url: "getAuth",
-                   headers : { 'Content-Type' : 'application/json' }
+                   headers : { 'Content-Type' : 'application/json', 'Authorization' : 'Bearer ' + token }
                }).success(function(output) {
                    $scope.dashboardDetails = output;
                    $scope.userlogged = output.username;
@@ -155,20 +157,21 @@ app.controller("dashboardCtrl", function($scope, $http, $location, $window,  $ro
         }
 
        	$scope.getDashboardStatistics = function() {
-                   	$http({
-                           method: "GET",
-                           url: "getDashboardStats",
-                           headers : { 'Content-Type' : 'application/json' }
-                       }).success(function(output) {
-                           $scope.producerCount = output.producerCount;
-                           $scope.consumerCount = output.consumerCount;
-                           $scope.teamMembersCount = output.teamMembersCount;
-                       }).error(
-                           function(error)
-                           {
-                               $scope.alert = error;
-                           }
-                       );
+            var token = localStorage.getItem("token");
+            $http({
+                   method: "GET",
+                   url: "getDashboardStats",
+                   headers : { 'Content-Type' : 'application/json' , 'Authorization' : 'Bearer ' + token}
+               }).success(function(output) {
+                   $scope.producerCount = output.producerCount;
+                   $scope.consumerCount = output.consumerCount;
+                   $scope.teamMembersCount = output.teamMembersCount;
+               }).error(
+                   function(error)
+                   {
+                       $scope.alert = error;
+                   }
+               );
                	}
 
 

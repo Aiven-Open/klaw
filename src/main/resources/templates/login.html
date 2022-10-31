@@ -42,17 +42,17 @@
     <![endif]-->
 </head>
 
-<script>
-    function callLogin(){
-        if(document.loginForm.password.value == '')
-            return;
-        if(document.loginForm.username.value == '')
-            return;
+<!--<script>-->
+<!--    function callLogin(){-->
+<!--        if(document.loginForm.password.value == '')-->
+<!--            return;-->
+<!--        if(document.loginForm.username.value == '')-->
+<!--            return;-->
 
-        document.loginForm.urlbar.value = window.location.href.replace(window.location.origin, "");
-        document.loginForm.submit();
-    }
-</script>
+<!--        document.loginForm.urlbar.value = window.location.href.replace(window.location.origin, "");-->
+<!--        document.loginForm.submit();-->
+<!--    }-->
+<!--</script>-->
 
 
 <body class="fix-header card-no-border logo-center">
@@ -192,7 +192,7 @@
                 <div class="col-md-4">
                     <div class="login-box card">
                         <div class="card-body">
-                        <form class="form-horizontal form-material" name="loginForm" id="loginFormId" th:action="@{/login}" method="post">
+                        <form class="form-horizontal form-material" name="loginForm" id="loginFormId" >
                             <input type="hidden" name="urlbar">
                             <table width="100%">
                                 <tr>
@@ -221,11 +221,11 @@
 
                             <div class="form-group text-center mt-3">
                                 <div class="col-xs-12">
-                                    <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" id="grad1" onClick="callLogin()" type="submit">Log In</button>
+                                    <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" id="grad1" ng-click="callLogin()" type="submit">Log In</button>
                                 </div>
                             </div>
                         </form>
-                        <div th:if="${param.error}">
+                        <div ng-show="alert != null && alert != ''">
                             Invalid username and/or password.
                         </div>
 

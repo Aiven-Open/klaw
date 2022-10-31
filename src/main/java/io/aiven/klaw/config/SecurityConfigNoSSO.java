@@ -2,7 +2,6 @@ package io.aiven.klaw.config;
 
 import io.aiven.klaw.auth.JwtAuthenticationFilter;
 import io.aiven.klaw.auth.JwtAuthorizationFilter;
-import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HttpLogoutHandler;
@@ -34,7 +33,6 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
@@ -94,8 +92,6 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   private boolean coralEnabled;
 
   @Autowired LdapTemplate ldapTemplate;
-
-  @Autowired private KwRequestFilter kwRequestFilterup;
 
   @Lazy @Autowired private UserDetailsService userDetailsService;
 
@@ -158,12 +154,20 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
         .failureForwardUrl("/login?error")
         .failureUrl("/login?error")
         .loginPage("/login")
-        .permitAll()
+        .permitAll();
+    http.logout()
+        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+        .logoutSuccessHandler(httpLogoutHandler)
+        .logoutSuccessUrl("/login")
         .and()
-        .logout()
-        .logoutSuccessUrl("/login");
-    //         Add a filter to validate the username/pwd with every request
-    http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
+        // Authentication filter, this will intercept request path for login ("/login").
+        .addFilter(
+            new JwtAuthenticationFilter(
+                authenticationManager(), jwtTokenUtilService, userDetailsService))
+        // Authorization filter to check jwt validity.
+        .addFilter(
+            new JwtAuthorizationFilter(
+                authenticationManager(), userDetailsService, jwtTokenUtilService));
   }
 
   private void tokenBasedHttpSecurity(HttpSecurity http) throws Exception {
@@ -202,7 +206,9 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
         .logoutSuccessHandler(httpLogoutHandler)
         .and()
         // Authentication filter, this will intercept request path for login ("/login").
-        .addFilter(new JwtAuthenticationFilter(authenticationManager(), jwtTokenUtilService))
+        .addFilter(
+            new JwtAuthenticationFilter(
+                authenticationManager(), jwtTokenUtilService, userDetailsService))
         // Authorization filter to check jwt validity.
         .addFilter(
             new JwtAuthorizationFilter(

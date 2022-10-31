@@ -17,7 +17,7 @@ public class CoralController {
 
   @RequestMapping(value = "/{path:[^\\.]*}", method = RequestMethod.GET)
   public String rootPattern(@PathVariable String path) {
-      log.info("Requested path {}", path);
+    log.info("Requested path {}", path);
     return CORAL_INDEX;
   }
 
