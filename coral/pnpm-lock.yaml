@@ -4,6 +4,7 @@ specifiers:
   '@aivenio/design-system': ^19.0.1
   '@hookform/resolvers': ^2.9.10
   '@testing-library/dom': ^8.19.0
+  '@tanstack/react-query': ^4.13.5
   '@testing-library/jest-dom': ^5.16.5
   '@testing-library/react': ^13.4.0
   '@testing-library/user-event': ^14.4.3
@@ -40,6 +41,7 @@ specifiers:
 dependencies:
   '@aivenio/design-system': 19.0.1_pvnihi4muhoy7kenlmiyxwzuqy
   '@hookform/resolvers': 2.9.10_react-hook-form@7.38.0
+  '@tanstack/react-query': 4.13.5_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.38.0_react@18.2.0
@@ -898,6 +900,28 @@ packages:
     dependencies:
       '@sinonjs/commons': 1.8.3
     dev: true
+
+  /@tanstack/query-core/4.13.4:
+    resolution: {integrity: sha512-DMIy6tgGehYoRUFyoR186+pQspOicyZNSGvBWxPc2CinHjWOQ7DPnGr9zmn/kE9xK4Zd3GXd25Nj3X20+TF6Lw==}
+    dev: false
+
+  /@tanstack/react-query/4.13.5_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-p2HcWGuqfvG7Pz04un4phWZeXzlITD7Ue0gMXjD56g8y3rP1r5qEYC/BckffrZLf4dZtQeVPCWOa8RYAqx036g==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.13.4
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
 
   /@testing-library/dom/8.19.0:
     resolution: {integrity: sha512-6YWYPPpxG3e/xOo6HIWwB/58HukkwIVTOaZ0VwdMVjhRUX/01E4FtQbck9GazOOj7MXHc5RBzMrU86iBJHbI+A==}
@@ -4657,6 +4681,14 @@ packages:
       querystringify: 2.2.0
       requires-port: 1.0.0
     dev: true
+
+  /use-sync-external-store/1.2.0_react@18.2.0:
+    resolution: {integrity: sha512-eEgnFxGQ1Ife9bzYs6VLi8/4X6CObHMw9Qr9tPY43iKwsPw8xE8+EFsf/2cFZ5S3esXgpWgtSCtLNS41F+sKPA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /v8-compile-cache-lib/3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
