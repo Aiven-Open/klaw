@@ -6,6 +6,7 @@ import React from "react";
 import type { DeepPartial, FieldValues } from "react-hook-form";
 import {
   Form,
+  PasswordInput,
   SubmitErrorHandler,
   SubmitHandler,
   TextInput,
@@ -147,6 +148,52 @@ describe("Form", () => {
       await waitFor(() => expect(screen.queryByText("error")).toBeVisible());
 
       await typeText("abc{tab}");
+      await waitFor(() => expect(screen.queryByText("error")).toBeNull());
+    });
+  });
+
+  describe("<PasswordInput>", () => {
+    const schema = z.object({ password: z.string().min(3, "error") });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <PasswordInput<Schema> name="password" labelText="PasswordInput" />,
+        { schema }
+      );
+    });
+
+    it("should render <PasswordInput>", () => {
+      expect(results.container).toMatchSnapshot();
+    });
+
+    it("should render label", () => {
+      expect(screen.queryByLabelText("PasswordInput")).toBeVisible();
+    });
+
+    it("should sync value to form state", async () => {
+      // For security reasons, there is no role password
+      // -> https://github.com/w3c/aria/issues/166
+      // the recommended way to query is using byLabel
+      const passwordInput = screen.getByLabelText("PasswordInput");
+      await user.clear(passwordInput);
+      await user.type(passwordInput, "value{tab}");
+
+      await submit();
+      assertSubmitted({ password: "value" });
+    });
+
+    it("should render errors after blur event and hide them after valid input", async () => {
+      // For security reasons, there is no role password
+      // -> https://github.com/w3c/aria/issues/166
+      // the recommended way to query is using byLabel
+      const passwordInput = screen.getByLabelText("PasswordInput");
+      await user.clear(passwordInput);
+      await user.type(passwordInput, "a{tab}");
+      await waitFor(() => expect(screen.queryByText("error")).toBeVisible());
+
+      await user.clear(passwordInput);
+      await user.type(passwordInput, "abc{tab}");
       await waitFor(() => expect(screen.queryByText("error")).toBeNull());
     });
   });
