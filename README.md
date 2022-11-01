@@ -20,11 +20,6 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ![Architecture](https://github.com/aiven/klaw/blob/main/arch.png)
 
-## Dependency project:
-
-### ClusterApi
-https://github.com/aiven/klaw-cluster-api
-
 ## Work in progress
 
 The directory `/coral` contains a React app. It's an ongoing rewrite of the existing Klaw frontend. The app Frontend app is not used in Klaw at the moment.
@@ -106,9 +101,23 @@ The directory `/coral` contains a React app. It's an ongoing rewrite of the exis
 
 ## Install
 
+### Manual
 mvn clean install
 
-and follow steps defined at https://klaw-project.io/docs
+Builds two artifacts core/target/klaw-<version>.jar and cluster-api/target/cluster-api-<version>.jar
+
+and follow steps defined at https://klaw-project.io/docs or run the binaries like below
+
+java -jar core/target/klaw-<version>.jar
+
+java -jar cluster-api/target/cluster-api-<version>.jar --spring.config.location=cluster-api/target/classes/application.properties
+
+### With `make`
+
+1. Clone this repo containing two maven modules (core and cluster-api) : `git clone git@github.com:aiven/klaw.git`
+2. Run `make` to install dependencies and setup both Klaw Core and the Klaw-Cluster-Api
+3. [Optional] edit any configs using `make edit-core-config` for Klaw Core or `make edit-cluster-api-config` for Klaw-Cluster-API
+4. To run, you can use `make run-core` and `make run-cluster-api` in different terminal windows or you can run `make -j2 run-core run-cluster-api` to execute both (NOTE: this will mix output and make debugging harder)
 
 ## License
 

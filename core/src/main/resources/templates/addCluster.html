@@ -578,7 +578,7 @@
 											</div>
 
 										</div>
-										<div class="col-md-6">
+										<div class="col-md-6" ng-show="kafkaFlavor != 'Aiven for Apache Kafka'">
 											<div ng-show="sslparams=='true'">
 												<label>Copy this command and execute on your kafka broker. This gives the authorization for Klaw to create topics on your Kafka brokers.</label>
 												<br>

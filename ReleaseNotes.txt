@@ -1,5 +1,23 @@
 Release Notes:
 
+Release 1.1.0
+
+This is a minor release with a couple of features and improvements.
+
+ - Klaw as Maven multi-module project. Modules : 'core' and 'cluster-api'.
+   'core' being the main Governance Api.
+   'cluster-api' module is cloned from main branch of repo https://github.com/aiven/klaw-cluster-api
+ - Introduced new protocols SCRAM SHA 256, SCRAM SHA 512 to Klaw to connect to Kafka clusters
+ - Enabled JWT based authentication to connect to Cluster Api
+ - Functionality to configure Klaw to connect to multiple kafka clusters with different SSL certificates
+ - Improved Api Exception handling
+ - Code refactoring and improvements
+ - Fix for circular dependency issue
+ - Upgraded Spring boot, Kafka and other dependencies
+ - Bug fixes
+
+-----------------------------------------------------------------------------------
+
 - Klaw (formerly Kafkawize) Release 1.0.0
 
 - This release is cloned from master branch of https://github.com/muralibasani/kafkawize
