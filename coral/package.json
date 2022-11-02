@@ -75,6 +75,6 @@
     "profanitySureness": 1
   },
   "msw": {
-    "workerDirectory": "public"
+    "workerDirectory": "./"
   }
 }

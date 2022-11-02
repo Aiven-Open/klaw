@@ -17,7 +17,11 @@ const queryClient = new QueryClient();
 if (DEV_MODE) {
   await import("src/services/http-client/mocks/browser")
     .then(({ worker }) => {
-      worker.start().then();
+      worker
+        .start({
+          onUnhandledRequest: "bypass",
+        })
+        .then();
     })
     .then(() => {
       root.render(
