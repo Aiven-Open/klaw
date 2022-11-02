@@ -6,15 +6,14 @@ import "@aivenio/design-system/dist/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-// @TODO add vite env
-const DEV_MODE = true;
+const DEV_MODE = import.meta.env.DEV;
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      {DEV_MODE && <RouterProvider router={router} />}
-      <ReactQueryDevtools />
+      <RouterProvider router={router} />
+      {DEV_MODE && <ReactQueryDevtools />}
     </QueryClientProvider>
   </React.StrictMode>
 );
