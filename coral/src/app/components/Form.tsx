@@ -73,6 +73,41 @@ export const Form = <T extends FieldValues = FieldValues>({
 };
 
 //
+// <PasswordInput>
+// This not part of Aiven core implementation but an input
+// custom for Klaw use cases. It's exactly the same as <TextInput>
+// with the only difference being the type (password) to have
+// a more secure way for users to enter password (input obscured)
+function _PasswordInput<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
+  const { errors } = form.formState;
+  const error = get(errors, name)?.message as string;
+  return (
+    <BaseInput
+      {...props}
+      type="password"
+      {...form.register(name)}
+      valid={error ? false : undefined}
+      error={error}
+    />
+  );
+}
+
+const PasswordInputMemo = memo(_PasswordInput) as typeof _PasswordInput;
+
+export const PasswordInput = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseInputProps
+): React.ReactElement<FormInputProps<T> & BaseInputProps> => {
+  const ctx = useFormContext<T>();
+  return <PasswordInputMemo formContext={ctx} {...props} />;
+};
+
+PasswordInput.Skeleton = BaseInput.Skeleton;
+
+//
 // <TextInput>
 //
 function _TextInput<T extends FieldValues>({
