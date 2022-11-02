@@ -1,28 +1,13 @@
 import HomePage from "src/app/pages";
-import { render, cleanup, screen } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactElement } from "react";
-
-export function renderWithClient(client: QueryClient, ui: ReactElement) {
-  const { rerender, ...result } = render(
-    <QueryClientProvider client={client}>{ui}</QueryClientProvider>
-  );
-  return {
-    ...result,
-    rerender: (rerenderUi: ReactElement) =>
-      rerender(
-        <QueryClientProvider client={client}>{rerenderUi}</QueryClientProvider>
-      ),
-  };
-}
+import { cleanup, screen } from "@testing-library/react";
+import { renderWithQueryClient } from "src/services/test-utils";
 
 const loadingText = "data is loading";
 const textFromApi = "hello";
 
 describe("HomePage", () => {
   beforeEach(() => {
-    const queryClient = new QueryClient();
-    renderWithClient(queryClient, <HomePage />);
+    renderWithQueryClient(<HomePage />);
   });
 
   afterEach(() => {
