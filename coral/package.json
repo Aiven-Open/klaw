@@ -62,6 +62,7 @@
     "jest-environment-jsdom": "^29.2.1",
     "lint-staged": "^13.0.3",
     "lodash": "^4.17.21",
+    "msw": "^0.47.4",
     "prettier": "^2.7.1",
     "ts-jest": "^29.0.3",
     "ts-node": "^10.9.1",
