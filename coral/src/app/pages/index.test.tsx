@@ -1,17 +1,27 @@
 import HomePage from "src/app/pages";
 import { cleanup, screen } from "@testing-library/react";
 import { renderWithQueryClient } from "src/services/test-utils";
+import { server } from "src/services/http-client/mocks/server";
 
 const loadingText = "data is loading";
-const textFromApi = "hello";
+const userName = "Super Admin";
 
 describe("HomePage", () => {
+  beforeAll(() => {
+    server.listen();
+  });
+
   beforeEach(() => {
     renderWithQueryClient(<HomePage />);
   });
 
   afterEach(() => {
     cleanup();
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   it("renders dummy content", () => {
@@ -26,8 +36,8 @@ describe("HomePage", () => {
     expect(loadingInfo).toBeVisible();
   });
 
-  it("shows the data returned from the 'API'", async () => {
-    const dataFromApi = await screen.findByText(textFromApi);
+  it("shows the username when loaded", async () => {
+    const dataFromApi = await screen.findByText(userName);
 
     expect(dataFromApi).toBeVisible();
   });
@@ -36,7 +46,7 @@ describe("HomePage", () => {
     const loadingInfo = screen.queryByText(loadingText);
     expect(loadingInfo).toBeVisible();
 
-    await screen.findByText(textFromApi);
+    await screen.findByText(userName);
 
     expect(loadingInfo).not.toBeInTheDocument();
   });
