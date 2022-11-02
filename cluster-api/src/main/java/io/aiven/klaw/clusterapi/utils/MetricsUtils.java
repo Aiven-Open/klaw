@@ -27,8 +27,7 @@ public class MetricsUtils {
         jmxConnector = metricsClientsMap.get(jmxUrl);
       }
     } catch (Exception exception) {
-      log.error("Unable to create JMX Connector " + exception.getMessage() + exception.getCause());
-      exception.printStackTrace();
+      log.error("Unable to create JMX Connector " + exception.getMessage(), exception);
       throw new Exception("Cannot connect to JMX Host. Please contact Administrator.");
     }
 
@@ -45,7 +44,7 @@ public class MetricsUtils {
     } catch (Exception e) {
       metricsClientsMap.remove(jmxUrl);
       jmxConnector.close();
-      log.error("Cannot create JMX Connector {}", jmxUrl);
+      log.error("Cannot create JMX Connector {}", jmxUrl, e);
       throw new Exception("Cannot connect to JMX host. Please contact Administrator.");
     }
   }

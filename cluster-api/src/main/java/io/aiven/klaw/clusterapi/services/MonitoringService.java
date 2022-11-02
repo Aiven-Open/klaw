@@ -21,7 +21,7 @@ public class MonitoringService {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public List<HashMap<String, String>> getConsumerGroupDetails(
+  public List<Map<String, String>> getConsumerGroupDetails(
       String consumerGroupId,
       String topicName,
       String environment,
@@ -38,8 +38,8 @@ public class MonitoringService {
 
     AdminClient adminClient = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
 
-    List<HashMap<String, String>> consumerGroupOffsetList = new ArrayList<>();
-    HashMap<String, String> offsetDetails;
+    List<Map<String, String>> consumerGroupOffsetList = new ArrayList<>();
+    Map<String, String> offsetDetails;
     try {
       DescribeTopicsResult describeTopicsResult =
           adminClient.describeTopics(Collections.singletonList(topicName));
@@ -87,7 +87,7 @@ public class MonitoringService {
           "Cannot retrieve consumer offset details topicName: {} groupid: {} Error: {}",
           topicName,
           consumerGroupId,
-          exception.toString());
+          exception);
       return consumerGroupOffsetList;
     }
   }

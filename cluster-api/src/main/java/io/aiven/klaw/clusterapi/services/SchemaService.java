@@ -61,7 +61,7 @@ public class SchemaService {
 
       return ApiResponse.builder().result(updateTopicReqStatus).build();
     } catch (Exception e) {
-      log.error(e.getMessage());
+      log.error("Exception:", e);
       if (((HttpClientErrorException.Conflict) e).getStatusCode().value() == 409) {
         return ApiResponse.builder()
             .result("Schema being registered is incompatible with an earlier schema")
@@ -107,7 +107,7 @@ public class SchemaService {
 
       return allSchemaObjects;
     } catch (Exception e) {
-      log.error("Error from getSchema : " + e.getMessage());
+      log.error("Error from getSchema : ", e);
       return new TreeMap<>();
     }
   }
@@ -131,7 +131,7 @@ public class SchemaService {
       log.info("Schema versions " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
-      log.error("Error in getting versions " + e.getMessage());
+      log.error("Error in getting versions ", e);
       return new ArrayList<>();
     }
   }
@@ -155,7 +155,7 @@ public class SchemaService {
       log.info("Schema compatibility " + responseList);
       return (String) responseList.getBody().get("compatibilityLevel");
     } catch (Exception e) {
-      log.error("Error in getting schema compatibility " + e.getMessage());
+      log.error("Error in getting schema compatibility ", e);
       return "NOT SET";
     }
   }
@@ -183,7 +183,7 @@ public class SchemaService {
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
       return true;
     } catch (Exception e) {
-      log.error("Error in setting schema compatibility " + e.getMessage());
+      log.error("Error in setting schema compatibility ", e);
       return false;
     }
   }
@@ -201,7 +201,7 @@ public class SchemaService {
       reqDetails.getRight().getForEntity(reqDetails.getLeft(), Object.class, params);
       return ClusterStatus.ONLINE;
     } catch (RestClientException e) {
-      e.printStackTrace();
+      log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
     }
   }

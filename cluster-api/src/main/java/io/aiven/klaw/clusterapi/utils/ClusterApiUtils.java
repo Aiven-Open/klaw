@@ -39,7 +39,7 @@ public class ClusterApiUtils {
     try {
       messageDigest = MessageDigest.getInstance("SHA-256");
     } catch (NoSuchAlgorithmException e) {
-      e.printStackTrace();
+      log.error("Error ", e);
     }
   }
 
@@ -251,7 +251,7 @@ public class ClusterApiUtils {
             env.getProperty(clusterIdentification.toLowerCase() + ".kafkasasl.jaasconfig.plain"));
       }
     } catch (Exception exception) {
-      log.error("Error : Cannot set SASL SSL PLAIN Config properties.");
+      log.error("Error : Cannot set SASL SSL PLAIN Config properties.", exception);
     }
 
     return props;

@@ -84,16 +84,17 @@ public class ApacheKafkaAclService {
       Set<Map<String, String>> acls, AclBinding aclBinding) {
     if (aclBinding.pattern().patternType().name().equals(AclPatternType.LITERAL.value)) {
       Map<String, String> aclbindingMap = new HashMap<>();
-      aclbindingMap.put("host", aclBinding.entry().host());
-      aclbindingMap.put("principle", aclBinding.entry().principal());
-      aclbindingMap.put("operation", aclBinding.entry().operation().toString());
-      aclbindingMap.put("permissionType", aclBinding.entry().permissionType().toString());
+      AccessControlEntry accessControlEntry = aclBinding.entry();
+      aclbindingMap.put("host", accessControlEntry.host());
+      aclbindingMap.put("principle", accessControlEntry.principal());
+      aclbindingMap.put("operation", accessControlEntry.operation().toString());
+      aclbindingMap.put("permissionType", accessControlEntry.permissionType().toString());
       aclbindingMap.put("resourceType", aclBinding.pattern().resourceType().toString());
       aclbindingMap.put("resourceName", aclBinding.pattern().name());
 
       if (!aclBinding.pattern().resourceType().toString().equals("CLUSTER")) {
-        if (aclBinding.entry().operation().toString().equals("WRITE")
-            || aclBinding.entry().operation().toString().equals("READ")) {
+        if (accessControlEntry.operation().toString().equals("WRITE")
+            || accessControlEntry.operation().toString().equals("READ")) {
           acls.add(aclbindingMap);
         }
       }
@@ -173,7 +174,7 @@ public class ApacheKafkaAclService {
       }
 
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Exception: ", e);
       return ApiResultStatus.FAILURE.value;
     }
 
@@ -229,10 +230,9 @@ public class ApacheKafkaAclService {
 
     if (acl1Exists && acl2Exists) {
       return true;
-    } else {
-      client.createAcls(aclListArray).all().get(TIME_OUT_SECS_FOR_ACLS, TimeUnit.SECONDS);
-      return false;
     }
+    client.createAcls(aclListArray).all().get(TIME_OUT_SECS_FOR_ACLS, TimeUnit.SECONDS);
+    return false;
   }
 
   private boolean aclExists(AdminClient client, AclBindingFilter aclBindingFilter) {
@@ -242,7 +242,7 @@ public class ApacheKafkaAclService {
         return true;
       }
     } catch (InterruptedException | TimeoutException | ExecutionException e) {
-      e.printStackTrace();
+      log.error("Exception:", e);
     }
     return false;
   }
@@ -409,7 +409,7 @@ public class ApacheKafkaAclService {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Exception:", e);
       return ApiResultStatus.FAILURE.value;
     }
 

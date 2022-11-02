@@ -23,8 +23,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-  public static final String USERNAME = "username";
-  public static final String TOKEN = "token";
+  private static final String BEARER = "Bearer ";
+  private static final String USERNAME = "username";
+  private static final String TOKEN = "token";
   private final JwtTokenUtilService jwtTokenUtil;
   private final UserDetailsService userDetailsService;
 
@@ -49,11 +50,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
       throws IOException {
     final String requestTokenHeader = request.getHeader("Authorization");
     String jwtToken;
-    final String bearer = "Bearer ";
+
     // JWT Token is in the form "Bearer token". Remove Bearer word and get
     // only the Token
-    if (requestTokenHeader != null && requestTokenHeader.startsWith(bearer)) {
-      jwtToken = requestTokenHeader.substring(bearer.length());
+    if (requestTokenHeader != null && requestTokenHeader.startsWith(BEARER)) {
+      jwtToken = requestTokenHeader.substring(BEARER.length());
       userTokenMap.put(TOKEN, jwtToken);
       return extractUsernameFromToken(response, userTokenMap, jwtToken);
     } else {
@@ -75,20 +76,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     try {
       username = jwtTokenUtil.getUsernameFromToken(jwtToken);
       userTokenMap.put(USERNAME, username);
+      return false;
     } catch (IllegalArgumentException e) {
       log.info("Unable to get JWT Token ", e);
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-      return true;
     } catch (ExpiredJwtException e) {
       log.info("JWT Token has expired", e);
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-      return true;
     } catch (Exception e) {
       log.info("Token validation errors ", e);
-      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-      return true;
     }
-    return false;
+    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+    return true;
   }
 
   // Once we get the token validate it.

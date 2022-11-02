@@ -52,9 +52,9 @@ public class UtilMethods {
     return aclsSet;
   }
 
-  public Set<HashMap<String, String>> getTopics() {
-    Set<HashMap<String, String>> topicsSet = new HashSet<>();
-    HashMap<String, String> hashMap = new HashMap<>();
+  public Set<Map<String, String>> getTopics() {
+    Set<Map<String, String>> topicsSet = new HashSet<>();
+    Map<String, String> hashMap = new HashMap<>();
     hashMap.put("topicName", "testtopic1");
 
     hashMap.put("partitions", "2");

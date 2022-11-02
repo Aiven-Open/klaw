@@ -73,12 +73,12 @@ public class ClusterApiController {
       value = "/getTopics/{bootstrapServers}/{protocol}/{clusterName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Set<HashMap<String, String>>> getTopics(
+  public ResponseEntity<Set<Map<String, String>>> getTopics(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName)
       throws Exception {
-    Set<HashMap<String, String>> topics =
+    Set<Map<String, String>> topics =
         apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
     return new ResponseEntity<>(topics, HttpStatus.OK);
   }
@@ -124,14 +124,14 @@ public class ClusterApiController {
           "/getConsumerOffsets/{bootstrapServers}/{protocol}/{clusterName}/{consumerGroupId}/{topicName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<HashMap<String, String>>> getConsumerOffsets(
+  public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
       @PathVariable String consumerGroupId,
       @PathVariable String topicName)
       throws Exception {
-    List<HashMap<String, String>> consumerOffsetDetails =
+    List<Map<String, String>> consumerOffsetDetails =
         monitoringService.getConsumerGroupDetails(
             consumerGroupId, topicName, bootstrapServers, protocol, clusterName);
 

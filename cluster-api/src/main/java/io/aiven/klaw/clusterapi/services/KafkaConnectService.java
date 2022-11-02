@@ -153,7 +153,7 @@ public class KafkaConnectService {
 
       return responseList.getBody();
     } catch (Exception e) {
-      log.error("Error in getting connector detail " + e.getMessage());
+      log.error("Error in getting connector detail ", e);
       return new LinkedHashMap<>();
     }
   }
@@ -169,7 +169,7 @@ public class KafkaConnectService {
       reqDetails.getRight().getForEntity(reqDetails.getLeft(), Object.class, params);
       return ClusterStatus.ONLINE;
     } catch (RestClientException e) {
-      e.printStackTrace();
+      log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
     }
   }

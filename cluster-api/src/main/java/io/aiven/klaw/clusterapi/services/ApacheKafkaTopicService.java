@@ -26,7 +26,6 @@ import org.apache.kafka.clients.admin.NewPartitions;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaException;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -35,20 +34,17 @@ public class ApacheKafkaTopicService {
 
   private static final long TIME_OUT_SECS_FOR_TOPICS = 5;
 
-  private Environment env;
+  private final ClusterApiUtils clusterApiUtils;
 
-  private ClusterApiUtils clusterApiUtils;
-
-  public ApacheKafkaTopicService(Environment env, ClusterApiUtils clusterApiUtils) {
-    this.env = env;
+  public ApacheKafkaTopicService(ClusterApiUtils clusterApiUtils) {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public synchronized Set<HashMap<String, String>> loadTopics(
+  public synchronized Set<Map<String, String>> loadTopics(
       String environment, KafkaSupportedProtocol protocol, String clusterName) throws Exception {
     log.info("loadTopics {} {}", environment, protocol);
     AdminClient client = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
-    Set<HashMap<String, String>> topics = new HashSet<>();
+    Set<Map<String, String>> topics = new HashSet<>();
     if (client == null) {
       throw new Exception("Cannot connect to cluster.");
     }
@@ -65,21 +61,22 @@ public class ApacheKafkaTopicService {
       Set<String> keySet = topicDesc.keySet();
       keySet.remove("_schemas");
       List<String> lstK = new ArrayList<>(keySet);
-      HashMap<String, String> hashMap;
+      Map<String, String> hashMap;
       for (String topicName : lstK) {
+        if (topicName.startsWith("_confluent")) {
+          continue;
+        }
         hashMap = new HashMap<>();
         hashMap.put("topicName", topicName);
         hashMap.put(
             "replicationFactor",
             "" + topicDesc.get(topicName).partitions().get(0).replicas().size());
         hashMap.put("partitions", "" + topicDesc.get(topicName).partitions().size());
-        if (!topicName.startsWith("_confluent")) {
-          topics.add(hashMap);
-        }
+        topics.add(hashMap);
       }
 
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      log.error(e.getMessage());
+      log.error("Exception:", e);
     }
     return topics;
   }
@@ -128,8 +125,7 @@ public class ApacheKafkaTopicService {
       log.error("Unable to create topic {}, {}", clusterTopicRequest.getTopicName(), errorMessage);
       throw e;
     } catch (Exception e) {
-      log.error(e.getMessage());
-      e.printStackTrace();
+      log.error("Exception:", e);
       throw e;
     }
 
@@ -209,11 +205,9 @@ public class ApacheKafkaTopicService {
         errorMessage = e.getMessage();
       }
       log.error("Unable to delete topic {}, {}", clusterTopicRequest.getTopicName(), errorMessage);
-
       throw e;
     } catch (Exception e) {
-      log.error(e.getMessage());
-      e.printStackTrace();
+      log.error("Exception:", e);
       throw e;
     }
   }

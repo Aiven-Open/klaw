@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.utils.MetricsUtils;
 import java.util.HashMap;
+import java.util.Map;
 import javax.management.*;
 import javax.management.remote.JMXConnector;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,8 @@ public class MetricsApiService {
   //                "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec");
   //    }
 
-  public HashMap<String, String> getMetrics(String jmxUrl, String objectName) throws Exception {
-    HashMap<String, String> metricsMap = new HashMap<>();
+  public Map<String, String> getMetrics(String jmxUrl, String objectName) throws Exception {
+    Map<String, String> metricsMap = new HashMap<>();
     try {
       JMXConnector jmxc = metricsUtils.getJmxConnector(jmxUrl);
       MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
@@ -37,7 +38,7 @@ public class MetricsApiService {
         log.debug(attr.getName() + " " + mbsc.getAttribute(mxbeanName, attr.getName()));
       }
     } catch (Exception e) {
-      log.error("Error {}", e.toString());
+      log.error("Error ", e);
       throw e;
     }
     return metricsMap;

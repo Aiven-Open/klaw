@@ -101,7 +101,7 @@ public class UtilComponentsServiceTest {
   public void setUp() {
     utilComponentsService = new UtilComponentsService(env, getAdminClient);
     apacheKafkaAclService = new ApacheKafkaAclService(getAdminClient);
-    apacheKafkaTopicService = new ApacheKafkaTopicService(env, getAdminClient);
+    apacheKafkaTopicService = new ApacheKafkaTopicService(getAdminClient);
     schemaService = new SchemaService(getAdminClient);
     utilMethods = new UtilMethods();
   }
@@ -194,15 +194,15 @@ public class UtilComponentsServiceTest {
     when(describeTopicsResult.all()).thenReturn(kafkaFutureTopicdesc);
     when(kafkaFutureTopicdesc.get(anyLong(), any(TimeUnit.class))).thenReturn(getTopicDescs());
 
-    Set<HashMap<String, String>> result =
+    Set<Map<String, String>> result =
         apacheKafkaTopicService.loadTopics("localhost", KafkaSupportedProtocol.PLAINTEXT, "");
 
-    HashMap<String, String> hashMap = new HashMap<>();
+    Map<String, String> hashMap = new HashMap<>();
     hashMap.put("partitions", "2");
     hashMap.put("replicationFactor", "1");
     hashMap.put("topicName", "testtopic2");
 
-    HashMap<String, String> hashMap1 = new HashMap<>();
+    Map<String, String> hashMap1 = new HashMap<>();
     hashMap1.put("partitions", "2");
     hashMap1.put("replicationFactor", "1");
     hashMap1.put("topicName", "testtopic1");

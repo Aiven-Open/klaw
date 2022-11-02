@@ -1,3 +1,4 @@
+version = 1.1.0
 
 build_all: klaw_core cluster_api
 
@@ -14,7 +15,7 @@ edit-cluster-api-config:
 	${EDITOR} cluster-api/target/classes/application.properties
 
 run-core:
-	java -jar core/target/klaw-1.1.0.jar
+	java -jar core/target/klaw-$(version).jar
 
 run-cluster-api:
-	java -jar cluster-api/target/cluster-api-1.1.0.jar --spring.config.location=cluster-api/target/classes/application.properties
+	java -jar cluster-api/target/cluster-api-$(version).jar --spring.config.location=cluster-api/target/classes/application.properties

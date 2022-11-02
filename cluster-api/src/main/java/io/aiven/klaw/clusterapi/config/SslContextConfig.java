@@ -57,7 +57,7 @@ public class SslContextConfig {
           | CertificateException
           | UnrecoverableKeyException
           | IOException e) {
-        log.error(e.getMessage());
+        log.error("Exception:", e);
         throw new Exception("Unable to load TLS certs");
       }
       SSLConnectionSocketFactory csf;

@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class AivenApiService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
   @Value("${klaw.clusters.accesstoken:accesstoken}")
   private String clusterAccessToken;
 
@@ -50,7 +52,7 @@ public class AivenApiService {
     try {
       ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
       AivenAclResponse aivenAclResponse =
-          new ObjectMapper().readValue(response.getBody(), AivenAclResponse.class);
+          OBJECT_MAPPER.readValue(response.getBody(), AivenAclResponse.class);
       Optional<AivenAclStruct> aivenAclStructOptional =
           Arrays.stream(aivenAclResponse.getAcl())
               .filter(
@@ -70,7 +72,7 @@ public class AivenApiService {
 
       return resultMap;
     } catch (Exception e) {
-      log.error(e.toString());
+      log.error("Exception:", e);
       resultMap.put("result", "Failure in adding acls" + e.getMessage());
       return resultMap;
     }
@@ -94,7 +96,7 @@ public class AivenApiService {
       HttpEntity<?> request = new HttpEntity<>(headers);
       restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
     } catch (Exception e) {
-      log.error(e.toString());
+      log.error("Exception:", e);
       throw new Exception("Error in deleting acls " + e.getMessage());
     }
 
@@ -155,7 +157,7 @@ public class AivenApiService {
 
       return new HashSet<>(aclsListUpdated);
     } catch (RestClientException e) {
-      log.error(e.toString());
+      log.error("Exception:", e);
       throw new Exception("Error in listing acls : " + e.getMessage());
     }
   }

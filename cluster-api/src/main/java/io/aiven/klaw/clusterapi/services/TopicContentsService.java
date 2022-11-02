@@ -78,6 +78,7 @@ public class TopicContentsService {
     }
 
     int i = 0;
+    int numOfEventsToRead = 5;
     do {
       ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofMillis(500));
       consumerRecords.forEach(
@@ -85,7 +86,7 @@ public class TopicContentsService {
             eventMap.put(record.offset(), record.value());
           });
       i++;
-    } while (i != 5);
+    } while (i != numOfEventsToRead);
 
     consumer.commitAsync();
     consumer.close();
