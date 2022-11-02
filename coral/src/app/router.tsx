@@ -22,6 +22,8 @@ const routes: Array<RouteObject> = [
   },
 ];
 
-const router = createBrowserRouter(routes);
+const router = createBrowserRouter(routes, {
+  basename: import.meta.env.VITE_ROUTER_BASENAME,
+});
 
 export default router;
