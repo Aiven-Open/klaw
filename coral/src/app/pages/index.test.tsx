@@ -1,7 +1,7 @@
 import HomePage from "src/app/pages";
 import { cleanup, screen } from "@testing-library/react";
 import { renderWithQueryClient } from "src/services/test-utils";
-import { server } from "src/services/http-client/mocks/server";
+import { server } from "src/domain/api-mocks/server";
 
 const loadingText = "data is loading";
 const userName = "Super Admin";

@@ -15,7 +15,7 @@ const root = ReactDOM.createRoot(
 const queryClient = new QueryClient();
 
 if (DEV_MODE) {
-  await import("src/services/http-client/mocks/browser")
+  await import("src/domain/api-mocks/browser")
     .then(({ worker }) => {
       worker
         .start({
