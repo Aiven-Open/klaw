@@ -11,8 +11,6 @@ function mockUserAuthRequest({
 }) {
   mswInstance.use(
     rest.post("/user/authenticate", (req, res, ctx) => {
-      sessionStorage.setItem("is-authenticated", "true");
-
       return res(ctx.status(200), ctx.json(userObject));
     })
   );

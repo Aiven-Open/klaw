@@ -10,11 +10,10 @@ const HomePage = () => {
     const browserEnvWorker = window.msw;
 
     if (browserEnvWorker) {
-      const mswInstance = browserEnvWorker;
       const userObject: AuthUser = {
         name: "Super Admin",
       };
-      mockUserAuthRequest({ mswInstance, userObject });
+      mockUserAuthRequest({ mswInstance: browserEnvWorker, userObject });
     }
   }, []);
 
