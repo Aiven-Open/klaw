@@ -70,7 +70,7 @@ module.exports = {
     "plugins": [
         "react",
         "@typescript-eslint",
-        "no-relative-import-paths"
+        "no-relative-import-paths",
     ],
     "settings": {
         "react": {
@@ -81,6 +81,9 @@ module.exports = {
         "no-relative-import-paths/no-relative-import-paths": [
             "error"
         ],
-        "no-restricted-imports": strip_ids_from_no_restricted_imports(NO_RESTRICTED_IMPORTS_RULES)
+        "no-unused-vars": "off",
+        "no-restricted-imports": strip_ids_from_no_restricted_imports(NO_RESTRICTED_IMPORTS_RULES),
+        "@typescript-eslint/no-unused-vars": "error",
+        "@typescript-eslint/no-explicit-any": "error"
     }
 }

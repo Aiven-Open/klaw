@@ -245,7 +245,7 @@ public class ClusterApiController {
   }
 
   private static ResponseEntity<ApiResponse> handleException(Exception e) {
-    log.error(e.getMessage());
+    log.error("Exception:", e);
     return new ResponseEntity<>(
         ApiResponse.builder().result(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
   }

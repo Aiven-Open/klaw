@@ -159,7 +159,7 @@ public class AclSyncControllerService {
         }
       }
     } catch (Exception e) {
-      log.error(e.getMessage());
+      log.error("Error ", e);
       throw new KlawException(e.getMessage());
     }
 
@@ -212,7 +212,7 @@ public class AclSyncControllerService {
         }
       }
     } catch (KlawException e) {
-      log.error("Error in creating acl {} {}", e.getMessage(), aclFound);
+      log.error("Error in creating acl {}", aclFound, e);
       List<String> resultStatus = new ArrayList<>();
       resultStatus.add("Error :" + e.getMessage());
       resultMap.put("result", resultStatus);

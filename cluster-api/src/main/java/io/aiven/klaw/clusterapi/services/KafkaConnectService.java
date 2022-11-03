@@ -100,7 +100,7 @@ public class KafkaConnectService {
       responseNew =
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
     } catch (RestClientException e) {
-      log.error("Error in registering new connector " + e.toString());
+      log.error("Error in registering new connector ", e);
       throw new Exception(e.toString());
     }
     if (responseNew.getStatusCodeValue() == 201) {
@@ -128,7 +128,7 @@ public class KafkaConnectService {
       log.info("connectors list " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
-      log.error("Error in getting connectors " + e.getMessage());
+      log.error("Error in getting connectors " + e);
       return new ArrayList<>();
     }
   }

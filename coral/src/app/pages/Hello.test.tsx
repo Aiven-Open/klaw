@@ -1,15 +1,15 @@
-import HomePage from "src/pages";
+import Hello from "src/app/pages/Hello";
 import { render, cleanup, screen } from "@testing-library/react";
 
-describe("HomePage", () => {
+describe("Hello", () => {
   beforeEach(() => {
-    render(<HomePage />);
+    render(<Hello />);
   });
 
   afterEach(() => {
     cleanup();
   });
   it("shoud render dummy content", () => {
-    expect(screen.getByText("Index")).toBeVisible();
+    expect(screen.getByText("Hello")).toBeVisible();
   });
 });

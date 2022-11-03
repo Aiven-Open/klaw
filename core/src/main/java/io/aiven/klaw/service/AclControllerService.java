@@ -572,7 +572,7 @@ public class AclControllerService {
 
         return ApiResponse.builder().result(updateAclReqStatus).build();
       } catch (Exception e) {
-        log.error(e.getMessage());
+        log.error("Error ", e);
         throw new KlawException(e.getMessage());
       }
     } else {
@@ -639,7 +639,7 @@ public class AclControllerService {
         return hashMap;
       }
     } catch (Exception e) {
-      log.error("getTopicPromotionEnv {}", e.getMessage());
+      log.error("getTopicPromotionEnv error ", e);
       hashMap.put("status", ApiResultStatus.FAILURE.value);
       hashMap.put("error", "Topic does not exist in any environment.");
     }
@@ -658,7 +658,7 @@ public class AclControllerService {
                 .collect(Collectors.toList());
       }
     } catch (Exception exception) {
-      log.error("No environments/clusters found.");
+      log.error("No environments/clusters found.", exception);
       return new ArrayList<>();
     }
     return topicsFromSOT;
@@ -709,7 +709,7 @@ public class AclControllerService {
       reqTopicsEnvs = requestTopicsEnvs.split(",");
       reqTopicsEnvsList = new ArrayList<>(Arrays.asList(reqTopicsEnvs));
     } catch (Exception exception) {
-      log.error("Error in getting req topic envs");
+      log.error("Error in getting req topic envs", exception);
     }
 
     List<TopicInfo> topicInfoList = new ArrayList<>();
@@ -735,7 +735,7 @@ public class AclControllerService {
               OBJECT_MAPPER.readValue(topic.getHistory(), new TypeReference<>() {});
           topicHistoryList.addAll(topicHistoryFromTopic);
         } catch (JsonProcessingException e) {
-          log.error("Unable to parse topicHistory");
+          log.error("Unable to parse topicHistory ", e);
         }
       }
 
@@ -945,7 +945,7 @@ public class AclControllerService {
           topicOverview.setSchemaExists(true);
           log.info("Getting schema " + topicNameSearch);
         } catch (Exception e) {
-          log.error(e.getMessage());
+          log.error("Error ", e);
         }
       }
       if (topicOverview.isSchemaExists()) topicOverview.setSchemaDetails(schemaDetails);

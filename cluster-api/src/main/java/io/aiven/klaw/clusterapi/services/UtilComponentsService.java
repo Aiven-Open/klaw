@@ -69,8 +69,7 @@ public class UtilComponentsService {
       } else return ClusterStatus.OFFLINE;
 
     } catch (Exception e) {
-      e.printStackTrace();
-      log.error(e.getMessage());
+      log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
     }
   }

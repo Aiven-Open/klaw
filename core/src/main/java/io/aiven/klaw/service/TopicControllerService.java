@@ -355,7 +355,7 @@ public class TopicControllerService {
             manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result");
         return ApiResponse.builder().result(result).build();
       } catch (Exception e) {
-        log.error(e.getMessage());
+        log.error("Error ", e);
         throw new KlawException(e.getMessage());
       }
     } else {
@@ -430,7 +430,7 @@ public class TopicControllerService {
           manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result");
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
-      log.error(e.getMessage());
+      log.error("Error ", e);
       throw new KlawException(e.getMessage());
     }
   }

@@ -62,10 +62,6 @@ public class ClusterApiUtils {
     this.adminClientProperties = adminClientProperties;
   }
 
-  public RestTemplate getRestTemplate() {
-    return new RestTemplate();
-  }
-
   //    public void removeSSLElementFromAdminClientMap(String protocol, String clusterName){
   //        log.info("Into removeSSLElementFromAdminClientMap");
   //        String adminClientKeyReq = protocol + clusterName;
@@ -159,7 +155,7 @@ public class ClusterApiUtils {
           break;
       }
     } catch (Exception exception) {
-      log.error("Unable to create Admin client " + exception.getMessage() + exception.getCause());
+      log.error("Unable to create Admin client ", exception);
       exception.printStackTrace();
       throw new Exception("Cannot connect to cluster. Please contact Administrator.");
     }
@@ -178,7 +174,7 @@ public class ClusterApiUtils {
     } catch (Exception e) {
       adminClientsMap.remove(adminClientKey);
       adminClient.close();
-      log.error("Cannot create Admin Client {} {} {}", envHost, protocol, clusterIdentification);
+      log.error("Cannot create Admin Client {} {} {}", envHost, protocol, clusterIdentification, e);
       throw new Exception("Cannot connect to cluster. Please contact Administrator.");
     }
   }
@@ -225,7 +221,7 @@ public class ClusterApiUtils {
       }
 
     } catch (Exception exception) {
-      log.error("Error : Cannot set SASL PLAIN Config properties.");
+      log.error("Error : Cannot set SASL PLAIN Config properties.", exception);
     }
 
     return props;
@@ -286,7 +282,7 @@ public class ClusterApiUtils {
             env.getProperty(clusterIdentification.toLowerCase() + ".kafkasasl.jaasconfig.scram"));
       }
     } catch (Exception exception) {
-      log.error("Error : Cannot set SASL SSL SCRAM Config properties.");
+      log.error("Error : Cannot set SASL SSL SCRAM Config properties.", exception);
     }
 
     return props;
@@ -324,7 +320,7 @@ public class ClusterApiUtils {
                     + ".kafkasasl.saslmechanism.gssapi.servicename"));
       }
     } catch (Exception exception) {
-      log.error("Error : Cannot set SASL SSL GSSAPI Config properties.");
+      log.error("Error : Cannot set SASL SSL GSSAPI Config properties.", exception);
     }
 
     return props;
@@ -386,7 +382,7 @@ public class ClusterApiUtils {
       props.put("ssl.enabled.protocols", "TLSv1.2,TLSv1.1");
       props.put("ssl.endpoint.identification.algorithm", "");
     } catch (Exception exception) {
-      log.error("Error : Cannot set SSL Config properties.");
+      log.error("Error : Cannot set SSL Config properties.", exception);
     }
 
     return props;

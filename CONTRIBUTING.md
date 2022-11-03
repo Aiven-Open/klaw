@@ -8,11 +8,12 @@ Please read through this document before submitting any issues or pull requests.
 
 ## Content
 
-- [❤️ Code of Conduct](#code-of-conduct)
+- [❤️ Code of Conduct](#-code-of-conduct)
 - [Opening an issue](#opening-an-issue)
 - [How to work on an issue](#how-to-work-on-an-issue)
 - [How to make a pull request](#how-to-make-a-pull-request)
-  - [When is your pull request ready to be merged?](#when-is-your-pull-request-ready-to-be-merged)
+  - [When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
+- [How to merge a pull request](#how-to-merge-a-pull-request)
 - [Guideline commit messages](#guideline-commit-messages)
   - [ℹ️ Semantic prefixes for commit messages](#-semantic-prefixes-for-commit-messages)
   - [✍️ Writing a great commit message](#-writing-a-great-commit-message)
@@ -46,6 +47,7 @@ The more information an issue includes, the better! For example:
 - On your fork, [create a branch](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/making-changes-in-a-branch/managing-branches#creating-a-branch) named after the issue you're working on.
 - Make all of your changes 🧑‍💻
 - For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
+- Prefer making small and self-contained commits. It helps doing reviews. 
 - Check if it would be helpful to update documentation related to your change. If yes, please do so 🤗!
 - Make sure you add tests for your changes.
 - If you fix a bug, add a regression test.
@@ -92,6 +94,17 @@ __4. Keep a clear git history in mind__
 - Your commit messages should follow our [guideline](#guideline-commit-messages).
 - If you add changes after a review, don't force push in your existing PR, but add new commits. That way, reviewers can pick up the review again.
 
+## How to merge a pull request
+
+Pull request are merged by the maintainer that approved after review. An pull request author should never merge themself, even if they are maintainer. 
+
+### Squash and merge
+
+While working on a change, making small commits related to specific changes is a good practice. The commit history helps describe the process of building. It helps reviewers doing a good job! But they can clutter the Git history on the main branch a lot.
+
+This is why we use "squash and merge" as merge method. When merging, the small commits are combined into one. It creates a cleaner merge history. It also makes it more straight forward to revert all part of the changes, if that is needed. 
+
+The commit message for the pull request can be changed when merging. We recommend updating the automatically created text for this commit to create a meaningful squash commit message. They should follow our [Guideline commit messages](#guideline-commit-messages). 
 
 ## Guideline commit messages
 

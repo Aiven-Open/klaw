@@ -74,7 +74,7 @@ public class ApacheKafkaAclService {
                 filterAndUpdateAclBindings(acls, aclBinding);
               });
     } catch (Exception e) {
-      log.error("Error " + e.getMessage());
+      log.error("Exception: ", e);
     }
 
     return acls;

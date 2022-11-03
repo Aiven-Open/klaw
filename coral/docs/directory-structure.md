@@ -65,9 +65,10 @@ The structure is inspired in big parts by:
     │   │   ├── ...
     │   │   ├── index.ts
     │   │── pages/
-    │   │   ├── page-one
-    │   │   ├── ...
-    │   │   └── index.ts
+    │   │   ├── index.tsx
+    │   │   ├── Login.tsx
+    │   │   ├── Users.tsx
+    │   │   └── ...
     │   └── router.tsx
     ├── domain/
     │   ├── name-of-domain-one/
@@ -127,7 +128,7 @@ In this directory, we group similar code together based on one feature. The stru
 
 #### `pages`
 
-Contains every page of the application, one file per page. The structure in this folder should mirror the structure of the web apps views and routing. If there is a link to a "dashboard" page in the web app, there should be a `Dashboard` page inside `pages`.
+Contains every page of the application, one file per page. The structure in this folder should mirror the structure of the web apps views and routing. If there is a link to a "dashboard" page in the web app, there should be a `Dashboard` page inside `pages`. The files don't need to have a `Page` pre- or postfix since the directory already gives that information.  
 
 #### `services`
 
