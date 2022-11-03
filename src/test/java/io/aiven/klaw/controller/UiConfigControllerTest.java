@@ -1,18 +1,16 @@
 package io.aiven.klaw.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.ActivityLog;
-import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
@@ -91,19 +89,13 @@ public class UiConfigControllerTest {
     List<EnvModel> envList = utilMethods.getEnvList();
     when(envsClustersTenantsControllerService.getKafkaEnvs()).thenReturn(envList);
 
-    String res =
-        mvcEnvs
-            .perform(
-                MockMvcRequestBuilders.get("/getEnvs")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Env> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.get("/getEnvs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -112,20 +104,14 @@ public class UiConfigControllerTest {
     List<Map<String, String>> envList = utilMethods.getSyncEnv();
     when(envsClustersTenantsControllerService.getSyncEnvs()).thenReturn(envList);
 
-    String res =
-        mvcEnvs
-            .perform(
-                MockMvcRequestBuilders.get("/getSyncEnv")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Map<String, String>> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(2);
-    assertThat(response.get(0)).hasSize(2);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.get("/getSyncEnv")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].*", hasSize(2)));
   }
 
   @Test
@@ -134,19 +120,13 @@ public class UiConfigControllerTest {
     List<EnvModel> envList = utilMethods.getEnvList();
     when(envsClustersTenantsControllerService.getSchemaRegEnvs()).thenReturn(envList);
 
-    String res =
-        mvcEnvs
-            .perform(
-                MockMvcRequestBuilders.get("/getSchemaRegEnvs")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Env> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.get("/getSchemaRegEnvs")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -155,19 +135,13 @@ public class UiConfigControllerTest {
     List<TeamModel> teamList = utilMethods.getTeamsModel();
     when(usersTeamsControllerService.getAllTeamsSU()).thenReturn(teamList);
 
-    String res =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.get("/getAllTeamsSU")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Team> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.get("/getAllTeamsSU")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -176,19 +150,13 @@ public class UiConfigControllerTest {
     List<String> teamList = utilMethods.getAllTeamsSUOnly();
     when(usersTeamsControllerService.getAllTeamsSUOnly()).thenReturn(teamList);
 
-    String res =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.get("/getAllTeamsSUOnly")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<Team> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(2);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.get("/getAllTeamsSUOnly")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)));
   }
 
   @Test
@@ -199,20 +167,14 @@ public class UiConfigControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
 
-    String response =
-        mvcEnvs
-            .perform(
-                MockMvcRequestBuilders.post("/addNewEnv")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.post("/addNewEnv")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -222,21 +184,15 @@ public class UiConfigControllerTest {
     when(envsClustersTenantsControllerService.deleteEnvironment(anyString(), anyString()))
         .thenReturn(apiResponse);
 
-    String response =
-        mvcEnvs
-            .perform(
-                MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
-                    .param("envId", "101")
-                    .param("envType", KafkaClustersType.KAFKA.value)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
+                .param("envId", "101")
+                .param("envType", KafkaClustersType.KAFKA.value)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -245,20 +201,14 @@ public class UiConfigControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteTeam(any())).thenReturn(apiResponse);
 
-    String response =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.post("/deleteTeamRequest")
-                    .param("teamId", "101")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.post("/deleteTeamRequest")
+                .param("teamId", "101")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -267,20 +217,14 @@ public class UiConfigControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn(apiResponse);
 
-    String response =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.post("/deleteUserRequest")
-                    .param("userId", "uiuser1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.post("/deleteUserRequest")
+                .param("userId", "uiuser1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -291,19 +235,14 @@ public class UiConfigControllerTest {
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfo);
     when(usersTeamsControllerService.addNewUser(any(), anyBoolean())).thenReturn(apiResponse);
 
-    String response =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.post("/addNewUser")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.post("/addNewUser")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -314,19 +253,14 @@ public class UiConfigControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.addNewTeam(any(), anyBoolean())).thenReturn(apiResponse);
 
-    String response =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.post("/addNewTeam")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.post("/addNewTeam")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -335,19 +269,14 @@ public class UiConfigControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
 
-    String response =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.post("/chPwd")
-                    .param("changePwd", "newpasswd")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.post("/chPwd")
+                .param("changePwd", "newpasswd")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -356,21 +285,15 @@ public class UiConfigControllerTest {
     List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
     when(usersTeamsControllerService.showUsers(any(), any(), any())).thenReturn(userList);
 
-    String res =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.get("/showUserList")
-                    .param("teamName", "")
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<UserInfo> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.get("/showUserList")
+                .param("teamName", "")
+                .param("pageNo", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -379,19 +302,13 @@ public class UiConfigControllerTest {
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     when(usersTeamsControllerService.getMyProfileInfo()).thenReturn(userInfo);
 
-    String res =
-        mvcUserTeams
-            .perform(
-                MockMvcRequestBuilders.get("/getMyProfileInfo")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    UserInfoModel response = OBJECT_MAPPER.readValue(res, UserInfoModel.class);
-    assertThat(response.getTeam()).isEqualTo("Seahorses");
+    mvcUserTeams
+        .perform(
+            MockMvcRequestBuilders.get("/getMyProfileInfo")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.team", is("Seahorses")));
   }
 
   @Test
@@ -401,19 +318,13 @@ public class UiConfigControllerTest {
     when(uiConfigControllerService.showActivityLog(anyString(), anyString(), anyString()))
         .thenReturn(activityLogs);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getActivityLogPerEnv")
-                    .param("env", "1")
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<ActivityLog> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getActivityLogPerEnv")
+                .param("env", "1")
+                .param("pageNo", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 }

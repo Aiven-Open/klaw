@@ -1,7 +1,8 @@
 package io.aiven.klaw.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,17 +49,11 @@ public class ServerConfigControllerTest {
     List<ServerConfigProperties> serverConfigPropertiesList = utilMethods.getServerConfig();
     when(serverConfigService.getAllProps()).thenReturn(serverConfigPropertiesList);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getAllServerConfig")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<ServerConfigProperties> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getAllServerConfig")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 }
