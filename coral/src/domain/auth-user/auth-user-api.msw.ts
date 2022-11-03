@@ -1,13 +1,12 @@
 import { rest } from "msw";
 import { AuthUser } from "src/domain/auth-user/auth-user-types";
+import { MswInstance } from "src/domain/api-mocks/types";
 
-// @TODO check right type for MSW instance
 function mockUserAuthRequest({
   mswInstance,
   userObject,
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  mswInstance: any;
+  mswInstance: MswInstance;
   userObject: AuthUser;
 }) {
   mswInstance.use(

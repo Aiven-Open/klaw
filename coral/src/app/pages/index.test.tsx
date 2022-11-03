@@ -2,6 +2,7 @@ import HomePage from "src/app/pages";
 import { screen } from "@testing-library/react";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/domain/api-mocks/server";
+import { mockUserAuthRequest } from "src/domain/auth-user/auth-user-api.msw";
 
 const loadingText = "data is loading";
 const userName = "Super Admin";
@@ -12,13 +13,10 @@ describe("HomePage", () => {
   });
 
   beforeEach(() => {
-    // Note: As long as we're using a msw mock in the component
-    // we can't use it in the test directly but set the "window.msw"
-    // object to "server". This will call the mocked function
-    // with server instead of worker
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-    window.msw = server;
+    mockUserAuthRequest({
+      mswInstance: server,
+      userObject: { name: "Super Admin" },
+    });
     renderWithQueryClient(<HomePage />);
   });
 

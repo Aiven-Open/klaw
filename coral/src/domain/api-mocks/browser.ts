@@ -1,3 +1,5 @@
 import { setupWorker } from "msw";
 
-export const worker = setupWorker();
+const worker = setupWorker();
+
+export { worker };
