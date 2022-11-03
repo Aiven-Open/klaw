@@ -1,4 +1,4 @@
-import { WindowMswWorkerInstance } from "src/domain/api-mocks/types";
+import { WindowMswWorkerInstance } from "src/services/api-mocks/types";
 
 declare let window: WindowMswWorkerInstance;
 

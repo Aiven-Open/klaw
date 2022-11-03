@@ -1,6 +1,6 @@
 import { rest } from "msw";
 import { AuthUser } from "src/domain/auth-user/auth-user-types";
-import { MswInstance } from "src/domain/api-mocks/types";
+import { MswInstance } from "src/services/api-mocks/types";
 
 function mockUserAuthRequest({
   mswInstance,

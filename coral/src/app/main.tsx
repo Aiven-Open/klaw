@@ -5,7 +5,7 @@ import router from "src/app/router";
 import "@aivenio/design-system/dist/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { getWindowWithMswInstance } from "src/domain/api-mocks/window-msw";
+import { getWindowWithMswInstance } from "src/services/api-mocks/window-msw";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -17,11 +17,11 @@ const queryClient = new QueryClient();
 
 function prepare(): Promise<void | ServiceWorkerRegistration> {
   if (DEV_MODE) {
-    return import("src/domain/api-mocks/browser").then(({ worker }) => {
+    return import("src/services/api-mocks/browser").then(({ worker }) => {
       if ("start" in worker) {
         const window = getWindowWithMswInstance();
         window.msw = worker;
-        return worker.start();
+        return worker.start({ onUnhandledRequest: "bypass" });
       }
     });
   }

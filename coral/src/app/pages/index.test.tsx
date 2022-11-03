@@ -1,11 +1,11 @@
 import HomePage from "src/app/pages";
 import { screen } from "@testing-library/react";
 import { renderWithQueryClient } from "src/services/test-utils";
-import { server } from "src/domain/api-mocks/server";
 import { mockUserAuthRequest } from "src/domain/auth-user/auth-user-api.msw";
+import { server } from "src/services/api-mocks/server";
 
 const loadingText = "data is loading";
-const userName = "Super Admin";
+const userName = "Klaw user";
 
 describe("HomePage", () => {
   beforeAll(() => {
@@ -15,7 +15,7 @@ describe("HomePage", () => {
   beforeEach(() => {
     mockUserAuthRequest({
       mswInstance: server,
-      userObject: { name: "Super Admin" },
+      userObject: { name: userName },
     });
     renderWithQueryClient(<HomePage />);
   });
