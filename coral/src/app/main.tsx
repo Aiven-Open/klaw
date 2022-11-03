@@ -14,31 +14,27 @@ const root = ReactDOM.createRoot(
 
 const queryClient = new QueryClient();
 
-if (DEV_MODE) {
-  await import("src/domain/api-mocks/browser")
-    .then(({ worker }) => {
-      worker
-        .start({
-          onUnhandledRequest: "bypass",
-        })
-        .then();
-    })
-    .then(() => {
-      root.render(
-        <React.StrictMode>
-          <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-        </React.StrictMode>
-      );
+function prepare(): Promise<void | ServiceWorkerRegistration> {
+  if (DEV_MODE) {
+    return import("src/domain/api-mocks/browser").then(({ worker }) => {
+      if ("start" in worker) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        window.msw = worker;
+        return worker.start();
+      }
     });
-} else {
+  }
+  return Promise.resolve();
+}
+
+prepare().then(() => {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        {DEV_MODE && <ReactQueryDevtools />}
       </QueryClientProvider>
     </React.StrictMode>
   );
-}
+});
