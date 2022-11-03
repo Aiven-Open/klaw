@@ -4,14 +4,14 @@ import { MswInstance } from "src/services/api-mocks/types";
 
 function mockUserAuthRequest({
   mswInstance,
-  userObject,
+  userResponse,
 }: {
   mswInstance: MswInstance;
-  userObject: AuthUser;
+  userResponse: AuthUser;
 }) {
   mswInstance.use(
     rest.post("/user/authenticate", (req, res, ctx) => {
-      return res(ctx.status(200), ctx.json(userObject));
+      return res(ctx.status(200), ctx.json(userResponse));
     })
   );
 }
