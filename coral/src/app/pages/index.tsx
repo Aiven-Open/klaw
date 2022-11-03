@@ -2,11 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { AuthUser, getAuthUser } from "src/domain/auth-user";
 import { mockUserAuthRequest } from "src/domain/auth-user/auth-user-api.msw";
 import { useEffect } from "react";
-import { getWindowWithMswInstance } from "src/services/api-mocks/window-msw";
 
 const HomePage = () => {
   useEffect(() => {
-    const window = getWindowWithMswInstance();
     const browserEnvWorker = window.msw;
 
     if (browserEnvWorker) {
