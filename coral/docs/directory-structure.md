@@ -132,4 +132,4 @@ Contains every page of the application, one file per page. The structure in this
 
 #### `services`
 
-Contains functionality we use in many areas to reduce coupling between different layers. `services1 include utility functions as well as facades around external libraries. As a rule of thumb: We should not use a third-part library that is not related to the core packages like react outsite of `services`. We implement them in a [Facade Pattern](https://blog.webdevsimplified.com/2022-07/facade-pattern/).
+Contains functionality we use in many areas to reduce coupling between different layers. `services` include utility functions as well as facades around external libraries. As a rule of thumb: We should not use a third-part library that is not related to the core packages like react outside of `services`. We implement them in a [Facade Pattern](https://blog.webdevsimplified.com/2022-07/facade-pattern/).

@@ -1,27 +1,21 @@
-CORAL_DIST_PATH = coral/dist
+version = 1.1.0
 
-default:
-	@echo "TODO: ADD USAGE INSTRUCTIONS"
+build_all: klaw_core cluster_api
 
-$(CORAL_DIST_PATH): coral/index.html coral/src/*
-	pnpm  --prefix coral build --assetsDir assets/coral --mode springboot
+klaw_core:
+	cd core && mvn clean verify
 
-src/main/resources/templates/coral/index.html: $(CORAL_DIST_PATH)
-	mkdir -p $(shell dirname $@)
-	cp -r $(CORAL_DIST_PATH)/index.html $@
+cluster_api:
+	cd cluster-api && mvn clean verify
 
-src/main/resources/static/assets/coral: $(CORAL_DIST_PATH)
-	cp -r $(CORAL_DIST_PATH)/assets/* $@
+edit-core-config:
+	${EDITOR} core/target/classes/application.properties
 
-.PHONY: enable-coral-in-springboot 
-enable-coral-in-springboot: src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral
-	sed -i "" 's/klaw\.coral\.enabled=false/klaw\.coral\.enabled=true/' src/main/resources/application.properties
+edit-cluster-api-config:
+	${EDITOR} cluster-api/target/classes/application.properties
 
-.PHONY: disable-coral-in-springboot 
-disable-coral-in-springboot:
-	sed -i "" 's/klaw\.coral\.enabled=true/klaw\.coral\.enabled=false/' src/main/resources/application.properties
+run-core:
+	java -jar core/target/klaw-$(version).jar
 
-clean:
-	rm -rf src/main/resources/templates/coral
-	rm -rf src/main/resources/static/assets/coral
-
+run-cluster-api:
+	java -jar cluster-api/target/cluster-api-$(version).jar --spring.config.location=cluster-api/target/classes/application.properties
