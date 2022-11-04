@@ -3,16 +3,14 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
-import { mockUserAuthRequest } from "src/domain/auth-user/auth-user-api.msw";
-import { AuthUser } from "src/domain/auth-user";
+import {
+  mockUserAuthRequest,
+  correctUsername,
+} from "src/domain/auth-user/auth-user-api.msw";
 
 const successfulLoginMessage = "Login successful 🎉";
-const loginDataWrong = "Username or password are wrong 😞";
-const correctUserName = "superadmin";
+const loginDataWrong = "Something went wrong 😞";
 
-const user: AuthUser = {
-  name: correctUserName,
-};
 describe("Login", () => {
   beforeAll(() => {
     server.listen();
@@ -20,7 +18,7 @@ describe("Login", () => {
 
   beforeEach(() => {
     console.error = jest.fn();
-    mockUserAuthRequest({ mswInstance: server, userResponse: user });
+    mockUserAuthRequest(server);
     renderWithQueryClient(<LoginForm />);
   });
 
@@ -58,7 +56,7 @@ describe("Login", () => {
       const usernameInput = screen.getByRole("textbox", { name: /Username/ });
       const submitButton = screen.getByRole("button", { name: "Submit" });
 
-      await userEvent.type(usernameInput, correctUserName);
+      await userEvent.type(usernameInput, correctUsername);
       await userEvent.tab();
       await userEvent.click(submitButton);
 
@@ -73,7 +71,7 @@ describe("Login", () => {
       const usernameInput = screen.getByRole("textbox", { name: /Username/ });
       const submitButton = screen.getByRole("button", { name: "Submit" });
 
-      await userEvent.type(usernameInput, correctUserName);
+      await userEvent.type(usernameInput, correctUsername);
       await userEvent.tab();
       await userEvent.click(submitButton);
 
@@ -89,7 +87,7 @@ describe("Login", () => {
       const passwordInput = screen.getByLabelText(/Password/);
       const submitButton = screen.getByRole("button", { name: "Submit" });
 
-      await userEvent.type(usernameInput, correctUserName);
+      await userEvent.type(usernameInput, correctUsername);
       await userEvent.tab();
       await userEvent.type(passwordInput, "password123");
       await userEvent.tab();

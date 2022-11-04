@@ -1,17 +1,25 @@
-import { AuthUser } from "src/domain/auth-user/auth-user-types";
+import {
+  AuthUser,
+  AuthUserLoginData,
+} from "src/domain/auth-user/auth-user-types";
 
-const getAuthUser = async ({
-  username,
-  password,
-}: {
-  username: string;
-  password: string;
-}): Promise<AuthUser> => {
-  const res = await fetch("/user/authenticate", {
+const getAuthUser = async (userLogin: AuthUserLoginData): Promise<AuthUser> => {
+  return fetch("/user/authenticate", {
     method: "POST",
-    body: JSON.stringify({ username, password }),
-  });
-  return res.json();
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userLogin),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json();
+    })
+    .catch((error) => {
+      throw new Error(error.message);
+    });
 };
 
 export { getAuthUser };

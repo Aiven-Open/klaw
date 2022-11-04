@@ -9,6 +9,7 @@ import {
 import { FieldErrors } from "react-hook-form";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import useLoginUser from "src/app/features/login/useLoginUser";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   username: z.string().min(1, { message: "Username is required" }),
@@ -23,15 +24,17 @@ const LoginForm = () => {
     schema: formSchema,
   });
 
+  useEffect(() => {
+    if (loginUser.isSuccess) {
+      form.reset();
+    }
+  }, [loginUser.isSuccess]);
+
   function onSubmitForm(userInput: Schema) {
     loginUser.mutate({
       username: userInput.username,
       password: userInput.password,
     });
-
-    if (loginUser.isSuccess) {
-      form.reset();
-    }
   }
 
   function onErrorForm(arg: FieldErrors) {
@@ -56,8 +59,8 @@ const LoginForm = () => {
           />
           <SubmitButton>Submit</SubmitButton>
         </Form>
-        {loginUser.isSuccess && <div>Login successful 🎉</div>}
-        {loginUser.isError && <div>Username or password are wrong 😞</div>}
+        {loginUser.isSuccess && <div>Login successful 🎉 </div>}
+        {loginUser.isError && <div>Something went wrong 😞</div>}
       </FlexboxItem>
     </Flexbox>
   );
