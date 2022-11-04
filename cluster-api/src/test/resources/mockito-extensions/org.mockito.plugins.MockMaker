@@ -1,0 +1,4 @@
+# Details: https://github.com/mockito/mockito/wiki/What%27s-new-in-Mockito-2#unmockable
+# When this feature is enabled, some features that are usually only available when using PowerMockito can be used.
+# This is considered a quick fix and it might be a good idea to review the design of some of the classes in this project.
+mock-maker-inline
