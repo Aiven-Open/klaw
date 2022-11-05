@@ -10,8 +10,10 @@ import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,6 +23,15 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 public class SchemaService {
+
+  private static final ParameterizedTypeReference<Map<String, String>>
+      GET_SCHEMA_COMPATIBILITY_TYPEREF = new ParameterizedTypeReference<>() {};
+  private static final ParameterizedTypeReference<Map<String, Object>> GET_SCHEMA_TYPEREF =
+      new ParameterizedTypeReference<>() {};
+
+  private static final ParameterizedTypeReference<List<Integer>> GET_SCHEMAVERSIONS_TYPEREF =
+      new ParameterizedTypeReference<>() {};
+
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
 
@@ -93,8 +104,10 @@ public class SchemaService {
 
           Map<String, String> params = new HashMap<>();
 
-          ResponseEntity<HashMap> responseNew =
-              reqDetails.getRight().getForEntity(reqDetails.getLeft(), HashMap.class, params);
+          ResponseEntity<Map<String, Object>> responseNew =
+              reqDetails
+                  .getRight()
+                  .exchange(reqDetails.getLeft(), HttpMethod.GET, null, GET_SCHEMA_TYPEREF, params);
           Map<String, Object> schemaResponse = responseNew.getBody();
           if (schemaResponse != null) {
             schemaResponse.put("compatibility", schemaCompatibility);
@@ -108,7 +121,7 @@ public class SchemaService {
       return allSchemaObjects;
     } catch (Exception e) {
       log.error("Error from getSchema : ", e);
-      return new TreeMap<>();
+      return Collections.emptyMap();
     }
   }
 
@@ -126,13 +139,16 @@ public class SchemaService {
 
       Map<String, String> params = new HashMap<>();
 
-      ResponseEntity<ArrayList> responseList =
-          reqDetails.getRight().getForEntity(reqDetails.getLeft(), ArrayList.class, params);
+      ResponseEntity<List<Integer>> responseList =
+          reqDetails
+              .getRight()
+              .exchange(
+                  reqDetails.getLeft(), HttpMethod.GET, null, GET_SCHEMAVERSIONS_TYPEREF, params);
       log.info("Schema versions " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
       log.error("Error in getting versions ", e);
-      return new ArrayList<>();
+      return Collections.emptyList();
     }
   }
 
@@ -150,10 +166,17 @@ public class SchemaService {
 
       Map<String, String> params = new HashMap<>();
 
-      ResponseEntity<HashMap> responseList =
-          reqDetails.getRight().getForEntity(reqDetails.getLeft(), HashMap.class, params);
+      ResponseEntity<Map<String, String>> responseList =
+          reqDetails
+              .getRight()
+              .exchange(
+                  reqDetails.getLeft(),
+                  HttpMethod.GET,
+                  null,
+                  GET_SCHEMA_COMPATIBILITY_TYPEREF,
+                  params);
       log.info("Schema compatibility " + responseList);
-      return (String) responseList.getBody().get("compatibilityLevel");
+      return responseList.getBody().get("compatibilityLevel");
     } catch (Exception e) {
       log.error("Error in getting schema compatibility ", e);
       return "NOT SET";
