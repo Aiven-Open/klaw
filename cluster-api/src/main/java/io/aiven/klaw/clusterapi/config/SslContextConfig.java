@@ -44,7 +44,7 @@ public class SslContextConfig {
   public void setKwSSLContext() throws Exception {
     if (keyStore != null && !keyStore.equals("null")) {
       TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-      javax.net.ssl.SSLContext sslContext = null;
+      javax.net.ssl.SSLContext sslContext;
       try {
         sslContext =
             org.apache.http.ssl.SSLContexts.custom()

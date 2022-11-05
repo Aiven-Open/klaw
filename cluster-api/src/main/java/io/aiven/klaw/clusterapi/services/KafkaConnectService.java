@@ -177,7 +177,7 @@ public class KafkaConnectService {
     String suffixUrl = environment + "/connectors";
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT);
-    Map<String, String> params = new HashMap<String, String>();
+    Map<String, String> params = new HashMap<>();
 
     try {
       reqDetails.getRight().getForEntity(reqDetails.getLeft(), Object.class, params);

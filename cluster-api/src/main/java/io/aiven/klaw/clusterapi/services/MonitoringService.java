@@ -47,7 +47,6 @@ public class MonitoringService {
 
       TopicPartition topicPartition;
       Map<TopicPartition, OffsetSpec> topicPartitionOffsetSpecMap = new HashMap<>();
-      topicPartitionOffsetSpecMap = new HashMap<>();
 
       for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
         topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
