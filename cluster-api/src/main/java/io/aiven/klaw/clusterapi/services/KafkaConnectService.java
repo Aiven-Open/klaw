@@ -10,6 +10,7 @@ import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -18,6 +19,11 @@ import org.springframework.web.client.RestTemplate;
 @Service
 @Slf4j
 public class KafkaConnectService {
+
+  private static final ParameterizedTypeReference<List<String>> GET_CONNECTORS_TYPEREF =
+      new ParameterizedTypeReference<>() {};
+  private static final ParameterizedTypeReference<Map<String, Object>>
+      GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -122,18 +128,19 @@ public class KafkaConnectService {
           clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT);
 
       Map<String, String> params = new HashMap<>();
-      ResponseEntity<List> responseList =
-          reqDetails.getRight().getForEntity(reqDetails.getLeft(), List.class, params);
-
+      ResponseEntity<List<String>> responseList =
+          reqDetails
+              .getRight()
+              .exchange(reqDetails.getLeft(), HttpMethod.GET, null, GET_CONNECTORS_TYPEREF, params);
       log.info("connectors list " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
       log.error("Error in getting connectors " + e);
-      return new ArrayList<>();
+      return Collections.emptyList();
     }
   }
 
-  public LinkedHashMap<String, Object> getConnectorDetails(
+  public Map<String, Object> getConnectorDetails(
       String connector, String environmentVal, KafkaSupportedProtocol protocol) {
     try {
       log.info("Into getConnectorDetails {} {}", environmentVal, protocol);
@@ -147,14 +154,21 @@ public class KafkaConnectService {
 
       Map<String, String> params = new HashMap<>();
 
-      ResponseEntity<LinkedHashMap> responseList =
-          reqDetails.getRight().getForEntity(reqDetails.getLeft(), LinkedHashMap.class, params);
+      ResponseEntity<Map<String, Object>> responseList =
+          reqDetails
+              .getRight()
+              .exchange(
+                  reqDetails.getLeft(),
+                  HttpMethod.GET,
+                  null,
+                  GET_CONNECTOR_DETAILS_TYPEREF,
+                  params);
       log.info("connectors list " + responseList);
 
       return responseList.getBody();
     } catch (Exception e) {
       log.error("Error in getting connector detail ", e);
-      return new LinkedHashMap<>();
+      return Collections.emptyMap();
     }
   }
 
