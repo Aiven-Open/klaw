@@ -1,7 +1,6 @@
 package io.aiven.klaw.controller;
 
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -79,7 +78,7 @@ public class SchemaRegstryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -94,7 +93,7 @@ public class SchemaRegstryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -111,6 +110,6 @@ public class SchemaRegstryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 }

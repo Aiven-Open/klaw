@@ -101,7 +101,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -171,7 +171,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -187,7 +187,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -204,7 +204,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
