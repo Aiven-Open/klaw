@@ -1,10 +1,10 @@
 package io.aiven.klaw.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
@@ -57,19 +57,13 @@ public class SchemaRegstryControllerTest {
     when(schemaRegstryControllerService.getSchemaRequests(anyString(), anyString(), anyString()))
         .thenReturn(schRequests);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getSchemaRequests")
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<SchemaRequestModel> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getSchemaRequests")
+                .param("pageNo", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -78,18 +72,13 @@ public class SchemaRegstryControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegstryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/deleteSchemaRequests")
-                    .param("req_no", "1001")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/deleteSchemaRequests")
+                .param("req_no", "1001")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -98,18 +87,13 @@ public class SchemaRegstryControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/execSchemaRequests")
-                    .param("avroSchemaReqId", "1001")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/execSchemaRequests")
+                .param("avroSchemaReqId", "1001")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -120,17 +104,12 @@ public class SchemaRegstryControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegstryControllerService.uploadSchema(any())).thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/uploadSchema")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/uploadSchema")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 }
