@@ -34,7 +34,7 @@ public class KafkaConnectController {
       value = "/getConnectorDetails/{connectorName}/{kafkaConnectHost}/{protocol}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<LinkedHashMap<String, Object>> getConnectorDetails(
+  public ResponseEntity<Map<String, Object>> getConnectorDetails(
       @PathVariable String connectorName,
       @PathVariable String kafkaConnectHost,
       @Valid @PathVariable KafkaSupportedProtocol protocol) {

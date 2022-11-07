@@ -76,19 +76,18 @@ public class AuthenticationIntegrationTest {
     RuntimeException thrown =
         Assertions.assertThrows(
             RuntimeException.class,
-            () -> {
-              mvc.perform(
-                      MockMvcRequestBuilders.get("/topics/getApiStatus")
-                          .contentType(MediaType.APPLICATION_JSON)
-                          .header(
-                              AUTHORIZATION,
-                              BEARER_PREFIX
-                                  + generateToken("notExistingUser", clusterAccessSecret, 3L))
-                          .accept(MediaType.APPLICATION_JSON))
-                  .andExpect(status().isUnauthorized())
-                  .andReturn()
-                  .getResponse();
-            });
+            () ->
+                mvc.perform(
+                        MockMvcRequestBuilders.get("/topics/getApiStatus")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .header(
+                                AUTHORIZATION,
+                                BEARER_PREFIX
+                                    + generateToken("notExistingUser", clusterAccessSecret, 3L))
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized())
+                    .andReturn()
+                    .getResponse());
     assertThat(thrown.getMessage()).isEqualTo("User/subject not found !!");
   }
 

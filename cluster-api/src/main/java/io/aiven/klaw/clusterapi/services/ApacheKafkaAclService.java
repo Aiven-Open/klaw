@@ -69,10 +69,7 @@ public class ApacheKafkaAclService {
       aclsResult
           .values()
           .get(TIME_OUT_SECS_FOR_ACLS, TimeUnit.SECONDS)
-          .forEach(
-              aclBinding -> {
-                filterAndUpdateAclBindings(acls, aclBinding);
-              });
+          .forEach(aclBinding -> filterAndUpdateAclBindings(acls, aclBinding));
     } catch (Exception e) {
       log.error("Exception: ", e);
     }

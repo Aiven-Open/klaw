@@ -1,9 +1,9 @@
 package io.aiven.klaw.clusterapi.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -23,6 +23,8 @@ import org.springframework.util.ResourceUtils;
 @Slf4j
 public class SslContextConfig {
 
+  public static HttpComponentsClientHttpRequestFactory requestFactory;
+
   @Value("${server.ssl.trust-store:null}")
   private String trustStore;
 
@@ -38,13 +40,11 @@ public class SslContextConfig {
   @Value("${server.ssl.key-store-type:JKS}")
   private String keyStoreType;
 
-  public static HttpComponentsClientHttpRequestFactory requestFactory;
-
   @PostConstruct
   public void setKwSSLContext() throws Exception {
     if (keyStore != null && !keyStore.equals("null")) {
       TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-      javax.net.ssl.SSLContext sslContext = null;
+      javax.net.ssl.SSLContext sslContext;
       try {
         sslContext =
             org.apache.http.ssl.SSLContexts.custom()
@@ -76,7 +76,7 @@ public class SslContextConfig {
     File key = ResourceUtils.getFile(storeLoc);
 
     final KeyStore store = KeyStore.getInstance(keyStoreType);
-    try (InputStream inputStream = new FileInputStream(key)) {
+    try (InputStream inputStream = Files.newInputStream(key.toPath())) {
       store.load(inputStream, secret.toCharArray());
     }
     return store;

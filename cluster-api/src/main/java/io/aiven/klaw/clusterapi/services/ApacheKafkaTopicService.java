@@ -107,12 +107,10 @@ public class ApacheKafkaTopicService {
           .get(clusterTopicRequest.getTopicName())
           .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
     } catch (KafkaException e) {
-      String errorMessage = "Invalid properties: ";
-      log.error(errorMessage, e);
+      log.error("Invalid properties: ", e);
       throw e;
     } catch (NumberFormatException e) {
-      String errorMessage = "Invalid replica assignment string";
-      log.error(errorMessage, e);
+      log.error("Invalid replica assignment string", e);
       throw e;
     } catch (ExecutionException | InterruptedException e) {
       String errorMessage;
@@ -193,8 +191,7 @@ public class ApacheKafkaTopicService {
           .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
       return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     } catch (KafkaException e) {
-      String errorMessage = "Invalid properties: ";
-      log.error(errorMessage, e);
+      log.error("Invalid properties: ", e);
       throw e;
     } catch (ExecutionException | InterruptedException e) {
       String errorMessage;

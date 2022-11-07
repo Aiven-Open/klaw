@@ -30,8 +30,7 @@ public class TopicContentsController {
       @PathVariable String clusterName,
       @PathVariable String consumerGroupId,
       @PathVariable String topicName,
-      @PathVariable int offsetPosition)
-      throws Exception {
+      @PathVariable int offsetPosition) {
     Map<Long, String> events =
         topicContentsService.readEvents(
             bootstrapServers,

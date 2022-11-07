@@ -13,9 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MonitoringService {
 
-  final ClusterApiUtils clusterApiUtils;
-
   private static final long timeOutSecsForAcls = 5;
+  final ClusterApiUtils clusterApiUtils;
 
   public MonitoringService(ClusterApiUtils clusterApiUtils) {
     this.clusterApiUtils = clusterApiUtils;
@@ -48,7 +47,6 @@ public class MonitoringService {
 
       TopicPartition topicPartition;
       Map<TopicPartition, OffsetSpec> topicPartitionOffsetSpecMap = new HashMap<>();
-      topicPartitionOffsetSpecMap = new HashMap<>();
 
       for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
         topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
@@ -75,10 +73,10 @@ public class MonitoringService {
         long latestOffset = listOffsetsLatestResult.partitionResult(topicPartition).get().offset();
         long lag = latestOffset - earliestOffset;
 
-        offsetDetails.put("topicPartitionId", topicPartition.partition() + "");
-        offsetDetails.put("currentOffset", earliestOffset + "");
-        offsetDetails.put("endOffset", latestOffset + "");
-        offsetDetails.put("lag", lag + "");
+        offsetDetails.put("topicPartitionId", Long.toString(topicPartition.partition()));
+        offsetDetails.put("currentOffset", Long.toString(earliestOffset));
+        offsetDetails.put("endOffset", Long.toString(latestOffset));
+        offsetDetails.put("lag", Long.toString(lag));
         consumerGroupOffsetList.add(offsetDetails);
       }
       return consumerGroupOffsetList;
