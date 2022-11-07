@@ -181,7 +181,8 @@ public class AclControllerTest {
             MockMvcRequestBuilders.get("/getAcls")
                 .param("topicnamesearch", "testtopic")
                 .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)).andDo(print())
+                .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.topicInfoList[*]", hasSize(1)))
         .andExpect(jsonPath("$.aclInfoList[*]", hasSize(1)));
