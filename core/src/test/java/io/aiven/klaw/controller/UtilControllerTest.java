@@ -1,12 +1,15 @@
 package io.aiven.klaw.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.service.UtilControllerService;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,28 +44,19 @@ public class UtilControllerTest {
     hMap.put("status", ApiResultStatus.AUTHORIZED.value);
     when(utilControllerService.getAuth()).thenReturn(hMap);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getAuth")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    HashMap<String, String> response = OBJECT_MAPPER.readValue(res, HashMap.class);
-    assertThat(response).containsEntry("status", "Authorized");
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getAuth")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8)
+                .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.status", is("Authorized")));
   }
 
   @Test
   @Order(2)
   public void getLogoutPage() throws Exception {
-
-    mvc.perform(MockMvcRequestBuilders.post("/logout"))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+    mvc.perform(MockMvcRequestBuilders.post("/logout")).andExpect(status().isOk());
   }
 }

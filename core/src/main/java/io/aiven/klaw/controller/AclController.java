@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.service.AclControllerService;
+import io.aiven.klaw.service.TopicOverviewService;
 import java.util.List;
 import java.util.Map;
 import javax.validation.Valid;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AclController {
 
   @Autowired AclControllerService aclControllerService;
+
+  @Autowired TopicOverviewService topicOverviewService;
 
   @PostMapping(value = "/createAcl")
   public ResponseEntity<ApiResponse> createAcl(@Valid @RequestBody AclRequestsModel addAclRequest)
@@ -96,7 +99,8 @@ public class AclController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TopicOverview> getAcls(
       @RequestParam(value = "topicnamesearch") String topicNameSearch) {
-    return new ResponseEntity<>(aclControllerService.getAcls(topicNameSearch), HttpStatus.OK);
+    return new ResponseEntity<>(
+        topicOverviewService.getTopicOverview(topicNameSearch), HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -107,7 +111,7 @@ public class AclController {
       @RequestParam(value = "topicnamesearch") String topicNameSearch,
       @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
     return new ResponseEntity<>(
-        aclControllerService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
+        topicOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
   }
 
   // getConsumerOffsets from kafka cluster

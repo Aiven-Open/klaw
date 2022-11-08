@@ -1,12 +1,12 @@
 package io.aiven.klaw.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.AclInfo;
@@ -17,6 +17,7 @@ import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
+import io.aiven.klaw.service.TopicOverviewService;
 import java.util.List;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,22 +34,17 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 public class AclControllerTest {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  @MockBean private AclControllerService aclControllerService;
-
-  @MockBean private AclSyncControllerService aclSyncControllerService;
-
-  private UtilMethods utilMethods;
-
-  private MockMvc mvcAcls;
-
-  private AclController aclController;
-
-  private MockMvc mvcAclsSync;
-
-  private AclSyncController aclSyncController;
-
   private static final String topicName = "testtopic";
   private static final int topicId = 1001;
+  @MockBean private AclControllerService aclControllerService;
+  @MockBean private AclSyncControllerService aclSyncControllerService;
+
+  @MockBean private TopicOverviewService topicOverviewService;
+  private UtilMethods utilMethods;
+  private MockMvc mvcAcls;
+  private AclController aclController;
+  private MockMvc mvcAclsSync;
+  private AclSyncController aclSyncController;
 
   @BeforeEach
   public void setup() {
@@ -57,6 +53,7 @@ public class AclControllerTest {
     utilMethods = new UtilMethods();
     mvcAcls = MockMvcBuilders.standaloneSetup(aclController).dispatchOptions(true).build();
     ReflectionTestUtils.setField(aclController, "aclControllerService", aclControllerService);
+    ReflectionTestUtils.setField(aclController, "topicOverviewService", topicOverviewService);
     mvcAclsSync = MockMvcBuilders.standaloneSetup(aclSyncController).dispatchOptions(true).build();
     ReflectionTestUtils.setField(
         aclSyncController, "aclSyncControllerService", aclSyncControllerService);
@@ -70,20 +67,14 @@ public class AclControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.createAcl(any())).thenReturn(apiResponse);
 
-    String response =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.post("/createAcl")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.post("/createAcl")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -95,21 +86,14 @@ public class AclControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclSyncControllerService.updateSyncAcls(any())).thenReturn(apiResponse);
 
-    String response =
-        mvcAclsSync
-            .perform(
-                MockMvcRequestBuilders.post("/updateSyncAcls")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
-
-    assertThat(actualResult.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcAclsSync
+        .perform(
+            MockMvcRequestBuilders.post("/updateSyncAcls")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -119,20 +103,14 @@ public class AclControllerTest {
 
     when(aclControllerService.getAclRequests("1", "", "all")).thenReturn(aclRequests);
 
-    String res =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.get("/getAclRequests")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .param("pageNo", "1")
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<AclRequestsModel> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.get("/getAclRequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "1")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -142,39 +120,28 @@ public class AclControllerTest {
 
     when(aclControllerService.getCreatedAclRequests("1", "", "created")).thenReturn(aclRequests);
 
-    String res =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.get("/getCreatedAclRequests")
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<List<AclRequestsModel>> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.get("/getCreatedAclRequests")
+                .param("pageNo", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
   public void deleteAclRequests() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.deleteAclRequests(anyString())).thenReturn(apiResponse);
-    String response =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.post("/deleteAclRequests")
-                    .param("req_no", "fsda32FSDw")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.post("/deleteAclRequests")
+                .param("req_no", "fsda32FSDw")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -182,80 +149,64 @@ public class AclControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.approveAclRequests(anyString())).thenReturn(apiResponse);
 
-    String response =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.post("/execAclRequest")
-                    .param("req_no", "reqno")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.post("/execAclRequest")
+                .param("req_no", "reqno")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   public void declineAclRequests() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.declineAclRequests(anyString(), anyString())).thenReturn(apiResponse);
-    String response =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.post("/execAclRequestDecline")
-                    .param("req_no", "reqno")
-                    .param("reasonForDecline", "reason")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.post("/execAclRequestDecline")
+                .param("req_no", "reqno")
+                .param("reasonForDecline", "reason")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   public void getAcls1() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(aclControllerService.getAcls("testtopic")).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview("testtopic")).thenReturn(topicOverview);
 
-    String res =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.get("/getAcls")
-                    .param("topicnamesearch", "testtopic")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
-    assertThat(response.getAclInfoList()).hasSize(1);
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.get("/getAcls")
+                .param("topicnamesearch", "testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.topicInfoList[*]", hasSize(1)))
+        .andExpect(jsonPath("$.aclInfoList[*]", hasSize(1)));
   }
 
   @Test
   public void getAcls2() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(aclControllerService.getAcls(null)).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview(null)).thenReturn(topicOverview);
 
-    String res =
-        mvcAcls
-            .perform(
-                MockMvcRequestBuilders.get("/getAcls")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+    // TODO Consider returning an error response object (https://www.rfc-editor.org/rfc/rfc7807)
+    // Just checking response code seems to be sufficient as the contentAsString() returns an empty
+    // String.
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.get("/getAcls")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest());
   }
 
   @Test
@@ -265,20 +216,14 @@ public class AclControllerTest {
     when(aclSyncControllerService.getSyncAcls(anyString(), anyString(), anyString(), any(), any()))
         .thenReturn(aclInfo);
 
-    String res =
-        mvcAclsSync
-            .perform(
-                MockMvcRequestBuilders.get("/getSyncAcls")
-                    .param("env", "DEV")
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<AclInfo> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvcAclsSync
+        .perform(
+            MockMvcRequestBuilders.get("/getSyncAcls")
+                .param("env", "DEV")
+                .param("pageNo", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 }

@@ -147,6 +147,10 @@ public class MailUtils {
                 "'" + reasonToDecline + "'");
         subject = "Acl Request Denied";
         break;
+      case ACL_REQUEST_FAILURE:
+        formattedStr = "Acl Request processing failed : " + acl + ", " + topicName;
+        subject = "Request processing failed.";
+        break;
     }
 
     sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);

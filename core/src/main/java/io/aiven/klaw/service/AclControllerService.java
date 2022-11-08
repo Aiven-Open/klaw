@@ -1,15 +1,9 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.ACL_DELETE_REQUESTED;
-import static io.aiven.klaw.model.MailType.ACL_REQUESTED;
-import static io.aiven.klaw.model.MailType.ACL_REQUEST_APPROVED;
-import static io.aiven.klaw.model.MailType.ACL_REQUEST_DENIED;
+import static io.aiven.klaw.model.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
@@ -20,7 +14,6 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclIPPrincipleType;
-import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.AclType;
@@ -31,20 +24,14 @@ import io.aiven.klaw.model.MailType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
-import io.aiven.klaw.model.TopicHistory;
-import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.SortedMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +43,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AclControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
-      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+  public static final String SEPARATOR_ACL = "<ACL>";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private final MailUtils mailService;
@@ -126,13 +112,12 @@ public class AclControllerService {
 
   void handleIpAddressAndCNString(AclRequestsModel aclRequestsModel, AclRequests aclRequestsDao) {
     StringBuilder aclStr = new StringBuilder();
-    String separatorAcl = "<ACL>";
     if (aclRequestsModel.getAclIpPrincipleType() == AclIPPrincipleType.IP_ADDRESS) {
       for (int i = 0; i < aclRequestsModel.getAcl_ip().size(); i++) {
         if (i == 0) {
           aclStr.append(aclRequestsModel.getAcl_ip().get(i));
         } else {
-          aclStr = new StringBuilder(aclStr + separatorAcl + aclRequestsModel.getAcl_ip().get(i));
+          aclStr = new StringBuilder(aclStr + SEPARATOR_ACL + aclRequestsModel.getAcl_ip().get(i));
         }
       }
       aclRequestsDao.setAcl_ip(aclStr.toString());
@@ -142,7 +127,7 @@ public class AclControllerService {
         if (i == 0) {
           aclStr.append(aclRequestsModel.getAcl_ssl().get(i));
         } else {
-          aclStr = new StringBuilder(aclStr + separatorAcl + aclRequestsModel.getAcl_ssl().get(i));
+          aclStr = new StringBuilder(aclStr + SEPARATOR_ACL + aclRequestsModel.getAcl_ssl().get(i));
         }
       }
       aclRequestsDao.setAcl_ssl(aclStr.toString());
@@ -223,12 +208,12 @@ public class AclControllerService {
         aclRequestsModel = new AclRequestsModel();
         copyProperties(aclRequests, aclRequestsModel);
         if (aclRequests.getAcl_ip() != null) {
-          String[] aclListIp = aclRequests.getAcl_ip().split("<ACL>");
+          String[] aclListIp = aclRequests.getAcl_ip().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ip(new ArrayList<>(Arrays.asList(aclListIp)));
         }
 
         if (aclRequests.getAcl_ssl() != null) {
-          String[] aclListSsl = aclRequests.getAcl_ssl().split("<ACL>");
+          String[] aclListSsl = aclRequests.getAcl_ssl().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ssl(new ArrayList<>(Arrays.asList(aclListSsl)));
         }
         aclRequestsModel.setTeamname(
@@ -458,6 +443,42 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
+    ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails);
+    if (!aclValidationResponse.getResult().equals(ApiResultStatus.SUCCESS.value)) {
+      return aclValidationResponse;
+    }
+
+    String allIps = aclReq.getAcl_ip();
+    String allSsl = aclReq.getAcl_ssl();
+
+    ResponseEntity<ApiResponse> response = invokeClusterApiAclRequest(tenantId, aclReq);
+    // set back all ips, principals
+    aclReq.setAcl_ip(allIps);
+    aclReq.setAcl_ssl(allSsl);
+    String updateAclReqStatus;
+    updateAclReqStatus = handleClusterApiResponse(userDetails, dbHandle, aclReq, response);
+
+    MailType notifyUserType = ACL_REQUEST_APPROVED;
+    if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
+      notifyUserType = ACL_REQUEST_FAILURE;
+    }
+
+    mailService.sendMail(
+        aclReq.getTopicname(),
+        aclReq.getTopictype(),
+        "",
+        aclReq.getUsername(),
+        dbHandle,
+        notifyUserType,
+        commonUtilsService.getLoginUrl());
+    return ApiResponse.builder().result(updateAclReqStatus).build();
+  }
+
+  private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails) {
+    if (aclReq == null || aclReq.getReq_no() == null) {
+      return ApiResponse.builder().result("Record not found !").build();
+    }
+
     if (Objects.equals(aclReq.getUsername(), userDetails)) {
       return ApiResponse.builder()
           .result("You are not allowed to approve your own subscription requests.")
@@ -473,62 +494,55 @@ public class AclControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    String allIps = aclReq.getAcl_ip();
-    String allSsl = aclReq.getAcl_ssl();
-    if (aclReq.getReq_no() != null) {
-      ResponseEntity<ApiResponse> response = null;
-      if (aclReq.getAcl_ip() != null) {
-        String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");
-        for (String s : aclListIp) {
-          aclReq.setAcl_ip(s);
-          response = clusterApiService.approveAclRequests(aclReq, tenantId);
-        }
-      } else if (aclReq.getAcl_ssl() != null) {
-        String[] aclListSsl = aclReq.getAcl_ssl().split("<ACL>");
-        for (String s : aclListSsl) {
-          aclReq.setAcl_ssl(s);
-          response = clusterApiService.approveAclRequests(aclReq, tenantId);
-        }
-      }
+    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+  }
 
-      // set back all ips, principles
-      aclReq.setAcl_ip(allIps);
-      aclReq.setAcl_ssl(allSsl);
-      String updateAclReqStatus;
-
-      try {
-        ApiResponse responseBody = Objects.requireNonNull(response).getBody();
-        if (Objects.requireNonNull(responseBody)
-            .getResult()
-            .contains(ApiResultStatus.SUCCESS.value)) {
-          String jsonParams = "", aivenAclIdKey = "aivenaclid";
-          if (responseBody.getData() instanceof Map) {
-            Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
-            if (dataMap.containsKey(aivenAclIdKey)) {
-              jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
-            }
+  private static String handleClusterApiResponse(
+      String userDetails,
+      HandleDbRequests dbHandle,
+      AclRequests aclReq,
+      ResponseEntity<ApiResponse> response) {
+    String updateAclReqStatus;
+    try {
+      ApiResponse responseBody = Objects.requireNonNull(response).getBody();
+      if (Objects.requireNonNull(responseBody)
+          .getResult()
+          .contains(ApiResultStatus.SUCCESS.value)) {
+        String jsonParams = "", aivenAclIdKey = "aivenaclid";
+        if (responseBody.getData() instanceof Map) {
+          Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
+          if (dataMap.containsKey(aivenAclIdKey)) {
+            jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
           }
-          updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
-        } else {
-          return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
         }
-      } catch (Exception e) {
-        log.error("Exception ", e);
-        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
+      } else {
+        updateAclReqStatus = ApiResultStatus.FAILURE.value;
       }
-
-      mailService.sendMail(
-          aclReq.getTopicname(),
-          aclReq.getTopictype(),
-          "",
-          aclReq.getUsername(),
-          dbHandle,
-          ACL_REQUEST_APPROVED,
-          commonUtilsService.getLoginUrl());
-      return ApiResponse.builder().result(updateAclReqStatus).build();
-    } else {
-      return ApiResponse.builder().result("Record not found !").build();
+    } catch (Exception e) {
+      log.error("Exception ", e);
+      updateAclReqStatus = ApiResultStatus.FAILURE.value;
     }
+    return updateAclReqStatus;
+  }
+
+  private ResponseEntity<ApiResponse> invokeClusterApiAclRequest(int tenantId, AclRequests aclReq)
+      throws KlawException {
+    ResponseEntity<ApiResponse> response = null;
+    if (aclReq.getAclIpPrincipleType() == AclIPPrincipleType.IP_ADDRESS) {
+      String[] aclListIp = aclReq.getAcl_ip().split(SEPARATOR_ACL);
+      for (String s : aclListIp) {
+        aclReq.setAcl_ip(s);
+        response = clusterApiService.approveAclRequests(aclReq, tenantId);
+      }
+    } else if (aclReq.getAclIpPrincipleType() == AclIPPrincipleType.PRINCIPAL) {
+      String[] aclListSsl = aclReq.getAcl_ssl().split(SEPARATOR_ACL);
+      for (String s : aclListSsl) {
+        aclReq.setAcl_ssl(s);
+        response = clusterApiService.approveAclRequests(aclReq, tenantId);
+      }
+    }
+    return response;
   }
 
   public ApiResponse declineAclRequests(String req_no, String reasonToDecline)
@@ -545,6 +559,10 @@ public class AclControllerService {
     AclRequests aclReq =
         dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
+    if (aclReq.getReq_no() == null) {
+      return ApiResponse.builder().result("Record not found !").build();
+    }
+
     if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
@@ -554,95 +572,22 @@ public class AclControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    String updateAclReqStatus;
-
-    if (aclReq.getReq_no() != null) {
-      try {
-        updateAclReqStatus = dbHandle.declineAclRequest(aclReq, userDetails);
-        mailService.sendMail(
-            aclReq.getTopicname(),
-            aclReq.getTopictype(),
-            reasonToDecline,
-            aclReq.getUsername(),
-            dbHandle,
-            ACL_REQUEST_DENIED,
-            commonUtilsService.getLoginUrl());
-
-        return ApiResponse.builder().result(updateAclReqStatus).build();
-      } catch (Exception e) {
-        log.error("Error ", e);
-        throw new KlawException(e.getMessage());
-      }
-    } else {
-      return ApiResponse.builder().result("Record not found !").build();
-    }
-  }
-
-  private List<Acl> getAclsFromSOT(
-      String env, String topicNameSearch, boolean regex, int tenantId) {
-    List<Acl> aclsFromSOT;
-    if (!regex) {
-      aclsFromSOT =
-          manageDatabase.getHandleDbRequests().getSyncAcls(env, topicNameSearch, tenantId);
-    } else {
-      aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env, tenantId);
-      List<Acl> topicFilteredList = aclsFromSOT;
-      // Filter topics on topic name for search
-      if (topicNameSearch != null && topicNameSearch.length() > 0) {
-        final String topicSearchFilter = topicNameSearch;
-        topicFilteredList =
-            aclsFromSOT.stream()
-                .filter(acl -> acl.getTopicname().contains(topicSearchFilter))
-                .collect(Collectors.toList());
-      }
-      aclsFromSOT = topicFilteredList;
-    }
-
-    return aclsFromSOT;
-  }
-
-  private Map<String, String> getTopicPromotionEnv(
-      String topicSearch, List<Topic> topics, int tenantId) {
-    Map<String, String> hashMap = new HashMap<>();
     try {
-      if (topics == null) {
-        topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
-      }
+      String updateAclReqStatus = dbHandle.declineAclRequest(aclReq, userDetails);
+      mailService.sendMail(
+          aclReq.getTopicname(),
+          aclReq.getTopictype(),
+          reasonToDecline,
+          aclReq.getUsername(),
+          dbHandle,
+          ACL_REQUEST_DENIED,
+          commonUtilsService.getLoginUrl());
 
-      hashMap.put("topicName", topicSearch);
-
-      if (topics != null && topics.size() > 0) {
-        List<String> envList = new ArrayList<>();
-        List<String> finalEnvList = envList;
-        topics.forEach(topic -> finalEnvList.add(topic.getEnvironment()));
-        envList = finalEnvList;
-
-        // tenant filtering
-        String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
-        envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-        String lastEnv = envList.get(envList.size() - 1);
-        List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
-
-        if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
-          hashMap.put("status", "NO_PROMOTION"); // PRD
-        } else {
-          hashMap.put("status", ApiResultStatus.SUCCESS.value);
-          hashMap.put("sourceEnv", lastEnv);
-          String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
-          hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
-          hashMap.put("targetEnvId", targetEnv);
-        }
-
-        return hashMap;
-      }
+      return ApiResponse.builder().result(updateAclReqStatus).build();
     } catch (Exception e) {
-      log.error("getTopicPromotionEnv error ", e);
-      hashMap.put("status", ApiResultStatus.FAILURE.value);
-      hashMap.put("error", "Topic does not exist in any environment.");
+      log.error("Error ", e);
+      throw new KlawException(e.getMessage());
     }
-
-    return hashMap;
   }
 
   private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
@@ -660,321 +605,6 @@ public class AclControllerService {
       return new ArrayList<>();
     }
     return topicsFromSOT;
-  }
-
-  public TopicOverview getAcls(String topicNameSearch) {
-    log.debug("getAcls {}", topicNameSearch);
-    String userDetails = getUserName();
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-
-    if (topicNameSearch != null) {
-      topicNameSearch = topicNameSearch.trim();
-    } else {
-      return null;
-    }
-
-    Integer loggedInUserTeam = getMyTeamId(userDetails);
-    List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
-
-    // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
-    topics =
-        topics.stream()
-            .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
-            .collect(Collectors.toList());
-
-    TopicOverview topicOverview = new TopicOverview();
-
-    if (topics.size() == 0) {
-      topicOverview.setTopicExists(false);
-      return topicOverview;
-    } else {
-      topicOverview.setTopicExists(true);
-    }
-
-    String syncCluster;
-    String[] reqTopicsEnvs;
-    ArrayList<String> reqTopicsEnvsList = new ArrayList<>();
-    try {
-      syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-    } catch (Exception exception) {
-      syncCluster = null;
-    }
-
-    try {
-      String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
-      reqTopicsEnvs = requestTopicsEnvs.split(",");
-      reqTopicsEnvsList = new ArrayList<>(Arrays.asList(reqTopicsEnvs));
-    } catch (Exception exception) {
-      log.error("Error in getting req topic envs", exception);
-    }
-
-    List<TopicInfo> topicInfoList = new ArrayList<>();
-    ArrayList<TopicHistory> topicHistoryFromTopic;
-    List<TopicHistory> topicHistoryList = new ArrayList<>();
-
-    for (Topic topic : topics) {
-      TopicInfo topicInfo = new TopicInfo();
-      topicInfo.setCluster(getEnvDetails(topic.getEnvironment(), tenantId).getName());
-      topicInfo.setClusterId(topic.getEnvironment());
-      topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
-      topicInfo.setNoOfReplcias(topic.getNoOfReplcias());
-      topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
-
-      if (syncCluster != null && syncCluster.equals(topic.getEnvironment())) {
-        topicOverview.setTopicDocumentation(topic.getDocumentation());
-        topicOverview.setTopicIdForDocumentation(topic.getTopicid());
-      }
-
-      if (topic.getHistory() != null) {
-        try {
-          topicHistoryFromTopic =
-              OBJECT_MAPPER.readValue(topic.getHistory(), new TypeReference<>() {});
-          topicHistoryList.addAll(topicHistoryFromTopic);
-        } catch (JsonProcessingException e) {
-          log.error("Unable to parse topicHistory ", e);
-        }
-      }
-
-      topicInfoList.add(topicInfo);
-    }
-
-    if (topicOverview.getTopicIdForDocumentation() == null) {
-      topicOverview.setTopicDocumentation(topics.get(0).getDocumentation());
-      topicOverview.setTopicIdForDocumentation(topics.get(0).getTopicid());
-    }
-
-    topicOverview.setTopicHistoryList(topicHistoryList);
-
-    List<Acl> aclsFromSOT = new ArrayList<>();
-    List<AclInfo> aclInfo = new ArrayList<>();
-    List<AclInfo> tmpAcl;
-    List<Acl> prefixedAcls = new ArrayList<>();
-    List<Acl> allPrefixedAcls;
-    List<AclInfo> tmpAclPrefixed;
-    List<AclInfo> prefixedAclsInfo = new ArrayList<>();
-
-    List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(topicNameSearch, tenantId);
-
-    // tenant filtering
-    Integer topicOwnerTeam = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
-
-    for (TopicInfo topicInfo : topicInfoList) {
-      aclsFromSOT.addAll(
-          getAclsFromSOT(topicInfo.getClusterId(), topicNameSearch, false, tenantId));
-
-      tmpAcl =
-          applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId).stream()
-              .collect(Collectors.groupingBy(AclInfo::getTopicname))
-              .get(topicNameSearch);
-
-      if (tmpAcl != null) {
-        aclInfo.addAll(tmpAcl);
-      }
-
-      allPrefixedAcls = handleDb.getPrefixedAclsSOT(topicInfo.getClusterId(), tenantId);
-      if (allPrefixedAcls != null && allPrefixedAcls.size() > 0) {
-        for (Acl allPrefixedAcl : allPrefixedAcls) {
-          if (topicNameSearch.startsWith(allPrefixedAcl.getTopicname())) {
-            prefixedAcls.add(allPrefixedAcl);
-          }
-        }
-        tmpAclPrefixed = applyFiltersAclsForSOT(loggedInUserTeam, prefixedAcls, tenantId);
-        prefixedAclsInfo.addAll(tmpAclPrefixed);
-      }
-
-      // show edit button only for restricted envs
-      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)
-          && reqTopicsEnvsList.contains(topicInfo.getClusterId())) {
-        topicInfo.setShowEditTopic(true);
-      }
-    }
-
-    aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
-    List<AclInfo> transactionalAcls =
-        aclInfo.stream()
-            .filter(aclRec -> aclRec.getTransactionalId() != null)
-            .collect(Collectors.toList());
-
-    for (AclInfo aclInfo1 : aclInfo) {
-      aclInfo1.setEnvironmentName(getEnvDetails(aclInfo1.getEnvironment(), tenantId).getName());
-    }
-
-    for (AclInfo aclInfo2 : prefixedAclsInfo) {
-      aclInfo2.setEnvironmentName(getEnvDetails(aclInfo2.getEnvironment(), tenantId).getName());
-    }
-
-    topicOverview.setAclInfoList(aclInfo);
-    if (prefixedAclsInfo.size() > 0) {
-      topicOverview.setPrefixedAclInfoList(prefixedAclsInfo);
-      topicOverview.setPrefixAclsExists(true);
-    }
-    if (transactionalAcls.size() > 0) {
-      topicOverview.setTransactionalAclInfoList(transactionalAcls);
-      topicOverview.setTxnAclsExists(true);
-    }
-
-    topicOverview.setTopicInfoList(topicInfoList);
-
-    try {
-      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
-        topicOverview.setPromotionDetails(getTopicPromotionEnv(topicNameSearch, topics, tenantId));
-
-        if (topicInfoList.size() > 0) {
-          TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
-          lastItem.setTopicDeletable(
-              aclInfo.stream()
-                  .noneMatch(
-                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getCluster())));
-          lastItem.setShowDeleteTopic(true);
-        }
-      } else {
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", "not_authorized");
-        topicOverview.setPromotionDetails(hashMap);
-      }
-    } catch (Exception e) {
-      Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", "not_authorized");
-      topicOverview.setPromotionDetails(hashMap);
-    }
-
-    return topicOverview;
-  }
-
-  public TopicOverview getSchemaOfTopic(String topicNameSearch, String schemaVersionSearch) {
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    TopicOverview topicOverview = new TopicOverview();
-    topicOverview.setTopicExists(true);
-    boolean retrieveSchemas = true;
-    updateAvroSchema(
-        topicNameSearch, schemaVersionSearch, handleDb, retrieveSchemas, topicOverview, tenantId);
-    return topicOverview;
-  }
-
-  private void updateAvroSchema(
-      String topicNameSearch,
-      String schemaVersionSearch,
-      HandleDbRequests handleDb,
-      boolean retrieveSchemas,
-      TopicOverview topicOverview,
-      int tenantId) {
-    if (topicOverview.isTopicExists() && retrieveSchemas) {
-      List<Map<String, String>> schemaDetails = new ArrayList<>();
-      Map<String, String> schemaMap = new HashMap<>();
-      List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
-      Object dynamicObj;
-      Map<String, Object> hashMapSchemaObj;
-      String schemaOfObj;
-      for (Env schemaEnv : schemaEnvs) {
-        try {
-          KwClusters kwClusters =
-              manageDatabase
-                  .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-                  .get(schemaEnv.getClusterId());
-          SortedMap<Integer, Map<String, Object>> schemaObjects =
-              clusterApiService.getAvroSchema(
-                  kwClusters.getBootstrapServers(),
-                  kwClusters.getProtocol(),
-                  kwClusters.getClusterName(),
-                  topicNameSearch,
-                  tenantId);
-
-          Integer latestSchemaVersion = schemaObjects.firstKey();
-          Set<Integer> allVersions = schemaObjects.keySet();
-          List<Integer> allVersionsList = new ArrayList<>(allVersions);
-
-          try {
-            if (schemaVersionSearch != null
-                && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
-              schemaVersionSearch = "";
-            }
-          } catch (NumberFormatException ignored) {
-          }
-
-          // get latest version
-          if (schemaVersionSearch != null && schemaVersionSearch.equals("")) {
-            hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
-            schemaOfObj = (String) hashMapSchemaObj.get("schema");
-            schemaMap.put("isLatest", "true");
-            schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-            schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-            schemaMap.put("version", "" + latestSchemaVersion);
-
-            if (schemaObjects.size() > 1) {
-              schemaMap.put("showNext", "true");
-              schemaMap.put("showPrev", "false");
-              int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
-              schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
-            }
-          } else {
-            hashMapSchemaObj =
-                schemaObjects.get(Integer.parseInt(Objects.requireNonNull(schemaVersionSearch)));
-            schemaOfObj = (String) hashMapSchemaObj.get("schema");
-            schemaMap.put("isLatest", "false");
-            schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-            schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-            schemaMap.put("version", "" + schemaVersionSearch);
-
-            if (schemaObjects.size() > 1) {
-              int indexOfVersion = allVersionsList.indexOf(Integer.parseInt(schemaVersionSearch));
-              if (indexOfVersion + 1 == allVersionsList.size()) {
-                schemaMap.put("showNext", "false");
-                schemaMap.put("showPrev", "true");
-                schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
-              } else {
-                schemaMap.put("showNext", "true");
-                schemaMap.put("showPrev", "true");
-                schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
-                schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
-              }
-            }
-          }
-
-          schemaMap.put("env", schemaEnv.getName());
-          dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
-          schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-          schemaMap.put("content", schemaOfObj);
-
-          schemaDetails.add(schemaMap);
-          topicOverview.setSchemaExists(true);
-          log.info("Getting schema " + topicNameSearch);
-        } catch (Exception e) {
-          log.error("Error ", e);
-        }
-      }
-      if (topicOverview.isSchemaExists()) topicOverview.setSchemaDetails(schemaDetails);
-    }
-  }
-
-  private List<AclInfo> applyFiltersAclsForSOT(
-      Integer loggedInUserTeam, List<Acl> aclsFromSOT, int tenantId) {
-
-    List<AclInfo> aclList = new ArrayList<>();
-    AclInfo mp;
-
-    for (Acl aclSotItem : aclsFromSOT) {
-      mp = new AclInfo();
-      mp.setEnvironment(aclSotItem.getEnvironment());
-      mp.setEnvironmentName(getEnvDetails(aclSotItem.getEnvironment(), tenantId).getName());
-      mp.setTopicname(aclSotItem.getTopicname());
-      mp.setAcl_ip(aclSotItem.getAclip());
-      mp.setAcl_ssl(aclSotItem.getAclssl());
-      mp.setTransactionalId(aclSotItem.getTransactionalId());
-      mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
-      mp.setConsumergroup(aclSotItem.getConsumergroup());
-      mp.setTopictype(aclSotItem.getTopictype());
-      mp.setAclPatternType(aclSotItem.getAclPatternType());
-      mp.setReq_no(aclSotItem.getReq_no() + "");
-      if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam))
-        mp.setShowDeleteAcl(true);
-
-      if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) aclList.add(mp);
-    }
-    return aclList;
   }
 
   private String getUserName() {
@@ -1031,7 +661,6 @@ public class AclControllerService {
     } catch (Exception e) {
       log.error("Ignoring error while retrieving consumer offsets {} ", e.toString());
     }
-
     return consumerOffsetInfoList;
   }
 

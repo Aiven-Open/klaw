@@ -1,16 +1,16 @@
 package io.aiven.klaw.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
@@ -77,19 +77,13 @@ public class TopicControllerTest {
         ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
     when(topicControllerService.createTopicsRequest(any())).thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/createTopics")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    Map<String, String> actualResult =
-        new ObjectMapper().readValue(response, new TypeReference<>() {});
-    assertThat(actualResult).containsEntry("result", ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/createTopics")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -100,21 +94,14 @@ public class TopicControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(apiResponse);
 
-    String response =
-        mvcSync
-            .perform(
-                MockMvcRequestBuilders.post("/updateSyncTopics")
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse actualResult = new ObjectMapper().readValue(response, new TypeReference<>() {});
-
-    assertThat(actualResult.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvcSync
+        .perform(
+            MockMvcRequestBuilders.post("/updateSyncTopics")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -124,19 +111,13 @@ public class TopicControllerTest {
 
     when(topicControllerService.getTopicRequests("1", "", "all")).thenReturn(topicRequests);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getTopicRequests")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .param("pageNo", "1")
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<TopicRequest> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getTopicRequests")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "1")
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -169,19 +150,13 @@ public class TopicControllerTest {
     List<TopicRequestModel> topicReqs = utilMethods.getTopicRequestsList();
     when(topicControllerService.getCreatedTopicRequests("1", "", "created")).thenReturn(topicReqs);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getCreatedTopicRequests")
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<TopicRequestModel> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getCreatedTopicRequests")
+                .param("pageNo", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -190,19 +165,13 @@ public class TopicControllerTest {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.deleteTopicRequests(anyString())).thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/deleteTopicRequests")
-                    .param("topicId", "testtopic")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/deleteTopicRequests")
+                .param("topicId", "testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -212,19 +181,13 @@ public class TopicControllerTest {
         ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
     when(topicControllerService.approveTopicRequests(anyString())).thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/execTopicRequests")
-                    .param("topicId", "testtopic")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/execTopicRequests")
+                .param("topicId", "testtopic")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -234,20 +197,14 @@ public class TopicControllerTest {
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
         .thenReturn(apiResponse);
 
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/execTopicRequestsDecline")
-                    .param("topicId", "1001")
-                    .param("reasonForDecline", "reason")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
-    assertThat(objectResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/execTopicRequestsDecline")
+                .param("topicId", "1001")
+                .param("reasonForDecline", "reason")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -259,23 +216,17 @@ public class TopicControllerTest {
             anyString(), anyString(), anyString(), anyString(), anyString(), any()))
         .thenReturn(topicList);
 
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getTopics")
-                    .param("env", "1")
-                    .param("pageNo", "1")
-                    .param("topicnamesearch", "testtopic")
-                    .param("teamName", "Team1")
-                    .param("topicType", "")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<List<TopicInfo>> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(1);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getTopics")
+                .param("env", "1")
+                .param("pageNo", "1")
+                .param("topicnamesearch", "testtopic")
+                .param("teamName", "Team1")
+                .param("topicType", "")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(1)));
   }
 
   @Test
@@ -283,19 +234,14 @@ public class TopicControllerTest {
   public void getTopicsOnly() throws Exception {
     List<String> topicList = Arrays.asList("testtopic1", "testtopic2");
     when(topicControllerService.getAllTopics(false)).thenReturn(topicList);
-    String res =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getTopicsOnly")
-                    .param("env", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
 
-    List<String> response = OBJECT_MAPPER.readValue(res, List.class);
-    assertThat(response).hasSize(2);
+    mvc.perform(
+            MockMvcRequestBuilders.get("/getTopicsOnly")
+                .param("env", "1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", hasSize(2)));
   }
 
   @Test
@@ -309,22 +255,16 @@ public class TopicControllerTest {
             anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
         .thenReturn(hashMap);
 
-    String res =
-        mvcSync
-            .perform(
-                MockMvcRequestBuilders.get("/getSyncTopics")
-                    .param("env", "1")
-                    .param("pageNo", "1")
-                    .param("topicnamesearch", "testtopic")
-                    .param("showAllTopics", "true")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    HashMap response = OBJECT_MAPPER.readValue(res, HashMap.class);
-    assertThat(response).hasSize(1);
+    mvcSync
+        .perform(
+            MockMvcRequestBuilders.get("/getSyncTopics")
+                .param("env", "1")
+                .param("pageNo", "1")
+                .param("topicnamesearch", "testtopic")
+                .param("showAllTopics", "true")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.*", hasSize(1)));
   }
 }
