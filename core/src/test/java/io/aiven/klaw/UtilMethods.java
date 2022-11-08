@@ -496,6 +496,7 @@ public class UtilMethods {
     aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequest.setRequestingteam(1);
     aclRequest.setTeamname("INFRATEAM");
+    aclRequest.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
     return aclRequest;
   }

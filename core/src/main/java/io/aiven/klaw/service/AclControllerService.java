@@ -19,6 +19,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
@@ -26,6 +27,7 @@ import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.MailType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
@@ -71,25 +73,110 @@ public class AclControllerService {
     this.mailService = mailService;
   }
 
-  public ApiResponse createAcl(AclRequestsModel aclReq) throws KlawException {
-    log.info("createAcl {}", aclReq);
+  public ApiResponse createAcl(AclRequestsModel aclRequestsModel) throws KlawException {
+    log.info("createAcl {}", aclRequestsModel);
     String userDetails = getUserName();
-    aclReq.setAclType(RequestOperationType.CREATE.value);
-    aclReq.setUsername(userDetails);
+    aclRequestsModel.setAclType(RequestOperationType.CREATE.value);
+    aclRequestsModel.setUsername(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
-    aclReq.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, aclReq.getTeamname()));
-    aclReq.setRequestingteam(getMyTeamId(userDetails));
+    aclRequestsModel.setTeamId(
+        manageDatabase.getTeamIdFromTeamName(tenantId, aclRequestsModel.getTeamname()));
+    aclRequestsModel.setRequestingteam(getMyTeamId(userDetails));
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
+    String result;
+    if (verifyIfTopicExists(aclRequestsModel, tenantId)) {
+      return ApiResponse.builder()
+          .result("Failure : Topic not found on target environment.")
+          .build();
+    }
+
+    if (AclType.CONSUMER.value.equals(aclRequestsModel.getTopictype())) {
+      if (AclPatternType.PREFIXED.value.equals(aclRequestsModel.getAclPatternType())) {
+        result = "Failure : Please change the pattern to LITERAL for topic type.";
+        return ApiResponse.builder().result(result).build();
+      }
+      if (validateTeamConsumerGroup(
+          aclRequestsModel.getRequestingteam(), aclRequestsModel.getConsumergroup(), tenantId)) {
+        result =
+            "Failure : Consumer group "
+                + aclRequestsModel.getConsumergroup()
+                + " used by another team.";
+        return ApiResponse.builder().result(result).build();
+      }
+    }
+
+    String transactionalId = aclRequestsModel.getTransactionalId();
+    if (transactionalId != null && transactionalId.length() > 0) {
+      aclRequestsModel.setTransactionalId(transactionalId.trim());
+    }
+
+    AclRequests aclRequestsDao = new AclRequests();
+    copyProperties(aclRequestsModel, aclRequestsDao);
+    handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
+
+    aclRequestsDao.setTenantId(tenantId);
+    return executeAclRequestModel(userDetails, aclRequestsDao, ACL_REQUESTED);
+  }
+
+  void handleIpAddressAndCNString(AclRequestsModel aclRequestsModel, AclRequests aclRequestsDao) {
+    StringBuilder aclStr = new StringBuilder();
+    String separatorAcl = "<ACL>";
+    if (aclRequestsModel.getAclIpPrincipleType() == AclIPPrincipleType.IP_ADDRESS) {
+      for (int i = 0; i < aclRequestsModel.getAcl_ip().size(); i++) {
+        if (i == 0) {
+          aclStr.append(aclRequestsModel.getAcl_ip().get(i));
+        } else {
+          aclStr = new StringBuilder(aclStr + separatorAcl + aclRequestsModel.getAcl_ip().get(i));
+        }
+      }
+      aclRequestsDao.setAcl_ip(aclStr.toString());
+      aclRequestsDao.setAcl_ssl("User:*");
+    } else if (aclRequestsModel.getAclIpPrincipleType() == AclIPPrincipleType.PRINCIPAL) {
+      for (int i = 0; i < aclRequestsModel.getAcl_ssl().size(); i++) {
+        if (i == 0) {
+          aclStr.append(aclRequestsModel.getAcl_ssl().get(i));
+        } else {
+          aclStr = new StringBuilder(aclStr + separatorAcl + aclRequestsModel.getAcl_ssl().get(i));
+        }
+      }
+      aclRequestsDao.setAcl_ssl(aclStr.toString());
+      aclRequestsDao.setAcl_ip(null);
+    }
+  }
+
+  private ApiResponse executeAclRequestModel(
+      String userDetails, AclRequests aclRequestsDao, MailType mailType) throws KlawException {
+    try {
+      String execRes =
+          manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
+
+      if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
+        mailService.sendMail(
+            aclRequestsDao.getTopicname(),
+            aclRequestsDao.getTopictype(),
+            "",
+            userDetails,
+            manageDatabase.getHandleDbRequests(),
+            mailType,
+            commonUtilsService.getLoginUrl());
+      }
+      return ApiResponse.builder().result(execRes).build();
+    } catch (Exception e) {
+      log.error("Exception : ", e);
+      throw new KlawException(e.getMessage());
+    }
+  }
+
+  private boolean verifyIfTopicExists(AclRequestsModel aclReq, int tenantId) {
     List<Topic> topics =
         manageDatabase.getHandleDbRequests().getTopics(aclReq.getTopicname(), tenantId);
     boolean topicFound = false;
-    String result;
 
     if (AclPatternType.LITERAL.value.equals(aclReq.getAclPatternType())) {
       for (Topic topic : topics) {
@@ -98,79 +185,9 @@ public class AclControllerService {
           break;
         }
       }
-      result = "Failure : Topic not found on target environment.";
-      if (!topicFound) {
-        return ApiResponse.builder().result(result).build();
-      }
+      return !topicFound;
     }
-
-    if (AclType.CONSUMER.value.equals(aclReq.getTopictype())) {
-      if (AclPatternType.PREFIXED.value.equals(aclReq.getAclPatternType())) {
-        result = "Failure : Please change the pattern to LITERAL for topic type.";
-        return ApiResponse.builder().result(result).build();
-      }
-      if (validateTeamConsumerGroup(
-          aclReq.getRequestingteam(), aclReq.getConsumergroup(), tenantId)) {
-        result = "Failure : Consumer group " + aclReq.getConsumergroup() + " used by another team.";
-        return ApiResponse.builder().result(result).build();
-      }
-    }
-
-    String txnId;
-    if (aclReq.getTransactionalId() != null) {
-      txnId = aclReq.getTransactionalId().trim();
-      if (txnId.length() > 0) aclReq.setTransactionalId(txnId);
-    }
-
-    AclRequests aclRequestsDao = new AclRequests();
-    copyProperties(aclReq, aclRequestsDao);
-    StringBuilder aclStr = new StringBuilder();
-    String separatorAcl = "<ACL>";
-    if (aclReq.getAcl_ip() != null) {
-      for (int i = 0; i < aclReq.getAcl_ip().size(); i++) {
-        if (i == 0) {
-          aclStr.append(aclReq.getAcl_ip().get(i));
-        } else {
-          aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ip().get(i));
-        }
-      }
-      aclRequestsDao.setAcl_ip(aclStr.toString());
-    }
-
-    if (aclReq.getAcl_ssl() != null) {
-      for (int i = 0; i < aclReq.getAcl_ssl().size(); i++) {
-        if (i == 0) {
-          aclStr.append(aclReq.getAcl_ssl().get(i));
-        } else {
-          aclStr = new StringBuilder(aclStr + separatorAcl + aclReq.getAcl_ssl().get(i));
-        }
-      }
-      aclRequestsDao.setAcl_ssl(aclStr.toString());
-    }
-
-    if (aclReq.getAcl_ssl() == null || aclReq.getAcl_ssl().equals("null")) {
-      aclRequestsDao.setAcl_ssl("User:*");
-    }
-
-    aclRequestsDao.setTenantId(tenantId);
-    try {
-      String execRes =
-          manageDatabase.getHandleDbRequests().requestForAcl(aclRequestsDao).get("result");
-
-      if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
-        mailService.sendMail(
-            aclReq.getTopicname(),
-            aclReq.getTopictype(),
-            "",
-            userDetails,
-            manageDatabase.getHandleDbRequests(),
-            ACL_REQUESTED,
-            commonUtilsService.getLoginUrl());
-      }
-      return ApiResponse.builder().result(execRes).build();
-    } catch (Exception e) {
-      throw new KlawException(e.getMessage());
-    }
+    return false;
   }
 
   public List<AclRequestsModel> getAclRequests(
@@ -187,15 +204,10 @@ public class AclControllerService {
     aclReqs =
         aclReqs.stream()
             .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
-            .collect(Collectors.toList());
-
-    aclReqs =
-        aclReqs.stream()
             .sorted(Collections.reverseOrder(Comparator.comparing(AclRequests::getRequesttime)))
             .collect(Collectors.toList());
 
     aclReqs = getAclRequestsPaged(aclReqs, pageNo, currentPage, tenantId);
-
     return getAclRequestsModels(aclReqs, tenantId);
   }
 
@@ -244,7 +256,7 @@ public class AclControllerService {
       String aclType,
       Integer team,
       List<String> approverRoles,
-      String requestor,
+      String requester,
       int tenantId) {
     List<Topic> topicTeamsList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
@@ -261,7 +273,7 @@ public class AclControllerService {
 
       for (UserInfo userInfo : userList) {
         if (approverRoles.contains(userInfo.getRole())
-            && !Objects.equals(requestor, userInfo.getUsername())) {
+            && !Objects.equals(requester, userInfo.getUsername())) {
           approvingInfo.append(userInfo.getUsername()).append(",");
         }
       }
@@ -414,7 +426,6 @@ public class AclControllerService {
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-
     Acl acl =
         dbHandle.selectSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
@@ -423,29 +434,16 @@ public class AclControllerService {
       return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
     }
 
-    AclRequests aclReq = new AclRequests();
+    AclRequests aclRequestsDao = new AclRequests();
 
-    copyProperties(acl, aclReq);
-    aclReq.setAcl_ip(acl.getAclip());
-    aclReq.setAcl_ssl(acl.getAclssl());
-
-    aclReq.setUsername(userDetails);
-    aclReq.setAclType(RequestOperationType.DELETE.value);
-    aclReq.setOtherParams(req_no);
-    aclReq.setJsonParams(acl.getJsonParams());
-    String execRes = manageDatabase.getHandleDbRequests().requestForAcl(aclReq).get("result");
-
-    if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
-      mailService.sendMail(
-          aclReq.getTopicname(),
-          aclReq.getTopictype(),
-          "",
-          userDetails,
-          manageDatabase.getHandleDbRequests(),
-          ACL_DELETE_REQUESTED,
-          commonUtilsService.getLoginUrl());
-    }
-    return ApiResponse.builder().result(execRes).build();
+    copyProperties(acl, aclRequestsDao);
+    aclRequestsDao.setAcl_ip(acl.getAclip());
+    aclRequestsDao.setAcl_ssl(acl.getAclssl());
+    aclRequestsDao.setUsername(userDetails);
+    aclRequestsDao.setAclType(RequestOperationType.DELETE.value);
+    aclRequestsDao.setOtherParams(req_no);
+    aclRequestsDao.setJsonParams(acl.getJsonParams());
+    return executeAclRequestModel(userDetails, aclRequestsDao, ACL_DELETE_REQUESTED);
   }
 
   public ApiResponse approveAclRequests(String req_no) throws KlawException {
