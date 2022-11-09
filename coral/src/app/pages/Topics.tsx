@@ -1,12 +1,17 @@
 import Layout from "src/app/layout/Layout";
 import { BrowseTopics } from "src/app/features/topics/BrowseTopics";
+import { Typography } from "@aivenio/design-system";
 
 const Topics = () => {
   return (
     <Layout>
       <>
-        <h1>Topics</h1>
-        <BrowseTopics />
+        <Typography.Heading htmlTag={"h1"}>
+          Browse all topics
+        </Typography.Heading>
+        <div style={{ paddingTop: "30px" }}>
+          <BrowseTopics />
+        </div>
       </>
     </Layout>
   );

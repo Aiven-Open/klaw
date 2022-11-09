@@ -3,7 +3,7 @@ import { TopicCard } from "src/app/features/topics/list/TopicCard";
 
 function TopicList() {
   return (
-    <Flexbox colGap="l2" rowGap={"l2"} wrap={"wrap"}>
+    <Flexbox htmlTag={"ul"} colGap="l2" rowGap={"l2"} wrap={"wrap"}>
       <TopicCard />
       <TopicCard />
       <TopicCard />

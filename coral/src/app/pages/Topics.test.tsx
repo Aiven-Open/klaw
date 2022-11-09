@@ -8,7 +8,7 @@ describe("Topics", () => {
   });
 
   it("shows a headline", () => {
-    const headline = screen.getByRole("heading", { name: "Topics" });
+    const headline = screen.getByRole("heading", { name: "Browse all topics" });
 
     expect(headline).toBeVisible();
   });
