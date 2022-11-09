@@ -2,13 +2,12 @@ import Hello from "src/app/pages/Hello";
 import { render, cleanup, screen } from "@testing-library/react";
 
 describe("Hello", () => {
-  beforeEach(() => {
+  beforeAll(() => {
     render(<Hello />);
   });
 
-  afterEach(() => {
-    cleanup();
-  });
+  afterAll(cleanup);
+
   it("shoud render dummy content", () => {
     expect(screen.getByText("Hello")).toBeVisible();
   });

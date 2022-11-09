@@ -1,5 +1,5 @@
 import { LoginForm } from "src/app/features/login";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
@@ -16,22 +16,22 @@ describe("Login", () => {
     server.listen();
   });
 
-  beforeEach(() => {
-    console.error = jest.fn();
-    mockUserAuthRequest(server);
-    renderWithQueryClient(<LoginForm />);
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-    server.resetHandlers();
-  });
-
   afterAll(() => {
     server.close();
   });
 
   describe("renders all necessary elements", () => {
+    beforeAll(() => {
+      mockUserAuthRequest(server);
+      renderWithQueryClient(<LoginForm />);
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+      server.resetHandlers();
+    });
+
     it("shows an input field for username", () => {
       const input = screen.getByRole("textbox", { name: /Username/ });
       expect(input).toBeEnabled();
@@ -52,6 +52,17 @@ describe("Login", () => {
   });
 
   describe("provides form control", () => {
+    beforeEach(() => {
+      mockUserAuthRequest(server);
+      renderWithQueryClient(<LoginForm />);
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+      server.resetHandlers();
+    });
+
     it("user can not submit form if not all inputs are filled", async () => {
       const usernameInput = screen.getByRole("textbox", { name: /Username/ });
       const submitButton = screen.getByRole("button", { name: "Submit" });
@@ -98,6 +109,9 @@ describe("Login", () => {
     });
 
     it("user sees error message if username or password is wrong", async () => {
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+
       const usernameInput = screen.getByRole("textbox", { name: /Username/ });
       const passwordInput = screen.getByLabelText(/Password/);
       const submitButton = screen.getByRole("button", { name: "Submit" });
@@ -111,6 +125,7 @@ describe("Login", () => {
       const wrongDataMessage = await screen.findByText(loginDataWrong);
       expect(wrongDataMessage).toBeVisible();
       expect(console.error).toHaveBeenCalled();
+      console.error = originalConsoleError;
     });
   });
 });
