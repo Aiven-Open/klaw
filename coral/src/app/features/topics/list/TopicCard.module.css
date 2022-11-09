@@ -1,0 +1,6 @@
+/*@TODO use aiven-ds based values*/
+.topic-card-title-desc {
+    border-bottom: 3px solid orange;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}

@@ -1,4 +1,12 @@
-import { BorderBox, Grid, GridItem } from "@aivenio/design-system";
+import {
+  BorderBox,
+  Grid,
+  GridItem,
+  Typography,
+  Chip,
+  Flexbox,
+} from "@aivenio/design-system";
+import classes from "src/app/features/topics/list/TopicCard.module.css";
 
 const exampleCard = {
   topicid: 1010,
@@ -24,30 +32,34 @@ function TopicCard() {
   return (
     <BorderBox
       style={{
-        padding: 10,
         width: 400,
       }}
     >
       <Grid
         colGap={"l1"}
         style={{
-          gridTemplateColumns: "auto",
-          gridTemplateRows: "1fr 1fr",
+          gridTemplateColumns: "1fr 1fr",
+          gridTemplateRows: "auto 1fr",
+          padding: 20,
         }}
       >
-        <GridItem colSpan="span-2">
-          <div>{exampleCard.topicName}</div>
+        <GridItem colSpan="span-2" className={classes.topicCardTitleDesc}>
+          <Typography.Heading htmlTag={"h2"}>
+            {exampleCard.topicName}
+          </Typography.Heading>
           <div>{exampleCard.description}</div>
         </GridItem>
         <GridItem>
-          <div>Owner</div>
+          <strong>Owner</strong>
           <div>{exampleCard.teamname}</div>
         </GridItem>
         <GridItem>
-          <div>Environments:</div>
-          {exampleCard.environmentsList.map((env, index) => {
-            return <div key={env + index}>{env}</div>;
-          })}
+          <strong>Environments:</strong>
+          <Flexbox colGap="l1" rowGap={"l1"} wrap={"wrap"}>
+            {exampleCard.environmentsList.map((env, index) => {
+              return <Chip key={env + index} text={env} />;
+            })}
+          </Flexbox>
         </GridItem>
       </Grid>
     </BorderBox>
