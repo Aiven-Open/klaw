@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 import HomePage from "src/app/pages";
-import Hello from "src/app/pages/Hello";
+import Topics from "src/app/pages/Topics";
 import Login from "src/app/pages/Login";
 
 const routes: Array<RouteObject> = [
@@ -13,8 +13,8 @@ const routes: Array<RouteObject> = [
     element: <Login />,
   },
   {
-    path: "/hello",
-    element: <Hello />,
+    path: "/topics",
+    element: <Topics />,
   },
   {
     path: "*",
