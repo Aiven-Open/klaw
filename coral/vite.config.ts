@@ -17,6 +17,11 @@ export default defineConfig({
       EXAMPLE: "",
     },
   },
+  css: {
+    modules: {
+      localsConvention: "camelCaseOnly",
+    },
+  },
   resolve: {
     alias: {
       src: resolve(resolve(__dirname), "./src"),
