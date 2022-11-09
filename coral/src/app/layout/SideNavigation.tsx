@@ -6,15 +6,15 @@ const SideNavigation = () => {
   return (
     <Flexbox htmlTag="nav" style={style} height={"full"}>
       <ul>
-        <a href="#">
-          <li>navigation item 1</li>
-        </a>
-        <a href="#">
-          <li>navigation item 2</li>
-        </a>
-        <a href="#">
-          <li>navigation item 3</li>
-        </a>
+        <li>
+          <a href="#">navigation item 1</a>
+        </li>
+        <li>
+          <a href="#">navigation item 2</a>
+        </li>
+        <li>
+          <a href="#">navigation item 3</a>
+        </li>
       </ul>
     </Flexbox>
   );
