@@ -1,3 +1,11 @@
-import { renderWithQueryClient } from "src/services/test-utils/render-with-query-client";
+import {
+  renderWithQueryClient,
+  renderWithMemoryRouter,
+  renderWithQueryClientAndMemoryRouter,
+} from "src/services/test-utils/render-helpers";
 
-export { renderWithQueryClient };
+export {
+  renderWithQueryClient,
+  renderWithMemoryRouter,
+  renderWithQueryClientAndMemoryRouter,
+};

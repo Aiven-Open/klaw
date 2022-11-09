@@ -1,10 +1,10 @@
 import HomePage from "src/app/pages";
 import { screen } from "@testing-library/react";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { renderWithMemoryRouter } from "src/services/test-utils";
 
 describe("HomePage", () => {
   beforeEach(() => {
-    renderWithQueryClient(<HomePage />);
+    renderWithMemoryRouter(<HomePage />);
   });
 
   it("renders dummy content", () => {
