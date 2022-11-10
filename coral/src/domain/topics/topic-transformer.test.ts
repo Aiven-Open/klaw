@@ -2,7 +2,7 @@ import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import { Topic, TopicDTOApiResponse } from "src/domain/topics/topics-types";
 
 describe("topic-transformer.ts", () => {
-  describe("transforms API response into list of topics", () => {
+  describe("transforms API response into components of topics", () => {
     it("transforms a response with two entries", () => {
       const apiResponse: TopicDTOApiResponse = [
         [

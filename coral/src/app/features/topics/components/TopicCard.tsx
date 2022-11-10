@@ -7,7 +7,7 @@ import {
   Flexbox,
   ExternalLinkButton,
 } from "@aivenio/design-system";
-import classes from "src/app/features/topics/list/TopicCard.module.css";
+import classes from "src/app/features/topics/components/TopicCard.module.css";
 import { Topic } from "src/domain/topics";
 
 type TopicCardPros = Pick<

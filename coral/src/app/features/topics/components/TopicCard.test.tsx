@@ -1,6 +1,6 @@
 // @TODO import from "@testing-library/react/pure" disables auto cleanup, remove when main is merged
 import { cleanup, render, screen, within } from "@testing-library/react/pure";
-import { TopicCard } from "src/app/features/topics/list/TopicCard";
+import { TopicCard } from "src/app/features/topics/components/TopicCard";
 
 const testCard = {
   topicName: "aivtopic2",
@@ -24,13 +24,13 @@ describe("TopicCard.tsx", () => {
 
     afterAll(cleanup);
 
-    it("shows a list item ", () => {
+    it("shows a components item ", () => {
       const listItem = screen.getByRole("listitem");
 
       expect(listItem).toBeVisible();
     });
 
-    it("shows the topicName in the list item", () => {
+    it("shows the topicName in the components item", () => {
       const headline = within(screen.getByRole("listitem")).getByRole(
         "heading",
         { name: requiredProps.topicName }
@@ -39,7 +39,7 @@ describe("TopicCard.tsx", () => {
       expect(headline).toBeVisible();
     });
 
-    it("shows the topic description in the list item", () => {
+    it("shows the topic description in the components item", () => {
       const headline = within(screen.getByRole("listitem")).getByText(
         requiredProps.description
       );
@@ -47,7 +47,7 @@ describe("TopicCard.tsx", () => {
       expect(headline).toBeVisible();
     });
 
-    it("shows the topic description in the list item", () => {
+    it("shows the topic description in the components item", () => {
       const description = within(screen.getByRole("listitem")).getByText(
         requiredProps.description
       );
@@ -55,13 +55,13 @@ describe("TopicCard.tsx", () => {
       expect(description).toBeVisible();
     });
 
-    it("shows the term 'owner' in the list item", () => {
+    it("shows the term 'owner' in the components item", () => {
       const owner = within(screen.getByRole("listitem")).getByText("Owner");
 
       expect(owner).toBeVisible();
     });
 
-    it("shows the teamname as owner in the list item", () => {
+    it("shows the teamname as owner in the components item", () => {
       const teamname = within(screen.getByRole("listitem")).getByText(
         requiredProps.teamname
       );
@@ -69,7 +69,7 @@ describe("TopicCard.tsx", () => {
       expect(teamname).toHaveTextContent(requiredProps.teamname);
     });
 
-    it("shows the term 'environments' in the list item", () => {
+    it("shows the term 'environments' in the components item", () => {
       const environments = within(screen.getByRole("listitem")).getByText(
         "Environments"
       );
@@ -77,7 +77,7 @@ describe("TopicCard.tsx", () => {
       expect(environments).toBeVisible();
     });
 
-    it("shows all items of the environmentsList in the list item", () => {
+    it("shows all items of the environmentsList in the components item", () => {
       requiredProps.environmentsList.forEach((env) => {
         const environment = within(screen.getByRole("listitem")).getByText(env);
 

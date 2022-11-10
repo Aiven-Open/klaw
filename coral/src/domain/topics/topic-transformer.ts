@@ -1,6 +1,6 @@
 import { Topic, TopicDTOApiResponse } from "src/domain/topics/topics-types";
 
-// @TODO check zod
+// @TODO check zod for this!
 function transformTopicApiResponse(apiResponse: TopicDTOApiResponse): Topic[] {
   return apiResponse.flat();
 }

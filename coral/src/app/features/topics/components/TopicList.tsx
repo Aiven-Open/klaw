@@ -1,5 +1,5 @@
 import { Flexbox } from "@aivenio/design-system";
-import { TopicCard } from "src/app/features/topics/list/TopicCard";
+import { TopicCard } from "src/app/features/topics/components/TopicCard";
 
 const exampleCard = {
   topicid: 1010,

@@ -1,4 +1,4 @@
-import { TopicList } from "src/app/features/topics/list/TopicList";
+import { TopicList } from "src/app/features/topics/components/TopicList";
 
 function BrowseTopics() {
   return <TopicList />;
