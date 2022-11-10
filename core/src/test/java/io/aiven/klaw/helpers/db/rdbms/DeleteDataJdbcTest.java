@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
-import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

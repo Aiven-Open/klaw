@@ -1,6 +1,5 @@
 package io.aiven.klaw.model;
 
-import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.validation.KafkaClusterValidator;
 import java.io.Serializable;
 import java.util.List;

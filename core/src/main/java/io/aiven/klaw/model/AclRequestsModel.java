@@ -1,6 +1,5 @@
 package io.aiven.klaw.model;
 
-import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.MailType.*;
+import static io.aiven.klaw.model.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,11 +11,11 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
+import io.aiven.klaw.model.TopicRequestTypes;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;

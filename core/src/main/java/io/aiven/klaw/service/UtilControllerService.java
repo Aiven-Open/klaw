@@ -1,14 +1,14 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
+import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwMetadataUpdates;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.RequestStatus;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;

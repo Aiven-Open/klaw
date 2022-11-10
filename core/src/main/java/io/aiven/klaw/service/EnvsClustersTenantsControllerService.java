@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
+import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import static io.aiven.klaw.service.KwConstants.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -12,12 +12,12 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.*;
-import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EntityType;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.KafkaFlavors;
-import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
-import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.EntityType;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaFlavors;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.PermissionType;
 import java.io.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;

@@ -1,6 +1,6 @@
 package io.aiven.klaw.dao;
 
-import io.aiven.klaw.model.enums.AclIPPrincipleType;
+import io.aiven.klaw.model.AclIPPrincipleType;
 import java.io.Serializable;
 import javax.persistence.*;
 import lombok.Getter;

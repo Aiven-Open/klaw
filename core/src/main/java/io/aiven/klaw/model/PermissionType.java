@@ -1,4 +1,4 @@
-package io.aiven.klaw.model.enums;
+package io.aiven.klaw.model;
 
 public enum PermissionType {
   REQUEST_CREATE_TOPICS("To request for Topics"),

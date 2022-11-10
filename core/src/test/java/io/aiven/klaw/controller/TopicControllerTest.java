@@ -11,12 +11,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.enums.AclPatternType;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.service.TopicControllerService;
 import io.aiven.klaw.service.TopicSyncControllerService;
 import java.util.Arrays;

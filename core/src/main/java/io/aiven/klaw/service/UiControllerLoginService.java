@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
+import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
