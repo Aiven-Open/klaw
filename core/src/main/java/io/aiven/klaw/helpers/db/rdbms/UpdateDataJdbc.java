@@ -3,10 +3,10 @@ package io.aiven.klaw.helpers.db.rdbms;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.RequestStatus;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;

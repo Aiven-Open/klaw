@@ -552,7 +552,14 @@
 									</div>
 									<br>
 									<div class="d-flex flex-row">
-										<div class="p-2" style="width:40%">
+										<div class="p-2" style="width:20%">
+											<h6 class="text-primary">Other Topic Configs</h6>
+											<div ng-repeat="topicConfig in topicRequest.advancedTopicConfigs">
+												<span>{{ topicConfig }}</span>
+											</div>
+										</div>
+
+										<div class="p-2 border-left" style="width:20%">
 											<h6 class="text-primary">Description</h6><b>{{ topicRequest.description }}</b>
 										</div>
 										<div class="p-2 border-left" style="width:35%">

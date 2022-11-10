@@ -2,6 +2,11 @@ package io.aiven.klaw;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclPermissionType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;

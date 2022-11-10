@@ -911,3 +911,13 @@ databaseChangeLog:
                               name: tenantid
                               type: INT
                     tableName: kwusers
+    - changeSet:
+          id: 2022-11-09 New column to store advanced topic configuration
+          author: muralibasani
+          changes:
+               - addColumn:
+                   tableName: kwtopicrequests
+                   columns:
+                     - column:
+                         name: jsonparams
+                         type: CLOB

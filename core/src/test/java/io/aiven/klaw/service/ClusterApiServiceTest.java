@@ -2,10 +2,7 @@ package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -17,13 +14,13 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.ClusterStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.RequestOperationType;
+import io.aiven.klaw.model.enums.AclIPPrincipleType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -217,7 +214,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<ApiResponse> response1 =
         clusterApiService.approveTopicRequests(
-            topicName, RequestOperationType.CREATE.value, 1, "1", "", 1);
+            topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1);
     assertThat(Objects.requireNonNull(response1.getBody()).getResult())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -244,7 +241,7 @@ public class ClusterApiServiceTest {
     assertThatThrownBy(
             () ->
                 clusterApiService.approveTopicRequests(
-                    topicName, RequestOperationType.CREATE.value, 1, "1", "", 1))
+                    topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1))
         .isInstanceOf(KlawException.class);
   }
 

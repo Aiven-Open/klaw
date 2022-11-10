@@ -19,17 +19,17 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwPropertiesModel;
-import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -301,7 +301,7 @@ public class TopicAclControllerIT {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     when(clusterApiService.approveTopicRequests(
-            topicName, RequestOperationType.CREATE.value, 2, "1", "1", 101))
+            topicName, RequestOperationType.CREATE.value, 2, "1", "1", null, 101))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     String response =

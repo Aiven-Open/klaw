@@ -1,12 +1,13 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.TOPIC_CLAIM_REQUESTED;
-import static io.aiven.klaw.model.MailType.TOPIC_CREATE_REQUESTED;
-import static io.aiven.klaw.model.MailType.TOPIC_DELETE_REQUESTED;
-import static io.aiven.klaw.model.MailType.TOPIC_REQUEST_APPROVED;
-import static io.aiven.klaw.model.MailType.TOPIC_REQUEST_DENIED;
+import static io.aiven.klaw.model.enums.MailType.TOPIC_CLAIM_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.TOPIC_CREATE_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.TOPIC_DELETE_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.TOPIC_REQUEST_APPROVED;
+import static io.aiven.klaw.model.enums.MailType.TOPIC_REQUEST_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
@@ -17,17 +18,19 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.AclPatternType;
-import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.TopicConfiguration;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,6 +201,7 @@ public class TopicControllerService {
     if ("true".equals(validTopicStatus)) {
       TopicRequest topicRequestDao = new TopicRequest();
       copyProperties(topicRequestReq, topicRequestDao);
+      validateAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
       topicRequestDao.setTenantId(tenantId);
 
       mailService.sendMail(
@@ -213,6 +217,25 @@ public class TopicControllerService {
           .build();
     } else {
       return ApiResponse.builder().result(isValidTopicMap.get("error")).build();
+    }
+  }
+
+  private void validateAdvancedTopicConfiguration(
+      TopicRequestModel topicRequestModel, TopicRequest topicRequestDao) throws KlawException {
+    Map<String, String> topicConfigs = new HashMap<>();
+    if (null != topicRequestModel.getAdvancedTopicConfigs()) {
+      for (String advancedTopicConfig : topicRequestModel.getAdvancedTopicConfigs()) {
+        String[] strings = advancedTopicConfig.split(":");
+        topicConfigs.put(strings[0], strings[1].trim());
+      }
+      TopicConfigurationRequest topicConfigurationRequest =
+          TopicConfigurationRequest.builder().advancedTopicConfiguration(topicConfigs).build();
+      try {
+        topicRequestDao.setJsonParams(OBJECT_MAPPER.writeValueAsString(topicConfigurationRequest));
+      } catch (JsonProcessingException e) {
+        log.error("Error in processing topic configs ", e);
+        throw new KlawException("Error in processing advanced topic configs");
+      }
     }
   }
 
@@ -617,6 +640,8 @@ public class TopicControllerService {
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestModel();
       copyProperties(topicReq, topicRequestModel);
+      validateAndCopyTopicConfigs(topicReq, topicRequestModel);
+
       topicRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, topicReq.getTeamId()));
 
@@ -648,6 +673,25 @@ public class TopicControllerService {
       topicRequestModelList.add(topicRequestModel);
     }
     return topicRequestModelList;
+  }
+
+  private void validateAndCopyTopicConfigs(
+      TopicRequest topicReq, TopicRequestModel topicRequestModel) {
+    try {
+      List<String> advancedTopicConfigs = new ArrayList<>();
+      if (topicReq.getJsonParams() != null) {
+        TopicConfigurationRequest topicConfigurationRequest =
+            OBJECT_MAPPER.readValue(topicReq.getJsonParams(), TopicConfigurationRequest.class);
+        for (Map.Entry<String, String> entry :
+            topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
+          advancedTopicConfigs.add(entry.getKey() + ":" + entry.getValue());
+        }
+        topicRequestModel.setAdvancedTopicConfigs(advancedTopicConfigs);
+      }
+    } catch (JsonProcessingException e) {
+      // ignore this error while retrieving the requests
+      log.error("Error in parsing topic configs ", e);
+    }
   }
 
   private String updateApproverInfo(
@@ -728,6 +772,19 @@ public class TopicControllerService {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userDetails);
       }
     } else {
+      Map<String, String> topicConfig = null;
+      try {
+        if (null != topicRequest.getJsonParams()) {
+          topicConfig =
+              OBJECT_MAPPER
+                  .readValue(topicRequest.getJsonParams(), TopicConfigurationRequest.class)
+                  .getAdvancedTopicConfiguration();
+        }
+      } catch (JsonProcessingException e) {
+        // ignore this error while executing the req. should have been raised earlier in the
+        // process.
+        log.error("Error in parsing topic config ", e);
+      }
       ResponseEntity<ApiResponse> response =
           clusterApiService.approveTopicRequests(
               topicRequest.getTopicname(),
@@ -735,6 +792,7 @@ public class TopicControllerService {
               topicRequest.getTopicpartitions(),
               topicRequest.getReplicationfactor(),
               topicRequest.getEnvironment(),
+              topicConfig,
               tenantId);
 
       updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getResult();
@@ -948,6 +1006,15 @@ public class TopicControllerService {
       hashMap.put("topicContents", topicInfo);
     }
     return hashMap;
+  }
+
+  public Map<String, String> getAdvancedTopicConfigs() {
+    Map<String, String> topicConfigs = new HashMap<>();
+    for (TopicConfiguration topicConfiguration : TopicConfiguration.values()) {
+      topicConfigs.put(topicConfiguration.name(), topicConfiguration.getValue());
+    }
+
+    return topicConfigs;
   }
 
   static class TopicNameComparator implements Comparator<Topic> {

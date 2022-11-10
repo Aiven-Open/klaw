@@ -2,13 +2,13 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.MetadataOperationType;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.Title;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.io.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;

@@ -9,20 +9,20 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.model.AclPatternType;
-import io.aiven.klaw.model.AclType;
-import io.aiven.klaw.model.AclsNativeType;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.ClusterStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaFlavors;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.AclsNativeType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.io.File;
@@ -413,6 +413,7 @@ public class ClusterApiService {
       int topicPartitions,
       String replicationFactor,
       String topicEnvId,
+      Map<String, String> advancedTopicConfiguration,
       int tenantId)
       throws KlawException {
     log.info("approveTopicRequests {} {}", topicName, topicEnvId);
@@ -440,6 +441,7 @@ public class ClusterApiService {
             clusterTopicRequest.toBuilder()
                 .partitions(topicPartitions)
                 .replicationFactor(Short.parseShort(replicationFactor))
+                .advancedTopicConfiguration(advancedTopicConfiguration)
                 .build();
       } else if (RequestOperationType.UPDATE.value.equals(topicRequestType)) {
         uri = clusterConnUrl + URI_UPDATE_TOPICS;

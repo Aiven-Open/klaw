@@ -183,4 +183,12 @@ public class TopicController {
         topicControllerService.getTopicEvents(envId, consumerGroupId, topicName, offsetId),
         HttpStatus.OK);
   }
+
+  @RequestMapping(
+      value = "/getAdvancedTopicConfigs",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<Map<String, String>> getAdvancedTopicConfigs() {
+    return new ResponseEntity<>(topicControllerService.getAdvancedTopicConfigs(), HttpStatus.OK);
+  }
 }

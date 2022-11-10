@@ -2,11 +2,11 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.model.AclPatternType;
-import io.aiven.klaw.model.AclType;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;

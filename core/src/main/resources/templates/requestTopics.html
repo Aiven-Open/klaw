@@ -431,7 +431,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="loadEditTopicInfo();getEnvs();">
+			<div class="row" ng-init="loadEditTopicInfo();getEnvs();getTopicConfigs();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
 						<div class="card-body">
@@ -523,17 +523,71 @@
 									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
+												<label>Advanced Topic Configuration</label>
+
+												<table>
+													<tr valign="top" ng-repeat="oneTopicConfig in topicConfigsSelected track by $index">
+														<td width="45%">
+															<select class="form-control custom-select"
+																	required
+																	ng-model="topicConfigsSelectedDropdown[$index]" name="topicConfigsSelectedDropdown[$index]"
+																	ng-change="updateLink($index)"
+																	ng-options="value as value for (keys, value) in topicConfigs">
+																<option value="" selected="selected">
+																	Select Config</option>
+															</select>
+														</td>
+														<td>
+															<input ng-show="propertyInfoLink[$index] != ''" ng-model="topicConfigsSelected[$index]" name="topicConfigsSelected[$index]"
+																   type="text" placeholder="" class="form-control">
+														</td>
+														<td>
+															<a ng-show="propertyInfoLink[$index] != ''" href="{{ propertyInfoLink[$index] }}" ng-model="topicConfigsSelectedLink[$index]" target="_blank">
+																<button type="button" class="btn btn-outline-info  mb-2">
+																	<i class="ti-info"></i>
+																</button>
+															</a>
+														</td>
+														<td ng-show="topicConfigsSelectedLength-1 == $index && propertyInfoLink[$index] != ''">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addConfigRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="topicConfigsSelectedLength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeConfigRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
+												<small class="form-control-feedback">Check the info icon for possible values.</small>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
 												<label class="control-label">Topic Description</label>
 												<input class="form-control" maxlength="75" placeholder="This topic is for .."
 													   ng-model="addTopic.description">
 											</div>
 										</div>
+									</div>
+
+									<div class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">Remarks</label>
 												<input class="form-control" maxlength="75" placeholder="Any specific comments"
 													   ng-model="addTopic.remarks">
 											</div>
+										</div>
+										<div class="col-md-6">
+<!--											<div class="form-group">-->
+<!--												<label class="control-label">Topic Description</label>-->
+<!--												<input class="form-control" maxlength="75" placeholder="This topic is for .."-->
+<!--													   ng-model="addTopic.description">-->
+<!--											</div>-->
 										</div>
 									</div>
 

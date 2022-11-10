@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;

@@ -1,7 +1,7 @@
 package io.aiven.klaw.model.cluster;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import java.io.Serializable;
 import lombok.Builder;
 
