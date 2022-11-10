@@ -9,6 +9,7 @@ import {
 } from "@aivenio/design-system";
 import classes from "src/app/features/topics/components/TopicCard.module.css";
 import { Topic } from "src/domain/topics";
+import { createTopicOverviewLink } from "src/app/features/topics/utils/create-topic-overview-link";
 
 type TopicCardPros = Pick<
   Topic,
@@ -53,7 +54,10 @@ function TopicCard(props: TopicCardPros) {
             </Flexbox>
           </GridItem>
           <GridItem colSpan="span-2" justifySelf={"start"}>
-            <ExternalLinkButton href="/" kind="secondary">
+            <ExternalLinkButton
+              href={createTopicOverviewLink(topicName)}
+              kind="secondary"
+            >
               <span aria-hidden={"true"}>Topic overview</span>
               <span className={classes.visuallyHidden}>
                 Overview for topic {topicName}
