@@ -8,6 +8,7 @@ function withQueryClient({ children }: { children: ReactElement }) {
     defaultOptions: {
       queries: {
         retry: false,
+        cacheTime: Infinity,
       },
     },
   });
