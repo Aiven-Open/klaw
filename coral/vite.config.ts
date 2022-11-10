@@ -16,6 +16,18 @@ function getRouterBasename(env: Record<string, string>): string | undefined {
   return env.VITE_ROUTER_BASENAME ?? env.BASE_URL ?? undefined;
 }
 
+/**
+ * Get base url for Klaw API client.
+ *
+ * @param  {[type]} environment
+ *
+ * The $VITE_API_BASE_URL variable allows API to be consumed from another origin.
+ * Also, this make it easy to override the API base url for unittests.
+ */
+function getApiBaseUrl(env: Record<string, string>): string | undefined {
+  return env.VITE_API_BASE_URL ?? undefined;
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "");
@@ -32,6 +44,7 @@ export default defineConfig(({ mode }) => {
       "process.env": {
         EXAMPLE: "",
         ROUTER_BASENAME: getRouterBasename(environment),
+        API_BASE_URL: getApiBaseUrl(environment),
       },
     },
     resolve: {
