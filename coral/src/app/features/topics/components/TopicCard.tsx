@@ -58,6 +58,10 @@ function TopicCard(props: TopicCardPros) {
               href={createTopicOverviewLink(topicName)}
               kind="secondary"
             >
+              {/*Using "Overview for topic {topicName}" as link*/}
+              {/*name for assistive technology makes sure to*/}
+              {/*have a distinct name for the link*/}
+              {/*visually presented is only "Topic overview"*/}
               <span aria-hidden={"true"}>Topic overview</span>
               <span className={classes.visuallyHidden}>
                 Overview for topic {topicName}
