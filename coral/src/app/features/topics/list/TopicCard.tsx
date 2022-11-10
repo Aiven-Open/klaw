@@ -8,28 +8,16 @@ import {
   ExternalLinkButton,
 } from "@aivenio/design-system";
 import classes from "src/app/features/topics/list/TopicCard.module.css";
+import { Topic } from "src/domain/topics";
 
-const exampleCard = {
-  topicid: 1010,
-  sequence: "308",
-  totalNoPages: "1",
-  currentPage: "1",
-  allPageNos: ["1"],
-  topicName: "aivtopic1",
-  noOfPartitions: 1,
-  description: "Topic description",
-  documentation: null,
-  noOfReplcias: "2",
-  teamname: "Ospo",
-  cluster: "1",
-  clusterId: null,
-  environmentsList: ["DEV", "TST"],
-  showEditTopic: false,
-  showDeleteTopic: false,
-  topicDeletable: false,
-};
+type TopicCardPros = Pick<
+  Topic,
+  "topicName" | "description" | "teamname" | "environmentsList"
+>;
 
-function TopicCard() {
+function TopicCard(props: TopicCardPros) {
+  const { topicName, description, teamname, environmentsList } = props;
+
   return (
     <li>
       <BorderBox
@@ -48,18 +36,18 @@ function TopicCard() {
         >
           <GridItem colSpan="span-2" className={classes.topicCardTitleDesc}>
             <Typography.Subheading htmlTag={"h2"}>
-              {exampleCard.topicName}
+              {topicName}
             </Typography.Subheading>
-            <div>{exampleCard.description}</div>
+            <div>{description}</div>
           </GridItem>
           <GridItem>
             <strong>Owner</strong>
-            <div>{exampleCard.teamname}</div>
+            <div>{teamname}</div>
           </GridItem>
           <GridItem>
-            <strong>Environments:</strong>
+            <strong>Environments</strong>
             <Flexbox colGap="l1" rowGap={"l1"} wrap={"wrap"}>
-              {exampleCard.environmentsList.map((env, index) => {
+              {environmentsList.map((env, index) => {
                 return <Chip key={env + index} text={env} />;
               })}
             </Flexbox>
@@ -68,7 +56,7 @@ function TopicCard() {
             <ExternalLinkButton href="/" kind="secondary">
               <span aria-hidden={"true"}>Topic overview</span>
               <span className={classes.visuallyHidden}>
-                Overview for topic {exampleCard.topicName}
+                Overview for topic {topicName}
               </span>
             </ExternalLinkButton>
           </GridItem>
