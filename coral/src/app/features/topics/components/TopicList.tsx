@@ -1,55 +1,32 @@
 import { Flexbox } from "@aivenio/design-system";
 import { TopicCard } from "src/app/features/topics/components/TopicCard";
-
-const exampleCard = {
-  topicid: 1010,
-  sequence: "308",
-  totalNoPages: "1",
-  currentPage: "1",
-  allPageNos: ["1"],
-  topicName: "aivtopic1",
-  noOfPartitions: 1,
-  description: "Topic description",
-  documentation: null,
-  noOfReplcias: "2",
-  teamname: "Ospo",
-  cluster: "1",
-  clusterId: null,
-  environmentsList: ["DEV", "TST"],
-  showEditTopic: false,
-  showDeleteTopic: false,
-  topicDeletable: false,
-};
+import { useGetTopics } from "src/app/features/topics/hooks/useGetTopics";
 
 function TopicList() {
+  const { data: topics, isLoading, isError } = useGetTopics();
+
   return (
-    <Flexbox htmlTag={"ul"} colGap="l2" rowGap={"l2"} wrap={"wrap"}>
-      <TopicCard
-        description={exampleCard.description}
-        environmentsList={exampleCard.environmentsList}
-        teamname={exampleCard.teamname}
-        topicName={exampleCard.topicName}
-      />
-      <TopicCard
-        description={exampleCard.description}
-        environmentsList={exampleCard.environmentsList}
-        teamname={exampleCard.teamname}
-        topicName={exampleCard.topicName}
-      />
-      <TopicCard
-        description={exampleCard.description}
-        environmentsList={exampleCard.environmentsList}
-        teamname={exampleCard.teamname}
-        topicName={exampleCard.topicName}
-      />
-      <TopicCard
-        description={exampleCard.description}
-        environmentsList={exampleCard.environmentsList}
-        teamname={exampleCard.teamname}
-        topicName={exampleCard.topicName}
-      />
-    </Flexbox>
+    <>
+      {isLoading && <div>Loading...</div>}
+      {isError && <div>Something went wrong 😔</div>}
+
+      {topics?.length === 0 && <div>No topics found</div>}
+      {topics && (
+        <Flexbox htmlTag={"ul"} colGap="l1" rowGap={"l1"} wrap={"wrap"}>
+          {topics.map((topic) => {
+            return (
+              <TopicCard
+                key={topic.topicid}
+                description={topic.description}
+                environmentsList={topic.environmentsList}
+                teamname={topic.teamname}
+                topicName={topic.topicName}
+              />
+            );
+          })}
+        </Flexbox>
+      )}
+    </>
   );
 }
-
 export { TopicList };

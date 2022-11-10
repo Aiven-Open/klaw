@@ -1,10 +1,10 @@
 import Topics from "src/app/pages/Topics";
 import { screen } from "@testing-library/react";
-import { renderWithMemoryRouter } from "src/services/test-utils";
+import { renderWithQueryClientAndMemoryRouter } from "src/services/test-utils";
 
 describe("Topics", () => {
   beforeEach(() => {
-    renderWithMemoryRouter(<Topics />);
+    renderWithQueryClientAndMemoryRouter(<Topics />);
   });
 
   it("shows a headline", () => {

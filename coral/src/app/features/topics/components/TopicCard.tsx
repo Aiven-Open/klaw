@@ -22,7 +22,7 @@ function TopicCard(props: TopicCardPros) {
     <li>
       <BorderBox
         style={{
-          width: 400,
+          width: 380,
         }}
       >
         <Grid

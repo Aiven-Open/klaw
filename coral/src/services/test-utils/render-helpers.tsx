@@ -4,7 +4,13 @@ import { render, RenderOptions } from "@testing-library/react";
 import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 
 function withQueryClient({ children }: { children: ReactElement }) {
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );

@@ -7,13 +7,17 @@ const getTopics = async (): Promise<Topic[]> => {
     headers: {
       "Content-Type": "application/json",
     },
-  }).then(async (response) => {
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
-    const test: TopicDTOApiResponse = await response.json();
-    return transformTopicApiResponse(test);
-  });
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`msw error: ${response.statusText}`);
+      }
+      const test: TopicDTOApiResponse = await response.json();
+      return transformTopicApiResponse(test);
+    })
+    .catch((error) => {
+      throw new Error(error);
+    });
 };
 
 export { getTopics };

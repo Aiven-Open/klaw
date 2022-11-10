@@ -2,15 +2,30 @@ import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
 import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 
-function mockTopicGetRequest(mswInstance: MswInstance) {
+function mockTopicGetRequest({
+  mswInstance,
+  scenario,
+}: {
+  mswInstance: MswInstance;
+  scenario?: "error" | "empty";
+}) {
   mswInstance.use(
     rest.get("getTopics", async (req, res, ctx) => {
+      // error path
+      if (scenario === "error") {
+        return res(ctx.status(400), ctx.json(""));
+      }
+      // response empty
+      else if (scenario === "empty") {
+        return res(ctx.status(200), ctx.json([]));
+      }
+      // success part
       return res(ctx.status(200), ctx.json(mockedResponse));
     })
   );
 }
 
-export { mockTopicGetRequest };
+export { mockTopicGetRequest, mockedResponse };
 
 const mockedResponse: TopicDTOApiResponse = [
   [
