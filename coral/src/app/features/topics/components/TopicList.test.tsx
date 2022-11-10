@@ -8,16 +8,9 @@ import { server } from "src/services/api-mocks/server";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { TopicList } from "src/app/features/topics/components/TopicList";
 import {
-  mockedResponse,
+  mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topics/topics-api.msw";
-
-// This mirrors the formatting formation used in `/domain`
-// it's a temp implementation here and will be removed
-// as soon as we have the final API schema
-const allTopiNamesFromApi = mockedResponse
-  .flat()
-  .map((topic) => topic.topicName);
 
 describe("TopicList.tsx", () => {
   beforeAll(() => {
@@ -100,8 +93,8 @@ describe("TopicList.tsx", () => {
     it("shows a list of all topics", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
 
-      allTopiNamesFromApi.forEach((name) => {
-        const topicCard = screen.getByText(name);
+      mockedResponseTransformed.forEach((topic) => {
+        const topicCard = screen.getByText(topic.topicName);
 
         expect(topicCard).toBeVisible();
       });

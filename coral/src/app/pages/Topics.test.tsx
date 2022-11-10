@@ -3,7 +3,7 @@ import Topics from "src/app/pages/Topics";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
 import {
-  mockedResponse,
+  mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topics/topics-api.msw";
 import {
@@ -21,7 +21,6 @@ jest.mock("src/app/layout/SideNavigation");
 // This mirrors the formatting formation used in `/domain`
 // it's a temp implementation here and will be removed
 // as soon as we have the final API schema
-const topicLength = mockedResponse.flat().length;
 
 describe("Topics", () => {
   beforeAll(() => {
@@ -64,7 +63,7 @@ describe("Topics", () => {
     it("shows list items for each topic", () => {
       const listItem = screen.getAllByRole("listitem");
 
-      expect(listItem).toHaveLength(topicLength);
+      expect(listItem).toHaveLength(mockedResponseTransformed.length);
     });
   });
 });
