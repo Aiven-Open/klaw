@@ -10,9 +10,10 @@ const correctUsername = "superadmin";
 
 function mockUserAuthRequest(mswInstance: MswInstance) {
   mswInstance.use(
-    rest.post("/user/authenticate", async (req, res, ctx) => {
-      const { username } = await req.json();
-
+    rest.post(`${process.env.API_BASE_URL}/login`, async (req, res, ctx) => {
+      const responseText = await req.text();
+      const data = new URLSearchParams(responseText);
+      const username = data.get("username");
       // hard coded check for the "right" username to simulate error case
       // remove when real api is connected
       if (username !== correctUsername) {

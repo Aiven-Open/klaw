@@ -3,23 +3,14 @@ import {
   AuthUserLoginData,
 } from "src/domain/auth-user/auth-user-types";
 
-const getAuthUser = async (userLogin: AuthUserLoginData): Promise<AuthUser> => {
-  return fetch("/user/authenticate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userLogin),
-  })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-      return response.json();
-    })
-    .catch((error) => {
-      throw new Error(error.message);
-    });
+import api from "src/services/coral-client";
+
+const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
+  const data = new URLSearchParams();
+  data.append("username", userLogin.username);
+  data.append("password", userLogin.password);
+
+  return api.post("/login", data);
 };
 
 export { getAuthUser };
