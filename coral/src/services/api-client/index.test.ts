@@ -1,9 +1,9 @@
 import {
   AbsolutePathname,
   UnauthorizedError,
-} from "src/services/coral-client/index";
-import { ClientError, ServerError } from "src/services/coral-client/index";
-import api from "src/services/coral-client";
+} from "src/services/api-client/index";
+import { ClientError, ServerError } from "src/services/api-client/index";
+import api from "src/services/api-client";
 import { server } from "src/services/api-mocks/server";
 import { rest } from "msw";
 

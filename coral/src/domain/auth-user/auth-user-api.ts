@@ -3,7 +3,7 @@ import {
   AuthUserLoginData,
 } from "src/domain/auth-user/auth-user-types";
 
-import api from "src/services/coral-client";
+import api from "src/services/api-client";
 
 const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
   const data = new URLSearchParams();
