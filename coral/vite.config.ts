@@ -52,5 +52,13 @@ export default defineConfig(({ mode }) => {
         src: resolve(resolve(__dirname), "./src"),
       },
     },
+    server: {
+      proxy: {
+        "/api": {
+          target: "http://localhost:9097",
+          rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+      },
+    },
   };
 });
