@@ -7,6 +7,7 @@ export default {
   moduleFileExtensions: ["js", "jsx", "ts", "tsx"],
   preset: "ts-jest",
   testEnvironment: "jsdom",
+  setupFiles: ["@testing-library/react/dont-cleanup-after-each"],
   setupFilesAfterEnv: ["<rootDir>/test-setup/setup-files-after-env.ts"],
   moduleNameMapper: {
     ".+\\.(png|jpg|ttf|woff|woff2|svg)$": "jest-transform-stub",
