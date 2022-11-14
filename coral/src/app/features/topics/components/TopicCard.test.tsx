@@ -1,6 +1,6 @@
 // @TODO import from "@testing-library/react/pure" disables auto cleanup, remove when main is merged
 import { cleanup, render, screen } from "@testing-library/react/pure";
-import { TopicCard } from "src/app/features/topics/components/TopicCard";
+import TopicCard from "src/app/features/topics/components/TopicCard";
 
 const testCard = {
   topicName: "aivtopic2",

@@ -2,7 +2,7 @@ import { screen } from "@testing-library/react";
 import { server } from "src/services/api-mocks/server";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { mockTopicGetRequest } from "src/domain/topics/topics-api.msw";
-import { BrowseTopics } from "src/app/features/topics/BrowseTopics";
+import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 describe("TopicList.tsx", () => {

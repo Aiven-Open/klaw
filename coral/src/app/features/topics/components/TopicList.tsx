@@ -1,5 +1,5 @@
 import { Flexbox } from "@aivenio/design-system";
-import { TopicCard } from "src/app/features/topics/components/TopicCard";
+import TopicCard from "src/app/features/topics/components/TopicCard";
 import { useGetTopics } from "src/app/features/topics/hooks/useGetTopics";
 
 function TopicList() {
@@ -30,4 +30,4 @@ function TopicList() {
     </>
   );
 }
-export { TopicList };
+export default TopicList;

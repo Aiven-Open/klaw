@@ -72,4 +72,4 @@ function TopicCard(props: TopicCardPros) {
   );
 }
 
-export { TopicCard };
+export default TopicCard;

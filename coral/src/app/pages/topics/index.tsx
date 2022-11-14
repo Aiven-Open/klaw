@@ -1,5 +1,5 @@
 import Layout from "src/app/layout/Layout";
-import { BrowseTopics } from "src/app/features/topics/BrowseTopics";
+import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { PageHeader } from "@aivenio/design-system";
 
 const Topics = () => {

@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react/pure";
 import { server } from "src/services/api-mocks/server";
 import { renderWithQueryClient } from "src/services/test-utils";
-import { TopicList } from "src/app/features/topics/components/TopicList";
+import TopicList from "src/app/features/topics/components/TopicList";
 import {
   mockedResponseTransformed,
   mockTopicGetRequest,
