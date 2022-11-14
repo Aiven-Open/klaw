@@ -1,5 +1,9 @@
 package io.aiven.klaw.model;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum TopicConfiguration {
   CLEANUP_POLICY("cleanup.policy"),
   COMPRESSION_TYPE("compression.type"),
@@ -36,5 +40,13 @@ public enum TopicConfiguration {
 
   public String getValue() {
     return this.value;
+  }
+
+  public static Map<String, String> getTopicConfigurations() {
+    Map<String, String> topicConfigs = new HashMap<>();
+    for (TopicConfiguration topicConfiguration : TopicConfiguration.values()) {
+      topicConfigs.put(topicConfiguration.name(), topicConfiguration.getValue());
+    }
+    return Collections.unmodifiableMap(topicConfigs);
   }
 }

@@ -554,8 +554,8 @@
 									<div class="d-flex flex-row">
 										<div class="p-2" style="width:20%">
 											<h6 class="text-primary">Other Topic Configs</h6>
-											<div ng-repeat="topicConfig in topicRequest.advancedTopicConfigs">
-												<span>{{ topicConfig }}</span>
+											<div ng-repeat="topicConfig in topicRequest.advancedTopicConfigEntries">
+												<span>{{ topicConfig.configKey }}:{{ topicConfig.configValue }}</span>
 											</div>
 										</div>
 

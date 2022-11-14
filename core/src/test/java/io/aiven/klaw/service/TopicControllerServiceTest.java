@@ -506,7 +506,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTopictype(TopicRequestTypes.Create.toString());
-    topicRequest.setAdvancedTopicConfigs(null);
+    topicRequest.setAdvancedTopicConfigEntries(null);
     return topicRequest;
   }
 

@@ -44,7 +44,7 @@ public class TopicRequestModel implements Serializable {
 
   private Integer topicid;
 
-  private List<String> advancedTopicConfigs;
+  private List<TopicConfigEntry> advancedTopicConfigEntries;
 
   private String appname;
 

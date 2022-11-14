@@ -221,10 +221,14 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 tmpTopicRepFactor = tmpTopicRepFactor.replace(" (default)","");
             }
 
-            let topicConfigsList = [];
+            let advancedTopicConfigEntries = [];
+            let serviceInputTopicConfigs;
             for (let i = 0; i < $scope.topicConfigsSelectedDropdown.length; i++) {
                 if($scope.topicConfigsSelectedDropdown[i] !== "" && $scope.topicConfigsSelected[i] !== ""){
-                    topicConfigsList.push($scope.topicConfigsSelectedDropdown[i] + ":" + $scope.topicConfigsSelected[i]);
+                    serviceInputTopicConfigs = {};
+                    serviceInputTopicConfigs['configKey'] = $scope.topicConfigsSelectedDropdown[i];
+                    serviceInputTopicConfigs['configValue'] = $scope.topicConfigsSelected[i];
+                    advancedTopicConfigEntries.push(serviceInputTopicConfigs);
                 }
                 else if($scope.topicConfigsSelectedDropdown[i] !== "" && $scope.topicConfigsSelected[i] === ""){
                     $scope.alertnote = "Please fill in a value for the selected topic configuration.";
@@ -241,7 +245,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['appname'] = "App";//$scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
             serviceInput['description'] = $scope.addTopic.description;
-            serviceInput['advancedTopicConfigs'] = topicConfigsList;
+            serviceInput['advancedTopicConfigEntries'] = advancedTopicConfigEntries;
             if($scope.requestType === 'CreateTopic'){
                 serviceInput['topictype'] = 'Create';
 

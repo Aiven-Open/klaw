@@ -25,6 +25,7 @@ import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
@@ -223,20 +224,21 @@ public class TopicControllerService {
   private void validateAdvancedTopicConfiguration(
       TopicRequestModel topicRequestModel, TopicRequest topicRequestDao) throws KlawException {
     Map<String, String> topicConfigs = new HashMap<>();
-    if (null != topicRequestModel.getAdvancedTopicConfigs()) {
-      try {
-        for (String advancedTopicConfig : topicRequestModel.getAdvancedTopicConfigs()) {
-          String[] strings = advancedTopicConfig.split(":");
-          topicConfigs.put(strings[0], strings[1].trim());
+    try {
+      List<TopicConfigEntry> advancedTopicConfigEntries =
+          topicRequestModel.getAdvancedTopicConfigEntries();
+      if (null != advancedTopicConfigEntries) {
+        for (TopicConfigEntry advancedTopicConfig : advancedTopicConfigEntries) {
+          topicConfigs.put(
+              advancedTopicConfig.getConfigKey(), advancedTopicConfig.getConfigValue());
         }
-        TopicConfigurationRequest topicConfigurationRequest =
-            TopicConfigurationRequest.builder().advancedTopicConfiguration(topicConfigs).build();
-
-        topicRequestDao.setJsonParams(OBJECT_MAPPER.writeValueAsString(topicConfigurationRequest));
-      } catch (JsonProcessingException e) {
-        log.error("Error in processing topic configs ", e);
-        throw new KlawException("Error in processing advanced topic configs");
       }
+      TopicConfigurationRequest topicConfigurationRequest =
+          TopicConfigurationRequest.builder().advancedTopicConfiguration(topicConfigs).build();
+      topicRequestDao.setJsonParams(OBJECT_MAPPER.writeValueAsString(topicConfigurationRequest));
+    } catch (JsonProcessingException e) {
+      log.error("Error in processing topic configs ", e);
+      throw new KlawException("Error in processing advanced topic configs");
     }
   }
 
@@ -679,15 +681,19 @@ public class TopicControllerService {
   private void validateAndCopyTopicConfigs(
       TopicRequest topicReq, TopicRequestModel topicRequestModel) {
     try {
-      List<String> advancedTopicConfigs = new ArrayList<>();
       if (topicReq.getJsonParams() != null) {
+        List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
         TopicConfigurationRequest topicConfigurationRequest =
             OBJECT_MAPPER.readValue(topicReq.getJsonParams(), TopicConfigurationRequest.class);
         for (Map.Entry<String, String> entry :
             topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
-          advancedTopicConfigs.add(entry.getKey() + ":" + entry.getValue());
+          topicConfigEntryList.add(
+              TopicConfigEntry.builder()
+                  .configKey(entry.getKey())
+                  .configValue(entry.getValue())
+                  .build());
         }
-        topicRequestModel.setAdvancedTopicConfigs(advancedTopicConfigs);
+        topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
       }
     } catch (JsonProcessingException e) {
       // ignore this error while retrieving the requests
@@ -1010,12 +1016,7 @@ public class TopicControllerService {
   }
 
   public Map<String, String> getAdvancedTopicConfigs() {
-    Map<String, String> topicConfigs = new HashMap<>();
-    for (TopicConfiguration topicConfiguration : TopicConfiguration.values()) {
-      topicConfigs.put(topicConfiguration.name(), topicConfiguration.getValue());
-    }
-
-    return topicConfigs;
+    return TopicConfiguration.getTopicConfigurations();
   }
 
   static class TopicNameComparator implements Comparator<Topic> {
