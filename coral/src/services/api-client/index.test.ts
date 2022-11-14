@@ -1,5 +1,6 @@
 import {
   AbsolutePathname,
+  HTTPMethod,
   UnauthorizedError,
 } from "src/services/api-client/index";
 import { ClientError, ServerError } from "src/services/api-client/index";
@@ -55,7 +56,7 @@ describe("API client", () => {
   });
 
   function generateScenarioForMethodWithData(
-    name: string,
+    name: HTTPMethod,
     func: (
       url: AbsolutePathname,
       data: Record<string, string>
@@ -73,7 +74,7 @@ describe("API client", () => {
   }
 
   function generateScenarioForMethod(
-    name: string,
+    name: HTTPMethod,
     func: (url: AbsolutePathname) => Promise<unknown>
   ): HTTPScenario {
     return {
@@ -86,17 +87,23 @@ describe("API client", () => {
     };
   }
 
-  const GET: HTTPScenatio = generateScenarioForMethod("get", api.get);
-  const POST: HTTPScenatio = generateScenarioForMethodWithData(
-    "post",
+  const GET: HTTPScenario = generateScenarioForMethod(HTTPMethod.GET, api.get);
+  const POST: HTTPScenario = generateScenarioForMethodWithData(
+    HTTPMethod.POST,
     api.post
   );
-  const PUT: HTTPScenatio = generateScenarioForMethodWithData("puy", api.put);
-  const PATCH: HTTPScenatio = generateScenarioForMethodWithData(
-    "patch",
+  const PUT: HTTPScenario = generateScenarioForMethodWithData(
+    HTTPMethod.PUT,
+    api.put
+  );
+  const PATCH: HTTPScenario = generateScenarioForMethodWithData(
+    HTTPMethod.PATCH,
     api.patch
   );
-  const DELETE: HTTPScenatio = generateScenarioForMethod("delete", api.delete);
+  const DELETE: HTTPScenario = generateScenarioForMethod(
+    HTTPMethod.DELETE,
+    api.delete
+  );
 
   [GET, POST, PUT, PATCH, DELETE].forEach(
     ({
