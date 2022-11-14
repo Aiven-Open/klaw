@@ -47,8 +47,8 @@ function TopicCard(props: TopicCardPros) {
         <GridItem>
           <strong>Environments</strong>
           <Flexbox colGap="l1" rowGap={"l1"} wrap={"wrap"}>
-            {environmentsList.map((env, index) => {
-              return <Chip key={env + index} text={env} />;
+            {environmentsList.map((env) => {
+              return <Chip key={env} text={env} />;
             })}
           </Flexbox>
         </GridItem>
