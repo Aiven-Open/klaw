@@ -35,14 +35,12 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       // Vite does not use process.env (see https://vitejs.dev/guide/env-and-mode.html).
-      // If a library depends on process.env (like "@aivenio/design-system"),
-      // the needed env variable can be set here like with EXAMPLE.
+      // If a library depends on process.env (like "@aivenio/design-system").
       // ⛔ Note: there are stackoverflow answers / github issues that recommend e.g
       // ⛔ 'process.env': process.env or
       // ⛔ 'process.env': { ...process.env}
       // ⛔️ Don't do that! This can expose unwanted env vars in production builds.
       "process.env": {
-        EXAMPLE: "",
         ROUTER_BASENAME: getRouterBasename(environment),
         API_BASE_URL: getApiBaseUrl(environment),
       },
