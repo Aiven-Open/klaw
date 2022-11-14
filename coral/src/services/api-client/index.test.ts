@@ -11,7 +11,7 @@ function apiUrl(path: string) {
   return `${process.env.API_BASE_URL}${path}`;
 }
 
-type HTTPScenatio = {
+type HTTPScenario = {
   functionName: string;
   ok: () => Promise<unknown>;
   htmlResponse: () => Promise<unknown>;
@@ -60,7 +60,7 @@ describe("API client", () => {
       url: AbsolutePathname,
       data: Record<string, string>
     ) => Promise<unknown>
-  ): HTTPScenatio {
+  ): HTTPScenario {
     const data = { not: "relevant" };
     return {
       functionName: name,
@@ -75,7 +75,7 @@ describe("API client", () => {
   function generateScenarioForMethod(
     name: string,
     func: (url: AbsolutePathname) => Promise<unknown>
-  ): HTTPScenatio {
+  ): HTTPScenario {
     return {
       functionName: name,
       ok: () => func("/ok"),
