@@ -1,5 +1,5 @@
 import { screen } from "@testing-library/react/pure";
-import Topics from "src/app/pages/Topics";
+import Topics from "src/app/pages/topics";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
 import {

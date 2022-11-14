@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
 import HomePage from "src/app/pages";
-import Topics from "src/app/pages/Topics";
+import Topics from "src/app/pages/topics";
 import Login from "src/app/pages/Login";
 
 const routes: Array<RouteObject> = [
