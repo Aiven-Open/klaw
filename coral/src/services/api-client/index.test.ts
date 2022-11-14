@@ -20,7 +20,7 @@ type HTTPScenatio = {
   internalError: () => Promise<unknown>;
 };
 
-describe.only("API client", () => {
+describe("API client", () => {
   const mockResponseData = { foo: "bar" };
   beforeAll(() => {
     server.listen();
