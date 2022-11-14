@@ -1,5 +1,5 @@
 // @TODO import from "@testing-library/react/pure" disables auto cleanup, remove when main is merged
-import { cleanup, render, screen, within } from "@testing-library/react/pure";
+import { cleanup, render, screen } from "@testing-library/react/pure";
 import { TopicCard } from "src/app/features/topics/components/TopicCard";
 
 const testCard = {
@@ -24,54 +24,41 @@ describe("TopicCard.tsx", () => {
 
     afterAll(cleanup);
 
-    it("shows a list item", () => {
-      const listItem = screen.getByRole("listitem");
-
-      expect(listItem).toBeVisible();
-    });
-
     it("shows the topicName in the topic's list item", () => {
-      const headline = within(screen.getByRole("listitem")).getByRole(
-        "heading",
-        { name: requiredProps.topicName }
-      );
+      const headline = screen.getByRole("heading", {
+        name: requiredProps.topicName,
+      });
 
       expect(headline).toBeVisible();
     });
 
     it("shows the topic description in the topic's list item", () => {
-      const description = within(screen.getByRole("listitem")).getByText(
-        requiredProps.description
-      );
+      const description = screen.getByText(requiredProps.description);
 
       expect(description).toBeVisible();
     });
 
     it("shows the term 'owner' in the topic's list item", () => {
-      const owner = within(screen.getByRole("listitem")).getByText("Owner");
+      const owner = screen.getByText("Owner");
 
       expect(owner).toBeVisible();
     });
 
     it("shows the all team names the topic's list item", () => {
-      const teamname = within(screen.getByRole("listitem")).getByText(
-        requiredProps.teamname
-      );
+      const teamname = screen.getByText(requiredProps.teamname);
 
       expect(teamname).toHaveTextContent(requiredProps.teamname);
     });
 
     it("shows the term 'environments' in the topic's list item", () => {
-      const environments = within(screen.getByRole("listitem")).getByText(
-        "Environments"
-      );
+      const environments = screen.getByText("Environments");
 
       expect(environments).toBeVisible();
     });
 
     it("shows all environments in the topic's list item", () => {
       requiredProps.environmentsList.forEach((env) => {
-        const environment = within(screen.getByRole("listitem")).getByText(env);
+        const environment = screen.getByText(env);
 
         expect(environment).toBeVisible();
       });
@@ -80,7 +67,7 @@ describe("TopicCard.tsx", () => {
     it("shows a link get to the topic overview", () => {
       const accessibleLinkName = `Overview for topic ${requiredProps.topicName}`;
 
-      const link = within(screen.getByRole("listitem")).getByRole("link", {
+      const link = screen.getByRole("link", {
         name: accessibleLinkName,
       });
 

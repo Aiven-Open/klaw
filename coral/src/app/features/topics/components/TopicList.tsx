@@ -15,13 +15,14 @@ function TopicList() {
         <Flexbox htmlTag={"ul"} colGap="l1" rowGap={"l1"} wrap={"wrap"}>
           {topics.map((topic) => {
             return (
-              <TopicCard
-                key={topic.topicid}
-                description={topic.description}
-                environmentsList={topic.environmentsList}
-                teamname={topic.teamname}
-                topicName={topic.topicName}
-              />
+              <li key={topic.topicid}>
+                <TopicCard
+                  description={topic.description}
+                  environmentsList={topic.environmentsList}
+                  teamname={topic.teamname}
+                  topicName={topic.topicName}
+                />
+              </li>
             );
           })}
         </Flexbox>

@@ -3,6 +3,7 @@ import {
   cleanup,
   screen,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react/pure";
 import { server } from "src/services/api-mocks/server";
 import { renderWithQueryClient } from "src/services/test-utils";
@@ -90,11 +91,20 @@ describe("TopicList.tsx", () => {
       cleanup();
     });
 
-    it("shows a list of all topics", async () => {
+    it("renders a list", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const list = screen.getByRole("list");
+
+      expect(list).toBeVisible();
+    });
+
+    it("shows each topic as list item", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
 
+      const list = screen.getByRole("list");
+
       mockedResponseTransformed.forEach((topic) => {
-        const topicCard = screen.getByText(topic.topicName);
+        const topicCard = within(list).getByText(topic.topicName);
 
         expect(topicCard).toBeVisible();
       });
