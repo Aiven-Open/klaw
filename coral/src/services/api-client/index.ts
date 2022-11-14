@@ -1,3 +1,5 @@
+import { getHTTPBaseAPIUrl } from "src/config";
+
 export enum HTTPMethod {
   GET = "GET",
   POST = "POST",
@@ -9,7 +11,7 @@ type SomeObject = Record<string, unknown> | Record<string, never>;
 export type AbsolutePathname = `/${string}`;
 const CONTENT_TYPE_JSON = "application/json" as const;
 
-const API_BASE_URL = process.env.API_BASE_URL ?? location.origin;
+const API_BASE_URL = getHTTPBaseAPIUrl();
 
 class HTTPError extends Error {
   status: number;

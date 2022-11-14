@@ -7,9 +7,10 @@ import { ClientError, ServerError } from "src/services/api-client/index";
 import api from "src/services/api-client";
 import { server } from "src/services/api-mocks/server";
 import { rest } from "msw";
+import { getHTTPBaseAPIUrl } from "src/config";
 
 function apiUrl(path: string) {
-  return `${process.env.API_BASE_URL}${path}`;
+  return `${getHTTPBaseAPIUrl()}${path}`;
 }
 
 type HTTPScenario = {

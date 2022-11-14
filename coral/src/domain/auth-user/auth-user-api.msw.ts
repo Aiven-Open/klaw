@@ -1,4 +1,5 @@
 import { rest } from "msw";
+import { getHTTPBaseAPIUrl } from "src/config";
 import { AuthUser } from "src/domain/auth-user/auth-user-types";
 import { MswInstance } from "src/services/api-mocks/types";
 
@@ -10,7 +11,7 @@ const correctUsername = "superadmin";
 
 function mockUserAuthRequest(mswInstance: MswInstance) {
   mswInstance.use(
-    rest.post(`${process.env.API_BASE_URL}/login`, async (req, res, ctx) => {
+    rest.post(`${getHTTPBaseAPIUrl()}/login`, async (req, res, ctx) => {
       const responseText = await req.text();
       const data = new URLSearchParams(responseText);
       const username = data.get("username");
