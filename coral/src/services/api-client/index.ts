@@ -1,4 +1,4 @@
-enum HTTPVerb {
+export enum HTTPMethod {
   GET = "GET",
   POST = "POST",
   PUT = "PUT",
@@ -85,7 +85,7 @@ function withJSONPayload<TBody extends SomeObject>(
 }
 
 function withPayload<TBody extends SomeObject | URLSearchParams>(
-  method: HTTPVerb.POST | HTTPVerb.PUT | HTTPVerb.PATCH,
+  method: HTTPMethod.POST | HTTPMethod.PUT | HTTPMethod.PATCH,
   data: TBody
 ): Partial<RequestInit> {
   if (data instanceof URLSearchParams) {
@@ -96,7 +96,7 @@ function withPayload<TBody extends SomeObject | URLSearchParams>(
 }
 
 function withoutPayload(
-  method: HTTPVerb.GET | HTTPVerb.DELETE
+  method: HTTPMethod.GET | HTTPMethod.DELETE
 ): Partial<RequestInit> {
   return {
     method,
@@ -152,7 +152,7 @@ function withPayloadAndVerb<
   TResponse extends SomeObject,
   TBody extends SomeObject | URLSearchParams
 >(
-  method: HTTPVerb.POST | HTTPVerb.PUT | HTTPVerb.PATCH,
+  method: HTTPMethod.POST | HTTPMethod.PUT | HTTPMethod.PATCH,
   pathname: AbsolutePathname,
   data: TBody
 ): Promise<TResponse> {
@@ -162,7 +162,7 @@ function withPayloadAndVerb<
 }
 
 function withoutPayloadandWithVerb<TResponse extends SomeObject>(
-  method: HTTPVerb.GET | HTTPVerb.DELETE,
+  method: HTTPMethod.GET | HTTPMethod.DELETE,
   pathname: AbsolutePathname
 ): Promise<TResponse> {
   return fetch(`${API_BASE_URL}${pathname}`, withoutPayload(method)).then(
@@ -171,7 +171,7 @@ function withoutPayloadandWithVerb<TResponse extends SomeObject>(
 }
 
 const get = (pathname: AbsolutePathname) =>
-  withoutPayloadandWithVerb(HTTPVerb.GET, pathname);
+  withoutPayloadandWithVerb(HTTPMethod.GET, pathname);
 
 const post = <
   TResponse extends SomeObject,
@@ -179,20 +179,20 @@ const post = <
 >(
   pathname: AbsolutePathname,
   data: TBody
-): Promise<TResponse> => withPayloadAndVerb(HTTPVerb.POST, pathname, data);
+): Promise<TResponse> => withPayloadAndVerb(HTTPMethod.POST, pathname, data);
 
 const put = <TBody extends SomeObject | URLSearchParams>(
   pathname: AbsolutePathname,
   data: TBody
-) => withPayloadAndVerb(HTTPVerb.PUT, pathname, data);
+) => withPayloadAndVerb(HTTPMethod.PUT, pathname, data);
 
 const patch = <TBody extends SomeObject | URLSearchParams>(
   pathname: AbsolutePathname,
   data: TBody
-) => withPayloadAndVerb(HTTPVerb.PATCH, pathname, data);
+) => withPayloadAndVerb(HTTPMethod.PATCH, pathname, data);
 
 const delete_ = (pathname: AbsolutePathname) =>
-  withoutPayloadandWithVerb(HTTPVerb.DELETE, pathname);
+  withoutPayloadandWithVerb(HTTPMethod.DELETE, pathname);
 
 export default {
   get,
