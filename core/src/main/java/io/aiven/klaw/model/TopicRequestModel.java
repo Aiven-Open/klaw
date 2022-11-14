@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.validation.TopicRequestValidator;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
@@ -13,6 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@TopicRequestValidator(getPermissionType = PermissionType.REQUEST_CREATE_TOPICS)
 public class TopicRequestModel implements Serializable {
 
   @NotNull

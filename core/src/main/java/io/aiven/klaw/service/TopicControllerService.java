@@ -224,13 +224,14 @@ public class TopicControllerService {
       TopicRequestModel topicRequestModel, TopicRequest topicRequestDao) throws KlawException {
     Map<String, String> topicConfigs = new HashMap<>();
     if (null != topicRequestModel.getAdvancedTopicConfigs()) {
-      for (String advancedTopicConfig : topicRequestModel.getAdvancedTopicConfigs()) {
-        String[] strings = advancedTopicConfig.split(":");
-        topicConfigs.put(strings[0], strings[1].trim());
-      }
-      TopicConfigurationRequest topicConfigurationRequest =
-          TopicConfigurationRequest.builder().advancedTopicConfiguration(topicConfigs).build();
       try {
+        for (String advancedTopicConfig : topicRequestModel.getAdvancedTopicConfigs()) {
+          String[] strings = advancedTopicConfig.split(":");
+          topicConfigs.put(strings[0], strings[1].trim());
+        }
+        TopicConfigurationRequest topicConfigurationRequest =
+            TopicConfigurationRequest.builder().advancedTopicConfiguration(topicConfigs).build();
+
         topicRequestDao.setJsonParams(OBJECT_MAPPER.writeValueAsString(topicConfigurationRequest));
       } catch (JsonProcessingException e) {
         log.error("Error in processing topic configs ", e);

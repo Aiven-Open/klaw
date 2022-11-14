@@ -2,8 +2,10 @@ package io.aiven.klaw.error;
 
 import io.aiven.klaw.model.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -15,11 +17,23 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
   public static final String ERROR_MSG =
       "Unable to process the request. Please contact our Administrator !!";
 
-  @ExceptionHandler(KlawException.class)
+  @ExceptionHandler({KlawException.class})
   protected ResponseEntity<ApiResponse> handleExceptionInternal(
       KlawException ex, WebRequest request) {
-    ex.printStackTrace();
+    log.error("Error ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder().message(ERROR_MSG).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
+    log.error("Validation Error ", ex);
+    return new ResponseEntity<>(
+        ApiResponse.builder().message(ex.getAllErrors().get(0).getDefaultMessage()).build(),
+        HttpStatus.BAD_REQUEST);
   }
 }

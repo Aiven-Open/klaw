@@ -223,7 +223,14 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
             let topicConfigsList = [];
             for (let i = 0; i < $scope.topicConfigsSelectedDropdown.length; i++) {
-                topicConfigsList.push($scope.topicConfigsSelectedDropdown[i] + ":" + $scope.topicConfigsSelected[i]);
+                if($scope.topicConfigsSelectedDropdown[i] !== "" && $scope.topicConfigsSelected[i] !== ""){
+                    topicConfigsList.push($scope.topicConfigsSelectedDropdown[i] + ":" + $scope.topicConfigsSelected[i]);
+                }
+                else if($scope.topicConfigsSelectedDropdown[i] !== "" && $scope.topicConfigsSelected[i] === ""){
+                    $scope.alertnote = "Please fill in a value for the selected topic configuration.";
+                    $scope.showAlertToast();
+                    return;
+                }
             }
 
             serviceInput['environment'] = $scope.addTopic.envName;
