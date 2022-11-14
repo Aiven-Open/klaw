@@ -1,9 +1,12 @@
 import { screen } from "@testing-library/react";
 import { server } from "src/services/api-mocks/server";
 import { renderWithQueryClient } from "src/services/test-utils";
-import { mockTopicGetRequest } from "src/domain/topics/topics-api.msw";
+import {
+  mockTopicGetRequest,
+  mockedResponseTransformed,
+} from "src/domain/topics/topics-api.msw";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
 
 describe("TopicList.tsx", () => {
   beforeAll(() => {
@@ -28,5 +31,16 @@ describe("TopicList.tsx", () => {
     const list = screen.getByRole("list");
 
     expect(list).toBeVisible();
+  });
+
+  it("shows the topics as list item", async () => {
+    await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    const list = screen.getByRole("list");
+
+    const topic = within(list).getByRole("heading", {
+      name: mockedResponseTransformed[0].topicName,
+    });
+
+    expect(topic).toBeVisible();
   });
 });
