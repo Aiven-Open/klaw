@@ -1,8 +1,9 @@
 package io.aiven.klaw.model;
 
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public enum TopicConfiguration {
   CLEANUP_POLICY("cleanup.policy"),
@@ -42,11 +43,15 @@ public enum TopicConfiguration {
     return this.value;
   }
 
+  // sorted map
+  private static final Map<String, String> TOPIC_CONFIGURATION_MAP =
+      new TreeMap<>(
+          Arrays.stream(TopicConfiguration.values())
+              .collect(
+                  Collectors.toUnmodifiableMap(
+                      TopicConfiguration::name, TopicConfiguration::getValue)));
+
   public static Map<String, String> getTopicConfigurations() {
-    Map<String, String> topicConfigs = new HashMap<>();
-    for (TopicConfiguration topicConfiguration : TopicConfiguration.values()) {
-      topicConfigs.put(topicConfiguration.name(), topicConfiguration.getValue());
-    }
-    return Collections.unmodifiableMap(topicConfigs);
+    return TOPIC_CONFIGURATION_MAP;
   }
 }
