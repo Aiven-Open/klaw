@@ -19,7 +19,8 @@
     "reformat": "prettier --write src",
     "test": "jest",
     "test-dev": "jest --watch",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type"
   },
   "lint-staged": {
     "**/*.ts?(x)": [
@@ -64,6 +65,7 @@
     "lint-staged": "^13.0.3",
     "lodash": "^4.17.21",
     "msw": "^0.47.4",
+    "openapi-typescript": "^5.4.1",
     "prettier": "^2.7.1",
     "react-test-renderer": "^18.2.0",
     "ts-jest": "^29.0.3",
