@@ -9,7 +9,7 @@ function mockTopicGetRequest({
   scenario,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error" | "empty";
+  scenario?: "error" | "empty" | "multiple-pages";
 }) {
   mswInstance.use(
     rest.get("getTopics", async (req, res, ctx) => {
@@ -20,19 +20,33 @@ function mockTopicGetRequest({
       // response empty
       else if (scenario === "empty") {
         return res(ctx.status(200), ctx.json([]));
+
+        // response total pages 4, current page 2
+      } else if (scenario === "multiple-pages") {
+        return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
       }
       // success part
-      return res(ctx.status(200), ctx.json(mockedResponse));
+      return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
     })
   );
 }
 
-const mockedResponse: TopicDTOApiResponse = createMockTopicApiResponse({
-  entries: 10,
-});
+const mockedResponseSinglePage: TopicDTOApiResponse =
+  createMockTopicApiResponse({
+    entries: 10,
+  });
+
+const mockedResponseMultiplePage: TopicDTOApiResponse =
+  createMockTopicApiResponse({
+    entries: 2,
+    totalPages: 4,
+    currentPage: 2,
+  });
 
 // This mirrors the formatting formation used in the api call
 // for usage in tests that use the mock API
-const mockedResponseTransformed = transformTopicApiResponse(mockedResponse);
+const mockedResponseTransformed = transformTopicApiResponse(
+  mockedResponseSinglePage
+);
 
 export { mockTopicGetRequest, mockedResponseTransformed };

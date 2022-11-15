@@ -6,8 +6,8 @@ import {
 const defaultGeneratedMockTopic = {
   topicid: expect.any(Number),
   sequence: expect.any(String),
-  totalNoPages: expect.any(String),
-  currentPage: expect.any(String),
+  totalNoPages: "1",
+  currentPage: "1",
   allPageNos: expect.arrayContaining([expect.any(String)]),
   topicName: expect.any(String),
   noOfPartitions: expect.any(Number),
@@ -50,6 +50,50 @@ describe("topic-test-helper.ts", () => {
       ];
 
       expect(createMockTopicApiResponse({ entries: 2 })).toEqual(result);
+    });
+
+    it("creates a mocked api response for topics with 2 entries, 10 total pages", () => {
+      const result = [
+        [
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "10",
+          }),
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "10",
+          }),
+        ],
+      ];
+
+      expect(
+        createMockTopicApiResponse({ entries: 2, totalPages: 10 })
+      ).toEqual(result);
+    });
+
+    it("creates a mocked api response for topics with 2 entries, 3 total pages and 2 as current page", () => {
+      const result = [
+        [
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "3",
+            currentPage: "2",
+          }),
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "3",
+            currentPage: "2",
+          }),
+        ],
+      ];
+
+      expect(
+        createMockTopicApiResponse({
+          entries: 2,
+          totalPages: 3,
+          currentPage: 2,
+        })
+      ).toEqual(result);
     });
 
     it("creates a mocked api response for topics with 3 entries", () => {

@@ -1,7 +1,10 @@
-import { Topic, TopicDTOApiResponse } from "src/domain/topics/topics-types";
+import {
+  TopicApiResponse,
+  TopicDTOApiResponse,
+} from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 
-const getTopics = async (): Promise<Topic[]> => {
+const getTopics = async (): Promise<TopicApiResponse> => {
   return fetch("/getTopics", {
     method: "GET",
     headers: {
