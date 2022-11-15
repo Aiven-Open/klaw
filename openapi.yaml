@@ -15,6 +15,8 @@ externalDocs:
 tags:
   - name: User
     description: User API endpoints
+  - name: Topic
+    description: Topic operations
 paths:
   /user/authenticate:
     summary: User authentication
@@ -48,7 +50,58 @@ paths:
                 $ref: '#/components/schemas/CommonError'
               example:
                 message: Username and password did not match
-                
+  /getTopics:
+    get:
+      operationId: topicsGet
+      summary: Get topics
+      tags:
+        - Topic
+      parameters:
+        - in: query
+          name: env
+          required: true
+          description: The value should be either a environment identifier or "ALL".
+          schema:
+            type: string
+          example: "ALL"
+        - in: query
+          name: pageNo
+          required: true
+          schema:
+            type: string
+          example: "1"
+        - in: query
+          name: currentPage
+          required: false
+          schema:
+            type: string
+          example: "1"
+        - in: query
+          name: topicnamesearch
+          required: false
+          schema:
+            type: string
+          example: searchTerm
+        - in: query
+          name: teamName
+          required: false
+          schema:
+            type: string
+          example: application-X-developers
+        - in: query
+          name: topicType
+          required: false
+          schema:
+            type: string
+            enum: ["Producer", "Consumer"]
+          example: "Producer"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicsGetResponse'
+                    
 components:
   schemas:
     CommonError:
@@ -91,3 +144,116 @@ components:
           example: JWT
           type: string
           enum: [JWT]
+    TopicsGetResponse:
+      type: array
+      items:
+        type: array
+        items:
+          $ref: '#/components/schemas/TopicInfo'
+    TopicInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        topicid:
+          title: Topic identifier
+          description: This identifier is used in Klaw metadata store to ensure uniquenes.
+          type: integer
+          format: int32
+          example: 1010
+        totalNoPages:
+          title: Total number of pages
+          type: string
+          example: "1"
+        currentPage:
+          title: Current page number
+          type: string
+          example: "1"
+        allPageNos:
+          title: All page numbers
+          description: List of all page numbers
+          type: array
+          items:
+            type: string
+          example: ["1"]
+        topicName:
+          title: Topic name
+          description: Kafka Topic name
+          type: string
+          example: "topicName"
+        noOfPartitions:
+          title: Number of partitions
+          description: Topic partition count
+          type: integer
+          format: int32
+          example: 10
+        description:
+          title: Description
+          description: Kafka topic description stored in Klaw metadata.
+          type: string
+          example: "Topic description"
+        documentation:
+          title: Documentation
+          deprecated: true
+          nullable: true
+          type: string
+        noOfReplicas:
+          title: Number of replicas
+          description: Topic replica count
+          type: string
+          example: "2"
+        teamname:
+          title: Team name
+          description: Topic owner team name
+          type: string
+          example: application-X-developers
+        cluster:
+          title: cluster
+          deprecated: true
+          type: string
+          example: "1"
+        clusterId:
+          title: Cluster Identifier
+          deprecated: true
+          type: string
+        environmentsList:
+          title: Environments list 
+          description: List of environments where the topic is present.
+          type: array
+          items:
+            title: Environment name
+            example: TEST
+            type: string
+          example: ["DEV", "TEST"]
+        showEditTopic:
+          title: Show edit topic
+          description: Describes if the user should see topic edit action. 
+          type: boolean
+          example: false
+        showDeleteTopic:
+          title: Show delete topic
+          description: Describes if the user should see topic delete action.
+          type: boolean
+          example: true
+        topicDeletable:
+          title: Topic Deletable
+          description: Describes if the topic can be deleted. 
+          example: true
+          type: boolean
+      required: [
+        allPageNos,
+        cluster,
+        clusterId,
+        currentPage,
+        description,
+        documentation,
+        environmentsList,
+        noOfPartitions,
+        noOfReplcias,
+        showDeleteTopic,
+        showEditTopic,
+        teamname,
+        topicDeletable,
+        topicid,
+        topicName,
+        totalNoPages,
+      ]
