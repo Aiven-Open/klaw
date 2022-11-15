@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.validation.TopicRequestValidator;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
@@ -13,6 +14,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@TopicRequestValidator(getPermissionType = PermissionType.REQUEST_CREATE_TOPICS)
 public class TopicRequestModel implements Serializable {
 
   @NotNull
@@ -34,13 +36,15 @@ public class TopicRequestModel implements Serializable {
   @Pattern(message = "Invalid description", regexp = "^[a-zA-Z 0-9_.,-]{3,}$")
   private String description;
 
+  @NotNull
+  @Min(value = 1, message = "Replication factor must be greater than zero")
+  private String replicationfactor;
+
   private String environmentName;
 
   private Integer topicid;
 
-  @NotNull
-  @Min(value = 1, message = "Replication factor must be greater than zero")
-  private String replicationfactor;
+  private List<TopicConfigEntry> advancedTopicConfigEntries;
 
   private String appname;
 

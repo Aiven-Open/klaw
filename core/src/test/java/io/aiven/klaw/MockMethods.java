@@ -1,6 +1,8 @@
 package io.aiven.klaw;
 
 import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 
 public class MockMethods {
 
