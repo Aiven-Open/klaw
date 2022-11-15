@@ -45,6 +45,11 @@ export default defineConfig(({ mode }) => {
         API_BASE_URL: getApiBaseUrl(environment),
       },
     },
+    css: {
+      modules: {
+        localsConvention: "camelCaseOnly",
+      },
+    },
     resolve: {
       alias: {
         src: resolve(resolve(__dirname), "./src"),
