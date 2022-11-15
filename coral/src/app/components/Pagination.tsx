@@ -21,14 +21,14 @@ function Pagination(props: PaginationProps) {
             {`You are on page ${activePage} of ${totalPages}`}
           </span>
         </li>
-        <li>
-          <a href={""} aria-disabled={activePage === 1} tabIndex={0}>
+        <li aria-hidden={activePage === 1}>
+          <a href={""} tabIndex={0}>
             <span className={classes.visuallyHidden}>Go to first page</span>
             <Icon aria-hidden={true} icon={chevronBackward} />
           </a>
         </li>
-        <li>
-          <a href={""} aria-disabled={activePage === 1} tabIndex={0}>
+        <li aria-hidden={activePage === 1}>
+          <a href={""} tabIndex={0}>
             <span className={classes.visuallyHidden}>
               Go to previous page, page {activePage - 1}
             </span>
@@ -39,18 +39,18 @@ function Pagination(props: PaginationProps) {
           <span tabIndex={-1} aria-hidden={true} />
           Page {activePage} of {totalPages}
         </li>
-        <li>
-          <a href={""} aria-disabled={activePage === totalPages} tabIndex={0}>
+        <li aria-hidden={activePage === totalPages}>
+          <a href={""} tabIndex={0}>
             <span className={classes.visuallyHidden}>
               Go to next page, page {activePage + 1}
             </span>
             <Icon aria-hidden={true} icon={chevronRight} />
           </a>
         </li>
-        <li>
-          <a href={""} aria-disabled={activePage === totalPages} tabIndex={0}>
+        <li aria-hidden={activePage === totalPages}>
+          <a href={""} tabIndex={0}>
             <span className={classes.visuallyHidden}>
-              Go to Last page, page {totalPages}
+              Go to last page, page {totalPages}
             </span>
             <Icon aria-hidden={true} icon={chevronForward} />
           </a>
