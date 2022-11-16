@@ -52,50 +52,6 @@ describe("topic-test-helper.ts", () => {
       expect(createMockTopicApiResponse({ entries: 2 })).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 2 entries, 10 total pages", () => {
-      const result = [
-        [
-          expect.objectContaining({
-            ...defaultGeneratedMockTopic,
-            totalNoPages: "10",
-          }),
-          expect.objectContaining({
-            ...defaultGeneratedMockTopic,
-            totalNoPages: "10",
-          }),
-        ],
-      ];
-
-      expect(
-        createMockTopicApiResponse({ entries: 2, totalPages: 10 })
-      ).toEqual(result);
-    });
-
-    it("creates a mocked api response for topics with 2 entries, 3 total pages and 2 as current page", () => {
-      const result = [
-        [
-          expect.objectContaining({
-            ...defaultGeneratedMockTopic,
-            totalNoPages: "3",
-            currentPage: "2",
-          }),
-          expect.objectContaining({
-            ...defaultGeneratedMockTopic,
-            totalNoPages: "3",
-            currentPage: "2",
-          }),
-        ],
-      ];
-
-      expect(
-        createMockTopicApiResponse({
-          entries: 2,
-          totalPages: 3,
-          currentPage: 2,
-        })
-      ).toEqual(result);
-    });
-
     it("creates a mocked api response for topics with 3 entries", () => {
       const result = [
         [
@@ -159,6 +115,75 @@ describe("topic-test-helper.ts", () => {
       ];
 
       expect(createMockTopicApiResponse({ entries: 10 })).toEqual(result);
+    });
+
+    it("creates a mocked api response for topics with 2 entries, 10 total pages", () => {
+      const result = [
+        [
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "10",
+          }),
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "10",
+          }),
+        ],
+      ];
+
+      expect(
+        createMockTopicApiResponse({ entries: 2, totalPages: 10 })
+      ).toEqual(result);
+    });
+
+    it("creates a mocked api response for topics with 2 entries, 3 total pages and 2 as current page", () => {
+      const result = [
+        [
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "3",
+            currentPage: "2",
+          }),
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "3",
+            currentPage: "2",
+          }),
+        ],
+      ];
+
+      expect(
+        createMockTopicApiResponse({
+          entries: 2,
+          totalPages: 3,
+          currentPage: 2,
+        })
+      ).toEqual(result);
+    });
+
+    it("sets the total pages at least to currentPage if is is by mistake less than that", () => {
+      const result = [
+        [
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "2",
+            currentPage: "2",
+          }),
+          expect.objectContaining({
+            ...defaultGeneratedMockTopic,
+            totalNoPages: "2",
+            currentPage: "2",
+          }),
+        ],
+      ];
+
+      expect(
+        createMockTopicApiResponse({
+          entries: 2,
+          totalPages: 1,
+          currentPage: 2,
+        })
+      ).toEqual(result);
     });
   });
 });

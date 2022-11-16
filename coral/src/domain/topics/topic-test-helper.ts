@@ -48,6 +48,8 @@ function createMockTopicApiResponse({
   currentPage?: number;
 }): TopicDTOApiResponse {
   const response: TopicDTOApiResponse = [[]];
+
+  const totalPageNumber = currentPage > totalPages ? currentPage : totalPages;
   if (entries >= 4 && entries <= 6) {
     response.push([]);
   }
@@ -74,7 +76,10 @@ function createMockTopicApiResponse({
     }
     entries--;
     response[subArray].push(
-      createMockTopic({ totalNoPages: totalPages, currentPage: currentPage })
+      createMockTopic({
+        totalNoPages: totalPageNumber,
+        currentPage: currentPage,
+      })
     );
   }
 
