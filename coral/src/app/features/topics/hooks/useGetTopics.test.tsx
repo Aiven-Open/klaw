@@ -23,6 +23,8 @@ const wrapper = ({ children }: { children: ReactElement }) => (
 );
 
 describe("useGetTopics", () => {
+  const originalConsoleError = console.error;
+
   beforeAll(() => {
     server.listen();
   });
@@ -32,10 +34,11 @@ describe("useGetTopics", () => {
   });
 
   afterAll(() => {
+    console.error = originalConsoleError;
     server.close();
   });
 
-  xit("returns a loading state before starting to fetch data", async () => {
+  it("returns a loading state before starting to fetch data", async () => {
     mockTopicGetRequest({
       mswInstance: server,
       scenario: "single-page-static",
@@ -51,7 +54,9 @@ describe("useGetTopics", () => {
     });
   });
 
-  xit("returns an error when request fails", async () => {
+  it("returns an error when request fails", async () => {
+    console.error = jest.fn();
+
     mockTopicGetRequest({ mswInstance: server, scenario: "error" });
 
     const { result } = await renderHook(() => useGetTopics(1), {
@@ -59,11 +64,12 @@ describe("useGetTopics", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.isError).toBe(false);
+      expect(result.current.isError).toBe(true);
     });
+    expect(console.error).toHaveBeenCalledTimes(1);
   });
 
-  xit("returns a list of topics with one page if api call is successful", async () => {
+  it("returns a list of topics with one page if api call is successful", async () => {
     mockTopicGetRequest({
       mswInstance: server,
       scenario: "single-page-static",
@@ -80,7 +86,7 @@ describe("useGetTopics", () => {
     expect(result.current.data).toEqual(mockedResponseTransformed);
   });
 
-  xit("returns a list of topics with 2 pages if api call is successful", async () => {
+  it("returns a list of topics with 2 pages if api call is successful", async () => {
     mockTopicGetRequest({
       mswInstance: server,
       scenario: "multiple-pages-static",

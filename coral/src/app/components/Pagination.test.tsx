@@ -20,7 +20,7 @@ function getNavigationElement() {
 }
 
 describe("Pagination.tsx", () => {
-  describe("renders the pagination by default on page 1", () => {
+  describe("renders the pagination by default with active page `1`", () => {
     const totalPages = 5;
 
     beforeAll(() => {
@@ -103,6 +103,13 @@ describe("Pagination.tsx", () => {
       });
 
       expect(button).toBeEnabled();
+    });
+
+    it("renders all icons", () => {
+      // makes sure that the right amount of icons has been used
+      // will break if icons are missing / not used
+      // does NOT check if the right icons are rendered
+      expect(mockIconRender).toHaveBeenCalledTimes(4);
     });
   });
 
