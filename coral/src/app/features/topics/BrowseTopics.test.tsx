@@ -7,6 +7,7 @@ import {
 } from "src/domain/topics/topics-api.msw";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@aivenio/design-system", () => {
   return {
@@ -27,7 +28,10 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles loading state", () => {
     beforeEach(() => {
-      mockTopicGetRequest({ mswInstance: server });
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 
@@ -85,7 +89,10 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles successful response with one page", () => {
     beforeEach(() => {
-      mockTopicGetRequest({ mswInstance: server });
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 
@@ -124,7 +131,10 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles successful response with 4 pages", () => {
     beforeEach(() => {
-      mockTopicGetRequest({ mswInstance: server, scenario: "multiple-pages" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "multiple-pages-static",
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 
@@ -146,6 +156,39 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const activePageInformation = screen.getByText("You are on page 2 of 4");
 
+      expect(activePageInformation).toBeVisible();
+    });
+  });
+
+  describe("handles user stepping through pagination", () => {
+    beforeEach(() => {
+      mockTopicGetRequest({ mswInstance: server });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows page 1 as currently active page and the total page number", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const activePageInformation = screen.getByText("You are on page 1 of 10");
+
+      expect(activePageInformation).toBeVisible();
+    });
+
+    it("fetches new data when user clicks on next page", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const pageTwoButton = screen.getByRole("button", {
+        name: "Go to next page, page 2",
+      });
+
+      await userEvent.click(pageTwoButton);
+
+      const activePageInformation = await screen.findByText(
+        "You are on page 2 of 10"
+      );
       expect(activePageInformation).toBeVisible();
     });
   });
