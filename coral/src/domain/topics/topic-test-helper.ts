@@ -1,29 +1,47 @@
 import { Topic, TopicDTOApiResponse } from "src/domain/topics/topics-types";
 
-function createRandomTopicId() {
-  return Math.floor(Math.random() * 9000 + 1000);
-}
+// currently this file is used in code (topcis-api.msw.ts)
+// so "expect" is not defined there
+const baseTestObjectMockedTopic = () => {
+  return {
+    topicid: expect.any(Number),
+    totalNoPages: expect.any(String),
+    currentPage: expect.any(String),
+    topicName: expect.any(String),
+    noOfPartitions: 2,
+    sequence: "341",
+    allPageNos: ["1"],
+    description: "Topic description",
+    documentation: null,
+    noOfReplcias: "2",
+    teamname: "DevRel",
+    cluster: "1",
+    clusterId: null,
+    environmentsList: ["DEV"],
+    showEditTopic: false,
+    showDeleteTopic: false,
+    topicDeletable: false,
+  };
+};
 
 function createMockTopic({
   topicName,
-  topicId = createRandomTopicId(),
+  topicId,
   totalNoPages = 1,
   currentPage = 1,
 }: {
-  topicName?: string;
-  topicId?: number;
+  topicName: string;
+  topicId: number;
   totalNoPages?: number;
   currentPage?: number;
 }): Topic {
-  const name = topicName ? topicName : "Mock topic " + createRandomTopicId();
-
   return {
     topicid: topicId,
     sequence: "341",
     totalNoPages: `${totalNoPages}`,
     currentPage: `${currentPage}`,
     allPageNos: ["1"],
-    topicName: name,
+    topicName: topicName,
     noOfPartitions: 2,
     description: "Topic description",
     documentation: null,
@@ -63,7 +81,8 @@ function createMockTopicApiResponse({
     response.push([]);
   }
 
-  while (entries > +0) {
+  let topicId = 0;
+  while (entries > 0) {
     let subArray = 0;
     if (entries >= 4 && entries <= 6) {
       subArray = 1;
@@ -74,16 +93,24 @@ function createMockTopicApiResponse({
     if (entries === 10) {
       subArray = 3;
     }
-    entries--;
+
     response[subArray].push(
       createMockTopic({
+        topicName: `Mocked topic ${topicId}`,
+        topicId: topicId,
         totalNoPages: totalPageNumber,
         currentPage: currentPage,
       })
     );
+    entries--;
+    topicId++;
   }
 
   return response;
 }
 
-export { createMockTopic, createMockTopicApiResponse };
+export {
+  createMockTopic,
+  createMockTopicApiResponse,
+  baseTestObjectMockedTopic,
+};

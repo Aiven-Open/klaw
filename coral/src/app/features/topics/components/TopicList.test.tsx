@@ -4,8 +4,8 @@ import TopicList from "src/app/features/topics/components/TopicList";
 import { createMockTopic } from "src/domain/topics/topic-test-helper";
 
 const mockedTopicNames = ["Name one", "Name two", "Name three", "Name four"];
-const mockedTopics = mockedTopicNames.map((name) =>
-  createMockTopic({ topicName: name })
+const mockedTopics = mockedTopicNames.map((name, index) =>
+  createMockTopic({ topicName: name, topicId: index })
 );
 
 describe("TopicList.tsx", () => {

@@ -14,6 +14,7 @@ function transformTopicApiResponse(
       entries: [],
     };
   }
+
   return {
     totalPages: Number(apiResponse[0][0].totalNoPages),
     currentPage: Number(apiResponse[0][0].currentPage),

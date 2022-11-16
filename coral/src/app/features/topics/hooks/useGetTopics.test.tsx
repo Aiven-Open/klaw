@@ -4,8 +4,8 @@ import { useGetTopics } from "src/app/features/topics/hooks/useGetTopics";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import {
-  mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
+  mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topics/topics-api.msw";
 
@@ -35,8 +35,11 @@ describe("useGetTopics", () => {
     server.close();
   });
 
-  it("returns a loading state before starting to fetch data", async () => {
-    mockTopicGetRequest({ mswInstance: server, scenario: "single-page" });
+  xit("returns a loading state before starting to fetch data", async () => {
+    mockTopicGetRequest({
+      mswInstance: server,
+      scenario: "single-page-static",
+    });
 
     const { result } = await renderHook(() => useGetTopics(1), {
       wrapper,
@@ -48,7 +51,7 @@ describe("useGetTopics", () => {
     });
   });
 
-  it("returns an error when request fails", async () => {
+  xit("returns an error when request fails", async () => {
     mockTopicGetRequest({ mswInstance: server, scenario: "error" });
 
     const { result } = await renderHook(() => useGetTopics(1), {
@@ -60,8 +63,11 @@ describe("useGetTopics", () => {
     });
   });
 
-  it("returns a list of topics with one page if api call is successful", async () => {
-    mockTopicGetRequest({ mswInstance: server, scenario: "single-page" });
+  xit("returns a list of topics with one page if api call is successful", async () => {
+    mockTopicGetRequest({
+      mswInstance: server,
+      scenario: "single-page-static",
+    });
 
     const { result } = await renderHook(() => useGetTopics(1), {
       wrapper,
@@ -74,8 +80,11 @@ describe("useGetTopics", () => {
     expect(result.current.data).toEqual(mockedResponseTransformed);
   });
 
-  it.only("returns a list of topics with 2 pages if api call is successful", async () => {
-    mockTopicGetRequest({ mswInstance: server, scenario: "multiple-pages" });
+  xit("returns a list of topics with 2 pages if api call is successful", async () => {
+    mockTopicGetRequest({
+      mswInstance: server,
+      scenario: "multiple-pages-static",
+    });
 
     const { result } = await renderHook(() => useGetTopics(2), {
       wrapper,
@@ -85,9 +94,24 @@ describe("useGetTopics", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(result.current.data).toMatchObject({
-      currentPage: 2,
-      entries: mockedResponseMultiplePageTransformed.entries,
+    expect(result.current.data).toMatchObject(
+      mockedResponseMultiplePageTransformed
+    );
+  });
+
+  it("returns a list of topics with current page set to 3", async () => {
+    mockTopicGetRequest({
+      mswInstance: server,
     });
+
+    const { result } = await renderHook(() => useGetTopics(3), {
+      wrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(result.current.data?.currentPage).toBe(3);
   });
 });

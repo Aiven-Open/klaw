@@ -29,7 +29,10 @@ describe("Topics", () => {
     // `render` from `renderWithQueryClientAndMemoryRouter` does
     // not import from `/pure` so that setting can't be used here
     beforeEach(async () => {
-      mockTopicGetRequest({ mswInstance: server, scenario: "single-page" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
       renderWithQueryClient(<Topics />);
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });

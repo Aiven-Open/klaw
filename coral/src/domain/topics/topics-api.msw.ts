@@ -3,7 +3,7 @@ import { MswInstance } from "src/services/api-mocks/types";
 import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import { createMockTopicApiResponse } from "src/domain/topics/topic-test-helper";
-import { SetupServerApi } from "msw/node";
+import { entries } from "lodash";
 
 // pageNo=1
 function mockTopicGetRequest({
@@ -11,7 +11,7 @@ function mockTopicGetRequest({
   scenario,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error" | "empty" | "multiple-pages" | "single-page";
+  scenario?: "error" | "empty" | "multiple-pages-static" | "single-page-static";
 }) {
   mswInstance.use(
     rest.get("getTopics", async (req, res, ctx) => {
@@ -25,10 +25,10 @@ function mockTopicGetRequest({
       else if (scenario === "empty") {
         return res(ctx.status(200), ctx.json([]));
 
-        // response total pages 4, current page 2
-      } else if (scenario === "multiple-pages") {
+        // response total pages 4, current page based on api
+      } else if (scenario === "multiple-pages-static") {
         return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
-      } else if (scenario === "single-page") {
+      } else if (scenario === "single-page-static") {
         return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
       }
 
@@ -61,6 +61,7 @@ const mockedResponseMultiplePage: TopicDTOApiResponse =
 const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
   mockedResponseMultiplePage
 );
+
 // This mirrors the formatting formation used in the api call
 // for usage in tests that use the mock API
 const mockedResponseTransformed = transformTopicApiResponse(
