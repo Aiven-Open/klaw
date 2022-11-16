@@ -3,7 +3,6 @@ import { MswInstance } from "src/services/api-mocks/types";
 import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import { createMockTopicApiResponse } from "src/domain/topics/topic-test-helper";
-import { entries } from "lodash";
 
 // pageNo=1
 function mockTopicGetRequest({
