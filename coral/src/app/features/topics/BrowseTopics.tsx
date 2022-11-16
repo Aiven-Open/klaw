@@ -1,7 +1,7 @@
-import TopicList from "src/app/features/topics/components/TopicList";
+import { TopicList } from "src/app/features/topics/list";
 import { Pagination } from "src/app/components/Pagination";
 import { Flexbox } from "@aivenio/design-system";
-import { useGetTopics } from "src/app/features/topics/hooks/useGetTopics";
+import { useGetTopics } from "src/app/features/topics/list/hooks/useGetTopics";
 import { useState } from "react";
 
 function BrowseTopics() {
