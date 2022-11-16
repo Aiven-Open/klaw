@@ -25,10 +25,7 @@ describe("Topics", () => {
   });
 
   describe("renders default view with data from API", () => {
-    // can be beforeAll when auto clean up setting is up to date
-    // `render` from `renderWithQueryClientAndMemoryRouter` does
-    // not import from `/pure` so that setting can't be used here
-    beforeEach(async () => {
+    beforeAll(async () => {
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-static",
@@ -37,7 +34,7 @@ describe("Topics", () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
-    afterEach(() => {
+    afterAll(() => {
       server.resetHandlers();
       cleanup();
     });

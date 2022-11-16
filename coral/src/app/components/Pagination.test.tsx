@@ -1,5 +1,4 @@
-// @TODO remove import from `pure` when custom cleanup is merged
-import { cleanup, render, within } from "@testing-library/react/pure";
+import { cleanup, render, within } from "@testing-library/react";
 import { Pagination } from "src/app/components/Pagination";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
