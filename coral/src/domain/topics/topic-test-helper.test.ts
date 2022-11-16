@@ -25,13 +25,13 @@ describe("topic-test-helper.ts", () => {
         [
           expect.objectContaining({
             ...baseTestObjectMockedTopic(),
-            topicName: `Mocked topic 0`,
+            topicName: `Mocked topic nr 0 page 1`,
             topicid: 0,
             currentPage: "1",
           }),
           expect.objectContaining({
             ...baseTestObjectMockedTopic(),
-            topicName: `Mocked topic 1`,
+            topicName: `Mocked topic nr 1 page 1`,
             topicid: 1,
             currentPage: "1",
           }),

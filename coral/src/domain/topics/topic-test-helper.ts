@@ -96,7 +96,7 @@ function createMockTopicApiResponse({
 
     response[subArray].push(
       createMockTopic({
-        topicName: `Mocked topic ${topicId}`,
+        topicName: `Mocked topic nr ${topicId} page ${currentPage}`,
         topicId: topicId,
         totalNoPages: totalPageNumber,
         currentPage: currentPage,
