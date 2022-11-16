@@ -60,7 +60,7 @@ paths:
         - in: query
           name: env
           required: true
-          description: The value should be either a environment identifier or "ALL".
+          description: The value should be either an environment identifier or "ALL".
           schema:
             type: string
           example: "ALL"
@@ -212,7 +212,7 @@ components:
           type: string
           example: "1"
         clusterId:
-          title: Cluster Identifier
+          title: Cluster identifier
           deprecated: true
           type: string
         environmentsList:
@@ -235,7 +235,7 @@ components:
           type: boolean
           example: true
         topicDeletable:
-          title: Topic Deletable
+          title: Topic deletable
           description: Describes if the topic can be deleted. 
           example: true
           type: boolean
