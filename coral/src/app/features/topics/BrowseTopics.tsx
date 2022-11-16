@@ -19,16 +19,11 @@ function BrowseTopics() {
       {hasTopics && <TopicList topics={data.entries} />}
 
       {hasMultiplePages && (
-        <>
-          <Pagination
-            activePage={data.currentPage}
-            totalPages={data.totalPages}
-            setActivePage={setPage}
-          />
-          <br />
-          <br />
-          <br />
-        </>
+        <Pagination
+          activePage={data.currentPage}
+          totalPages={data.totalPages}
+          setActivePage={setPage}
+        />
       )}
     </Flexbox>
   );
