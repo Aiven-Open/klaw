@@ -190,7 +190,7 @@ components:
           title: Description
           description: Kafka topic description stored in Klaw metadata.
           type: string
-          example: "Topic description"
+          example: "Main PostgreSQL change data capture stream"
         documentation:
           title: Documentation
           deprecated: true
