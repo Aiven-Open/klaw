@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useGetTopics } from "src/app/features/topics/hooks/useGetTopics";
+import { useGetTopics } from "src/app/features/topics/list/hooks/useGetTopics";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import {
