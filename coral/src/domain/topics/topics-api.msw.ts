@@ -3,6 +3,7 @@ import { MswInstance } from "src/services/api-mocks/types";
 import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import { createMockTopicApiResponse } from "src/domain/topics/topic-test-helper";
+import { SetupServerApi } from "msw/node";
 
 // pageNo=1
 function mockTopicGetRequest({
@@ -10,7 +11,7 @@ function mockTopicGetRequest({
   scenario,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error" | "empty" | "multiple-pages";
+  scenario?: "error" | "empty" | "multiple-pages" | "single-page";
 }) {
   mswInstance.use(
     rest.get("getTopics", async (req, res, ctx) => {
@@ -27,20 +28,20 @@ function mockTopicGetRequest({
         // response total pages 4, current page 2
       } else if (scenario === "multiple-pages") {
         return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
+      } else if (scenario === "single-page") {
+        return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
       }
-      if (currentPage) {
-        return res(
-          ctx.status(200),
-          ctx.json(
-            createMockTopicApiResponse({
-              entries: 10,
-              currentPage: Number(currentPage),
-              totalPages: 10,
-            })
-          )
-        );
-      }
-      return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
+
+      return res(
+        ctx.status(200),
+        ctx.json(
+          createMockTopicApiResponse({
+            entries: 10,
+            currentPage: Number(currentPage),
+            totalPages: 10,
+          })
+        )
+      );
     })
   );
 }
@@ -57,10 +58,17 @@ const mockedResponseMultiplePage: TopicDTOApiResponse =
     currentPage: 2,
   });
 
+const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
+  mockedResponseMultiplePage
+);
 // This mirrors the formatting formation used in the api call
 // for usage in tests that use the mock API
 const mockedResponseTransformed = transformTopicApiResponse(
   mockedResponseSinglePage
 );
 
-export { mockTopicGetRequest, mockedResponseTransformed };
+export {
+  mockTopicGetRequest,
+  mockedResponseTransformed,
+  mockedResponseMultiplePageTransformed,
+};

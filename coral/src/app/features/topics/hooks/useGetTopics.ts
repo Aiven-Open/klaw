@@ -4,7 +4,7 @@ import { mockTopicGetRequest } from "src/domain/topics/topics-api.msw";
 import { getTopics } from "src/domain/topics";
 import { TopicApiResponse } from "src/domain/topics/topics-types";
 
-function useGetTopics(): UseQueryResult<TopicApiResponse> {
+function useGetTopics(currentPage: number): UseQueryResult<TopicApiResponse> {
   // everything in useEffect is used to mock the api call
   // and can be removed once the real api is connected
   useEffect(() => {
@@ -15,8 +15,10 @@ function useGetTopics(): UseQueryResult<TopicApiResponse> {
     }
   }, []);
 
-  return useQuery<TopicApiResponse, Error>(["topics"], () => {
-    return getTopics();
+  return useQuery<TopicApiResponse, Error>({
+    queryKey: ["topics", currentPage],
+    queryFn: () => getTopics(currentPage),
+    keepPreviousData: true,
   });
 }
 
