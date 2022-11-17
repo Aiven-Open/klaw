@@ -28,7 +28,7 @@ function mockTopicGetRequest({
     rest.get("getTopics", async (req, res, ctx) => {
       const currentPage = req.url.searchParams.get("pageNo");
       const env = req.url.searchParams.get("env");
-
+      const team = req.url.searchParams.get("teamName");
       // error path
       if (scenario === "error") {
         return res(ctx.status(400), ctx.json(""));
@@ -48,6 +48,10 @@ function mockTopicGetRequest({
 
       if (env === "DEV") {
         return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
+      }
+
+      if (team === "TEST_TEAM_02") {
+        return res(ctx.status(200), ctx.json(mockedResponseTopicTeam));
       }
 
       return res(
@@ -97,6 +101,25 @@ const mockedResponseTopicEnv = [
       topicId: 3,
       environmentsList: [TopicEnv.DEV],
     }),
+  ],
+];
+
+const mockedResponseTopicTeam = [
+  [
+    {
+      ...createMockTopic({
+        topicName: "Topic 1",
+        topicId: 1,
+      }),
+      teamname: "TEST_TEAM_02",
+    },
+    {
+      ...createMockTopic({
+        topicName: "Topic 2",
+        topicId: 2,
+      }),
+      teamname: "TEST_TEAM_02",
+    },
   ],
 ];
 

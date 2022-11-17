@@ -22,7 +22,8 @@ function BrowseTopics() {
     isLoading,
     isError,
     isPreviousData,
-  } = useGetTopics({ currentPage: page, topicEnv: env });
+  } = useGetTopics({ currentPage: page, topicEnv: env, teamName: team });
+
   const hasTopics = topics && topics.entries.length > 0;
   const hasMultiplePages = topics && topics.totalPages > 1;
 
