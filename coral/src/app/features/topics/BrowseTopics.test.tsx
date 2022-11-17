@@ -5,6 +5,7 @@ import {
   mockTopicGetRequest,
   mockedResponseTransformed,
   mockGetEnvs,
+  mockGetTeams,
 } from "src/domain/topics/topics-api.msw";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
@@ -31,6 +32,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles loading state", () => {
     beforeEach(() => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-static",
@@ -54,6 +56,7 @@ describe("BrowseTopics.tsx", () => {
     beforeEach(() => {
       console.error = jest.fn();
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server, scenario: "error" });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -75,6 +78,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles an empty response", () => {
     beforeEach(() => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server, scenario: "empty" });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -95,6 +99,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles successful response with one page", () => {
     beforeEach(() => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-static",
@@ -107,10 +112,19 @@ describe("BrowseTopics.tsx", () => {
       cleanup();
     });
 
-    it("renders a select element to choose Kafka environment", async () => {
+    it("renders a select element to filter topics by Kafka environment", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
         name: "Kafka Environment",
+      });
+
+      expect(select).toBeEnabled();
+    });
+
+    it("renders a select element to filter topics by team", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Team",
       });
 
       expect(select).toBeEnabled();
@@ -147,6 +161,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles successful response with 4 pages", () => {
     beforeEach(() => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "multiple-pages-static",
@@ -179,6 +194,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles user stepping through pagination", () => {
     beforeEach(() => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -213,6 +229,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles user filtering topics by env", () => {
     beforeEach(() => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -282,6 +299,44 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
       expect(getAllTopics()).toHaveLength(3);
+    });
+  });
+
+  describe("handles user filtering topics by team", () => {
+    beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
+      mockTopicGetRequest({ mswInstance: server });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows a select element for team with `All teams` preselected", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Team",
+      });
+
+      expect(select).toHaveValue("All teams");
+    });
+
+    it("changes active selected option when user selects `TEST_TEAM_02`", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Team",
+      });
+      const option = within(select).getByRole("option", {
+        name: "TEST_TEAM_02",
+      });
+      expect(select).toHaveValue("All teams");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue("TEST_TEAM_02");
     });
   });
 });

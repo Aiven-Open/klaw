@@ -62,3 +62,9 @@ export const enum TopicEnv {
   DEV = "DEV",
   TST = "TST",
 }
+
+// ****************************
+// Types related to topic ENV
+//*****************************
+
+export type TopicTeams = string[];

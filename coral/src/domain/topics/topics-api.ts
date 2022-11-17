@@ -2,6 +2,7 @@ import {
   TopicApiResponse,
   TopicDTOApiResponse,
   TopicEnv,
+  TopicTeams,
 } from "src/domain/topics/topics-types";
 import {
   transformTopicApiResponse,
@@ -52,4 +53,23 @@ const getEnvs = async (): Promise<TopicEnv[]> => {
     });
 };
 
-export { getTopics, getEnvs };
+const getTeams = async (): Promise<TopicTeams> => {
+  return fetch(`/getAllTeamsSUOnly`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`msw error: ${response.statusText}`);
+      }
+      const result = await response.json();
+      return result;
+    })
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
+
+export { getTopics, getEnvs, getTeams };
