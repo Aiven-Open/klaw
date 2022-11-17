@@ -1,5 +1,5 @@
 import { Topic, TopicEnv, TopicEnvDTO } from "src/domain/topics/topics-types";
-import { getTopics } from "src/domain/topics/topics-api";
+import { getTopics, getEnvs } from "src/domain/topics/topics-api";
 
 export type { Topic, TopicEnvDTO };
-export { getTopics, TopicEnv };
+export { getTopics, getEnvs, TopicEnv };
