@@ -5,6 +5,7 @@ import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseTransformed,
   mockGetEnvs,
+  mockGetTeams,
   mockTopicGetRequest,
 } from "src/domain/topics/topics-api.msw";
 import {
@@ -28,6 +29,7 @@ describe("Topics", () => {
   describe("renders default view with data from API", () => {
     beforeAll(async () => {
       mockGetEnvs({ mswInstance: server });
+      mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-static",
@@ -49,9 +51,17 @@ describe("Topics", () => {
       expect(headline).toBeVisible();
     });
 
-    it("renders a select element to choose Kafka environment", async () => {
+    it("renders a select element to filter topics by Kafka environment", async () => {
       const select = screen.getByRole("combobox", {
         name: "Kafka Environment",
+      });
+
+      expect(select).toBeEnabled();
+    });
+
+    it("renders a select element to filter topics by team", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "Team",
       });
 
       expect(select).toBeEnabled();
