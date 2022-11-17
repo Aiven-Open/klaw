@@ -42,7 +42,7 @@ import org.springframework.test.context.TestPropertySource;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = UiapiApplication.class)
-@TestPropertySource(locations = "classpath:test-application-rdbms.properties")
+@TestPropertySource(locations = "classpath:test-application-rdbms2.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
