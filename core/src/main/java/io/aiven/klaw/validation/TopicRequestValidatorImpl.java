@@ -21,7 +21,6 @@ public class TopicRequestValidatorImpl
     implements ConstraintValidator<TopicRequestValidator, TopicRequestModel> {
 
   @Autowired private CommonUtilsService commonUtilsService;
-  //  @Autowired ManageDatabase manageDatabase;
   @Autowired private MailUtils mailService;
   @Autowired private TopicControllerService topicControllerService;
 
