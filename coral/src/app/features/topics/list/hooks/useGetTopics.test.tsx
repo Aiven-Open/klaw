@@ -38,105 +38,135 @@ describe("useGetTopics", () => {
     server.close();
   });
 
-  it("returns a loading state before starting to fetch data", async () => {
-    mockTopicGetRequest({
-      mswInstance: server,
-      scenario: "single-page-static",
+  describe("handles loading and error state", () => {
+    it("returns a loading state before starting to fetch data", async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
+
+      const { result } = await renderHook(
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            topicEnv: "ALL",
+          }),
+        {
+          wrapper,
+        }
+      );
+      expect(result.current.isLoading).toBe(true);
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
     });
 
-    const { result } = await renderHook(
-      () =>
-        useGetTopics({
-          currentPage: 1,
-          topicEnv: "ALL",
-        }),
-      {
-        wrapper,
-      }
-    );
-    expect(result.current.isLoading).toBe(true);
+    it("returns an error when request fails", async () => {
+      console.error = jest.fn();
 
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      mockTopicGetRequest({ mswInstance: server, scenario: "error" });
+
+      const { result } = await renderHook(
+        () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true);
+      });
+      expect(console.error).toHaveBeenCalledTimes(1);
     });
   });
 
-  it("returns an error when request fails", async () => {
-    console.error = jest.fn();
+  describe("handles paginated responses", () => {
+    it("returns a list of topics with one page if api call is successful", async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
 
-    mockTopicGetRequest({ mswInstance: server, scenario: "error" });
+      const { result } = await renderHook(
+        () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
+        {
+          wrapper,
+        }
+      );
 
-    const { result } = await renderHook(
-      () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
-      {
-        wrapper,
-      }
-    );
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
 
-    await waitFor(() => {
-      expect(result.current.isError).toBe(true);
+      expect(result.current.data).toEqual(mockedResponseTransformed);
     });
-    expect(console.error).toHaveBeenCalledTimes(1);
+
+    it("returns a list of topics with 2 pages if api call is successful", async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "multiple-pages-static",
+      });
+
+      const { result } = await renderHook(
+        () => useGetTopics({ currentPage: 2, topicEnv: "ALL" }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toMatchObject(
+        mockedResponseMultiplePageTransformed
+      );
+    });
+
+    it("returns a list of topics with current page set to 3", async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+      });
+
+      const { result } = await renderHook(
+        () => useGetTopics({ currentPage: 3, topicEnv: "ALL" }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data?.currentPage).toBe(3);
+    });
   });
 
-  it("returns a list of topics with one page if api call is successful", async () => {
-    mockTopicGetRequest({
-      mswInstance: server,
-      scenario: "single-page-static",
+  describe("handles responses based on the env", () => {
+    it("returns a list of three topics with `DEV` envs", async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-env-dev",
+      });
+
+      const { result } = await renderHook(
+        () => useGetTopics({ currentPage: 1, topicEnv: "DEV" }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      const envList = result.current.data?.entries
+        .map((topic) => topic.environmentsList)
+        .flat();
+
+      expect(envList).toEqual(["DEV", "DEV", "DEV"]);
     });
-
-    const { result } = await renderHook(
-      () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
-      {
-        wrapper,
-      }
-    );
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true);
-    });
-
-    expect(result.current.data).toEqual(mockedResponseTransformed);
-  });
-
-  it("returns a list of topics with 2 pages if api call is successful", async () => {
-    mockTopicGetRequest({
-      mswInstance: server,
-      scenario: "multiple-pages-static",
-    });
-
-    const { result } = await renderHook(
-      () => useGetTopics({ currentPage: 2, topicEnv: "ALL" }),
-      {
-        wrapper,
-      }
-    );
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true);
-    });
-
-    expect(result.current.data).toMatchObject(
-      mockedResponseMultiplePageTransformed
-    );
-  });
-
-  it("returns a list of topics with current page set to 3", async () => {
-    mockTopicGetRequest({
-      mswInstance: server,
-    });
-
-    const { result } = await renderHook(
-      () => useGetTopics({ currentPage: 3, topicEnv: "ALL" }),
-      {
-        wrapper,
-      }
-    );
-
-    await waitFor(() => {
-      expect(result.current.isSuccess).toBe(true);
-    });
-
-    expect(result.current.data?.currentPage).toBe(3);
   });
 });

@@ -22,7 +22,7 @@ function useGetTopics({
   }, []);
 
   return useQuery<TopicApiResponse, Error>({
-    queryKey: ["topics", currentPage],
+    queryKey: ["topics", currentPage, topicEnv],
     queryFn: () => getTopics({ currentPage, topicEnv }),
     keepPreviousData: true,
   });
