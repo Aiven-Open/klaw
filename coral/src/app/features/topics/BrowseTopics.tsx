@@ -5,8 +5,12 @@ import { useGetTopics } from "src/app/features/topics/list/hooks/useGetTopics";
 import { useState } from "react";
 import { SelectEnv } from "src/app/features/topics/select-env";
 
+type Env = "ALL" | "DEV" | "TST";
+const mockedEnvOptions: Env[] = ["ALL", "DEV", "TST"];
+
 function BrowseTopics() {
   const [page, setPage] = useState(1);
+  const [env, setEnv] = useState<Env>("ALL");
   const { data, isLoading, isError } = useGetTopics(page);
   const hasTopics = data && data.entries.length > 0;
   const hasMultiplePages = data && data.totalPages > 1;
@@ -14,7 +18,11 @@ function BrowseTopics() {
   return (
     <Flexbox direction={"column"} alignItems={"center"} rowGap={"l4"}>
       <FlexboxItem alignSelf={"self-start"}>
-        <SelectEnv />
+        <SelectEnv
+          envOptions={mockedEnvOptions}
+          activeOption={env}
+          selectEnv={setEnv}
+        />
       </FlexboxItem>
       {isLoading && <div>Loading...</div>}
       {isError && <div>Something went wrong 😔</div>}
