@@ -9,6 +9,7 @@ import {
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
+import { TopicEnv } from "src/domain/topics";
 
 jest.mock("@aivenio/design-system", () => {
   return {
@@ -226,12 +227,8 @@ describe("BrowseTopics.tsx", () => {
       const select = screen.getByRole("combobox", {
         name: "Kafka Environment",
       });
-      const option = within(select).getByRole("option", {
-        name: "ALL",
-        selected: true,
-      });
 
-      expect(option).toBeVisible();
+      expect(select).toHaveValue(TopicEnv.ALL);
     });
 
     it("shows an information that the list is updated after user selected an env", async () => {
@@ -240,9 +237,9 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
       const option = within(select).getByRole("option", {
-        name: "DEV",
+        name: TopicEnv.DEV,
       });
-      expect(select).toHaveValue("ALL");
+      expect(select).toHaveValue(TopicEnv.ALL);
 
       await userEvent.selectOptions(select, option);
 
@@ -256,13 +253,13 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
       const option = within(select).getByRole("option", {
-        name: "DEV",
+        name: TopicEnv.DEV,
       });
-      expect(select).toHaveValue("ALL");
+      expect(select).toHaveValue(TopicEnv.ALL);
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue("DEV");
+      expect(select).toHaveValue(TopicEnv.DEV);
     });
 
     it("fetches new data when user selects `DEV`", async () => {
@@ -278,7 +275,7 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
       const option = within(select).getByRole("option", {
-        name: "DEV",
+        name: TopicEnv.DEV,
       });
 
       await userEvent.selectOptions(select, option);

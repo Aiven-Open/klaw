@@ -1,7 +1,7 @@
 import {
+  baseTestObjectMockedTopic,
   createMockTopic,
   createMockTopicApiResponse,
-  baseTestObjectMockedTopic,
   createMockTopicEnvDTO,
 } from "src/domain/topics/topic-test-helper";
 import { TopicEnv } from "src/domain/topics/topics-types";
@@ -23,13 +23,13 @@ describe("topic-test-helper.ts", () => {
         createMockTopic({
           topicName: "mocked name",
           topicId: 1,
-          environmentsList: ["DEV"],
+          environmentsList: [TopicEnv.DEV],
         })
       ).toMatchObject({
         ...baseTestObjectMockedTopic(),
         topicName: "mocked name",
         topicid: 1,
-        environmentsList: ["DEV"],
+        environmentsList: [TopicEnv.DEV],
       });
     });
   });
@@ -193,11 +193,11 @@ describe("topic-test-helper.ts", () => {
 
   describe("createMockTopicEnvDTO", () => {
     it("creates a mocked TopicEnvDTO object with a given name", () => {
-      const nameToTest: TopicEnv = "TST";
+      const nameToTest = TopicEnv.TST;
       const result = {
         allPageNos: null,
         clusterId: 1,
-        clusterName: "DEV",
+        clusterName: TopicEnv.DEV,
         defaultPartitions: null,
         defaultReplicationFactor: null,
         envStatus: "ONLINE",

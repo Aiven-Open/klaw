@@ -8,6 +8,7 @@ import {
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topics/topics-api.msw";
+import { TopicEnv } from "src/domain/topics";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,7 +50,7 @@ describe("useGetTopics", () => {
         () =>
           useGetTopics({
             currentPage: 1,
-            topicEnv: "ALL",
+            topicEnv: TopicEnv.ALL,
           }),
         {
           wrapper,
@@ -68,7 +69,7 @@ describe("useGetTopics", () => {
       mockTopicGetRequest({ mswInstance: server, scenario: "error" });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
+        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.ALL }),
         {
           wrapper,
         }
@@ -89,7 +90,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
+        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.ALL }),
         {
           wrapper,
         }
@@ -109,7 +110,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 2, topicEnv: "ALL" }),
+        () => useGetTopics({ currentPage: 2, topicEnv: TopicEnv.ALL }),
         {
           wrapper,
         }
@@ -130,7 +131,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 3, topicEnv: "ALL" }),
+        () => useGetTopics({ currentPage: 3, topicEnv: TopicEnv.ALL }),
         {
           wrapper,
         }
@@ -152,7 +153,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: "DEV" }),
+        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.DEV }),
         {
           wrapper,
         }
@@ -166,7 +167,7 @@ describe("useGetTopics", () => {
         .map((topic) => topic.environmentsList)
         .flat();
 
-      expect(envList).toEqual(["DEV", "DEV", "DEV"]);
+      expect(envList).toEqual([TopicEnv.DEV, TopicEnv.DEV, TopicEnv.DEV]);
     });
   });
 });
