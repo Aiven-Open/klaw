@@ -21,7 +21,7 @@ const baseTestObjectMockedTopic = () => {
     teamname: "DevRel",
     cluster: "1",
     clusterId: null,
-    environmentsList: ["DEV"],
+    environmentsList: expect.arrayContaining(["DEV"]),
     showEditTopic: false,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -33,11 +33,13 @@ function createMockTopic({
   topicId,
   totalNoPages = 1,
   currentPage = 1,
+  environmentsList = ["DEV", "TST"],
 }: {
   topicName: string;
   topicId: number;
   totalNoPages?: number;
   currentPage?: number;
+  environmentsList?: TopicEnv[];
 }): Topic {
   return {
     topicid: topicId,
@@ -53,7 +55,7 @@ function createMockTopic({
     teamname: "DevRel",
     cluster: "1",
     clusterId: null,
-    environmentsList: ["DEV"],
+    environmentsList,
     showEditTopic: false,
     showDeleteTopic: false,
     topicDeletable: false,

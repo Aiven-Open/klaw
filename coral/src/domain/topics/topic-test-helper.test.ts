@@ -8,16 +8,29 @@ import { TopicEnv } from "src/domain/topics/topics-types";
 
 describe("topic-test-helper.ts", () => {
   describe("createMockTopic", () => {
-    const testObject = {
-      ...baseTestObjectMockedTopic(),
-      topicName: "mocked name",
-      topicid: 1,
-    };
-
     it("creates a topic mock with given name and id", () => {
       expect(
         createMockTopic({ topicName: "mocked name", topicId: 1 })
-      ).toMatchObject(testObject);
+      ).toMatchObject({
+        ...baseTestObjectMockedTopic(),
+        topicName: "mocked name",
+        topicid: 1,
+      });
+    });
+
+    it("creates a topic mock with given topic env list", () => {
+      expect(
+        createMockTopic({
+          topicName: "mocked name",
+          topicId: 1,
+          environmentsList: ["DEV"],
+        })
+      ).toMatchObject({
+        ...baseTestObjectMockedTopic(),
+        topicName: "mocked name",
+        topicid: 1,
+        environmentsList: ["DEV"],
+      });
     });
   });
 

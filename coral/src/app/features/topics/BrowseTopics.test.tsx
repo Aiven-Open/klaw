@@ -208,4 +208,83 @@ describe("BrowseTopics.tsx", () => {
       expect(activePageInformation).toBeVisible();
     });
   });
+
+  describe("handles user filtering topics by env", () => {
+    beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
+      mockTopicGetRequest({ mswInstance: server });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows a select element for envs with `ALL` preselected", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Kafka Environment",
+      });
+      const option = within(select).getByRole("option", {
+        name: "ALL",
+        selected: true,
+      });
+
+      expect(option).toBeVisible();
+    });
+
+    it("shows an information that the list is updated after user selected an env", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Kafka Environment",
+      });
+      const option = within(select).getByRole("option", {
+        name: "DEV",
+      });
+      expect(select).toHaveValue("ALL");
+
+      await userEvent.selectOptions(select, option);
+
+      const updatingList = screen.getByText("Filtering list...");
+      expect(updatingList).toBeVisible();
+    });
+
+    it("changes active selected option when user selects `DEV`", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Kafka Environment",
+      });
+      const option = within(select).getByRole("option", {
+        name: "DEV",
+      });
+      expect(select).toHaveValue("ALL");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue("DEV");
+    });
+
+    it("fetches new data when user selects `DEV`", async () => {
+      const getAllTopics = () =>
+        within(screen.getByRole("list", { name: "Topics" })).getAllByRole(
+          "heading"
+        );
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      expect(getAllTopics()).toHaveLength(10);
+
+      const select = screen.getByRole("combobox", {
+        name: "Kafka Environment",
+      });
+      const option = within(select).getByRole("option", {
+        name: "DEV",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
+
+      expect(getAllTopics()).toHaveLength(3);
+    });
+  });
 });

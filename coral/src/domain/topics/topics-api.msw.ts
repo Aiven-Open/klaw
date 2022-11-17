@@ -3,20 +3,31 @@ import { MswInstance } from "src/services/api-mocks/types";
 import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import {
+  createMockTopic,
   createMockTopicApiResponse,
   createMockTopicEnvDTO,
 } from "src/domain/topics/topic-test-helper";
 
+// @TODO
+// create visible mocked responses and easy responses for different scenarios to use in tests
+// use json files from real api for mocked responses for web worker (more realistic(
+// don't use the same mocks for both, it gets confusing to maintain
 function mockTopicGetRequest({
   mswInstance,
   scenario,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error" | "empty" | "multiple-pages-static" | "single-page-static";
+  scenario?:
+    | "error"
+    | "empty"
+    | "multiple-pages-static"
+    | "single-page-static"
+    | "single-page-env-dev";
 }) {
   mswInstance.use(
     rest.get("getTopics", async (req, res, ctx) => {
       const currentPage = req.url.searchParams.get("pageNo");
+      const env = req.url.searchParams.get("env");
 
       // error path
       if (scenario === "error") {
@@ -31,6 +42,12 @@ function mockTopicGetRequest({
         return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
       } else if (scenario === "single-page-static") {
         return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
+      } else if (scenario === "single-page-env-dev") {
+        return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
+      }
+
+      if (env === "DEV") {
+        return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
       }
 
       return res(
@@ -62,6 +79,26 @@ const mockedResponseMultiplePage: TopicDTOApiResponse =
 const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
   mockedResponseMultiplePage
 );
+
+const mockedResponseTopicEnv = [
+  [
+    createMockTopic({
+      topicName: "Topic 1",
+      topicId: 1,
+      environmentsList: ["DEV"],
+    }),
+    createMockTopic({
+      topicName: "Topic 2",
+      topicId: 2,
+      environmentsList: ["DEV"],
+    }),
+    createMockTopic({
+      topicName: "Topic 3",
+      topicId: 3,
+      environmentsList: ["DEV"],
+    }),
+  ],
+];
 
 // This mirrors the formatting formation used in the api call
 // for usage in tests that use the mock API

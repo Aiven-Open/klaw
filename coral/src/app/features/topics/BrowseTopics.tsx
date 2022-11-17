@@ -17,6 +17,7 @@ function BrowseTopics() {
     data: topics,
     isLoading,
     isError,
+    isPreviousData,
   } = useGetTopics({ currentPage: page, topicEnv: env });
   const hasTopics = topics && topics.entries.length > 0;
   const hasMultiplePages = topics && topics.totalPages > 1;
@@ -32,10 +33,11 @@ function BrowseTopics() {
           />
         )}
       </FlexboxItem>
+      {isPreviousData && <div>Filtering list...</div>}
       {isLoading && <div>Loading...</div>}
       {isError && <div>Something went wrong 😔</div>}
 
-      {!hasTopics && <div>No topics found</div>}
+      {!isLoading && !hasTopics && <div>No topics found</div>}
       {hasTopics && <TopicList topics={topics.entries} />}
 
       {hasMultiplePages && (
