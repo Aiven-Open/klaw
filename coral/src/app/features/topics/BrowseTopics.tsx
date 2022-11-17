@@ -4,36 +4,40 @@ import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useGetTopics } from "src/app/features/topics/list/hooks/useGetTopics";
 import { useState } from "react";
 import { SelectEnv } from "src/app/features/topics/select-env";
-
-type Env = "ALL" | "DEV" | "TST";
-const mockedEnvOptions: Env[] = ["ALL", "DEV", "TST"];
+import { useGetEnvs } from "src/app/features/topics/select-env/hooks/useGetEnvs";
+import { TopicEnv } from "src/domain/topics";
 
 function BrowseTopics() {
   const [page, setPage] = useState(1);
-  const [env, setEnv] = useState<Env>("ALL");
-  const { data, isLoading, isError } = useGetTopics(page);
-  const hasTopics = data && data.entries.length > 0;
-  const hasMultiplePages = data && data.totalPages > 1;
+  const [env, setEnv] = useState<TopicEnv>("ALL");
+
+  const { data: topicEnvs } = useGetEnvs();
+
+  const { data: topics, isLoading, isError } = useGetTopics(page);
+  const hasTopics = topics && topics.entries.length > 0;
+  const hasMultiplePages = topics && topics.totalPages > 1;
 
   return (
     <Flexbox direction={"column"} alignItems={"center"} rowGap={"l4"}>
       <FlexboxItem alignSelf={"self-start"}>
-        <SelectEnv
-          envOptions={mockedEnvOptions}
-          activeOption={env}
-          selectEnv={setEnv}
-        />
+        {topicEnvs && (
+          <SelectEnv
+            envOptions={[...topicEnvs, "ALL"]}
+            activeOption={env}
+            selectEnv={setEnv}
+          />
+        )}
       </FlexboxItem>
       {isLoading && <div>Loading...</div>}
       {isError && <div>Something went wrong 😔</div>}
 
       {!hasTopics && <div>No topics found</div>}
-      {hasTopics && <TopicList topics={data.entries} />}
+      {hasTopics && <TopicList topics={topics.entries} />}
 
       {hasMultiplePages && (
         <Pagination
-          activePage={data.currentPage}
-          totalPages={data.totalPages}
+          activePage={topics.currentPage}
+          totalPages={topics.totalPages}
           setActivePage={setPage}
         />
       )}

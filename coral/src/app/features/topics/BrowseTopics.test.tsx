@@ -4,6 +4,7 @@ import { renderWithQueryClient } from "src/services/test-utils";
 import {
   mockTopicGetRequest,
   mockedResponseTransformed,
+  mockGetEnvs,
 } from "src/domain/topics/topics-api.msw";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
@@ -28,6 +29,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles loading state", () => {
     beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-static",
@@ -50,6 +52,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles error responses", () => {
     beforeEach(() => {
       console.error = jest.fn();
+      mockGetEnvs({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server, scenario: "error" });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -70,6 +73,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles an empty response", () => {
     beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server, scenario: "empty" });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -89,6 +93,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles successful response with one page", () => {
     beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-static",
@@ -99,6 +104,15 @@ describe("BrowseTopics.tsx", () => {
     afterEach(() => {
       server.resetHandlers();
       cleanup();
+    });
+
+    it("renders a select element to choose Kafka environment", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: "Kafka Environment",
+      });
+
+      expect(select).toBeEnabled();
     });
 
     it("renders the topic list", async () => {
@@ -131,6 +145,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles successful response with 4 pages", () => {
     beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "multiple-pages-static",
@@ -162,6 +177,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(() => {
+      mockGetEnvs({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
       renderWithQueryClient(<BrowseTopics />);
     });

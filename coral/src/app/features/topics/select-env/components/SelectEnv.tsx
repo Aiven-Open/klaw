@@ -1,27 +1,33 @@
-import { Select } from "@aivenio/design-system";
+import { NativeSelect, Option } from "@aivenio/design-system";
+import { ChangeEvent } from "react";
+import { TopicEnv } from "src/domain/topics";
 
-type Env = "ALL" | "DEV" | "TST";
 type SelectEnvProps = {
-  envOptions: Array<Env>;
-  activeOption: Env;
-  selectEnv: (value: Env) => void;
+  envOptions: Array<TopicEnv>;
+  activeOption: TopicEnv;
+  selectEnv: (value: TopicEnv) => void;
 };
 function SelectEnv(props: SelectEnvProps) {
   const { envOptions, activeOption, selectEnv } = props;
 
-  function onChangeEnv(value: Env | null | undefined) {
-    if (value) {
-      selectEnv(value);
-    }
+  function onChangeEnv(event: ChangeEvent<HTMLSelectElement>) {
+    selectEnv(event.target.value as TopicEnv);
   }
 
   return (
-    <Select
+    <NativeSelect
       labelText="Kafka Environment"
       value={activeOption}
-      options={envOptions}
-      onChange={onChangeEnv}
-    />
+      onChange={(event) => onChangeEnv(event)}
+    >
+      {envOptions.map((env) => {
+        return (
+          <Option key={env} value={env}>
+            {env}
+          </Option>
+        );
+      })}
+    </NativeSelect>
   );
 }
 
