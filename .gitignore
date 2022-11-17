@@ -44,3 +44,9 @@ node_modules/
 coral/dist*
 src/main/resources/static/assets/coral*
 src/main/resources/templates/coral*
+
+# Coral development mode against remote Klaw API
+coral/.env.remote-api
+
+# Coral HTTPS development environment default self signed certificate path 
+coral/.cert*
