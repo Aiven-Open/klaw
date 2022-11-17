@@ -6,6 +6,7 @@ import {
   Topic,
   TopicApiResponse,
   TopicDTOApiResponse,
+  TopicEnv,
   TopicEnvDTO,
 } from "src/domain/topics/topics-types";
 import {
@@ -60,25 +61,28 @@ describe("topic-transformer.ts", () => {
   describe("'transformTopicEnvApiResponse' transforms API response into list of environments", () => {
     it("transforms list of 4 envs with 2 unique env values", () => {
       const testInput: TopicEnvDTO[] = [
-        createMockTopicEnvDTO("DEV"),
-        createMockTopicEnvDTO("TST"),
-        createMockTopicEnvDTO("DEV"),
-        createMockTopicEnvDTO("DEV"),
+        createMockTopicEnvDTO(TopicEnv.DEV),
+        createMockTopicEnvDTO(TopicEnv.TST),
+        createMockTopicEnvDTO(TopicEnv.DEV),
+        createMockTopicEnvDTO(TopicEnv.DEV),
       ];
 
-      expect(transformTopicEnvApiResponse(testInput)).toEqual(["DEV", "TST"]);
+      expect(transformTopicEnvApiResponse(testInput)).toEqual([
+        TopicEnv.DEV,
+        "TST",
+      ]);
     });
 
     it("transforms list of 3 envs with 1 unique env value", () => {
       const testInput: TopicEnvDTO[] = [
-        createMockTopicEnvDTO("DEV"),
-        createMockTopicEnvDTO("DEV"),
-        createMockTopicEnvDTO("DEV"),
-        createMockTopicEnvDTO("DEV"),
-        createMockTopicEnvDTO("DEV"),
+        createMockTopicEnvDTO(TopicEnv.DEV),
+        createMockTopicEnvDTO(TopicEnv.DEV),
+        createMockTopicEnvDTO(TopicEnv.DEV),
+        createMockTopicEnvDTO(TopicEnv.DEV),
+        createMockTopicEnvDTO(TopicEnv.DEV),
       ];
 
-      expect(transformTopicEnvApiResponse(testInput)).toEqual(["DEV"]);
+      expect(transformTopicEnvApiResponse(testInput)).toEqual([TopicEnv.DEV]);
     });
   });
 });

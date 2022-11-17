@@ -10,7 +10,7 @@ import {
 
 const getTopics = async ({
   currentPage = 1,
-  topicEnv = "ALL",
+  topicEnv = TopicEnv.ALL,
 }: {
   currentPage: number;
   topicEnv: TopicEnv;

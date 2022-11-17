@@ -9,7 +9,7 @@ import { TopicEnv } from "src/domain/topics";
 
 function BrowseTopics() {
   const [page, setPage] = useState(1);
-  const [env, setEnv] = useState<TopicEnv>("ALL");
+  const [env, setEnv] = useState<TopicEnv>(TopicEnv.ALL);
 
   const { data: topicEnvs } = useGetEnvs();
 
@@ -27,7 +27,7 @@ function BrowseTopics() {
       <FlexboxItem alignSelf={"self-start"}>
         {topicEnvs && (
           <SelectEnv
-            envOptions={[...topicEnvs, "ALL"]}
+            envOptions={[...topicEnvs, TopicEnv.ALL]}
             activeOption={env}
             selectEnv={setEnv}
           />

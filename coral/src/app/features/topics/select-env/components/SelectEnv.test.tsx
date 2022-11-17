@@ -4,9 +4,10 @@ import userEvent from "@testing-library/user-event";
 import { TopicEnv } from "src/domain/topics";
 
 describe("SelectEnv.tsx", () => {
+  const envOptions: TopicEnv[] = [TopicEnv.ALL, TopicEnv.DEV, TopicEnv.TST];
+
   describe("renders all necessary elements", () => {
-    const envOptions: TopicEnv[] = ["ALL", "DEV", "TST"];
-    const activeOption: TopicEnv = "ALL";
+    const activeOption: TopicEnv = TopicEnv.ALL;
 
     const requiredProps = {
       envOptions,
@@ -48,13 +49,12 @@ describe("SelectEnv.tsx", () => {
   });
 
   describe("handles the change event for selecting", () => {
-    const envOptions: TopicEnv[] = ["ALL", "DEV", "TST"];
-    const optionToSelect: TopicEnv = "DEV";
+    const optionToSelect = TopicEnv.DEV;
 
     const mockedSelectEnv = jest.fn();
     const requiredProps = {
       envOptions,
-      activeOption: "ALL" as TopicEnv,
+      activeOption: TopicEnv.ALL,
       selectEnv: mockedSelectEnv,
     };
 

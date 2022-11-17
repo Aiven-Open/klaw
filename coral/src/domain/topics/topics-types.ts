@@ -1,3 +1,7 @@
+// ************************
+// Types related to TOPIC
+//*************************
+
 export type TopicDTO = {
   topicid: number;
   sequence: string;
@@ -26,6 +30,11 @@ export type TopicApiResponse = {
 
 // @TODO adjust to our needs
 export type Topic = TopicDTO;
+export type TopicDTOApiResponse = Array<Array<TopicDTO>>;
+
+// ****************************
+// Types related to topic ENV
+//*****************************
 
 export type TopicEnvDTO = {
   id: string;
@@ -48,6 +57,8 @@ export type TopicEnvDTO = {
   allPageNos: null;
 };
 
-export type TopicEnv = "ALL" | "DEV" | "TST";
-
-export type TopicDTOApiResponse = Array<Array<TopicDTO>>;
+export const enum TopicEnv {
+  ALL = "ALL",
+  DEV = "DEV",
+  TST = "TST",
+}

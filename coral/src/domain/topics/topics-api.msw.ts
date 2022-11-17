@@ -1,6 +1,6 @@
 import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
-import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
+import { TopicDTOApiResponse, TopicEnv } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import {
   createMockTopic,
@@ -85,17 +85,17 @@ const mockedResponseTopicEnv = [
     createMockTopic({
       topicName: "Topic 1",
       topicId: 1,
-      environmentsList: ["DEV"],
+      environmentsList: [TopicEnv.DEV],
     }),
     createMockTopic({
       topicName: "Topic 2",
       topicId: 2,
-      environmentsList: ["DEV"],
+      environmentsList: [TopicEnv.DEV],
     }),
     createMockTopic({
       topicName: "Topic 3",
       topicId: 3,
-      environmentsList: ["DEV"],
+      environmentsList: [TopicEnv.DEV],
     }),
   ],
 ];
@@ -111,7 +111,10 @@ function mockGetEnvs({ mswInstance }: { mswInstance: MswInstance }) {
     rest.get("getEnvs", async (req, res, ctx) => {
       return res(
         ctx.status(200),
-        ctx.json([createMockTopicEnvDTO("DEV"), createMockTopicEnvDTO("TST")])
+        ctx.json([
+          createMockTopicEnvDTO(TopicEnv.DEV),
+          createMockTopicEnvDTO(TopicEnv.TST),
+        ])
       );
     })
   );
