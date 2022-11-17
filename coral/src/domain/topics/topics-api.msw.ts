@@ -2,9 +2,11 @@ import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
 import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
-import { createMockTopicApiResponse } from "src/domain/topics/topic-test-helper";
+import {
+  createMockTopicApiResponse,
+  createMockTopicEnvDTO,
+} from "src/domain/topics/topic-test-helper";
 
-// pageNo=1
 function mockTopicGetRequest({
   mswInstance,
   scenario,
@@ -67,7 +69,19 @@ const mockedResponseTransformed = transformTopicApiResponse(
   mockedResponseSinglePage
 );
 
+function mockGetEnvs({ mswInstance }: { mswInstance: MswInstance }) {
+  mswInstance.use(
+    rest.get("getEnvs", async (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.json([createMockTopicEnvDTO("DEV"), createMockTopicEnvDTO("TST")])
+      );
+    })
+  );
+}
+
 export {
+  mockGetEnvs,
   mockTopicGetRequest,
   mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,

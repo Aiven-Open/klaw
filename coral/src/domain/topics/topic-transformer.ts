@@ -1,6 +1,8 @@
 import {
   TopicApiResponse,
   TopicDTOApiResponse,
+  TopicEnv,
+  TopicEnvDTO,
 } from "src/domain/topics/topics-types";
 
 // @TODO check zod for this!
@@ -22,4 +24,10 @@ function transformTopicApiResponse(
   };
 }
 
-export { transformTopicApiResponse };
+function transformTopicEnvApiResponse(apiResponse: TopicEnvDTO[]): TopicEnv[] {
+  return [
+    ...new Set(apiResponse.map((topicEnv) => topicEnv.name as TopicEnv)),
+  ].sort();
+}
+
+export { transformTopicApiResponse, transformTopicEnvApiResponse };

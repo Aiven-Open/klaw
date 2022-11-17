@@ -1,8 +1,12 @@
 import {
   TopicApiResponse,
   TopicDTOApiResponse,
+  TopicEnv,
 } from "src/domain/topics/topics-types";
-import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
+import {
+  transformTopicApiResponse,
+  transformTopicEnvApiResponse,
+} from "src/domain/topics/topic-transformer";
 
 const getTopics = async (currentPage: number): Promise<TopicApiResponse> => {
   return fetch(`/getTopics?pageNo=${currentPage}`, {
@@ -23,4 +27,23 @@ const getTopics = async (currentPage: number): Promise<TopicApiResponse> => {
     });
 };
 
-export { getTopics };
+const getEnvs = async (): Promise<TopicEnv[]> => {
+  return fetch(`/getEnvs`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`msw error: ${response.statusText}`);
+      }
+      const result = await response.json();
+      return transformTopicEnvApiResponse(result);
+    })
+    .catch((error) => {
+      throw new Error(error);
+    });
+};
+
+export { getTopics, getEnvs };
