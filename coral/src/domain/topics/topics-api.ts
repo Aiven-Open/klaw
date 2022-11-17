@@ -8,8 +8,14 @@ import {
   transformTopicEnvApiResponse,
 } from "src/domain/topics/topic-transformer";
 
-const getTopics = async (currentPage: number): Promise<TopicApiResponse> => {
-  return fetch(`/getTopics?pageNo=${currentPage}`, {
+const getTopics = async ({
+  currentPage = 1,
+  topicEnv = "ALL",
+}: {
+  currentPage: number;
+  topicEnv: TopicEnv;
+}): Promise<TopicApiResponse> => {
+  return fetch(`/getTopics?env=${topicEnv}&pageNo=${currentPage}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

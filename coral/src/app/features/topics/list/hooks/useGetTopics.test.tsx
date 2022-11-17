@@ -44,9 +44,16 @@ describe("useGetTopics", () => {
       scenario: "single-page-static",
     });
 
-    const { result } = await renderHook(() => useGetTopics(1), {
-      wrapper,
-    });
+    const { result } = await renderHook(
+      () =>
+        useGetTopics({
+          currentPage: 1,
+          topicEnv: "ALL",
+        }),
+      {
+        wrapper,
+      }
+    );
     expect(result.current.isLoading).toBe(true);
 
     await waitFor(() => {
@@ -59,9 +66,12 @@ describe("useGetTopics", () => {
 
     mockTopicGetRequest({ mswInstance: server, scenario: "error" });
 
-    const { result } = await renderHook(() => useGetTopics(1), {
-      wrapper,
-    });
+    const { result } = await renderHook(
+      () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
+      {
+        wrapper,
+      }
+    );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -75,9 +85,12 @@ describe("useGetTopics", () => {
       scenario: "single-page-static",
     });
 
-    const { result } = await renderHook(() => useGetTopics(1), {
-      wrapper,
-    });
+    const { result } = await renderHook(
+      () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
+      {
+        wrapper,
+      }
+    );
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -92,9 +105,12 @@ describe("useGetTopics", () => {
       scenario: "multiple-pages-static",
     });
 
-    const { result } = await renderHook(() => useGetTopics(2), {
-      wrapper,
-    });
+    const { result } = await renderHook(
+      () => useGetTopics({ currentPage: 2, topicEnv: "ALL" }),
+      {
+        wrapper,
+      }
+    );
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -110,9 +126,12 @@ describe("useGetTopics", () => {
       mswInstance: server,
     });
 
-    const { result } = await renderHook(() => useGetTopics(3), {
-      wrapper,
-    });
+    const { result } = await renderHook(
+      () => useGetTopics({ currentPage: 3, topicEnv: "ALL" }),
+      {
+        wrapper,
+      }
+    );
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
