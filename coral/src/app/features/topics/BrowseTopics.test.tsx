@@ -7,41 +7,189 @@ import {
 } from "src/domain/topics/topics-api.msw";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
 
-describe("TopicList.tsx", () => {
+jest.mock("@aivenio/design-system", () => {
+  return {
+    __esModule: true,
+    ...jest.requireActual("@aivenio/design-system"),
+    Icon: jest.fn(),
+  };
+});
+
+describe("BrowseTopics.tsx", () => {
   beforeAll(() => {
     server.listen();
-  });
-
-  beforeEach(() => {
-    mockTopicGetRequest({ mswInstance: server });
-    renderWithQueryClient(<BrowseTopics />);
   });
 
   afterAll(() => {
     server.close();
   });
 
-  afterEach(() => {
-    server.resetHandlers();
-    cleanup();
-  });
-
-  it("shows the topic list when topics are loaded", async () => {
-    await waitForElementToBeRemoved(screen.getByText("Loading..."));
-    const list = screen.getByRole("list");
-
-    expect(list).toBeVisible();
-  });
-
-  it("shows the topics as list item", async () => {
-    await waitForElementToBeRemoved(screen.getByText("Loading..."));
-    const list = screen.getByRole("list");
-
-    const topic = within(list).getByRole("heading", {
-      name: mockedResponseTransformed[0].topicName,
+  describe("handles loading state", () => {
+    beforeEach(() => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
+      renderWithQueryClient(<BrowseTopics />);
     });
 
-    expect(topic).toBeVisible();
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows a loading message while data is being fetched", () => {
+      const loading = screen.getByText("Loading...");
+
+      expect(loading).toBeVisible();
+    });
+  });
+
+  describe("handles error responses", () => {
+    beforeEach(() => {
+      console.error = jest.fn();
+      mockTopicGetRequest({ mswInstance: server, scenario: "error" });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows an error message to the user", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const errorMessage = screen.getByText("Something went wrong 😔");
+
+      expect(errorMessage).toBeVisible();
+    });
+  });
+
+  describe("handles an empty response", () => {
+    beforeEach(() => {
+      mockTopicGetRequest({ mswInstance: server, scenario: "empty" });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows an info to user that no topic is found", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const emptyMessage = screen.getByText("No topics found");
+
+      expect(emptyMessage).toBeVisible();
+    });
+  });
+
+  describe("handles successful response with one page", () => {
+    beforeEach(() => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("renders the topic list", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const list = screen.getByRole("list", { name: "Topics" });
+
+      expect(list).toBeVisible();
+    });
+
+    it("shows topic names as list item", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      const list = screen.getByRole("list", { name: "Topics" });
+
+      const topicCard = within(list).getByText(
+        mockedResponseTransformed.entries[0].topicName
+      );
+      expect(topicCard).toBeVisible();
+    });
+
+    it("does not render the pagination", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const pagination = screen.queryByRole("navigation", {
+        name: "Pagination",
+      });
+
+      expect(pagination).not.toBeInTheDocument();
+    });
+  });
+
+  describe("handles successful response with 4 pages", () => {
+    beforeEach(() => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "multiple-pages-static",
+      });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows a pagination", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const pagination = screen.getByRole("navigation", {
+        name: "Pagination",
+      });
+
+      expect(pagination).toBeVisible();
+    });
+
+    it("shows page 2 as currently active page and the total page number", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const activePageInformation = screen.getByText("You are on page 2 of 4");
+
+      expect(activePageInformation).toBeVisible();
+    });
+  });
+
+  describe("handles user stepping through pagination", () => {
+    beforeEach(() => {
+      mockTopicGetRequest({ mswInstance: server });
+      renderWithQueryClient(<BrowseTopics />);
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("shows page 1 as currently active page and the total page number", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const activePageInformation = screen.getByText("You are on page 1 of 10");
+
+      expect(activePageInformation).toBeVisible();
+    });
+
+    it("fetches new data when user clicks on next page", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const pageTwoButton = screen.getByRole("button", {
+        name: "Go to next page, page 2",
+      });
+
+      await userEvent.click(pageTwoButton);
+
+      const activePageInformation = await screen.findByText(
+        "You are on page 2 of 10"
+      );
+      expect(activePageInformation).toBeVisible();
+    });
   });
 });

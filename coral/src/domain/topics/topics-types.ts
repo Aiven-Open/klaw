@@ -18,6 +18,12 @@ export type TopicDTO = {
   topicDeletable: boolean;
 };
 
+export type TopicApiResponse = {
+  totalPages: number;
+  currentPage: number;
+  entries: Topic[];
+};
+
 // @TODO adjust to our needs
 export type Topic = TopicDTO;
 

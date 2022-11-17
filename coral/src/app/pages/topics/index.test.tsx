@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react/pure";
+import { screen, within } from "@testing-library/react/pure";
 import Topics from "src/app/pages/topics";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
@@ -25,16 +25,16 @@ describe("Topics", () => {
   });
 
   describe("renders default view with data from API", () => {
-    // can be beforeAll when auto clean up setting is up to date
-    // `render` from `renderWithQueryClientAndMemoryRouter` does
-    // not import from `/pure` so that setting can't be used here
-    beforeEach(async () => {
-      mockTopicGetRequest({ mswInstance: server });
+    beforeAll(async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+        scenario: "single-page-static",
+      });
       renderWithQueryClient(<Topics />);
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
-    afterEach(() => {
+    afterAll(() => {
       server.resetHandlers();
       cleanup();
     });
@@ -48,15 +48,16 @@ describe("Topics", () => {
     });
 
     it("shows a list of topics", async () => {
-      const list = screen.getByRole("list");
+      const list = screen.getByRole("list", { name: "Topics" });
 
       expect(list).toBeVisible();
     });
 
     it("shows list items for each topic", () => {
-      const listItem = screen.getAllByRole("listitem");
+      const list = screen.getByRole("list", { name: "Topics" });
+      const listItem = within(list).getAllByRole("listitem");
 
-      expect(listItem).toHaveLength(mockedResponseTransformed.length);
+      expect(listItem).toHaveLength(mockedResponseTransformed.entries.length);
     });
   });
 });

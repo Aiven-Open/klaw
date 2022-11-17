@@ -1,9 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { mockTopicGetRequest } from "src/domain/topics/topics-api.msw";
-import { getTopics, Topic } from "src/domain/topics";
+import { getTopics } from "src/domain/topics";
+import { TopicApiResponse } from "src/domain/topics/topics-types";
 
-function useGetTopics() {
+function useGetTopics(currentPage: number): UseQueryResult<TopicApiResponse> {
   // everything in useEffect is used to mock the api call
   // and can be removed once the real api is connected
   useEffect(() => {
@@ -14,8 +15,10 @@ function useGetTopics() {
     }
   }, []);
 
-  return useQuery<Topic[], Error>(["topics"], () => {
-    return getTopics();
+  return useQuery<TopicApiResponse, Error>({
+    queryKey: ["topics", currentPage],
+    queryFn: () => getTopics(currentPage),
+    keepPreviousData: true,
   });
 }
 

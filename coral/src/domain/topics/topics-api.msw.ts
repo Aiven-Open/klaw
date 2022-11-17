@@ -4,15 +4,18 @@ import { TopicDTOApiResponse } from "src/domain/topics/topics-types";
 import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
 import { createMockTopicApiResponse } from "src/domain/topics/topic-test-helper";
 
+// pageNo=1
 function mockTopicGetRequest({
   mswInstance,
   scenario,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error" | "empty";
+  scenario?: "error" | "empty" | "multiple-pages-static" | "single-page-static";
 }) {
   mswInstance.use(
     rest.get("getTopics", async (req, res, ctx) => {
+      const currentPage = req.url.searchParams.get("pageNo");
+
       // error path
       if (scenario === "error") {
         return res(ctx.status(400), ctx.json(""));
@@ -20,19 +23,52 @@ function mockTopicGetRequest({
       // response empty
       else if (scenario === "empty") {
         return res(ctx.status(200), ctx.json([]));
+
+        // response total pages 4, current page based on api
+      } else if (scenario === "multiple-pages-static") {
+        return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
+      } else if (scenario === "single-page-static") {
+        return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
       }
-      // success part
-      return res(ctx.status(200), ctx.json(mockedResponse));
+
+      return res(
+        ctx.status(200),
+        ctx.json(
+          createMockTopicApiResponse({
+            entries: 10,
+            currentPage: Number(currentPage),
+            totalPages: 10,
+          })
+        )
+      );
     })
   );
 }
 
-const mockedResponse: TopicDTOApiResponse = createMockTopicApiResponse({
-  entries: 10,
-});
+const mockedResponseSinglePage: TopicDTOApiResponse =
+  createMockTopicApiResponse({
+    entries: 10,
+  });
+
+const mockedResponseMultiplePage: TopicDTOApiResponse =
+  createMockTopicApiResponse({
+    entries: 2,
+    totalPages: 4,
+    currentPage: 2,
+  });
+
+const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
+  mockedResponseMultiplePage
+);
 
 // This mirrors the formatting formation used in the api call
 // for usage in tests that use the mock API
-const mockedResponseTransformed = transformTopicApiResponse(mockedResponse);
+const mockedResponseTransformed = transformTopicApiResponse(
+  mockedResponseSinglePage
+);
 
-export { mockTopicGetRequest, mockedResponseTransformed };
+export {
+  mockTopicGetRequest,
+  mockedResponseTransformed,
+  mockedResponseMultiplePageTransformed,
+};
