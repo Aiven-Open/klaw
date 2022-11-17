@@ -106,9 +106,19 @@ const mockedResponseTransformed = transformTopicApiResponse(
   mockedResponseSinglePage
 );
 
-function mockGetEnvs({ mswInstance }: { mswInstance: MswInstance }) {
+function mockGetEnvs({
+  mswInstance,
+  scenario,
+}: {
+  mswInstance: MswInstance;
+  scenario?: "error";
+}) {
   mswInstance.use(
     rest.get("getEnvs", async (req, res, ctx) => {
+      if (scenario === "error") {
+        return res(ctx.status(400), ctx.json(""));
+      }
+
       return res(
         ctx.status(200),
         ctx.json([
