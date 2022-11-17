@@ -13,7 +13,11 @@ function BrowseTopics() {
 
   const { data: topicEnvs } = useGetEnvs();
 
-  const { data: topics, isLoading, isError } = useGetTopics(page);
+  const {
+    data: topics,
+    isLoading,
+    isError,
+  } = useGetTopics({ currentPage: page, topicEnv: env });
   const hasTopics = topics && topics.entries.length > 0;
   const hasMultiplePages = topics && topics.totalPages > 1;
 
