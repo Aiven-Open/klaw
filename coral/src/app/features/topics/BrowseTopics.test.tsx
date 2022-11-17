@@ -206,6 +206,7 @@ describe("BrowseTopics.tsx", () => {
 
     it("shows page 1 as currently active page and the total page number", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
       const activePageInformation = screen.getByText("You are on page 1 of 10");
 
       expect(activePageInformation).toBeVisible();
@@ -337,6 +338,28 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.selectOptions(select, option);
 
       expect(select).toHaveValue("TEST_TEAM_02");
+    });
+
+    it("fetches new data when user selects `TEST_TEAM_02`", async () => {
+      const getAllTopics = () =>
+        within(screen.getByRole("list", { name: "Topics" })).getAllByRole(
+          "heading"
+        );
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      expect(getAllTopics()).toHaveLength(10);
+
+      const select = screen.getByRole("combobox", {
+        name: "Team",
+      });
+      const option = within(select).getByRole("option", {
+        name: "TEST_TEAM_02",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
+
+      expect(getAllTopics()).toHaveLength(2);
     });
   });
 });

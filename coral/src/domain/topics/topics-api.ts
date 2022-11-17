@@ -12,11 +12,20 @@ import {
 const getTopics = async ({
   currentPage = 1,
   topicEnv = TopicEnv.ALL,
+  teamName,
 }: {
   currentPage: number;
   topicEnv: TopicEnv;
+  teamName?: string;
 }): Promise<TopicApiResponse> => {
-  return fetch(`/getTopics?env=${topicEnv}&pageNo=${currentPage}`, {
+  const team = teamName && teamName !== "All teams" ? teamName : null;
+  const params: Record<string, string> = {
+    pageNo: currentPage.toString(),
+    env: topicEnv,
+    ...(team && { teamName: team }),
+  };
+
+  return fetch(`/getTopics?${new URLSearchParams(params)}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
