@@ -43,7 +43,7 @@ public class ServerConfigServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     serverConfigService.getAllProperties();
     List<ServerConfigProperties> list = serverConfigService.getAllProps();
-    assertThat(list).isNotEmpty(); // after filtering for spring. and klaw.
+    assertThat(list).isEmpty(); // after filtering for spring. and klaw.
   }
 
   private void loginMock() {

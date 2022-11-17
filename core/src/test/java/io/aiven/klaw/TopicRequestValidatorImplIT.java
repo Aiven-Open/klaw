@@ -44,7 +44,7 @@ import org.springframework.test.context.TestPropertySource;
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
-public class TopicRequestValidatorImplTest {
+public class TopicRequestValidatorImplIT {
 
   public static final String KWUSER = "kwuser";
   @Autowired private Validator validator;
