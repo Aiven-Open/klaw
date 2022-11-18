@@ -1113,8 +1113,7 @@ public class TopicControllerService {
   }
 
   public String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public Object getPrincipal() {

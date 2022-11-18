@@ -71,7 +71,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
@@ -83,7 +83,7 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(topicControllerService.getEnvsFromUserId(any())).thenReturn(List.of("2"));
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. Not authorized to request topic for this environment.");
   }
@@ -98,9 +98,9 @@ public class TopicRequestValidatorImplIT {
 
     addTopicRequest.setTopicname("");
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(2);
-    assertThat(violations.toString()).contains("Failure. Please fill in a valid topic name.");
-    assertThat(violations.toString()).contains("Invalid topic name");
+    assertThat(violations).hasSize(2);
+    assertThat(violations.toString())
+        .contains("Failure. Please fill in a valid topic name.", "Invalid topic name");
 
     addTopicRequest.setTopicname("testtopic$@$@#$"); // with special characters
     when(topicControllerService.getTopicFromName(anyString(), anyInt()))
@@ -124,7 +124,7 @@ public class TopicRequestValidatorImplIT {
         .thenThrow(new RuntimeException("Sync cluster not configured"));
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. Tenant configuration in Server config is missing. Please configure.");
   }
@@ -143,7 +143,7 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains("Failure. This topic is owned by a different team.");
   }
 
@@ -171,19 +171,19 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. Please request for a topic first in " + env.getName() + " cluster.");
 
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(null);
     violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains("Failure. Base cluster is not configured.");
 
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
     violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. This topic does not exist in " + env.getName() + " cluster.");
   }
@@ -204,7 +204,7 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Topic prefix does not match. " + addTopicRequest.getTopicname());
 
@@ -235,7 +235,7 @@ public class TopicRequestValidatorImplIT {
         .thenReturn(List.of(topicRequest));
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains("Failure. A topic request already exists.");
   }
 
@@ -261,7 +261,7 @@ public class TopicRequestValidatorImplIT {
         .thenReturn(Collections.emptyList());
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
-    assertThat(violations.size()).isEqualTo(1);
+    assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. This topic already exists in the selected cluster.");
   }

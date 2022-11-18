@@ -58,8 +58,8 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
-    // check for empty topic name
-    if (topicRequestModel.getTopicname().length() == 0) {
+    // check for empty/whitespaces on topic name
+    if (topicRequestModel.getTopicname().isBlank()) {
       updateConstraint(constraintValidatorContext, "Failure. Please fill in a valid topic name.");
       return false;
     }
@@ -83,7 +83,10 @@ public class TopicRequestValidatorImpl
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(
-            topics.get(0).getTeamId(),
+            topics
+                .get(0) // as there could be only one owner team for topic, with topic name being
+                // unique for tenant, getting the first element.
+                .getTeamId(),
             topicControllerService.getTeamId(topicControllerService.getUserName()))) {
       updateConstraint(
           constraintValidatorContext, "Failure. This topic is owned by a different team.");
@@ -199,7 +202,7 @@ public class TopicRequestValidatorImpl
 
     try {
       if (topicPrefix != null
-          && topicPrefix.length() > 0
+          && !topicPrefix.isBlank()
           && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
         log.error(
             "Topic prefix {} does not match. {}", topicPrefix, topicRequestReq.getTopicname());
@@ -210,7 +213,7 @@ public class TopicRequestValidatorImpl
       }
 
       if (topicSuffix != null
-          && topicSuffix.length() > 0
+          && !topicSuffix.isBlank()
           && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
         log.error(
             "Topic suffix {} does not match. {}", topicSuffix, topicRequestReq.getTopicname());
