@@ -3,11 +3,11 @@ import {
   TopicDTOApiResponse,
   TopicEnv,
   TopicTeams,
-} from "src/domain/topics/topics-types";
+} from "src/domain/topic/topic-types";
 import {
   transformTopicApiResponse,
   transformTopicEnvApiResponse,
-} from "src/domain/topics/topic-transformer";
+} from "src/domain/topic/topic-transformer";
 
 const getTopics = async ({
   currentPage = 1,

@@ -3,8 +3,8 @@ import {
   createMockTopic,
   createMockTopicApiResponse,
   createMockTopicEnvDTO,
-} from "src/domain/topics/topic-test-helper";
-import { TopicEnv } from "src/domain/topics/topics-types";
+} from "src/domain/topic/topic-test-helper";
+import { TopicEnv } from "src/domain/topic/topic-types";
 
 describe("topic-test-helper.ts", () => {
   describe("createMockTopic", () => {

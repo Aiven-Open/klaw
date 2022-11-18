@@ -1,12 +1,12 @@
 import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
-import { TopicDTOApiResponse, TopicEnv } from "src/domain/topics/topics-types";
-import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
+import { TopicDTOApiResponse, TopicEnv } from "src/domain/topic/topic-types";
+import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import {
   createMockTopic,
   createMockTopicApiResponse,
   createMockTopicEnvDTO,
-} from "src/domain/topics/topic-test-helper";
+} from "src/domain/topic/topic-test-helper";
 
 // @TODO
 // create visible mocked responses and easy responses for different scenarios to use in tests

@@ -2,7 +2,7 @@ import {
   Topic,
   TopicDTOApiResponse,
   TopicEnv,
-} from "src/domain/topics/topics-types";
+} from "src/domain/topic/topic-types";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there

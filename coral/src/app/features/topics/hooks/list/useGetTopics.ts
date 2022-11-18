@@ -1,8 +1,8 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { mockTopicGetRequest } from "src/domain/topics/topics-api.msw";
-import { getTopics, TopicEnv } from "src/domain/topics";
-import { TopicApiResponse } from "src/domain/topics/topics-types";
+import { mockTopicGetRequest } from "src/domain/topic/topic-api.msw";
+import { getTopics, TopicEnv } from "src/domain/topic";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
 
 function useGetTopics({
   currentPage,

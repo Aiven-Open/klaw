@@ -1,19 +1,19 @@
 import {
   transformTopicApiResponse,
   transformTopicEnvApiResponse,
-} from "src/domain/topics/topic-transformer";
+} from "src/domain/topic/topic-transformer";
 import {
   Topic,
   TopicApiResponse,
   TopicDTOApiResponse,
   TopicEnv,
   TopicEnvDTO,
-} from "src/domain/topics/topics-types";
+} from "src/domain/topic/topic-types";
 import {
   baseTestObjectMockedTopic,
   createMockTopicApiResponse,
   createMockTopicEnvDTO,
-} from "src/domain/topics/topic-test-helper";
+} from "src/domain/topic/topic-test-helper";
 
 describe("topic-transformer.ts", () => {
   describe("'transformTopicApiResponse' transforms API response into list of topics", () => {

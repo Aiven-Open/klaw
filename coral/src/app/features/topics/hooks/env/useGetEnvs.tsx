@@ -1,8 +1,8 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { mockGetEnvs } from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
-import { getEnvs } from "src/domain/topics";
+import { mockGetEnvs } from "src/domain/topic/topic-api.msw";
+import { TopicEnv } from "src/domain/topic";
+import { getEnvs } from "src/domain/topic";
 
 function useGetEnvs(): UseQueryResult<TopicEnv[]> {
   // everything in useEffect is used to mock the api call

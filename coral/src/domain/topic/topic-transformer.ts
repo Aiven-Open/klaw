@@ -3,7 +3,7 @@ import {
   TopicDTOApiResponse,
   TopicEnv,
   TopicEnvDTO,
-} from "src/domain/topics/topics-types";
+} from "src/domain/topic/topic-types";
 
 // @TODO check zod for this!
 function transformTopicApiResponse(

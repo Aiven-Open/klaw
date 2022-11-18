@@ -7,7 +7,7 @@ import {
   mockGetEnvs,
   mockGetTeams,
   mockTopicGetRequest,
-} from "src/domain/topics/topics-api.msw";
+} from "src/domain/topic/topic-api.msw";
 import {
   cleanup,
   waitForElementToBeRemoved,

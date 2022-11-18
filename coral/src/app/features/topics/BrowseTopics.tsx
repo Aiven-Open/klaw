@@ -1,6 +1,6 @@
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
-import { TopicEnv } from "src/domain/topics";
+import { TopicEnv } from "src/domain/topic";
 import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
 import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
 import TopicList from "src/app/features/topics/components/list/TopicList";

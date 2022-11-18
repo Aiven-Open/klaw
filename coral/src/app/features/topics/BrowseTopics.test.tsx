@@ -4,8 +4,8 @@ import {
   mockGetEnvs,
   mockGetTeams,
   mockTopicGetRequest,
-} from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
+} from "src/domain/topic/topic-api.msw";
+import { TopicEnv } from "src/domain/topic";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { cleanup, within, screen } from "@testing-library/react";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";

@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { TopicEnv } from "src/domain/topics";
+import { TopicEnv } from "src/domain/topic";
 import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 
 describe("SelectEnv.tsx", () => {

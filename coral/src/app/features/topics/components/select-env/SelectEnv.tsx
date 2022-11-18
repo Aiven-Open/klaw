@@ -1,6 +1,6 @@
 import { NativeSelect, Option } from "@aivenio/design-system";
 import { ChangeEvent } from "react";
-import { TopicEnv } from "src/domain/topics";
+import { TopicEnv } from "src/domain/topic";
 
 type SelectEnvProps = {
   envOptions: Array<{ label: string; value: string }>;

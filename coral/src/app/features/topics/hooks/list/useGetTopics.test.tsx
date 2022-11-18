@@ -6,8 +6,8 @@ import {
   mockedResponseMultiplePageTransformed,
   mockedResponseTransformed,
   mockTopicGetRequest,
-} from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
+} from "src/domain/topic/topic-api.msw";
+import { TopicEnv } from "src/domain/topic";
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 
 const queryClient = new QueryClient({

@@ -2,8 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
-import { mockGetEnvs } from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
+import { mockGetEnvs } from "src/domain/topic/topic-api.msw";
+import { TopicEnv } from "src/domain/topic";
 import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
 
 const queryClient = new QueryClient({
