@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import SelectTeam from "src/app/features/topics/select-team/components/SelectTeam";
 import userEvent from "@testing-library/user-event";
+import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
 
 describe("SelectTeam.tsx", () => {
   const teamOptions = ["All teams", "Marketing", "Infra", "Devrel"];

@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useGetTeams } from "src/app/features/topics/select-team/hooks/useGetTeams";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import { mockGetTeams } from "src/domain/topics/topics-api.msw";
 import { TopicEnv } from "src/domain/topics";
+import { useGetTeams } from "src/app/features/topics/hooks/teams/useGetTeams";
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,16 +1,16 @@
-import { cleanup, screen } from "@testing-library/react";
 import { server } from "src/services/api-mocks/server";
-import { renderWithQueryClient } from "src/services/test-utils";
 import {
-  mockTopicGetRequest,
   mockedResponseTransformed,
   mockGetEnvs,
   mockGetTeams,
+  mockTopicGetRequest,
 } from "src/domain/topics/topics-api.msw";
-import BrowseTopics from "src/app/features/topics/BrowseTopics";
-import { waitForElementToBeRemoved, within } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
 import { TopicEnv } from "src/domain/topics";
+import { renderWithQueryClient } from "src/services/test-utils";
+import { cleanup, within, screen } from "@testing-library/react";
+import BrowseTopics from "src/app/features/topics/BrowseTopics";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@aivenio/design-system", () => {
   return {

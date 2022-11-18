@@ -1,13 +1,13 @@
-import { TopicList } from "src/app/features/topics/list";
+import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
-import { Flexbox, FlexboxItem } from "@aivenio/design-system";
-import { useGetTopics } from "src/app/features/topics/list/hooks/useGetTopics";
-import { useState } from "react";
-import { SelectEnv } from "src/app/features/topics/select-env";
-import { useGetEnvs } from "src/app/features/topics/select-env/hooks/useGetEnvs";
 import { TopicEnv } from "src/domain/topics";
-import { SelectTeam } from "src/app/features/topics/select-team";
-import { useGetTeams } from "src/app/features/topics/select-team/hooks/useGetTeams";
+import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
+import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
+import TopicList from "src/app/features/topics/components/list/TopicList";
+import { useGetTeams } from "src/app/features/topics/hooks/teams/useGetTeams";
+import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
+import { useState } from "react";
+import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 
 function BrowseTopics() {
   const [page, setPage] = useState(1);

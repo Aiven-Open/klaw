@@ -1,7 +1,7 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import { renderWithQueryClient } from "src/services/test-utils";
-import TopicList from "src/app/features/topics/list/components/TopicList";
 import { createMockTopic } from "src/domain/topics/topic-test-helper";
+import TopicList from "src/app/features/topics/components/list/TopicList";
 
 const mockedTopicNames = ["Name one", "Name two", "Name three", "Name four"];
 const mockedTopics = mockedTopicNames.map((name, index) =>

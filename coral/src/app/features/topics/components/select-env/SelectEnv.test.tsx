@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import SelectEnv from "src/app/features/topics/select-env/components/SelectEnv";
 import userEvent from "@testing-library/user-event";
 import { TopicEnv } from "src/domain/topics";
+import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 
 describe("SelectEnv.tsx", () => {
   const envOptions: TopicEnv[] = [TopicEnv.ALL, TopicEnv.DEV, TopicEnv.TST];
