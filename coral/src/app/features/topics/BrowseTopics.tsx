@@ -55,7 +55,7 @@ function BrowseTopics() {
         {topicTeams && (
           <FlexboxItem width={"l7"}>
             <SelectTeam
-              teamOptions={[
+              teams={[
                 { label: "All teams", value: ALL_TEAMS_VALUE },
                 ...topicTeams.map((team) => ({ label: team, value: team })),
               ]}

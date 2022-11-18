@@ -27,5 +27,3 @@ export type TopicApiResponse = {
 // @TODO adjust to our needs
 export type Topic = TopicDTO;
 export type TopicDTOApiResponse = Array<Array<TopicDTO>>;
-
-export type TopicTeams = string[];
