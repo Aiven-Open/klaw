@@ -1,4 +1,8 @@
-import { Topic, TopicDTOApiResponse } from "src/domain/topics/topics-types";
+import {
+  Topic,
+  TopicDTOApiResponse,
+  TopicEnv,
+} from "src/domain/topics/topics-types";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
@@ -17,7 +21,7 @@ const baseTestObjectMockedTopic = () => {
     teamname: "DevRel",
     cluster: "1",
     clusterId: null,
-    environmentsList: ["DEV"],
+    environmentsList: expect.arrayContaining([TopicEnv.DEV]),
     showEditTopic: false,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -29,11 +33,13 @@ function createMockTopic({
   topicId,
   totalNoPages = 1,
   currentPage = 1,
+  environmentsList = [TopicEnv.DEV, TopicEnv.TST],
 }: {
   topicName: string;
   topicId: number;
   totalNoPages?: number;
   currentPage?: number;
+  environmentsList?: TopicEnv[];
 }): Topic {
   return {
     topicid: topicId,
@@ -49,7 +55,7 @@ function createMockTopic({
     teamname: "DevRel",
     cluster: "1",
     clusterId: null,
-    environmentsList: ["DEV"],
+    environmentsList,
     showEditTopic: false,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -109,8 +115,33 @@ function createMockTopicApiResponse({
   return response;
 }
 
+function createMockTopicEnvDTO(name: TopicEnv) {
+  return {
+    id: "1",
+    name,
+    type: "kafka",
+    tenantId: 101,
+    topicprefix: null,
+    topicsuffix: null,
+    clusterId: 1,
+    tenantName: "default",
+    clusterName: "DEV",
+    envStatus: "ONLINE",
+    otherParams:
+      "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
+    defaultPartitions: null,
+    maxPartitions: null,
+    defaultReplicationFactor: null,
+    maxReplicationFactor: null,
+    showDeleteEnv: false,
+    totalNoPages: null,
+    allPageNos: null,
+  };
+}
+
 export {
   createMockTopic,
   createMockTopicApiResponse,
+  createMockTopicEnvDTO,
   baseTestObjectMockedTopic,
 };

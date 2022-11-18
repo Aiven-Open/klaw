@@ -1,3 +1,7 @@
+// ************************
+// Types related to TOPIC
+//*************************
+
 export type TopicDTO = {
   topicid: number;
   sequence: string;
@@ -26,5 +30,41 @@ export type TopicApiResponse = {
 
 // @TODO adjust to our needs
 export type Topic = TopicDTO;
-
 export type TopicDTOApiResponse = Array<Array<TopicDTO>>;
+
+// ****************************
+// Types related to topic ENV
+//*****************************
+
+export type TopicEnvDTO = {
+  id: string;
+  name: string;
+  type: string;
+  tenantId: number;
+  topicprefix: null;
+  topicsuffix: null;
+  clusterId: number;
+  tenantName: string;
+  clusterName: string;
+  envStatus: string;
+  otherParams: string;
+  defaultPartitions: null;
+  maxPartitions: null;
+  defaultReplicationFactor: null;
+  maxReplicationFactor: null;
+  showDeleteEnv: boolean;
+  totalNoPages: null;
+  allPageNos: null;
+};
+
+export const enum TopicEnv {
+  ALL = "ALL",
+  DEV = "DEV",
+  TST = "TST",
+}
+
+// ****************************
+// Types related to topic ENV
+//*****************************
+
+export type TopicTeams = string[];
