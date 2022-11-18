@@ -3,7 +3,6 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import { mockGetTeams } from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
 import { useGetTeams } from "src/app/features/topics/hooks/teams/useGetTeams";
 
 const queryClient = new QueryClient({
@@ -19,7 +18,7 @@ const wrapper = ({ children }: { children: ReactElement }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
-xdescribe("useGetTeams", () => {
+describe("useGetTeams", () => {
   const originalConsoleError = console.error;
 
   beforeAll(() => {
@@ -68,7 +67,7 @@ xdescribe("useGetTeams", () => {
   });
 
   describe("handles successful response", () => {
-    it("returns a list of environments", async () => {
+    it("returns a list of teams", async () => {
       mockGetTeams({
         mswInstance: server,
       });
@@ -81,7 +80,11 @@ xdescribe("useGetTeams", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual([TopicEnv.DEV, TopicEnv.TST]);
+      expect(result.current.data).toEqual([
+        "TEST_TEAM_01",
+        "TEST_TEAM_02",
+        "TEST_TEAM_03",
+      ]);
     });
   });
 });
