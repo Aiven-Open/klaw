@@ -8,17 +8,17 @@ import { Environment } from "src/domain/environment";
 
 const getTopics = async ({
   currentPage = 1,
-  topicEnv = "ALL",
+  environment = "ALL",
   teamName,
 }: {
   currentPage: number;
-  topicEnv: Environment;
+  environment: Environment;
   teamName?: string;
 }): Promise<TopicApiResponse> => {
   const team = teamName && teamName !== "All teams" ? teamName : null;
   const params: Record<string, string> = {
     pageNo: currentPage.toString(),
-    env: topicEnv,
+    env: environment,
     ...(team && { teamName: team }),
   };
 

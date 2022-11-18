@@ -1,10 +1,10 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 import { Environment } from "src/domain/environment";
+import SelectEnvironment from "src/app/features/topics/components/select-environment/SelectEnvironment";
 
-describe("SelectEnv.tsx", () => {
-  const envOptions = ["ALL", "DEV", "TST"].map((env) => ({
+describe("SelectEnvironment.tsx", () => {
+  const environments = ["ALL", "DEV", "TST"].map((env) => ({
     label: env,
     value: env,
   }));
@@ -13,13 +13,13 @@ describe("SelectEnv.tsx", () => {
     const activeOption: Environment = "ALL";
 
     const requiredProps = {
-      envOptions,
+      environments,
       activeOption,
-      selectEnv: jest.fn(),
+      selectEnvironment: jest.fn(),
     };
 
     beforeAll(() => {
-      render(<SelectEnv {...requiredProps} />);
+      render(<SelectEnvironment {...requiredProps} />);
     });
 
     afterAll(cleanup);
@@ -33,14 +33,14 @@ describe("SelectEnv.tsx", () => {
     });
 
     it("renders a list of given options for environments", () => {
-      envOptions.forEach(({ label }) => {
+      environments.forEach(({ label }) => {
         const option = screen.getByRole("option", {
           name: label,
         });
 
         expect(option).toBeEnabled();
       });
-      expect(screen.getAllByRole("option")).toHaveLength(envOptions.length);
+      expect(screen.getAllByRole("option")).toHaveLength(environments.length);
     });
 
     it("shows a given environment as the active option one", () => {
@@ -54,15 +54,15 @@ describe("SelectEnv.tsx", () => {
   describe("handles the change event for selecting", () => {
     const optionToSelect = "DEV";
 
-    const mockedSelectEnv = jest.fn();
+    const mockedSelectEnvironment = jest.fn();
     const requiredProps = {
-      envOptions,
+      environments,
       activeOption: "ALL",
-      selectEnv: mockedSelectEnv,
+      selectEnvironment: mockedSelectEnvironment,
     };
 
     beforeEach(() => {
-      render(<SelectEnv {...requiredProps} />);
+      render(<SelectEnvironment {...requiredProps} />);
     });
 
     afterEach(() => {
@@ -78,7 +78,7 @@ describe("SelectEnv.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(mockedSelectEnv).toHaveBeenCalledWith(optionToSelect);
+      expect(mockedSelectEnvironment).toHaveBeenCalledWith(optionToSelect);
     });
   });
 });

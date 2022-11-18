@@ -7,11 +7,11 @@ import { Environment } from "src/domain/environment";
 
 function useGetTopics({
   currentPage,
-  topicEnv,
+  environment,
   teamName,
 }: {
   currentPage: number;
-  topicEnv: Environment;
+  environment: Environment;
   teamName?: string;
 }): UseQueryResult<TopicApiResponse> {
   // everything in useEffect is used to mock the api call
@@ -25,8 +25,8 @@ function useGetTopics({
   }, []);
 
   return useQuery<TopicApiResponse, Error>({
-    queryKey: ["topics", currentPage, topicEnv, teamName],
-    queryFn: () => getTopics({ currentPage, topicEnv, teamName }),
+    queryKey: ["topics", currentPage, environment, teamName],
+    queryFn: () => getTopics({ currentPage, environment, teamName }),
     keepPreviousData: true,
   });
 }

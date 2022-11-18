@@ -3,15 +3,15 @@ import { ChangeEvent } from "react";
 import { Environment } from "src/domain/environment";
 
 type SelectEnvProps = {
-  envOptions: Array<{ label: string; value: Environment }>;
+  environments: Array<{ label: string; value: Environment }>;
   activeOption: Environment;
-  selectEnv: (value: Environment) => void;
+  selectEnvironment: (value: Environment) => void;
 };
 function SelectEnv(props: SelectEnvProps) {
-  const { envOptions, activeOption, selectEnv } = props;
+  const { environments, activeOption, selectEnvironment } = props;
 
   function onChangeEnv(event: ChangeEvent<HTMLSelectElement>) {
-    selectEnv(event.target.value as Environment);
+    selectEnvironment(event.target.value as Environment);
   }
 
   return (
@@ -20,7 +20,7 @@ function SelectEnv(props: SelectEnvProps) {
       value={activeOption}
       onChange={(event) => onChangeEnv(event)}
     >
-      {envOptions.map(({ label, value }) => (
+      {environments.map(({ label, value }) => (
         <Option key={value} value={value}>
           {label}
         </Option>

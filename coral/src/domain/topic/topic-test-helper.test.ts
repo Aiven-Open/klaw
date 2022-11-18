@@ -16,7 +16,7 @@ describe("topic-test-helper.ts", () => {
       });
     });
 
-    it("creates a topic mock with given topic env list", () => {
+    it("creates a topic mock with given topic environment list", () => {
       expect(
         createMockTopic({
           topicName: "mocked name",

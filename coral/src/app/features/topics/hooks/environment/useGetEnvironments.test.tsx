@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
-import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
+import { useGetEnvironments } from "src/app/features/topics/hooks/environment/useGetEnvironments";
 import { mockGetEnvironments } from "src/domain/environment";
 
 const queryClient = new QueryClient({
@@ -18,7 +18,7 @@ const wrapper = ({ children }: { children: ReactElement }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
-describe("useGetEnvs", () => {
+describe("useGetEnvironments", () => {
   const originalConsoleError = console.error;
 
   beforeAll(() => {
@@ -40,7 +40,7 @@ describe("useGetEnvs", () => {
         mswInstance: server,
       });
 
-      const { result } = await renderHook(() => useGetEnvs(), {
+      const { result } = await renderHook(() => useGetEnvironments(), {
         wrapper,
       });
       expect(result.current.isLoading).toBe(true);
@@ -55,7 +55,7 @@ describe("useGetEnvs", () => {
 
       mockGetEnvironments({ mswInstance: server, scenario: "error" });
 
-      const { result } = await renderHook(() => useGetEnvs(), {
+      const { result } = await renderHook(() => useGetEnvironments(), {
         wrapper,
       });
 
@@ -72,7 +72,7 @@ describe("useGetEnvs", () => {
         mswInstance: server,
       });
 
-      const { result } = await renderHook(() => useGetEnvs(), {
+      const { result } = await renderHook(() => useGetEnvironments(), {
         wrapper,
       });
 

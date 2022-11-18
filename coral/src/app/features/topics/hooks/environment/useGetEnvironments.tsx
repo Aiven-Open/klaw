@@ -6,7 +6,7 @@ import {
   mockGetEnvironments,
 } from "src/domain/environment";
 
-function useGetEnvs(): UseQueryResult<Environment[]> {
+function useGetEnvironments(): UseQueryResult<Environment[]> {
   // everything in useEffect is used to mock the api call
   // and can be removed once the real api is connected
   useEffect(() => {
@@ -17,9 +17,9 @@ function useGetEnvs(): UseQueryResult<Environment[]> {
     }
   }, []);
 
-  return useQuery<Environment[], Error>(["topic-envs"], () =>
+  return useQuery<Environment[], Error>(["topic-environments"], () =>
     getEnvironments()
   );
 }
 
-export { useGetEnvs };
+export { useGetEnvironments };

@@ -226,7 +226,7 @@ describe("BrowseTopics.tsx", () => {
     });
   });
 
-  describe("handles user filtering topics by env", () => {
+  describe("handles user filtering topics by environment", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
@@ -239,7 +239,7 @@ describe("BrowseTopics.tsx", () => {
       cleanup();
     });
 
-    it("shows a select element for envs with `ALL` preselected", async () => {
+    it("shows a select element for environments with `ALL` preselected", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
         name: "Kafka Environment",
@@ -248,7 +248,7 @@ describe("BrowseTopics.tsx", () => {
       expect(select).toHaveValue("ALL");
     });
 
-    it("shows an information that the list is updated after user selected an env", async () => {
+    it("shows an information that the list is updated after user selected an environment", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
         name: "Kafka Environment",
