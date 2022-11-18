@@ -79,7 +79,10 @@ describe("BrowseTopics.tsx", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
-      mockTopicGetRequest({ mswInstance: server, scenario: "empty" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        response: { status: 200, data: [] },
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 

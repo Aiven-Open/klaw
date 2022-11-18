@@ -19,11 +19,7 @@ function mockTopicGetRequest({
   response,
 }: {
   mswInstance: MswInstance;
-  scenario?:
-    | "error"
-    | "empty"
-    | "multiple-pages-static"
-    | "single-page-env-dev";
+  scenario?: "error" | "multiple-pages-static" | "single-page-env-dev";
   response?: { status: number; data: TopicDTOApiResponse };
 }) {
   const base = getHTTPBaseAPIUrl();
@@ -41,12 +37,6 @@ function mockTopicGetRequest({
       // error path
       if (scenario === "error") {
         return res(ctx.status(400), ctx.json(""));
-      }
-      // response empty
-      else if (scenario === "empty") {
-        return res(ctx.status(200), ctx.json([]));
-
-        // response total pages 4, current page based on api
       } else if (scenario === "multiple-pages-static") {
         return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
       } else if (scenario === "single-page-env-dev") {
