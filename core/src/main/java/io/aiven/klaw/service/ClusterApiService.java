@@ -413,6 +413,7 @@ public class ClusterApiService {
       int topicPartitions,
       String replicationFactor,
       String topicEnvId,
+      Map<String, String> advancedTopicConfiguration,
       int tenantId)
       throws KlawException {
     log.info("approveTopicRequests {} {}", topicName, topicEnvId);
@@ -440,6 +441,7 @@ public class ClusterApiService {
             clusterTopicRequest.toBuilder()
                 .partitions(topicPartitions)
                 .replicationFactor(Short.parseShort(replicationFactor))
+                .advancedTopicConfiguration(advancedTopicConfiguration)
                 .build();
       } else if (RequestOperationType.UPDATE.value.equals(topicRequestType)) {
         uri = clusterConnUrl + URI_UPDATE_TOPICS;

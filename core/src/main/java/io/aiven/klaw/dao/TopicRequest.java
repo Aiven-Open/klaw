@@ -73,6 +73,9 @@ public class TopicRequest implements Serializable {
   @Column(name = "description")
   private String description;
 
+  @Column(name = "jsonparams")
+  private String jsonParams;
+
   @Transient private String sequence;
 
   @Transient private String history;

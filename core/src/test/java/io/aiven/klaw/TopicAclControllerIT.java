@@ -32,6 +32,7 @@ import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -301,7 +302,7 @@ public class TopicAclControllerIT {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     when(clusterApiService.approveTopicRequests(
-            topicName, RequestOperationType.CREATE.value, 2, "1", "1", 101))
+            topicName, RequestOperationType.CREATE.value, 2, "1", "1", new HashMap<>(), 101))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     String response =

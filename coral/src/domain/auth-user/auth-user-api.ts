@@ -1,10 +1,16 @@
-import { AuthUser } from "src/domain/auth-user/auth-user-types";
+import {
+  AuthUser,
+  AuthUserLoginData,
+} from "src/domain/auth-user/auth-user-types";
 
-const getAuthUser = async (): Promise<AuthUser> => {
-  const res = await fetch("/user/authenticate", {
-    method: "POST",
-  });
-  return res.json();
+import api from "src/services/api-client";
+
+const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
+  const data = new URLSearchParams();
+  data.append("username", userLogin.username);
+  data.append("password", userLogin.password);
+
+  return api.post("/login", data);
 };
 
 export { getAuthUser };

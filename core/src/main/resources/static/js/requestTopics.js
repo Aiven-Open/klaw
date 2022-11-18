@@ -15,8 +15,9 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
+    const apacheKafkaTopicConfigsUrl = "https://kafka.apache.org/documentation/#topicconfigs_";
 
-    	$scope.showSubmitFailed = function(title, text){
+        $scope.showSubmitFailed = function(title, text){
 		swal({
 			 title: "",
 			 text: "Request unsuccessful !!",
@@ -139,14 +140,14 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             $scope.alert = null;
             $scope.alertnote = null;
 
-            if(!$scope.addTopic.envName || $scope.addTopic.envName == "")
+            if(!$scope.addTopic.envName || $scope.addTopic.envName === "")
             {
                 $scope.alertnote = "Please select an environment.";
                 $scope.showAlertToast();
                 return;
             }
 
-            if($scope.addTopic.topicname == null || $scope.addTopic.topicname.length==0)
+            if($scope.addTopic.topicname == null || $scope.addTopic.topicname.length === 0)
             {
                 $scope.alertnote = "Please fill in topic name.";
                 $scope.showAlertToast();
@@ -154,7 +155,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             }else
             {
                 $scope.addTopic.topicname = $scope.addTopic.topicname.trim();
-                if($scope.addTopic.topicname.length==0)
+                if($scope.addTopic.topicname.length === 0)
                 {
                     $scope.alertnote = "Please fill in topic name.";
                     $scope.showAlertToast();
@@ -174,14 +175,14 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 }
             }
 
-            if(!$scope.addTopic.topicpartitions || $scope.addTopic.topicpartitions == 'selected'){
+            if(!$scope.addTopic.topicpartitions || $scope.addTopic.topicpartitions === 'selected'){
 
                 $scope.alertnote = "Please select topic partitions.";
                 $scope.showAlertToast();
                 return;
             }
 
-            if(!$scope.addTopic.replicationfactor || $scope.addTopic.replicationfactor == 'selected'){
+            if(!$scope.addTopic.replicationfactor || $scope.addTopic.replicationfactor === 'selected'){
 
                 $scope.alertnote = "Please select topic replication factor.";
                 $scope.showAlertToast();
@@ -198,7 +199,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             }
             else {
                 $scope.addTopic.description = $scope.addTopic.description.trim();
-                if($scope.addTopic.description.length==0)
+                if($scope.addTopic.description.length === 0)
                 {
                     $scope.alertnote = "Please fill in description.";
                     $scope.showAlertToast();
@@ -206,8 +207,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 }
             }
 
-            var tmpTopicPartitions = $scope.addTopic.topicpartitions;
-            var tmpTopicRepFactor = $scope.addTopic.replicationfactor;
+            let tmpTopicPartitions = $scope.addTopic.topicpartitions;
+            let tmpTopicRepFactor = $scope.addTopic.replicationfactor;
 
             if(tmpTopicPartitions.indexOf("default") > 0)
             {
@@ -220,6 +221,22 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 tmpTopicRepFactor = tmpTopicRepFactor.replace(" (default)","");
             }
 
+            let advancedTopicConfigEntries = [];
+            let serviceInputTopicConfigs;
+            for (let i = 0; i < $scope.topicConfigsSelectedDropdown.length; i++) {
+                if($scope.topicConfigsSelectedDropdown[i] !== "" && $scope.topicConfigsSelected[i] !== ""){
+                    serviceInputTopicConfigs = {};
+                    serviceInputTopicConfigs['configKey'] = $scope.topicConfigsSelectedDropdown[i];
+                    serviceInputTopicConfigs['configValue'] = $scope.topicConfigsSelected[i];
+                    advancedTopicConfigEntries.push(serviceInputTopicConfigs);
+                }
+                else if($scope.topicConfigsSelectedDropdown[i] !== "" && $scope.topicConfigsSelected[i] === ""){
+                    $scope.alertnote = "Please fill in a value for the selected topic configuration.";
+                    $scope.showAlertToast();
+                    return;
+                }
+            }
+
             serviceInput['environment'] = $scope.addTopic.envName;
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = tmpTopicPartitions;
@@ -228,7 +245,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['appname'] = "App";//$scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
             serviceInput['description'] = $scope.addTopic.description;
-            if($scope.requestType == 'CreateTopic'){
+            serviceInput['advancedTopicConfigEntries'] = advancedTopicConfigEntries;
+            if($scope.requestType === 'CreateTopic'){
                 serviceInput['topictype'] = 'Create';
 
                 $scope.httpCreateTopicReq(serviceInput);
@@ -249,10 +267,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                              closeOnConfirm: true,
                              closeOnCancel: true
                          }).then(function(isConfirm){
-                             if (isConfirm.dismiss != "cancel") {
+                             if (isConfirm.dismiss !== "cancel") {
                                  $scope.httpCreateTopicReq(serviceInput);
-                             } else {
-                                 return;
                              }
                          });
                     }else {
@@ -310,6 +326,49 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     }
                 );
             }
+
+        $scope.topicConfigsSelected = [""];
+        $scope.propertyInfoLink = [""];
+        $scope.topicConfigsSelectedDropdown = [""];
+        $scope.topicConfigsSelectedLength = $scope.topicConfigsSelected.length;
+
+        $scope.canShowInfo = function(indexOfRec){
+            return $scope.propertyInfoLink[indexOfRec] !== "";
+        }
+
+        $scope.updateLink = function(indexOfRec){
+            $scope.propertyInfoLink[indexOfRec] = apacheKafkaTopicConfigsUrl + $scope.topicConfigsSelectedDropdown[indexOfRec];
+        }
+
+        $scope.addConfigRecord = function(indexToAdd){
+            $scope.propertyInfoLink.push("");
+            $scope.topicConfigsSelected.push("");
+            $scope.topicConfigsSelectedLength = $scope.topicConfigsSelected.length;
+        }
+
+        $scope.removeConfigRecord = function(indexToRemove){
+            if($scope.topicConfigsSelected.length === 1){}
+            else{
+                $scope.topicConfigsSelected.splice(indexToRemove, 1);
+                $scope.topicConfigsSelectedDropdown.splice(indexToRemove, 1);
+            }
+            $scope.topicConfigsSelectedLength = $scope.topicConfigsSelected.length;
+        }
+
+        $scope.getTopicConfigs = function(){
+            $http({
+                method: "GET",
+                url: "getAdvancedTopicConfigs",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.topicConfigs = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
 
 
         $scope.refreshPage = function(){

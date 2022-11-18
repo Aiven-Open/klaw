@@ -1,6 +1,7 @@
 package io.aiven.klaw.clusterapi.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,4 +19,6 @@ public class ClusterTopicRequest {
   @JsonProperty private String clusterName;
 
   @JsonProperty private String topicName;
+
+  @JsonProperty private Map<String, String> advancedTopicConfiguration;
 }

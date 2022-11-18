@@ -1,0 +1,259 @@
+openapi: 3.0.3
+info:
+  title: Klaw - OpenAPI
+  version: 1.0.0
+  description: >
+    This specification is still a work in progess and is not yet implemented in any API. The purpose of this specification is to facilitate developers discussions. 
+  contact:
+    email: info@klaw-project.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+externalDocs:
+  description: Klaw documentation
+  url: https://www.klaw-project.io/docs
+tags:
+  - name: User
+    description: User API endpoints
+  - name: Topic
+    description: Topic operations
+paths:
+  /user/authenticate:
+    summary: User authentication
+    description: User can authenticate themselves with their username and password
+    post:
+      operationId: userAuthentication
+      summary: Authenticate user
+      description: >
+        Exchange username and password to an authentication token. 
+        The token can be later used as authentication mechanism for other API endpoints.
+      tags:
+        - User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserAuthenticationRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/UserAuthenticationResponse'
+        '403':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/CommonError'
+              example:
+                message: Username and password did not match
+  /getTopics:
+    get:
+      operationId: topicsGet
+      summary: Get topics
+      tags:
+        - Topic
+      parameters:
+        - in: query
+          name: env
+          required: true
+          description: The value should be either an environment identifier or "ALL".
+          schema:
+            type: string
+          example: "ALL"
+        - in: query
+          name: pageNo
+          required: true
+          schema:
+            type: string
+          example: "1"
+        - in: query
+          name: currentPage
+          required: false
+          schema:
+            type: string
+          example: "1"
+        - in: query
+          name: topicnamesearch
+          required: false
+          schema:
+            type: string
+          example: searchTerm
+        - in: query
+          name: teamName
+          required: false
+          schema:
+            type: string
+          example: application-X-developers
+        - in: query
+          name: topicType
+          required: false
+          schema:
+            type: string
+            enum: ["Producer", "Consumer"]
+          example: "Producer"
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TopicsGetResponse'
+                    
+components:
+  schemas:
+    CommonError:
+      type: object
+      properties:
+        message:
+          title: message
+          description: Description for user why a certain operation failed
+          type: string
+    UserAuthenticationRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          title: username
+          description: Username
+          example: john.doe@klaw-project.io
+        password:
+          title: password
+          type: string
+          example: password123
+    UserAuthenticationResponse:
+      type: object
+      required:
+        - token
+        - tokenType
+      properties:
+        token:
+          title: token
+          description: Klaw authentication token
+          type: string
+          minLength: 256
+          maxLength: 2048
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        tokenType:
+          title: Token type
+          example: JWT
+          type: string
+          enum: [JWT]
+    TopicsGetResponse:
+      type: array
+      items:
+        type: array
+        items:
+          $ref: '#/components/schemas/TopicInfo'
+    TopicInfo:
+      type: object
+      additionalProperties: false
+      properties:
+        topicid:
+          title: Topic identifier
+          description: This identifier is used in Klaw metadata store to ensure uniquenes.
+          type: integer
+          format: int32
+          example: 1010
+        totalNoPages:
+          title: Total number of pages
+          type: string
+          example: "1"
+        currentPage:
+          title: Current page number
+          type: string
+          example: "1"
+        allPageNos:
+          title: All page numbers
+          description: List of all page numbers
+          type: array
+          items:
+            type: string
+          example: ["1"]
+        topicName:
+          title: Topic name
+          description: Kafka Topic name
+          type: string
+          example: "topicName"
+        noOfPartitions:
+          title: Number of partitions
+          description: Topic partition count
+          type: integer
+          format: int32
+          example: 10
+        description:
+          title: Description
+          description: Kafka topic description stored in Klaw metadata.
+          type: string
+          example: "Main PostgreSQL change data capture stream"
+        documentation:
+          title: Documentation
+          deprecated: true
+          nullable: true
+          type: string
+        noOfReplicas:
+          title: Number of replicas
+          description: Topic replica count
+          type: string
+          example: "2"
+        teamname:
+          title: Team name
+          description: Topic owner team name
+          type: string
+          example: application-X-developers
+        cluster:
+          title: cluster
+          deprecated: true
+          type: string
+          example: "1"
+        clusterId:
+          title: Cluster identifier
+          deprecated: true
+          type: string
+        environmentsList:
+          title: Environments list 
+          description: List of environments where the topic is present.
+          type: array
+          items:
+            title: Environment name
+            example: TEST
+            type: string
+          example: ["DEV", "TEST"]
+        showEditTopic:
+          title: Show edit topic
+          description: Describes if the user should see topic edit action. 
+          type: boolean
+          example: false
+        showDeleteTopic:
+          title: Show delete topic
+          description: Describes if the user should see topic delete action.
+          type: boolean
+          example: true
+        topicDeletable:
+          title: Topic deletable
+          description: Describes if the topic can be deleted. 
+          example: true
+          type: boolean
+      required: [
+        allPageNos,
+        cluster,
+        clusterId,
+        currentPage,
+        description,
+        documentation,
+        environmentsList,
+        noOfPartitions,
+        noOfReplcias,
+        showDeleteTopic,
+        showEditTopic,
+        teamname,
+        topicDeletable,
+        topicid,
+        topicName,
+        totalNoPages,
+      ]

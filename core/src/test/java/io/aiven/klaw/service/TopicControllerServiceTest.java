@@ -29,7 +29,6 @@ import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.TopicRequestTypes;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -335,7 +334,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
-            anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
+            anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -348,7 +347,7 @@ public class TopicControllerServiceTest {
   @Test
   @Order(14)
   public void approveTopicRequestsFailure1() throws KlawException {
-    String topicName = "topic1", env = "1";
+    String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
@@ -358,7 +357,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
-            anyString(), anyString(), anyInt(), anyString(), anyString(), anyInt()))
+            anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -491,7 +490,7 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic";
     stubUserInfo();
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
-        .thenReturn(Arrays.asList(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
@@ -507,6 +506,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTopictype(TopicRequestTypes.Create.toString());
+    topicRequest.setAdvancedTopicConfigEntries(null);
     return topicRequest;
   }
 

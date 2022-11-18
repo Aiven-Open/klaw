@@ -97,9 +97,10 @@ public class ApacheKafkaTopicService {
 
       NewTopic topic =
           new NewTopic(
-              clusterTopicRequest.getTopicName(),
-              clusterTopicRequest.getPartitions(),
-              clusterTopicRequest.getReplicationFactor());
+                  clusterTopicRequest.getTopicName(),
+                  clusterTopicRequest.getPartitions(),
+                  clusterTopicRequest.getReplicationFactor())
+              .configs(clusterTopicRequest.getAdvancedTopicConfiguration());
 
       CreateTopicsResult result = client.createTopics(Collections.singletonList(topic));
       result

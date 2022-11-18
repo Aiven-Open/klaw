@@ -561,6 +561,7 @@ public class TopicSyncControllerService {
               topicFound.getNoOfPartitions(),
               topicFound.getNoOfReplcias(),
               syncBackTopics.getTargetEnv(),
+              null,
               tenantId);
 
       if (!Objects.equals(

@@ -1,12 +1,9 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.TOPIC_CLAIM_REQUESTED;
-import static io.aiven.klaw.model.MailType.TOPIC_CREATE_REQUESTED;
-import static io.aiven.klaw.model.MailType.TOPIC_DELETE_REQUESTED;
-import static io.aiven.klaw.model.MailType.TOPIC_REQUEST_APPROVED;
-import static io.aiven.klaw.model.MailType.TOPIC_REQUEST_DENIED;
+import static io.aiven.klaw.model.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
@@ -24,13 +21,15 @@ import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.TopicConfigEntry;
+import io.aiven.klaw.model.TopicConfiguration;
+import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.TopicRequestTypes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -74,201 +73,53 @@ public class TopicControllerService {
 
   public ApiResponse createTopicsRequest(TopicRequestModel topicRequestReq) throws KlawException {
     log.info("createTopicsRequest {}", topicRequestReq);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
-    }
-
-    topicRequestReq.setRequestor(userDetails);
-    topicRequestReq.setUsername(userDetails);
-    topicRequestReq.setTeamId(getMyTeamId(userDetails));
-
-    int topicPartitions = topicRequestReq.getTopicpartitions();
-    String topicRf = topicRequestReq.getReplicationfactor();
-    String envSelected = topicRequestReq.getEnvironment();
-
-    // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(envSelected)) {
-      return ApiResponse.builder()
-          .result("Failure. Not authorized to request topic for this environment.")
-          .build();
-    }
+    topicRequestReq.setRequestor(userName);
+    topicRequestReq.setUsername(userName);
+    topicRequestReq.setTeamId(getMyTeamId(userName));
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    // tenant filtering
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    String syncCluster;
-    try {
-      syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-    } catch (Exception e) {
-      log.error("Tenant Configuration not found. " + tenantId, e);
-      return ApiResponse.builder()
-          .result("Failure. Tenant configuration in Server config is missing. Please configure.")
-          .build();
-    }
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    TopicRequest topicRequestDao = new TopicRequest();
+    copyProperties(topicRequestReq, topicRequestDao);
+    mapAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
+    topicRequestDao.setTenantId(commonUtilsService.getTenantId(getUserName()));
 
-    if (topicRequestReq.getTopicname() == null || topicRequestReq.getTopicname().length() == 0) {
-      return ApiResponse.builder().result("Failure. Please fill in topic name.").build();
-    }
-    List<Topic> topics = getTopicFromName(topicRequestReq.getTopicname(), tenantId);
-
-    if (topics != null
-        && topics.size() > 0
-        && !Objects.equals(topics.get(0).getTeamId(), topicRequestReq.getTeamId())) {
-      return ApiResponse.builder()
-          .result("Failure. This topic is owned by a different team.")
-          .build();
-    }
-    boolean promotionOrderCheck =
-        checkInPromotionOrder(
-            topicRequestReq.getTopicname(), topicRequestReq.getEnvironment(), orderOfEnvs);
-
-    if (topics != null && topics.size() > 0) {
-      if (promotionOrderCheck) {
-        int devTopicFound =
-            (int)
-                topics.stream()
-                    .filter(topic -> Objects.equals(topic.getEnvironment(), syncCluster))
-                    .count();
-        if (devTopicFound != 1) {
-          if (getEnvDetails(syncCluster) == null) {
-            return ApiResponse.builder()
-                .result("Failure. This topic does not exist in base cluster.")
-                .build();
-          } else {
-            return ApiResponse.builder()
-                .result(
-                    "Failure. This topic does not exist in "
-                        + getEnvDetails(syncCluster).getName()
-                        + " cluster.")
-                .build();
-          }
-        }
-      }
-    } else if (!Objects.equals(topicRequestReq.getEnvironment(), syncCluster)) {
-      if (promotionOrderCheck) {
-        return ApiResponse.builder()
-            .result(
-                "Failure. Please request for a topic first in "
-                    + getEnvDetails(syncCluster).getName()
-                    + " cluster.")
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .result(dbHandle.requestForTopic(topicRequestDao).get("result"))
             .build();
-      }
-    }
 
-    if (topics != null) {
-      if (manageDatabase
-              .getHandleDbRequests()
-              .selectTopicRequests(
-                  topicRequestReq.getTopicname(),
-                  topicRequestReq.getEnvironment(),
-                  RequestStatus.created.name(),
-                  tenantId)
-              .size()
-          > 0) {
-        return ApiResponse.builder().result("Failure. A topic request already exists.").build();
-      }
-    }
-
-    // Ignore topic exists check if Update request
-    if (!TopicRequestTypes.Update.name().equals(topicRequestReq.getTopictype())) {
-      boolean topicExists = false;
-      if (topics != null) {
-        topicExists =
-            topics.stream()
-                .anyMatch(
-                    topicEx ->
-                        Objects.equals(topicEx.getEnvironment(), topicRequestReq.getEnvironment()));
-      }
-      if (topicExists) {
-        return ApiResponse.builder()
-            .result("Failure. This topic already exists in the selected cluster.")
-            .build();
-      }
-    }
-
-    Env env = getEnvDetails(envSelected);
-    Map<String, String> isValidTopicMap =
-        validateParameters(topicRequestReq, env, topicPartitions, topicRf);
-    String validTopicStatus = isValidTopicMap.get("status");
-
-    if ("true".equals(validTopicStatus)) {
-      TopicRequest topicRequestDao = new TopicRequest();
-      copyProperties(topicRequestReq, topicRequestDao);
-      topicRequestDao.setTenantId(tenantId);
-
-      mailService.sendMail(
-          topicRequestReq.getTopicname(),
-          null,
-          "",
-          userDetails,
-          dbHandle,
-          TOPIC_CREATE_REQUESTED,
-          commonUtilsService.getLoginUrl());
-      return ApiResponse.builder()
-          .result(dbHandle.requestForTopic(topicRequestDao).get("result"))
-          .build();
-    } else {
-      return ApiResponse.builder().result(isValidTopicMap.get("error")).build();
-    }
+    mailService.sendMail(
+        topicRequestReq.getTopicname(),
+        null,
+        "",
+        userName,
+        dbHandle,
+        TOPIC_CREATE_REQUESTED,
+        commonUtilsService.getLoginUrl());
+    return apiResponse;
   }
 
-  private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {
-    List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
-    return orderedEnv.contains(envId);
-  }
-
-  private Map<String, String> validateParameters(
-      TopicRequestModel topicRequestReq, Env env, int topicPartitions, String replicationFactor) {
-    log.debug("Into validateParameters");
-
-    Map<String, String> validMap = new HashMap<>();
-    validMap.put("status", "true");
-
-    String topicPrefix = null, topicSuffix = null;
-    String otherParams = env.getOtherParams();
-    String[] params;
+  private void mapAdvancedTopicConfiguration(
+      TopicRequestModel topicRequestModel, TopicRequest topicRequestDao) throws KlawException {
+    Map<String, String> topicConfigs = new HashMap<>();
     try {
-      if (otherParams != null) {
-        params = otherParams.split(",");
-        for (String param : params) {
-          if (param.startsWith("topic.prefix")) {
-            topicPrefix = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.suffix")) {
-            topicSuffix = param.substring(param.indexOf("=") + 1);
-          }
+      List<TopicConfigEntry> advancedTopicConfigEntries =
+          topicRequestModel.getAdvancedTopicConfigEntries();
+      if (null != advancedTopicConfigEntries) {
+        for (TopicConfigEntry advancedTopicConfig : advancedTopicConfigEntries) {
+          topicConfigs.put(
+              advancedTopicConfig.getConfigKey(), advancedTopicConfig.getConfigValue());
         }
       }
-    } catch (Exception e) {
-      log.error("Unable to set topic partitions, setting default from properties.", e);
+      TopicConfigurationRequest topicConfigurationRequest =
+          TopicConfigurationRequest.builder().advancedTopicConfiguration(topicConfigs).build();
+      topicRequestDao.setJsonParams(OBJECT_MAPPER.writeValueAsString(topicConfigurationRequest));
+    } catch (JsonProcessingException e) {
+      log.error("Error in processing topic configs ", e);
+      throw new KlawException("Error in processing advanced topic configs");
     }
-
-    try {
-      if (topicPrefix != null
-          && topicPrefix.length() > 0
-          && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
-        log.error(
-            "Topic prefix {} does not match. {}", topicPrefix, topicRequestReq.getTopicname());
-        validMap.put("status", "false");
-        validMap.put("error", "Topic prefix does not match. " + topicRequestReq.getTopicname());
-      }
-      if (topicSuffix != null
-          && topicSuffix.length() > 0
-          && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
-        log.error(
-            "Topic suffix {} does not match. {}", topicSuffix, topicRequestReq.getTopicname());
-        validMap.put("status", "false");
-        validMap.put("error", "Topic suffix does not match. " + topicRequestReq.getTopicname());
-      }
-    } catch (Exception e) {
-      log.error("Unable to set topic partitions, setting default from properties.", e);
-      validMap.put("status", "false");
-      validMap.put("error", "Cluster default parameters config missing/incorrect.");
-    }
-    return validMap;
   }
 
   // create a request to delete topic.
@@ -617,6 +468,8 @@ public class TopicControllerService {
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestModel();
       copyProperties(topicReq, topicRequestModel);
+      validateAndCopyTopicConfigs(topicReq, topicRequestModel);
+
       topicRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, topicReq.getTeamId()));
 
@@ -648,6 +501,29 @@ public class TopicControllerService {
       topicRequestModelList.add(topicRequestModel);
     }
     return topicRequestModelList;
+  }
+
+  private void validateAndCopyTopicConfigs(
+      TopicRequest topicReq, TopicRequestModel topicRequestModel) {
+    try {
+      if (topicReq.getJsonParams() != null) {
+        List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
+        TopicConfigurationRequest topicConfigurationRequest =
+            OBJECT_MAPPER.readValue(topicReq.getJsonParams(), TopicConfigurationRequest.class);
+        for (Map.Entry<String, String> entry :
+            topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
+          topicConfigEntryList.add(
+              TopicConfigEntry.builder()
+                  .configKey(entry.getKey())
+                  .configValue(entry.getValue())
+                  .build());
+        }
+        topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
+      }
+    } catch (JsonProcessingException e) {
+      // ignore this error while retrieving the requests
+      log.error("Error in parsing topic configs ", e);
+    }
   }
 
   private String updateApproverInfo(
@@ -728,6 +604,19 @@ public class TopicControllerService {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userDetails);
       }
     } else {
+      Map<String, String> topicConfig = null;
+      try {
+        if (null != topicRequest.getJsonParams()) {
+          topicConfig =
+              OBJECT_MAPPER
+                  .readValue(topicRequest.getJsonParams(), TopicConfigurationRequest.class)
+                  .getAdvancedTopicConfiguration();
+        }
+      } catch (JsonProcessingException e) {
+        // ignore this error while executing the req. should have been raised earlier in the
+        // process.
+        log.error("Error in parsing topic config ", e);
+      }
       ResponseEntity<ApiResponse> response =
           clusterApiService.approveTopicRequests(
               topicRequest.getTopicname(),
@@ -735,6 +624,7 @@ public class TopicControllerService {
               topicRequest.getTopicpartitions(),
               topicRequest.getReplicationfactor(),
               topicRequest.getEnvironment(),
+              topicConfig,
               tenantId);
 
       updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getResult();
@@ -948,6 +838,10 @@ public class TopicControllerService {
       hashMap.put("topicContents", topicInfo);
     }
     return hashMap;
+  }
+
+  public Map<String, String> getAdvancedTopicConfigs() {
+    return TopicConfiguration.getTopicConfigurations();
   }
 
   static class TopicNameComparator implements Comparator<Topic> {
@@ -1218,12 +1112,11 @@ public class TopicControllerService {
     return topicsListMap;
   }
 
-  private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+  public String getUserName() {
+    return mailService.getUserName(getPrincipal());
   }
 
-  private Object getPrincipal() {
+  public Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
@@ -1246,7 +1139,7 @@ public class TopicControllerService {
     return envFound.orElse(null);
   }
 
-  private List<String> getEnvsFromUserId(String userDetails) {
+  public List<String> getEnvsFromUserId(String userDetails) {
     Integer userTeamId = getMyTeamId(userDetails);
     return manageDatabase.getTeamsAndAllowedEnvs(
         userTeamId, commonUtilsService.getTenantId(userDetails));
@@ -1319,5 +1212,24 @@ public class TopicControllerService {
     }
 
     return topicEvents;
+  }
+
+  public List<TopicRequest> getExistingTopicRequests(
+      TopicRequestModel topicRequestModel, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .selectTopicRequests(
+            topicRequestModel.getTopicname(),
+            topicRequestModel.getEnvironment(),
+            RequestStatus.created.name(),
+            tenantId);
+  }
+
+  public String getSyncCluster(int tenantId) {
+    return manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
+  }
+
+  public Integer getTeamId(String userName) {
+    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 }

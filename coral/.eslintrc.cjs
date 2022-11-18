@@ -54,6 +54,7 @@ module.exports = {
         "plugin:react/jsx-runtime",
         "prettier"
     ],
+    "ignorePatterns": ["dist/**", "types/api.d.ts"],
     "overrides": [
         {
             "files": ["src/router.tsx", "src/pages/**/*.test.tsx"],
