@@ -4,11 +4,13 @@ import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseMultiplePageTransformed,
+  mockedResponseSinglePage,
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
 
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
+import { createMockTopic } from "src/domain/topic/topic-test-helper";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -39,11 +41,23 @@ describe("useGetTopics", () => {
     server.close();
   });
 
-  describe("handles loading and error state", () => {
+  describe.only("handles loading and error state", () => {
     it("returns a loading state before starting to fetch data", async () => {
+      const responseData = [
+        [
+          createMockTopic({
+            topicName: "Topic 1",
+            topicId: 1,
+            environmentsList: ["DEV"],
+          }),
+        ],
+      ];
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: {
+          status: 200,
+          data: responseData,
+        },
       });
 
       const { result } = await renderHook(
@@ -86,7 +100,7 @@ describe("useGetTopics", () => {
     it("returns a list of topics with one page if api call is successful", async () => {
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: { status: 200, data: mockedResponseSinglePage },
       });
 
       const { result } = await renderHook(

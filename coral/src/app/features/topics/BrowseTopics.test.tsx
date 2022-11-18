@@ -1,5 +1,6 @@
 import { server } from "src/services/api-mocks/server";
 import {
+  mockedResponseSinglePage,
   mockedResponseTransformed,
   mockGetTeams,
   mockTopicGetRequest,
@@ -34,7 +35,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: { status: 200, data: mockedResponseSinglePage },
       });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -101,7 +102,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: { status: 200, data: mockedResponseSinglePage },
       });
       renderWithQueryClient(<BrowseTopics />);
     });

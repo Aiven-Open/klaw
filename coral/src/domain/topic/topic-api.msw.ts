@@ -8,6 +8,7 @@ import {
 } from "src/domain/topic/topic-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
 
+import { isObject } from "lodash";
 // @TODO
 // create visible mocked responses and easy responses for different scenarios to use in tests
 // use json files from real api for mocked responses for web worker (more realistic(
@@ -15,14 +16,15 @@ import { getHTTPBaseAPIUrl } from "src/config";
 function mockTopicGetRequest({
   mswInstance,
   scenario,
+  response,
 }: {
   mswInstance: MswInstance;
   scenario?:
     | "error"
     | "empty"
     | "multiple-pages-static"
-    | "single-page-static"
     | "single-page-env-dev";
+  response?: { status: number; data: TopicDTOApiResponse };
 }) {
   const base = getHTTPBaseAPIUrl();
   mswInstance.use(
@@ -30,6 +32,12 @@ function mockTopicGetRequest({
       const currentPage = req.url.searchParams.get("pageNo");
       const env = req.url.searchParams.get("env");
       const team = req.url.searchParams.get("teamName");
+
+      // Passing an response will the precedence over scenario.
+      if (isObject(response)) {
+        return res(ctx.status(response.status), ctx.json(response.data));
+      }
+
       // error path
       if (scenario === "error") {
         return res(ctx.status(400), ctx.json(""));
@@ -41,8 +49,6 @@ function mockTopicGetRequest({
         // response total pages 4, current page based on api
       } else if (scenario === "multiple-pages-static") {
         return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
-      } else if (scenario === "single-page-static") {
-        return res(ctx.status(200), ctx.json(mockedResponseSinglePage));
       } else if (scenario === "single-page-env-dev") {
         return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
       }
@@ -69,7 +75,7 @@ function mockTopicGetRequest({
   );
 }
 
-const mockedResponseSinglePage: TopicDTOApiResponse =
+export const mockedResponseSinglePage: TopicDTOApiResponse =
   createMockTopicApiResponse({
     entries: 10,
   });
