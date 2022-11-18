@@ -86,3 +86,4 @@ We provide more documentation on:
 - Detailed overview of the [Directory Structure](docs/directory-structure.md)
 - Our thinking about [Docmentation](docs/documentation.md)
 - More information about [Frontend Testing](docs/frontend-testing.md)
+- [Development with remote API](docs/development-with-remote-api.md)
