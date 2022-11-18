@@ -81,7 +81,7 @@ public class TopicRequestValidatorImpl
     List<Topic> topics =
         topicControllerService.getTopicFromName(topicRequestModel.getTopicname(), tenantId);
     if (topics != null
-        && topics.size() > 0
+        && !topics.isEmpty()
         && !Objects.equals(
             topics
                 .get(0) // as there could be only one owner team for topic, with topic name being
@@ -101,7 +101,7 @@ public class TopicRequestValidatorImpl
 
     // Verify if topic request already exists
     if (topics != null) {
-      if (topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).size() > 0) {
+      if (!topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).isEmpty()) {
         updateConstraint(constraintValidatorContext, "Failure. A topic request already exists.");
         return false;
       }
@@ -142,7 +142,7 @@ public class TopicRequestValidatorImpl
       promotionOrderCheck = checkInPromotionOrder(topicRequestModel.getEnvironment(), orderOfEnvs);
     }
 
-    if (topics != null && topics.size() > 0) {
+    if (topics != null && !topics.isEmpty()) {
       if (promotionOrderCheck) {
         int devTopicFound =
             (int)
