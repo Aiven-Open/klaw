@@ -1,15 +1,59 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclID;
+import io.aiven.klaw.dao.AclRequestID;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvID;
+import io.aiven.klaw.dao.KafkaConnectorRequest;
+import io.aiven.klaw.dao.KafkaConnectorRequestID;
+import io.aiven.klaw.dao.KwClusterID;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.KwProperties;
+import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.ProductDetails;
+import io.aiven.klaw.dao.RegisterUserInfo;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.SchemaRequestID;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.TeamID;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicID;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.TopicRequestID;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicRequestTypes;
-import io.aiven.klaw.repository.*;
+import io.aiven.klaw.repository.AclRepo;
+import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.ActivityLogRepo;
+import io.aiven.klaw.repository.EnvRepo;
+import io.aiven.klaw.repository.KwClusterRepo;
+import io.aiven.klaw.repository.KwKafkaConnectorRepo;
+import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
+import io.aiven.klaw.repository.KwMetricsRepo;
+import io.aiven.klaw.repository.KwPropertiesRepo;
+import io.aiven.klaw.repository.KwRolesPermsRepo;
+import io.aiven.klaw.repository.MessageSchemaRepo;
+import io.aiven.klaw.repository.ProductDetailsRepo;
+import io.aiven.klaw.repository.RegisterInfoRepo;
+import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TeamRepo;
+import io.aiven.klaw.repository.TenantRepo;
+import io.aiven.klaw.repository.TopicRepo;
+import io.aiven.klaw.repository.TopicRequestsRepo;
+import io.aiven.klaw.repository.UserInfoRepo;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +70,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SelectDataJdbc {
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
 
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;
@@ -526,16 +572,16 @@ public class SelectDataJdbc {
       String username, String env, boolean allReqs, int tenantId) {
     log.debug("selectActivityLog {}", username);
     List<ActivityLog> activityList;
-    UserInfo userInfo = selectUserInfo(username);
 
     if (allReqs) {
-      if (env == null || env.equals("")) {
+      if (env == null || env.isBlank()) {
         activityList = Lists.newArrayList(activityLogRepo.findAllByTenantId(tenantId));
       } else {
         activityList = activityLogRepo.findAllByEnvAndTenantId(env, tenantId);
       }
     } else {
-      if (env == null || env.equals("")) {
+      final UserInfo userInfo = selectUserInfo(username);
+      if (env == null || env.isBlank()) {
         activityList = activityLogRepo.findAllByTeamIdAndTenantId(userInfo.getTeamId(), tenantId);
       } else {
         activityList =
@@ -545,8 +591,7 @@ public class SelectDataJdbc {
 
     for (ActivityLog row : activityList) {
       row.setActivityTimeString(
-          ((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-              .format((row.getActivityTime()).getTime())));
+          DATE_TIME_FORMATTER.format(row.getActivityTime().toLocalDateTime()));
     }
 
     return activityList;
