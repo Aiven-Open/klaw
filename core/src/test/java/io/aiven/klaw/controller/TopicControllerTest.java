@@ -1,12 +1,14 @@
 package io.aiven.klaw.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +31,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +40,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.Validator;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -47,19 +51,21 @@ public class TopicControllerTest {
 
   @MockBean private TopicSyncControllerService topicSyncControllerService;
 
-  private TopicController topicController;
-
-  private TopicSyncController topicSyncController;
-
   private UtilMethods utilMethods;
+
+  @Mock private Validator validator;
 
   private MockMvc mvc, mvcSync;
 
   @BeforeEach
   public void setUp() throws Exception {
-    topicController = new TopicController();
-    topicSyncController = new TopicSyncController();
-    mvc = MockMvcBuilders.standaloneSetup(topicController).dispatchOptions(true).build();
+    TopicController topicController = new TopicController();
+    TopicSyncController topicSyncController = new TopicSyncController();
+    mvc =
+        MockMvcBuilders.standaloneSetup(topicController)
+            .setValidator(validator)
+            .dispatchOptions(true)
+            .build();
     utilMethods = new UtilMethods();
     mvcSync = MockMvcBuilders.standaloneSetup(topicSyncController).dispatchOptions(true).build();
     utilMethods = new UtilMethods();
