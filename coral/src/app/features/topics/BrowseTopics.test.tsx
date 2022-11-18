@@ -57,7 +57,10 @@ describe("BrowseTopics.tsx", () => {
       console.error = jest.fn();
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
-      mockTopicGetRequest({ mswInstance: server, scenario: "error" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        response: { status: 400, data: { message: "Not relevant" } },
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 

@@ -19,8 +19,11 @@ function mockTopicGetRequest({
   response,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error" | "multiple-pages-static" | "single-page-env-dev";
-  response?: { status: number; data: TopicDTOApiResponse };
+  scenario?: "multiple-pages-static" | "single-page-env-dev";
+  response?: {
+    status: number;
+    data: TopicDTOApiResponse | { message: string };
+  };
 }) {
   const base = getHTTPBaseAPIUrl();
   mswInstance.use(
@@ -34,10 +37,7 @@ function mockTopicGetRequest({
         return res(ctx.status(response.status), ctx.json(response.data));
       }
 
-      // error path
-      if (scenario === "error") {
-        return res(ctx.status(400), ctx.json(""));
-      } else if (scenario === "multiple-pages-static") {
+      if (scenario === "multiple-pages-static") {
         return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
       } else if (scenario === "single-page-env-dev") {
         return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
@@ -65,7 +65,7 @@ function mockTopicGetRequest({
   );
 }
 
-export const mockedResponseSinglePage: TopicDTOApiResponse =
+const mockedResponseSinglePage: TopicDTOApiResponse =
   createMockTopicApiResponse({
     entries: 10,
   });
@@ -152,4 +152,5 @@ export {
   mockGetTeams,
   mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
+  mockedResponseSinglePage,
 };

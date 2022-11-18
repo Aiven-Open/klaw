@@ -80,7 +80,10 @@ describe("useGetTopics", () => {
     it("returns an error when request fails", async () => {
       console.error = jest.fn();
 
-      mockTopicGetRequest({ mswInstance: server, scenario: "error" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        response: { status: 400, data: { message: "Not relevant" } },
+      });
 
       const { result } = await renderHook(
         () => useGetTopics({ currentPage: 1, environment: "ALL" }),
