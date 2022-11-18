@@ -1,17 +1,17 @@
 import { NativeSelect, Option } from "@aivenio/design-system";
 import { ChangeEvent } from "react";
-import { TopicEnv } from "src/domain/topic";
+import { Environment } from "src/domain/environment";
 
 type SelectEnvProps = {
-  envOptions: Array<{ label: string; value: string }>;
-  activeOption: TopicEnv;
-  selectEnv: (value: TopicEnv) => void;
+  envOptions: Array<{ label: string; value: Environment }>;
+  activeOption: Environment;
+  selectEnv: (value: Environment) => void;
 };
 function SelectEnv(props: SelectEnvProps) {
   const { envOptions, activeOption, selectEnv } = props;
 
   function onChangeEnv(event: ChangeEvent<HTMLSelectElement>) {
-    selectEnv(event.target.value as TopicEnv);
+    selectEnv(event.target.value as Environment);
   }
 
   return (

@@ -1,8 +1,9 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { mockTopicGetRequest } from "src/domain/topic/topic-api.msw";
-import { getTopics, TopicEnv } from "src/domain/topic";
+import { getTopics } from "src/domain/topic";
 import { TopicApiResponse } from "src/domain/topic/topic-types";
+import { Environment } from "src/domain/environment";
 
 function useGetTopics({
   currentPage,
@@ -10,7 +11,7 @@ function useGetTopics({
   teamName,
 }: {
   currentPage: number;
-  topicEnv: TopicEnv;
+  topicEnv: Environment;
   teamName?: string;
 }): UseQueryResult<TopicApiResponse> {
   // everything in useEffect is used to mock the api call

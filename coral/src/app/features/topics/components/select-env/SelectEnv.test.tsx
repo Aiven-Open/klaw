@@ -1,16 +1,16 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { TopicEnv } from "src/domain/topic";
 import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
+import { Environment } from "src/domain/environment";
 
 describe("SelectEnv.tsx", () => {
-  const envOptions = [TopicEnv.ALL, TopicEnv.DEV, TopicEnv.TST].map((env) => ({
+  const envOptions = ["ALL", "DEV", "TST"].map((env) => ({
     label: env,
     value: env,
   }));
 
   describe("renders all necessary elements", () => {
-    const activeOption: TopicEnv = TopicEnv.ALL;
+    const activeOption: Environment = "ALL";
 
     const requiredProps = {
       envOptions,
@@ -52,12 +52,12 @@ describe("SelectEnv.tsx", () => {
   });
 
   describe("handles the change event for selecting", () => {
-    const optionToSelect = TopicEnv.DEV;
+    const optionToSelect = "DEV";
 
     const mockedSelectEnv = jest.fn();
     const requiredProps = {
       envOptions,
-      activeOption: TopicEnv.ALL,
+      activeOption: "ALL",
       selectEnv: mockedSelectEnv,
     };
 

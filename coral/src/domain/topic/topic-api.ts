@@ -1,21 +1,18 @@
 import {
   TopicApiResponse,
   TopicDTOApiResponse,
-  TopicEnv,
   TopicTeams,
 } from "src/domain/topic/topic-types";
-import {
-  transformTopicApiResponse,
-  transformTopicEnvApiResponse,
-} from "src/domain/topic/topic-transformer";
+import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
+import { Environment } from "src/domain/environment";
 
 const getTopics = async ({
   currentPage = 1,
-  topicEnv = TopicEnv.ALL,
+  topicEnv = "ALL",
   teamName,
 }: {
   currentPage: number;
-  topicEnv: TopicEnv;
+  topicEnv: Environment;
   teamName?: string;
 }): Promise<TopicApiResponse> => {
   const team = teamName && teamName !== "All teams" ? teamName : null;
@@ -43,25 +40,6 @@ const getTopics = async ({
     });
 };
 
-const getEnvs = async (): Promise<TopicEnv[]> => {
-  return fetch(`/getEnvs`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`msw error: ${response.statusText}`);
-      }
-      const result = await response.json();
-      return transformTopicEnvApiResponse(result);
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
-};
-
 const getTeams = async (): Promise<TopicTeams> => {
   return fetch(`/getAllTeamsSUOnly`, {
     method: "GET",
@@ -81,4 +59,4 @@ const getTeams = async (): Promise<TopicTeams> => {
     });
 };
 
-export { getTopics, getEnvs, getTeams };
+export { getTopics, getTeams };

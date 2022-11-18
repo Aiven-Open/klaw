@@ -7,7 +7,7 @@ import {
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import { TopicEnv } from "src/domain/topic";
+
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 
 const queryClient = new QueryClient({
@@ -50,7 +50,7 @@ describe("useGetTopics", () => {
         () =>
           useGetTopics({
             currentPage: 1,
-            topicEnv: TopicEnv.ALL,
+            topicEnv: "ALL",
           }),
         {
           wrapper,
@@ -69,7 +69,7 @@ describe("useGetTopics", () => {
       mockTopicGetRequest({ mswInstance: server, scenario: "error" });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
         {
           wrapper,
         }
@@ -90,7 +90,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 1, topicEnv: "ALL" }),
         {
           wrapper,
         }
@@ -110,7 +110,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 2, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 2, topicEnv: "ALL" }),
         {
           wrapper,
         }
@@ -131,7 +131,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 3, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 3, topicEnv: "ALL" }),
         {
           wrapper,
         }
@@ -153,7 +153,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.DEV }),
+        () => useGetTopics({ currentPage: 1, topicEnv: "DEV" }),
         {
           wrapper,
         }
@@ -167,7 +167,7 @@ describe("useGetTopics", () => {
         .map((topic) => topic.environmentsList)
         .flat();
 
-      expect(envList).toEqual([TopicEnv.DEV, TopicEnv.DEV, TopicEnv.DEV]);
+      expect(envList).toEqual(["DEV", "DEV", "DEV"]);
     });
   });
 });

@@ -1,16 +1,15 @@
 import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseTransformed,
-  mockGetEnvs,
   mockGetTeams,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import { TopicEnv } from "src/domain/topic";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { cleanup, within, screen } from "@testing-library/react";
 import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
+import { mockGetEnvironments } from "src/domain/environment";
 
 jest.mock("@aivenio/design-system", () => {
   return {
@@ -31,7 +30,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles loading state", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
@@ -55,7 +54,7 @@ describe("BrowseTopics.tsx", () => {
   describe("handles error responses", () => {
     beforeEach(() => {
       console.error = jest.fn();
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server, scenario: "error" });
       renderWithQueryClient(<BrowseTopics />);
@@ -77,7 +76,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles an empty response", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server, scenario: "empty" });
       renderWithQueryClient(<BrowseTopics />);
@@ -98,7 +97,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles successful response with one page", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
@@ -160,7 +159,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles successful response with 4 pages", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
@@ -193,7 +192,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
       renderWithQueryClient(<BrowseTopics />);
@@ -229,7 +228,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles user filtering topics by env", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
       renderWithQueryClient(<BrowseTopics />);
@@ -246,7 +245,7 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
 
-      expect(select).toHaveValue(TopicEnv.ALL);
+      expect(select).toHaveValue("ALL");
     });
 
     it("shows an information that the list is updated after user selected an env", async () => {
@@ -255,9 +254,9 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
       const option = within(select).getByRole("option", {
-        name: TopicEnv.DEV,
+        name: "DEV",
       });
-      expect(select).toHaveValue(TopicEnv.ALL);
+      expect(select).toHaveValue("ALL");
 
       await userEvent.selectOptions(select, option);
 
@@ -271,13 +270,13 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
       const option = within(select).getByRole("option", {
-        name: TopicEnv.DEV,
+        name: "DEV",
       });
-      expect(select).toHaveValue(TopicEnv.ALL);
+      expect(select).toHaveValue("ALL");
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue(TopicEnv.DEV);
+      expect(select).toHaveValue("DEV");
     });
 
     it("fetches new data when user selects `DEV`", async () => {
@@ -293,7 +292,7 @@ describe("BrowseTopics.tsx", () => {
         name: "Kafka Environment",
       });
       const option = within(select).getByRole("option", {
-        name: TopicEnv.DEV,
+        name: "DEV",
       });
 
       await userEvent.selectOptions(select, option);
@@ -305,7 +304,7 @@ describe("BrowseTopics.tsx", () => {
 
   describe("handles user filtering topics by team", () => {
     beforeEach(() => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
       renderWithQueryClient(<BrowseTopics />);

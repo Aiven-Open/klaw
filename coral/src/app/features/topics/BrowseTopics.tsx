@@ -1,6 +1,5 @@
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
-import { TopicEnv } from "src/domain/topic";
 import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
 import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
 import TopicList from "src/app/features/topics/components/list/TopicList";
@@ -9,15 +8,16 @@ import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useSearchParams } from "react-router-dom";
+import { Environment } from "src/domain/environment";
 
 // Use a UUID value to represent empty option value.
 const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
-const ALL_ENVIRONMENTS_VALUE = TopicEnv.ALL;
+const ALL_ENVIRONMENTS_VALUE = "ALL";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const [env, setEnv] = useState<TopicEnv>(ALL_ENVIRONMENTS_VALUE);
+  const [env, setEnv] = useState<Environment>(ALL_ENVIRONMENTS_VALUE);
   const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
 
   const { data: topicEnvs } = useGetEnvs();
@@ -40,7 +40,7 @@ function BrowseTopics() {
           <FlexboxItem width={"l7"}>
             <SelectEnv
               envOptions={[
-                { label: "All Environments", value: TopicEnv.ALL },
+                { label: "All Environments", value: ALL_ENVIRONMENTS_VALUE },
                 ...topicEnvs.map((env) => ({ label: env, value: env })),
               ]}
               activeOption={env}
@@ -81,7 +81,7 @@ function BrowseTopics() {
     </>
   );
 
-  function selectEnvironment(environment: TopicEnv) {
+  function selectEnvironment(environment: Environment) {
     setEnv(environment);
     if (environment === ALL_ENVIRONMENTS_VALUE) {
       searchParams.delete("environment");
