@@ -2,7 +2,7 @@ import { NativeSelect, Option } from "@aivenio/design-system";
 import { ChangeEvent } from "react";
 
 type SelectTeamProps = {
-  teamOptions: Array<string>;
+  teamOptions: Array<{ label: string; value: string }>;
   activeOption: string;
   selectTeam: (value: string) => void;
 };
@@ -19,13 +19,11 @@ function SelectTeam(props: SelectTeamProps) {
       value={activeOption}
       onChange={(event) => onChangeEnv(event)}
     >
-      {teamOptions.map((env) => {
-        return (
-          <Option key={env} value={env}>
-            {env}
-          </Option>
-        );
-      })}
+      {teamOptions.map(({ label, value }) => (
+        <Option key={value} value={value}>
+          {label}
+        </Option>
+      ))}
     </NativeSelect>
   );
 }

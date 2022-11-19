@@ -8,11 +8,17 @@ import { useGetTeams } from "src/app/features/topics/hooks/teams/useGetTeams";
 import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
+import { useSearchParams } from "react-router-dom";
+
+// Use a UUID value to represent empty option value.
+const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
+const ALL_ENVIRONMENTS_VALUE = TopicEnv.ALL;
 
 function BrowseTopics() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const [env, setEnv] = useState<TopicEnv>(TopicEnv.ALL);
-  const [team, setTeam] = useState<string>("All teams");
+  const [env, setEnv] = useState<TopicEnv>(ALL_ENVIRONMENTS_VALUE);
+  const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
 
   const { data: topicEnvs } = useGetEnvs();
   const { data: topicTeams } = useGetTeams();
@@ -33,18 +39,24 @@ function BrowseTopics() {
         {topicEnvs && (
           <FlexboxItem width={"l7"}>
             <SelectEnv
-              envOptions={[...topicEnvs, TopicEnv.ALL]}
+              envOptions={[
+                { label: "All Environments", value: TopicEnv.ALL },
+                ...topicEnvs.map((env) => ({ label: env, value: env })),
+              ]}
               activeOption={env}
-              selectEnv={setEnv}
+              selectEnv={selectEnvironment}
             />
           </FlexboxItem>
         )}
         {topicTeams && (
           <FlexboxItem width={"l7"}>
             <SelectTeam
-              teamOptions={[...topicTeams, "All teams"]}
+              teamOptions={[
+                { label: "All teams", value: ALL_TEAMS_VALUE },
+                ...topicTeams.map((team) => ({ label: team, value: team })),
+              ]}
               activeOption={team}
-              selectTeam={setTeam}
+              selectTeam={selectTeam}
             />
           </FlexboxItem>
         )}
@@ -68,6 +80,26 @@ function BrowseTopics() {
       </Flexbox>
     </>
   );
+
+  function selectEnvironment(environment: TopicEnv) {
+    setEnv(environment);
+    if (environment === ALL_ENVIRONMENTS_VALUE) {
+      searchParams.delete("environment");
+    } else {
+      searchParams.set("environment", environment);
+    }
+    setSearchParams(searchParams);
+  }
+
+  function selectTeam(team: string) {
+    setTeam(team);
+    if (team === ALL_TEAMS_VALUE) {
+      searchParams.delete("team");
+    } else {
+      searchParams.set("team", team);
+    }
+    setSearchParams(searchParams);
+  }
 }
 
 export default BrowseTopics;

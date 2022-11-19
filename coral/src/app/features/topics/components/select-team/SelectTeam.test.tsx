@@ -3,7 +3,9 @@ import userEvent from "@testing-library/user-event";
 import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
 
 describe("SelectTeam.tsx", () => {
-  const teamOptions = ["All teams", "Marketing", "Infra", "Devrel"];
+  const teamOptions = ["All teams", "Marketing", "Infra", "Devrel"].map(
+    (team) => ({ label: team, value: team })
+  );
 
   describe("renders all necessary elements", () => {
     const activeOption = "Marketing";
@@ -29,9 +31,9 @@ describe("SelectTeam.tsx", () => {
     });
 
     it("renders a list of given options for teams", () => {
-      teamOptions.forEach((env) => {
+      teamOptions.forEach(({ label }) => {
         const option = screen.getByRole("option", {
-          name: env,
+          name: label,
         });
 
         expect(option).toBeEnabled();

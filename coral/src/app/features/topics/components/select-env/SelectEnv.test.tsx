@@ -4,7 +4,10 @@ import { TopicEnv } from "src/domain/topics";
 import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 
 describe("SelectEnv.tsx", () => {
-  const envOptions: TopicEnv[] = [TopicEnv.ALL, TopicEnv.DEV, TopicEnv.TST];
+  const envOptions = [TopicEnv.ALL, TopicEnv.DEV, TopicEnv.TST].map((env) => ({
+    label: env,
+    value: env,
+  }));
 
   describe("renders all necessary elements", () => {
     const activeOption: TopicEnv = TopicEnv.ALL;
@@ -30,9 +33,9 @@ describe("SelectEnv.tsx", () => {
     });
 
     it("renders a list of given options for environments", () => {
-      envOptions.forEach((env) => {
+      envOptions.forEach(({ label }) => {
         const option = screen.getByRole("option", {
-          name: env,
+          name: label,
         });
 
         expect(option).toBeEnabled();

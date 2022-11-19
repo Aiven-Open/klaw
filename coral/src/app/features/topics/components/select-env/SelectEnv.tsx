@@ -3,7 +3,7 @@ import { ChangeEvent } from "react";
 import { TopicEnv } from "src/domain/topics";
 
 type SelectEnvProps = {
-  envOptions: Array<TopicEnv>;
+  envOptions: Array<{ label: string; value: string }>;
   activeOption: TopicEnv;
   selectEnv: (value: TopicEnv) => void;
 };
@@ -20,13 +20,11 @@ function SelectEnv(props: SelectEnvProps) {
       value={activeOption}
       onChange={(event) => onChangeEnv(event)}
     >
-      {envOptions.map((env) => {
-        return (
-          <Option key={env} value={env}>
-            {env}
-          </Option>
-        );
-      })}
+      {envOptions.map(({ label, value }) => (
+        <Option key={value} value={value}>
+          {label}
+        </Option>
+      ))}
     </NativeSelect>
   );
 }
