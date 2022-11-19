@@ -130,7 +130,7 @@ public class TopicOverviewServiceTest {
   }
 
   private List<Acl> getAclsSOT(String topicName) {
-    List<Acl> aclList = new ArrayList();
+    List<Acl> aclList = new ArrayList<>();
 
     Acl aclReq = new Acl();
     aclReq.setReq_no(1001);

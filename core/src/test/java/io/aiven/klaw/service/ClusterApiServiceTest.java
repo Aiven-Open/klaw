@@ -94,9 +94,6 @@ public class ClusterApiServiceTest {
     String result = clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
     assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
-    result = clusterApiService.getSchemaClusterStatus("", 1);
-    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
-
     result =
         clusterApiService.getKafkaClusterStatus("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
     assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
@@ -111,9 +108,6 @@ public class ClusterApiServiceTest {
         .thenThrow(new RuntimeException("error"));
 
     String result = clusterApiService.getClusterApiStatus("", false, 1);
-    assertThat(result).isEqualTo("OFFLINE");
-
-    result = clusterApiService.getSchemaClusterStatus("", 1);
     assertThat(result).isEqualTo("OFFLINE");
 
     result =

@@ -372,9 +372,11 @@ public class MailUtils {
 
       switch (envPropertyType) {
         case "ORDER_OF_ENVS":
-          tenantModel
-              .getOrderOfTopicPromotionEnvsList()
-              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          List<String> orderOfTopicPromotionEnvsList =
+              tenantModel.getOrderOfTopicPromotionEnvsList();
+          if (null != orderOfTopicPromotionEnvsList && !orderOfTopicPromotionEnvsList.isEmpty()) {
+            orderOfTopicPromotionEnvsList.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
           break;
         case "REQUEST_TOPICS_OF_ENVS":
           tenantModel

@@ -529,19 +529,24 @@ public class AclControllerService {
   private ResponseEntity<ApiResponse> invokeClusterApiAclRequest(int tenantId, AclRequests aclReq)
       throws KlawException {
     ResponseEntity<ApiResponse> response = null;
-    if (aclReq.getAclIpPrincipleType() == AclIPPrincipleType.IP_ADDRESS) {
-      String[] aclListIp = aclReq.getAcl_ip().split(SEPARATOR_ACL);
-      for (String s : aclListIp) {
-        aclReq.setAcl_ip(s);
-        response = clusterApiService.approveAclRequests(aclReq, tenantId);
-      }
-    } else if (aclReq.getAclIpPrincipleType() == AclIPPrincipleType.PRINCIPAL) {
-      String[] aclListSsl = aclReq.getAcl_ssl().split(SEPARATOR_ACL);
-      for (String s : aclListSsl) {
-        aclReq.setAcl_ssl(s);
-        response = clusterApiService.approveAclRequests(aclReq, tenantId);
-      }
+    AclIPPrincipleType aclIPPrincipleType = aclReq.getAclIpPrincipleType();
+    switch (aclIPPrincipleType) {
+      case IP_ADDRESS:
+        String[] aclListIp = aclReq.getAcl_ip().split(SEPARATOR_ACL);
+        for (String s : aclListIp) {
+          aclReq.setAcl_ip(s);
+          response = clusterApiService.approveAclRequests(aclReq, tenantId);
+        }
+        break;
+      case PRINCIPAL:
+        String[] aclListSsl = aclReq.getAcl_ssl().split(SEPARATOR_ACL);
+        for (String s : aclListSsl) {
+          aclReq.setAcl_ssl(s);
+          response = clusterApiService.approveAclRequests(aclReq, tenantId);
+        }
+        break;
     }
+
     return response;
   }
 

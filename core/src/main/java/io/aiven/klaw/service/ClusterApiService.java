@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.service.KwConstants.CLUSTER_CONN_URL_KEY;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
@@ -125,6 +126,10 @@ public class ClusterApiService {
 
   private void getClusterApiProperties(int tenantId) {
     clusterConnUrl = manageDatabase.getKwPropertyValue(CLUSTER_CONN_URL_KEY, tenantId);
+    if (clusterApiAccessBase64Secret.isBlank()) {
+      log.info(
+          "CONFIGURE CLUSTER API SECRET FOR CLUSTER OPERATIONS. klaw.clusterapi.access.base64.secret");
+    }
   }
 
   public String getClusterApiStatus(String clusterApiUrl, boolean testConnection, int tenantId) {
@@ -145,21 +150,6 @@ public class ClusterApiService {
       return Objects.requireNonNull(resultBody.getBody()).value;
     } catch (Exception e) {
       log.error("Error from getClusterApiStatus ", e);
-      return ClusterStatus.OFFLINE.value;
-    }
-  }
-
-  String getSchemaClusterStatus(String host, int tenantId) {
-    log.info("getSchemaClusterStatus {}", host);
-    getClusterApiProperties(tenantId);
-    String clusterStatus;
-    try {
-      String uri = host + "/subjects";
-      ResponseEntity<ClusterStatus> resultBody =
-          getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
-      return Objects.requireNonNull(resultBody.getBody()).value;
-    } catch (Exception e) {
-      log.error("Error from getSchemaClusterStatus ", e);
       return ClusterStatus.OFFLINE.value;
     }
   }
@@ -503,7 +493,8 @@ public class ClusterApiService {
 
         if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getAclType())
             && null != aclReq.getJsonParams()) {
-          Map<String, String> jsonObj = OBJECT_MAPPER.readValue(aclReq.getJsonParams(), Map.class);
+          Map<String, String> jsonObj =
+              OBJECT_MAPPER.readValue(aclReq.getJsonParams(), new TypeReference<>() {});
           String aivenAclKey = "aivenaclid";
           if (jsonObj.containsKey(aivenAclKey)) {
             clusterAclRequest =

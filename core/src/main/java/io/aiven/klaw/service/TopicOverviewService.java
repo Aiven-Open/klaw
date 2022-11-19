@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,9 +51,6 @@ public class TopicOverviewService {
 
   public TopicOverview getTopicOverview(String topicNameSearch) {
     log.debug("getAcls {}", topicNameSearch);
-    String userDetails = getUserName();
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (topicNameSearch != null) {
       topicNameSearch = topicNameSearch.trim();
@@ -60,11 +58,15 @@ public class TopicOverviewService {
       return null;
     }
 
-    Integer loggedInUserTeam = getMyTeamId(userDetails);
+    String userName = getUserName();
+    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+
+    Integer loggedInUserTeam = getMyTeamId(userName);
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    List<String> allowedEnvIdList = getEnvsFromUserId(userName);
     topics =
         topics.stream()
             .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
@@ -81,17 +83,18 @@ public class TopicOverviewService {
 
     String syncCluster;
     String[] reqTopicsEnvs;
-    ArrayList<String> reqTopicsEnvsList = new ArrayList<>();
+    Set<String> reqTopicsEnvsList = new HashSet<>();
     try {
       syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
     } catch (Exception exception) {
+      log.error("Exception while getting syncCluster. Ignored. ", exception);
       syncCluster = null;
     }
 
     try {
       String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
       reqTopicsEnvs = requestTopicsEnvs.split(",");
-      reqTopicsEnvsList = new ArrayList<>(Arrays.asList(reqTopicsEnvs));
+      reqTopicsEnvsList = new HashSet<>(Arrays.asList(reqTopicsEnvs));
     } catch (Exception exception) {
       log.error("Error in getting req topic envs", exception);
     }
@@ -105,7 +108,7 @@ public class TopicOverviewService {
     List<Topic> topicsSearchList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicNameSearch, tenantId);
     // tenant filtering
-    Integer topicOwnerTeam = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    Integer topicOwnerTeamId = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
 
     enrichTopicInfoList(
         topicNameSearch,
@@ -116,7 +119,7 @@ public class TopicOverviewService {
         topicInfoList,
         aclInfo,
         prefixedAclsInfo,
-        topicOwnerTeam);
+        topicOwnerTeamId);
 
     aclInfo = getAclInfoList(tenantId, topicOverview, topicInfoList, aclInfo, prefixedAclsInfo);
 
@@ -128,7 +131,7 @@ public class TopicOverviewService {
         topicOverview,
         topicInfoList,
         aclInfo,
-        topicOwnerTeam);
+        topicOwnerTeamId);
 
     return topicOverview;
   }
@@ -311,11 +314,11 @@ public class TopicOverviewService {
       HandleDbRequests handleDb,
       int tenantId,
       Integer loggedInUserTeam,
-      ArrayList<String> reqTopicsEnvsList,
+      Set<String> reqTopicsEnvsList,
       List<TopicInfo> topicInfoList,
       List<AclInfo> aclInfo,
       List<AclInfo> prefixedAclsInfo,
-      Integer topicOwnerTeam) {
+      Integer topicOwnerTeamId) {
     List<Acl> prefixedAcls = new ArrayList<>();
     List<Acl> aclsFromSOT = new ArrayList<>();
     List<Acl> allPrefixedAcls;
@@ -346,7 +349,7 @@ public class TopicOverviewService {
       }
 
       // show edit button only for restricted envs
-      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)
+      if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)
           && reqTopicsEnvsList.contains(topicInfo.getClusterId())) {
         topicInfo.setShowEditTopic(true);
       }
@@ -455,8 +458,8 @@ public class TopicOverviewService {
       hashMap.put("topicName", topicSearch);
 
       if (topics != null && topics.size() > 0) {
-        List<String> envList = new ArrayList<>();
-        topics.forEach(topic -> envList.add(topic.getEnvironment()));
+        List<String> envList =
+            topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
 
         // tenant filtering
         String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
@@ -497,8 +500,9 @@ public class TopicOverviewService {
                 .collect(Collectors.toList());
       }
     } catch (Exception exception) {
-      log.error("No environments/clusters found.", exception);
-      return new ArrayList<>();
+      // this situation cannot happen, as every topic has an assigned team and this flow is
+      // triggered on topic overview, which means topic has an owner
+      log.error("No environments/clusters found. Error ignored.", exception);
     }
     return topicsFromSOT;
   }
