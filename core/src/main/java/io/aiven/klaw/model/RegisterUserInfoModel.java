@@ -15,9 +15,9 @@ import lombok.ToString;
 @ToString
 public class RegisterUserInfoModel implements Serializable {
 
+  // Can be emailid or username
   @Size(min = 6, max = 300, message = "UserName must be above 5 characters")
   @NotNull(message = "Username cannot be null")
-  @Pattern(message = "Invalid username", regexp = "^[a-zA-Z0-9]{3,}$")
   private String username;
 
   private String pwd;

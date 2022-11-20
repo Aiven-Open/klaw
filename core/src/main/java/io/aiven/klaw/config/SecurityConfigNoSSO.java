@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.AttributesMapper;
@@ -29,7 +29,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
+@ConditionalOnExpression(
+    "'${klaw.enable.sso}'.equals('false') && !'${klaw.login.authentication.type}'.equals('azuread')")
 @Slf4j
 public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
@@ -46,9 +47,6 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Value("${spring.ldap.userDnPatterns:@null}")
   private String userDnPatterns;
-
-  @Value("${spring.ldap.groupSearchBase:ou=groups:@null}")
-  private String groupSearchBase;
 
   @Value("${spring.ldap.passwordAttribute:@null}")
   private String passwordAttribute;
@@ -90,41 +88,10 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    List<String> staticResourcesHtmlArray =
-        new ArrayList<>(
-            List.of(
-                "/assets/**",
-                "/lib/**",
-                "/js/**",
-                "/home",
-                "/home/**",
-                "/register**",
-                "/authenticate",
-                "/login**",
-                "/terms**",
-                "/registrationReview**",
-                "/forgotPassword",
-                "/getDbAuth",
-                "/feedback**",
-                "/resetPassword",
-                "/getRoles",
-                "/getTenantsInfo",
-                "/getBasicInfo",
-                "/getAllTeamsSUFromRegisterUsers",
-                "/registerUser",
-                "/resetMemoryCache/**",
-                "/userActivation**",
-                "/getActivationInfo**"));
-
-    if (coralEnabled) {
-      staticResourcesHtmlArray.add("/coral/**");
-      staticResourcesHtmlArray.add("/assets/coral/**");
-    }
-
     http.csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers(staticResourcesHtmlArray.toArray(new String[0]))
+        .antMatchers(ConfigUtils.getStaticResources(coralEnabled).toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .fullyAuthenticated()

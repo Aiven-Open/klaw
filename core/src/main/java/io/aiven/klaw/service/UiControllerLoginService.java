@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -52,30 +53,43 @@ public class UiControllerLoginService {
 
   public String getReturningPage(String uri) {
     try {
-      UserDetails userDetails =
-          (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      if (userDetails != null) {
+      String userName;
 
+      if ("azuread".equals(authenticationType)) {
+        DefaultOidcUser userDetails =
+            (org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userName = userDetails.getPreferredUsername();
+      } else {
+        UserDetails userDetails =
+            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        userName = userDetails.getUsername();
+      }
+
+      if (userName != null) {
         HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
-        UserInfo userInfo = reqsHandle.getUsersInfo(userDetails.getUsername());
+        UserInfo userInfo = reqsHandle.getUsersInfo(userName);
 
         if (userInfo == null) {
           SecurityContextHolder.getContext().setAuthentication(null);
           if ("saas".equals(kwInstallationType)) {
             return "registerSaas.html";
           }
-          if ("ad".equals(authenticationType)) return "registerLdap.html";
+
+          if ("ad".equals(authenticationType) || "azuread".equals(authenticationType)) {
+            return "registerLdap.html";
+          }
           return "register.html";
         }
 
         if ("saas".equals(kwInstallationType)) {
-          int tenantId = commonUtilsService.getTenantId(userDetails.getUsername());
+          int tenantId = commonUtilsService.getTenantId(userName);
           if (!"true".equals(manageDatabase.getTenantFullConfig(tenantId).getIsActive())) {
             return "tenantInfo.html";
           }
         }
 
-        log.debug("Authenticated user : {}", userDetails.getUsername());
+        log.debug("Authenticated user : {}", userName);
         if ("login.html".equals(uri)
             || "loginSaas.html".equals(uri)
             || "home.html".equals(uri)

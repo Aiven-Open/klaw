@@ -122,6 +122,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
+  @Value("${klaw.superadmin.default.username:'superadmin'}")
+  private String superAdminDefaultUserName;
+
   private ApplicationContext contextApp;
 
   @Override
@@ -181,8 +184,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
 
     // add user
-    String userName = "superadmin";
-    UserInfo userExists = handleDbRequests.getUsersInfo(userName);
+    UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
     if (userExists == null) {
       handleDbRequests.addNewUser(
           defaultDataService.getUser(
@@ -193,7 +195,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
                   .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
                   .getTeamId(),
               kwAdminMailId,
-              userName,
+              superAdminDefaultUserName,
               encryptorSecretKey));
     }
 

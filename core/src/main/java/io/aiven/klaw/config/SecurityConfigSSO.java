@@ -2,6 +2,7 @@ package io.aiven.klaw.config;
 
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,10 +18,6 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
@@ -28,66 +25,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 @EnableWebSecurity
 public class SecurityConfigSSO extends WebSecurityConfigurerAdapter {
 
-  private void shutdownApp() {
-    // ((ConfigurableApplicationContext) contextApp).close();
-  }
+  @Value("${klaw.coral.enabled:false}")
+  private boolean coralEnabled;
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-
-    String[] staticResources = {
-      "/logout**",
-      "/login**",
-      "/assets/**",
-      "/js/**",
-      "/oauthLogin",
-      "/login/oauth2/**",
-      "/lib/**",
-      "/register**",
-      "/terms**",
-      "/registrationReview**",
-      "/forgotPassword",
-      "/getDbAuth",
-      "/resetPassword",
-      "/getRoles",
-      "/getAllTeamsSUFromRegisterUsers",
-      "/getTenantsInfo",
-      "/getBasicInfo",
-      "/getAllTeamsSUFromRegisterUsers",
-      "/registerUser",
-      "/resetMemoryCache/**",
-      "/userActivation**",
-      "/getActivationInfo**"
-    };
-
-    String[] loginResources = {"/logout", "/login**"};
-
-    http.csrf()
-        .disable()
-        .authorizeRequests()
-        .antMatchers(staticResources)
-        .permitAll()
-        .anyRequest()
-        .authenticated()
-        .and()
-        .oauth2Login()
-        .loginPage("/login")
-        .and()
-        .logout()
-        .invalidateHttpSession(true)
-        .deleteCookies("JSESSIONID")
-        .addLogoutHandler(
-            new HeaderWriterLogoutHandler(
-                new ClearSiteDataHeaderWriter(
-                    ClearSiteDataHeaderWriter.Directive.CACHE,
-                    ClearSiteDataHeaderWriter.Directive.COOKIES,
-                    ClearSiteDataHeaderWriter.Directive.STORAGE)));
-  }
-
-  private CsrfTokenRepository csrfTokenRepository() {
-    HttpSessionCsrfTokenRepository repository = new HttpSessionCsrfTokenRepository();
-    repository.setHeaderName("X-XSRF-TOKEN");
-    return repository;
+    ConfigUtils.applyHttpSecurityConfig(http, coralEnabled);
   }
 
   @Bean

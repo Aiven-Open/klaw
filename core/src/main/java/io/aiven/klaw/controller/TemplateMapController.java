@@ -48,7 +48,7 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
   public String login(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (ssoEnabled.equals("true")) {
+    if (ssoEnabled.equals("true") || authenticationType.equals("azuread")) {
       return "oauthLogin";
     }
     if (authenticationType.equals("db") && kwInstallationType.equals("saas"))
@@ -66,6 +66,7 @@ public class TemplateMapController {
   public String register(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
     if (authenticationType.equals("ldap")
         || authenticationType.equals("ad")
+        || authenticationType.equals("azuread")
         || ssoEnabled.equals("true")) {
       if (kwInstallationType.equals("saas"))
         return checkAuth("registerSaas.html", request, response);
@@ -106,7 +107,9 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/addUser", method = RequestMethod.GET)
   public String addUsers(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (authenticationType.equals("ldap") || authenticationType.equals("ad"))
+    if (authenticationType.equals("ldap")
+        || authenticationType.equals("ad")
+        || authenticationType.equals("azuread"))
       return checkAuth("addUserLdap.html", request, response);
     else return checkAuth("addUser.html", request, response);
   }
@@ -237,8 +240,9 @@ public class TemplateMapController {
   @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
   public String changePwd(
       ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (authenticationType.equals("ldap") || authenticationType.equals("ad"))
-      return checkAuth("index", request, response);
+    if (authenticationType.equals("ldap")
+        || authenticationType.equals("ad")
+        || authenticationType.equals("azuread")) return checkAuth("index", request, response);
     else return checkAuth("changePwd.html", request, response);
   }
 

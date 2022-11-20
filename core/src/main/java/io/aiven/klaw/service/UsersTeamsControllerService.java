@@ -424,20 +424,18 @@ public class UsersTeamsControllerService {
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
 
-    if ("saas".equals(kwInstallationType)) {
-      String regex = "^[A-Za-z0-9+_.-]+@(.+)$";
-      Pattern p = Pattern.compile(regex);
-      Matcher m = p.matcher(newUser.getUsername());
-      if (!m.matches()) {
-        return ApiResponse.builder().result("Invalid mail id").build();
-      }
+    String regex;
+
+    if ("saas".equals(kwInstallationType) || ("azuread".equals(authenticationType))) {
+      regex = "^[A-Za-z0-9+_.-]+@(.+)$";
     } else {
-      String regex = "^[a-zA-Z0-9]{3,}$";
-      Pattern p = Pattern.compile(regex);
-      Matcher m = p.matcher(newUser.getUsername());
-      if (!m.matches()) {
-        return ApiResponse.builder().result("Invalid username").build();
-      }
+      regex = "^[a-zA-Z0-9]{3,}$";
+    }
+
+    Pattern p = Pattern.compile(regex);
+    Matcher m = p.matcher(newUser.getUsername());
+    if (!m.matches()) {
+      return ApiResponse.builder().result("Invalid username/mail id").build();
     }
 
     int tenantId;

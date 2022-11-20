@@ -63,6 +63,9 @@ public class UtilControllerService {
   @Value("${klaw.sso.server.loginurl:url}")
   private String ssoServerLoginUrl;
 
+  @Value("${klaw.aad.server.loginurl}")
+  private String azureAdLoginUrl;
+
   @Autowired private ConfigurableApplicationContext context;
 
   public Map<String, String> getDashboardStats() {
@@ -599,6 +602,8 @@ public class UtilControllerService {
 
     if ("true".equals(ssoEnabled)) {
       resultBasicInfo.put("ssoServerUrl", ssoServerLoginUrl);
+    } else if (authenticationType.equals("azuread")) {
+      resultBasicInfo.put("ssoServerUrl", azureAdLoginUrl);
     }
 
     return resultBasicInfo;
