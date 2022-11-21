@@ -1,8 +1,13 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { render, RenderOptions } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
-function renderWithQueryClient(ui: ReactElement, options?: RenderOptions) {
+// TODO: Think how we should model the render utilities. All components don't need MemoryRouter.
+function renderWithMemoryRouterAndQueryClient(
+  ui: ReactElement,
+  options?: RenderOptions
+) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -13,10 +18,12 @@ function renderWithQueryClient(ui: ReactElement, options?: RenderOptions) {
   });
   render(ui, {
     wrapper: ({ children }) => (
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter>{children}</MemoryRouter>
+      </QueryClientProvider>
     ),
     ...options,
   });
 }
 
-export { renderWithQueryClient };
+export { renderWithMemoryRouterAndQueryClient as renderWithQueryClient };

@@ -322,7 +322,7 @@ describe("BrowseTopics.tsx", () => {
         name: "Team",
       });
 
-      expect(select).toHaveValue("All teams");
+      expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
     });
 
     it("changes active selected option when user selects `TEST_TEAM_02`", async () => {
@@ -333,7 +333,7 @@ describe("BrowseTopics.tsx", () => {
       const option = within(select).getByRole("option", {
         name: "TEST_TEAM_02",
       });
-      expect(select).toHaveValue("All teams");
+      expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
 
       await userEvent.selectOptions(select, option);
 
