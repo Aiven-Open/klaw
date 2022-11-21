@@ -1,5 +1,7 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
@@ -231,7 +233,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   private void checkSSOAuthentication() {
-    if ("db".equals(authenticationType) && "true".equals(ssoEnabled)) {
+    if (DATABASE.value.equals(authenticationType) && "true".equals(ssoEnabled)) {
       log.error(
           "Error : Please configure authentication type to ad, if SSO is enabled. Shutting down..");
       shutdownApp();

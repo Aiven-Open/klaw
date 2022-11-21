@@ -1,5 +1,10 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.AuthenticationType.LDAP;
+
 import io.aiven.klaw.service.UiControllerLoginService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @Slf4j
 public class TemplateMapController {
+
+  private static final String SAAS = "saas";
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -48,10 +55,10 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
   public String login(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (ssoEnabled.equals("true") || authenticationType.equals("azuread")) {
+    if (ssoEnabled.equals("true") || authenticationType.equals(AZURE_ACTIVE_DIRECTORY.value)) {
       return "oauthLogin";
     }
-    if (authenticationType.equals("db") && kwInstallationType.equals("saas"))
+    if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
       return checkAuth("loginSaas.html", request, response);
     return "login.html";
   }
@@ -64,14 +71,16 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/register", method = RequestMethod.GET)
   public String register(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (authenticationType.equals("ldap")
-        || authenticationType.equals("ad")
-        || authenticationType.equals("azuread")
-        || ssoEnabled.equals("true")) {
-      if (kwInstallationType.equals("saas"))
+    if (LDAP.value.equals(authenticationType)
+        || ACTIVE_DIRECTORY.value.equals(authenticationType)
+        || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)
+        || "true".equals(ssoEnabled)) {
+      if (SAAS.equals(kwInstallationType)) {
         return checkAuth("registerSaas.html", request, response);
-      else return checkAuth("registerLdap.html", request, response);
-    } else if (authenticationType.equals("db") && kwInstallationType.equals("saas"))
+      } else {
+        return checkAuth("registerLdap.html", request, response);
+      }
+    } else if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
       return checkAuth("registerSaas.html", request, response);
     else return checkAuth("register.html", request, response);
   }
@@ -79,7 +88,7 @@ public class TemplateMapController {
   @RequestMapping(value = "/registrationReview", method = RequestMethod.GET)
   public String registrationReview(
       ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (authenticationType.equals("db") && kwInstallationType.equals("saas"))
+    if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
       return checkAuth("registrationReviewSaas.html", request, response);
     return checkAuth("registrationReview.html", request, response);
   }
@@ -107,9 +116,9 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/addUser", method = RequestMethod.GET)
   public String addUsers(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (authenticationType.equals("ldap")
-        || authenticationType.equals("ad")
-        || authenticationType.equals("azuread"))
+    if (LDAP.value.equals(authenticationType)
+        || ACTIVE_DIRECTORY.value.equals(authenticationType)
+        || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))
       return checkAuth("addUserLdap.html", request, response);
     else return checkAuth("addUser.html", request, response);
   }
@@ -240,9 +249,10 @@ public class TemplateMapController {
   @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
   public String changePwd(
       ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (authenticationType.equals("ldap")
-        || authenticationType.equals("ad")
-        || authenticationType.equals("azuread")) return checkAuth("index", request, response);
+    if (LDAP.value.equals(authenticationType)
+        || ACTIVE_DIRECTORY.value.equals(authenticationType)
+        || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))
+      return checkAuth("index", request, response);
     else return checkAuth("changePwd.html", request, response);
   }
 
@@ -399,8 +409,6 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/tenants", method = RequestMethod.GET)
   public String tenants(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    //        if(authenticationType.equals("db"))
-    //            return checkAuth("index", request, response);
     return checkAuth("tenants.html", request, response);
   }
 

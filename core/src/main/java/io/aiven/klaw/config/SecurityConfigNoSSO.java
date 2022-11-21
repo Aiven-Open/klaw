@@ -1,5 +1,9 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.AuthenticationType.LDAP;
+
 import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -111,11 +115,11 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    if (authenticationType != null && authenticationType.equals("db")) {
+    if (authenticationType != null && authenticationType.equals(DATABASE.value)) {
       dbAuthentication(auth);
-    } else if (authenticationType != null && authenticationType.equals("ldap")) {
+    } else if (authenticationType != null && authenticationType.equals(LDAP.value)) {
       ldapAuthentication(auth);
-    } else if (authenticationType != null && authenticationType.equals("ad")) {
+    } else if (authenticationType != null && authenticationType.equals(ACTIVE_DIRECTORY.value)) {
       auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
           .userDetailsService(userDetailsService());
     } else {
@@ -128,7 +132,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Bean
   public AuthenticationManager authenticationManagerBean() throws Exception {
     AuthenticationManager result;
-    if (authenticationType != null && authenticationType.equals("ad")) {
+    if (authenticationType != null && authenticationType.equals(ACTIVE_DIRECTORY.value)) {
       log.info("AD authentication configured.");
       log.info(
           "AD URL : {}, AD Domain : {}, AD Root DN : {}, AD Filter : {}",
@@ -193,7 +197,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Bean
   public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
     final Properties globalUsers = new Properties();
-    if (authenticationType != null && authenticationType.equals("db")) {
+    if (authenticationType != null && authenticationType.equals(DATABASE.value)) {
       log.info("Loading all users !!");
       List<UserInfo> users;
 

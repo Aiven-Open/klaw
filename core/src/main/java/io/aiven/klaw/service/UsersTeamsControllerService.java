@@ -1,5 +1,9 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -47,6 +51,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UsersTeamsControllerService {
 
+  private static final String SAAS = "saas";
+
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
@@ -66,6 +72,12 @@ public class UsersTeamsControllerService {
   @Autowired ManageDatabase manageDatabase;
 
   private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
+
+  // pattern for simple username/mailid
+  private static final Pattern saasPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+
+  // pattern for simple username
+  private static final Pattern defaultPattern = Pattern.compile("^[a-zA-Z0-9]{3,}$");
 
   @Autowired
   public UsersTeamsControllerService(InMemoryUserDetailsManager inMemoryUserDetailsManager) {
@@ -126,7 +138,8 @@ public class UsersTeamsControllerService {
 
     String pwdUpdated = newUser.getUserPassword();
     String existingPwd;
-    if ("*******".equals(pwdUpdated) && "db".equals(authenticationType)) {
+    String maskedPwd = "*******";
+    if (maskedPwd.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
       if (!"".equals(existingPwd)) {
         newUser.setUserPassword(decodePwd(existingPwd));
@@ -135,7 +148,7 @@ public class UsersTeamsControllerService {
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-      if ("db".equals(authenticationType)) {
+      if (DATABASE.value.equals(authenticationType)) {
         if (inMemoryUserDetailsManager.userExists(newUser.getUsername())) {
           inMemoryUserDetailsManager.updateUser(
               User.withUsername(newUser.getUsername())
@@ -423,17 +436,7 @@ public class UsersTeamsControllerService {
 
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
-
-    String regex;
-
-    if ("saas".equals(kwInstallationType) || ("azuread".equals(authenticationType))) {
-      regex = "^[A-Za-z0-9+_.-]+@(.+)$";
-    } else {
-      regex = "^[a-zA-Z0-9]{3,}$";
-    }
-
-    Pattern p = Pattern.compile(regex);
-    Matcher m = p.matcher(newUser.getUsername());
+    Matcher m = getPattern().matcher(newUser.getUsername());
     if (!m.matches()) {
       return ApiResponse.builder().result("Invalid username/mail id").build();
     }
@@ -459,14 +462,14 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
+    if (ACTIVE_DIRECTORY.value.equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
       newUser.setRole("NA");
     }
 
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-      if ("db".equals(authenticationType)) {
+      if (DATABASE.value.equals(authenticationType)) {
         inMemoryUserDetailsManager.createUser(
             User.withUsername(newUser.getUsername())
                 .password(encoder.encode(newUser.getUserPassword()))
@@ -578,7 +581,8 @@ public class UsersTeamsControllerService {
   }
 
   public ApiResponse changePwd(String changePwd) throws KlawException {
-    if ("ldap".equals(authenticationType) || "ad".equals(authenticationType)) {
+    if (LDAP.value.equals(authenticationType)
+        || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
       return ApiResponse.builder()
           .result("Password cannot be updated in ldap/ad authentication mode.")
           .build();
@@ -806,7 +810,7 @@ public class UsersTeamsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
-    if ("saas".equals(kwInstallationType)) {
+    if (SAAS.equals(kwInstallationType)) {
       registerUserInfoList =
           manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfoForTenant(tenantId);
     } else {
@@ -859,7 +863,7 @@ public class UsersTeamsControllerService {
       userInfo.setRole(registerUserInfo.getRole());
       userInfo.setTenantId(tenantId);
 
-      if ("db".equals(authenticationType)) {
+      if (DATABASE.value.equals(authenticationType)) {
         userInfo.setUserPassword(decodePwd(registerUserInfo.getPwd()));
       } else {
         userInfo.setUserPassword("");
@@ -925,5 +929,14 @@ public class UsersTeamsControllerService {
 
   private Integer getMyTeamId(String userName) {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  }
+
+  private Pattern getPattern() {
+    if (SAAS.equals(kwInstallationType)
+        || (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))) {
+      return saasPattern;
+    } else {
+      return defaultPattern;
+    }
   }
 }

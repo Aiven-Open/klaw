@@ -1,5 +1,8 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -26,6 +29,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class UiControllerLoginService {
+
+  private static final String SAAS = "saas";
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -55,10 +60,9 @@ public class UiControllerLoginService {
     try {
       String userName;
 
-      if ("azuread".equals(authenticationType)) {
+      if (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
         DefaultOidcUser userDetails =
-            (org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            (DefaultOidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         userName = userDetails.getPreferredUsername();
       } else {
         UserDetails userDetails =
@@ -72,17 +76,18 @@ public class UiControllerLoginService {
 
         if (userInfo == null) {
           SecurityContextHolder.getContext().setAuthentication(null);
-          if ("saas".equals(kwInstallationType)) {
+          if (SAAS.equals(kwInstallationType)) {
             return "registerSaas.html";
           }
 
-          if ("ad".equals(authenticationType) || "azuread".equals(authenticationType)) {
+          if (ACTIVE_DIRECTORY.value.equals(authenticationType)
+              || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
             return "registerLdap.html";
           }
           return "register.html";
         }
 
-        if ("saas".equals(kwInstallationType)) {
+        if (SAAS.equals(kwInstallationType)) {
           int tenantId = commonUtilsService.getTenantId(userName);
           if (!"true".equals(manageDatabase.getTenantFullConfig(tenantId).getIsActive())) {
             return "tenantInfo.html";
@@ -102,7 +107,7 @@ public class UiControllerLoginService {
         }
         return uri;
       }
-      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType)) {
+      if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType)) {
         return defaultPageSaas;
       } else {
         return defaultPage;
@@ -120,7 +125,7 @@ public class UiControllerLoginService {
           || "terms.html".equals(uri)
           || "feedback.html".equals(uri)) return uri;
 
-      if ("db".equals(authenticationType) && "saas".equals(kwInstallationType)) {
+      if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType)) {
         return defaultPageSaas;
       } else {
         return defaultPage;
