@@ -1,12 +1,11 @@
 import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
-import { TopicDTOApiResponse, TopicEnv } from "src/domain/topics/topics-types";
-import { transformTopicApiResponse } from "src/domain/topics/topic-transformer";
+import { TopicDTOApiResponse } from "src/domain/topic/topic-types";
+import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import {
   createMockTopic,
   createMockTopicApiResponse,
-  createMockTopicEnvDTO,
-} from "src/domain/topics/topic-test-helper";
+} from "src/domain/topic/topic-test-helper";
 
 // @TODO
 // create visible mocked responses and easy responses for different scenarios to use in tests
@@ -89,17 +88,17 @@ const mockedResponseTopicEnv = [
     createMockTopic({
       topicName: "Topic 1",
       topicId: 1,
-      environmentsList: [TopicEnv.DEV],
+      environmentsList: ["DEV"],
     }),
     createMockTopic({
       topicName: "Topic 2",
       topicId: 2,
-      environmentsList: [TopicEnv.DEV],
+      environmentsList: ["DEV"],
     }),
     createMockTopic({
       topicName: "Topic 3",
       topicId: 3,
-      environmentsList: [TopicEnv.DEV],
+      environmentsList: ["DEV"],
     }),
   ],
 ];
@@ -129,30 +128,6 @@ const mockedResponseTransformed = transformTopicApiResponse(
   mockedResponseSinglePage
 );
 
-function mockGetEnvs({
-  mswInstance,
-  scenario,
-}: {
-  mswInstance: MswInstance;
-  scenario?: "error";
-}) {
-  mswInstance.use(
-    rest.get("getEnvs", async (req, res, ctx) => {
-      if (scenario === "error") {
-        return res(ctx.status(400), ctx.json(""));
-      }
-
-      return res(
-        ctx.status(200),
-        ctx.json([
-          createMockTopicEnvDTO(TopicEnv.DEV),
-          createMockTopicEnvDTO(TopicEnv.TST),
-        ])
-      );
-    })
-  );
-}
-
 function mockGetTeams({
   mswInstance,
   scenario,
@@ -175,7 +150,6 @@ function mockGetTeams({
 }
 
 export {
-  mockGetEnvs,
   mockTopicGetRequest,
   mockGetTeams,
   mockedResponseTransformed,

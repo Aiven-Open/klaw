@@ -6,8 +6,8 @@ import {
   mockedResponseMultiplePageTransformed,
   mockedResponseTransformed,
   mockTopicGetRequest,
-} from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
+} from "src/domain/topic/topic-api.msw";
+
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 
 const queryClient = new QueryClient({
@@ -50,7 +50,7 @@ describe("useGetTopics", () => {
         () =>
           useGetTopics({
             currentPage: 1,
-            topicEnv: TopicEnv.ALL,
+            environment: "ALL",
           }),
         {
           wrapper,
@@ -69,7 +69,7 @@ describe("useGetTopics", () => {
       mockTopicGetRequest({ mswInstance: server, scenario: "error" });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 1, environment: "ALL" }),
         {
           wrapper,
         }
@@ -90,7 +90,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 1, environment: "ALL" }),
         {
           wrapper,
         }
@@ -110,7 +110,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 2, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 2, environment: "ALL" }),
         {
           wrapper,
         }
@@ -131,7 +131,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 3, topicEnv: TopicEnv.ALL }),
+        () => useGetTopics({ currentPage: 3, environment: "ALL" }),
         {
           wrapper,
         }
@@ -145,7 +145,7 @@ describe("useGetTopics", () => {
     });
   });
 
-  describe("handles responses based on the env", () => {
+  describe("handles responses based on the environment", () => {
     it("returns a list of three topics with `DEV` envs", async () => {
       mockTopicGetRequest({
         mswInstance: server,
@@ -153,7 +153,7 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, topicEnv: TopicEnv.DEV }),
+        () => useGetTopics({ currentPage: 1, environment: "DEV" }),
         {
           wrapper,
         }
@@ -167,7 +167,7 @@ describe("useGetTopics", () => {
         .map((topic) => topic.environmentsList)
         .flat();
 
-      expect(envList).toEqual([TopicEnv.DEV, TopicEnv.DEV, TopicEnv.DEV]);
+      expect(envList).toEqual(["DEV", "DEV", "DEV"]);
     });
   });
 });

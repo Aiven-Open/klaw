@@ -2,9 +2,7 @@ import {
   baseTestObjectMockedTopic,
   createMockTopic,
   createMockTopicApiResponse,
-  createMockTopicEnvDTO,
-} from "src/domain/topics/topic-test-helper";
-import { TopicEnv } from "src/domain/topics/topics-types";
+} from "src/domain/topic/topic-test-helper";
 
 describe("topic-test-helper.ts", () => {
   describe("createMockTopic", () => {
@@ -18,18 +16,18 @@ describe("topic-test-helper.ts", () => {
       });
     });
 
-    it("creates a topic mock with given topic env list", () => {
+    it("creates a topic mock with given topic environment list", () => {
       expect(
         createMockTopic({
           topicName: "mocked name",
           topicId: 1,
-          environmentsList: [TopicEnv.DEV],
+          environmentsList: ["DEV"],
         })
       ).toMatchObject({
         ...baseTestObjectMockedTopic(),
         topicName: "mocked name",
         topicid: 1,
-        environmentsList: [TopicEnv.DEV],
+        environmentsList: ["DEV"],
       });
     });
   });
@@ -188,35 +186,6 @@ describe("topic-test-helper.ts", () => {
           currentPage: 2,
         })
       ).toEqual(result);
-    });
-  });
-
-  describe("createMockTopicEnvDTO", () => {
-    it("creates a mocked TopicEnvDTO object with a given name", () => {
-      const nameToTest = TopicEnv.TST;
-      const result = {
-        allPageNos: null,
-        clusterId: 1,
-        clusterName: TopicEnv.DEV,
-        defaultPartitions: null,
-        defaultReplicationFactor: null,
-        envStatus: "ONLINE",
-        id: "1",
-        maxPartitions: null,
-        maxReplicationFactor: null,
-        name: nameToTest,
-        otherParams:
-          "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
-        showDeleteEnv: false,
-        tenantId: 101,
-        tenantName: "default",
-        topicprefix: null,
-        topicsuffix: null,
-        totalNoPages: null,
-        type: "kafka",
-      };
-
-      expect(createMockTopicEnvDTO(nameToTest)).toEqual(result);
     });
   });
 });

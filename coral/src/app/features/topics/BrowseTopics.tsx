@@ -1,26 +1,28 @@
 import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
-import { TopicEnv } from "src/domain/topics";
 import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
-import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
 import TopicList from "src/app/features/topics/components/list/TopicList";
 import { useGetTeams } from "src/app/features/topics/hooks/teams/useGetTeams";
-import SelectEnv from "src/app/features/topics/components/select-env/SelectEnv";
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useSearchParams } from "react-router-dom";
+import { Environment } from "src/domain/environment";
+import SelectEnvironment from "src/app/features/topics/components/select-environment/SelectEnvironment";
+import { useGetEnvironments } from "src/app/features/topics/hooks/environment/useGetEnvironments";
 
 // Use a UUID value to represent empty option value.
 const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
-const ALL_ENVIRONMENTS_VALUE = TopicEnv.ALL;
+const ALL_ENVIRONMENTS_VALUE = "ALL";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const [env, setEnv] = useState<TopicEnv>(ALL_ENVIRONMENTS_VALUE);
+  const [environment, setEnvironment] = useState<Environment>(
+    ALL_ENVIRONMENTS_VALUE
+  );
   const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
 
-  const { data: topicEnvs } = useGetEnvs();
+  const { data: topicEnvs } = useGetEnvironments();
   const { data: topicTeams } = useGetTeams();
 
   const {
@@ -28,7 +30,11 @@ function BrowseTopics() {
     isLoading,
     isError,
     isPreviousData,
-  } = useGetTopics({ currentPage: page, topicEnv: env, teamName: team });
+  } = useGetTopics({
+    currentPage: page,
+    environment,
+    teamName: team,
+  });
 
   const hasTopics = topics && topics.entries.length > 0;
   const hasMultiplePages = topics && topics.totalPages > 1;
@@ -38,20 +44,20 @@ function BrowseTopics() {
       <Flexbox direction={"row"} colGap={"l4"}>
         {topicEnvs && (
           <FlexboxItem width={"l7"}>
-            <SelectEnv
-              envOptions={[
-                { label: "All Environments", value: TopicEnv.ALL },
+            <SelectEnvironment
+              environments={[
+                { label: "All Environments", value: ALL_ENVIRONMENTS_VALUE },
                 ...topicEnvs.map((env) => ({ label: env, value: env })),
               ]}
-              activeOption={env}
-              selectEnv={selectEnvironment}
+              activeOption={environment}
+              selectEnvironment={selectEnvironment}
             />
           </FlexboxItem>
         )}
         {topicTeams && (
           <FlexboxItem width={"l7"}>
             <SelectTeam
-              teamOptions={[
+              teams={[
                 { label: "All teams", value: ALL_TEAMS_VALUE },
                 ...topicTeams.map((team) => ({ label: team, value: team })),
               ]}
@@ -81,8 +87,8 @@ function BrowseTopics() {
     </>
   );
 
-  function selectEnvironment(environment: TopicEnv) {
-    setEnv(environment);
+  function selectEnvironment(environment: Environment) {
+    setEnvironment(environment);
     if (environment === ALL_ENVIRONMENTS_VALUE) {
       searchParams.delete("environment");
     } else {

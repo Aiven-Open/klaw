@@ -4,14 +4,14 @@ import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseTransformed,
-  mockGetEnvs,
   mockGetTeams,
   mockTopicGetRequest,
-} from "src/domain/topics/topics-api.msw";
+} from "src/domain/topic/topic-api.msw";
 import {
   cleanup,
   waitForElementToBeRemoved,
 } from "@testing-library/react/pure";
+import { mockGetEnvironments } from "src/domain/environment";
 
 // This mirrors the formatting formation used in `/domain`
 // it's a temp implementation here and will be removed
@@ -28,7 +28,7 @@ describe("Topics", () => {
 
   describe("renders default view with data from API", () => {
     beforeAll(async () => {
-      mockGetEnvs({ mswInstance: server });
+      mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,

@@ -2,9 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
-import { mockGetEnvs } from "src/domain/topics/topics-api.msw";
-import { TopicEnv } from "src/domain/topics";
-import { useGetEnvs } from "src/app/features/topics/hooks/env/useGetEnvs";
+import { useGetEnvironments } from "src/app/features/topics/hooks/environment/useGetEnvironments";
+import { mockGetEnvironments } from "src/domain/environment";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +18,7 @@ const wrapper = ({ children }: { children: ReactElement }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
-describe("useGetEnvs", () => {
+describe("useGetEnvironments", () => {
   const originalConsoleError = console.error;
 
   beforeAll(() => {
@@ -37,11 +36,11 @@ describe("useGetEnvs", () => {
 
   describe("handles loading and error state", () => {
     it("returns a loading state before starting to fetch data", async () => {
-      mockGetEnvs({
+      mockGetEnvironments({
         mswInstance: server,
       });
 
-      const { result } = await renderHook(() => useGetEnvs(), {
+      const { result } = await renderHook(() => useGetEnvironments(), {
         wrapper,
       });
       expect(result.current.isLoading).toBe(true);
@@ -54,9 +53,9 @@ describe("useGetEnvs", () => {
     it("returns an error when request fails", async () => {
       console.error = jest.fn();
 
-      mockGetEnvs({ mswInstance: server, scenario: "error" });
+      mockGetEnvironments({ mswInstance: server, scenario: "error" });
 
-      const { result } = await renderHook(() => useGetEnvs(), {
+      const { result } = await renderHook(() => useGetEnvironments(), {
         wrapper,
       });
 
@@ -69,11 +68,11 @@ describe("useGetEnvs", () => {
 
   describe("handles successful response", () => {
     it("returns a list of environments", async () => {
-      mockGetEnvs({
+      mockGetEnvironments({
         mswInstance: server,
       });
 
-      const { result } = await renderHook(() => useGetEnvs(), {
+      const { result } = await renderHook(() => useGetEnvironments(), {
         wrapper,
       });
 
@@ -81,7 +80,7 @@ describe("useGetEnvs", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual([TopicEnv.DEV, TopicEnv.TST]);
+      expect(result.current.data).toEqual(["DEV", "TST"]);
     });
   });
 });

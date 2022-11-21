@@ -3,15 +3,16 @@ import userEvent from "@testing-library/user-event";
 import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
 
 describe("SelectTeam.tsx", () => {
-  const teamOptions = ["All teams", "Marketing", "Infra", "Devrel"].map(
-    (team) => ({ label: team, value: team })
-  );
+  const teams = ["All teams", "Marketing", "Infra", "Devrel"].map((team) => ({
+    label: team,
+    value: team,
+  }));
 
   describe("renders all necessary elements", () => {
     const activeOption = "Marketing";
 
     const requiredProps = {
-      teamOptions,
+      teams,
       activeOption,
       selectTeam: jest.fn(),
     };
@@ -31,14 +32,14 @@ describe("SelectTeam.tsx", () => {
     });
 
     it("renders a list of given options for teams", () => {
-      teamOptions.forEach(({ label }) => {
+      teams.forEach(({ label }) => {
         const option = screen.getByRole("option", {
           name: label,
         });
 
         expect(option).toBeEnabled();
       });
-      expect(screen.getAllByRole("option")).toHaveLength(teamOptions.length);
+      expect(screen.getAllByRole("option")).toHaveLength(teams.length);
     });
 
     it("shows a given team as the active option one", () => {
@@ -54,7 +55,7 @@ describe("SelectTeam.tsx", () => {
 
     const mockedSelectTeam = jest.fn();
     const requiredProps = {
-      teamOptions,
+      teams,
       activeOption: "Infra",
       selectTeam: mockedSelectTeam,
     };

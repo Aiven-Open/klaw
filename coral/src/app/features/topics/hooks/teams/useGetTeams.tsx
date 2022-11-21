@@ -1,10 +1,9 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { mockGetTeams } from "src/domain/topics/topics-api.msw";
-import { getTeams } from "src/domain/topics";
-import { TopicTeams } from "src/domain/topics/topics-types";
+import { getTeams, Team } from "src/domain/team";
+import { mockGetTeams } from "src/domain/topic/topic-api.msw";
 
-function useGetTeams(): UseQueryResult<TopicTeams> {
+function useGetTeams(): UseQueryResult<Team[]> {
   // everything in useEffect is used to mock the api call
   // and can be removed once the real api is connected
   useEffect(() => {
@@ -15,7 +14,7 @@ function useGetTeams(): UseQueryResult<TopicTeams> {
     }
   }, []);
 
-  return useQuery<TopicTeams, Error>(["topic-teams"], () => getTeams());
+  return useQuery<Team[], Error>(["topic-teams"], () => getTeams());
 }
 
 export { useGetTeams };
