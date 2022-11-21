@@ -3,9 +3,10 @@ import userEvent from "@testing-library/user-event";
 import SelectTeam from "src/app/features/topics/components/select-team/SelectTeam";
 
 describe("SelectTeam.tsx", () => {
-  const teams = ["All teams", "Marketing", "Infra", "Devrel"].map(
-    (team) => ({ label: team, value: team })
-  );
+  const teams = ["All teams", "Marketing", "Infra", "Devrel"].map((team) => ({
+    label: team,
+    value: team,
+  }));
 
   describe("renders all necessary elements", () => {
     const activeOption = "Marketing";

@@ -17,7 +17,9 @@ const ALL_ENVIRONMENTS_VALUE = "ALL";
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const [environment, setEnvironment] = useState<Environment>(ALL_ENVIRONMENTS_VALUE);
+  const [environment, setEnvironment] = useState<Environment>(
+    ALL_ENVIRONMENTS_VALUE
+  );
   const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
 
   const { data: topicEnvs } = useGetEnvironments();
