@@ -1,3 +1,4 @@
+import api from "src/services/api-client";
 import {
   TopicApiResponse,
   TopicDTOApiResponse,
@@ -21,22 +22,9 @@ const getTopics = async ({
     ...(team && { teamName: team }),
   };
 
-  return fetch(`/getTopics?${new URLSearchParams(params)}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`msw error: ${response.statusText}`);
-      }
-      const test: TopicDTOApiResponse = await response.json();
-      return transformTopicApiResponse(test);
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
+  return api
+    .get<TopicDTOApiResponse>(`/getTopics?${new URLSearchParams(params)}`)
+    .then(transformTopicApiResponse);
 };
 
 export { getTopics };

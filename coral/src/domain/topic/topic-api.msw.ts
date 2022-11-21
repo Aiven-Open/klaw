@@ -6,6 +6,7 @@ import {
   createMockTopic,
   createMockTopicApiResponse,
 } from "src/domain/topic/topic-test-helper";
+import { getHTTPBaseAPIUrl } from "src/config";
 
 // @TODO
 // create visible mocked responses and easy responses for different scenarios to use in tests
@@ -23,8 +24,9 @@ function mockTopicGetRequest({
     | "single-page-static"
     | "single-page-env-dev";
 }) {
+  const base = getHTTPBaseAPIUrl();
   mswInstance.use(
-    rest.get("getTopics", async (req, res, ctx) => {
+    rest.get(`${base}/getTopics`, async (req, res, ctx) => {
       const currentPage = req.url.searchParams.get("pageNo");
       const env = req.url.searchParams.get("env");
       const team = req.url.searchParams.get("teamName");

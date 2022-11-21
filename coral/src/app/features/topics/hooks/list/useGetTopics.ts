@@ -1,9 +1,9 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { mockTopicGetRequest } from "src/domain/topic/topic-api.msw";
-import { getTopics } from "src/domain/topic";
 import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { Environment } from "src/domain/environment";
+import { topicsQuery } from "src/domain/topic/topic-queries";
 
 function useGetTopics({
   currentPage,
@@ -24,11 +24,9 @@ function useGetTopics({
     }
   }, []);
 
-  return useQuery<TopicApiResponse, Error>({
-    queryKey: ["topics", currentPage, environment, teamName],
-    queryFn: () => getTopics({ currentPage, environment, teamName }),
-    keepPreviousData: true,
-  });
+  return useQuery<TopicApiResponse, Error>(
+    topicsQuery({ currentPage, environment, teamName })
+  );
 }
 
 export { useGetTopics };
