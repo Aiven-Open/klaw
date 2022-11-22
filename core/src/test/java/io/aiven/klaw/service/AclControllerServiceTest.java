@@ -606,6 +606,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("kwusera");
+    when(mailService.getCurrentUserName()).thenReturn("kwusera");
   }
 
   private static List<Topic> getTopicList() {
