@@ -1,6 +1,5 @@
-import { cleanup, render, within } from "@testing-library/react";
+import { cleanup, render, within, screen } from "@testing-library/react";
 import { Pagination } from "src/app/components/Pagination";
-import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const mockIconRender = jest.fn();

@@ -52,6 +52,8 @@ module.exports = {
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/jsx-runtime",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
         "prettier"
     ],
     "ignorePatterns": ["dist/**", "types/api.d.ts"],
@@ -76,6 +78,10 @@ module.exports = {
     "settings": {
         "react": {
             "version": "detect"
+        },
+        "import/resolver": {
+           "typescript": true,
+            "node": true
         }
     },
     "rules": {
@@ -85,6 +91,11 @@ module.exports = {
         "no-unused-vars": "off",
         "no-restricted-imports": strip_ids_from_no_restricted_imports(NO_RESTRICTED_IMPORTS_RULES),
         "@typescript-eslint/no-unused-vars": "error",
-        "@typescript-eslint/no-explicit-any": "error"
+        "@typescript-eslint/no-explicit-any": "error",
+        "import/no-mutable-exports": "error",
+        "import/no-cycle": "error",
+        "import/exports-last": "error",
+        "import/no-anonymous-default-export": "error",
+        "import/group-exports": "error"
     }
 }

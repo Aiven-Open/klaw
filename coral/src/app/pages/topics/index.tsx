@@ -5,7 +5,6 @@ const Topics = () => {
   return (
     <Flexbox direction={"column"} rowGap={"l2"}>
       <PageHeader title={"Browse all topics"} />
-
       <BrowseTopics />
     </Flexbox>
   );

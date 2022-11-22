@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { getAuthUser } from "src/domain/auth-user";
 import { AuthUserLoginData } from "src/domain/auth-user/auth-user-types";
 
-export default function useLoginUser() {
+function useLoginUser() {
   return useMutation((userLogin: AuthUserLoginData) => {
     return getAuthUser(userLogin);
   });

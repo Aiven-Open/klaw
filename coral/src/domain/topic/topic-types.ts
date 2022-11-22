@@ -1,4 +1,4 @@
-export type TopicDTO = {
+type TopicDTO = {
   topicid: number;
   sequence: string;
   totalNoPages: string;
@@ -18,12 +18,14 @@ export type TopicDTO = {
   topicDeletable: boolean;
 };
 
-export type TopicApiResponse = {
+type TopicApiResponse = {
   totalPages: number;
   currentPage: number;
   entries: Topic[];
 };
 
 // @TODO adjust to our needs
-export type Topic = TopicDTO;
-export type TopicDTOApiResponse = Array<Array<TopicDTO>>;
+type Topic = TopicDTO;
+type TopicDTOApiResponse = Array<Array<TopicDTO>>;
+
+export type { TopicDTO, TopicApiResponse, Topic, TopicDTOApiResponse };
