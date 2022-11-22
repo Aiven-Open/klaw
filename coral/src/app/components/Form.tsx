@@ -30,6 +30,12 @@ type FormRegisterProps<T extends FieldValues = FieldValues> = {
   formContext: UseFormReturn<T>;
 };
 
+// eslint-disable-next-line import/exports-last
+export type { SubmitHandler, SubmitErrorHandler, FieldError };
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export { useWatch, Option };
+
 type UseFormProps<T extends FieldValues = FieldValues> = Omit<
   _UseFormProps<T>,
   "resolver"
@@ -37,7 +43,8 @@ type UseFormProps<T extends FieldValues = FieldValues> = Omit<
   schema?: ZodSchema;
 };
 
-const useForm = <T extends FieldValues = FieldValues>({
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const useForm = <T extends FieldValues = FieldValues>({
   defaultValues,
   schema,
   ...props
@@ -55,7 +62,8 @@ type FormProps<T extends FieldValues = FieldValues> = UseFormReturn<T> & {
   onError?: SubmitErrorHandler<T>;
 };
 
-const Form = <T extends FieldValues = FieldValues>({
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const Form = <T extends FieldValues = FieldValues>({
   onSubmit,
   onError,
   children,
@@ -94,7 +102,8 @@ function _PasswordInput<T extends FieldValues>({
 
 const PasswordInputMemo = memo(_PasswordInput) as typeof _PasswordInput;
 
-const PasswordInput = <T extends FieldValues>(
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const PasswordInput = <T extends FieldValues>(
   props: FormInputProps<T> & BaseInputProps
 ): React.ReactElement<FormInputProps<T> & BaseInputProps> => {
   const ctx = useFormContext<T>();
@@ -126,7 +135,8 @@ function _TextInput<T extends FieldValues>({
 
 const TextInputMemo = memo(_TextInput) as typeof _TextInput;
 
-const TextInput = <T extends FieldValues>(
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const TextInput = <T extends FieldValues>(
   props: FormInputProps<T> & BaseInputProps
 ): React.ReactElement<FormInputProps<T> & BaseInputProps> => {
   const ctx = useFormContext<T>();
@@ -156,21 +166,10 @@ const SubmitButtonMemo = memo(
   }
 ) as typeof _SubmitButton;
 
-const SubmitButton = <T extends FieldValues>(
+// eslint-disable-next-line import/group-exports
+export const SubmitButton = <T extends FieldValues>(
   props: ButtonProps
 ): React.ReactElement<ButtonProps> => {
   const ctx = useFormContext<T>();
   return <SubmitButtonMemo formContext={ctx} {...props} />;
-};
-
-export type { SubmitHandler, SubmitErrorHandler, FieldError };
-
-export {
-  useWatch,
-  Option,
-  PasswordInput,
-  useForm,
-  Form,
-  TextInput,
-  SubmitButton,
 };
