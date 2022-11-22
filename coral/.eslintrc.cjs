@@ -52,6 +52,8 @@ module.exports = {
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",
         "plugin:react/jsx-runtime",
+        "plugin:import/recommended",
+        "plugin:import/typescript",
         "prettier"
     ],
     "ignorePatterns": ["dist/**", "types/api.d.ts"],
@@ -76,6 +78,10 @@ module.exports = {
     "settings": {
         "react": {
             "version": "detect"
+        },
+        "import/resolver": {
+           "typescript": true,
+            "node": true
         }
     },
     "rules": {
