@@ -40,6 +40,8 @@ public class TopicOverviewService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+  public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
+      new TypeReference<>() {};
   @Autowired ManageDatabase manageDatabase;
   @Autowired ClusterApiService clusterApiService;
   @Autowired private CommonUtilsService commonUtilsService;
@@ -379,8 +381,7 @@ public class TopicOverviewService {
 
       if (topic.getHistory() != null) {
         try {
-          topicHistoryFromTopic =
-              OBJECT_MAPPER.readValue(topic.getHistory(), new TypeReference<>() {});
+          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), VALUE_TYPE_REF);
           topicHistoryList.addAll(topicHistoryFromTopic);
         } catch (JsonProcessingException e) {
           log.error("Unable to parse topicHistory ", e);
