@@ -9,7 +9,7 @@ import {
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
 
-import { useGetTopics } from "src/app/features/topics/hooks/list/useGetTopics";
+import { useGetTopics } from "src/app/features/browse-topics/hooks/list/useGetTopics";
 import { createMockTopic } from "src/domain/topic/topic-test-helper";
 
 const queryClient = new QueryClient({

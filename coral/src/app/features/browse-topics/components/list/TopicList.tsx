@@ -1,6 +1,6 @@
 import { Flexbox } from "@aivenio/design-system";
 import { Topic } from "src/domain/topic";
-import TopicCard from "src/app/features/topics/components/list/TopicCard";
+import TopicCard from "src/app/features/browse-topics/components/list/TopicCard";
 
 type TopicListProps = {
   topics: Topic[];

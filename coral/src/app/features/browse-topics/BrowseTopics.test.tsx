@@ -6,7 +6,7 @@ import {
 } from "src/domain/topic/topic-api.msw";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { cleanup, within, screen } from "@testing-library/react";
-import BrowseTopics from "src/app/features/topics/BrowseTopics";
+import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { mockGetEnvironments } from "src/domain/environment";

@@ -33,7 +33,7 @@ describe("topic-test-helper.ts", () => {
   });
 
   describe("createMockTopicApiResponse", () => {
-    it("creates a mocked api response for topics with 2 entries with current page 1 per default", () => {
+    it("creates a mocked api response for browse-topics with 2 entries with current page 1 per default", () => {
       const result = [
         [
           expect.objectContaining({
@@ -54,7 +54,7 @@ describe("topic-test-helper.ts", () => {
       expect(createMockTopicApiResponse({ entries: 2 })).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 3 entries", () => {
+    it("creates a mocked api response for browse-topics with 3 entries", () => {
       const result = [
         [
           expect.objectContaining(baseTestObjectMockedTopic()),
@@ -66,7 +66,7 @@ describe("topic-test-helper.ts", () => {
       expect(createMockTopicApiResponse({ entries: 3 })).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 4 entries", () => {
+    it("creates a mocked api response for browse-topics with 4 entries", () => {
       const result = [
         [
           expect.objectContaining(baseTestObjectMockedTopic()),
@@ -79,7 +79,7 @@ describe("topic-test-helper.ts", () => {
       expect(createMockTopicApiResponse({ entries: 4 })).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 6 entries", () => {
+    it("creates a mocked api response for browse-topics with 6 entries", () => {
       const result = [
         [
           expect.objectContaining(baseTestObjectMockedTopic()),
@@ -96,7 +96,7 @@ describe("topic-test-helper.ts", () => {
       expect(createMockTopicApiResponse({ entries: 6 })).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 10 entries", () => {
+    it("creates a mocked api response for browse-topics with 10 entries", () => {
       const result = [
         [
           expect.objectContaining(baseTestObjectMockedTopic()),
@@ -119,7 +119,7 @@ describe("topic-test-helper.ts", () => {
       expect(createMockTopicApiResponse({ entries: 10 })).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 2 entries, 10 total pages", () => {
+    it("creates a mocked api response for browse-topics with 2 entries, 10 total pages", () => {
       const result = [
         [
           expect.objectContaining({
@@ -138,7 +138,7 @@ describe("topic-test-helper.ts", () => {
       ).toEqual(result);
     });
 
-    it("creates a mocked api response for topics with 2 entries, 3 total pages and 2 as current page", () => {
+    it("creates a mocked api response for browse-topics with 2 entries, 3 total pages and 2 as current page", () => {
       const result = [
         [
           expect.objectContaining({

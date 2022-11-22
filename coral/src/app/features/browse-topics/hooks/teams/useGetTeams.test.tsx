@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
-import { useGetTeams } from "src/app/features/topics/hooks/teams/useGetTeams";
+import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
 import { mockGetTeams } from "src/domain/team/team-api.msw";
 
 const queryClient = new QueryClient({

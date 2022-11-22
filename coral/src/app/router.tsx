@@ -9,7 +9,7 @@ const routes: Array<RouteObject> = [
     element: <HomePage />,
   },
   {
-    path: "/topics",
+    path: "/browse-topics",
     element: <Topics />,
   },
   {
