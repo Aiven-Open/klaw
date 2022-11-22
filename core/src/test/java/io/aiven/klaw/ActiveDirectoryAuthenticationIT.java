@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.assertj.core.api.AssertionsForClassTypes;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -28,16 +30,18 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.web.util.NestedServletException;
 
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = UiapiApplication.class)
-// Config file with property klaw.login.authentication.type set to 'azuread'
-@TestPropertySource(locations = "classpath:test-application-rdbms-aad.properties")
+// Config file with property klaw.login.authentication.type set to 'ad' and klaw.enable.sso set to
+// true
+@TestPropertySource(locations = "classpath:test-application-rdbms-ad.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
-public class AzureActiveDirectoryAuthenticationIT {
+public class ActiveDirectoryAuthenticationIT {
 
   @Autowired private MockMvc mvc;
 
@@ -68,27 +72,24 @@ public class AzureActiveDirectoryAuthenticationIT {
   @Test
   @Order(2)
   public void invokeRootPageWithBasicLoginFailure() {
-    try {
-      MockHttpServletResponse response =
-          mvc.perform(
-                  MockMvcRequestBuilders.get("/")
-                      .with(
-                          user("superadmin")
-                              .password(
-                                  "superAdminPwd")) // Invalid login for AD context authentication
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andReturn()
-              .getResponse();
-      assertThat(response.getContentAsString())
-          .doesNotContain(
-              "dashboardApp"); // after invalid login, user redirected to login page, and not
-      // index/dashboard
-      assertThat(response.getContentAsString())
-          .contains("loginSaasApp"); // after invalid login, user redirected to login page
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
+
+    NestedServletException thrown =
+        Assertions.assertThrows(
+            NestedServletException.class,
+            () ->
+                mvc.perform(
+                        MockMvcRequestBuilders.get("/")
+                            .with(
+                                user("superadmin")
+                                    .password("superAdminPwd")) // Invalid login for AD context
+                            // authentication
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andReturn()
+                    .getResponse());
+    AssertionsForClassTypes.assertThat(thrown.getMessage())
+        .contains(
+            "Current user principal is not of type [org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken]");
   }
 
   private OidcUser getOidcUser() {

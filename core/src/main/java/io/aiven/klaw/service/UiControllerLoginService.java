@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -20,9 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -58,17 +56,9 @@ public class UiControllerLoginService {
 
   public String getReturningPage(String uri) {
     try {
-      String userName;
-
-      if (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-        DefaultOidcUser userDetails =
-            (DefaultOidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userName = userDetails.getPreferredUsername();
-      } else {
-        UserDetails userDetails =
-            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userName = userDetails.getUsername();
-      }
+      UserDetails userDetails =
+          (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      String userName = userDetails.getUsername();
 
       if (userName != null) {
         HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -80,8 +70,7 @@ public class UiControllerLoginService {
             return "registerSaas.html";
           }
 
-          if (ACTIVE_DIRECTORY.value.equals(authenticationType)
-              || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
+          if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
             return "registerLdap.html";
           }
           return "register.html";
@@ -134,7 +123,7 @@ public class UiControllerLoginService {
   }
 
   public String checkAnonymousLogin(
-      String uri, HttpServletRequest request, HttpServletResponse response) {
+      String uri, OAuth2AuthenticationToken auth2AuthenticationToken) {
     try {
       DefaultOAuth2User defaultOAuth2User =
           (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -150,14 +139,10 @@ public class UiControllerLoginService {
             defaultOAuth2User.getAttributes().get("name"));
       }
 
-      OAuth2AuthorizedClient client =
-          authorizedClientService.loadAuthorizedClient(
-              ssoClientRegistrationId,
-              (String) defaultOAuth2User.getAttributes().get("preferred_username"));
-      if (client == null) {
-        return oauthLoginPage;
-      } else {
+      if (auth2AuthenticationToken.isAuthenticated()) {
         return uri;
+      } else {
+        return oauthLoginPage;
       }
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -165,7 +150,11 @@ public class UiControllerLoginService {
     }
   }
 
-  public String checkAuth(String uri, HttpServletRequest request, HttpServletResponse response) {
+  public String checkAuth(
+      String uri,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      OAuth2AuthenticationToken authentication) {
     if ("tenants.html".equals(uri)) {
       UserDetails userDetails =
           (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -189,7 +178,7 @@ public class UiControllerLoginService {
       if (uri.contains("register") || uri.equals("registrationReview.html")) {
         return uri;
       } else {
-        return checkAnonymousLogin(uri, request, response);
+        return checkAnonymousLogin(uri, authentication);
       }
     } else {
       return getReturningPage(uri);
@@ -198,7 +187,7 @@ public class UiControllerLoginService {
 
   public String registerStagingUser(String userName, Object fullName) {
     try {
-      log.info("User found in SSO and not in Klaw db :{}", userName);
+      log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
           manageDatabase.getHandleDbRequests().getRegistrationId(userName);
 
@@ -214,7 +203,7 @@ public class UiControllerLoginService {
         RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
         registerUserInfoModel.setRegistrationId(randomId);
         registerUserInfoModel.setStatus("STAGING");
-        registerUserInfoModel.setTeam("STAGINGTEAM");
+        registerUserInfoModel.setTeam(KwConstants.STAGINGTEAM);
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");

@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -932,8 +931,7 @@ public class UsersTeamsControllerService {
   }
 
   private Pattern getPattern() {
-    if (SAAS.equals(kwInstallationType)
-        || (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))) {
+    if (SAAS.equals(kwInstallationType) || (ACTIVE_DIRECTORY.value.equals(authenticationType))) {
       return saasPattern;
     } else {
       return defaultPattern;

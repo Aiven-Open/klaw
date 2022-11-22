@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -64,9 +63,6 @@ public class UtilControllerService {
 
   @Value("${klaw.sso.server.loginurl:url}")
   private String ssoServerLoginUrl;
-
-  @Value("${klaw.aad.server.loginurl}")
-  private String azureAdLoginUrl;
 
   @Autowired private ConfigurableApplicationContext context;
 
@@ -604,8 +600,6 @@ public class UtilControllerService {
 
     if ("true".equals(ssoEnabled)) {
       resultBasicInfo.put("ssoServerUrl", ssoServerLoginUrl);
-    } else if (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-      resultBasicInfo.put("ssoServerUrl", azureAdLoginUrl);
     }
 
     return resultBasicInfo;
