@@ -446,6 +446,7 @@ public class UtilMethods {
     env.setId("1");
     env.setName("DEV");
     envList.add(env);
+    env.setClusterId(1);
     return envList;
   }
 
@@ -501,6 +502,7 @@ public class UtilMethods {
     aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequest.setRequestingteam(1);
     aclRequest.setTeamname("INFRATEAM");
+    aclRequest.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
     return aclRequest;
   }

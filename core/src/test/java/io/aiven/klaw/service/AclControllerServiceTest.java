@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -15,26 +14,24 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclIPPrincipleType;
 import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.SyncAclUpdates;
+import io.aiven.klaw.model.KafkaFlavors;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -57,52 +54,43 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AclControllerServiceTest {
 
   private UtilMethods utilMethods;
-
   @Mock private UserDetails userDetails;
-
   @Mock private ClusterApiService clusterApiService;
-
   @Mock private HandleDbRequestsJdbc handleDbRequests;
-
   @Mock private ManageDatabase manageDatabase;
-
   @Mock private CommonUtilsService commonUtilsService;
-
   @Mock private RolesPermissionsControllerService rolesPermissionsControllerService;
-
-  @Mock private Map<Integer, KwClusters> clustersHashMap;
-
-  @Mock private KwClusters kwClusters;
-
   @Mock private MailUtils mailService;
-
   @Mock private UserInfo userInfo;
 
   private AclControllerService aclControllerService;
-
-  private AclSyncControllerService aclSyncControllerService;
-  private Env env;
 
   @BeforeEach
   public void setUp() throws Exception {
     utilMethods = new UtilMethods();
     this.aclControllerService = new AclControllerService(clusterApiService, mailService);
-    this.aclSyncControllerService = new AclSyncControllerService(clusterApiService, mailService);
 
-    this.env = new Env();
+    Env env = new Env();
     env.setName("DEV");
     env.setId("1");
     ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(aclControllerService, "commonUtilsService", commonUtilsService);
-    ReflectionTestUtils.setField(aclSyncControllerService, "manageDatabase", manageDatabase);
-    ReflectionTestUtils.setField(
-        aclSyncControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
         aclControllerService,
         "rolesPermissionsControllerService",
         rolesPermissionsControllerService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     loginMock();
+  }
+
+  private void mockKafkaFlavor() {
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    KwClusters kwClusters = new KwClusters();
+    kwClusters.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwClusters.setClusterId(1);
+    kwClustersMap.put(1, kwClusters);
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
   }
 
   private void loginMock() {
@@ -115,9 +103,9 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(1)
-  public void createAcl() throws KlawException {
+  public void createAclProducer() throws KlawException {
     AclRequests aclRequestsDao = new AclRequests();
-    AclRequestsModel aclRequests = getAclRequest();
+    AclRequestsModel aclRequests = getAclRequestProducer();
     copyProperties(aclRequests, aclRequestsDao);
     List<Topic> topicList = utilMethods.getTopics();
     Map<String, String> hashMap = new HashMap<>();
@@ -132,129 +120,256 @@ public class AclControllerServiceTest {
 
   @Test
   @Order(2)
-  public void updateSyncAcls() throws KlawException {
-    stubUserInfo();
-    when(handleDbRequests.addToSyncacls(anyList())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+  public void createAclConsumer() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequests = getAclRequestConsumer();
+    copyProperties(aclRequests, aclRequestsDao);
+    List<Topic> topicList = utilMethods.getTopics();
+    Map<String, String> hashMap = new HashMap<>();
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
 
-    ApiResponse resultResp =
-        aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
+    mockKafkaFlavor();
+    stubUserInfo();
+
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(3)
-  public void updateSyncAclsFailure1() throws KlawException {
+  public void createAclConsumerThrowError() {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequests = getAclRequestConsumer();
+    copyProperties(aclRequests, aclRequestsDao);
+    List<Topic> topicList = utilMethods.getTopics();
+    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.requestForAcl(any()))
+        .thenThrow(new RuntimeException("Failure in creating request"));
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    mockKafkaFlavor();
 
-    ApiResponse resultResp =
-        aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    KlawException thrown =
+        Assertions.assertThrows(
+            KlawException.class, () -> aclControllerService.createAcl(aclRequests));
+    assertThat(thrown.getMessage()).isEqualTo("Failure in creating request");
   }
 
   @Test
   @Order(4)
-  public void updateSyncAclsFailure2() throws KlawException {
+  public void createAclNotAuthorized() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequests = getAclRequestProducer();
+    copyProperties(aclRequests, aclRequestsDao);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
 
-    try {
-      aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    } catch (KlawException e) {
-      assertThat(e.getMessage()).isEqualTo("Error");
-    }
-  }
-
-  private void stubUserInfo() {
-    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(userInfo.getTeamId()).thenReturn(101);
-    when(mailService.getUserName(any())).thenReturn("kwusera");
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
   @Order(5)
-  public void updateSyncAclsFailure3() throws KlawException {
-    List<SyncAclUpdates> updates = new ArrayList<>();
+  public void createAclTopicNotFound() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequests = getAclRequestProducer();
+    copyProperties(aclRequests, aclRequestsDao);
+    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(Collections.emptyList());
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
-    ApiResponse resultResp = aclSyncControllerService.updateSyncAcls(updates);
-    assertThat(resultResp.getResult()).isEqualTo("No record updated.");
+
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
+    assertThat(resultResp.getResult())
+        .isEqualTo("Failure : Topic not found on target environment.");
   }
 
   @Test
   @Order(6)
-  public void updateSyncAclsFailure4() throws KlawException {
-    when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
+  public void createAclInvalidPattern() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequestsModel = getAclRequestConsumer();
+    aclRequestsModel.setAclPatternType(AclPatternType.PREFIXED.value);
+    List<Topic> topicList = utilMethods.getTopics();
+    copyProperties(aclRequestsModel, aclRequestsDao);
+    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     stubUserInfo();
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
 
-    try {
-      aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    } catch (KlawException e) {
-      assertThat(e.getMessage()).isEqualTo("Error");
-    }
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequestsModel);
+    assertThat(resultResp.getResult())
+        .isEqualTo("Failure : Please change the pattern to LITERAL for topic type.");
   }
 
   @Test
   @Order(7)
-  public void getAclRequests() {
+  public void createAclConsumerFailure() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequestsModel = getAclRequestConsumer();
+    copyProperties(aclRequestsModel, aclRequestsDao);
+    List<Topic> topicList = utilMethods.getTopics();
+    Acl acl = new Acl();
+    acl.setConsumergroup(aclRequestsModel.getConsumergroup());
+
+    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.getUniqueConsumerGroups(anyInt()))
+        .thenReturn(Collections.singletonList(acl));
     stubUserInfo();
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.getAllAclRequests(
-            anyBoolean(), anyString(), anyString(), anyString(), anyBoolean(), anyInt()))
-        .thenReturn(getAclRequests("testtopic", 5));
-    when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(Collections.singletonList("USER"));
-    List<AclRequestsModel> aclReqs = aclControllerService.getAclRequests("1", "", "all");
-    assertThat(aclReqs).isEmpty();
+    mockKafkaFlavor();
+
+    ApiResponse resultResp = aclControllerService.createAcl(aclRequestsModel);
+    assertThat(resultResp.getResult())
+        .isEqualTo(
+            "Failure : Consumer group "
+                + aclRequestsModel.getConsumergroup()
+                + " used by another team.");
   }
 
   @Test
   @Order(8)
+  public void createAclProducerEmptyTxnId() throws KlawException {
+    AclRequests aclRequestsDao = new AclRequests();
+    AclRequestsModel aclRequestsModel = getAclRequestProducer();
+    aclRequestsModel.setTransactionalId("    "); // empty spaces
+    copyProperties(aclRequestsModel, aclRequestsDao);
+    List<Topic> topicList = utilMethods.getTopics();
+    Map<String, String> hashMap = new HashMap<>();
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+    stubUserInfo();
+
+    aclControllerService.createAcl(aclRequestsModel);
+    assertThat(aclRequestsModel.getTransactionalId()).isEqualTo("");
+  }
+
+  @Test
+  @Order(9)
+  public void createAclMultipleAcls() {
+    AclRequestsModel aclRequestsModel = getAclRequestProducer();
+    AclRequests aclRequestsDao = new AclRequests();
+
+    aclControllerService.handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
+    assertThat(aclRequestsDao.getAcl_ip())
+        .isEqualTo(
+            aclRequestsModel.getAcl_ip().get(0) + "<ACL>" + aclRequestsModel.getAcl_ip().get(1));
+    assertThat(aclRequestsDao.getAcl_ssl()).isEqualTo("User:*");
+
+    aclRequestsModel.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+    aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("CN=abc", "CN=def")));
+    aclControllerService.handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
+    assertThat(aclRequestsDao.getAcl_ssl())
+        .isEqualTo(
+            aclRequestsModel.getAcl_ssl().get(0) + "<ACL>" + aclRequestsModel.getAcl_ssl().get(1));
+    assertThat(aclRequestsDao.getAcl_ip()).isNull();
+  }
+
+  @Test
+  @Order(10)
+  public void getAclRequestsFirstAndSecondPage() {
+    String teamName = "teamname";
+    List<Topic> topicList = getTopicList();
+    List<UserInfo> userList = getUserInfoList();
+
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(handleDbRequests.getAllAclRequests(
+            anyBoolean(), anyString(), anyString(), anyString(), anyBoolean(), anyInt()))
+        .thenReturn(getAclRequests("testtopic", 15));
+    when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
+        .thenReturn(Collections.singletonList("USER"));
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(topicList);
+    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
+
+    List<AclRequestsModel> aclReqs = aclControllerService.getAclRequests("1", "", "all");
+    assertThat(aclReqs.size()).isEqualTo(10);
+    assertThat(aclReqs.get(0).getAcl_ip().size()).isEqualTo(3);
+    assertThat(aclReqs.get(0).getTeamname()).isEqualTo(teamName);
+
+    aclReqs = aclControllerService.getAclRequests("2", "", "all");
+    assertThat(aclReqs.size()).isEqualTo(5);
+    assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(0).getUsername());
+    assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(1).getUsername());
+  }
+
+  @Test
+  @Order(11)
   public void getCreatedAclRequests() {
+    String teamName = "teamname";
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedAclRequestsByStatus(
             anyString(), anyString(), anyBoolean(), anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
-    List<AclRequestsModel> listReqs = aclControllerService.getCreatedAclRequests("", "", "");
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
-    assertThat(listReqs).isEmpty();
+    List<AclRequestsModel> listReqs = aclControllerService.getCreatedAclRequests("", "", "");
+    assertThat(listReqs.size()).isEqualTo(10);
   }
 
   @Test
-  @Order(9)
+  @Order(12)
+  public void getCreatedAclRequestsNotAuthorizedForAllTeams() {
+    String teamName = "teamname";
+    stubUserInfo();
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(handleDbRequests.getCreatedAclRequestsByStatus(
+            anyString(), anyString(), anyBoolean(), anyInt()))
+        .thenReturn(getAclRequests("testtopic", 16));
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
+
+    List<AclRequestsModel> listReqs = aclControllerService.getCreatedAclRequests("", "", "");
+    assertThat(listReqs.size()).isEqualTo(10);
+  }
+
+  @Test
+  @Order(13)
   public void deleteAclRequests() throws KlawException {
     String req_no = "1001";
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
-    // assertThat(result).isEqualTo("{\"result\":\"null\"}");
+    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
-  @Order(10)
-  public void deleteAclRequestsFailure() throws KlawException {
+  @Order(14)
+  public void deleteAclRequestsNotAuthorized() throws KlawException {
     String req_no = "1001";
-    when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1)).thenReturn("failure");
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
-    // assertThat(result).isEqualTo("{\"result\":\"null\"}");
+    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
-  @Order(11)
-  public void approveAclRequests() throws KlawException {
+  @Order(15)
+  public void deleteAclRequestsFailure() {
     String req_no = "1001";
+    when(handleDbRequests.deleteAclRequest(anyInt(), anyInt()))
+        .thenThrow(new RuntimeException("failure in deleting request"));
+    KlawException thrown =
+        Assertions.assertThrows(
+            KlawException.class, () -> aclControllerService.deleteAclRequests(req_no));
+    assertThat(thrown.getMessage()).isEqualTo("failure in deleting request");
+  }
+
+  @Test
+  @Order(16)
+  public void approveAclRequests() throws KlawException {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
@@ -273,7 +388,53 @@ public class AclControllerServiceTest {
   }
 
   @Test
-  @Order(12)
+  @Order(17)
+  public void approveAclRequestsWithAivenAcl() throws KlawException {
+    AclRequests aclReq = getAclRequestDao();
+
+    stubUserInfo();
+    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+
+    Map<String, String> dataObj = new HashMap<>();
+    String aivenAclIdKey = "aivenaclid";
+    dataObj.put(aivenAclIdKey, "abcdef"); // any test key
+
+    ApiResponse apiResponse =
+        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(dataObj).build();
+    when(clusterApiService.approveAclRequests(any(), anyInt()))
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
+    when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests("112");
+    assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(18)
+  public void approveAclRequestsNotAuthorized() throws KlawException {
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    ApiResponse apiResp = aclControllerService.approveAclRequests("112");
+    assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+  }
+
+  @Test
+  @Order(19)
+  public void approveAclRequestsOwnRequest() throws KlawException {
+    stubUserInfo();
+    AclRequests aclReq = getAclRequestDao();
+    aclReq.setUsername("kwusera");
+    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    ApiResponse apiResp = aclControllerService.approveAclRequests("112");
+    assertThat(apiResp.getResult())
+        .isEqualTo("You are not allowed to approve your own subscription requests.");
+  }
+
+  @Test
+  @Order(20)
   public void approveAclRequestsFailure1() throws KlawException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
@@ -291,7 +452,7 @@ public class AclControllerServiceTest {
   }
 
   @Test
-  @Order(13)
+  @Order(21)
   public void approveAclRequestsFailure2() throws KlawException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
@@ -312,7 +473,7 @@ public class AclControllerServiceTest {
   }
 
   @Test
-  @Order(14)
+  @Order(22)
   public void approveAclRequestsFailure3() throws KlawException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
@@ -328,7 +489,7 @@ public class AclControllerServiceTest {
   }
 
   @Test
-  @Order(15)
+  @Order(23)
   public void declineAclRequests() throws KlawException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
@@ -345,8 +506,8 @@ public class AclControllerServiceTest {
   }
 
   @Test
-  @Order(16)
-  public void declineAclRequestsFailure() throws KlawException {
+  @Order(24)
+  public void declineAclRequestsFailure() {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
 
@@ -355,185 +516,55 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
-    ApiResponse result = aclControllerService.declineAclRequests(req_no, "Reason");
-
-    // assertThat(result).isEqualTo("{\"result\":\"null\"}");
+    when(handleDbRequests.declineAclRequest(any(), anyString()))
+        .thenThrow(new RuntimeException("failure in declining request"));
+    KlawException thrown =
+        Assertions.assertThrows(
+            KlawException.class, () -> aclControllerService.declineAclRequests(req_no, "Reason"));
+    assertThat(thrown.getMessage()).isEqualTo("failure in declining request");
   }
 
   @Test
-  @Order(17)
-  public void getAclsSyncFalse1() throws KlawException {
-    String env1 = "1", topicNameSearch = "testtopic";
-
-    String RETRIEVE_SCHEMAS_KEY = "klaw.getschemas.enable";
+  @Order(25)
+  public void createDeleteAclSubscriptionRequest() throws KlawException {
+    String reqNo = "101";
     stubUserInfo();
+    Acl acl = utilMethods.getAllAcls().get(1);
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-    when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
-        .thenReturn(getAclsSOT(topicNameSearch));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    Map<String, String> hashMap = new HashMap<>();
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
 
-    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch).getAclInfoList();
-
-    assertThat(aclList).hasSize(1);
-
-    assertThat(aclList.get(0).getTopicname()).isEqualTo(topicNameSearch);
-    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
-    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
+    ApiResponse resultResp = aclControllerService.createDeleteAclSubscriptionRequest(reqNo);
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
-  @Test
-  @Order(18)
-  public void getAclsSyncFalse2() throws KlawException {
-    String env1 = "1", topicNameSearch = "testnewtopic1";
-
-    String RETRIEVE_SCHEMAS_KEY = "klaw.getschemas.enable";
-
-    stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
-    when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-    when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
-        .thenReturn(getAclsSOT(topicNameSearch));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-
-    List<AclInfo> aclList = aclControllerService.getAcls(topicNameSearch).getAclInfoList();
-
-    assertThat(aclList).hasSize(1);
-
-    assertThat(aclList.get(0).getTopicname()).isEqualTo(topicNameSearch);
-    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
-    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
-  }
-
-  @Test
-  @Order(19)
-  public void getAclsSyncTrue1() throws KlawException {
-    String envSelected = "1", pageNo = "1", topicNameSearch = "testtopic1";
-
-    stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
-        .thenReturn(utilMethods.getClusterAcls());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
-        .thenReturn(getAvailableTeams());
-    when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
-    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-        .thenReturn(clustersHashMap);
-    when(clustersHashMap.get(any())).thenReturn(kwClusters);
-    when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-
-    List<AclInfo> aclList =
-        aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
-
-    assertThat(aclList).isEmpty();
-  }
-
-  @Test
-  @Order(20)
-  public void getAclsSyncTrue2() throws KlawException {
-    String envSelected = "1", pageNo = "1", topicNameSearch = "test";
-    boolean isSyncAcls = true;
-
-    stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
-        .thenReturn(utilMethods.getClusterAcls());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
-        .thenReturn(getAvailableTeams());
-    when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
-    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-        .thenReturn(clustersHashMap);
-    when(clustersHashMap.get(any())).thenReturn(kwClusters);
-    when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-
-    List<AclInfo> aclList =
-        aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
-
-    assertThat(aclList).isEmpty();
-  }
-
-  private List<Team> getAvailableTeams() {
-
-    Team team1 = new Team();
-    team1.setTeamname("Team1");
-
-    Team team2 = new Team();
-    team2.setTeamname("Team2");
-
-    Team team3 = new Team();
-    team3.setTeamname("Team3");
-
-    List<Team> teamList = new ArrayList<>();
-    teamList.add(team1);
-    teamList.add(team2);
-    teamList.add(team3);
-
-    return teamList;
-  }
-
-  private List<Acl> getAclsSOT0() {
-    List<Acl> aclList = new ArrayList<>();
-
-    Acl aclReq = new Acl();
-    aclReq.setReq_no(1001);
-    aclReq.setTopicname("testtopic1");
-    aclReq.setTeamId(1);
-    aclReq.setAclip("2.1.2.1");
-    aclReq.setAclssl(null);
-    aclReq.setConsumergroup("mygrp1");
-    aclReq.setTopictype(AclType.CONSUMER.value);
-
-    aclList.add(aclReq);
-
-    return aclList;
-  }
-
-  private List<Acl> getAclsSOT(String topicName) {
-    List<Acl> aclList = new ArrayList<>();
-
-    Acl aclReq = new Acl();
-    aclReq.setReq_no(1001);
-    aclReq.setTopicname(topicName);
-    aclReq.setTeamId(1);
-    aclReq.setAclip("2.1.2.1");
-    aclReq.setAclssl(null);
-    aclReq.setEnvironment("1");
-    aclReq.setConsumergroup("mygrp1");
-    aclReq.setTopictype(AclType.CONSUMER.value);
-
-    aclList.add(aclReq);
-
-    return aclList;
-  }
-
-  private AclRequestsModel getAclRequest() {
+  private AclRequestsModel getAclRequestProducer() {
     AclRequestsModel aclReq = new AclRequestsModel();
     aclReq.setTopicname("testtopic");
-    aclReq.setTopictype("producer");
+    aclReq.setTopictype(AclType.PRODUCER.value);
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setAclPatternType(AclPatternType.LITERAL.value);
+    aclReq.setAcl_ip(new ArrayList<>(List.of("1.1.1.1", "2.2.2.2")));
+    aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+    return aclReq;
+  }
+
+  private AclRequestsModel getAclRequestConsumer() {
+    AclRequestsModel aclReq = new AclRequestsModel();
+    aclReq.setTopicname("testtopic");
+    aclReq.setTopictype(AclType.CONSUMER.value);
+    aclReq.setRequestingteam(1);
+    aclReq.setReq_no(112);
+    aclReq.setEnvironment("1");
+    aclReq.setAclPatternType(AclPatternType.LITERAL.value);
+    aclReq.setConsumergroup("testconsumergroup");
     return aclReq;
   }
 
@@ -547,6 +578,7 @@ public class AclControllerServiceTest {
     aclReq.setUsername("kwuserb");
     aclReq.setAclstatus("created");
     aclReq.setAcl_ip("1.2.3.4");
+    aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
     return aclReq;
   }
 
@@ -560,10 +592,38 @@ public class AclControllerServiceTest {
       aclReq.setTopicname(topicPrefix + i);
       aclReq.setTopictype("producer");
       aclReq.setRequestingteam(1);
+      aclReq.setTeamId(1);
+      aclReq.setAcl_ip("1.2.3.4<ACL>3.2.4.5<ACL>11.22.33.44");
       aclReq.setReq_no(100 + i);
       aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
+      aclReq.setUsername("testuser");
       listReqs.add(aclReq);
     }
     return listReqs;
+  }
+
+  private void stubUserInfo() {
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(userInfo.getTeamId()).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("kwusera");
+  }
+
+  private static List<Topic> getTopicList() {
+    Topic topic = new Topic();
+    topic.setTeamId(1);
+    topic.setEnvironment("1");
+    return new ArrayList<>(List.of(topic));
+  }
+
+  private static List<UserInfo> getUserInfoList() {
+    UserInfo userInfo1 = new UserInfo();
+    userInfo1.setUsername("firstuser");
+    userInfo1.setTeamId(1);
+    userInfo1.setRole("USER");
+    UserInfo userInfo2 = new UserInfo();
+    userInfo2.setUsername("seconduser");
+    userInfo2.setTeamId(1);
+    userInfo2.setRole("USER");
+    return new ArrayList<>(List.of(userInfo1, userInfo2));
   }
 }

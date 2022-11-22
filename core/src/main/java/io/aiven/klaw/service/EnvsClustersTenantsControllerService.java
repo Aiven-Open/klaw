@@ -281,6 +281,11 @@ public class EnvsClustersTenantsControllerService {
       return new ArrayList<>();
     }
 
+    // return empty list, when sync cluster is not configured
+    if (syncCluster == null) {
+      return new ArrayList<>();
+    }
+
     Map<String, String> hMap;
     List<Map<String, String>> envsOnly = new ArrayList<>();
     List<EnvModel> envList = getKafkaEnvs();

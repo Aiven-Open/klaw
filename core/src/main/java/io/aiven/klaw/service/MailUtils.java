@@ -147,6 +147,10 @@ public class MailUtils {
                 "'" + reasonToDecline + "'");
         subject = "Acl Request Denied";
         break;
+      case ACL_REQUEST_FAILURE:
+        formattedStr = "Acl Request processing failed : " + acl + ", " + topicName;
+        subject = "Request processing failed.";
+        break;
     }
 
     sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
@@ -368,9 +372,11 @@ public class MailUtils {
 
       switch (envPropertyType) {
         case "ORDER_OF_ENVS":
-          tenantModel
-              .getOrderOfTopicPromotionEnvsList()
-              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          List<String> orderOfTopicPromotionEnvsList =
+              tenantModel.getOrderOfTopicPromotionEnvsList();
+          if (null != orderOfTopicPromotionEnvsList && !orderOfTopicPromotionEnvsList.isEmpty()) {
+            orderOfTopicPromotionEnvsList.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
           break;
         case "REQUEST_TOPICS_OF_ENVS":
           tenantModel

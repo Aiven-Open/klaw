@@ -40,21 +40,23 @@ public class AclRequestsModel implements Serializable {
 
   private Integer req_no;
 
-  private String topicname;
+  @NotNull private String topicname;
 
-  private String environment;
+  @NotNull private String environment;
+
+  @NotNull private String teamname;
+
+  @NotNull private String topictype;
+
+  @NotNull private AclIPPrincipleType aclIpPrincipleType;
 
   private String environmentName;
-
-  private String teamname;
 
   private Integer teamId;
 
   private Integer requestingteam;
 
   private String appname;
-
-  private String topictype;
 
   private String username;
 
@@ -69,8 +71,6 @@ public class AclRequestsModel implements Serializable {
   private Timestamp approvingtime;
 
   private String aclType;
-
-  private AclIPPrincipleType aclIpPrincipleType;
 
   // Always TOPIC (for now)
   private String aclResourceType;

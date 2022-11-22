@@ -391,6 +391,40 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
         }
 
 
+    $scope.deleteTopicRequest = function(topicId) {
+        swal({
+            title: "Are you sure?",
+            text: "You would like to delete the request ?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "No, cancel please!",
+            closeOnConfirm: true,
+            closeOnCancel: true
+        }).then(function(isConfirm) {
+            if (isConfirm.dismiss !== "cancel") {
+                $http({
+                    method: "POST",
+                    url: "deleteTopicRequests",
+                    headers: {'Content-Type': 'application/json'},
+                    params: {'topicId': topicId},
+                    data: {'topicId': topicId}
+                }).success(function (output) {
+                    $scope.alert = "Topic Delete Request : " + output.result;
+                    $scope.getMyTopicRequests(1);
+                }).error(
+                    function (error) {
+                        $scope.handleValidationErrors(error);
+                    }
+                );
+            } else {
+                return;
+            }
+        });
+    }
+
+
     $scope.deleteConnectorRequest = function(topicId) {
         swal({
                     title: "Are you sure?",
@@ -403,7 +437,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.dismiss !== "cancel") {
                         $http({
                               method: "POST",
                               url: "deleteConnectorRequests",

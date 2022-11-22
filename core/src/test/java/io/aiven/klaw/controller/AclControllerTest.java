@@ -17,6 +17,7 @@ import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
+import io.aiven.klaw.service.TopicOverviewService;
 import java.util.List;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +38,8 @@ public class AclControllerTest {
   private static final int topicId = 1001;
   @MockBean private AclControllerService aclControllerService;
   @MockBean private AclSyncControllerService aclSyncControllerService;
+
+  @MockBean private TopicOverviewService topicOverviewService;
   private UtilMethods utilMethods;
   private MockMvc mvcAcls;
   private AclController aclController;
@@ -50,6 +53,7 @@ public class AclControllerTest {
     utilMethods = new UtilMethods();
     mvcAcls = MockMvcBuilders.standaloneSetup(aclController).dispatchOptions(true).build();
     ReflectionTestUtils.setField(aclController, "aclControllerService", aclControllerService);
+    ReflectionTestUtils.setField(aclController, "topicOverviewService", topicOverviewService);
     mvcAclsSync = MockMvcBuilders.standaloneSetup(aclSyncController).dispatchOptions(true).build();
     ReflectionTestUtils.setField(
         aclSyncController, "aclSyncControllerService", aclSyncControllerService);
@@ -174,7 +178,7 @@ public class AclControllerTest {
   public void getAcls1() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(aclControllerService.getAcls("testtopic")).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview("testtopic")).thenReturn(topicOverview);
 
     mvcAcls
         .perform(
@@ -192,7 +196,7 @@ public class AclControllerTest {
   public void getAcls2() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(aclControllerService.getAcls(null)).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview(null)).thenReturn(topicOverview);
 
     // TODO Consider returning an error response object (https://www.rfc-editor.org/rfc/rfc7807)
     // Just checking response code seems to be sufficient as the contentAsString() returns an empty

@@ -189,8 +189,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         $scope.aivenCluster = output.aivenCluster;
                         if($scope.aivenCluster === 'false')
                             $scope.acl_ip_ssl = 'IP';
-                        else
+                        else{
                             $scope.acl_ip_ssl = 'SSL';
+                            $scope.selectedAclType="PRINCIPAL";
+                        }
                     }).error(
                         function(error)
                         {
