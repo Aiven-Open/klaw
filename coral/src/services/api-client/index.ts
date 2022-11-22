@@ -7,7 +7,10 @@ export enum HTTPMethod {
   PATCH = "PATCH",
   DELETE = "DELETE",
 }
-type SomeObject = Record<string, unknown> | Record<string, never>;
+type SomeObject =
+  | Record<string, unknown>
+  | Record<string, never>
+  | Array<unknown>;
 export type AbsolutePathname = `/${string}`;
 const CONTENT_TYPE_JSON = "application/json" as const;
 
@@ -172,8 +175,8 @@ function withoutPayloadandWithVerb<TResponse extends SomeObject>(
   );
 }
 
-const get = (pathname: AbsolutePathname) =>
-  withoutPayloadandWithVerb(HTTPMethod.GET, pathname);
+const get = <T extends SomeObject>(pathname: AbsolutePathname) =>
+  withoutPayloadandWithVerb<T>(HTTPMethod.GET, pathname);
 
 const post = <
   TResponse extends SomeObject,

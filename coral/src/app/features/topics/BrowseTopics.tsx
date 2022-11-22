@@ -33,7 +33,7 @@ function BrowseTopics() {
   } = useGetTopics({
     currentPage: page,
     environment,
-    teamName: team,
+    ...(team !== ALL_TEAMS_VALUE && { teamName: team }),
   });
 
   const hasTopics = topics && topics.entries.length > 0;
