@@ -17,6 +17,8 @@ tags:
     description: User API endpoints
   - name: Topic
     description: Topic operations
+  - name: Team
+    description: Team operations
 paths:
   /user/authenticate:
     summary: User authentication
@@ -97,11 +99,25 @@ paths:
           example: "Producer"
       responses:
         200:
+          description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/TopicsGetResponse'
-                    
+  /getAllTeamsSUOnly:
+    get:
+      operationId: teamNamesGet
+      summary: Get team names
+      tags:
+        - Team
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamNamesGetResponse'
+
 components:
   schemas:
     CommonError:
@@ -257,3 +273,11 @@ components:
         topicName,
         totalNoPages,
       ]
+    TeamNamesGetResponse:
+      type: array
+      items:
+        title: Team name
+        type: string
+        example: Team A
+      example: ["All teams", "Team A", "Team B"]
+
