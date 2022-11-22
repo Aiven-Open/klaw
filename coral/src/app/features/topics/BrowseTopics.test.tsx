@@ -1,5 +1,6 @@
 import { server } from "src/services/api-mocks/server";
 import {
+  mockedResponseSinglePage,
   mockedResponseTransformed,
   mockGetTeams,
   mockTopicGetRequest,
@@ -34,7 +35,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: { status: 200, data: mockedResponseSinglePage },
       });
       renderWithQueryClient(<BrowseTopics />);
     });
@@ -56,7 +57,10 @@ describe("BrowseTopics.tsx", () => {
       console.error = jest.fn();
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
-      mockTopicGetRequest({ mswInstance: server, scenario: "error" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        response: { status: 400, data: { message: "Not relevant" } },
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 
@@ -78,7 +82,10 @@ describe("BrowseTopics.tsx", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
-      mockTopicGetRequest({ mswInstance: server, scenario: "empty" });
+      mockTopicGetRequest({
+        mswInstance: server,
+        response: { status: 200, data: [] },
+      });
       renderWithQueryClient(<BrowseTopics />);
     });
 
@@ -101,7 +108,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: { status: 200, data: mockedResponseSinglePage },
       });
       renderWithQueryClient(<BrowseTopics />);
     });

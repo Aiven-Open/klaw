@@ -8,6 +8,7 @@ import Topics from "src/app/pages/topics";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
 import {
+  mockedResponseSinglePage,
   mockedResponseTransformed,
   mockGetTeams,
   mockTopicGetRequest,
@@ -33,7 +34,7 @@ describe("Topics", () => {
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-static",
+        response: { status: 200, data: mockedResponseSinglePage },
       });
       renderWithQueryClient(<Topics />);
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
