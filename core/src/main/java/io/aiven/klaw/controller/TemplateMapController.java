@@ -55,10 +55,10 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
   public String login(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (ssoEnabled.equals("true") || authenticationType.equals(AZURE_ACTIVE_DIRECTORY.value)) {
+    if (ssoEnabled.equals("true") || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
       return "oauthLogin";
     }
-    if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
+    if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
       return checkAuth("loginSaas.html", request, response);
     return "login.html";
   }
