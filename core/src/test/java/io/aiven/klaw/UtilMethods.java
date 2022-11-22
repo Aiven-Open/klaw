@@ -446,6 +446,7 @@ public class UtilMethods {
     env.setId("1");
     env.setName("DEV");
     envList.add(env);
+    env.setClusterId(1);
     return envList;
   }
 

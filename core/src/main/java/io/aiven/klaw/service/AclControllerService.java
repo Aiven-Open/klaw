@@ -20,6 +20,7 @@ import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.MailType;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RequestOperationType;
@@ -87,13 +88,22 @@ public class AclControllerService {
         result = "Failure : Please change the pattern to LITERAL for topic type.";
         return ApiResponse.builder().result(result).build();
       }
-      if (validateTeamConsumerGroup(
-          aclRequestsModel.getRequestingteam(), aclRequestsModel.getConsumergroup(), tenantId)) {
-        result =
-            "Failure : Consumer group "
-                + aclRequestsModel.getConsumergroup()
-                + " used by another team.";
-        return ApiResponse.builder().result(result).build();
+
+      String kafkaFlavor =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getClusterId())
+              .getKafkaFlavor();
+      // ignore consumer group check for Aiven kafka flavors
+      if (!kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
+        if (validateTeamConsumerGroup(
+            aclRequestsModel.getRequestingteam(), aclRequestsModel.getConsumergroup(), tenantId)) {
+          result =
+              "Failure : Consumer group "
+                  + aclRequestsModel.getConsumergroup()
+                  + " used by another team.";
+          return ApiResponse.builder().result(result).build();
+        }
       }
     }
 

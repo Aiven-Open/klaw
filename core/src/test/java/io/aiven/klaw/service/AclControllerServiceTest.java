@@ -13,6 +13,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -23,6 +24,7 @@ import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.KafkaFlavors;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,6 +83,16 @@ public class AclControllerServiceTest {
     loginMock();
   }
 
+  private void mockKafkaFlavor() {
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    KwClusters kwClusters = new KwClusters();
+    kwClusters.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwClusters.setClusterId(1);
+    kwClustersMap.put(1, kwClusters);
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+  }
+
   private void loginMock() {
     Authentication authentication = Mockito.mock(Authentication.class);
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
@@ -117,6 +129,8 @@ public class AclControllerServiceTest {
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+
+    mockKafkaFlavor();
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
@@ -134,6 +148,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.requestForAcl(any()))
         .thenThrow(new RuntimeException("Failure in creating request"));
     stubUserInfo();
+    mockKafkaFlavor();
 
     KlawException thrown =
         Assertions.assertThrows(
@@ -198,6 +213,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getUniqueConsumerGroups(anyInt()))
         .thenReturn(Collections.singletonList(acl));
     stubUserInfo();
+    mockKafkaFlavor();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequestsModel);
     assertThat(resultResp.getResult())
