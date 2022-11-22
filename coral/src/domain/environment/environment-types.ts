@@ -1,4 +1,4 @@
-export type EnvironmentDTO = {
+type EnvironmentDTO = {
   id: string;
   name: string;
   type: string;
@@ -19,4 +19,6 @@ export type EnvironmentDTO = {
   allPageNos: null;
 };
 
-export type Environment = string;
+type Environment = string;
+
+export type { Environment, EnvironmentDTO };

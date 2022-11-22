@@ -95,6 +95,7 @@ module.exports = {
         "import/no-mutable-exports": "error",
         "import/no-cycle": "error",
         "import/exports-last": "error",
-        "import/no-anonymous-default-export": "error"
+        "import/no-anonymous-default-export": "error",
+        "import/group-exports": "error"
     }
 }
