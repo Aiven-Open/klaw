@@ -3,6 +3,7 @@
  * https://jestjs.io/docs/configuration
  */
 
+//eslint-disable-next-line
 export default {
   moduleFileExtensions: ["js", "jsx", "ts", "tsx"],
   preset: "ts-jest",

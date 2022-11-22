@@ -199,6 +199,7 @@ const patch = <TBody extends SomeObject | URLSearchParams>(
 const delete_ = (pathname: AbsolutePathname) =>
   withoutPayloadandWithVerb(HTTPMethod.DELETE, pathname);
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
   get,
   post,
