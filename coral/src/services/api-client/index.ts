@@ -1,6 +1,6 @@
 import { getHTTPBaseAPIUrl } from "src/config";
 
-export enum HTTPMethod {
+enum HTTPMethod {
   GET = "GET",
   POST = "POST",
   PUT = "PUT",
@@ -11,7 +11,7 @@ type SomeObject =
   | Record<string, unknown>
   | Record<string, never>
   | Array<unknown>;
-export type AbsolutePathname = `/${string}`;
+type AbsolutePathname = `/${string}`;
 const CONTENT_TYPE_JSON = "application/json" as const;
 
 const API_BASE_URL = getHTTPBaseAPIUrl();
@@ -31,11 +31,11 @@ class HTTPError extends Error {
   }
 }
 
-export class ServerError extends HTTPError {}
+class ServerError extends HTTPError {}
 
-export class ClientError extends HTTPError {}
+class ClientError extends HTTPError {}
 
-export class UnauthorizedError extends ClientError {
+class UnauthorizedError extends ClientError {
   constructor(message?: string, options?: ErrorOptions) {
     super(401, "Unauthorized", message, options);
   }
@@ -206,3 +206,6 @@ export default {
   patch,
   delete: delete_,
 };
+
+export type { AbsolutePathname };
+export { HTTPMethod, ServerError, ClientError, UnauthorizedError };

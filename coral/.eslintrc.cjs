@@ -94,5 +94,6 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "error",
         "import/no-mutable-exports": "error",
         "import/no-cycle": "error",
+        "import/exports-last": "error"
     }
 }
