@@ -1,4 +1,9 @@
-import { screen, within } from "@testing-library/react/pure";
+import {
+  screen,
+  within,
+  cleanup,
+  waitForElementToBeRemoved,
+} from "@testing-library/react/pure";
 import Topics from "src/app/pages/topics";
 import { renderWithQueryClient } from "src/services/test-utils";
 import { server } from "src/services/api-mocks/server";
@@ -7,10 +12,6 @@ import {
   mockGetTeams,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import {
-  cleanup,
-  waitForElementToBeRemoved,
-} from "@testing-library/react/pure";
 import { mockGetEnvironments } from "src/domain/environment";
 
 // This mirrors the formatting formation used in `/domain`

@@ -8,7 +8,7 @@ import {
 } from "src/app/components/Form";
 import { FieldErrors } from "react-hook-form";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
-import useLoginUser from "src/app/features/login/useLoginUser";
+import { useLoginUser } from "src/app/features/login/useLoginUser";
 import { useEffect } from "react";
 
 const formSchema = z.object({
