@@ -10,7 +10,7 @@ import {
 } from "src/domain/topic/topic-test-helper";
 
 describe("topic-transformer.ts", () => {
-  describe("'transformTopicApiResponse' transforms API response into list of browse-topics", () => {
+  describe("'transformTopicApiResponse' transforms API response into list of topics", () => {
     const mockedTopic: Topic = baseTestObjectMockedTopic();
 
     it("transforms a response with two entries", () => {
