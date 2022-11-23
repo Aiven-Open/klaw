@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { getTeams, Team } from "src/domain/team";
-import { mockGetTeams } from "src/domain/topic/topic-api.msw";
+import { mockGetTeams } from "src/domain/team/team-api.msw";
 
 function useGetTeams(): UseQueryResult<Team[]> {
   // everything in useEffect is used to mock the api call

@@ -2,7 +2,6 @@ import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseSinglePage,
   mockedResponseTransformed,
-  mockGetTeams,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
 import { renderWithQueryClient } from "src/services/test-utils";
@@ -11,6 +10,7 @@ import BrowseTopics from "src/app/features/topics/BrowseTopics";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { mockGetEnvironments } from "src/domain/environment";
+import { mockGetTeams } from "src/domain/team/team-api.msw";
 
 jest.mock("@aivenio/design-system", () => {
   return {
