@@ -17,12 +17,17 @@ const ALL_ENVIRONMENTS_VALUE = "ALL";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(1);
+  const initialPage = searchParams.get("page");
+  const initialTeam = searchParams.get("team");
+  const initialEnv = searchParams.get("environment");
+  const initialSearchTerm = searchParams.get("search");
+
+  const [page, setPage] = useState(Number(initialPage) || 1);
   const [environment, setEnvironment] = useState<Environment>(
-    ALL_ENVIRONMENTS_VALUE
+    initialEnv || ALL_ENVIRONMENTS_VALUE
   );
-  const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [team, setTeam] = useState<string>(initialTeam || ALL_TEAMS_VALUE);
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm || "");
 
   const { data: topicEnvs } = useGetEnvironments();
   const { data: topicTeams } = useGetTeams();
@@ -86,7 +91,7 @@ function BrowseTopics() {
           <Pagination
             activePage={topics.currentPage}
             totalPages={topics.totalPages}
-            setActivePage={setPage}
+            setActivePage={changePage}
           />
         )}
       </Flexbox>
@@ -100,6 +105,7 @@ function BrowseTopics() {
     } else {
       searchParams.set("environment", environment);
     }
+
     setSearchParams(searchParams);
   }
 
@@ -115,7 +121,13 @@ function BrowseTopics() {
 
   function searchTopics(newSearchTerm: string) {
     setSearchTerm(newSearchTerm);
-    searchParams.set("topicnamesearch", newSearchTerm);
+    searchParams.set("search", newSearchTerm);
+    setSearchParams(searchParams);
+  }
+
+  function changePage(activePage: number) {
+    setPage(activePage);
+    searchParams.set("page", activePage.toString());
     setSearchParams(searchParams);
   }
 }
