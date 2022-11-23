@@ -88,18 +88,18 @@ The structure is inspired in big parts by:
     │   ├── name-of-domain-one/
     │   │   ├── api/
     │   │   ├── types/
-    │   │   └── api-client.ts
+    │   │   └── index.ts
     │   └── name-of-domain-two/
     │       ├── api/
     │       ├── types/
-    │       └── api-client.ts
+    │       └── index.ts
     └── services/
         ├── api-mocks/
         │   ├── browser.ts
         │   ├── server.ts
         │   └── types.ts
-        ├── api-client.test.ts
-        └── api-client.ts
+        ├── api.test.ts
+        └── api.ts
         
 ```
 
@@ -108,7 +108,7 @@ The structure is inspired in big parts by:
 ### First level: `app` folder
 
 Contains everything related to the UI application. `app` consumes information from `domain` that we cater to the needs of the UI app.
-Nothing in `app` knows anything from the content of `domain` other than the exported modules / interfaces in the `api-client.ts` (public API).
+Nothing in `app` knows anything from the content of `domain` other than the exported modules / interfaces in the `index.ts` (public API).
 
 #### Second level: `app/assets`
 
@@ -148,7 +148,7 @@ Contains different domains we need to describe the UI application. They are spec
 
 Contains functionality we use in many areas to reduce coupling between different layers. `services` include utility functions as well as facades around external libraries. As a rule of thumb: We should not use a third-part library that is not related to the core packages like react outside of `services`. We implement them in a [Facade Pattern](https://blog.webdevsimplified.com/2022-07/facade-pattern/).
 
-- We name files based on their exported functionality, e.g. `api-client.ts`.
+- We name files based on their exported functionality, e.g. `api.ts`.
 - We create folders for the same responsibilities, e.g. for `test-utils/`.
 
 

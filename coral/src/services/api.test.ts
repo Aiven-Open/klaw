@@ -4,7 +4,7 @@ import api, {
   UnauthorizedError,
   ClientError,
   ServerError,
-} from "src/services/api-client";
+} from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
