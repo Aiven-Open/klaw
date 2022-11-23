@@ -41,7 +41,7 @@ describe("useGetTopics", () => {
     server.close();
   });
 
-  describe.only("handles loading and error state", () => {
+  describe("handles loading and error state", () => {
     it("returns a loading state before starting to fetch data", async () => {
       const responseData = [
         [
@@ -185,6 +185,68 @@ describe("useGetTopics", () => {
         .flat();
 
       expect(envList).toEqual(["DEV", "DEV", "DEV"]);
+    });
+  });
+
+  describe("handles responses based on the team", () => {
+    it("returns a list of two topics with `TEST_TEAM_02` team", async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+      });
+
+      const { result } = await renderHook(
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "ALL",
+            teamName: "TEST_TEAM_02",
+          }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      const teamList = result.current.data?.entries
+        .map((topic) => topic.teamname)
+        .flat();
+
+      expect(teamList).toEqual(["TEST_TEAM_02", "TEST_TEAM_02"]);
+    });
+  });
+
+  describe("handles responses based on a search term", () => {
+    const searchTerm = "Searched for topic";
+
+    it(`returns a list of two topics matching a "${searchTerm}" search`, async () => {
+      mockTopicGetRequest({
+        mswInstance: server,
+      });
+
+      const { result } = await renderHook(
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "ALL",
+            searchTerm,
+          }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      const titleList = result.current.data?.entries
+        .map((topic) => topic.topicName)
+        .flat();
+
+      expect(titleList).toEqual([`${searchTerm} 1`, `${searchTerm} 2`]);
     });
   });
 });

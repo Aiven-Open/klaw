@@ -31,6 +31,7 @@ function mockTopicGetRequest({
       const currentPage = req.url.searchParams.get("pageNo");
       const env = req.url.searchParams.get("env");
       const team = req.url.searchParams.get("teamName");
+      const search = req.url.searchParams.get("topicnamesearch");
 
       // Passing an response will the precedence over scenario.
       if (isObject(response)) {
@@ -49,6 +50,10 @@ function mockTopicGetRequest({
 
       if (team === "TEST_TEAM_02") {
         return res(ctx.status(200), ctx.json(mockedResponseTopicTeam));
+      }
+
+      if (search) {
+        return res(ctx.status(200), ctx.json(mockedResponseSearch));
       }
 
       return res(
@@ -113,6 +118,25 @@ const mockedResponseTopicTeam = [
     {
       ...createMockTopic({
         topicName: "Topic 2",
+        topicId: 2,
+      }),
+      teamname: "TEST_TEAM_02",
+    },
+  ],
+];
+
+const mockedResponseSearch = [
+  [
+    {
+      ...createMockTopic({
+        topicName: "Searched for topic 1",
+        topicId: 1,
+      }),
+      teamname: "TEST_TEAM_01",
+    },
+    {
+      ...createMockTopic({
+        topicName: "Searched for topic 2",
         topicId: 2,
       }),
       teamname: "TEST_TEAM_02",

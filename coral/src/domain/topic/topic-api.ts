@@ -10,16 +10,19 @@ const getTopics = async ({
   currentPage = 1,
   environment = "ALL",
   teamName,
+  searchTerm,
 }: {
   currentPage: number;
   environment: Environment;
   teamName?: string;
+  searchTerm?: string;
 }): Promise<TopicApiResponse> => {
   const team = teamName && teamName !== "All teams" ? teamName : null;
   const params: Record<string, string> = {
     pageNo: currentPage.toString(),
     env: environment,
     ...(team && { teamName: team }),
+    ...(searchTerm && { topicnamesearch: searchTerm }),
   };
 
   return api

@@ -9,10 +9,12 @@ function useGetTopics({
   currentPage,
   environment,
   teamName,
+  searchTerm,
 }: {
   currentPage: number;
   environment: Environment;
   teamName?: string;
+  searchTerm?: string;
 }): UseQueryResult<TopicApiResponse> {
   // everything in useEffect is used to mock the api call
   // and can be removed once the real api is connected
@@ -25,7 +27,7 @@ function useGetTopics({
   }, []);
 
   return useQuery<TopicApiResponse, Error>(
-    topicsQuery({ currentPage, environment, teamName })
+    topicsQuery({ currentPage, environment, teamName, searchTerm })
   );
 }
 

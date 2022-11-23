@@ -9,6 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { Environment } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
+import { SearchTopics } from "src/app/features/topics/components/search/SearchTopics";
 
 // Use a UUID value to represent empty option value.
 const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
@@ -21,10 +22,12 @@ function BrowseTopics() {
     ALL_ENVIRONMENTS_VALUE
   );
   const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const { data: topicEnvs } = useGetEnvironments();
   const { data: topicTeams } = useGetTeams();
 
+  console.log(searchParams);
   const {
     data: topics,
     isLoading,
@@ -34,6 +37,7 @@ function BrowseTopics() {
     currentPage: page,
     environment,
     ...(team !== ALL_TEAMS_VALUE && { teamName: team }),
+    ...(searchTerm && { searchTerm: searchTerm }),
   });
 
   const hasTopics = topics && topics.entries.length > 0;
@@ -66,6 +70,9 @@ function BrowseTopics() {
             />
           </FlexboxItem>
         )}
+        <FlexboxItem alignSelf={"center"}>
+          <SearchTopics search={searchTopics} searchTerm={searchTerm} />
+        </FlexboxItem>
       </Flexbox>
 
       <Flexbox direction={"column"} alignItems={"center"} rowGap={"l4"}>
@@ -104,6 +111,12 @@ function BrowseTopics() {
     } else {
       searchParams.set("team", team);
     }
+    setSearchParams(searchParams);
+  }
+
+  function searchTopics(newSearchTerm: string) {
+    setSearchTerm(newSearchTerm);
+    searchParams.set("topicnamesearch", newSearchTerm);
     setSearchParams(searchParams);
   }
 }
