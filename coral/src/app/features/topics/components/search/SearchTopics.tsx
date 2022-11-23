@@ -17,9 +17,18 @@ function SearchTopics(props: SearchTopicsProps) {
   const [currentSearchTerm, setCurrentSearchTerm] =
     useState<string>(searchTerm);
 
+  function hasInput() {
+    return currentSearchTerm.trim().length > 0;
+  }
+
   function onSubmit(event: FormEvent) {
     event.preventDefault();
-    search(currentSearchTerm);
+    if (!hasInput()) {
+      return;
+    }
+    const trimmed = currentSearchTerm.trim();
+    setCurrentSearchTerm(trimmed);
+    search(trimmed);
   }
 
   return (
@@ -33,8 +42,10 @@ function SearchTopics(props: SearchTopicsProps) {
           value={currentSearchTerm}
           onChange={(event) => setCurrentSearchTerm(event.target.value)}
           id={"topics-search"}
+          minLength={1}
+          required={true}
         />
-        <PrimaryButton type={"submit"} dense>
+        <PrimaryButton type={"submit"} dense aria-disabled={!hasInput()}>
           <span className={"visually-hidden"}>Submit search</span>
           <Icon
             aria-hidden={true}
