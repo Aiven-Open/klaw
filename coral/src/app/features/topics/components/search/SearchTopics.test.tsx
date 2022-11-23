@@ -91,5 +91,24 @@ describe("SearchTopics.tsx", () => {
 
       expect(mockedSearch).toHaveBeenCalledWith(testSearchInput);
     });
+
+    it("does not submit form when input is empty", async () => {
+      const submitButton = screen.getByRole("button", {
+        name: "Submit search",
+      });
+
+      await userEvent.click(submitButton);
+
+      expect(mockedSearch).not.toHaveBeenCalled();
+    });
+
+    it("does not submit form when input is not at least one character", async () => {
+      const input = screen.getByRole("textbox", { name: "Search topics" });
+
+      await userEvent.type(input, " ");
+      await userEvent.keyboard("{Enter}");
+
+      expect(mockedSearch).not.toHaveBeenCalled();
+    });
   });
 });
