@@ -27,7 +27,6 @@ function BrowseTopics() {
   const { data: topicEnvs } = useGetEnvironments();
   const { data: topicTeams } = useGetTeams();
 
-  console.log(searchParams);
   const {
     data: topics,
     isLoading,
