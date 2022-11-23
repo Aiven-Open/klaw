@@ -85,14 +85,16 @@ The structure is inspired in big parts by:
     │   │   └── Login.tsx
     │   └── router.tsx
     ├── domain/
-    │   ├── name-of-domain-one/
-    │   │   ├── api/
-    │   │   ├── types/
+    │   ├── environment/
+    │   │   ├── environment-api.ts
+    │   │   ├── environment-api.msw.ts
+    │   │   ├── environment-types.ts
     │   │   └── index.ts
-    │   └── name-of-domain-two/
-    │       ├── api/
-    │       ├── types/
-    │       └── index.ts
+    │   ├── team/
+    │   │   ├── team-api.ts
+    │   │   ├── team-api.msw.ts
+    │   │   ├── team-types.ts
+    │   │   └── index.ts
     └── services/
         ├── api-mocks/
         │   ├── browser.ts
