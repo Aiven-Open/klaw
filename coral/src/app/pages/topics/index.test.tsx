@@ -10,10 +10,10 @@ import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseSinglePage,
   mockedResponseTransformed,
-  mockGetTeams,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
 import { mockGetEnvironments } from "src/domain/environment";
+import { mockGetTeams } from "src/domain/team/team-api.msw";
 
 // This mirrors the formatting formation used in `/domain`
 // it's a temp implementation here and will be removed
