@@ -32,15 +32,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @SpringBootTest(
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = UiapiApplication.class)
-// Config file with property klaw.login.authentication.type set to 'azuread'
-@TestPropertySource(locations = "classpath:test-application-rdbms-aad.properties")
+// Config file with property klaw.login.authentication.type set to 'ad' and klaw.enable.sso set to
+// true
+@TestPropertySource(locations = "classpath:test-application-rdbms-ad.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
-public class AzureActiveDirectoryAuthenticationIT {
+public class ActiveDirectoryAuthenticationIT {
 
   @Autowired private MockMvc mvc;
 
+  // Login with Oidc profile with success
   @Test
   @Order(1)
   public void invokeRootPageWithOidcLoginSuccess() {
@@ -65,6 +67,8 @@ public class AzureActiveDirectoryAuthenticationIT {
     }
   }
 
+  // In AD/SSO context, submitting plain username/password credentials would fail to process, and
+  // user returned to login page
   @Test
   @Order(2)
   public void invokeRootPageWithBasicLoginFailure() {
@@ -74,21 +78,21 @@ public class AzureActiveDirectoryAuthenticationIT {
                   MockMvcRequestBuilders.get("/")
                       .with(
                           user("superadmin")
-                              .password(
-                                  "superAdminPwd")) // Invalid login for AD context authentication
+                              .password("superAdminPwd")) // Invalid login for AD context
+                      // authentication
                       .contentType(MediaType.APPLICATION_JSON)
                       .accept(MediaType.APPLICATION_JSON))
               .andReturn()
               .getResponse();
       assertThat(response.getContentAsString())
           .doesNotContain(
-              "dashboardApp"); // after invalid login, user redirected to login page, and not
-      // index/dashboard
+              "dashboardApp"); // after invalid login, user returned to login.html and not dashboard
       assertThat(response.getContentAsString())
-          .contains("loginSaasApp"); // after invalid login, user redirected to login page
+          .contains("loginSaasApp"); // after invalid login, user returned to login.html
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+    ;
   }
 
   private OidcUser getOidcUser() {

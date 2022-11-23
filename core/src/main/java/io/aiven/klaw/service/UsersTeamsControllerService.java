@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -17,6 +16,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.MetadataOperationType;
+import io.aiven.klaw.model.NewUserStatus;
 import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.TeamModel;
@@ -741,7 +741,7 @@ public class UsersTeamsControllerService {
     }
 
     try {
-      newUser.setStatus("PENDING");
+      newUser.setStatus(NewUserStatus.PENDING.value);
       newUser.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
 
       if (isExternal) { // not saas
@@ -932,8 +932,7 @@ public class UsersTeamsControllerService {
   }
 
   private Pattern getPattern() {
-    if (SAAS.equals(kwInstallationType)
-        || (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))) {
+    if (SAAS.equals(kwInstallationType) || (ACTIVE_DIRECTORY.value.equals(authenticationType))) {
       return saasPattern;
     } else {
       return defaultPattern;

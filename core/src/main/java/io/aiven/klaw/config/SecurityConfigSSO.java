@@ -30,6 +30,7 @@ public class SecurityConfigSSO extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
+    log.info("SSO enabled");
     ConfigUtils.applyHttpSecurityConfig(http, coralEnabled);
   }
 

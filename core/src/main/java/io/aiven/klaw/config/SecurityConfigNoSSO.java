@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.AttributesMapper;
@@ -33,8 +33,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
-@ConditionalOnExpression(
-    "'${klaw.enable.sso}'.equals('false') && !'${klaw.login.authentication.type}'.equals('azuread')")
+@ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
 @Slf4j
 public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 

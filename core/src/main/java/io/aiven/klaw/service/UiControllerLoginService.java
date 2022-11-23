@@ -1,7 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -10,6 +9,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.NewUserStatus;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -18,11 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
-import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +41,6 @@ public class UiControllerLoginService {
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
-  @Value("${klaw.sso.client.registration.id:kwregid}")
-  private String ssoClientRegistrationId;
-
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired CommonUtilsService commonUtilsService;
@@ -58,17 +55,9 @@ public class UiControllerLoginService {
 
   public String getReturningPage(String uri) {
     try {
-      String userName;
-
-      if (AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-        DefaultOidcUser userDetails =
-            (DefaultOidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userName = userDetails.getPreferredUsername();
-      } else {
-        UserDetails userDetails =
-            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        userName = userDetails.getUsername();
-      }
+      UserDetails userDetails =
+          (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      String userName = userDetails.getUsername();
 
       if (userName != null) {
         HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -80,8 +69,7 @@ public class UiControllerLoginService {
             return "registerSaas.html";
           }
 
-          if (ACTIVE_DIRECTORY.value.equals(authenticationType)
-              || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
+          if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
             return "registerLdap.html";
           }
           return "register.html";
@@ -134,7 +122,7 @@ public class UiControllerLoginService {
   }
 
   public String checkAnonymousLogin(
-      String uri, HttpServletRequest request, HttpServletResponse response) {
+      String uri, OAuth2AuthenticationToken auth2AuthenticationToken) {
     try {
       DefaultOAuth2User defaultOAuth2User =
           (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -150,14 +138,10 @@ public class UiControllerLoginService {
             defaultOAuth2User.getAttributes().get("name"));
       }
 
-      OAuth2AuthorizedClient client =
-          authorizedClientService.loadAuthorizedClient(
-              ssoClientRegistrationId,
-              (String) defaultOAuth2User.getAttributes().get("preferred_username"));
-      if (client == null) {
-        return oauthLoginPage;
-      } else {
+      if (auth2AuthenticationToken.isAuthenticated()) {
         return uri;
+      } else {
+        return oauthLoginPage;
       }
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -165,7 +149,11 @@ public class UiControllerLoginService {
     }
   }
 
-  public String checkAuth(String uri, HttpServletRequest request, HttpServletResponse response) {
+  public String checkAuth(
+      String uri,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken authentication) {
     if ("tenants.html".equals(uri)) {
       UserDetails userDetails =
           (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -189,16 +177,21 @@ public class UiControllerLoginService {
       if (uri.contains("register") || uri.equals("registrationReview.html")) {
         return uri;
       } else {
-        return checkAnonymousLogin(uri, request, response);
+        if (authentication instanceof OAuth2AuthenticationToken) {
+          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication);
+        } else {
+          return oauthLoginPage;
+        }
       }
     } else {
       return getReturningPage(uri);
     }
   }
 
+  // register user with staging status, and forward to signup
   public String registerStagingUser(String userName, Object fullName) {
     try {
-      log.info("User found in SSO and not in Klaw db :{}", userName);
+      log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
           manageDatabase.getHandleDbRequests().getRegistrationId(userName);
 
@@ -213,8 +206,8 @@ public class UiControllerLoginService {
 
         RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
         registerUserInfoModel.setRegistrationId(randomId);
-        registerUserInfoModel.setStatus("STAGING");
-        registerUserInfoModel.setTeam("STAGINGTEAM");
+        registerUserInfoModel.setStatus(NewUserStatus.STAGING.value);
+        registerUserInfoModel.setTeam(KwConstants.STAGINGTEAM);
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");

@@ -1,7 +1,6 @@
 package io.aiven.klaw.controller;
 
 import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.AZURE_ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.AuthenticationType.LDAP;
 
@@ -11,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,398 +33,609 @@ public class TemplateMapController {
 
   @Autowired UiControllerLoginService uiControllerLoginService;
 
-  private String checkAuth(String uri, HttpServletRequest request, HttpServletResponse response) {
-    return uiControllerLoginService.checkAuth(uri, request, response);
+  private String checkAuth(
+      String uri,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return uiControllerLoginService.checkAuth(uri, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
-  public String root(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("index.html", request, response);
+  public String root(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("index.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/index", method = RequestMethod.GET)
-  public String index(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("index.html", request, response);
+  public String index(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("index.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
   public String dashboard(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("dashboard", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("dashboard", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
-  public String login(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (ssoEnabled.equals("true") || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)) {
+  public String login(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    if (ssoEnabled.equals("true")) {
       return "oauthLogin";
     }
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth("loginSaas.html", request, response);
+      return checkAuth("loginSaas.html", request, response, abstractAuthenticationToken);
     return "login.html";
   }
 
   @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
   public String forgotPassword(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("forgotPassword.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("forgotPassword.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/register", method = RequestMethod.GET)
-  public String register(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
+  public String register(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (LDAP.value.equals(authenticationType)
         || ACTIVE_DIRECTORY.value.equals(authenticationType)
-        || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType)
         || "true".equals(ssoEnabled)) {
       if (SAAS.equals(kwInstallationType)) {
-        return checkAuth("registerSaas.html", request, response);
+        return checkAuth("registerSaas.html", request, response, abstractAuthenticationToken);
       } else {
-        return checkAuth("registerLdap.html", request, response);
+        return checkAuth("registerLdap.html", request, response, abstractAuthenticationToken);
       }
     } else if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
-      return checkAuth("registerSaas.html", request, response);
-    else return checkAuth("register.html", request, response);
+      return checkAuth("registerSaas.html", request, response, abstractAuthenticationToken);
+    else return checkAuth("register.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/registrationReview", method = RequestMethod.GET)
   public String registrationReview(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth("registrationReviewSaas.html", request, response);
-    return checkAuth("registrationReview.html", request, response);
+      return checkAuth(
+          "registrationReviewSaas.html", request, response, abstractAuthenticationToken);
+    return checkAuth("registrationReview.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/feedback", method = RequestMethod.GET)
-  public String feedback(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("feedback.html", request, response);
+  public String feedback(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("feedback.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/newADUser", method = RequestMethod.GET)
   public String newADUser(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     return "newADUser.html";
   }
 
   @RequestMapping(value = "/home", method = RequestMethod.GET)
-  public String home(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("home.html", request, response);
+  public String home(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("home.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/terms", method = RequestMethod.GET)
-  public String terms(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("terms.html", request, response);
+  public String terms(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("terms.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addUser", method = RequestMethod.GET)
-  public String addUsers(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (LDAP.value.equals(authenticationType)
-        || ACTIVE_DIRECTORY.value.equals(authenticationType)
-        || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))
-      return checkAuth("addUserLdap.html", request, response);
-    else return checkAuth("addUser.html", request, response);
+  public String addUsers(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    if (LDAP.value.equals(authenticationType) || ACTIVE_DIRECTORY.value.equals(authenticationType))
+      return checkAuth("addUserLdap.html", request, response, abstractAuthenticationToken);
+    else return checkAuth("addUser.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/envs", method = RequestMethod.GET)
-  public String envs(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("envs.html", request, response);
+  public String envs(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("envs.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/userActivation", method = RequestMethod.GET)
   public String userActivation(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("userActivation.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("userActivation.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/helpwizard", method = RequestMethod.GET)
   public String helpWizard(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("helpwizard.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("helpwizard.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/clusters", method = RequestMethod.GET)
-  public String clusters(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("clusters.html", request, response);
+  public String clusters(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("clusters.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/monitorEnvs", method = RequestMethod.GET)
   public String monitorEnvs(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("monitorEnvs.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("monitorEnvs.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execAcls", method = RequestMethod.GET)
-  public String execAcls(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("execAcls.html", request, response);
+  public String execAcls(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execSchemas", method = RequestMethod.GET)
   public String execSchemas(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("execSchemas.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execSchemas.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execUsers", method = RequestMethod.GET)
   public String execUsers(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("execRegisteredUsers.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execRegisteredUsers.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execTopics", method = RequestMethod.GET)
   public String execTopics(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("execTopics.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execConnectors", method = RequestMethod.GET)
   public String execConnectors(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("execConnectors.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execConnectors.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
   public String myTopicRequests(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("myTopicRequests.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myTopicRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myConnectorRequests", method = RequestMethod.GET)
   public String myConnectorRequests(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("myConnectorRequests.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myConnectorRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/mySchemaRequests", method = RequestMethod.GET)
   public String mySchemaRequests(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("mySchemaRequests.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("mySchemaRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myAclRequests", method = RequestMethod.GET)
   public String myAclRequests(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("myAclRequests.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myAclRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)
   public String requestAcls(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("requestAcls.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestSchema", method = RequestMethod.GET)
   public String requestSchemaUpload(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("requestSchema.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestSchema.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestTopics", method = RequestMethod.GET)
   public String requestTopics(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("requestTopics.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestConnector", method = RequestMethod.GET)
   public String requestConnector(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("requestConnector.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestConnector.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/users", method = RequestMethod.GET)
   public String showUsers(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("showUsers.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("showUsers.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
   public String myProfile(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("myProfile.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myProfile.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/tenantInfo", method = RequestMethod.GET)
   public String tenantInfo(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("tenantInfo.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("tenantInfo.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
   public String changePwd(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    if (LDAP.value.equals(authenticationType)
-        || ACTIVE_DIRECTORY.value.equals(authenticationType)
-        || AZURE_ACTIVE_DIRECTORY.value.equals(authenticationType))
-      return checkAuth("index", request, response);
-    else return checkAuth("changePwd.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    if (LDAP.value.equals(authenticationType) || ACTIVE_DIRECTORY.value.equals(authenticationType))
+      return checkAuth("index", request, response, abstractAuthenticationToken);
+    else return checkAuth("changePwd.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/synchronizeTopics", method = RequestMethod.GET)
   public String synchronizeTopics(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("synchronizeTopics.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/syncConnectors", method = RequestMethod.GET)
   public String syncConnectors(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("synchronizeConnectors.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeConnectors.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/synchronizeAcls", method = RequestMethod.GET)
   public String synchronizeAcls(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("synchronizeAcls.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/teams", method = RequestMethod.GET)
   public String showTeams(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("showTeams.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("showTeams.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addTeam", method = RequestMethod.GET)
-  public String addTeam(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addTeam.html", request, response);
+  public String addTeam(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addTeam.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addEnv", method = RequestMethod.GET)
-  public String addEnv(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addEnv.html", request, response);
+  public String addEnv(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addKafkaConnectEnv", method = RequestMethod.GET)
   public String addKafkaConnectEnv(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addKafkaConnectEnv.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addKafkaConnectEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyEnv", method = RequestMethod.GET)
   public String modifyEnv(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("modifyEnv.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyCluster", method = RequestMethod.GET)
   public String modifyCluster(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("modifyCluster.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyCluster.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyUser", method = RequestMethod.GET)
   public String modifyUser(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("modifyUser.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyUser.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyTeam", method = RequestMethod.GET)
   public String modifyTeam(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("modifyTeam.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyTeam.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addSchemaEnv", method = RequestMethod.GET)
   public String addSchemaEnv(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addSchemaEnv.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addSchemaEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addCluster", method = RequestMethod.GET)
   public String addCluster(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addCluster.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addCluster.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
   public String activityLog(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("activityLog.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("activityLog.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
   public String browseTopics(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("browseTopics.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("browseTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/kafkaConnectors", method = RequestMethod.GET)
   public String manageKafkaConnect(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("kafkaConnectors.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("kafkaConnectors.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/syncBackTopics", method = RequestMethod.GET)
   public String syncBackTopics(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("syncBackTopics.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("syncBackTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/syncBackAcls", method = RequestMethod.GET)
   public String syncBackAcls(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("syncBackAcls.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("syncBackAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/topicOverview", method = RequestMethod.GET)
   public String browseAcls(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("browseAcls.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("browseAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/connectorOverview", method = RequestMethod.GET)
   public String connectorOverview(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("connectorOverview.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("connectorOverview.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/serverConfig", method = RequestMethod.GET)
   public String serverConfig(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("serverConfig.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("serverConfig.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/analytics", method = RequestMethod.GET)
   public String analytics(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("analytics.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("analytics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/metrics", method = RequestMethod.GET)
-  public String metrics(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("kwmetrics.html", request, response);
+  public String metrics(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("kwmetrics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/permissions", method = RequestMethod.GET)
   public String permissions(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("permissions.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("permissions.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/roles", method = RequestMethod.GET)
-  public String roles(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("roles.html", request, response);
+  public String roles(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("roles.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addRole", method = RequestMethod.GET)
-  public String addRole(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addRole.html", request, response);
+  public String addRole(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addRole.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/tenants", method = RequestMethod.GET)
-  public String tenants(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("tenants.html", request, response);
+  public String tenants(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("tenants.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addTenant", method = RequestMethod.GET)
   public String addTenant(
-      ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("addTenant.html", request, response);
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addTenant.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/docs", method = RequestMethod.GET)
-  public String docs(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("docs.html", request, response);
+  public String docs(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("docs.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/notFound", method = RequestMethod.GET)
-  public String notFound(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
-    return checkAuth("index.html", request, response);
+  public String notFound(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("index.html", request, response, abstractAuthenticationToken);
   }
 }

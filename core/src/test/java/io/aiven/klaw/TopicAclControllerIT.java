@@ -236,7 +236,6 @@ public class TopicAclControllerIT {
   public void createTopicRequest() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(topicId);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    login(user1, PASSWORD, "USER");
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
@@ -327,7 +326,6 @@ public class TopicAclControllerIT {
     int topicIdLocal = 1002;
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(topicIdLocal);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    login(user1, PASSWORD, "USER");
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
@@ -341,8 +339,6 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     assertThat(response).contains(ApiResultStatus.SUCCESS.value);
-
-    login(user2, PASSWORD, "APPROVER");
 
     response =
         mvc.perform(
@@ -386,7 +382,6 @@ public class TopicAclControllerIT {
 
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1003);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    login(user1, PASSWORD, "USER");
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopics")
