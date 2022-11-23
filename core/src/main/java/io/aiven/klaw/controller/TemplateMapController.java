@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,8 +37,8 @@ public class TemplateMapController {
       String uri,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken authentication) {
-    return uiControllerLoginService.checkAuth(uri, request, response, authentication);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return uiControllerLoginService.checkAuth(uri, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/", method = RequestMethod.GET)
@@ -46,8 +46,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("index.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("index.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/index", method = RequestMethod.GET)
@@ -55,8 +55,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("index.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("index.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
@@ -64,8 +64,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("dashboard", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("dashboard", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
@@ -73,12 +73,12 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (ssoEnabled.equals("true")) {
       return "oauthLogin";
     }
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth("loginSaas.html", request, response, oAuth2AuthenticationToken);
+      return checkAuth("loginSaas.html", request, response, abstractAuthenticationToken);
     return "login.html";
   }
 
@@ -87,8 +87,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("forgotPassword.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("forgotPassword.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -96,18 +96,18 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (LDAP.value.equals(authenticationType)
         || ACTIVE_DIRECTORY.value.equals(authenticationType)
         || "true".equals(ssoEnabled)) {
       if (SAAS.equals(kwInstallationType)) {
-        return checkAuth("registerSaas.html", request, response, oAuth2AuthenticationToken);
+        return checkAuth("registerSaas.html", request, response, abstractAuthenticationToken);
       } else {
-        return checkAuth("registerLdap.html", request, response, oAuth2AuthenticationToken);
+        return checkAuth("registerLdap.html", request, response, abstractAuthenticationToken);
       }
     } else if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
-      return checkAuth("registerSaas.html", request, response, oAuth2AuthenticationToken);
-    else return checkAuth("register.html", request, response, oAuth2AuthenticationToken);
+      return checkAuth("registerSaas.html", request, response, abstractAuthenticationToken);
+    else return checkAuth("register.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/registrationReview", method = RequestMethod.GET)
@@ -115,10 +115,11 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth("registrationReviewSaas.html", request, response, oAuth2AuthenticationToken);
-    return checkAuth("registrationReview.html", request, response, oAuth2AuthenticationToken);
+      return checkAuth(
+          "registrationReviewSaas.html", request, response, abstractAuthenticationToken);
+    return checkAuth("registrationReview.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/feedback", method = RequestMethod.GET)
@@ -126,8 +127,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("feedback.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("feedback.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/newADUser", method = RequestMethod.GET)
@@ -135,7 +136,7 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     return "newADUser.html";
   }
 
@@ -144,8 +145,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("home.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("home.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/terms", method = RequestMethod.GET)
@@ -153,8 +154,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("terms.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("terms.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addUser", method = RequestMethod.GET)
@@ -162,10 +163,10 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (LDAP.value.equals(authenticationType) || ACTIVE_DIRECTORY.value.equals(authenticationType))
-      return checkAuth("addUserLdap.html", request, response, oAuth2AuthenticationToken);
-    else return checkAuth("addUser.html", request, response, oAuth2AuthenticationToken);
+      return checkAuth("addUserLdap.html", request, response, abstractAuthenticationToken);
+    else return checkAuth("addUser.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/envs", method = RequestMethod.GET)
@@ -173,8 +174,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("envs.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("envs.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/userActivation", method = RequestMethod.GET)
@@ -182,8 +183,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("userActivation.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("userActivation.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/helpwizard", method = RequestMethod.GET)
@@ -191,8 +192,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("helpwizard.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("helpwizard.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/clusters", method = RequestMethod.GET)
@@ -200,8 +201,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("clusters.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("clusters.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/monitorEnvs", method = RequestMethod.GET)
@@ -209,8 +210,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("monitorEnvs.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("monitorEnvs.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execAcls", method = RequestMethod.GET)
@@ -218,8 +219,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("execAcls.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execSchemas", method = RequestMethod.GET)
@@ -227,8 +228,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("execSchemas.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execSchemas.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execUsers", method = RequestMethod.GET)
@@ -236,8 +237,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("execRegisteredUsers.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execRegisteredUsers.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execTopics", method = RequestMethod.GET)
@@ -245,8 +246,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("execTopics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/execConnectors", method = RequestMethod.GET)
@@ -254,8 +255,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("execConnectors.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execConnectors.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myTopicRequests", method = RequestMethod.GET)
@@ -263,8 +264,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("myTopicRequests.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myTopicRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myConnectorRequests", method = RequestMethod.GET)
@@ -272,8 +273,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("myConnectorRequests.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myConnectorRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/mySchemaRequests", method = RequestMethod.GET)
@@ -281,8 +282,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("mySchemaRequests.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("mySchemaRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myAclRequests", method = RequestMethod.GET)
@@ -290,8 +291,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("myAclRequests.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myAclRequests.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestAcls", method = RequestMethod.GET)
@@ -299,8 +300,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("requestAcls.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestSchema", method = RequestMethod.GET)
@@ -308,8 +309,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("requestSchema.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestSchema.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestTopics", method = RequestMethod.GET)
@@ -317,8 +318,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("requestTopics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/requestConnector", method = RequestMethod.GET)
@@ -326,8 +327,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("requestConnector.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("requestConnector.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/users", method = RequestMethod.GET)
@@ -335,8 +336,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("showUsers.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("showUsers.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/myProfile", method = RequestMethod.GET)
@@ -344,8 +345,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("myProfile.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myProfile.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/tenantInfo", method = RequestMethod.GET)
@@ -353,8 +354,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("tenantInfo.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("tenantInfo.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
@@ -362,10 +363,10 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     if (LDAP.value.equals(authenticationType) || ACTIVE_DIRECTORY.value.equals(authenticationType))
-      return checkAuth("index", request, response, oAuth2AuthenticationToken);
-    else return checkAuth("changePwd.html", request, response, oAuth2AuthenticationToken);
+      return checkAuth("index", request, response, abstractAuthenticationToken);
+    else return checkAuth("changePwd.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/synchronizeTopics", method = RequestMethod.GET)
@@ -373,8 +374,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("synchronizeTopics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/syncConnectors", method = RequestMethod.GET)
@@ -382,8 +383,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("synchronizeConnectors.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeConnectors.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/synchronizeAcls", method = RequestMethod.GET)
@@ -391,8 +392,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("synchronizeAcls.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/teams", method = RequestMethod.GET)
@@ -400,8 +401,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("showTeams.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("showTeams.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addTeam", method = RequestMethod.GET)
@@ -409,8 +410,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addTeam.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addTeam.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addEnv", method = RequestMethod.GET)
@@ -418,8 +419,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addEnv.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addKafkaConnectEnv", method = RequestMethod.GET)
@@ -427,8 +428,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addKafkaConnectEnv.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addKafkaConnectEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyEnv", method = RequestMethod.GET)
@@ -436,8 +437,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("modifyEnv.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyCluster", method = RequestMethod.GET)
@@ -445,8 +446,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("modifyCluster.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyCluster.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyUser", method = RequestMethod.GET)
@@ -454,8 +455,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("modifyUser.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyUser.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/modifyTeam", method = RequestMethod.GET)
@@ -463,8 +464,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("modifyTeam.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("modifyTeam.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addSchemaEnv", method = RequestMethod.GET)
@@ -472,8 +473,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addSchemaEnv.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addSchemaEnv.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addCluster", method = RequestMethod.GET)
@@ -481,8 +482,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addCluster.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addCluster.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/activityLog", method = RequestMethod.GET)
@@ -490,8 +491,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("activityLog.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("activityLog.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/browseTopics", method = RequestMethod.GET)
@@ -499,8 +500,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("browseTopics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("browseTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/kafkaConnectors", method = RequestMethod.GET)
@@ -508,8 +509,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("kafkaConnectors.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("kafkaConnectors.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/syncBackTopics", method = RequestMethod.GET)
@@ -517,8 +518,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("syncBackTopics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("syncBackTopics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/syncBackAcls", method = RequestMethod.GET)
@@ -526,8 +527,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("syncBackAcls.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("syncBackAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/topicOverview", method = RequestMethod.GET)
@@ -535,8 +536,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("browseAcls.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("browseAcls.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/connectorOverview", method = RequestMethod.GET)
@@ -544,8 +545,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("connectorOverview.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("connectorOverview.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/serverConfig", method = RequestMethod.GET)
@@ -553,8 +554,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("serverConfig.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("serverConfig.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/analytics", method = RequestMethod.GET)
@@ -562,8 +563,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("analytics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("analytics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/metrics", method = RequestMethod.GET)
@@ -571,8 +572,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("kwmetrics.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("kwmetrics.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/permissions", method = RequestMethod.GET)
@@ -580,8 +581,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("permissions.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("permissions.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/roles", method = RequestMethod.GET)
@@ -589,8 +590,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("roles.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("roles.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addRole", method = RequestMethod.GET)
@@ -598,8 +599,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addRole.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addRole.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/tenants", method = RequestMethod.GET)
@@ -607,8 +608,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("tenants.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("tenants.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addTenant", method = RequestMethod.GET)
@@ -616,8 +617,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("addTenant.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("addTenant.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/docs", method = RequestMethod.GET)
@@ -625,8 +626,8 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("docs.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("docs.html", request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/notFound", method = RequestMethod.GET)
@@ -634,7 +635,7 @@ public class TemplateMapController {
       ModelMap model,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-    return checkAuth("index.html", request, response, oAuth2AuthenticationToken);
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("index.html", request, response, abstractAuthenticationToken);
   }
 }

@@ -9,6 +9,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.NewUserStatus;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -17,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -38,9 +40,6 @@ public class UiControllerLoginService {
 
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
-
-  @Value("${klaw.sso.client.registration.id:kwregid}")
-  private String ssoClientRegistrationId;
 
   @Autowired ManageDatabase manageDatabase;
 
@@ -154,7 +153,7 @@ public class UiControllerLoginService {
       String uri,
       HttpServletRequest request,
       HttpServletResponse response,
-      OAuth2AuthenticationToken authentication) {
+      AbstractAuthenticationToken authentication) {
     if ("tenants.html".equals(uri)) {
       UserDetails userDetails =
           (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -178,13 +177,18 @@ public class UiControllerLoginService {
       if (uri.contains("register") || uri.equals("registrationReview.html")) {
         return uri;
       } else {
-        return checkAnonymousLogin(uri, authentication);
+        if (authentication instanceof OAuth2AuthenticationToken) {
+          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication);
+        } else {
+          return oauthLoginPage;
+        }
       }
     } else {
       return getReturningPage(uri);
     }
   }
 
+  // register user with staging status, and forward to signup
   public String registerStagingUser(String userName, Object fullName) {
     try {
       log.info("User found in SSO/AD and not in Klaw db :{}", userName);
@@ -202,7 +206,7 @@ public class UiControllerLoginService {
 
         RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
         registerUserInfoModel.setRegistrationId(randomId);
-        registerUserInfoModel.setStatus("STAGING");
+        registerUserInfoModel.setStatus(NewUserStatus.STAGING.value);
         registerUserInfoModel.setTeam(KwConstants.STAGINGTEAM);
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
         registerUserInfoModel.setUsername(userName);
