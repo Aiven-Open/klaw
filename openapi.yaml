@@ -19,6 +19,8 @@ tags:
     description: Topic operations
   - name: Team
     description: Team operations
+  - name: Environment
+    description: Environment operations
 paths:
   /user/authenticate:
     summary: User authentication
@@ -117,7 +119,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TeamNamesGetResponse'
-
+  /getEnvs:
+    get:
+      operationId: environmentsGet
+      summary: Get environments
+      tags:
+        - Environment
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+              $ref: '#/components/schemas/EnvironmentsGetResponse'
 components:
   schemas:
     CommonError:
@@ -280,4 +294,116 @@ components:
         type: string
         example: Team A
       example: ["All teams", "Team A", "Team B"]
-
+    EnvironmentsGetResponse:
+      type: object
+      properties:
+        id:
+          title: id
+          description: Environment identifier
+          type: string
+          example: "1"
+        name:
+          title: Name
+          description: Environment name
+          type: string
+          example: DEV
+        type:
+          title: Type
+          description: Environment type
+          type: string
+          enum: [kafka, kafkaconnect, schema]
+        tenantId:
+          title: TenantId
+          description: Tenant identifier
+          type: number
+          example: 101
+        topicprefix:
+          title: Topic prefix
+          description: Topic name prefix
+          type: string
+          nullable: true
+          example: "test-"
+        topicsuffix:
+          title: Topic suffix
+          description: Topic name suffix
+          type: string
+          nullable: true
+          example: "-test"
+        clusterId:
+          title: Cluster identifier
+          type: number
+          example: 1
+        tenantName:
+          title: Tenant name
+          type: string
+          example: default
+        clusterName:
+          title: Cluster name
+          type: string
+          example: DEV
+        envStatus:
+          title: Environment status
+          type: string
+          enum: [ONLINE, OFFLINE]
+          example: ONLINE
+        otherParams:
+          title: Other parameters
+          description: Topic configuration parameters
+          type: string
+          example: default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
+        defaultPartitions:
+          title: Default partitions
+          type: string
+          nullable: true
+          example: "1"
+        maxPartitions:
+          title: Maximum partitions
+          type: string
+          nullable: true
+          example: "2"
+        defaultReplicationFactor:
+          title: Default replication factor
+          type: string
+          nullable: true
+          example: "1"
+        maxReplicationFactor:
+          title: Maximum replication factor
+          type: string
+          nullable: true
+          example: "2"
+        showDeleteEnv:
+          title: Show delete environment
+          description: Describes if the user should see environment delete action.
+          type: boolean
+          example: true
+        totalNoPages:
+          title: Total number of pages
+          type: string
+          example: "1"
+        allPageNos:
+          title: All page numbers
+          description: List of all page numbers
+          type: array
+          items:
+            type: string
+          example: ["1"]
+      required: [
+        id,
+        name,
+        type,
+        tenantId,
+        topicprefix,
+        topicsuffix,
+        clusterId,
+        tenantName,
+        clusterName,
+        envStatus,
+        otherParams,
+        defaultPartitions,
+        maxPartitions,
+        defaultReplicationFactor,
+        maxReplicationFactor,
+        showDeleteEnv,
+        totalNoPages,
+        allPageNos,
+      ]
