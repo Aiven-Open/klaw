@@ -1,7 +1,7 @@
-import { useGetTopics } from "src/app/features/browse-topics/hooks/list/useGetTopics";
+import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
-import TopicList from "src/app/features/browse-topics/components/list/TopicList";
+import TopicList from "src/app/features/browse-topics/components/topic-list/TopicList";
 import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";

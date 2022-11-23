@@ -7,7 +7,7 @@ import {
   Flexbox,
   ExternalLinkButton,
 } from "@aivenio/design-system";
-import classes from "src/app/features/browse-topics/components/list/TopicCard.module.css";
+import classes from "src/app/features/browse-topics/components/topic-list/TopicCard.module.css";
 import { Topic } from "src/domain/topic";
 import { createTopicOverviewLink } from "src/app/features/browse-topics/utils/create-topic-overview-link";
 

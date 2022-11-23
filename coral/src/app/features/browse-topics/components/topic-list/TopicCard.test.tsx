@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import TopicCard from "src/app/features/browse-topics/components/list/TopicCard";
+import TopicCard from "src/app/features/browse-topics/components/topic-list/TopicCard";
 
 const testCard = {
   topicName: "aivtopic2",
