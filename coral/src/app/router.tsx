@@ -8,6 +8,11 @@ const routes: Array<RouteObject> = [
     path: "/",
     element: <HomePage />,
   },
+  // Login is currently the responsibility of the
+  // Angular Klaw app
+  // {
+  //   path: "/login",
+  // },
   {
     path: "/topics",
     element: <Topics />,
