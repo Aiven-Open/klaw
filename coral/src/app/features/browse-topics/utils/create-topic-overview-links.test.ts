@@ -1,4 +1,4 @@
-import { createTopicOverviewLink } from "src/app/features/topics/utils/create-topic-overview-link";
+import { createTopicOverviewLink } from "src/app/features/browse-topics/utils/create-topic-overview-link";
 
 describe("create-topic-overview-links", () => {
   beforeAll(() => {

@@ -1,4 +1,4 @@
-import api from "src/services/api-client";
+import api from "src/services/api";
 import {
   TopicApiResponse,
   TopicDTOApiResponse,

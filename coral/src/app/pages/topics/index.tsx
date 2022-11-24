@@ -1,4 +1,4 @@
-import BrowseTopics from "src/app/features/topics/BrowseTopics";
+import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
 import { Flexbox, PageHeader } from "@aivenio/design-system";
 
 const Topics = () => {

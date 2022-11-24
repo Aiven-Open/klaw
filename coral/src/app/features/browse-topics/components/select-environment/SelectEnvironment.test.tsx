@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Environment } from "src/domain/environment";
-import SelectEnvironment from "src/app/features/topics/components/select-environment/SelectEnvironment";
+import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 
 describe("SelectEnvironment.tsx", () => {
   const environments = ["ALL", "DEV", "TST"].map((env) => ({

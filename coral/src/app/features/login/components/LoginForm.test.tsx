@@ -1,4 +1,4 @@
-import { LoginForm } from "src/app/features/login";
+import { LoginForm } from "src/app/features/login/components/LoginForm";
 import { screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithQueryClient } from "src/services/test-utils";

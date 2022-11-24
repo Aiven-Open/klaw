@@ -1,4 +1,4 @@
-import Login from "src/app/pages/Login";
+import Login from "src/app/features/login/Login";
 import { cleanup, screen } from "@testing-library/react";
 import { renderWithQueryClient } from "src/services/test-utils";
 
