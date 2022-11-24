@@ -1,5 +1,4 @@
-import { cleanup, screen, within } from "@testing-library/react";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { cleanup, screen, within, render } from "@testing-library/react";
 import { createMockTopic } from "src/domain/topic/topic-test-helper";
 import TopicList from "src/app/features/browse-topics/components/topic-list/TopicList";
 
@@ -11,7 +10,7 @@ const mockedTopics = mockedTopicNames.map((name, index) =>
 describe("TopicList.tsx", () => {
   describe("shows all topics as a list", () => {
     beforeAll(() => {
-      renderWithQueryClient(<TopicList topics={mockedTopics} />);
+      render(<TopicList topics={mockedTopics} />);
     });
 
     afterAll(cleanup);
