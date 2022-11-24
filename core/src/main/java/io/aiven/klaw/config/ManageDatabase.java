@@ -1,5 +1,7 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
@@ -122,6 +124,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
+  @Value("${klaw.superadmin.default.username:'superadmin'}")
+  private String superAdminDefaultUserName;
+
   private ApplicationContext contextApp;
 
   @Override
@@ -181,8 +186,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
 
     // add user
-    String userName = "superadmin";
-    UserInfo userExists = handleDbRequests.getUsersInfo(userName);
+    UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
     if (userExists == null) {
       handleDbRequests.addNewUser(
           defaultDataService.getUser(
@@ -193,7 +197,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
                   .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
                   .getTeamId(),
               kwAdminMailId,
-              userName,
+              superAdminDefaultUserName,
               encryptorSecretKey));
     }
 
@@ -229,7 +233,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   private void checkSSOAuthentication() {
-    if ("db".equals(authenticationType) && "true".equals(ssoEnabled)) {
+    if (DATABASE.value.equals(authenticationType) && "true".equals(ssoEnabled)) {
       log.error(
           "Error : Please configure authentication type to ad, if SSO is enabled. Shutting down..");
       shutdownApp();

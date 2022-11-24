@@ -171,9 +171,9 @@
                 <div class="col-md-2">
                 </div>
                 <div class="col-md-4">
-                    <div ng-show="userNotFoundinKwDb == 'true'" class="row" style="align:center;padding-left:30%">
-                        <p class="text-warning font-weight-bold">
-                            Dear {{registerUser.username}}, your record does not exist in Klaw. Please register with the below form.
+                    <div ng-show="userNotFoundinKwDb == 'true'" class="row" style="align:center;padding-left:15%">
+                        <p class="text-warning">
+                            Dear {{registerUser.username}}, your profile does not exist in Klaw. Please register with the below form.
                         </p>
                     </div>
                     <div class="login-box card">
@@ -191,7 +191,8 @@
                                 <div class="form-group ">
                                     <div class="col-xs-12">
                                         <label class="control-label">Username</label>
-                                        <input class="form-control" type="text" placeholder="AD Username" required ng-model="registerUser.username">
+                                        <input ng-if="registerUser.username != null" disabled class="form-control" type="text" placeholder="AD Username / MailId" required ng-model="registerUser.username">
+                                        <input ng-if="registerUser.username == null" class="form-control" type="text" placeholder="AD Username / MailId" required ng-model="registerUser.username">
                                     </div>
                                 </div>
 

@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
@@ -29,7 +31,7 @@ public class UiConfigControllerService {
 
   public Map<String, String> getDbAuth() {
     Map<String, String> dbMap = new HashMap<>();
-    if ("db".equals(authenticationType)) {
+    if (DATABASE.value.equals(authenticationType)) {
       dbMap.put("dbauth", "true");
     } else {
       dbMap.put("dbauth", "false");

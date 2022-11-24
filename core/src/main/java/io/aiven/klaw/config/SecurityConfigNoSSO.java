@@ -1,5 +1,9 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.AuthenticationType.LDAP;
+
 import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -47,9 +51,6 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Value("${spring.ldap.userDnPatterns:@null}")
   private String userDnPatterns;
 
-  @Value("${spring.ldap.groupSearchBase:ou=groups:@null}")
-  private String groupSearchBase;
-
   @Value("${spring.ldap.passwordAttribute:@null}")
   private String passwordAttribute;
 
@@ -90,41 +91,10 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    List<String> staticResourcesHtmlArray =
-        new ArrayList<>(
-            List.of(
-                "/assets/**",
-                "/lib/**",
-                "/js/**",
-                "/home",
-                "/home/**",
-                "/register**",
-                "/authenticate",
-                "/login**",
-                "/terms**",
-                "/registrationReview**",
-                "/forgotPassword",
-                "/getDbAuth",
-                "/feedback**",
-                "/resetPassword",
-                "/getRoles",
-                "/getTenantsInfo",
-                "/getBasicInfo",
-                "/getAllTeamsSUFromRegisterUsers",
-                "/registerUser",
-                "/resetMemoryCache/**",
-                "/userActivation**",
-                "/getActivationInfo**"));
-
-    if (coralEnabled) {
-      staticResourcesHtmlArray.add("/coral/**");
-      staticResourcesHtmlArray.add("/assets/coral/**");
-    }
-
     http.csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers(staticResourcesHtmlArray.toArray(new String[0]))
+        .antMatchers(ConfigUtils.getStaticResources(coralEnabled).toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .fullyAuthenticated()
@@ -144,11 +114,11 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(AuthenticationManagerBuilder auth) throws Exception {
-    if (authenticationType != null && authenticationType.equals("db")) {
+    if (authenticationType != null && authenticationType.equals(DATABASE.value)) {
       dbAuthentication(auth);
-    } else if (authenticationType != null && authenticationType.equals("ldap")) {
+    } else if (authenticationType != null && authenticationType.equals(LDAP.value)) {
       ldapAuthentication(auth);
-    } else if (authenticationType != null && authenticationType.equals("ad")) {
+    } else if (authenticationType != null && authenticationType.equals(ACTIVE_DIRECTORY.value)) {
       auth.authenticationProvider(activeDirectoryLdapAuthenticationProvider())
           .userDetailsService(userDetailsService());
     } else {
@@ -161,7 +131,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Bean
   public AuthenticationManager authenticationManagerBean() throws Exception {
     AuthenticationManager result;
-    if (authenticationType != null && authenticationType.equals("ad")) {
+    if (authenticationType != null && authenticationType.equals(ACTIVE_DIRECTORY.value)) {
       log.info("AD authentication configured.");
       log.info(
           "AD URL : {}, AD Domain : {}, AD Root DN : {}, AD Filter : {}",
@@ -226,7 +196,7 @@ public class SecurityConfigNoSSO extends WebSecurityConfigurerAdapter {
   @Bean
   public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
     final Properties globalUsers = new Properties();
-    if (authenticationType != null && authenticationType.equals("db")) {
+    if (authenticationType != null && authenticationType.equals(DATABASE.value)) {
       log.info("Loading all users !!");
       List<UserInfo> users;
 

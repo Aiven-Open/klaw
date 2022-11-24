@@ -1,5 +1,7 @@
 package io.aiven.klaw.auth;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.service.ValidateCaptchaService;
 import java.io.IOException;
@@ -62,7 +64,7 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
       }
     }
 
-    if ("ad".equals(authenticationType)) {
+    if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
       // Check if user exists in kw database
       if (manageDatabase.getHandleDbRequests().getUsersInfo(request.getParameter("username"))
           == null) {

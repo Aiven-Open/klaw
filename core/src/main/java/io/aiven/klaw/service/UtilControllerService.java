@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.RolesType.SUPERADMIN;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -477,7 +478,7 @@ public class UtilControllerService {
         addDeleteEditClusters = ApiResultStatus.AUTHORIZED.value;
       }
 
-      if ("ad".equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
+      if (ACTIVE_DIRECTORY.value.equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
         dashboardData.put("adAuthRoleEnabled", "true");
       } else {
         dashboardData.put("adAuthRoleEnabled", "false");

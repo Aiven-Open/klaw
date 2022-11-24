@@ -4,6 +4,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.NewUserStatus;
 import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TopicRequestTypes;
@@ -317,13 +318,13 @@ public class UpdateDataJdbc {
     Optional<RegisterUserInfo> registerUser = registerInfoRepo.findById(username);
     String status;
     if (isApprove) {
-      status = "APPROVED";
+      status = NewUserStatus.APPROVED.value;
     } else {
-      status = "DECLINED";
+      status = NewUserStatus.DECLINED.value;
     }
     if (registerUser.isPresent()) {
       RegisterUserInfo registerUserInfo = registerUser.get();
-      if ("PENDING".equals(registerUserInfo.getStatus())) {
+      if (NewUserStatus.PENDING.value.equals(registerUserInfo.getStatus())) {
         registerUserInfo.setStatus(status);
         registerUserInfo.setApprover(approver);
         registerUserInfo.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
