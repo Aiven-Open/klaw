@@ -1,11 +1,11 @@
 import Login from "src/app/features/login/Login";
 import { cleanup, screen } from "@testing-library/react";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("Login", () => {
   describe("renders all necessary elements", () => {
     beforeAll(() => {
-      renderWithQueryClient(<Login />);
+      customRender(<Login />, { queryClient: true });
     });
     afterAll(cleanup);
 

@@ -1,10 +1,9 @@
 import HomePage from "src/app/pages";
-import { cleanup, screen } from "@testing-library/react";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { render, cleanup, screen } from "@testing-library/react";
 
 describe("HomePage", () => {
   beforeAll(() => {
-    renderWithQueryClient(<HomePage />);
+    render(<HomePage />);
   });
 
   afterAll(cleanup);

@@ -4,7 +4,7 @@ import {
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, within, screen } from "@testing-library/react";
 import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
@@ -37,7 +37,7 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { status: 200, data: mockedResponseSinglePage },
       });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -61,7 +61,7 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { status: 400, data: { message: "Not relevant" } },
       });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -86,7 +86,7 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { status: 200, data: [] },
       });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -110,7 +110,7 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { status: 200, data: mockedResponseSinglePage },
       });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -172,7 +172,7 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         scenario: "multiple-pages-static",
       });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -202,7 +202,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -238,7 +238,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
@@ -314,7 +314,7 @@ describe("BrowseTopics.tsx", () => {
       mockGetEnvironments({ mswInstance: server });
       mockGetTeams({ mswInstance: server });
       mockTopicGetRequest({ mswInstance: server });
-      renderWithQueryClient(<BrowseTopics />);
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {

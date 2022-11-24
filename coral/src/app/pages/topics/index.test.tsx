@@ -5,7 +5,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react/pure";
 import Topics from "src/app/pages/topics";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { server } from "src/services/api-mocks/server";
 import {
   mockedResponseSinglePage,
@@ -36,7 +36,7 @@ describe("Topics", () => {
         mswInstance: server,
         response: { status: 200, data: mockedResponseSinglePage },
       });
-      renderWithQueryClient(<Topics />);
+      customRender(<Topics />, { memoryRouter: true, queryClient: true });
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
