@@ -39,7 +39,6 @@ public class ConfigUtils {
                 "/getActivationInfo**"));
 
     if (coralEnabled) {
-      staticResourcesHtmlArray.add("/coral/**");
       staticResourcesHtmlArray.add("/assets/coral/**");
     }
 
