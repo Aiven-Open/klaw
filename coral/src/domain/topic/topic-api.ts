@@ -5,6 +5,8 @@ import {
 } from "src/domain/topic/topic-types";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import { Environment } from "src/domain/environment";
+import { Team } from "src/domain/team";
+import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
 const getTopics = async ({
   currentPage = 1,
@@ -14,10 +16,15 @@ const getTopics = async ({
 }: {
   currentPage: number;
   environment: Environment;
-  teamName?: string;
+  teamName: Team | null;
   searchTerm?: string;
 }): Promise<TopicApiResponse> => {
-  const team = teamName && teamName !== "All teams" ? teamName : null;
+  // "ALL_TEAMS_VALUE" represents topic list without
+  // the optional team parameter
+  // where we still need a way to represent an
+  // option for "Select all teams" to users
+  const team = teamName && teamName !== ALL_TEAMS_VALUE && teamName;
+
   const params: Record<string, string> = {
     pageNo: currentPage.toString(),
     env: environment,

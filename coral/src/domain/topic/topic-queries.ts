@@ -8,7 +8,11 @@ export const topicsQuery = ({
 }: {
   currentPage: number;
   environment: string;
-  teamName?: string;
+  // null represents the initial state
+  // for teamName to avoid fetching
+  // until the value from searchQuery is not
+  // evaluated
+  teamName: string | null;
   searchTerm?: string;
 }) => {
   return {
@@ -16,5 +20,8 @@ export const topicsQuery = ({
     queryFn: () =>
       getTopics({ currentPage, environment, teamName, searchTerm }),
     keepPreviousData: true,
+    //@TODO remove that debugging helper
+    refetchOnWindowFocus: false,
+    enabled: !!teamName,
   };
 };

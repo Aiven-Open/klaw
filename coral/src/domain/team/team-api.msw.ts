@@ -16,12 +16,10 @@ function mockGetTeams({
         return res(ctx.status(400), ctx.json(""));
       }
 
-      return res(
-        ctx.status(200),
-        ctx.json(["TEST_TEAM_01", "TEST_TEAM_02", "TEST_TEAM_03"])
-      );
+      return res(ctx.status(200), ctx.json(mockedTeamResponse));
     })
   );
 }
 
-export { mockGetTeams };
+const mockedTeamResponse = ["TEST_TEAM_01", "TEST_TEAM_02", "TEST_TEAM_03"];
+export { mockGetTeams, mockedTeamResponse };

@@ -1,24 +1,30 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
+import { server } from "src/services/api-mocks/server";
+import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
 describe("SelectTeam.tsx", () => {
-  const teams = ["All teams", "Marketing", "Infra", "Devrel"].map((team) => ({
-    label: team,
-    value: team,
-  }));
+  beforeAll(() => {
+    server.listen();
+  });
 
-  describe("renders all necessary elements", () => {
-    const activeOption = "Marketing";
+  afterAll(() => {
+    server.close();
+  });
 
-    const requiredProps = {
-      teams,
-      activeOption,
-      selectTeam: jest.fn(),
-    };
+  describe("renders default view when no query is set", () => {
+    const mockedUpdateTeam = jest.fn();
 
-    beforeAll(() => {
-      render(<SelectTeam {...requiredProps} />);
+    beforeAll(async () => {
+      mockGetTeams({ mswInstance: server });
+      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+      await waitFor(() => screen.getByRole("combobox"));
     });
 
     afterAll(cleanup);
@@ -31,37 +37,47 @@ describe("SelectTeam.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders a list of given options for teams", () => {
-      teams.forEach(({ label }) => {
+    it("renders a list of given options for teams plus a option for `All teams`", () => {
+      mockedTeamResponse.forEach((team) => {
         const option = screen.getByRole("option", {
-          name: label,
+          name: team,
         });
 
         expect(option).toBeEnabled();
       });
-      expect(screen.getAllByRole("option")).toHaveLength(teams.length);
+      expect(screen.getAllByRole("option")).toHaveLength(
+        mockedTeamResponse.length + 1
+      );
     });
 
-    it("shows a given team as the active option one", () => {
+    it("shows `All teams` as the active option one", () => {
       const option = screen.getByRole("option", {
         selected: true,
       });
-      expect(option).toHaveAccessibleName(activeOption);
+      expect(option).toHaveAccessibleName("All teams");
+    });
+
+    it("updates the team state for initial api call with value associated with `All teams`", () => {
+      expect(mockedUpdateTeam).toHaveBeenCalledWith(ALL_TEAMS_VALUE);
     });
   });
 
-  describe("handles the change event for selecting", () => {
-    const optionToSelect = "Devrel";
+  describe("sets the active team based on a query param", () => {
+    const mockedUpdateTeam = jest.fn();
 
-    const mockedSelectTeam = jest.fn();
-    const requiredProps = {
-      teams,
-      activeOption: "Infra",
-      selectTeam: mockedSelectTeam,
-    };
+    const teamQueryValue = "TEST_TEAM_02";
 
-    beforeEach(() => {
-      render(<SelectTeam {...requiredProps} />);
+    beforeEach(async () => {
+      const routePath = "/topics?team=TEST_TEAM_02";
+
+      mockGetTeams({ mswInstance: server });
+
+      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: routePath,
+      });
+      await waitFor(() => screen.getByRole("combobox"));
     });
 
     afterEach(() => {
@@ -69,7 +85,40 @@ describe("SelectTeam.tsx", () => {
       cleanup();
     });
 
-    it("user can select a new team", async () => {
+    it("shows `TEST_TEAM_02` as the active option one", async () => {
+      const option = await screen.findByRole("option", {
+        name: teamQueryValue,
+        selected: true,
+      });
+      expect(option).toBeVisible();
+    });
+
+    it("updates the team state for api call", () => {
+      expect(mockedUpdateTeam).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("handles user selecting a team", () => {
+    const mockedUpdateTeam = jest.fn();
+    const optionToSelect = "TEST_TEAM_02";
+
+    beforeEach(async () => {
+      mockGetTeams({ mswInstance: server });
+      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      await waitFor(() => screen.getByRole("combobox"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    test.todo("updates the query if user selects a new team");
+
+    it("updates state for api call when user selects a new team", async () => {
       const select = screen.getByRole("combobox", {
         name: "Team",
       });
@@ -77,7 +126,18 @@ describe("SelectTeam.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(mockedSelectTeam).toHaveBeenCalledWith(optionToSelect);
+      expect(mockedUpdateTeam).toHaveBeenCalledWith(optionToSelect);
+    });
+
+    it("sets the team the user choose as active option", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "Team",
+      });
+      const option = screen.getByRole("option", { name: optionToSelect });
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue(optionToSelect);
     });
   });
 });
