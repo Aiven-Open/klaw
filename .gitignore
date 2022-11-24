@@ -42,8 +42,8 @@ node_modules/
 
 # Coral build artefacts
 coral/dist*
-src/main/resources/static/assets/coral*
-src/main/resources/templates/coral*
+core/src/main/resources/static/assets/coral*
+core/src/main/resources/templates/coral*
 
 # Coral development mode against remote Klaw API
 coral/.env.remote-api
