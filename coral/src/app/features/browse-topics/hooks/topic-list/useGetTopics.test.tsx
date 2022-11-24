@@ -11,6 +11,7 @@ import {
 
 import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/useGetTopics";
 import { createMockTopic } from "src/domain/topic/topic-test-helper";
+import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +66,7 @@ describe("useGetTopics", () => {
           useGetTopics({
             currentPage: 1,
             environment: "ALL",
+            teamName: ALL_TEAMS_VALUE,
           }),
         {
           wrapper,
@@ -86,7 +88,12 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, environment: "ALL" }),
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "ALL",
+            teamName: ALL_TEAMS_VALUE,
+          }),
         {
           wrapper,
         }
@@ -107,7 +114,12 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, environment: "ALL" }),
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "ALL",
+            teamName: ALL_TEAMS_VALUE,
+          }),
         {
           wrapper,
         }
@@ -127,7 +139,12 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 2, environment: "ALL" }),
+        () =>
+          useGetTopics({
+            currentPage: 2,
+            environment: "ALL",
+            teamName: ALL_TEAMS_VALUE,
+          }),
         {
           wrapper,
         }
@@ -148,7 +165,12 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 3, environment: "ALL" }),
+        () =>
+          useGetTopics({
+            currentPage: 3,
+            environment: "ALL",
+            teamName: ALL_TEAMS_VALUE,
+          }),
         {
           wrapper,
         }
@@ -229,7 +251,12 @@ describe("useGetTopics", () => {
       });
 
       const { result } = await renderHook(
-        () => useGetTopics({ currentPage: 1, environment: "DEV" }),
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "DEV",
+            teamName: ALL_TEAMS_VALUE,
+          }),
         {
           wrapper,
         }
@@ -362,6 +389,7 @@ describe("useGetTopics", () => {
           useGetTopics({
             currentPage: 1,
             environment: "ALL",
+            teamName: ALL_TEAMS_VALUE,
             searchTerm,
           }),
         {

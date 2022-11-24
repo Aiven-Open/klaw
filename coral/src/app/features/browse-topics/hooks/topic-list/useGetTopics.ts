@@ -13,7 +13,7 @@ function useGetTopics({
 }: {
   currentPage: number;
   environment: Environment;
-  teamName?: string;
+  teamName: string | null;
   searchTerm?: string;
 }): UseQueryResult<TopicApiResponse> {
   // everything in useEffect is used to mock the api call
