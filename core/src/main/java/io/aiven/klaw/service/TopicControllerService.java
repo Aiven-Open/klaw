@@ -125,64 +125,61 @@ public class TopicControllerService {
   // create a request to delete topic.
   public ApiResponse createTopicDeleteRequest(String topicName, String envId) throws KlawException {
     log.info("createTopicDeleteRequest {} {}", topicName, envId);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
+    // check if authorized user to delete topic request
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_TOPICS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
+    int tenantId = commonUtilsService.getTenantId(userName);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    TopicRequest topicRequestReq = new TopicRequest();
 
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<Topic> topics = getTopicFromName(topicName, tenantId);
-
-    Integer userTeamId = getMyTeamId(userDetails);
-    if (topics != null
-        && topics.size() > 0
-        && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
+    // check if already a delete topic request exists
+    if (!dbHandle
+        .selectTopicRequests(topicName, envId, RequestStatus.created.name(), tenantId)
+        .isEmpty()) {
       return ApiResponse.builder()
-          .result("Failure. Sorry, you cannot delete this topic, as you are not part of this team.")
+          .result("Failure. A delete topic request already exists.")
           .build();
     }
 
-    topicRequestReq.setRequestor(userDetails);
-    topicRequestReq.setUsername(userDetails);
+    List<Topic> topics = getTopicFromName(topicName, tenantId);
+
+    // check if you are part of the same team to delete this request
+    Integer userTeamId = getMyTeamId(userName);
+    if (topics != null
+        && !topics.isEmpty()
+        && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
+      return ApiResponse.builder()
+          .result("Failure. You cannot delete this topic, as you are not part of this team.")
+          .build();
+    }
+
+    TopicRequest topicRequestReq = new TopicRequest();
+    topicRequestReq.setRequestor(userName);
+    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
     topicRequestReq.setTopictype(TopicRequestTypes.Delete.name());
     topicRequestReq.setTenantId(tenantId);
 
-    Optional<Topic> topicOb =
-        getTopicFromName(topicName, tenantId).stream()
-            .filter(
-                topic -> Objects.equals(topic.getEnvironment(), topicRequestReq.getEnvironment()))
-            .findFirst();
-
-    if (manageDatabase
-            .getHandleDbRequests()
-            .selectTopicRequests(
-                topicRequestReq.getTopicname(),
-                topicRequestReq.getEnvironment(),
-                RequestStatus.created.name(),
-                tenantId)
-            .size()
-        > 0) {
-      return ApiResponse.builder()
-          .result("Failure. A delete topic request already exists.")
-          .build();
+    Optional<Topic> topicOb = Optional.empty();
+    if (topics != null) {
+      topicOb =
+          topics.stream()
+              .filter(
+                  topic -> Objects.equals(topic.getEnvironment(), topicRequestReq.getEnvironment()))
+              .findFirst();
     }
-
     if (topicOb.isPresent()) {
       // Check if any existing subscriptions for this topic
       List<Acl> acls =
-          manageDatabase
-              .getHandleDbRequests()
-              .getSyncAcls(
-                  topicRequestReq.getEnvironment(), topicRequestReq.getTopicname(), tenantId);
-      if (acls.size() > 0) {
+          dbHandle.getSyncAcls(
+              topicRequestReq.getEnvironment(), topicRequestReq.getTopicname(), tenantId);
+      if (!acls.isEmpty()) {
         return ApiResponse.builder()
             .result(
                 "Failure. There are existing subscriptions for topic. Please get them deleted before.")
@@ -191,19 +188,17 @@ public class TopicControllerService {
 
       topicRequestReq.setTopicpartitions(topicOb.get().getNoOfPartitions());
       topicRequestReq.setReplicationfactor(topicOb.get().getNoOfReplcias());
-
       try {
         mailService.sendMail(
             topicRequestReq.getTopicname(),
             null,
             "",
-            userDetails,
+            userName,
             dbHandle,
             TOPIC_DELETE_REQUESTED,
             commonUtilsService.getLoginUrl());
 
-        String result =
-            manageDatabase.getHandleDbRequests().requestForTopic(topicRequestReq).get("result");
+        String result = dbHandle.requestForTopic(topicRequestReq).get("result");
         return ApiResponse.builder().result(result).build();
       } catch (Exception e) {
         log.error("Error ", e);
@@ -211,7 +206,9 @@ public class TopicControllerService {
       }
     } else {
       log.error("Topic not found : {}", topicName);
-      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.builder()
+          .result("Failure. Topic not found on cluster: " + topicName)
+          .build();
     }
   }
 
@@ -354,7 +351,6 @@ public class TopicControllerService {
 
     // tenant filtering
     topics = getFilteredTopicsForTenant(topics);
-
     return topics;
   }
 
