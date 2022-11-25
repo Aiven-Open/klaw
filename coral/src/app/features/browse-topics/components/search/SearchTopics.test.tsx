@@ -1,5 +1,5 @@
 import { render, cleanup, screen, within } from "@testing-library/react";
-import { SearchTopics } from "src/app/features/topics/components/search/SearchTopics";
+import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
 import userEvent from "@testing-library/user-event";
 
 describe("SearchTopics.tsx", () => {

@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { Environment } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
-import { SearchTopics } from "src/app/features/topics/components/search/SearchTopics";
+import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
 
 // Use a UUID value to represent empty option value.
 const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
