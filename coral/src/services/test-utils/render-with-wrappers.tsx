@@ -1,18 +1,8 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-
-function getQueryClientForTests() {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-        cacheTime: Infinity,
-      },
-    },
-  });
-}
+import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
 function withQueryClient(ui: ReactElement, options?: RenderOptions) {
   const queryClient = getQueryClientForTests();
