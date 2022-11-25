@@ -121,7 +121,12 @@ function BrowseTopics() {
 
   function searchTopics(newSearchTerm: string) {
     setSearchTerm(newSearchTerm);
-    searchParams.set("search", newSearchTerm);
+    if (newSearchTerm.length === 0) {
+      searchParams.delete("search");
+    } else {
+      searchParams.set("search", newSearchTerm);
+    }
+
     setSearchParams(searchParams);
   }
 

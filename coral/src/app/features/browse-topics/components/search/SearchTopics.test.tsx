@@ -90,25 +90,13 @@ describe("SearchTopics.tsx", () => {
       expect(mockedSearch).toHaveBeenCalledWith(testSearchInput);
     });
 
-    it("does not submit form when input is empty", async () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
-      const submitButton = screen.getByRole("button", {
-        name: "Submit search",
-      });
-
-      await userEvent.click(input);
-      await userEvent.click(submitButton);
-
-      expect(mockedSearch).not.toHaveBeenCalled();
-    });
-
-    it("does not submit form when input is not at least one character", async () => {
+    it("removes spaces at beginning and end of search term when users submits", async () => {
       const input = screen.getByRole("searchbox", { name: "Search topics" });
 
-      await userEvent.type(input, " ");
+      await userEvent.type(input, " awesome topic ");
       await userEvent.keyboard("{Enter}");
 
-      expect(mockedSearch).not.toHaveBeenCalled();
+      expect(mockedSearch).toHaveBeenCalledWith("awesome topic");
     });
   });
 });
