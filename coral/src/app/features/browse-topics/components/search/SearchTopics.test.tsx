@@ -91,10 +91,12 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("does not submit form when input is empty", async () => {
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
       const submitButton = screen.getByRole("button", {
         name: "Submit search",
       });
 
+      await userEvent.click(input);
       await userEvent.click(submitButton);
 
       expect(mockedSearch).not.toHaveBeenCalled();
