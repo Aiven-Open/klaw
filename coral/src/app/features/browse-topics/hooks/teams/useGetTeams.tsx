@@ -1,20 +1,8 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { getTeams, Team } from "src/domain/team";
-import { mockGetTeams } from "src/domain/team/team-api.msw";
+import { useQuery } from "@tanstack/react-query";
+import { getTeams } from "src/domain/team";
 
-function useGetTeams(): UseQueryResult<Team[]> {
-  // everything in useEffect is used to mock the api call
-  // and can be removed once the real api is connected
-  useEffect(() => {
-    const browserEnvWorker = window.msw;
-
-    if (browserEnvWorker) {
-      mockGetTeams({ mswInstance: browserEnvWorker });
-    }
-  }, []);
-
-  return useQuery<Team[], Error>(["topic-teams"], () => getTeams());
+function useGetTeams() {
+  return useQuery(["topic-teams"], getTeams);
 }
 
 export { useGetTeams };

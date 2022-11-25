@@ -1,22 +1,11 @@
-import { Team } from "src/domain/team/team-types";
+import api from "src/services/api";
+import { TeamNamesGetResponse } from "src/domain/team/team-types";
+import { transformTeamNamesGetResponse } from "src/domain/team/team-transformer";
 
-const getTeams = async (): Promise<Team[]> => {
-  return fetch(`/getAllTeamsSUOnly`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        throw new Error(`msw error: ${response.statusText}`);
-      }
-      const result = await response.json();
-      return result;
-    })
-    .catch((error) => {
-      throw new Error(error);
-    });
+const getTeams = () => {
+  return api
+    .get<TeamNamesGetResponse>("/getAllTeamsSUOnly")
+    .then(transformTeamNamesGetResponse);
 };
 
 export { getTeams };

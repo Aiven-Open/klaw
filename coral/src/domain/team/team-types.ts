@@ -1,3 +1,6 @@
+import { components } from "types/api.d";
 type Team = string;
 
-export type { Team };
+type TeamNamesGetResponse = components["schemas"]["TeamNamesGetResponse"];
+
+export type { Team, TeamNamesGetResponse };
