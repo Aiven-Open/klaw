@@ -5,12 +5,10 @@ import userEvent from "@testing-library/user-event";
 describe("SearchTopics.tsx", () => {
   describe("renders all necessary elements", () => {
     const testSearchTerm = "Test";
-    const mockedSearch = jest.fn();
+    const mockedOnChange = jest.fn();
 
     beforeAll(() => {
-      render(
-        <SearchTopics search={mockedSearch} searchTerm={testSearchTerm} />
-      );
+      render(<SearchTopics onChange={mockedOnChange} value={testSearchTerm} />);
     });
     afterAll(cleanup);
 
@@ -55,7 +53,7 @@ describe("SearchTopics.tsx", () => {
     const mockedSearch = jest.fn();
 
     beforeEach(() => {
-      render(<SearchTopics search={mockedSearch} searchTerm={""} />);
+      render(<SearchTopics onChange={mockedSearch} value={""} />);
     });
     afterEach(() => {
       jest.clearAllMocks();

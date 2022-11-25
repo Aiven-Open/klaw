@@ -75,7 +75,7 @@ function BrowseTopics() {
           </FlexboxItem>
         )}
         <FlexboxItem alignSelf={"center"}>
-          <SearchTopics search={searchTopics} searchTerm={searchTerm} />
+          <SearchTopics onChange={searchTopics} value={searchTerm} />
         </FlexboxItem>
       </Flexbox>
 

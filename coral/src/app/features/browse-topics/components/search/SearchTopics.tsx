@@ -8,31 +8,30 @@ import { FormEvent, useState } from "react";
 import searchItem from "@aivenio/design-system/dist/module/icons/search";
 
 type SearchTopicsProps = {
-  searchTerm: string;
-  search: (searchTerm: string) => void;
+  value: string;
+  onChange: (searchTerm: string) => void;
 };
 
 function SearchTopics(props: SearchTopicsProps) {
-  const { search, searchTerm } = props;
-  const [currentSearchTerm, setCurrentSearchTerm] =
-    useState<string>(searchTerm);
+  const { onChange, value } = props;
+  const [searchTerm, setSearchTerm] = useState<string>(value);
 
   function hasInput() {
-    return currentSearchTerm.trim().length > 0;
+    return searchTerm.trim().length > 0;
   }
 
-  function onSubmit(event: FormEvent) {
+  function onSearchSubmit(event: FormEvent) {
     event.preventDefault();
     if (!hasInput()) {
       return;
     }
-    const trimmed = currentSearchTerm.trim();
-    setCurrentSearchTerm(trimmed);
-    search(trimmed);
+    const trimmed = searchTerm.trim();
+    setSearchTerm(trimmed);
+    onChange(trimmed);
   }
 
   return (
-    <form role={"search"} onSubmit={onSubmit} aria-label={"Topics"}>
+    <form role={"search"} onSubmit={onSearchSubmit} aria-label={"Topics"}>
       <label className={"visually-hidden"} htmlFor={"topics-search"}>
         Search topics
       </label>
@@ -40,8 +39,8 @@ function SearchTopics(props: SearchTopicsProps) {
         <InputBase
           type={"search"}
           placeholder="Topic name"
-          value={currentSearchTerm}
-          onChange={(event) => setCurrentSearchTerm(event.target.value)}
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
           id={"topics-search"}
           minLength={1}
           required={true}
