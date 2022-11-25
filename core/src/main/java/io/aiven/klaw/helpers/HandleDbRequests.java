@@ -18,7 +18,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

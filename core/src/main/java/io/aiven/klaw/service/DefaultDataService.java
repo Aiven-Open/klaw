@@ -1,7 +1,8 @@
 package io.aiven.klaw.service;
 
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.helpers.KwConstants;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;

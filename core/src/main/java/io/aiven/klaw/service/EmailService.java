@@ -1,7 +1,7 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.service.KwConstants.DEFAULT_TENANT_ID;
-import static io.aiven.klaw.service.KwConstants.EMAIL_NOTIFICATIONS_ENABLED_KEY;
+import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
+import static io.aiven.klaw.helpers.KwConstants.EMAIL_NOTIFICATIONS_ENABLED_KEY;
 
 import io.aiven.klaw.config.ManageDatabase;
 import java.io.UnsupportedEncodingException;

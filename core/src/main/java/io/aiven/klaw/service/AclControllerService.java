@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.*;
+import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,18 +13,18 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.AclIPPrincipleType;
-import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
-import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaFlavors;
-import io.aiven.klaw.model.MailType;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.enums.AclIPPrincipleType;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.MailType;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -195,7 +195,7 @@ public class AclControllerService {
         dbHandle.getAllAclRequests(false, userDetails, "", requestsType, false, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userDetails);
     aclReqs =
         aclReqs.stream()
             .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
@@ -256,7 +256,8 @@ public class AclControllerService {
     List<Topic> topicTeamsList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
     if (topicTeamsList.size() > 0) {
-      Integer teamId = getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
+      Integer teamId =
+          commonUtilsService.getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
       if (RequestOperationType.DELETE.value.equals(aclType)) teamId = team;
       List<UserInfo> userList =
@@ -371,7 +372,7 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userDetails);
     createdAclReqs =
         createdAclReqs.stream()
             .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
@@ -425,7 +426,7 @@ public class AclControllerService {
         dbHandle.selectSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
 
-    if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
     }
 
@@ -500,7 +501,7 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -583,7 +584,7 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -603,23 +604,6 @@ public class AclControllerService {
       log.error("Error ", e);
       throw new KlawException(e.getMessage());
     }
-  }
-
-  private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
-    // tenant filtering
-    try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null) {
-        topicsFromSOT =
-            topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception exception) {
-      log.error("No environments/clusters found.", exception);
-      return new ArrayList<>();
-    }
-    return topicsFromSOT;
   }
 
   private String getUserName() {
@@ -647,13 +631,6 @@ public class AclControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  // based on tenants
-  private List<String> getEnvsFromUserId(String userName) {
-    int tenantId = commonUtilsService.getTenantId(userName);
-    Integer myTeamId = getMyTeamId(userName);
-    return manageDatabase.getTeamsAndAllowedEnvs(myTeamId, tenantId);
   }
 
   public List<Map<String, String>> getConsumerOffsets(

@@ -14,7 +14,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.enums.AclType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

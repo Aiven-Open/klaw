@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

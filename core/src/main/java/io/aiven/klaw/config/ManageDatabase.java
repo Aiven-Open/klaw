@@ -1,6 +1,6 @@
 package io.aiven.klaw.config;
 
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.Env;
@@ -12,15 +12,15 @@ import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
-import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TenantConfig;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.service.DefaultDataService;
-import io.aiven.klaw.service.KwConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;

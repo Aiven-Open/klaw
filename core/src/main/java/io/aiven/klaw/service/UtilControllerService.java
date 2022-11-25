@@ -1,15 +1,16 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.RolesType.SUPERADMIN;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.KwMetadataUpdates;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,12 +98,6 @@ public class UtilControllerService {
     }
   }
 
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(userDetails));
-  }
-
   private Integer getMyTeamId(String userName) {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
@@ -152,7 +147,7 @@ public class UtilControllerService {
 
     try {
       // tenant filtering
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
       allAclReqs =
           allAclReqs.stream()
               .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))

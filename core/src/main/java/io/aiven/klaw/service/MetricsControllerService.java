@@ -35,12 +35,6 @@ public class MetricsControllerService {
         SecurityContextHolder.getContext().getAuthentication().getPrincipal());
   }
 
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(userDetails));
-  }
-
   private Integer getMyTeamId(String userName) {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }

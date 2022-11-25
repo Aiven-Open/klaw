@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.enums;
 
 /*
 User status when being registered into Klaw

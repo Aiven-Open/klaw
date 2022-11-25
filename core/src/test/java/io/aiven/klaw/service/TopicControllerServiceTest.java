@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.ApiResultStatus.NOT_AUTHORIZED;
+import static io.aiven.klaw.model.enums.ApiResultStatus.NOT_AUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -17,12 +17,13 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.RequestOperationType;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -230,8 +231,8 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.emptyList());
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
     try {
       ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
       assertThat(apiResponse.getResult())
@@ -254,8 +255,8 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.emptyList());
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
     try {
@@ -305,8 +306,8 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.emptyList());
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     Map<String, String> deleteReqResult = new HashMap<>();
@@ -322,6 +323,132 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(11)
+  public void createClaimTopicRequestFailure1() {
+    String topicName = "testtopic1";
+    String envId = "1";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(getListTopicRequests());
+    try {
+      ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
+      assertThat(apiResponse.getResult())
+          .isEqualTo("Failure. A request already exists for this topic.");
+    } catch (KlawException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(12)
+  public void createClaimTopicRequestSuccess() {
+    String topicName = "testtopic1";
+    String envId = "1";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(Collections.emptyList());
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+        .thenReturn(List.of(getTopic(topicName)));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
+    List<UserInfo> userList = utilMethods.getUserInfoList("testuser", "");
+    userList.get(0).setTeamId(1);
+    when(handleDbRequests.selectAllUsersInfo(anyInt())).thenReturn(userList);
+    Map<String, String> claimReqResult = new HashMap<>();
+    claimReqResult.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.requestForTopic(any())).thenReturn(claimReqResult);
+    try {
+      ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
+      assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    } catch (KlawException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  @Order(22)
+  public void getTopicRequests() {
+    stubUserInfo();
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(handleDbRequests.getAllTopicRequests(anyString(), anyInt()))
+        .thenReturn(getListTopicRequests());
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
+
+    List<TopicRequestModel> listTopicRqs = topicControllerService.getTopicRequests("1", "", "all");
+    assertThat(listTopicRqs).hasSize(2);
+  }
+
+  @Test
+  @Order(13)
+  public void getTopicTeamOnlyFailure() {
+    String topicName = "testtopic";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    Map<String, String> topicTeamMap =
+        topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
+    assertThat(topicTeamMap.get("error")).contains("There are no topics found with this prefix.");
+  }
+
+  @Test
+  @Order(13)
+  public void getTopicTeamOnlyFailure2() {
+    String topicName = "testtopic";
+    String teamName = "TestTeam";
+    List<Topic> topicList = utilMethods.getTopics();
+    Topic topic = new Topic();
+    topic.setTopicname("testtopic2");
+    topic.setEnvironment("1");
+    topicList.add(topic);
+
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.getAllTopics(anyInt())).thenReturn(topicList);
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    Map<String, String> topicTeamMap =
+        topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
+    assertThat(topicTeamMap.get("error"))
+        .contains("There are atleast two topics with same prefix owned by different teams.");
+  }
+
+  @Test
+  @Order(13)
+  public void getTopicTeamOnlySuccess() {
+    String topicName = "testtopic";
+    String teamName = "TestTeam";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.getAllTopics(anyInt())).thenReturn(utilMethods.getTopics());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
+    Map<String, String> topicTeamMap =
+        topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
+    assertThat(topicTeamMap.get("team")).isEqualTo(teamName);
+  }
+
+  @Test
+  @Order(13)
+  public void getTopicTeamOnlySuccess2() {
+    String topicName = "testtopic";
+    String teamName = "TestTeam";
+    stubUserInfo();
+    List<Topic> topicList = utilMethods.getTopics();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
+    Map<String, String> topicTeamMap =
+        topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL);
+    assertThat(topicTeamMap.get("team")).isEqualTo(teamName);
+  }
+
+  @Test
+  @Order(13)
   public void getCreatedTopicRequests1() {
     List<TopicRequest> listTopicReqs = new ArrayList<>();
     listTopicReqs.add(getCorrectTopicDao());
@@ -343,7 +470,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(12)
+  @Order(14)
   public void getCreatedTopicRequests2() {
     List<TopicRequest> listTopicReqs = new ArrayList<>();
     listTopicReqs.add(getTopicRequest("topic1"));
@@ -371,7 +498,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(13)
+  @Order(15)
   public void deleteTopicRequests() throws KlawException {
     when(handleDbRequests.deleteTopicRequest(anyInt(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
@@ -381,7 +508,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(14)
+  @Order(16)
   public void approveTopicRequestsSuccess() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
@@ -403,7 +530,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(15)
+  @Order(17)
   public void approveTopicRequestsFailure1() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
@@ -425,11 +552,11 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(16)
+  @Order(18)
   public void getAllTopics() {
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
     when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
         .thenReturn(utilMethods.getTopics());
 
@@ -439,13 +566,13 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(17)
+  @Order(19)
   public void getTopicsSuccess1() throws Exception {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(getSyncTopics("topic", 4));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
@@ -462,7 +589,7 @@ public class TopicControllerServiceTest {
 
   // topicSearch does not exist in topic names
   @Test
-  @Order(18)
+  @Order(20)
   public void getTopicsSearchFailure() throws Exception {
     String envSel = "1", pageNo = "1", topicNameSearch = "demo";
     stubUserInfo();
@@ -478,7 +605,7 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(19)
+  @Order(21)
   public void declineTopicRequests() throws KlawException {
     String topicName = "testtopic";
     int topicId = 1001;
@@ -497,30 +624,14 @@ public class TopicControllerServiceTest {
   }
 
   @Test
-  @Order(20)
-  public void getTopicRequests() {
-    stubUserInfo();
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
-    when(handleDbRequests.getAllTopicRequests(anyString(), anyInt()))
-        .thenReturn(getListTopicRequests());
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
-
-    List<TopicRequestModel> listTopicRqs = topicControllerService.getTopicRequests("1", "", "all");
-    assertThat(listTopicRqs).hasSize(2);
-  }
-
-  @Test
-  @Order(21)
+  @Order(23)
   public void getTopicTeam() {
     String topicName = "testtopic";
     stubUserInfo();
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
 
     List<Topic> topicTeam = topicControllerService.getTopicFromName(topicName, 1);
     assertThat(topicTeam.get(0).getTeamId()).isOne();

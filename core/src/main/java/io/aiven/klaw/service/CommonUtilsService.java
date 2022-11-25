@@ -1,14 +1,15 @@
 package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.KwMetadataUpdates;
-import io.aiven.klaw.model.MetadataOperationType;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.Title;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.io.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -401,5 +403,38 @@ public class CommonUtilsService {
     } catch (Exception e) {
       log.error("Error from invokeResetEndpoints ", e);
     }
+  }
+
+  protected List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
+    // tenant filtering
+    try {
+      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName(getPrincipal()));
+      if (topicsFromSOT != null) {
+        topicsFromSOT =
+            topicsFromSOT.stream()
+                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
+                .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      // this situation cannot happen, as every topic has an assigned team and this flow is
+      // triggered on topic overview, which means topic has an owner
+      log.error("No environments/clusters found.", e);
+    }
+    return topicsFromSOT;
+  }
+
+  public List<String> getEnvsFromUserId(String userName) {
+    List<String> listEnvs =
+        manageDatabase.getTeamsAndAllowedEnvs(getMyTeamId(userName), getTenantId(userName));
+    if (listEnvs == null) return new ArrayList<>();
+    return listEnvs;
+  }
+
+  private Integer getMyTeamId(String userName) {
+    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  }
+
+  public Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

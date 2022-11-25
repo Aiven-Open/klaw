@@ -1,10 +1,10 @@
 package io.aiven.klaw.validation;
 
 import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
@@ -43,7 +43,7 @@ public class TopicRequestValidatorImpl
     }
 
     // tenant filtering
-    if (!topicControllerService
+    if (!commonUtilsService
         .getEnvsFromUserId(topicControllerService.getUserName())
         .contains(topicRequestModel.getEnvironment())) {
       updateConstraint(

@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.service.TopicControllerService;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +73,7 @@ public class TopicController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, String>> getTopicTeam(
       @RequestParam("topicName") String topicName,
-      @RequestParam(value = "patternType", defaultValue = "LITERAL") String patternType)
+      @RequestParam(value = "patternType", defaultValue = "LITERAL") AclPatternType patternType)
       throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.getTopicTeamOnly(topicName, patternType), HttpStatus.OK);

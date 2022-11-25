@@ -1,7 +1,7 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.RolesType.SUPERADMIN;
-import static io.aiven.klaw.service.KwConstants.*;
+import static io.aiven.klaw.helpers.KwConstants.*;
+import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -12,12 +12,13 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.*;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.EntityType;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaFlavors;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.io.*;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -77,12 +78,13 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public synchronized EnvModel getEnvDetails(String envSelected, String clusterType) {
+    String userName = getUserName();
     log.debug("getEnvDetails {}", envSelected);
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       // tenant filtering
-      if (!getEnvsFromUserId().contains(envSelected)) {
+      if (!commonUtilsService.getEnvsFromUserId(userName).contains(envSelected)) {
         return null;
       }
     }
@@ -534,12 +536,13 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public List<EnvModel> getKafkaConnectEnvs() {
-    int tenantId = getUserDetails(getUserName()).getTenantId();
+    String userName = getUserName();
+    int tenantId = getUserDetails(userName).getTenantId();
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
-      List<String> allowedEnvIdList = getEnvsFromUserId();
+      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
       listEnvs =
           listEnvs.stream()
               .filter(env -> allowedEnvIdList.contains(env.getId()))
@@ -892,16 +895,6 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  // tenant filtering
-  private List<String> getEnvsFromUserId() {
-    String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
-    Integer userTeamId = getMyTeamId(userDetails);
-    List<String> listEnvs = manageDatabase.getTeamsAndAllowedEnvs(userTeamId, tenantId);
-    if (listEnvs == null) return new ArrayList<>();
-    return listEnvs;
-  }
-
   public KwClustersModel getClusterDetails(String clusterId) {
     try {
       int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1132,10 +1125,6 @@ public class EnvsClustersTenantsControllerService {
     return res;
   }
 
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
-  }
-
   public Map<String, String> getPublicKey() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getPublicKey download " + tenantId);
@@ -1207,7 +1196,7 @@ public class EnvsClustersTenantsControllerService {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       // tenant filtering
-      if (!getEnvsFromUserId().contains(envSelected)) {
+      if (!commonUtilsService.getEnvsFromUserId(getUserName()).contains(envSelected)) {
         return null;
       }
     }

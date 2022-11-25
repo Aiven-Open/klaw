@@ -1,4 +1,4 @@
-package io.aiven.klaw.service;
+package io.aiven.klaw.helpers;
 
 import java.util.Arrays;
 import java.util.List;

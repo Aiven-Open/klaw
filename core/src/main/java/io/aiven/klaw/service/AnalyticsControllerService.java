@@ -4,11 +4,12 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.model.AclType;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.TeamOverview;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -62,12 +63,6 @@ public class AnalyticsControllerService {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
-  private List<String> getEnvsFromUserId() {
-    Integer userTeamId = getMyTeamId(getUserName());
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(getUserName()));
-  }
-
   public String getEnvName(String envId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
@@ -116,7 +111,7 @@ public class AnalyticsControllerService {
 
     Map<String, String> resultMap = new HashMap<>();
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId();
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
     try {
       if (topicsCountList != null) {
         topicsCountList =
@@ -193,7 +188,7 @@ public class AnalyticsControllerService {
 
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = getEnvsFromUserId();
+      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
       if (teamCountList != null) {
         // if(!permissionType.equals(PermissionType.ALL_TENANTS_REPORTS))
         teamCountList =
@@ -587,7 +582,7 @@ public class AnalyticsControllerService {
 
   private Map<String, List<String>> getTopicNames(int tenantId) {
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId();
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
 
     Map<String, List<String>> topicsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
@@ -624,7 +619,7 @@ public class AnalyticsControllerService {
 
   private Map<String, List<String>> getConsumerGroups(int tenantId) {
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId();
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
 
     Map<String, List<String>> aclsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {

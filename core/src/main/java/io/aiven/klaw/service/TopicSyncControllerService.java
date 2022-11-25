@@ -11,19 +11,19 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -220,7 +220,7 @@ public class TopicSyncControllerService {
         manageDatabase.getHandleDbRequests().getSyncTopics(env, null, tenantId);
 
     // tenant filtering
-    topicsFromSOT = getFilteredTopicsForTenant(topicsFromSOT);
+    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
     int counterInc;
     List<String> teamList = new ArrayList<>();
     teamList = tenantFilterTeams(teamList);
@@ -294,7 +294,7 @@ public class TopicSyncControllerService {
         manageDatabase.getHandleDbRequests().getSyncTopics(env, null, tenantId);
 
     // tenant filtering
-    topicsFromSOT = getFilteredTopicsForTenant(topicsFromSOT);
+    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
     List<TopicRequest> topicsListMap = new ArrayList<>();
 
     List<String> teamList = new ArrayList<>();
@@ -664,7 +664,8 @@ public class TopicSyncControllerService {
               topicType, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
 
       // tenant filtering, not really necessary though, as based on team is searched.
-      producerConsumerTopics = getFilteredTopicsForTenant(producerConsumerTopics);
+      producerConsumerTopics =
+          commonUtilsService.getFilteredTopicsForTenant(producerConsumerTopics);
 
       // select all topics and then filter
       env = "ALL";
@@ -675,7 +676,7 @@ public class TopicSyncControllerService {
     List<Topic> topicsFromSOT =
         handleDbRequests.getSyncTopics(
             env, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
-    topicsFromSOT = getFilteredTopicsForTenant(topicsFromSOT);
+    topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
@@ -1006,7 +1007,9 @@ public class TopicSyncControllerService {
     if (updatedSyncTopics.size() > 0) {
       for (SyncTopicUpdates topicUpdate : updatedSyncTopics) {
         // tenant filtering
-        if (!getEnvsFromUserId(userDetails).contains(topicUpdate.getEnvSelected())) {
+        if (!commonUtilsService
+            .getEnvsFromUserId(userDetails)
+            .contains(topicUpdate.getEnvSelected())) {
           return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
         existingTopics = getTopicFromName(topicUpdate.getTopicName(), tenantId);
@@ -1181,7 +1184,7 @@ public class TopicSyncControllerService {
     List<Topic> topics = manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
 
     // tenant filtering
-    topics = getFilteredTopicsForTenant(topics);
+    topics = commonUtilsService.getFilteredTopicsForTenant(topics);
 
     return topics;
   }
@@ -1194,31 +1197,8 @@ public class TopicSyncControllerService {
     return envFound.orElse(null);
   }
 
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(userDetails));
-  }
-
   private Integer getMyTeamId(String userName) {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
-  }
-
-  private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
-    // tenant filtering
-    try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null) {
-        topicsFromSOT =
-            topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      log.error("No environments/clusters found.", e);
-      return new ArrayList<>();
-    }
-    return topicsFromSOT;
   }
 
   private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {
