@@ -38,6 +38,7 @@ function SearchTopics(props: SearchTopicsProps) {
       </label>
       <Flexbox>
         <InputBase
+          type={"search"}
           placeholder="Topic name"
           value={currentSearchTerm}
           onChange={(event) => setCurrentSearchTerm(event.target.value)}

@@ -21,13 +21,13 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("shows a search input", () => {
-      const input = screen.getByRole("textbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
 
       expect(input).toBeEnabled();
     });
 
     it("shows a given search term as value", () => {
-      const input = screen.getByRole("textbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
 
       expect(input).toHaveValue(testSearchTerm);
     });
@@ -63,7 +63,7 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("updates value for user input", async () => {
-      const input = screen.getByRole("textbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
       expect(input).toHaveValue("");
 
       await userEvent.type(input, testSearchInput);
@@ -72,7 +72,7 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("submits search term when user clicks button", async () => {
-      const input = screen.getByRole("textbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
       const submitButton = screen.getByRole("button", {
         name: "Submit search",
       });
@@ -84,7 +84,7 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("submits search term when user presses enter", async () => {
-      const input = screen.getByRole("textbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
 
       await userEvent.type(input, testSearchInput);
       await userEvent.keyboard("{Enter}");
@@ -103,7 +103,7 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("does not submit form when input is not at least one character", async () => {
-      const input = screen.getByRole("textbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", { name: "Search topics" });
 
       await userEvent.type(input, " ");
       await userEvent.keyboard("{Enter}");
