@@ -1,6 +1,10 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.*;
+import static io.aiven.klaw.model.MailType.ACL_DELETE_REQUESTED;
+import static io.aiven.klaw.model.MailType.ACL_REQUESTED;
+import static io.aiven.klaw.model.MailType.ACL_REQUEST_APPROVED;
+import static io.aiven.klaw.model.MailType.ACL_REQUEST_DENIED;
+import static io.aiven.klaw.model.MailType.ACL_REQUEST_FAILURE;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,10 +66,10 @@ public class AclControllerService {
 
   public ApiResponse createAcl(AclRequestsModel aclRequestsModel) throws KlawException {
     log.info("createAcl {}", aclRequestsModel);
-    String userDetails = getUserName();
+    String userDetails = getCurrentUserName();
     aclRequestsModel.setAclType(RequestOperationType.CREATE.value);
     aclRequestsModel.setUsername(userDetails);
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userDetails);
 
     aclRequestsModel.setTeamId(
         manageDatabase.getTeamIdFromTeamName(tenantId, aclRequestsModel.getTeamname()));
@@ -188,7 +192,7 @@ public class AclControllerService {
   public List<AclRequestsModel> getAclRequests(
       String pageNo, String currentPage, String requestsType) {
 
-    String userDetails = getUserName();
+    String userDetails = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<AclRequests> aclReqs =
@@ -352,7 +356,7 @@ public class AclControllerService {
   public List<AclRequestsModel> getCreatedAclRequests(
       String pageNo, String currentPage, String requestsType) {
     log.debug("getCreatedAclRequests {} {}", pageNo, requestsType);
-    String userDetails = getUserName();
+    String userDetails = getCurrentUserName();
     List<AclRequests> createdAclReqs;
     int tenantId = commonUtilsService.getTenantId(userDetails);
 
@@ -403,7 +407,7 @@ public class AclControllerService {
           manageDatabase
               .getHandleDbRequests()
               .deleteAclRequest(
-                  Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
+                  Integer.parseInt(req_no), commonUtilsService.getTenantId(getCurrentUserName()));
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception ", e);
@@ -414,7 +418,7 @@ public class AclControllerService {
   // this will create a delete subscription request
   public ApiResponse createDeleteAclSubscriptionRequest(String req_no) throws KlawException {
     log.info("createDeleteAclSubscriptionRequest {}", req_no);
-    String userDetails = getUserName();
+    final String userDetails = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
@@ -423,7 +427,7 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     Acl acl =
         dbHandle.selectSyncAclsFromReqNo(
-            Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
+            Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
@@ -443,8 +447,8 @@ public class AclControllerService {
 
   public ApiResponse approveAclRequests(String req_no) throws KlawException {
     log.info("approveAclRequests {}", req_no);
-    String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    final String userDetails = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
@@ -564,7 +568,7 @@ public class AclControllerService {
       throws KlawException {
     log.info("declineAclRequests {}", req_no);
 
-    String userDetails = getUserName();
+    String userDetails = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
@@ -572,7 +576,7 @@ public class AclControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq =
-        dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(getUserName()));
+        dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     if (aclReq.getReq_no() == null) {
       return ApiResponse.builder().result("Record not found !").build();
@@ -608,7 +612,7 @@ public class AclControllerService {
   private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+      List<String> allowedEnvIdList = getEnvsFromUserId(getCurrentUserName());
       if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
@@ -622,9 +626,8 @@ public class AclControllerService {
     return topicsFromSOT;
   }
 
-  private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+  private String getCurrentUserName() {
+    return mailService.getCurrentUserName();
   }
 
   private boolean validateTeamConsumerGroup(Integer teamId, String consumerGroup, int tenantId) {
@@ -659,7 +662,7 @@ public class AclControllerService {
   public List<Map<String, String>> getConsumerOffsets(
       String envId, String consumerGroupId, String topicName) {
     List<Map<String, String>> consumerOffsetInfoList = new ArrayList<>();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
     try {
       KwClusters kwClusters =
           manageDatabase

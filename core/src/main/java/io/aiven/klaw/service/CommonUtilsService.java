@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.MetadataOperationType;
@@ -117,14 +118,11 @@ public class CommonUtilsService {
   }
 
   public String getUserName(Object principal) {
-    if (principal instanceof DefaultOAuth2User) {
-      DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
-      return (String) defaultOAuth2User.getAttributes().get(preferredUsername);
-    } else if (principal instanceof String) {
-      return (String) principal;
-    } else {
-      return ((UserDetails) principal).getUsername();
-    }
+    return UtilMethods.getUserName(principal, preferredUsername);
+  }
+
+  public String getCurrentUserName() {
+    return UtilMethods.getUserName(preferredUsername);
   }
 
   public boolean isNotAuthorizedUser(Object principal, PermissionType permissionType) {
