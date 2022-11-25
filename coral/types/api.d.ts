@@ -4,10 +4,19 @@
  */
 
 export type paths = {
-  /** User can authenticate themselves with their username as password */
+  /** User can authenticate themselves with their username and password */
   "/user/authenticate": {
     /** Exchange username and password to an authentication token.  The token can be later used as authentication mechanism for other API endpoints. */
     post: operations["userAuthentication"];
+  };
+  "/getTopics": {
+    get: operations["topicsGet"];
+  };
+  "/getAllTeamsSUOnly": {
+    get: operations["teamNamesGet"];
+  };
+  "/getEnvs": {
+    get: operations["environmentsGet"];
   };
 };
 
@@ -23,27 +32,245 @@ export type components = {
     UserAuthenticationRequest: {
       /**
        * username
-       * Format: email
        * @description Username
        * @example john.doe@klaw-project.io
        */
       username: string;
-      /** password */
+      /**
+       * password
+       * @example password123
+       */
       password: string;
     };
     UserAuthenticationResponse: {
       /**
        * token
        * @description Klaw authentication token
-       * @example PgaBBvZpb30NUAZDwiJeAoTppfPa6NyX
+       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
        */
       token: string;
       /**
        * Token type
-       * @example bearer
+       * @example JWT
        * @enum {string}
        */
-      token_type: "bearer";
+      tokenType: "JWT";
+    };
+    TopicsGetResponse: components["schemas"]["TopicInfo"][][];
+    TopicInfo: {
+      /**
+       * Topic identifier
+       * Format: int32
+       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
+       * @example 1010
+       */
+      topicid: number;
+      /**
+       * Total number of pages
+       * @example 1
+       */
+      totalNoPages: string;
+      /**
+       * Current page number
+       * @example 1
+       */
+      currentPage: string;
+      /**
+       * All page numbers
+       * @description List of all page numbers
+       * @example [
+       *   "1"
+       * ]
+       */
+      allPageNos: string[];
+      /**
+       * Topic name
+       * @description Kafka Topic name
+       * @example topicName
+       */
+      topicName: string;
+      /**
+       * Number of partitions
+       * Format: int32
+       * @description Topic partition count
+       * @example 10
+       */
+      noOfPartitions: number;
+      /**
+       * Description
+       * @description Kafka topic description stored in Klaw metadata.
+       * @example Main PostgreSQL change data capture stream
+       */
+      description: string;
+      /**
+       * Documentation
+       * @deprecated
+       */
+      documentation: string | null;
+      /**
+       * Number of replicas
+       * @description Topic replica count
+       * @example 2
+       */
+      noOfReplicas?: string;
+      /**
+       * Team name
+       * @description Topic owner team name
+       * @example application-X-developers
+       */
+      teamname: string;
+      /**
+       * cluster
+       * @deprecated
+       * @example 1
+       */
+      cluster: string;
+      /**
+       * Cluster identifier
+       * @deprecated
+       */
+      clusterId: string;
+      /**
+       * Environments list
+       * @description List of environments where the topic is present.
+       * @example [
+       *   "DEV",
+       *   "TEST"
+       * ]
+       */
+      environmentsList: string[];
+      /**
+       * Show edit topic
+       * @description Describes if the user should see topic edit action.
+       * @example false
+       */
+      showEditTopic: boolean;
+      /**
+       * Show delete topic
+       * @description Describes if the user should see topic delete action.
+       * @example true
+       */
+      showDeleteTopic: boolean;
+      /**
+       * Topic deletable
+       * @description Describes if the topic can be deleted.
+       * @example true
+       */
+      topicDeletable: boolean;
+    } & {
+      noOfReplcias: unknown;
+    };
+    /**
+     * @example [
+     *   "All teams",
+     *   "Team A",
+     *   "Team B"
+     * ]
+     */
+    TeamNamesGetResponse: string[];
+    EnvironmentsGetResponse: {
+      /**
+       * id
+       * @description Environment identifier
+       * @example 1
+       */
+      id: string;
+      /**
+       * Name
+       * @description Environment name
+       * @example DEV
+       */
+      name: string;
+      /**
+       * Type
+       * @description Environment type
+       * @enum {string}
+       */
+      type: "kafka" | "kafkaconnect" | "schema";
+      /**
+       * TenantId
+       * @description Tenant identifier
+       * @example 101
+       */
+      tenantId: number;
+      /**
+       * Topic prefix
+       * @description Topic name prefix
+       * @example test-
+       */
+      topicprefix: string | null;
+      /**
+       * Topic suffix
+       * @description Topic name suffix
+       * @example -test
+       */
+      topicsuffix: string | null;
+      /**
+       * Cluster identifier
+       * @example 1
+       */
+      clusterId: number;
+      /**
+       * Tenant name
+       * @example default
+       */
+      tenantName: string;
+      /**
+       * Cluster name
+       * @example DEV
+       */
+      clusterName: string;
+      /**
+       * Environment status
+       * @example ONLINE
+       * @enum {string}
+       */
+      envStatus: "ONLINE" | "OFFLINE";
+      /**
+       * Other parameters
+       * @description Topic configuration parameters
+       * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
+       */
+      otherParams: string;
+      /**
+       * Default partitions
+       * @example 1
+       */
+      defaultPartitions: string | null;
+      /**
+       * Maximum partitions
+       * @example 2
+       */
+      maxPartitions: string | null;
+      /**
+       * Default replication factor
+       * @example 1
+       */
+      defaultReplicationFactor: string | null;
+      /**
+       * Maximum replication factor
+       * @example 2
+       */
+      maxReplicationFactor: string | null;
+      /**
+       * Show delete environment
+       * @description Describes if the user should see environment delete action.
+       * @example true
+       */
+      showDeleteEnv: boolean;
+      /**
+       * Total number of pages
+       * @example 1
+       */
+      totalNoPages: string;
+      /**
+       * All page numbers
+       * @description List of all page numbers
+       * @example [
+       *   "1"
+       * ]
+       */
+      allPageNos: string[];
     };
   };
 };
@@ -71,10 +298,54 @@ export type operations = {
       };
     };
   };
+  topicsGet: {
+    parameters: {
+      query: {
+        /** The value should be either an environment identifier or "ALL". */
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+        topicType?: "Producer" | "Consumer";
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicsGetResponse"];
+        };
+      };
+    };
+  };
+  teamNamesGet: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamNamesGetResponse"];
+        };
+      };
+    };
+  };
+  environmentsGet: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": unknown;
+        };
+      };
+    };
+  };
 };
 
 export type external = {};
 
 export enum ApiPaths {
   userAuthentication = "/user/authenticate",
+  topicsGet = "/getTopics",
+  teamNamesGet = "/getAllTeamsSUOnly",
+  environmentsGet = "/getEnvs",
 }

@@ -1,4 +1,5 @@
 import { rest } from "msw";
+import { getHTTPBaseAPIUrl } from "src/config";
 import { MswInstance } from "src/services/api-mocks/types";
 
 function mockGetTeams({
@@ -8,8 +9,9 @@ function mockGetTeams({
   mswInstance: MswInstance;
   scenario?: "error";
 }) {
+  const url = `${getHTTPBaseAPIUrl()}/getAllTeamsSUOnly`;
   mswInstance.use(
-    rest.get("getAllTeamsSUOnly", async (req, res, ctx) => {
+    rest.get(url, async (req, res, ctx) => {
       if (scenario === "error") {
         return res(ctx.status(400), ctx.json(""));
       }
