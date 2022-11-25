@@ -54,18 +54,26 @@ public class AnalyticsControllerService {
 
   @Autowired private CommonUtilsService commonUtilsService;
 
-  private String getUserName() {
-    return commonUtilsService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+  private String getCurrentUserName() {
+    return commonUtilsService.getCurrentUserName();
   }
 
   private Integer getMyTeamId(String userName) {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
+  private List<String> getEnvsFromUserId() {
+    final String currentUserName = getCurrentUserName();
+    Integer userTeamId = getMyTeamId(currentUserName);
+    return manageDatabase.getTeamsAndAllowedEnvs(
+        userTeamId, commonUtilsService.getTenantId(currentUserName));
+  }
+
   public String getEnvName(String envId) {
     Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
+        manageDatabase
+            .getKafkaEnvList(commonUtilsService.getTenantId(getCurrentUserName()))
+            .stream()
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.map(Env::getName).orElse(null);
@@ -73,7 +81,7 @@ public class AnalyticsControllerService {
 
   // For Sync Back Acls
   public Map<String, String> getAclsCountPerEnv(String sourceEnvSelected) {
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
 
     List<Map<String, String>> aclsPerEnvList =
         manageDatabase.getHandleDbRequests().selectAclsCountByEnv(null, tenantId);
@@ -107,11 +115,11 @@ public class AnalyticsControllerService {
     List<Map<String, String>> topicsCountList =
         manageDatabase
             .getHandleDbRequests()
-            .selectTopicsCountByEnv(commonUtilsService.getTenantId(getUserName()));
+            .selectTopicsCountByEnv(commonUtilsService.getTenantId(getCurrentUserName()));
 
     Map<String, String> resultMap = new HashMap<>();
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
     try {
       if (topicsCountList != null) {
         topicsCountList =
@@ -188,7 +196,7 @@ public class AnalyticsControllerService {
 
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
       if (teamCountList != null) {
         // if(!permissionType.equals(PermissionType.ALL_TENANTS_REPORTS))
         teamCountList =
@@ -214,10 +222,10 @@ public class AnalyticsControllerService {
   }
 
   public ChartsJsOverview getTopicsPerTeamEnvOverview(int tenantId) {
-    Integer userTeamId = getMyTeamId(getUserName());
+    final String currentUserName = getCurrentUserName();
+    Integer userTeamId = getMyTeamId(currentUserName);
     List<Map<String, String>> teamCountList = null;
-    String userDetails = getUserName();
-    if (userDetails != null) {
+    if (currentUserName != null) {
       teamCountList =
           manageDatabase
               .getHandleDbRequests()
@@ -336,10 +344,11 @@ public class AnalyticsControllerService {
     List<TeamOverview> listTeamOverview = new ArrayList<>();
     TeamOverview teamOverview = new TeamOverview();
 
-    Integer userTeamId = getMyTeamId(getUserName());
+    final String currentUserName = getCurrentUserName();
+    Integer userTeamId = getMyTeamId(currentUserName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
-      int tenantId = commonUtilsService.getTenantId(getUserName());
+      int tenantId = commonUtilsService.getTenantId(currentUserName);
 
       teamOverview.setProducerAclsPerTeamsOverview(
           getProducerAclsTeamsOverview(userTeamId, tenantId));
@@ -355,7 +364,7 @@ public class AnalyticsControllerService {
       teamOverview.setTopicsPerTeamsOverview(getTopicsTeamsOverview(userTeamId, tenantId));
       listTeamOverview.add(teamOverview);
     } else {
-      int tenantId = commonUtilsService.getTenantId(getUserName());
+      int tenantId = commonUtilsService.getTenantId(currentUserName);
 
       teamOverview.setTopicsPerEnvOverview(
           getTopicsEnvOverview(tenantId, PermissionType.ALL_TEAMS_REPORTS));
@@ -377,10 +386,11 @@ public class AnalyticsControllerService {
 
   public TeamOverview getActivityLogForTeamOverview(String forTeam) {
     TeamOverview teamOverview = new TeamOverview();
-    Integer userTeamId = getMyTeamId(getUserName());
+    final String currentUserName = getCurrentUserName();
+    Integer userTeamId = getMyTeamId(currentUserName);
 
     teamOverview.setTopicsPerTeamPerEnvOverview(
-        getTopicsPerTeamEnvOverview(commonUtilsService.getTenantId(getUserName())));
+        getTopicsPerTeamEnvOverview(commonUtilsService.getTenantId(currentUserName)));
     if (forTeam != null && forTeam.equals("true")) {
       teamOverview.setActivityLogOverview(getActivityLogOverview(userTeamId, 101));
     }
@@ -389,7 +399,7 @@ public class AnalyticsControllerService {
   }
 
   public File generateReport() {
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
     String kwReportsLocation =
         manageDatabase.getKwPropertyValue(KwConstants.KW_REPORTS_TMP_LOCATION_KEY, tenantId);
 
@@ -582,12 +592,12 @@ public class AnalyticsControllerService {
 
   private Map<String, List<String>> getTopicNames(int tenantId) {
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
 
     Map<String, List<String>> topicsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
-      Integer userTeamId = getMyTeamId(getUserName());
+      Integer userTeamId = getMyTeamId(getCurrentUserName());
       List<Topic> topics =
           manageDatabase.getHandleDbRequests().getTopicsforTeam(userTeamId, tenantId);
 
@@ -619,12 +629,12 @@ public class AnalyticsControllerService {
 
   private Map<String, List<String>> getConsumerGroups(int tenantId) {
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
 
     Map<String, List<String>> aclsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
-      Integer userTeamId = getMyTeamId(getUserName());
+      Integer userTeamId = getMyTeamId(getCurrentUserName());
       List<Acl> acls =
           manageDatabase.getHandleDbRequests().getConsumerGroupsforTeam(userTeamId, tenantId);
 

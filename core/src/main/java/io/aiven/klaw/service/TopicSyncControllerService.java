@@ -329,7 +329,7 @@ public class TopicSyncControllerService {
       List<TopicRequest> topicsList, boolean fromSyncTopics, int tenantId) {
     List<TopicRequestModel> topicRequestModelList = new ArrayList<>();
     TopicRequestModel topicRequestModel;
-    Integer userTeamId = getMyTeamId(getUserName());
+    Integer userTeamId = commonUtilsService.getTeamId(getUserName());
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<UserInfo> userList =
@@ -682,7 +682,7 @@ public class TopicSyncControllerService {
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
 
-    topicsFromSOT = groupTopicsByEnv(topicsFromSOT);
+    topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
     String tmpTopicFull, tmpTopicSub;
 
@@ -819,24 +819,6 @@ public class TopicSyncControllerService {
   private int counterIncrement() {
     topicCounter++;
     return topicCounter;
-  }
-
-  private List<Topic> groupTopicsByEnv(List<Topic> topicsFromSOT) {
-    List<Topic> tmpTopicList = new ArrayList<>();
-
-    Map<String, List<Topic>> groupedList =
-        topicsFromSOT.stream().collect(Collectors.groupingBy(Topic::getTopicname));
-    groupedList.forEach(
-        (k, v) -> {
-          Topic t = v.get(0);
-          List<String> tmpEnvList = new ArrayList<>();
-          for (Topic topic : v) {
-            tmpEnvList.add(topic.getEnvironment());
-          }
-          t.setEnvironmentsList(tmpEnvList);
-          tmpTopicList.add(t);
-        });
-    return tmpTopicList;
   }
 
   public ApiResponse updateSyncTopicsBulk(SyncTopicsBulk syncTopicsBulk) throws KlawException {
@@ -1195,10 +1177,6 @@ public class TopicSyncControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {

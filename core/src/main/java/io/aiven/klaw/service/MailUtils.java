@@ -4,10 +4,13 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
+import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -15,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -78,14 +79,11 @@ public class MailUtils {
   @Autowired private EmailService emailService;
 
   public String getUserName(Object principal) {
-    if (principal instanceof DefaultOAuth2User) {
-      DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
-      return (String) defaultOAuth2User.getAttributes().get(preferredUsername);
-    } else if (principal instanceof String) {
-      return (String) principal;
-    } else {
-      return ((UserDetails) principal).getUsername();
-    }
+    return UtilMethods.getUserName(principal, preferredUsername);
+  }
+
+  public String getCurrentUserName() {
+    return UtilMethods.getUserName(preferredUsername);
   }
 
   void sendMail(

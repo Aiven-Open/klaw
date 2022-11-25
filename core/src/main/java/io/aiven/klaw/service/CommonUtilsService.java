@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
@@ -119,14 +120,11 @@ public class CommonUtilsService {
   }
 
   public String getUserName(Object principal) {
-    if (principal instanceof DefaultOAuth2User) {
-      DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
-      return (String) defaultOAuth2User.getAttributes().get(preferredUsername);
-    } else if (principal instanceof String) {
-      return (String) principal;
-    } else {
-      return ((UserDetails) principal).getUsername();
-    }
+    return UtilMethods.getUserName(principal, preferredUsername);
+  }
+
+  public String getCurrentUserName() {
+    return UtilMethods.getUserName(preferredUsername);
   }
 
   public boolean isNotAuthorizedUser(Object principal, PermissionType permissionType) {
@@ -425,16 +423,34 @@ public class CommonUtilsService {
 
   public List<String> getEnvsFromUserId(String userName) {
     List<String> listEnvs =
-        manageDatabase.getTeamsAndAllowedEnvs(getMyTeamId(userName), getTenantId(userName));
+        manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName));
     if (listEnvs == null) return new ArrayList<>();
     return listEnvs;
   }
 
-  private Integer getMyTeamId(String userName) {
+  public Integer getTeamId(String userName) {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   public Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  List<Topic> groupTopicsByEnv(List<Topic> topicsFromSOT) {
+    List<Topic> tmpTopicList = new ArrayList<>();
+
+    Map<String, List<Topic>> groupedList =
+        topicsFromSOT.stream().collect(Collectors.groupingBy(Topic::getTopicname));
+    groupedList.forEach(
+        (k, v) -> {
+          Topic t = v.get(0);
+          List<String> tmpEnvList = new ArrayList<>();
+          for (Topic topic : v) {
+            tmpEnvList.add(topic.getEnvironment());
+          }
+          t.setEnvironmentsList(tmpEnvList);
+          tmpTopicList.add(t);
+        });
+    return tmpTopicList;
   }
 }

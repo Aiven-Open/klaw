@@ -87,7 +87,7 @@ public class TopicRequestValidatorImpl
                 .get(0) // as there could be only one owner team for topic, with topic name being
                 // unique for tenant, getting the first element.
                 .getTeamId(),
-            topicControllerService.getTeamId(topicControllerService.getUserName()))) {
+            commonUtilsService.getTeamId(topicControllerService.getUserName()))) {
       updateConstraint(
           constraintValidatorContext, "Failure. This topic is owned by a different team.");
       return false;

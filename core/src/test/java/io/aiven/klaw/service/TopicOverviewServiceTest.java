@@ -77,9 +77,8 @@ public class TopicOverviewServiceTest {
   public void getAclsSyncFalse1() throws KlawException {
     String env1 = "1", topicNameSearch = "testtopic";
 
-    String RETRIEVE_SCHEMAS_KEY = "klaw.getschemas.enable";
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
@@ -90,6 +89,8 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
@@ -107,7 +108,7 @@ public class TopicOverviewServiceTest {
     String topicNameSearch = "testnewtopic1";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
@@ -118,6 +119,8 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();

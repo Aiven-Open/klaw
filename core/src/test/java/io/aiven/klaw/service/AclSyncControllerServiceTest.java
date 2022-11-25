@@ -87,7 +87,7 @@ public class AclSyncControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.addToSyncacls(anyList())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
 
     ApiResponse resultResp =

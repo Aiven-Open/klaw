@@ -248,7 +248,7 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
-    when(userInfo.getTeamId()).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
@@ -299,7 +299,7 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
-    when(userInfo.getTeamId()).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
@@ -371,7 +371,7 @@ public class TopicControllerServiceTest {
   public void getTopicRequests() {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.getAllTopicRequests(anyString(), anyInt()))
         .thenReturn(getListTopicRequests());
@@ -407,7 +407,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getAllTopics(anyInt())).thenReturn(topicList);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     Map<String, String> topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
@@ -423,7 +423,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.getAllTopics(anyInt())).thenReturn(utilMethods.getTopics());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
     Map<String, String> topicTeamMap =
@@ -458,7 +458,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedTopicRequests(anyString(), anyString(), anyBoolean(), anyInt()))
         .thenReturn(listTopicReqs);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
@@ -483,7 +483,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedTopicRequests(anyString(), anyString(), anyBoolean(), anyInt()))
         .thenReturn(listTopicReqs);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
@@ -522,7 +522,7 @@ public class TopicControllerServiceTest {
     when(clusterApiService.approveTopicRequests(
             anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
@@ -571,8 +571,8 @@ public class TopicControllerServiceTest {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(getSyncTopics("topic", 4));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
@@ -580,6 +580,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
         .thenReturn("INFRATEAM", "INFRATEAM", "INFRATEAM", "INFRATEAM");
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, null, null);
@@ -614,7 +615,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.declineTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
@@ -742,6 +743,7 @@ public class TopicControllerServiceTest {
       t.setTopicid(i);
       t.setEnvironment("1");
       t.setTeamId(101);
+      t.setEnvironmentsList(new ArrayList<>());
 
       listTopics.add(t);
     }
