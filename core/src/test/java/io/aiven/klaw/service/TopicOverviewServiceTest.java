@@ -17,6 +17,7 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.enums.AclType;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -79,7 +80,7 @@ public class TopicOverviewServiceTest {
 
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
@@ -109,7 +110,7 @@ public class TopicOverviewServiceTest {
 
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))

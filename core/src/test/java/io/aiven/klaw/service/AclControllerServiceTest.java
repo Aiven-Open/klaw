@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Assertions;
@@ -275,7 +276,7 @@ public class AclControllerServiceTest {
         .thenReturn("1", "2");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllAclRequests(
             anyBoolean(), anyString(), anyString(), anyString(), anyBoolean(), anyInt()))
         .thenReturn(getAclRequests("testtopic", 15));
@@ -307,7 +308,7 @@ public class AclControllerServiceTest {
             anyString(), anyString(), anyBoolean(), anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
         .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
@@ -327,7 +328,7 @@ public class AclControllerServiceTest {
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
         .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
@@ -382,7 +383,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -407,7 +408,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -441,7 +442,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
     ApiResponse apiResponse = ApiResponse.builder().result("failure").build();
@@ -461,7 +462,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -498,7 +499,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.declineAclRequest(any(), any()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
@@ -515,7 +516,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     when(handleDbRequests.declineAclRequest(any(), anyString()))
         .thenThrow(new RuntimeException("failure in declining request"));
@@ -534,7 +535,7 @@ public class AclControllerServiceTest {
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);

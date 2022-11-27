@@ -81,7 +81,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("2"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("2"));
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString())
@@ -94,7 +94,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
 
     addTopicRequest.setTopicname("");
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
@@ -118,7 +118,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getSyncCluster(anyInt()))
         .thenThrow(new RuntimeException("Sync cluster not configured"));
@@ -138,7 +138,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
 
@@ -162,7 +162,7 @@ public class TopicRequestValidatorImplIT {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(teamId);
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1", "2"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1", "2"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getTopicFromName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
@@ -199,7 +199,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
 
@@ -227,7 +227,7 @@ public class TopicRequestValidatorImplIT {
     TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getEnvDetails(anyString()))
         .thenReturn(utilMethods.getEnvLists().get(0));
@@ -252,7 +252,7 @@ public class TopicRequestValidatorImplIT {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(teamId);
-    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(List.of("1"));
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getEnvDetails(anyString()))
         .thenReturn(utilMethods.getEnvLists().get(0));

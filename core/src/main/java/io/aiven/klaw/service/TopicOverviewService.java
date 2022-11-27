@@ -68,10 +68,10 @@ public class TopicOverviewService {
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     topics =
         topics.stream()
-            .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
+            .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
     TopicOverview topicOverview = new TopicOverview();

@@ -119,14 +119,14 @@ public class AnalyticsControllerService {
 
     Map<String, String> resultMap = new HashMap<>();
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
     try {
       if (topicsCountList != null) {
         topicsCountList =
             topicsCountList.stream()
                 .filter(
                     mapObj ->
-                        allowedEnvIdList.contains(mapObj.get("cluster"))
+                        allowedEnvIdSet.contains(mapObj.get("cluster"))
                             && Objects.equals(mapObj.get("cluster"), sourceEnvSelected))
                 .collect(Collectors.toList());
 
@@ -196,12 +196,13 @@ public class AnalyticsControllerService {
 
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
+      final Set<String> allowedEnvIdSet =
+          commonUtilsService.getEnvsFromUserId(getCurrentUserName());
       if (teamCountList != null) {
         // if(!permissionType.equals(PermissionType.ALL_TENANTS_REPORTS))
         teamCountList =
             teamCountList.stream()
-                .filter(mapObj -> allowedEnvIdList.contains(mapObj.get("cluster")))
+                .filter(mapObj -> allowedEnvIdSet.contains(mapObj.get("cluster")))
                 .collect(Collectors.toList());
         teamCountList.forEach(
             hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
@@ -592,7 +593,7 @@ public class AnalyticsControllerService {
 
   private Map<String, List<String>> getTopicNames(int tenantId) {
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
 
     Map<String, List<String>> topicsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
@@ -601,7 +602,7 @@ public class AnalyticsControllerService {
       List<Topic> topics =
           manageDatabase.getHandleDbRequests().getTopicsforTeam(userTeamId, tenantId);
 
-      for (String env : allowedEnvIdList) {
+      for (String env : allowedEnvIdSet) {
         topicsPerEnv.put(
             getEnvName(env),
             topics.stream()
@@ -613,7 +614,7 @@ public class AnalyticsControllerService {
     } else {
       // admin
       List<Topic> topics = manageDatabase.getHandleDbRequests().getAllTopics(tenantId);
-      for (String env : allowedEnvIdList) {
+      for (String env : allowedEnvIdSet) {
         topicsPerEnv.put(
             getEnvName(env),
             topics.stream()
@@ -629,7 +630,7 @@ public class AnalyticsControllerService {
 
   private Map<String, List<String>> getConsumerGroups(int tenantId) {
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
 
     Map<String, List<String>> aclsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
@@ -638,7 +639,7 @@ public class AnalyticsControllerService {
       List<Acl> acls =
           manageDatabase.getHandleDbRequests().getConsumerGroupsforTeam(userTeamId, tenantId);
 
-      for (String env : allowedEnvIdList) {
+      for (String env : allowedEnvIdSet) {
         aclsPerEnv.put(
             getEnvName(env),
             acls.stream()
@@ -652,7 +653,7 @@ public class AnalyticsControllerService {
     } else {
       // admin
       List<Acl> acls = manageDatabase.getHandleDbRequests().getAllConsumerGroups(tenantId);
-      for (String env : allowedEnvIdList) {
+      for (String env : allowedEnvIdSet) {
         aclsPerEnv.put(
             getEnvName(env),
             acls.stream()

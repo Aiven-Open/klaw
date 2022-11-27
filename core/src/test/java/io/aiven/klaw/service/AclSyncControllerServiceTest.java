@@ -25,6 +25,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,7 +89,7 @@ public class AclSyncControllerServiceTest {
     when(handleDbRequests.addToSyncacls(anyList())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());

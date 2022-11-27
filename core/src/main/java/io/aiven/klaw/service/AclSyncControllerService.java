@@ -55,8 +55,8 @@ public class AclSyncControllerService {
 
   public ApiResponse updateSyncAcls(List<SyncAclUpdates> syncAclUpdates) throws KlawException {
     log.info("updateSyncAcls {}", syncAclUpdates);
-    String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
@@ -81,7 +81,7 @@ public class AclSyncControllerService {
 
         // tenant filtering
         if (!commonUtilsService
-            .getEnvsFromUserId(userDetails)
+            .getEnvsFromUserId(userName)
             .contains(syncAclUpdateItem.getEnvSelected())) {
           return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
@@ -174,6 +174,7 @@ public class AclSyncControllerService {
       List<String> logUpdateSyncBackTopics,
       Acl aclFound,
       int tenantId) {
+    String userName = getUserName();
     try {
       AclRequests aclReq = new AclRequests();
       copyProperties(aclFound, aclReq);
@@ -183,7 +184,7 @@ public class AclSyncControllerService {
       aclReq.setEnvironment(syncBackAcls.getTargetEnv());
       aclReq.setRequestingteam(aclFound.getTeamId());
       aclReq.setAclType(RequestOperationType.CREATE.value);
-      aclReq.setUsername(getUserName());
+      aclReq.setUsername(userName);
       aclReq.setTenantId(tenantId);
 
       ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);
@@ -209,7 +210,7 @@ public class AclSyncControllerService {
             String emptyJsonParams = "{}";
             manageDatabase
                 .getHandleDbRequests()
-                .updateAclRequest(aclReq, getUserName(), emptyJsonParams);
+                .updateAclRequest(aclReq, userName, emptyJsonParams);
           }
         }
       }
@@ -347,9 +348,10 @@ public class AclSyncControllerService {
   public List<AclInfo> getSyncBackAcls(
       String envId, String pageNo, String currentPage, String topicNameSearch, String teamName) {
     log.info("getSyncBackAcls {} {} {} {}", envId, pageNo, topicNameSearch, teamName);
+    String userName = getUserName();
     if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
 
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
@@ -365,7 +367,7 @@ public class AclSyncControllerService {
     }
 
     List<AclInfo> aclInfoList;
-    Integer loggedInUserTeam = getMyTeamId(getUserName());
+    Integer loggedInUserTeam = getMyTeamId(userName);
 
     aclInfoList =
         getAclsList(

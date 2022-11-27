@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,10 +200,10 @@ public class AclControllerService {
         dbHandle.getAllAclRequests(false, userName, "", requestsType, false, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     aclReqs =
         aclReqs.stream()
-            .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
+            .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
             .sorted(Collections.reverseOrder(Comparator.comparing(AclRequests::getRequesttime)))
             .collect(Collectors.toList());
 
@@ -376,10 +377,10 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
     createdAclReqs =
         createdAclReqs.stream()
-            .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
+            .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
             .collect(Collectors.toList());
 
     return getAclRequestModelPaged(

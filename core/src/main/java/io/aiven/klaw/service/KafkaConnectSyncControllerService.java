@@ -78,7 +78,7 @@ public class KafkaConnectSyncControllerService {
     }
 
     // tenant filtering
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
     String syncCluster =
         manageDatabase.getTenantConfig().get(tenantId).getBaseSyncKafkaConnectCluster();
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");

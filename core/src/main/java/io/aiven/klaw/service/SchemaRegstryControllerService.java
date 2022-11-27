@@ -49,18 +49,17 @@ public class SchemaRegstryControllerService {
   public List<SchemaRequestModel> getSchemaRequests(
       String pageNo, String currentPage, String requestsType) {
     log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestsType);
-
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    String userDetails = getUserName();
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
     List<SchemaRequest> schemaReqs =
-        manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userDetails, tenantId);
+        manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userName, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     if (schemaReqs != null) {
       schemaReqs =
           schemaReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
     }
 
@@ -75,7 +74,7 @@ public class SchemaRegstryControllerService {
       }
     }
 
-    Integer userTeamId = getMyTeamId(userDetails);
+    Integer userTeamId = getMyTeamId(userName);
     List<UserInfo> userList =
         manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
 
@@ -204,9 +203,9 @@ public class SchemaRegstryControllerService {
           .result("You are not allowed to approve your own schema requests.")
           .build();
 
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
-    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment())) {
+    if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -252,9 +251,9 @@ public class SchemaRegstryControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     SchemaRequest schemaRequest =
         dbHandle.selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
-    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment())) {
+    if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -309,11 +308,11 @@ public class SchemaRegstryControllerService {
         manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userDetails, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
     if (schemaReqs != null)
       schemaReqs =
           schemaReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
     // request status filtering

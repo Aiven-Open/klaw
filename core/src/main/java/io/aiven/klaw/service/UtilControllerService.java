@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -147,28 +148,28 @@ public class UtilControllerService {
 
     try {
       // tenant filtering
-      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
       allAclReqs =
           allAclReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
       // tenant filtering
       allSchemaReqs =
           allSchemaReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
       // tenant filtering
       allTopicReqs =
           allTopicReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
       // tenant filtering
       allConnectorReqs =
           allConnectorReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);

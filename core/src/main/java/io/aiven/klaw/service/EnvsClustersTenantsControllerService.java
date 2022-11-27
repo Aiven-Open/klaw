@@ -542,10 +542,10 @@ public class EnvsClustersTenantsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
-      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
       listEnvs =
           listEnvs.stream()
-              .filter(env -> allowedEnvIdList.contains(env.getId()))
+              .filter(env -> allowedEnvIdSet.contains(env.getId()))
               .collect(Collectors.toList());
     }
 

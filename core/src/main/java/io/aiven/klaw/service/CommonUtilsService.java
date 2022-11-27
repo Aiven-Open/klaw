@@ -20,8 +20,10 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -406,11 +408,11 @@ public class CommonUtilsService {
   protected List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName(getPrincipal()));
+      final Set<String> allowedEnvIdSet = getEnvsFromUserId(getUserName(getPrincipal()));
       if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
+                .filter(topic -> allowedEnvIdSet.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
       }
     } catch (Exception e) {
@@ -421,11 +423,9 @@ public class CommonUtilsService {
     return topicsFromSOT;
   }
 
-  public List<String> getEnvsFromUserId(String userName) {
-    List<String> listEnvs =
-        manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName));
-    if (listEnvs == null) return new ArrayList<>();
-    return listEnvs;
+  public Set<String> getEnvsFromUserId(String userName) {
+    return new HashSet<>(
+        manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName)));
   }
 
   public Integer getTeamId(String userName) {

@@ -4,6 +4,7 @@ import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
@@ -56,6 +57,7 @@ import org.springframework.stereotype.Service;
 public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final TypeReference<List<TopicHistory>> VALUE_TYPE_REF = new TypeReference<>() {};
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -288,10 +290,10 @@ public class TopicControllerService {
             .getAllTopicRequests(userName, commonUtilsService.getTenantId(userName));
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     topicReqs =
         topicReqs.stream()
-            .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
+            .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
             .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
             .collect(Collectors.toList());
 
@@ -352,11 +354,11 @@ public class TopicControllerService {
       topics = manageDatabase.getHandleDbRequests().getAllTopics(tenantId);
 
       // tenant filtering
-      Set<String> allowedEnvIdList = new HashSet<>(commonUtilsService.getEnvsFromUserId(userName));
+      Set<String> allowedEnvIdSet = new HashSet<>(commonUtilsService.getEnvsFromUserId(userName));
       List<Topic> allTopicsStartingWithPattern = new ArrayList<>();
 
       topics.stream()
-          .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
+          .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
           .distinct()
           .forEach(
               topic -> {
@@ -568,8 +570,8 @@ public class TopicControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
-    if (!allowedEnvIdList.contains(topicRequest.getEnvironment())) {
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+    if (!allowedEnvIdSet.contains(topicRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -642,7 +644,7 @@ public class TopicControllerService {
             .filter(topic -> Objects.equals(topic.getEnvironment(), topicRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), ArrayList.class);
+        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
         topicHistoryList.addAll(existingTopicHistory);
       }
 
@@ -683,8 +685,8 @@ public class TopicControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
-    if (!allowedEnvIdList.contains(topicRequest.getEnvironment())) {
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+    if (!allowedEnvIdSet.contains(topicRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -770,10 +772,10 @@ public class TopicControllerService {
             .getTopics(topicName, commonUtilsService.getTenantId(userName));
 
     // tenant filtering
-    List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(userName);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     topics =
         topics.stream()
-            .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
+            .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
     int tenantId = commonUtilsService.getTenantId(userName);
@@ -1102,11 +1104,11 @@ public class TopicControllerService {
       List<TopicRequest> createdTopicReqList) {
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = commonUtilsService.getEnvsFromUserId(getUserName());
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
       if (createdTopicReqList != null) {
         createdTopicReqList =
             createdTopicReqList.stream()
-                .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
+                .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
                 .collect(Collectors.toList());
       }
     } catch (Exception e) {
