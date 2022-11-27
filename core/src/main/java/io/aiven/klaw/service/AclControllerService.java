@@ -33,10 +33,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,10 +201,10 @@ public class AclControllerService {
         dbHandle.getAllAclRequests(false, userDetails, "", requestsType, false, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = getEnvsFromUserId(userDetails);
     aclReqs =
         aclReqs.stream()
-            .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
+            .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
             .sorted(Collections.reverseOrder(Comparator.comparing(AclRequests::getRequesttime)))
             .collect(Collectors.toList());
 
@@ -375,10 +377,10 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = getEnvsFromUserId(userDetails);
     createdAclReqs =
         createdAclReqs.stream()
-            .filter(aclRequest -> allowedEnvIdList.contains(aclRequest.getEnvironment()))
+            .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
             .collect(Collectors.toList());
 
     return getAclRequestModelPaged(
@@ -612,11 +614,11 @@ public class AclControllerService {
   private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getCurrentUserName());
+      final Set<String> allowedEnvIdSet = getEnvsFromUserId(getCurrentUserName());
       if (topicsFromSOT != null) {
         topicsFromSOT =
             topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
+                .filter(topic -> allowedEnvIdSet.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
       }
     } catch (Exception exception) {
@@ -653,10 +655,10 @@ public class AclControllerService {
   }
 
   // based on tenants
-  private List<String> getEnvsFromUserId(String userName) {
+  private Set<String> getEnvsFromUserId(String userName) {
     int tenantId = commonUtilsService.getTenantId(userName);
     Integer myTeamId = getMyTeamId(userName);
-    return manageDatabase.getTeamsAndAllowedEnvs(myTeamId, tenantId);
+    return new HashSet<>(manageDatabase.getTeamsAndAllowedEnvs(myTeamId, tenantId));
   }
 
   public List<Map<String, String>> getConsumerOffsets(
