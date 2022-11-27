@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.io.Serializable;
 import java.util.List;
 import javax.validation.constraints.NotNull;

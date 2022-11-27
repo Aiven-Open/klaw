@@ -1,6 +1,6 @@
 package io.aiven.klaw.auth;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.service.ValidateCaptchaService;

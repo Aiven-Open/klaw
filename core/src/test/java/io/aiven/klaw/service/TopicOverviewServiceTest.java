@@ -14,9 +14,10 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.AclType;
+import io.aiven.klaw.model.enums.AclType;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -77,10 +78,9 @@ public class TopicOverviewServiceTest {
   public void getAclsSyncFalse1() throws KlawException {
     String env1 = "1", topicNameSearch = "testtopic";
 
-    String RETRIEVE_SCHEMAS_KEY = "klaw.getschemas.enable";
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
@@ -90,6 +90,8 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
@@ -107,8 +109,8 @@ public class TopicOverviewServiceTest {
     String topicNameSearch = "testnewtopic1";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
@@ -118,6 +120,8 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();

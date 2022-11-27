@@ -15,12 +15,12 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -100,11 +100,11 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getAllSchemaRequests(anyBoolean(), anyString(), anyInt()))
         .thenReturn(getSchemasReqs());
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(Arrays.asList(""));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+        .thenReturn(List.of(""));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt()))
-        .thenReturn(Arrays.asList(userInfo));
+        .thenReturn(List.of(userInfo));
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
@@ -161,8 +161,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(response);
     when(handleDbRequests.updateSchemaRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
@@ -189,8 +189,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(response);
     when(handleDbRequests.updateSchemaRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
@@ -247,12 +247,13 @@ public class SchemaRegistryControllerServiceTest {
     topic.setTeamId(101);
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegstryControllerService.uploadSchema(schemaRequest);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -271,13 +272,14 @@ public class SchemaRegistryControllerServiceTest {
     topic.setTeamId(101);
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any()))
         .thenThrow(new RuntimeException("Error from schema upload"));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     try {
       schemaRegstryControllerService.uploadSchema(schemaRequest);
@@ -310,6 +312,7 @@ public class SchemaRegistryControllerServiceTest {
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
+    when(userInfo.getRole()).thenReturn("USER");
     when(mailService.getUserName(any())).thenReturn("kwusera");
   }
 }

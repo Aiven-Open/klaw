@@ -1,16 +1,17 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
-import static io.aiven.klaw.model.RolesType.SUPERADMIN;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.NewUserStatus;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.RegisterUserInfoModel;
+import io.aiven.klaw.model.enums.NewUserStatus;
 import java.sql.Timestamp;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;

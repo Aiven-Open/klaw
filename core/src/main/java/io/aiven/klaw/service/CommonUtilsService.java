@@ -1,15 +1,16 @@
 package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.UtilMethods;
-import io.aiven.klaw.model.EntityType;
 import io.aiven.klaw.model.KwMetadataUpdates;
-import io.aiven.klaw.model.MetadataOperationType;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.Title;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.io.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -19,10 +20,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -399,5 +403,54 @@ public class CommonUtilsService {
     } catch (Exception e) {
       log.error("Error from invokeResetEndpoints ", e);
     }
+  }
+
+  protected List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
+    // tenant filtering
+    try {
+      final Set<String> allowedEnvIdSet = getEnvsFromUserId(getUserName(getPrincipal()));
+      if (topicsFromSOT != null) {
+        topicsFromSOT =
+            topicsFromSOT.stream()
+                .filter(topic -> allowedEnvIdSet.contains(topic.getEnvironment()))
+                .collect(Collectors.toList());
+      }
+    } catch (Exception e) {
+      // this situation cannot happen, as every topic has an assigned team and this flow is
+      // triggered on topic overview, which means topic has an owner
+      log.error("No environments/clusters found.", e);
+    }
+    return topicsFromSOT;
+  }
+
+  public Set<String> getEnvsFromUserId(String userName) {
+    return new HashSet<>(
+        manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName)));
+  }
+
+  public Integer getTeamId(String userName) {
+    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  }
+
+  public Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  List<Topic> groupTopicsByEnv(List<Topic> topicsFromSOT) {
+    List<Topic> tmpTopicList = new ArrayList<>();
+
+    Map<String, List<Topic>> groupedList =
+        topicsFromSOT.stream().collect(Collectors.groupingBy(Topic::getTopicname));
+    groupedList.forEach(
+        (k, v) -> {
+          Topic t = v.get(0);
+          List<String> tmpEnvList = new ArrayList<>();
+          for (Topic topic : v) {
+            tmpEnvList.add(topic.getEnvironment());
+          }
+          t.setEnvironmentsList(tmpEnvList);
+          tmpTopicList.add(t);
+        });
+    return tmpTopicList;
   }
 }

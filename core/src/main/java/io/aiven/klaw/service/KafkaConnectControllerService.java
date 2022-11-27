@@ -1,10 +1,10 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.CONNECTOR_CLAIM_REQUESTED;
-import static io.aiven.klaw.model.MailType.CONNECTOR_CREATE_REQUESTED;
-import static io.aiven.klaw.model.MailType.CONNECTOR_DELETE_REQUESTED;
-import static io.aiven.klaw.model.MailType.CONNECTOR_REQUEST_APPROVED;
-import static io.aiven.klaw.model.MailType.CONNECTOR_REQUEST_DENIED;
+import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CLAIM_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CREATE_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.CONNECTOR_DELETE_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_APPROVED;
+import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,18 +22,18 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.ConnectorOverview;
-import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TopicHistory;
-import io.aiven.klaw.model.TopicRequestTypes;
 import io.aiven.klaw.model.connectorconfig.ConnectorConfig;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,6 +62,8 @@ public class KafkaConnectControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+  public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
+      new TypeReference<>() {};
   @Autowired private CommonUtilsService commonUtilsService;
 
   @Autowired ClusterApiService clusterApiService;
@@ -118,7 +121,7 @@ public class KafkaConnectControllerService {
     String envSelected = topicRequestReq.getEnvironment();
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(envSelected)) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(envSelected)) {
       return ApiResponse.builder()
           .result("Failure. Not authorized to request connector for this environment.")
           .build();
@@ -534,8 +537,8 @@ public class KafkaConnectControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (!allowedEnvIdList.contains(connectorRequest.getEnvironment())) {
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
+    if (!allowedEnvIdSet.contains(connectorRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -619,7 +622,7 @@ public class KafkaConnectControllerService {
                 topic -> Objects.equals(topic.getEnvironment(), connectorRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), ArrayList.class);
+        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
         topicHistoryList.addAll(existingTopicHistory);
       }
 
@@ -662,8 +665,8 @@ public class KafkaConnectControllerService {
     }
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-    if (!allowedEnvIdList.contains(connectorRequest.getEnvironment())) {
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
+    if (!allowedEnvIdSet.contains(connectorRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -784,10 +787,10 @@ public class KafkaConnectControllerService {
         manageDatabase.getHandleDbRequests().getAllConnectorRequests(userDetails, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
     topicReqs =
         topicReqs.stream()
-            .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
+            .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
             .sorted(
                 Collections.reverseOrder(
                     Comparator.comparing(KafkaConnectorRequest::getRequesttime)))
@@ -892,10 +895,10 @@ public class KafkaConnectControllerService {
     List<KwKafkaConnector> connectors = handleDb.getConnectors(connectorNamesearch, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
     connectors =
         connectors.stream()
-            .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
+            .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
     ConnectorOverview topicOverview = new ConnectorOverview();
@@ -946,7 +949,7 @@ public class KafkaConnectControllerService {
 
       if (topic.getHistory() != null) {
         try {
-          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), ArrayList.class);
+          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), VALUE_TYPE_REF);
           topicHistoryList.addAll(topicHistoryFromTopic);
         } catch (JsonProcessingException e) {
           log.error("Unable to parse topicHistory", e);
@@ -1006,17 +1009,18 @@ public class KafkaConnectControllerService {
   public Map<String, Object> getConnectorDetailsPerEnv(String envId, String connectorName) {
     Map<String, Object> hashMap = new HashMap<>();
     hashMap.put("connectorExists", false);
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
 
     KafkaConnectorModel connectorModel = new KafkaConnectorModel();
     List<KwKafkaConnector> connectors =
         manageDatabase.getHandleDbRequests().getConnectors(connectorName, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     connectors =
         connectors.stream()
-            .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
+            .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
     String topicDescription = "";
@@ -1254,11 +1258,11 @@ public class KafkaConnectControllerService {
       List<KafkaConnectorRequest> createdTopicReqList) {
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
       if (createdTopicReqList != null) {
         createdTopicReqList =
             createdTopicReqList.stream()
-                .filter(topicRequest -> allowedEnvIdList.contains(topicRequest.getEnvironment()))
+                .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
                 .collect(Collectors.toList());
       }
     } catch (Exception e) {
@@ -1272,11 +1276,11 @@ public class KafkaConnectControllerService {
       List<KwKafkaConnector> connectorsFromSOT) {
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
       if (connectorsFromSOT != null) {
         connectorsFromSOT =
             connectorsFromSOT.stream()
-                .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
+                .filter(connector -> allowedEnvIdSet.contains(connector.getEnvironment()))
                 .collect(Collectors.toList());
       }
     } catch (Exception e) {
@@ -1303,12 +1307,6 @@ public class KafkaConnectControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(getUserName()));
   }
 
   private List<String> getConvertedEnvs(List<Env> allEnvs, List<String> selectedEnvs) {

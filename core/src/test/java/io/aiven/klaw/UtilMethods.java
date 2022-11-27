@@ -2,11 +2,12 @@ package io.aiven.klaw;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.*;
-import io.aiven.klaw.model.AclPatternType;
-import io.aiven.klaw.model.AclPermissionType;
-import io.aiven.klaw.model.AclType;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.RequestOperationType;
+import io.aiven.klaw.model.enums.AclIPPrincipleType;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclPermissionType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.*;
@@ -114,9 +115,7 @@ public class UtilMethods {
     Topic topicRequest = new Topic();
     topicRequest.setEnvironment("1");
     topicRequest.setTopicname("testtopic");
-
     topicRequest.setTeamId(3);
-    topicRequest.setEnvironment("1");
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -447,6 +446,7 @@ public class UtilMethods {
     env.setName("DEV");
     envList.add(env);
     env.setClusterId(1);
+    env.setTenantId(101);
     return envList;
   }
 

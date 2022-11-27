@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.*;
+import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,11 +11,11 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.SchemaRequestModel;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,18 +49,17 @@ public class SchemaRegstryControllerService {
   public List<SchemaRequestModel> getSchemaRequests(
       String pageNo, String currentPage, String requestsType) {
     log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestsType);
-
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    String userDetails = getUserName();
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
     List<SchemaRequest> schemaReqs =
-        manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userDetails, tenantId);
+        manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userName, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     if (schemaReqs != null) {
       schemaReqs =
           schemaReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
     }
 
@@ -75,7 +74,7 @@ public class SchemaRegstryControllerService {
       }
     }
 
-    Integer userTeamId = getMyTeamId(userDetails);
+    Integer userTeamId = getMyTeamId(userName);
     List<UserInfo> userList =
         manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
 
@@ -122,12 +121,6 @@ public class SchemaRegstryControllerService {
     }
 
     return String.valueOf(approvingInfo);
-  }
-
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(userDetails));
   }
 
   private Integer getMyTeamId(String userName) {
@@ -210,9 +203,9 @@ public class SchemaRegstryControllerService {
           .result("You are not allowed to approve your own schema requests.")
           .build();
 
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
-    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment())) {
+    if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -258,9 +251,9 @@ public class SchemaRegstryControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     SchemaRequest schemaRequest =
         dbHandle.selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
-    if (!allowedEnvIdList.contains(schemaRequest.getEnvironment())) {
+    if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -278,23 +271,6 @@ public class SchemaRegstryControllerService {
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
-  }
-
-  private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
-    // tenant filtering
-    try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null) {
-        topicsFromSOT =
-            topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      log.error("No environments/clusters found.", e);
-      return new ArrayList<>();
-    }
-    return topicsFromSOT;
   }
 
   public ApiResponse uploadSchema(SchemaRequestModel schemaRequest) throws KlawException {
@@ -319,7 +295,8 @@ public class SchemaRegstryControllerService {
         manageDatabase.getHandleDbRequests().getTopicTeam(schemaRequest.getTopicname(), tenantId);
 
     // tenant filtering
-    Integer topicOwnerTeam = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    Integer topicOwnerTeam =
+        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
 
     if (!Objects.equals(userTeamId, topicOwnerTeam)) {
       return ApiResponse.builder()
@@ -331,11 +308,11 @@ public class SchemaRegstryControllerService {
         manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userDetails, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
     if (schemaReqs != null)
       schemaReqs =
           schemaReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
     // request status filtering

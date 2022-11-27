@@ -1,8 +1,8 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
-import static io.aiven.klaw.model.AuthenticationType.LDAP;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -12,15 +12,16 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.EntityType;
-import io.aiven.klaw.model.MetadataOperationType;
-import io.aiven.klaw.model.NewUserStatus;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.NewUserStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;

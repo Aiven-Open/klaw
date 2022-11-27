@@ -3,7 +3,7 @@ package io.aiven.klaw.validation;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;

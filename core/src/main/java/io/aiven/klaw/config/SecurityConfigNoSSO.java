@@ -1,8 +1,8 @@
 package io.aiven.klaw.config;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
-import static io.aiven.klaw.model.AuthenticationType.LDAP;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 
 import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
