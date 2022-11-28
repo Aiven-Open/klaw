@@ -131,7 +131,9 @@ paths:
           content:
             application/json:
               schema:
-              $ref: '#/components/schemas/EnvironmentsGetResponse'
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Environment'
 components:
   schemas:
     CommonError:
@@ -294,7 +296,7 @@ components:
         type: string
         example: Team A
       example: ["All teams", "Team A", "Team B"]
-    EnvironmentsGetResponse:
+    Environment:
       type: object
       properties:
         id:

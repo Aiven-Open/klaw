@@ -1,24 +1,9 @@
-type EnvironmentDTO = {
-  id: string;
-  name: string;
-  type: string;
-  tenantId: number;
-  topicprefix: null;
-  topicsuffix: null;
-  clusterId: number;
-  tenantName: string;
-  clusterName: string;
-  envStatus: string;
-  otherParams: string;
-  defaultPartitions: null;
-  maxPartitions: null;
-  defaultReplicationFactor: null;
-  maxReplicationFactor: null;
-  showDeleteEnv: boolean;
-  totalNoPages: null;
-  allPageNos: null;
-};
+import { components, operations } from "types/api.d";
+
+type EnvironmentsGetResponse =
+  operations["environmentsGet"]["responses"]["200"]["content"]["application/json"];
+type EnvironmentDTO = components["schemas"]["Environment"];
 
 type Environment = string;
 
-export type { Environment, EnvironmentDTO };
+export type { Environment, EnvironmentDTO, EnvironmentsGetResponse };
