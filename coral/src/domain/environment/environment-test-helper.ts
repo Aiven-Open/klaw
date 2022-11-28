@@ -1,6 +1,9 @@
-import { Environment } from "src/domain/environment/environment-types";
+import {
+  Environment,
+  EnvironmentDTO,
+} from "src/domain/environment/environment-types";
 
-function createMockEnvironmentDTO(name: Environment) {
+function createMockEnvironmentDTO(name: Environment): EnvironmentDTO {
   return {
     id: "1",
     name,
@@ -19,8 +22,8 @@ function createMockEnvironmentDTO(name: Environment) {
     defaultReplicationFactor: null,
     maxReplicationFactor: null,
     showDeleteEnv: false,
-    totalNoPages: null,
-    allPageNos: null,
+    totalNoPages: "1",
+    allPageNos: ["1"],
   };
 }
 
