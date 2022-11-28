@@ -3,7 +3,6 @@ import chevronBackward from "@aivenio/design-system/dist/src/icons/chevronBackwa
 import chevronLeft from "@aivenio/design-system/dist/src/icons/chevronLeft";
 import chevronRight from "@aivenio/design-system/dist/src/icons/chevronRight";
 import chevronForward from "@aivenio/design-system/dist/src/icons/chevronForward";
-import classes from "src/app/components/Pagination.module.css";
 
 type PaginationProps = {
   activePage: number;
@@ -25,7 +24,7 @@ function Pagination(props: PaginationProps) {
     <nav role="navigation" aria-label="Pagination">
       <Flexbox htmlTag={"ul"} colGap={"l1"} alignItems={"center"}>
         <li>
-          <span tabIndex={0} className={classes.visuallyHidden}>
+          <span tabIndex={0} className={"visually-hidden"}>
             {`You are on page ${activePage} of ${totalPages}`}
           </span>
         </li>
@@ -35,7 +34,7 @@ function Pagination(props: PaginationProps) {
             tabIndex={0}
             onClick={() => onUpdatePage(1)}
           >
-            <span className={classes.visuallyHidden}>Go to first page</span>
+            <span className={"visually-hidden"}>Go to first page</span>
             <Icon aria-hidden={true} icon={chevronBackward} />
           </GhostButton>
         </li>
@@ -45,7 +44,7 @@ function Pagination(props: PaginationProps) {
             tabIndex={0}
             onClick={() => onUpdatePage(activePage - 1)}
           >
-            <span className={classes.visuallyHidden}>
+            <span className={"visually-hidden"}>
               Go to previous page, page {activePage - 1}
             </span>
             <Icon aria-hidden={true} icon={chevronLeft} />
@@ -61,7 +60,7 @@ function Pagination(props: PaginationProps) {
             tabIndex={0}
             onClick={() => onUpdatePage(activePage + 1)}
           >
-            <span className={classes.visuallyHidden}>
+            <span className={"visually-hidden"}>
               Go to next page, page {activePage + 1}
             </span>
             <Icon aria-hidden={true} icon={chevronRight} />
@@ -73,7 +72,7 @@ function Pagination(props: PaginationProps) {
             tabIndex={0}
             onClick={() => onUpdatePage(totalPages)}
           >
-            <span className={classes.visuallyHidden}>
+            <span className={"visually-hidden"}>
               Go to last page, page {totalPages}
             </span>
             <Icon aria-hidden={true} icon={chevronForward} />

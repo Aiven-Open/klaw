@@ -9,6 +9,7 @@ import { useSearchParams } from "react-router-dom";
 import { Environment } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
+import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
 
 // Use a UUID value to represent empty option value.
 const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
@@ -16,11 +17,17 @@ const ALL_ENVIRONMENTS_VALUE = "ALL";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [page, setPage] = useState(1);
+  const initialPage = searchParams.get("page");
+  const initialTeam = searchParams.get("team");
+  const initialEnv = searchParams.get("environment");
+  const initialSearchTerm = searchParams.get("search");
+
+  const [page, setPage] = useState(Number(initialPage) || 1);
   const [environment, setEnvironment] = useState<Environment>(
-    ALL_ENVIRONMENTS_VALUE
+    initialEnv || ALL_ENVIRONMENTS_VALUE
   );
-  const [team, setTeam] = useState<string>(ALL_TEAMS_VALUE);
+  const [team, setTeam] = useState<string>(initialTeam || ALL_TEAMS_VALUE);
+  const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm || "");
 
   const { data: topicEnvs } = useGetEnvironments();
   const { data: topicTeams } = useGetTeams();
@@ -34,6 +41,7 @@ function BrowseTopics() {
     currentPage: page,
     environment,
     ...(team !== ALL_TEAMS_VALUE && { teamName: team }),
+    ...(searchTerm && { searchTerm: searchTerm }),
   });
 
   const hasTopics = topics && topics.entries.length > 0;
@@ -66,6 +74,9 @@ function BrowseTopics() {
             />
           </FlexboxItem>
         )}
+        <FlexboxItem alignSelf={"center"}>
+          <SearchTopics onChange={searchTopics} value={searchTerm} />
+        </FlexboxItem>
       </Flexbox>
 
       <Flexbox direction={"column"} alignItems={"center"} rowGap={"l4"}>
@@ -80,7 +91,7 @@ function BrowseTopics() {
           <Pagination
             activePage={topics.currentPage}
             totalPages={topics.totalPages}
-            setActivePage={setPage}
+            setActivePage={changePage}
           />
         )}
       </Flexbox>
@@ -94,6 +105,7 @@ function BrowseTopics() {
     } else {
       searchParams.set("environment", environment);
     }
+
     setSearchParams(searchParams);
   }
 
@@ -104,6 +116,23 @@ function BrowseTopics() {
     } else {
       searchParams.set("team", team);
     }
+    setSearchParams(searchParams);
+  }
+
+  function searchTopics(newSearchTerm: string) {
+    setSearchTerm(newSearchTerm);
+    if (newSearchTerm.length === 0) {
+      searchParams.delete("search");
+    } else {
+      searchParams.set("search", newSearchTerm);
+    }
+
+    setSearchParams(searchParams);
+  }
+
+  function changePage(activePage: number) {
+    setPage(activePage);
+    searchParams.set("page", activePage.toString());
     setSearchParams(searchParams);
   }
 }

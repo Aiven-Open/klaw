@@ -41,7 +41,7 @@ describe("useGetTopics", () => {
     server.close();
   });
 
-  describe.only("handles loading and error state", () => {
+  describe("handles loading and error state", () => {
     it("returns a loading state before starting to fetch data", async () => {
       const responseData = [
         [
@@ -164,6 +164,65 @@ describe("useGetTopics", () => {
 
   describe("handles responses based on the environment", () => {
     it("returns a list of three topics with `DEV` envs", async () => {
+      const expectedFilterByEnvResult = [
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "DevRel",
+          topicDeletable: false,
+          topicName: "Topic 1",
+          topicid: 1,
+          totalNoPages: "1",
+        },
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "DevRel",
+          topicDeletable: false,
+          topicName: "Topic 2",
+          topicid: 2,
+          totalNoPages: "1",
+        },
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "DevRel",
+          topicDeletable: false,
+          topicName: "Topic 3",
+          topicid: 3,
+          totalNoPages: "1",
+        },
+      ];
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "single-page-env-dev",
@@ -180,11 +239,141 @@ describe("useGetTopics", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      const envList = result.current.data?.entries
-        .map((topic) => topic.environmentsList)
-        .flat();
+      expect(result.current.data?.entries).toEqual(expectedFilterByEnvResult);
+    });
+  });
 
-      expect(envList).toEqual(["DEV", "DEV", "DEV"]);
+  describe("handles responses based on the team", () => {
+    it("returns a list of two topics with `TEST_TEAM_02` team", async () => {
+      const expectedFilterByTeamResult = [
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV", "TEST"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "TEST_TEAM_02",
+          topicDeletable: false,
+          topicName: "Topic 1",
+          topicid: 1,
+          totalNoPages: "1",
+        },
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV", "TEST"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "TEST_TEAM_02",
+          topicDeletable: false,
+          topicName: "Topic 2",
+          topicid: 2,
+          totalNoPages: "1",
+        },
+      ];
+      mockTopicGetRequest({
+        mswInstance: server,
+      });
+
+      const { result } = await renderHook(
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "ALL",
+            teamName: "TEST_TEAM_02",
+          }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data?.entries).toEqual(expectedFilterByTeamResult);
+    });
+  });
+
+  describe("handles responses based on a search term", () => {
+    const searchTerm = "Searched for topic";
+
+    it(`returns a list of two topics matching a "${searchTerm}" search`, async () => {
+      const expectedSearchResult = [
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV", "TEST"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "TEST_TEAM_01",
+          topicDeletable: false,
+          topicName: "Searched for topic 1",
+          topicid: 1,
+          totalNoPages: "1",
+        },
+        {
+          allPageNos: ["1"],
+          cluster: "1",
+          clusterId: null,
+          currentPage: "1",
+          description: "Topic description",
+          documentation: null,
+          environmentsList: ["DEV", "TEST"],
+          noOfPartitions: 2,
+          noOfReplcias: "2",
+          sequence: "341",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamname: "TEST_TEAM_02",
+          topicDeletable: false,
+          topicName: "Searched for topic 2",
+          topicid: 2,
+          totalNoPages: "1",
+        },
+      ];
+      mockTopicGetRequest({
+        mswInstance: server,
+      });
+
+      const { result } = await renderHook(
+        () =>
+          useGetTopics({
+            currentPage: 1,
+            environment: "ALL",
+            searchTerm,
+          }),
+        {
+          wrapper,
+        }
+      );
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data?.entries).toEqual(expectedSearchResult);
     });
   });
 });
