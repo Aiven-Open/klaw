@@ -2,7 +2,6 @@ import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/us
 import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
 import TopicList from "src/app/features/browse-topics/components/topic-list/TopicList";
-import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useSearchParams } from "react-router-dom";
@@ -29,7 +28,6 @@ function BrowseTopics() {
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm || "");
 
   const { data: topicEnvs } = useGetEnvironments();
-  const { data: topicTeams } = useGetTeams();
 
   const {
     data: topics,
@@ -61,11 +59,11 @@ function BrowseTopics() {
             />
           </FlexboxItem>
         )}
-        {topicTeams && (
-          <FlexboxItem width={"l7"}>
-            <SelectTeam updateTeam={setTeamName} />
-          </FlexboxItem>
-        )}
+
+        <FlexboxItem width={"l7"}>
+          <SelectTeam updateTeam={setTeamName} />
+        </FlexboxItem>
+
         <FlexboxItem alignSelf={"center"}>
           <SearchTopics onChange={searchTopics} value={searchTerm} />
         </FlexboxItem>

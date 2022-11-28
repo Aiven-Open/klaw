@@ -5,6 +5,7 @@ import { server } from "src/services/api-mocks/server";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 describe("SelectTeam.tsx", () => {
   beforeAll(() => {
@@ -24,7 +25,9 @@ describe("SelectTeam.tsx", () => {
         memoryRouter: true,
         queryClient: true,
       });
-      await waitFor(() => screen.getByRole("combobox"));
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-team-loading")
+      );
     });
 
     afterAll(cleanup);
@@ -77,7 +80,9 @@ describe("SelectTeam.tsx", () => {
         queryClient: true,
         customRoutePath: routePath,
       });
-      await waitFor(() => screen.getByRole("combobox"));
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-team-loading")
+      );
     });
 
     afterEach(() => {
@@ -108,7 +113,9 @@ describe("SelectTeam.tsx", () => {
         queryClient: true,
         memoryRouter: true,
       });
-      await waitFor(() => screen.getByRole("combobox"));
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-team-loading")
+      );
     });
 
     afterEach(() => {
@@ -177,10 +184,6 @@ describe("SelectTeam.tsx", () => {
       await waitFor(() => {
         expect(window.location.search).toEqual(`?team=${optionToSelect}`);
       });
-    });
-
-    it("HMMM", () => {
-      expect(window.location.search).toEqual("");
     });
   });
 });

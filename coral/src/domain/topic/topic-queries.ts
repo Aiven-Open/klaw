@@ -1,4 +1,5 @@
 import { getTopics } from "src/domain/topic/topic-api";
+import { Team } from "src/domain/team";
 
 export const topicsQuery = ({
   currentPage,
@@ -12,7 +13,7 @@ export const topicsQuery = ({
   // for teamName to avoid fetching
   // until the value from searchQuery is not
   // evaluated
-  teamName: string | null;
+  teamName: Team | null;
   searchTerm?: string;
 }) => {
   return {
@@ -20,8 +21,6 @@ export const topicsQuery = ({
     queryFn: () =>
       getTopics({ currentPage, environment, teamName, searchTerm }),
     keepPreviousData: true,
-    //@TODO remove that debugging helper
-    refetchOnWindowFocus: false,
     enabled: !!teamName,
   };
 };

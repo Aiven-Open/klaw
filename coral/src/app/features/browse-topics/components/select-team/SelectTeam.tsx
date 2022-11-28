@@ -13,7 +13,7 @@ function SelectTeam(props: SelectTeamProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialTeam = searchParams.get("team");
-  const [team, setTeam] = useState<Team | null>(ALL_TEAMS_VALUE);
+  const [team, setTeam] = useState<Team>(ALL_TEAMS_VALUE);
   const { updateTeam } = props;
 
   const { data: topicTeams } = useGetTeams();
@@ -65,7 +65,11 @@ function SelectTeam(props: SelectTeamProps) {
       </NativeSelect>
     );
   } else {
-    return <></>;
+    return (
+      <div data-testid={"select-team-loading"}>
+        <NativeSelect.Skeleton />
+      </div>
+    );
   }
 }
 
