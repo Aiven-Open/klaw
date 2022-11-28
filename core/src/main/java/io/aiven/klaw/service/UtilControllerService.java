@@ -74,15 +74,14 @@ public class UtilControllerService {
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
     if (userName != null) {
       return reqsHandle.getDashboardStats(
-          getMyTeamId(userName), commonUtilsService.getTenantId(getUserName()));
+          commonUtilsService.getTeamId(userName), commonUtilsService.getTenantId(getUserName()));
     }
 
     return new HashMap<>();
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public String getTenantNameFromUser(String userId) {
@@ -97,10 +96,6 @@ public class UtilControllerService {
     } else {
       return null;
     }
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   public Map<String, String> getAllRequestsToBeApproved(String requestor, int tenantId) {
@@ -201,7 +196,8 @@ public class UtilControllerService {
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
     if (userName != null) {
-      String teamName = manageDatabase.getTeamNameFromTeamId(tenantId, getMyTeamId(userName));
+      String teamName =
+          manageDatabase.getTeamNameFromTeamId(tenantId, commonUtilsService.getTeamId(userName));
       String authority = commonUtilsService.getAuthority(getPrincipal());
       Map<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
 
@@ -241,7 +237,7 @@ public class UtilControllerService {
       }
 
       Map<String, String> dashboardData =
-          reqsHandle.getDashboardInfo(getMyTeamId(userName), tenantId);
+          reqsHandle.getDashboardInfo(commonUtilsService.getTeamId(userName), tenantId);
 
       dashboardData.put("contextPath", kwContextPath);
       dashboardData.put("teamsize", "" + manageDatabase.getTeamsForTenant(tenantId).size());

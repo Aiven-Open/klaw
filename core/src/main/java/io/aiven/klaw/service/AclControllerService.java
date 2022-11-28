@@ -67,14 +67,14 @@ public class AclControllerService {
 
   public ApiResponse createAcl(AclRequestsModel aclRequestsModel) throws KlawException {
     log.info("createAcl {}", aclRequestsModel);
-    String userDetails = getCurrentUserName();
+    String currentUserName = getCurrentUserName();
     aclRequestsModel.setAclType(RequestOperationType.CREATE.value);
-    aclRequestsModel.setUsername(userDetails);
-    int tenantId = commonUtilsService.getTenantId(userDetails);
+    aclRequestsModel.setUsername(currentUserName);
+    int tenantId = commonUtilsService.getTenantId(currentUserName);
 
     aclRequestsModel.setTeamId(
         manageDatabase.getTeamIdFromTeamName(tenantId, aclRequestsModel.getTeamname()));
-    aclRequestsModel.setRequestingteam(getMyTeamId(userDetails));
+    aclRequestsModel.setRequestingteam(commonUtilsService.getTeamId(currentUserName));
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
@@ -122,7 +122,7 @@ public class AclControllerService {
     handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
 
     aclRequestsDao.setTenantId(tenantId);
-    return executeAclRequestModel(userDetails, aclRequestsDao, ACL_REQUESTED);
+    return executeAclRequestModel(currentUserName, aclRequestsDao, ACL_REQUESTED);
   }
 
   void handleIpAddressAndCNString(AclRequestsModel aclRequestsModel, AclRequests aclRequestsDao) {
@@ -662,9 +662,5 @@ public class AclControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 }

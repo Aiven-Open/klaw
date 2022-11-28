@@ -343,7 +343,7 @@ public class UsersTeamsControllerService {
 
   public ApiResponse deleteTeam(Integer teamId) throws KlawException {
     log.info("deleteTeam {}", teamId);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
@@ -358,7 +358,7 @@ public class UsersTeamsControllerService {
     }
 
     // own team cannot be deleted
-    if (Objects.equals(getMyTeamId(userDetails), teamId)) {
+    if (Objects.equals(commonUtilsService.getTeamId(userName), teamId)) {
       return ApiResponse.builder().result("Team cannot be deleted.").build();
     }
 
@@ -687,8 +687,7 @@ public class UsersTeamsControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   Map<String, String> addTwoDefaultTeams(
@@ -926,10 +925,6 @@ public class UsersTeamsControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   private Pattern getPattern() {

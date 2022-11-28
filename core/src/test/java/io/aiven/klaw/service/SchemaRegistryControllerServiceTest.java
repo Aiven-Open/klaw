@@ -247,6 +247,7 @@ public class SchemaRegistryControllerServiceTest {
     topic.setTeamId(101);
 
     stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);

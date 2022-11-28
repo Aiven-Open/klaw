@@ -7,6 +7,7 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -116,6 +117,7 @@ public class UtilMethods {
     topicRequest.setEnvironment("1");
     topicRequest.setTopicname("testtopic");
     topicRequest.setTeamId(3);
+    topicRequest.setNoOfPartitions(1);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -588,5 +590,28 @@ public class UtilMethods {
     serverConfigPropertiesList.add(serverConfigProperties);
 
     return serverConfigPropertiesList;
+  }
+
+  public TopicInfo getTopicInfo() {
+    TopicInfo topicInfo = new TopicInfo();
+    topicInfo.setTeamname("testteam");
+    topicInfo.setTopicName("testtopic");
+    topicInfo.setTopicid(1);
+    topicInfo.setCluster("DEV");
+    topicInfo.setClusterId("1");
+    topicInfo.setDocumentation("this is content for documentation");
+
+    return topicInfo;
+  }
+
+  public KwClusters getKwClusters() {
+    KwClusters kwClusters = new KwClusters();
+    kwClusters.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwClusters.setBootstrapServers("");
+    kwClusters.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+    kwClusters.setClusterName("");
+    kwClusters.setClusterId(1);
+
+    return kwClusters;
   }
 }

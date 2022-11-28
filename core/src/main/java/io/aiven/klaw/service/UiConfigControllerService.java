@@ -40,8 +40,7 @@ public class UiConfigControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public List<ActivityLog> showActivityLog(String env, String pageNo, String currentPage) {

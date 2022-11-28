@@ -58,17 +58,6 @@ public class AnalyticsControllerService {
     return commonUtilsService.getCurrentUserName();
   }
 
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
-  }
-
-  private List<String> getEnvsFromUserId() {
-    final String currentUserName = getCurrentUserName();
-    Integer userTeamId = getMyTeamId(currentUserName);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(currentUserName));
-  }
-
   public String getEnvName(String envId) {
     Optional<Env> envFound =
         manageDatabase
@@ -199,7 +188,6 @@ public class AnalyticsControllerService {
       final Set<String> allowedEnvIdSet =
           commonUtilsService.getEnvsFromUserId(getCurrentUserName());
       if (teamCountList != null) {
-        // if(!permissionType.equals(PermissionType.ALL_TENANTS_REPORTS))
         teamCountList =
             teamCountList.stream()
                 .filter(mapObj -> allowedEnvIdSet.contains(mapObj.get("cluster")))
@@ -224,7 +212,7 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getTopicsPerTeamEnvOverview(int tenantId) {
     final String currentUserName = getCurrentUserName();
-    Integer userTeamId = getMyTeamId(currentUserName);
+    Integer userTeamId = commonUtilsService.getTeamId(currentUserName);
     List<Map<String, String>> teamCountList = null;
     if (currentUserName != null) {
       teamCountList =
@@ -346,7 +334,7 @@ public class AnalyticsControllerService {
     TeamOverview teamOverview = new TeamOverview();
 
     final String currentUserName = getCurrentUserName();
-    Integer userTeamId = getMyTeamId(currentUserName);
+    Integer userTeamId = commonUtilsService.getTeamId(currentUserName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       int tenantId = commonUtilsService.getTenantId(currentUserName);
@@ -388,7 +376,7 @@ public class AnalyticsControllerService {
   public TeamOverview getActivityLogForTeamOverview(String forTeam) {
     TeamOverview teamOverview = new TeamOverview();
     final String currentUserName = getCurrentUserName();
-    Integer userTeamId = getMyTeamId(currentUserName);
+    Integer userTeamId = commonUtilsService.getTeamId(currentUserName);
 
     teamOverview.setTopicsPerTeamPerEnvOverview(
         getTopicsPerTeamEnvOverview(commonUtilsService.getTenantId(currentUserName)));
@@ -598,7 +586,7 @@ public class AnalyticsControllerService {
     Map<String, List<String>> topicsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
-      Integer userTeamId = getMyTeamId(getCurrentUserName());
+      Integer userTeamId = commonUtilsService.getTeamId(getCurrentUserName());
       List<Topic> topics =
           manageDatabase.getHandleDbRequests().getTopicsforTeam(userTeamId, tenantId);
 
@@ -635,7 +623,7 @@ public class AnalyticsControllerService {
     Map<String, List<String>> aclsPerEnv = new HashMap<>();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ALL_TEAMS_REPORTS)) {
       // normal user
-      Integer userTeamId = getMyTeamId(getCurrentUserName());
+      Integer userTeamId = commonUtilsService.getTeamId(getCurrentUserName());
       List<Acl> acls =
           manageDatabase.getHandleDbRequests().getConsumerGroupsforTeam(userTeamId, tenantId);
 

@@ -367,7 +367,7 @@ public class AclSyncControllerService {
     }
 
     List<AclInfo> aclInfoList;
-    Integer loggedInUserTeam = getMyTeamId(userName);
+    Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
 
     aclInfoList =
         getAclsList(
@@ -552,8 +552,7 @@ public class AclSyncControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
@@ -567,9 +566,5 @@ public class AclSyncControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 }

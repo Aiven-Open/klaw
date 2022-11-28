@@ -1154,8 +1154,7 @@ public class TopicSyncControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   private Object getPrincipal() {

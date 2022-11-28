@@ -31,12 +31,7 @@ public class MetricsControllerService {
   @Autowired private CommonUtilsService commonUtilsService;
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+    return mailService.getUserName(getPrincipal());
   }
 
   // default 1 min

@@ -74,7 +74,7 @@ public class SchemaRegstryControllerService {
       }
     }
 
-    Integer userTeamId = getMyTeamId(userName);
+    Integer userTeamId = commonUtilsService.getTeamId(userName);
     List<UserInfo> userList =
         manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
 
@@ -121,10 +121,6 @@ public class SchemaRegstryControllerService {
     }
 
     return String.valueOf(approvingInfo);
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   private List<SchemaRequestModel> getSchemaRequestsPaged(
@@ -289,7 +285,7 @@ public class SchemaRegstryControllerService {
       return ApiResponse.builder().result("Failure. Invalid json").build();
     }
 
-    Integer userTeamId = getMyTeamId(userDetails);
+    Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<Topic> topicsSearchList =
         manageDatabase.getHandleDbRequests().getTopicTeam(schemaRequest.getTopicname(), tenantId);
@@ -357,8 +353,7 @@ public class SchemaRegstryControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   private Object getPrincipal() {

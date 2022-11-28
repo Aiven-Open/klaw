@@ -852,8 +852,7 @@ public class EnvsClustersTenantsControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public List<KwTenantModel> getAllTenants() {

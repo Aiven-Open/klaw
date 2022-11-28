@@ -74,8 +74,6 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
-
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
@@ -90,8 +88,6 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
   }
 
   // Create team success

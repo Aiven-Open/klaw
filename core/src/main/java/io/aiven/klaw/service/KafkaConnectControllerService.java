@@ -77,7 +77,7 @@ public class KafkaConnectControllerService {
   public ApiResponse createConnectorRequest(KafkaConnectorRequestModel topicRequestReq)
       throws KlawException {
     log.info("createConnectorRequest {}", topicRequestReq);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
@@ -112,16 +112,16 @@ public class KafkaConnectControllerService {
       throw new KlawException(e.getMessage());
     }
 
-    topicRequestReq.setRequestor(userDetails);
-    topicRequestReq.setUsername(userDetails);
+    topicRequestReq.setRequestor(userName);
+    topicRequestReq.setUsername(userName);
 
-    Integer userTeamId = getMyTeamId(userDetails);
+    Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     topicRequestReq.setTeamId(userTeamId);
     String envSelected = topicRequestReq.getEnvironment();
 
     // tenant filtering
-    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(envSelected)) {
+    if (!commonUtilsService.getEnvsFromUserId(userName).contains(envSelected)) {
       return ApiResponse.builder()
           .result("Failure. Not authorized to request connector for this environment.")
           .build();
@@ -226,7 +226,7 @@ public class KafkaConnectControllerService {
         topicRequestReq.getConnectorName(),
         null,
         "",
-        userDetails,
+        userName,
         dbHandle,
         CONNECTOR_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
@@ -705,7 +705,7 @@ public class KafkaConnectControllerService {
     KafkaConnectorRequest kafkaConnectorRequest = new KafkaConnectorRequest();
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
 
-    Integer userTeamId = getMyTeamId(userDetails);
+    Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
@@ -834,7 +834,7 @@ public class KafkaConnectControllerService {
             .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeam))
             .findFirst();
 
-    Integer userTeamId = getMyTeamId(userDetails);
+    Integer userTeamId = commonUtilsService.getTeamId(userDetails);
 
     connectorRequest.setRequestor(userDetails);
     connectorRequest.setUsername(userDetails);
@@ -879,7 +879,7 @@ public class KafkaConnectControllerService {
 
   public ConnectorOverview getConnectorOverview(String connectorNamesearch) {
     log.debug("getConnectorOverview {}", connectorNamesearch);
-    String userDetails = getUserName();
+    String userName = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -890,12 +890,12 @@ public class KafkaConnectControllerService {
       return null;
     }
 
-    Integer loggedInUserTeam = getMyTeamId(userDetails);
+    Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
 
     List<KwKafkaConnector> connectors = handleDb.getConnectors(connectorNamesearch, tenantId);
 
     // tenant filtering
-    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     connectors =
         connectors.stream()
             .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
@@ -1124,6 +1124,8 @@ public class KafkaConnectControllerService {
   }
 
   public ApiResponse saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
+    String userName = getUserName();
+
     KwKafkaConnector topic = new KwKafkaConnector();
     topic.setConnectorId(topicInfo.getConnectorId());
     topic.setDocumentation(topicInfo.getDocumentation());
@@ -1132,11 +1134,11 @@ public class KafkaConnectControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getConnectorsFromName(
-                topicInfo.getConnectorName(), commonUtilsService.getTenantId(getUserName()));
+                topicInfo.getConnectorName(), commonUtilsService.getTenantId(userName));
 
     // tenant filtering
     Integer topicOwnerTeam = getFilteredConnectorsForTenant(topicsSearchList).get(0).getTeamId();
-    Integer loggedInUserTeam = getMyTeamId(getUserName());
+    Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
 
     if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
       return ApiResponse.builder()
@@ -1151,7 +1153,7 @@ public class KafkaConnectControllerService {
       List<KafkaConnectorRequest> topicsList, boolean fromSyncTopics) {
     List<KafkaConnectorRequestModel> topicRequestModelList = new ArrayList<>();
     KafkaConnectorRequestModel topicRequestModel;
-    Integer userTeamId = getMyTeamId(getUserName());
+    Integer userTeamId = commonUtilsService.getTeamId(getUserName());
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<String> approverRoles =
@@ -1291,8 +1293,7 @@ public class KafkaConnectControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   private Object getPrincipal() {
@@ -1321,9 +1322,5 @@ public class KafkaConnectControllerService {
     }
 
     return newEnvList;
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 }

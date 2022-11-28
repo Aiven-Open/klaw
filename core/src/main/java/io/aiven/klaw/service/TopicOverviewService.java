@@ -62,9 +62,9 @@ public class TopicOverviewService {
 
     String userName = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
 
-    Integer loggedInUserTeam = getMyTeamId(userName);
+    Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
 
     // tenant filtering
@@ -492,12 +492,11 @@ public class TopicOverviewService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  private Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
