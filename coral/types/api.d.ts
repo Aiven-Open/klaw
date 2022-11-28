@@ -168,7 +168,7 @@ export type components = {
      * ]
      */
     TeamNamesGetResponse: string[];
-    EnvironmentsGetResponse: {
+    Environment: {
       /**
        * id
        * @description Environment identifier
@@ -334,7 +334,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["Environment"][];
         };
       };
     };
