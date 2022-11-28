@@ -1,5 +1,6 @@
 import { getTopics } from "src/domain/topic/topic-api";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
+import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 
 export const topicsQuery = ({
   currentPage,
@@ -9,10 +10,6 @@ export const topicsQuery = ({
 }: {
   currentPage: number;
   environment: string;
-  // null represents the initial state
-  // for teamName to avoid fetching
-  // until the value from searchQuery is not
-  // evaluated
   teamName: Team;
   searchTerm?: string;
 }) => {
@@ -21,6 +18,8 @@ export const topicsQuery = ({
     queryFn: () =>
       getTopics({ currentPage, environment, teamName, searchTerm }),
     keepPreviousData: true,
-    enabled: teamName !== TEAM_NOT_INITIALIZED,
+    enabled:
+      teamName !== TEAM_NOT_INITIALIZED &&
+      environment !== ENVIRONMENT_NOT_INITIALIZED,
   };
 };
