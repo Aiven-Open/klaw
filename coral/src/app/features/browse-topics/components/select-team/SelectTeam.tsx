@@ -39,21 +39,6 @@ function SelectTeam(props: SelectTeamProps) {
     setSearchParams(searchParams);
   }
 
-  function createOptions(teams: Team[]) {
-    return (
-      <>
-        <Option key={ALL_TEAMS_VALUE} value={ALL_TEAMS_VALUE}>
-          All teams
-        </Option>
-        {teams.map((team) => (
-          <Option key={team} value={team}>
-            {team}
-          </Option>
-        ))}
-      </>
-    );
-  }
-
   if (!topicTeams || !team) {
     return (
       <div data-testid={"select-team-loading"}>
@@ -67,7 +52,14 @@ function SelectTeam(props: SelectTeamProps) {
         value={team}
         onChange={(event) => onChangeEnv(event.target.value)}
       >
-        {topicTeams && createOptions(topicTeams)}
+        <Option key={ALL_TEAMS_VALUE} value={ALL_TEAMS_VALUE}>
+          All teams
+        </Option>
+        {topicTeams.map((team) => (
+          <Option key={team} value={team}>
+            {team}
+          </Option>
+        ))}
       </NativeSelect>
     );
   }
