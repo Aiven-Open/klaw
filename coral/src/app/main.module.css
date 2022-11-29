@@ -10,3 +10,23 @@
   white-space: nowrap !important;
   border: 0 !important;
 }
+
+/* @TODO check design system */
+/*TEMP browser reset*!*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  font-size: 16px;
+  color: #3c3c3c;
+  -webkit-text-size-adjust: 100%;
+}
