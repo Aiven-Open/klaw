@@ -1,22 +1,6 @@
-type TopicDTO = {
-  topicid: number;
-  sequence: string;
-  totalNoPages: string;
-  currentPage: string;
-  allPageNos: string[];
-  topicName: string;
-  noOfPartitions: number;
-  description: string;
-  documentation: string | null;
-  noOfReplcias: string;
-  teamname: string;
-  cluster: string;
-  clusterId: number | null;
-  environmentsList: string[];
-  showEditTopic: boolean;
-  showDeleteTopic: boolean;
-  topicDeletable: boolean;
-};
+import { components } from "types/api";
+
+type TopicDTO = components["schemas"]["TopicInfo"];
 
 type TopicApiResponse = {
   totalPages: number;
@@ -24,8 +8,7 @@ type TopicApiResponse = {
   entries: Topic[];
 };
 
-// @TODO adjust to our needs
 type Topic = TopicDTO;
-type TopicDTOApiResponse = Array<Array<TopicDTO>>;
+type TopicDTOApiResponse = components["schemas"]["TopicsGetResponse"];
 
 export type { TopicDTO, TopicApiResponse, Topic, TopicDTOApiResponse };
