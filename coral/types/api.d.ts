@@ -114,6 +114,11 @@ export type components = {
        */
       noOfReplicas?: string;
       /**
+       * Sequence
+       * @deprecated
+       */
+      sequence?: string;
+      /**
        * Team name
        * @description Topic owner team name
        * @example application-X-developers
@@ -129,7 +134,7 @@ export type components = {
        * Cluster identifier
        * @deprecated
        */
-      clusterId: string;
+      clusterId: string | null;
       /**
        * Environments list
        * @description List of environments where the topic is present.

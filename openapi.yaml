@@ -233,6 +233,10 @@ components:
           description: Topic replica count
           type: string
           example: "2"
+        sequence:
+          title: Sequence
+          type: string
+          deprecated: true
         teamname:
           title: Team name
           description: Topic owner team name
@@ -245,8 +249,9 @@ components:
           example: "1"
         clusterId:
           title: Cluster identifier
-          deprecated: true
           type: string
+          deprecated: true
+          nullable: true
         environmentsList:
           title: Environments list 
           description: List of environments where the topic is present.
