@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
 type SelectTeamProps = {
-  updateTeam: (teamName: Team | null) => void;
+  onChange: (teamName: Team | null) => void;
 };
 
 function SelectTeam(props: SelectTeamProps) {
@@ -14,7 +14,7 @@ function SelectTeam(props: SelectTeamProps) {
 
   const initialTeam = searchParams.get("team");
   const [team, setTeam] = useState<Team>(ALL_TEAMS_VALUE);
-  const { updateTeam } = props;
+  const { onChange } = props;
 
   const { data: topicTeams } = useGetTeams();
 
@@ -24,7 +24,7 @@ function SelectTeam(props: SelectTeamProps) {
     }
     // updates `team` in BrowseTopics
     // which will trigger the api call
-    updateTeam(initialTeam || ALL_TEAMS_VALUE);
+    onChange(initialTeam || ALL_TEAMS_VALUE);
   }, [initialTeam]);
 
   function onChangeEnv(newTeam: string) {
@@ -35,7 +35,7 @@ function SelectTeam(props: SelectTeamProps) {
       searchParams.set("team", newTeam);
     }
     setTeam(newTeam);
-    updateTeam(newTeam);
+    onChange(newTeam);
     setSearchParams(searchParams);
   }
 

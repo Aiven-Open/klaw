@@ -61,7 +61,7 @@ function BrowseTopics() {
         )}
 
         <FlexboxItem width={"l7"}>
-          <SelectTeam updateTeam={setTeamName} />
+          <SelectTeam onChange={setTeamName} />
         </FlexboxItem>
 
         <FlexboxItem alignSelf={"center"}>

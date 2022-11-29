@@ -17,11 +17,11 @@ describe("SelectTeam.tsx", () => {
   });
 
   describe("renders default view when no query is set", () => {
-    const mockedUpdateTeam = jest.fn();
+    const mockedOnChange = jest.fn();
 
     beforeAll(async () => {
       mockGetTeams({ mswInstance: server });
-      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+      customRender(<SelectTeam onChange={mockedOnChange} />, {
         memoryRouter: true,
         queryClient: true,
       });
@@ -61,12 +61,12 @@ describe("SelectTeam.tsx", () => {
     });
 
     it("updates the team state for initial api call with value associated with `All teams`", () => {
-      expect(mockedUpdateTeam).toHaveBeenCalledWith(ALL_TEAMS_VALUE);
+      expect(mockedOnChange).toHaveBeenCalledWith(ALL_TEAMS_VALUE);
     });
   });
 
   describe("sets the active team based on a query param", () => {
-    const mockedUpdateTeam = jest.fn();
+    const mockedOnChange = jest.fn();
 
     const teamQueryValue = "TEST_TEAM_02";
 
@@ -75,7 +75,7 @@ describe("SelectTeam.tsx", () => {
 
       mockGetTeams({ mswInstance: server });
 
-      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+      customRender(<SelectTeam onChange={mockedOnChange} />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -99,17 +99,17 @@ describe("SelectTeam.tsx", () => {
     });
 
     it("updates the team state for api call", () => {
-      expect(mockedUpdateTeam).toHaveBeenCalledTimes(1);
+      expect(mockedOnChange).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("handles user selecting a team", () => {
-    const mockedUpdateTeam = jest.fn();
+    const mockedOnChange = jest.fn();
     const optionToSelect = "TEST_TEAM_02";
 
     beforeEach(async () => {
       mockGetTeams({ mswInstance: server });
-      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+      customRender(<SelectTeam onChange={mockedOnChange} />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -131,7 +131,7 @@ describe("SelectTeam.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(mockedUpdateTeam).toHaveBeenCalledWith(optionToSelect);
+      expect(mockedOnChange).toHaveBeenCalledWith(optionToSelect);
     });
 
     it("sets the team the user choose as active option", async () => {
@@ -147,12 +147,12 @@ describe("SelectTeam.tsx", () => {
   });
 
   describe("updates the search param to preserve team in url", () => {
-    const mockedUpdateTeam = jest.fn();
+    const mockedOnChange = jest.fn();
     const optionToSelect = "TEST_TEAM_01";
 
     beforeEach(async () => {
       mockGetTeams({ mswInstance: server });
-      customRender(<SelectTeam updateTeam={mockedUpdateTeam} />, {
+      customRender(<SelectTeam onChange={mockedOnChange} />, {
         queryClient: true,
         browserRouter: true,
       });
