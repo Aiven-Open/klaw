@@ -54,7 +54,13 @@ function SelectTeam(props: SelectTeamProps) {
     );
   }
 
-  if (topicTeams && team) {
+  if (!topicTeams || !team) {
+    return (
+      <div data-testid={"select-team-loading"}>
+        <NativeSelect.Skeleton />
+      </div>
+    );
+  } else {
     return (
       <NativeSelect
         labelText="Team"
@@ -63,12 +69,6 @@ function SelectTeam(props: SelectTeamProps) {
       >
         {topicTeams && createOptions(topicTeams)}
       </NativeSelect>
-    );
-  } else {
-    return (
-      <div data-testid={"select-team-loading"}>
-        <NativeSelect.Skeleton />
-      </div>
     );
   }
 }
