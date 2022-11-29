@@ -1,8 +1,14 @@
 package io.aiven.klaw.model.enums;
 
 public enum RequestStatus {
-  created,
-  deleted,
-  declined,
-  approved
+  CREATED("created"),
+  DELETED("deleted"),
+  DECLINED("declined"),
+  APPROVED("approved");
+
+  public final String value;
+
+  RequestStatus(String value) {
+    this.value = value;
+  }
 }

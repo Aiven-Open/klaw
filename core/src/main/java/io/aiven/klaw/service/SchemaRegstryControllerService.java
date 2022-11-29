@@ -64,7 +64,8 @@ public class SchemaRegstryControllerService {
     }
 
     // request status filtering
-    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType)) {
+    if (!"all".equals(requestsType)
+        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
       if (schemaReqs != null) {
         schemaReqs =
             schemaReqs.stream()
@@ -94,7 +95,7 @@ public class SchemaRegstryControllerService {
         copyProperties(schemaReq, schemaRequestModel);
 
         // show approving info only before approvals
-        if (!RequestStatus.approved.name().equals(schemaRequestModel.getTopicstatus())) {
+        if (!RequestStatus.APPROVED.value.equals(schemaRequestModel.getTopicstatus())) {
           schemaRequestModel.setApprovingTeamDetails(
               updateApproverInfo(
                   userList,

@@ -588,8 +588,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   private void loadRequestTypeStatuses() {
     reqStatusList = new ArrayList<>();
     reqStatusList.add("all");
-    for (RequestStatus value : RequestStatus.values()) {
-      reqStatusList.add(value.name());
+    for (RequestStatus requestStatus : RequestStatus.values()) {
+      reqStatusList.add(requestStatus.value);
     }
   }
 

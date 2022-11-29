@@ -121,7 +121,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public List<TopicRequest> getAllTopicRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsByStatus(
-        false, requestor, RequestStatus.created.name(), false, tenantId);
+        false, requestor, RequestStatus.CREATED.value, false, tenantId);
   }
 
   public List<TopicRequest> getCreatedTopicRequests(
@@ -132,7 +132,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequestsByStatus(
-        false, requestor, RequestStatus.created.name(), false, tenantId);
+        false, requestor, RequestStatus.CREATED.value, false, tenantId);
   }
 
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(

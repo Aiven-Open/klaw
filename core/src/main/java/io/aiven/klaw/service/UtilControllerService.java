@@ -122,23 +122,23 @@ public class UtilControllerService {
         getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.created.name(), false, tenantId);
+              true, requestor, roleToSet, RequestStatus.CREATED.value, false, tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
-              requestor, RequestStatus.created.name(), false, tenantId);
+              requestor, RequestStatus.CREATED.value, false, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.created.name(), false, tenantId);
+              requestor, RequestStatus.CREATED.value, false, tenantId);
     } else {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.created.name(), true, tenantId);
+              true, requestor, roleToSet, RequestStatus.CREATED.value, true, tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
-              requestor, RequestStatus.created.name(), true, tenantId);
+              requestor, RequestStatus.CREATED.value, true, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.created.name(), true, tenantId);
+              requestor, RequestStatus.CREATED.value, true, tenantId);
     }
 
     try {

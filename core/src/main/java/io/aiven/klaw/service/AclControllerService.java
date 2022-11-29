@@ -235,7 +235,7 @@ public class AclControllerService {
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
 
         // show approving info only before approvals
-        if (!RequestStatus.approved.name().equals(aclRequestsModel.getAclstatus())) {
+        if (!RequestStatus.APPROVED.value.equals(aclRequestsModel.getAclstatus())) {
           aclRequestsModel.setApprovingTeamDetails(
               updateApprovingInfo(
                   aclRequestsModel.getTopicname(),
@@ -501,7 +501,7 @@ public class AclControllerService {
           .build();
     }
 
-    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
+    if (!RequestStatus.CREATED.value.equals(aclReq.getAclstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -584,7 +584,7 @@ public class AclControllerService {
       return ApiResponse.builder().result("Record not found !").build();
     }
 
-    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
+    if (!RequestStatus.CREATED.value.equals(aclReq.getAclstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 

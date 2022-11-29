@@ -341,7 +341,7 @@ public class TopicSyncControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!RequestStatus.approved.name().equals(topicRequestModel.getTopicstatus())) {
+        if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
               && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);

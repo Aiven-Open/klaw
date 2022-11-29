@@ -142,7 +142,7 @@ public class TopicControllerService {
 
     // check if already a delete topic request exists
     if (!dbHandle
-        .selectTopicRequests(topicName, envId, RequestStatus.created.name(), tenantId)
+        .selectTopicRequests(topicName, envId, RequestStatus.CREATED.value, tenantId)
         .isEmpty()) {
       return ApiResponse.builder()
           .result("Failure. A delete topic request already exists.")
@@ -157,7 +157,7 @@ public class TopicControllerService {
         && !topics.isEmpty()
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
       return ApiResponse.builder()
-          .result("Failure. You cannot delete this topic, as you are not part of this team.")
+          .result("Failure. Sorry, you cannot delete this topic, as you are not part of this team.")
           .build();
     }
 
@@ -225,7 +225,7 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     if (!dbHandle
-        .selectTopicRequests(topicName, envId, RequestStatus.created.name(), tenantId)
+        .selectTopicRequests(topicName, envId, RequestStatus.CREATED.value, tenantId)
         .isEmpty()) {
       return ApiResponse.builder()
           .result("Failure. A request already exists for this topic.")
@@ -297,7 +297,8 @@ public class TopicControllerService {
             .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
             .collect(Collectors.toList());
 
-    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType)) {
+    if (!"all".equals(requestsType)
+        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
       topicReqs =
           topicReqs.stream()
               .filter(topicRequest -> Objects.equals(topicRequest.getTopicstatus(), requestsType))
@@ -460,7 +461,7 @@ public class TopicControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!RequestStatus.approved.name().equals(topicRequestModel.getTopicstatus())) {
+        if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
               && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
@@ -645,7 +646,7 @@ public class TopicControllerService {
           .build();
     }
 
-    if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
+    if (!RequestStatus.CREATED.value.equals(topicRequest.getTopicstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -706,7 +707,7 @@ public class TopicControllerService {
         dbHandle.selectTopicRequestsForTopic(
             Integer.parseInt(topicId), commonUtilsService.getTenantId(userName));
 
-    if (!RequestStatus.created.name().equals(topicRequest.getTopicstatus())) {
+    if (!RequestStatus.CREATED.value.equals(topicRequest.getTopicstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -1190,7 +1191,7 @@ public class TopicControllerService {
         .selectTopicRequests(
             topicRequestModel.getTopicname(),
             topicRequestModel.getEnvironment(),
-            RequestStatus.created.name(),
+            RequestStatus.CREATED.value,
             tenantId);
   }
 

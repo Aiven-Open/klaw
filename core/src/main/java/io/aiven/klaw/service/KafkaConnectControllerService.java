@@ -192,7 +192,7 @@ public class KafkaConnectControllerService {
               .selectConnectorRequests(
                   topicRequestReq.getConnectorName(),
                   topicRequestReq.getEnvironment(),
-                  RequestStatus.created.name(),
+                  RequestStatus.CREATED.value,
                   tenantId)
               .size()
           > 0) {
@@ -532,7 +532,7 @@ public class KafkaConnectControllerService {
           .build();
     }
 
-    if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
+    if (!RequestStatus.CREATED.value.equals(connectorRequest.getConnectorStatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -660,7 +660,7 @@ public class KafkaConnectControllerService {
     KafkaConnectorRequest connectorRequest =
         dbHandle.selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
-    if (!RequestStatus.created.name().equals(connectorRequest.getConnectorStatus())) {
+    if (!RequestStatus.CREATED.value.equals(connectorRequest.getConnectorStatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -735,7 +735,7 @@ public class KafkaConnectControllerService {
             .selectConnectorRequests(
                 kafkaConnectorRequest.getConnectorName(),
                 kafkaConnectorRequest.getEnvironment(),
-                RequestStatus.created.name(),
+                RequestStatus.CREATED.value,
                 tenantId)
             .size()
         > 0) {
@@ -796,7 +796,8 @@ public class KafkaConnectControllerService {
                     Comparator.comparing(KafkaConnectorRequest::getRequesttime)))
             .collect(Collectors.toList());
 
-    if (!"all".equals(requestsType) && EnumUtils.isValidEnum(RequestStatus.class, requestsType))
+    if (!"all".equals(requestsType)
+        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType))
       topicReqs =
           topicReqs.stream()
               .filter(
@@ -819,7 +820,7 @@ public class KafkaConnectControllerService {
 
     if (manageDatabase
             .getHandleDbRequests()
-            .selectConnectorRequests(connectorName, envId, RequestStatus.created.name(), tenantId)
+            .selectConnectorRequests(connectorName, envId, RequestStatus.CREATED.value, tenantId)
             .size()
         > 0) {
       return ApiResponse.builder()
@@ -1169,7 +1170,7 @@ public class KafkaConnectControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!RequestStatus.approved.name().equals(topicRequestModel.getConnectorStatus())) {
+        if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getConnectorStatus())) {
           if (topicRequestModel.getConnectortype() != null
               && TopicRequestTypes.Claim.name().equals(topicRequestModel.getConnectortype())) {
             List<KwKafkaConnector> topics =

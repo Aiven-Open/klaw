@@ -406,11 +406,12 @@ public class CommonUtilsService {
   }
 
   protected List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
+    List<Topic> filteredList = new ArrayList<>();
     // tenant filtering
     try {
       final Set<String> allowedEnvIdSet = getEnvsFromUserId(getUserName(getPrincipal()));
       if (topicsFromSOT != null) {
-        topicsFromSOT =
+        filteredList =
             topicsFromSOT.stream()
                 .filter(topic -> allowedEnvIdSet.contains(topic.getEnvironment()))
                 .collect(Collectors.toList());
@@ -420,7 +421,7 @@ public class CommonUtilsService {
       // triggered on topic overview, which means topic has an owner
       log.error("No environments/clusters found.", e);
     }
-    return topicsFromSOT;
+    return filteredList;
   }
 
   public Set<String> getEnvsFromUserId(String userName) {

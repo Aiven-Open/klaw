@@ -16,6 +16,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
@@ -111,7 +112,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(1)
-  public void createTopicsSuccess() throws KlawException {
+  public void createTopicsSuccessAdvancedTopicConfigs() throws KlawException {
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
@@ -126,13 +127,14 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getCorrectTopic());
+    ApiResponse apiResponse =
+        topicControllerService.createTopicsRequest(getTopicWithAdvancedConfigs());
     assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(2)
-  public void createTopicsSuccess1() throws KlawException {
+  public void createTopicsSuccessDefaultValues() throws KlawException {
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
@@ -147,14 +149,15 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic());
+    ApiResponse apiResponse =
+        topicControllerService.createTopicsRequest(getTopicWithDefaultConfigs());
     assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // invalid partitions
   @Test
   @Order(3)
-  public void createTopicsFailure() throws KlawException {
+  public void createTopicsFailureInvalidPartitions() throws KlawException {
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "failure");
 
@@ -175,7 +178,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(4)
-  public void createTopicsFailure1() throws KlawException {
+  public void createTopicsFailureInvalidClusterTenantIds() throws KlawException {
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -193,7 +196,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(5)
-  public void createTopicDeleteRequestFailure1() {
+  public void createTopicDeleteRequestFailureNotAuthorized() {
     String topicName = "testtopic1";
     String envId = "1";
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
@@ -208,7 +211,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(6)
-  public void createTopicDeleteRequestFailure2() {
+  public void createTopicDeleteRequestFailureTopicAlreadyExists() {
     String topicName = "testtopic1";
     String envId = "1";
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
@@ -226,7 +229,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(7)
-  public void createTopicDeleteRequestFailure3() {
+  public void createTopicDeleteRequestFailureNotOwnerTeamOfTopic() {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
@@ -241,7 +244,8 @@ public class TopicControllerServiceTest {
     try {
       ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
       assertThat(apiResponse.getResult())
-          .isEqualTo("Failure. You cannot delete this topic, as you are not part of this team.");
+          .isEqualTo(
+              "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
     } catch (KlawException e) {
       throw new RuntimeException(e);
     }
@@ -249,7 +253,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(8)
-  public void createTopicDeleteRequestFailure4() {
+  public void createTopicDeleteRequestFailureTopicWithSubscriptions() {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
@@ -276,7 +280,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(9)
-  public void createTopicDeleteRequestFailure5() {
+  public void createTopicDeleteRequestFailureTopicNotInCluster() {
     String topicName = "testtopic1";
     String envId = "2";
     stubUserInfo();
@@ -300,7 +304,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(10)
-  public void createTopicDeleteRequestSuccess() {
+  public void createTopicDeleteRequestSuccessDefaultValues() {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
@@ -328,7 +332,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(11)
-  public void createClaimTopicRequestFailure1() {
+  public void createClaimTopicRequestFailureRequestAlreadyExists() {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
@@ -346,7 +350,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(12)
-  public void createClaimTopicRequestSuccess() {
+  public void createClaimTopicRequestSuccessDefaultValues() {
     String topicName = "testtopic1";
     String envId = "1";
     stubUserInfo();
@@ -428,7 +432,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(16)
-  public void getTopicTeamOnlyFailure() {
+  public void getTopicTeamOnlyFailureNoTopicsFound() {
     String topicName = "testtopic";
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
@@ -439,9 +443,8 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(17)
-  public void getTopicTeamOnlyFailure2() {
+  public void getTopicTeamOnlyFailurePrefixInMultipleTeams() {
     String topicName = "testtopic";
-    String teamName = "TestTeam";
     List<Topic> topicList = utilMethods.getTopics();
     Topic topic = new Topic();
     topic.setTopicname("testtopic2");
@@ -461,7 +464,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(18)
-  public void getTopicTeamOnlySuccess() {
+  public void getTopicTeamOnlySuccessPatternPrefixed() {
     String topicName = "testtopic";
     String teamName = "TestTeam";
     stubUserInfo();
@@ -477,7 +480,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(19)
-  public void getTopicTeamOnlySuccess2() {
+  public void getTopicTeamOnlySuccessPatternLiteral() {
     String topicName = "testtopic";
     String teamName = "TestTeam";
     stubUserInfo();
@@ -493,7 +496,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(20)
-  public void getCreatedTopicRequests1() {
+  public void getCreatedTopicRequests() {
     List<TopicRequest> listTopicReqs = new ArrayList<>();
     listTopicReqs.add(getCorrectTopicDao());
     listTopicReqs.add(getCorrectTopicDao());
@@ -515,7 +518,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(21)
-  public void getCreatedTopicRequests2() {
+  public void getCreatedTopicRequestsWithMoreElements() {
     List<TopicRequest> listTopicReqs = new ArrayList<>();
     listTopicReqs.add(getTopicRequest("topic1"));
     listTopicReqs.add(getTopicRequest("topic2"));
@@ -553,7 +556,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(23)
-  public void approveTopicRequestsSuccess1() throws KlawException {
+  public void approveTopicRequests() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
@@ -575,7 +578,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(24)
-  public void approveTopicClaimRequestsSuccess2() throws KlawException {
+  public void approveTopicClaimRequests() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
@@ -605,7 +608,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(25)
-  public void approveTopicUpdateRequestsSuccess3() throws KlawException {
+  public void approveTopicUpdateRequests() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
@@ -634,7 +637,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(26)
-  public void approveTopicRequestsFailure1() throws KlawException {
+  public void approveTopicRequestsFailureResponseFromCluster() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
@@ -656,7 +659,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(27)
-  public void approveTopicRequestsFailure2() throws KlawException {
+  public void approveTopicRequestsFailureNotAllowed() throws KlawException {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
@@ -672,7 +675,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(28)
-  public void getAllTopics1() {
+  public void getAllTopics() {
     stubUserInfo();
 
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
@@ -686,7 +689,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(29)
-  public void getAllTopics2() {
+  public void getAllTopicsForMyTeam() {
     stubUserInfo();
 
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
@@ -719,7 +722,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(31)
-  public void saveTopicDocumentationFailure() throws KlawException {
+  public void saveTopicDocumentationFailureInDbUpdate() throws KlawException {
     stubUserInfo();
     TopicInfo topicInfo = utilMethods.getTopicInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
@@ -737,7 +740,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(32)
-  public void getTopicDetailsPerEnvFailure1() {
+  public void getTopicDetailsPerEnvFailureTopicDoesNotExist() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
@@ -752,7 +755,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(33)
-  public void getTopicDetailsPerEnvFailure2() {
+  public void getTopicDetailsPerEnvFailureNotOwnerTeamOfTopic() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
@@ -769,7 +772,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(34)
-  public void getTopicDetailsPerEnvSuccess() {
+  public void getTopicDetailsPerEnv() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
@@ -787,7 +790,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(35)
-  public void getTopicsSuccess1() {
+  public void getTopics() {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -814,7 +817,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(36)
-  public void getTopicsSuccess2() {
+  public void getTopicsWithProducerFilter() {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -845,7 +848,7 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(37)
-  public void getTopicsSuccess3() {
+  public void getTopicsWithPatternFilter() {
     String envSel = "1", pageNo = "1", topicNameSearch = "top";
 
     stubUserInfo();
@@ -882,7 +885,7 @@ public class TopicControllerServiceTest {
   // topicSearch does not exist in topic names
   @Test
   @Order(38)
-  public void getTopicsSearchFailure() {
+  public void getTopicsSearchFailureNotExistingSearch() {
     String envSel = "1", pageNo = "1", topicNameSearch = "demo";
     stubUserInfo();
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
@@ -917,11 +920,11 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(40)
-  public void declineTopicRequestsFailure1() throws KlawException {
+  public void declineTopicRequestsFailureRequestDoesNotExist() throws KlawException {
     String topicName = "testtopic";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    topicRequest.setTopicstatus(RequestStatus.approved.name());
+    topicRequest.setTopicstatus(RequestStatus.APPROVED.value);
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -980,7 +983,7 @@ public class TopicControllerServiceTest {
     assertThat(topicReqResponse).hasSize(1);
   }
 
-  private TopicRequestModel getCorrectTopic() {
+  private TopicRequestModel getTopicWithAdvancedConfigs() {
     TopicRequestModel topicRequest = new TopicRequestModel();
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
@@ -996,7 +999,7 @@ public class TopicControllerServiceTest {
     return topicRequest;
   }
 
-  private TopicRequestModel getFailureTopic() {
+  private TopicRequestModel getTopicWithDefaultConfigs() {
     TopicRequestModel topicRequest = new TopicRequestModel();
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
