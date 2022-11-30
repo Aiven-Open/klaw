@@ -10,7 +10,7 @@ import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { mockGetEnvironments } from "src/domain/environment";
-import { mockGetTeams } from "src/domain/team/team-api.msw";
+import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 
 jest.mock("@aivenio/design-system", () => {
   return {
@@ -32,7 +32,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles loading state", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({
         mswInstance: server,
         response: { status: 200, data: mockedResponseSinglePage },
@@ -56,7 +59,10 @@ describe("BrowseTopics.tsx", () => {
     beforeEach(() => {
       console.error = jest.fn();
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({
         mswInstance: server,
         response: { status: 400, data: { message: "Not relevant" } },
@@ -81,7 +87,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles an empty response", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({
         mswInstance: server,
         response: { status: 200, data: [] },
@@ -105,7 +114,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles successful response with one page", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({
         mswInstance: server,
         response: { status: 200, data: mockedResponseSinglePage },
@@ -167,7 +179,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles successful response with 4 pages", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({
         mswInstance: server,
         scenario: "multiple-pages-static",
@@ -200,7 +215,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles user stepping through pagination", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({ mswInstance: server });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
@@ -236,7 +254,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles user filtering topics by environment", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({ mswInstance: server });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
@@ -312,7 +333,10 @@ describe("BrowseTopics.tsx", () => {
   describe("handles user filtering topics by team", () => {
     beforeEach(() => {
       mockGetEnvironments({ mswInstance: server });
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       mockTopicGetRequest({ mswInstance: server });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });

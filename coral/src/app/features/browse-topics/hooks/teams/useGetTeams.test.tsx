@@ -3,7 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
-import { mockGetTeams } from "src/domain/team/team-api.msw";
+import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
 const wrapper = ({ children }: { children: ReactElement }) => (
@@ -32,6 +32,7 @@ describe("useGetTeams", () => {
     it("returns a loading state before starting to fetch data", async () => {
       mockGetTeams({
         mswInstance: server,
+        response: { data: mockedTeamResponse },
       });
 
       const { result } = await renderHook(() => useGetTeams(), {
@@ -47,7 +48,10 @@ describe("useGetTeams", () => {
     it("returns an error when request fails", async () => {
       console.error = jest.fn();
 
-      mockGetTeams({ mswInstance: server, scenario: "error" });
+      mockGetTeams({
+        mswInstance: server,
+        response: { status: 400, data: { message: "" } },
+      });
 
       const { result } = await renderHook(() => useGetTeams(), {
         wrapper,
@@ -64,6 +68,7 @@ describe("useGetTeams", () => {
     it("returns a list of teams", async () => {
       mockGetTeams({
         mswInstance: server,
+        response: { data: mockedTeamResponse },
       });
 
       const { result } = await renderHook(() => useGetTeams(), {

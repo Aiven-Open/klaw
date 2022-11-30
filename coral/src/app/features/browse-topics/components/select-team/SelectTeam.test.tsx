@@ -20,7 +20,10 @@ describe("SelectTeam.tsx", () => {
     const mockedOnChange = jest.fn();
 
     beforeAll(async () => {
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         memoryRouter: true,
         queryClient: true,
@@ -73,7 +76,10 @@ describe("SelectTeam.tsx", () => {
     beforeEach(async () => {
       const routePath = "/topics?team=TEST_TEAM_02";
 
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
 
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         memoryRouter: true,
@@ -108,7 +114,10 @@ describe("SelectTeam.tsx", () => {
     const optionToSelect = "TEST_TEAM_02";
 
     beforeEach(async () => {
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         queryClient: true,
         memoryRouter: true,
@@ -151,7 +160,10 @@ describe("SelectTeam.tsx", () => {
     const optionToSelect = "TEST_TEAM_01";
 
     beforeEach(async () => {
-      mockGetTeams({ mswInstance: server });
+      mockGetTeams({
+        mswInstance: server,
+        response: { data: mockedTeamResponse },
+      });
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         queryClient: true,
         browserRouter: true,

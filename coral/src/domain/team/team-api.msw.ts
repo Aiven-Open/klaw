@@ -1,22 +1,22 @@
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
 import { MswInstance } from "src/services/api-mocks/types";
+import { TeamNamesGetResponse } from "src/domain/team/team-types";
 
 function mockGetTeams({
   mswInstance,
-  scenario,
+  response,
 }: {
   mswInstance: MswInstance;
-  scenario?: "error";
+  response: {
+    status?: number;
+    data: TeamNamesGetResponse | { message: string };
+  };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/getAllTeamsSUOnly`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
-      if (scenario === "error") {
-        return res(ctx.status(400), ctx.json(""));
-      }
-
-      return res(ctx.status(200), ctx.json(mockedTeamResponse));
+      return res(ctx.status(response.status ?? 200), ctx.json(response.data));
     })
   );
 }
