@@ -1,0 +1,17 @@
+/*@TODO check with design, no hover styles
+   defined and active styles is not meeting
+   accessibility standards */
+
+/*temp class until we have a solution for that*/
+.link-hover:hover {
+  /*Primary*/
+  color: #e41a4a;
+  text-decoration: underline;
+}
+
+/*//@TODO color contrast is not AA or AAA conform*/
+/*temp class until we have a solution for that*/
+.link-active {
+  /*Primary*/
+  color: #e41a4a;
+}

@@ -13,10 +13,15 @@ jest.mock("@aivenio/design-system", () => {
   };
 });
 
+// "http://localhost/" comes from window.location.origin
+// that represents the Angular app
 const quickLinksNavItems = [
-  "Approval requests",
-  "Go to Klaw documentation page",
-  "Your profile",
+  { name: "Go to approval requests", linkTo: "http://localhost/execTopics" },
+  {
+    name: "Go to Klaw documentation page",
+    linkTo: "https://www.klaw-project.io/docs",
+  },
+  { name: "Go to your profile", linkTo: "http://localhost/myProfile" },
 ];
 
 describe("Header.tsx", () => {
@@ -49,14 +54,15 @@ describe("Header.tsx", () => {
   quickLinksNavItems.forEach((item) => {
     it(`renders a link to ${item}`, () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
-      const link = within(nav).getByRole("link", { name: item });
+      const link = within(nav).getByRole("link", { name: item.name });
 
       expect(link).toBeEnabled();
+      expect(link).toHaveAttribute("href", item.linkTo);
     });
 
     it(`renders a Tooltip with an Icon, both hidden for assistive technology`, () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });
-      const link = within(nav).getByRole("link", { name: item });
+      const link = within(nav).getByRole("link", { name: item.name });
       const tooltip = within(link).getByTestId("tooltip");
       const icon = within(tooltip).getByTestId("ds-icon");
 

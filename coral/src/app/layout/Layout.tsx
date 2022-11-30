@@ -8,13 +8,14 @@ function Layout({ children }: { children: JSX.Element }) {
       colGap={"l1"}
       minHeight={"screen"}
       style={{
-        gridTemplateColumns: "minmax(200px, 350px) 1fr",
+        gridTemplateColumns: "240px 1fr",
         gridTemplateRows: "auto 1fr",
       }}
     >
       <Header />
       <SidebarNavigation />
-      <Box component={"main"} padding={"l4"}>
+      {/*ID is used to provide a skip link*/}
+      <Box component={"main"} padding={"l4"} id={"main-content"}>
         {children}
       </Box>
     </Grid>

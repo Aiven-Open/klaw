@@ -9,11 +9,11 @@
   clip: rect(0, 0, 0, 0) !important;
   white-space: nowrap !important;
   border: 0 !important;
+  font-size: 18px;
 }
 
 /* @TODO check design system */
 /*TEMP browser reset*!*/
-
 *,
 *::before,
 *::after {
@@ -21,11 +21,15 @@
 }
 
 :root {
-  font-size: 16px;
+  font-size: 14px;
 }
 
 body {
   margin: 0;
-  color: #3c3c3c;
+  /*@TODO check with design, it is supposed*/
+  /*  to be grey-60 but that does not meet*/
+  /*  accessibility standards*/
+  /*represents grey-70*/
+  color: #4a4b57;
   -webkit-text-size-adjust: 100%;
 }

@@ -13,13 +13,15 @@ jest.mock("@aivenio/design-system", () => {
   };
 });
 
+// "http://localhost/" comes from window.location.origin
+// that represents the Angular app
 const navLinks = [
   {
     name: "Overview",
-    linkTo: "/",
+    linkTo: "http://localhost/index",
   },
   { name: "Topics", linkTo: "/" },
-  { name: "Kafka Connector", linkTo: "/" },
+  { name: "Kafka Connector", linkTo: "http://localhost/kafkaConnectors" },
   { name: "Schemas", linkTo: "/" },
   { name: "User and teams", linkTo: "/" },
   { name: "Audit log", linkTo: "/" },

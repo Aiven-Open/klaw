@@ -4,6 +4,8 @@ import user from "@aivenio/design-system/dist/module/icons/user";
 import notifications from "@aivenio/design-system/dist/module/icons/notifications";
 import data from "@aivenio/design-system/dist/src/icons/console";
 
+const originLocationKlawAngular = window.location.origin;
+
 function createHeaderMenuListItem({
   icon,
   linkText,
@@ -16,10 +18,10 @@ function createHeaderMenuListItem({
   rel?: string;
 }) {
   return (
-    <li>
+    <li style={{ color: "white" }}>
       <a href={href} rel={rel}>
         <span className={"visually-hidden"}>{linkText}</span>
-        <span aria-hidden={"true"} style={{ color: "white" }}>
+        <span aria-hidden={"true"}>
           {/*DS does not fully support React18 now, where children */}
           {/*is not a default prop for FC*/}
           {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
@@ -50,8 +52,10 @@ function Header() {
         alignItems={"center"}
         alignContent={"center"}
       >
-        <a href="">
-          <span className={"visually-hidden"}>Klaw homepage</span>
+        <a href={originLocationKlawAngular}>
+          <span style={{ color: "white" }} className={"visually-hidden"}>
+            Klaw homepage
+          </span>
           <img
             aria-hidden="true"
             alt=""
@@ -60,14 +64,13 @@ function Header() {
             width={150}
           />
         </a>
-
         <nav aria-label={"Quick links"}>
           <Flexbox htmlTag={"ul"} colGap={"l2"}>
             {/*@TODO add correct link*/}
             {createHeaderMenuListItem({
               icon: notifications,
-              href: "/",
-              linkText: "Approval requests",
+              href: `${originLocationKlawAngular}/execTopics`,
+              linkText: "Go to approval requests",
             })}
 
             {createHeaderMenuListItem({
@@ -76,11 +79,10 @@ function Header() {
               linkText: "Go to Klaw documentation page",
               rel: "noreferrer",
             })}
-            {/*@TODO add correct link*/}
             {createHeaderMenuListItem({
               icon: user,
-              href: "/",
-              linkText: "Your profile",
+              href: `${originLocationKlawAngular}/myProfile`,
+              linkText: "Go to your profile",
             })}
           </Flexbox>
         </nav>
