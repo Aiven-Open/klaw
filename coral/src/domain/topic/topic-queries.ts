@@ -1,5 +1,5 @@
 import { getTopics } from "src/domain/topic/topic-api";
-import { Team } from "src/domain/team";
+import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 
 export const topicsQuery = ({
   currentPage,
@@ -13,7 +13,7 @@ export const topicsQuery = ({
   // for teamName to avoid fetching
   // until the value from searchQuery is not
   // evaluated
-  teamName: Team | null;
+  teamName: Team;
   searchTerm?: string;
 }) => {
   return {
@@ -21,6 +21,6 @@ export const topicsQuery = ({
     queryFn: () =>
       getTopics({ currentPage, environment, teamName, searchTerm }),
     keepPreviousData: true,
-    enabled: !!teamName,
+    enabled: teamName !== TEAM_NOT_INITIALIZED,
   };
 };

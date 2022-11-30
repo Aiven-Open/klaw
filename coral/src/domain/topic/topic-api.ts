@@ -17,7 +17,7 @@ const getTopics = async ({
 }: {
   currentPage: number;
   environment: Environment;
-  teamName: Team | null;
+  teamName: Team;
   searchTerm?: string;
 }): Promise<TopicApiResponse> => {
   // "ALL_TEAMS_VALUE" represents topic list without

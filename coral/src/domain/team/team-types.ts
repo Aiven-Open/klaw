@@ -5,10 +5,11 @@ import { components } from "types/api.d";
 // for the user, UUID makes sure we don't overlap with an
 // actual team name in the future
 const ALL_TEAMS_VALUE = "f5ed03b4-c0da-4b18-a534-c7e9a13d1342";
+const TEAM_NOT_INITIALIZED = "931bd061-fb50-4b92-ae49-b1e8004324d3";
 
 type Team = string | typeof ALL_TEAMS_VALUE;
 
 type TeamNamesGetResponse = components["schemas"]["TeamNamesGetResponse"];
 
 export type { Team, TeamNamesGetResponse };
-export { ALL_TEAMS_VALUE };
+export { ALL_TEAMS_VALUE, TEAM_NOT_INITIALIZED };

@@ -6,7 +6,7 @@ import { useSearchParams } from "react-router-dom";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
 type SelectTeamProps = {
-  onChange: (teamName: Team | null) => void;
+  onChange: (teamName: Team) => void;
 };
 
 function SelectTeam(props: SelectTeamProps) {

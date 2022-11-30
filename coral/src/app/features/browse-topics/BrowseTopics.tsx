@@ -9,13 +9,13 @@ import { Environment } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
 import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
-import { Team } from "src/domain/team";
+import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [teamName, setTeamName] = useState<Team | null>(null);
+  const [teamName, setTeamName] = useState<Team>(TEAM_NOT_INITIALIZED);
   const initialPage = searchParams.get("page");
   const initialEnv = searchParams.get("environment");
   const initialSearchTerm = searchParams.get("search");
