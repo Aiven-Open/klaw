@@ -11,7 +11,7 @@ function useGetTopics({
 }: {
   currentPage: number;
   environment: Environment;
-  teamName?: string;
+  teamName: string;
   searchTerm?: string;
 }): UseQueryResult<TopicApiResponse> {
   return useQuery<TopicApiResponse, Error>(

@@ -1,7 +1,7 @@
 import { LoginForm } from "src/app/features/login/components/LoginForm";
 import { screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { renderWithQueryClient } from "src/services/test-utils";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { server } from "src/services/api-mocks/server";
 import {
   mockUserAuthRequest,
@@ -23,7 +23,7 @@ describe("Login", () => {
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       mockUserAuthRequest(server);
-      renderWithQueryClient(<LoginForm />);
+      customRender(<LoginForm />, { queryClient: true });
     });
 
     afterAll(() => {
@@ -54,7 +54,7 @@ describe("Login", () => {
   describe("provides form control", () => {
     beforeEach(() => {
       mockUserAuthRequest(server);
-      renderWithQueryClient(<LoginForm />);
+      customRender(<LoginForm />, { queryClient: true });
     });
 
     afterEach(() => {
