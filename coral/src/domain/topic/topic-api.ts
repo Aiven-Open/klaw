@@ -4,7 +4,6 @@ import {
   TopicDTOApiResponse,
 } from "src/domain/topic/topic-types";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
-import { Environment } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import isString from "lodash/isString";
@@ -16,7 +15,7 @@ const getTopics = async ({
   searchTerm,
 }: {
   currentPage: number;
-  environment: Environment;
+  environment: string;
   teamName: Team;
   searchTerm?: string;
 }): Promise<TopicApiResponse> => {

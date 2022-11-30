@@ -1,3 +1,4 @@
+import pick from "lodash/pick";
 import {
   Environment,
   EnvironmentsGetResponse,
@@ -6,7 +7,7 @@ import {
 function transformEnvironmentApiResponse(
   apiResponse: EnvironmentsGetResponse
 ): Environment[] {
-  return [...new Set(apiResponse.map((topicEnv) => topicEnv.name))].sort();
+  return apiResponse.map((environment) => pick(environment, ["name", "id"]));
 }
 
 export { transformEnvironmentApiResponse };

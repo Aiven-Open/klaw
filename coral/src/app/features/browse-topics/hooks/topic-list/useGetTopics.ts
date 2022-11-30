@@ -1,6 +1,5 @@
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { TopicApiResponse } from "src/domain/topic/topic-types";
-import { Environment } from "src/domain/environment";
 import { topicsQuery } from "src/domain/topic/topic-queries";
 
 function useGetTopics({
@@ -10,7 +9,7 @@ function useGetTopics({
   searchTerm,
 }: {
   currentPage: number;
-  environment: Environment;
+  environment: string;
   teamName: string;
   searchTerm?: string;
 }): UseQueryResult<TopicApiResponse> {

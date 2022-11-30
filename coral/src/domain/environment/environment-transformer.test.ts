@@ -2,31 +2,13 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 
 describe("environment-transformer.ts", () => {
-  describe("'transformEnvironmentApiResponse' transforms API response into list of environments", () => {
-    it("transforms list of 4 environments with 2 unique environment values", () => {
-      const testInput = [
-        createMockEnvironmentDTO("DEV"),
-        createMockEnvironmentDTO("TST"),
-        createMockEnvironmentDTO("DEV"),
-        createMockEnvironmentDTO("DEV"),
-      ];
+  describe("transformEnvironmentApiResponse", () => {
+    it("transforms API response objects into application domain model", () => {
+      const testInput = [createMockEnvironmentDTO({ name: "DEV", id: "1001" })];
 
       expect(transformEnvironmentApiResponse(testInput)).toEqual([
-        "DEV",
-        "TST",
+        { name: "DEV", id: "1001" },
       ]);
-    });
-
-    it("transforms list of 3 environments with 1 unique environment value", () => {
-      const testInput = [
-        createMockEnvironmentDTO("DEV"),
-        createMockEnvironmentDTO("DEV"),
-        createMockEnvironmentDTO("DEV"),
-        createMockEnvironmentDTO("DEV"),
-        createMockEnvironmentDTO("DEV"),
-      ];
-
-      expect(transformEnvironmentApiResponse(testInput)).toEqual(["DEV"]);
     });
   });
 });

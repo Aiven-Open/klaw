@@ -4,6 +4,9 @@ type EnvironmentsGetResponse =
   operations["environmentsGet"]["responses"]["200"]["content"]["application/json"];
 type EnvironmentDTO = components["schemas"]["Environment"];
 
-type Environment = string;
+type Environment = {
+  name: string;
+  id: string;
+};
 
 export type { Environment, EnvironmentDTO, EnvironmentsGetResponse };

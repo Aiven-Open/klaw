@@ -44,7 +44,8 @@ function mockTopicGetRequest({
         return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
       }
 
-      if (env === "DEV") {
+      // "DEV"
+      if (env === "1") {
         return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
       }
 

@@ -1,5 +1,4 @@
 import { Topic, TopicDTOApiResponse } from "src/domain/topic/topic-types";
-import { Environment } from "src/domain/environment";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
@@ -36,7 +35,7 @@ function createMockTopic({
   topicId: number;
   totalNoPages?: number;
   currentPage?: number;
-  environmentsList?: Environment[];
+  environmentsList?: string[];
 }): Topic {
   return {
     topicid: topicId,

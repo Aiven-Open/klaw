@@ -5,7 +5,6 @@ import TopicList from "src/app/features/browse-topics/components/topic-list/Topi
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useSearchParams } from "react-router-dom";
-import { Environment } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
 import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
@@ -21,7 +20,7 @@ function BrowseTopics() {
   const initialSearchTerm = searchParams.get("search");
 
   const [page, setPage] = useState(Number(initialPage) || 1);
-  const [environment, setEnvironment] = useState<Environment>(
+  const [environment, setEnvironment] = useState(
     initialEnv || ALL_ENVIRONMENTS_VALUE
   );
 
@@ -52,7 +51,7 @@ function BrowseTopics() {
             <SelectEnvironment
               environments={[
                 { label: "All Environments", value: ALL_ENVIRONMENTS_VALUE },
-                ...topicEnvs.map((env) => ({ label: env, value: env })),
+                ...topicEnvs.map((env) => ({ label: env.name, value: env.id })),
               ]}
               activeOption={environment}
               selectEnvironment={selectEnvironment}
@@ -88,7 +87,7 @@ function BrowseTopics() {
     </>
   );
 
-  function selectEnvironment(environment: Environment) {
+  function selectEnvironment(environment: string) {
     setEnvironment(environment);
     if (environment === ALL_ENVIRONMENTS_VALUE) {
       searchParams.delete("environment");
