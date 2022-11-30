@@ -26,7 +26,7 @@ describe("environment-test-helper.ts", () => {
         type: "kafka",
       };
 
-      expect(createMockEnvironmentDTO(nameToTest)).toEqual(result);
+      expect(createMockEnvironmentDTO({ name: nameToTest })).toEqual(result);
     });
   });
 });

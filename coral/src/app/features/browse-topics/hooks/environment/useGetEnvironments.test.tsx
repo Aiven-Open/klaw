@@ -74,7 +74,10 @@ describe("useGetEnvironments", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data).toEqual(["DEV", "TST"]);
+      expect(result.current.data).toEqual([
+        { name: "DEV", id: "1" },
+        { name: "TST", id: "2" },
+      ]);
     });
   });
 });

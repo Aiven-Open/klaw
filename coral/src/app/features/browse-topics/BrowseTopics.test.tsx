@@ -283,7 +283,7 @@ describe("BrowseTopics.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue("DEV");
+      expect(select).toHaveValue("1");
     });
 
     it("fetches new data when user selects `DEV`", async () => {

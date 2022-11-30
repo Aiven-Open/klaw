@@ -1,16 +1,15 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Environment } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 
 describe("SelectEnvironment.tsx", () => {
-  const environments = ["ALL", "DEV", "TST"].map((env) => ({
+  const environments = ["ALL", "DEV", "TST"].map((env, index) => ({
     label: env,
-    value: env,
+    value: index.toString(),
   }));
 
   describe("renders all necessary elements", () => {
-    const activeOption: Environment = "ALL";
+    const activeOption = "ALL";
 
     const requiredProps = {
       environments,
@@ -78,7 +77,7 @@ describe("SelectEnvironment.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(mockedSelectEnvironment).toHaveBeenCalledWith(optionToSelect);
+      expect(mockedSelectEnvironment).toHaveBeenCalledWith("1");
     });
   });
 });

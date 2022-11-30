@@ -20,8 +20,8 @@ function mockGetEnvironments({
       return res(
         ctx.status(200),
         ctx.json([
-          createMockEnvironmentDTO("DEV"),
-          createMockEnvironmentDTO("TST"),
+          createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+          createMockEnvironmentDTO({ name: "TST", id: "2" }),
         ])
       );
     })
