@@ -88,7 +88,8 @@ public class SelectDataJdbcTest {
     List<AclRequests> aclRequests = utilMethods.getAclRequests();
 
     when(aclRequestsRepo.findAllByTenantId(anyInt())).thenReturn(aclRequests);
-    when(userInfoRepo.findByUsername(requestor)).thenReturn(java.util.Optional.of(userInfo));
+    when(userInfoRepo.findByUsernameIgnoreCase(requestor))
+        .thenReturn(java.util.Optional.of(userInfo));
 
     List<AclRequests> aclRequestsActual =
         selectData.selectAclRequests(false, requestor, "", "all", false, 1);
@@ -104,7 +105,8 @@ public class SelectDataJdbcTest {
     List<SchemaRequest> schemaRequests = utilMethods.getSchemaRequestsDao();
 
     when(schemaRequestRepo.findAllByTenantId(1)).thenReturn(schemaRequests);
-    when(userInfoRepo.findByUsername(requestor)).thenReturn(java.util.Optional.of(userInfo));
+    when(userInfoRepo.findByUsernameIgnoreCase(requestor))
+        .thenReturn(java.util.Optional.of(userInfo));
 
     List<SchemaRequest> schemaRequestsActual = selectData.selectSchemaRequests(false, requestor, 1);
     assertThat(schemaRequestsActual).isEmpty();
@@ -167,7 +169,8 @@ public class SelectDataJdbcTest {
     List<TopicRequest> schemaRequests = utilMethods.getTopicRequests();
 
     when(topicRequestsRepo.findAllByTenantId(anyInt())).thenReturn(schemaRequests);
-    when(userInfoRepo.findByUsername(requestor)).thenReturn(java.util.Optional.of(userInfo));
+    when(userInfoRepo.findByUsernameIgnoreCase(requestor))
+        .thenReturn(java.util.Optional.of(userInfo));
 
     List<TopicRequest> topicRequestsActual =
         selectData.selectTopicRequestsByStatus(false, requestor, "", true, 1);
@@ -221,7 +224,8 @@ public class SelectDataJdbcTest {
     userInfo.setTeamId(1);
     userInfo.setUsername(username);
     userInfo.setRole("ADMIN");
-    when(userInfoRepo.findByUsername(username)).thenReturn(java.util.Optional.of(userInfo));
+    when(userInfoRepo.findByUsernameIgnoreCase(username))
+        .thenReturn(java.util.Optional.of(userInfo));
     when(activityLogRepo.findAllByEnvAndTenantId(anyString(), anyInt()))
         .thenReturn(utilMethods.getLogs());
 
@@ -237,7 +241,8 @@ public class SelectDataJdbcTest {
     userInfo.setTeamId(1);
     userInfo.setUsername(username);
     userInfo.setRole("SUPERUSER");
-    when(userInfoRepo.findByUsername(username)).thenReturn(java.util.Optional.of(userInfo));
+    when(userInfoRepo.findByUsernameIgnoreCase(username))
+        .thenReturn(java.util.Optional.of(userInfo));
     when(activityLogRepo.findAllByEnvAndTenantId(env, 1)).thenReturn(utilMethods.getLogs());
 
     List<ActivityLog> activityLogs = selectData.selectActivityLog(username, env, true, 1);

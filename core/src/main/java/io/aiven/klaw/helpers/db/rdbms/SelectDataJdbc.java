@@ -564,7 +564,7 @@ public class SelectDataJdbc {
   }
 
   public UserInfo selectUserInfo(String username) {
-    Optional<UserInfo> userRec = userInfoRepo.findByUsername(username);
+    Optional<UserInfo> userRec = userInfoRepo.findByUsernameIgnoreCase(username);
     return userRec.orElse(null);
   }
 

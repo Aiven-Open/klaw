@@ -112,7 +112,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.admin.mailid}")
   private String kwAdminMailId;
 
-  @Value("${klaw.superadmin.defaultpassword}")
+  @Value("${klaw.superadmin.default.password:'changethepassword'}")
   private String superAdminDefaultPwd;
 
   @Value("${klaw.version:1.0.0}")
@@ -124,7 +124,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
-  @Value("${klaw.superadmin.default.username:'superadmin'}")
+  @Value("${klaw.superadmin.default.username}")
   private String superAdminDefaultUserName;
 
   private ApplicationContext contextApp;
@@ -163,7 +163,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return handleDbRequests;
   }
 
-  private void loadStaticDataToDb() {
+  private void loadStaticDataToDb() throws KlawException {
     // add tenant
     Optional<KwTenants> kwTenants = handleDbRequests.getMyTenants(KwConstants.DEFAULT_TENANT_ID);
     if (kwTenants.isEmpty()) {
@@ -185,20 +185,31 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
           defaultDataService.getTeam(KwConstants.DEFAULT_TENANT_ID, stagingTeam));
     }
 
-    // add user
-    UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
-    if (userExists == null) {
-      handleDbRequests.addNewUser(
-          defaultDataService.getUser(
-              KwConstants.DEFAULT_TENANT_ID,
-              superAdminDefaultPwd,
-              "SUPERADMIN",
-              handleDbRequests
-                  .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
-                  .getTeamId(),
-              kwAdminMailId,
-              superAdminDefaultUserName,
-              encryptorSecretKey));
+    // check if default superadmin is configured or blank.
+    // in case of blank, there should be atleast one other user with SUPERADMIN role
+    if (superAdminDefaultUserName.isBlank()) {
+      if (!validateUsersBeforeAdding()) {
+        String errorMsg =
+            "Please configure klaw.superadmin.default.username, as there are no other superadmins in the system.";
+        log.error(errorMsg);
+        throw new KlawException(errorMsg);
+      }
+    } else {
+      // verify add user with superadmin role
+      UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
+      if (userExists == null) {
+        handleDbRequests.addNewUser(
+            defaultDataService.getUser(
+                KwConstants.DEFAULT_TENANT_ID,
+                superAdminDefaultPwd,
+                KwConstants.SUPERADMIN_ROLE,
+                handleDbRequests
+                    .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
+                    .getTeamId(),
+                kwAdminMailId,
+                superAdminDefaultUserName,
+                encryptorSecretKey));
+      }
     }
 
     // add props
@@ -230,6 +241,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       handleDbRequests.insertProductDetails(
           defaultDataService.getProductDetails(productName, kwVersion));
     }
+  }
+
+  // verify if there is atleast one user with superadmin access in default tenant
+  private boolean validateUsersBeforeAdding() {
+    List<UserInfo> allUsers = handleDbRequests.selectAllUsersInfo(KwConstants.DEFAULT_TENANT_ID);
+    return allUsers.stream()
+        .anyMatch(userInfo -> userInfo.getRole().equals(KwConstants.SUPERADMIN_ROLE));
   }
 
   private void checkSSOAuthentication() {
