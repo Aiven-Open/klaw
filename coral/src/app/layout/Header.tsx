@@ -50,7 +50,7 @@ function Header() {
         alignItems={"center"}
         alignContent={"center"}
       >
-        <a href="/">
+        <a href="">
           <span className={"visually-hidden"}>Klaw homepage</span>
           <img
             aria-hidden="true"
@@ -73,7 +73,7 @@ function Header() {
             {createHeaderMenuListItem({
               icon: questionMark,
               href: "https://www.klaw-project.io/docs",
-              linkText: "Go to" + " Klaw documentation page",
+              linkText: "Go to Klaw documentation page",
               rel: "noreferrer",
             })}
             {/*@TODO add correct link*/}
