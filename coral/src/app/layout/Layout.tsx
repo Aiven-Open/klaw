@@ -1,4 +1,4 @@
-import { Grid } from "@aivenio/design-system";
+import { Box, Grid } from "@aivenio/design-system";
 import SidebarNavigation from "src/app/layout/SidebarNavigation";
 import Header from "src/app/layout/Header";
 
@@ -14,7 +14,9 @@ function Layout({ children }: { children: JSX.Element }) {
     >
       <Header />
       <SidebarNavigation />
-      <main className={"p-6"}>{children}</main>
+      <Box component={"main"} padding={"l4"}>
+        {children}
+      </Box>
     </Grid>
   );
 }

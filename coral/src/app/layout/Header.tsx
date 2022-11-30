@@ -1,10 +1,39 @@
-import { Flexbox, Icon, GridItem, Tooltip } from "@aivenio/design-system";
+import { Flexbox, GridItem, Icon, Tooltip } from "@aivenio/design-system";
 import questionMark from "@aivenio/design-system/dist/module/icons/questionMark";
 import user from "@aivenio/design-system/dist/module/icons/user";
 import notifications from "@aivenio/design-system/dist/module/icons/notifications";
+import data from "@aivenio/design-system/dist/src/icons/console";
 
-// This is a WIP placeholder
-// that does not have real data yet
+function createHeaderMenuListItem({
+  icon,
+  linkText,
+  href,
+  rel,
+}: {
+  icon: typeof data;
+  linkText: string;
+  href: string;
+  rel?: string;
+}) {
+  return (
+    <li>
+      <a href={href} rel={rel}>
+        <span className={"visually-hidden"}>{linkText}</span>
+        <span aria-hidden={"true"} style={{ color: "white" }}>
+          {/*DS does not fully support React18 now, where children */}
+          {/*is not a default prop for FC*/}
+          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+          {/*@ts-ignore*/}
+          <Tooltip content={linkText} placement="right">
+            {/*@TODO add correct link*/}
+            <Icon aria-hidden="true" icon={icon} fontSize={"20px"} />
+          </Tooltip>
+        </span>
+      </a>
+    </li>
+  );
+}
+
 function Header() {
   return (
     <GridItem
@@ -13,11 +42,8 @@ function Header() {
       colEnd={"12"}
       height={"l5"}
       backgroundColor={"primary-80"}
-      style={{ color: "white" }}
       paddingX={"l2"}
     >
-      {/*@TODO check of Flexbox can hava a aria-label attribute*/}
-
       <Flexbox
         height={"full"}
         justifyContent={"space-between"}
@@ -37,58 +63,25 @@ function Header() {
 
         <nav aria-label={"Quick links"}>
           <Flexbox htmlTag={"ul"} colGap={"l2"}>
-            <li>
-              {/*@TODO add correct link*/}
+            {/*@TODO add correct link*/}
+            {createHeaderMenuListItem({
+              icon: notifications,
+              href: "/",
+              linkText: "Approval requests",
+            })}
 
-              <a href={"/"} className={"typography-body-large"}>
-                {/*@TODO replace with IconButton when color change possible*/}
-                <span className={"visually-hidden"}>Approval requests</span>
-                <span aria-hidden={"true"}>
-                  {/*@TODO find out what happens here*/}
-                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                  {/*@ts-ignore*/}
-                  <Tooltip content="Tooltip content" placement="right">
-                    <Icon aria-hidden="true" icon={notifications} />
-                  </Tooltip>
-                </span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.klaw-project.io/docs"
-                rel="noreferrer"
-                className={"typography-body-large"}
-              >
-                {/*@TODO replace with IconButton when color change possible*/}
-                <span className={"visually-hidden"}>
-                  Go to Klaw documentation page
-                </span>
-                <span aria-hidden={"true"}>
-                  {/*@TODO find out what happens here*/}
-                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                  {/*@ts-ignore*/}
-                  <Tooltip content="Tooltip content" placement="right">
-                    <Icon aria-hidden="true" icon={questionMark} />
-                  </Tooltip>
-                </span>
-              </a>
-            </li>
-            <li>
-              <a href="/" className={"typography-body-large"}>
-                {/*@TODO replace with IconButton when color change possible*/}
-                <span className={"visually-hidden"}>Your Profile</span>
-
-                <span aria-hidden={"true"}>
-                  {/*@TODO find out what happens here*/}
-                  {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-                  {/*@ts-ignore*/}
-                  <Tooltip content="Tooltip content" placement="right">
-                    {/*@TODO add correct link*/}
-                    <Icon aria-hidden="true" icon={user} />
-                  </Tooltip>
-                </span>
-              </a>
-            </li>
+            {createHeaderMenuListItem({
+              icon: questionMark,
+              href: "https://www.klaw-project.io/docs",
+              linkText: "Go to" + " Klaw documentation page",
+              rel: "noreferrer",
+            })}
+            {/*@TODO add correct link*/}
+            {createHeaderMenuListItem({
+              icon: user,
+              href: "/",
+              linkText: "Your profile",
+            })}
           </Flexbox>
         </nav>
       </Flexbox>
