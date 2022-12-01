@@ -14,6 +14,7 @@ import {
 } from "src/domain/topic/topic-api.msw";
 import { mockGetEnvironments } from "src/domain/environment";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 
 // This mirrors the formatting formation used in `/domain`
 // it's a temp implementation here and will be removed
@@ -30,7 +31,10 @@ describe("Topics", () => {
 
   describe("renders default view with data from API", () => {
     beforeAll(async () => {
-      mockGetEnvironments({ mswInstance: server });
+      mockGetEnvironments({
+        mswInstance: server,
+        response: { data: mockedEnvironmentResponse },
+      });
       mockGetTeams({
         mswInstance: server,
         response: { data: mockedTeamResponse },
