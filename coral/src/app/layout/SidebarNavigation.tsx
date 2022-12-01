@@ -27,7 +27,11 @@ function createSidebarListItem({
       alignItems={"center"}
       marginBottom={"l1"}
       colGap={"l1"}
-      className={active ? classes.linkActive : classes.linkHover}
+      className={
+        active
+          ? classes.primaryNavigationLinkActive
+          : classes.primaryNavigationLink
+      }
       paddingLeft={"l2"}
     >
       <Icon icon={icon} />
