@@ -8,6 +8,7 @@ import io.aiven.klaw.model.enums.AclPermissionType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -613,5 +614,15 @@ public class UtilMethods {
     kwClusters.setClusterId(1);
 
     return kwClusters;
+  }
+
+  public Map<String, List<String>> getRolesPermsMap() {
+    Map<String, List<String>> rolesPermsMap = new HashMap<>();
+    List<String> permsList =
+        List.of(
+            PermissionType.ADD_EDIT_DELETE_ENVS.name(),
+            PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name());
+    rolesPermsMap.put("USER", permsList);
+    return rolesPermsMap;
   }
 }
