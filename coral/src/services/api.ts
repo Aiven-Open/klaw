@@ -94,9 +94,9 @@ function withPayload<TBody extends SomeObject | URLSearchParams>(
   data: TBody
 ): Partial<RequestInit> {
   if (data instanceof URLSearchParams) {
-    return { method, redirect: "manual", ...withFormPayload(data) };
+    return { method, ...withFormPayload(data) };
   } else {
-    return { method, redirect: "manual", ...withJSONPayload(data) };
+    return { method, ...withJSONPayload(data) };
   }
 }
 
@@ -105,7 +105,6 @@ function withoutPayload(
 ): Partial<RequestInit> {
   return {
     method,
-    redirect: "manual",
     headers: {
       accept: CONTENT_TYPE_JSON,
     },
