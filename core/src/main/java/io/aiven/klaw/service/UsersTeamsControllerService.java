@@ -52,6 +52,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UsersTeamsControllerService {
 
+  public static final String MASKED_PWD = "*******";
   private static final String SAAS = "saas";
 
   @Value("${klaw.login.authentication.type}")
@@ -92,7 +93,7 @@ public class UsersTeamsControllerService {
       copyProperties(userInfo, userInfoModel);
       userInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfoModel.getTeamId()));
-      userInfoModel.setUserPassword("*******");
+      userInfoModel.setUserPassword(MASKED_PWD);
       return userInfoModel;
     } else {
       return null;
@@ -101,10 +102,9 @@ public class UsersTeamsControllerService {
 
   public ApiResponse updateProfile(UserInfoModel updateUserObj) throws KlawException {
     log.info("updateProfile {}", updateUserObj);
-    Map<String, String> updateProfileResult = new HashMap<>();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
-    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName());
+    UserInfo userInfo = dbHandle.getUsersInfo(getUserName());
     userInfo.setFullname(updateUserObj.getFullname());
     userInfo.setMailid(updateUserObj.getMailid());
     try {
@@ -137,10 +137,14 @@ public class UsersTeamsControllerService {
       }
     }
 
+    return getApiResponseUpdateUser(newUser, existingUserInfo, tenantId);
+  }
+
+  private ApiResponse getApiResponseUpdateUser(
+      UserInfoModel newUser, UserInfo existingUserInfo, int tenantId) throws KlawException {
     String pwdUpdated = newUser.getUserPassword();
     String existingPwd;
-    String maskedPwd = "*******";
-    if (maskedPwd.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
+    if (MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
       if (!"".equals(existingPwd)) {
         newUser.setUserPassword(decodePwd(existingPwd));
