@@ -1,13 +1,8 @@
 import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
-import HomePage from "src/app/pages";
 import Topics from "src/app/pages/topics";
 import { getRouterBasename } from "src/config";
 
 const routes: Array<RouteObject> = [
-  {
-    path: "/",
-    element: <HomePage />,
-  },
   // Login is currently the responsibility of the
   // Angular Klaw app
   // {
@@ -19,7 +14,7 @@ const routes: Array<RouteObject> = [
   },
   {
     path: "*",
-    element: <Navigate to="/" />,
+    element: <Navigate to="/topics" />,
   },
 ];
 
