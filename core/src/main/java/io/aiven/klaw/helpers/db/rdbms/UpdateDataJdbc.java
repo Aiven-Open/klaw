@@ -3,11 +3,11 @@ package io.aiven.klaw.helpers.db.rdbms;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.NewUserStatus;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.RequestStatus;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.NewUserStatus;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public class UpdateDataJdbc {
   public String updateTopicRequestStatus(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequestStatus {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
-    topicRequest.setTopicstatus(RequestStatus.approved.name());
+    topicRequest.setTopicstatus(RequestStatus.APPROVED.value);
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
@@ -112,7 +112,7 @@ public class UpdateDataJdbc {
       KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("updateConnectorRequestStatus {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);
-    connectorRequest.setConnectorStatus(RequestStatus.approved.name());
+    connectorRequest.setConnectorStatus(RequestStatus.APPROVED.value);
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
@@ -122,7 +122,7 @@ public class UpdateDataJdbc {
   public String updateTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
-    topicRequest.setTopicstatus(RequestStatus.approved.name());
+    topicRequest.setTopicstatus(RequestStatus.APPROVED.value);
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
@@ -154,7 +154,7 @@ public class UpdateDataJdbc {
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("updateConnectorRequest {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);
-    connectorRequest.setConnectorStatus(RequestStatus.approved.name());
+    connectorRequest.setConnectorStatus(RequestStatus.APPROVED.value);
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 

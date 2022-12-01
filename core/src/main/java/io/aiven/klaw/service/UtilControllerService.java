@@ -1,21 +1,23 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.RolesType.SUPERADMIN;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.KwMetadataUpdates;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -72,15 +74,14 @@ public class UtilControllerService {
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
     if (userName != null) {
       return reqsHandle.getDashboardStats(
-          getMyTeamId(userName), commonUtilsService.getTenantId(getUserName()));
+          commonUtilsService.getTeamId(userName), commonUtilsService.getTenantId(getUserName()));
     }
 
     return new HashMap<>();
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public String getTenantNameFromUser(String userId) {
@@ -95,16 +96,6 @@ public class UtilControllerService {
     } else {
       return null;
     }
-  }
-
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(userDetails));
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   public Map<String, String> getAllRequestsToBeApproved(String requestor, int tenantId) {
@@ -131,49 +122,49 @@ public class UtilControllerService {
         getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.created.name(), false, tenantId);
+              true, requestor, roleToSet, RequestStatus.CREATED.value, false, tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
-              requestor, RequestStatus.created.name(), false, tenantId);
+              requestor, RequestStatus.CREATED.value, false, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.created.name(), false, tenantId);
+              requestor, RequestStatus.CREATED.value, false, tenantId);
     } else {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.created.name(), true, tenantId);
+              true, requestor, roleToSet, RequestStatus.CREATED.value, true, tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
-              requestor, RequestStatus.created.name(), true, tenantId);
+              requestor, RequestStatus.CREATED.value, true, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.created.name(), true, tenantId);
+              requestor, RequestStatus.CREATED.value, true, tenantId);
     }
 
     try {
       // tenant filtering
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
       allAclReqs =
           allAclReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
       // tenant filtering
       allSchemaReqs =
           allSchemaReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
       // tenant filtering
       allTopicReqs =
           allTopicReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
 
       // tenant filtering
       allConnectorReqs =
           allConnectorReqs.stream()
-              .filter(request -> allowedEnvIdList.contains(request.getEnvironment()))
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
@@ -205,7 +196,8 @@ public class UtilControllerService {
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
     if (userName != null) {
-      String teamName = manageDatabase.getTeamNameFromTeamId(tenantId, getMyTeamId(userName));
+      String teamName =
+          manageDatabase.getTeamNameFromTeamId(tenantId, commonUtilsService.getTeamId(userName));
       String authority = commonUtilsService.getAuthority(getPrincipal());
       Map<String, String> outstanding = getAllRequestsToBeApproved(userName, tenantId);
 
@@ -245,7 +237,7 @@ public class UtilControllerService {
       }
 
       Map<String, String> dashboardData =
-          reqsHandle.getDashboardInfo(getMyTeamId(userName), tenantId);
+          reqsHandle.getDashboardInfo(commonUtilsService.getTeamId(userName), tenantId);
 
       dashboardData.put("contextPath", kwContextPath);
       dashboardData.put("teamsize", "" + manageDatabase.getTeamsForTenant(tenantId).size());

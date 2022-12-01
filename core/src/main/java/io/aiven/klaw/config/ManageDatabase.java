@@ -1,6 +1,6 @@
 package io.aiven.klaw.config;
 
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.Env;
@@ -12,15 +12,15 @@ import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
-import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.RequestStatus;
 import io.aiven.klaw.model.TenantConfig;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.service.DefaultDataService;
-import io.aiven.klaw.service.KwConstants;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -112,7 +112,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.admin.mailid}")
   private String kwAdminMailId;
 
-  @Value("${klaw.superadmin.defaultpassword}")
+  @Value("${klaw.superadmin.default.password}")
   private String superAdminDefaultPwd;
 
   @Value("${klaw.version:1.0.0}")
@@ -124,7 +124,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
-  @Value("${klaw.superadmin.default.username:'superadmin'}")
+  @Value("${klaw.superadmin.default.username}")
   private String superAdminDefaultUserName;
 
   private ApplicationContext contextApp;
@@ -163,7 +163,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return handleDbRequests;
   }
 
-  private void loadStaticDataToDb() {
+  private void loadStaticDataToDb() throws KlawException {
     // add tenant
     Optional<KwTenants> kwTenants = handleDbRequests.getMyTenants(KwConstants.DEFAULT_TENANT_ID);
     if (kwTenants.isEmpty()) {
@@ -185,20 +185,37 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
           defaultDataService.getTeam(KwConstants.DEFAULT_TENANT_ID, stagingTeam));
     }
 
-    // add user
-    UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
-    if (userExists == null) {
-      handleDbRequests.addNewUser(
-          defaultDataService.getUser(
-              KwConstants.DEFAULT_TENANT_ID,
-              superAdminDefaultPwd,
-              "SUPERADMIN",
-              handleDbRequests
-                  .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
-                  .getTeamId(),
-              kwAdminMailId,
-              superAdminDefaultUserName,
-              encryptorSecretKey));
+    // check if default superadmin is configured or blank.
+    // in case of blank, there should be atleast one other user with SUPERADMIN role
+    if (superAdminDefaultUserName.isBlank()) {
+      if (!validateUsersBeforeAdding()) {
+        String errorMsg =
+            "Please configure klaw.superadmin.default.username, as there are no other superadmins in the system.";
+        log.error(errorMsg);
+        throw new KlawException(errorMsg);
+      }
+    } else {
+      // verify and add user with superadmin role
+      if (superAdminDefaultPwd.isBlank()) {
+        String errorMsg =
+            "Please configure klaw.superadmin.default.password with a valid password.";
+        log.error(errorMsg);
+        throw new KlawException(errorMsg);
+      }
+      UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
+      if (userExists == null) {
+        handleDbRequests.addNewUser(
+            defaultDataService.getUser(
+                KwConstants.DEFAULT_TENANT_ID,
+                superAdminDefaultPwd,
+                KwConstants.SUPERADMIN_ROLE,
+                handleDbRequests
+                    .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
+                    .getTeamId(),
+                kwAdminMailId,
+                superAdminDefaultUserName,
+                encryptorSecretKey));
+      }
     }
 
     // add props
@@ -230,6 +247,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       handleDbRequests.insertProductDetails(
           defaultDataService.getProductDetails(productName, kwVersion));
     }
+  }
+
+  // verify if there is atleast one user with superadmin access in default tenant
+  private boolean validateUsersBeforeAdding() {
+    List<UserInfo> allUsers = handleDbRequests.selectAllUsersInfo(KwConstants.DEFAULT_TENANT_ID);
+    return allUsers.stream()
+        .anyMatch(userInfo -> userInfo.getRole().equals(KwConstants.SUPERADMIN_ROLE));
   }
 
   private void checkSSOAuthentication() {
@@ -588,8 +612,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   private void loadRequestTypeStatuses() {
     reqStatusList = new ArrayList<>();
     reqStatusList.add("all");
-    for (RequestStatus value : RequestStatus.values()) {
-      reqStatusList.add(value.name());
+    for (RequestStatus requestStatus : RequestStatus.values()) {
+      reqStatusList.add(requestStatus.value);
     }
   }
 

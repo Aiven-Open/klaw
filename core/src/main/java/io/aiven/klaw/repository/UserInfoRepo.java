@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface UserInfoRepo extends CrudRepository<UserInfo, String> {
   Optional<UserInfo> findById(String userid);
 
-  Optional<UserInfo> findByUsername(String username);
+  Optional<UserInfo> findByUsernameIgnoreCase(String username);
 
   List<UserInfo> findAllByTenantId(int tenantId);
 

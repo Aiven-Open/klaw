@@ -1,7 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.model.ApiResultStatus;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.HashMap;

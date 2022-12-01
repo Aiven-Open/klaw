@@ -19,8 +19,8 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -121,7 +121,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public List<TopicRequest> getAllTopicRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsByStatus(
-        false, requestor, RequestStatus.created.name(), false, tenantId);
+        false, requestor, RequestStatus.CREATED.value, false, tenantId);
   }
 
   public List<TopicRequest> getCreatedTopicRequests(
@@ -132,7 +132,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequestsByStatus(
-        false, requestor, RequestStatus.created.name(), false, tenantId);
+        false, requestor, RequestStatus.CREATED.value, false, tenantId);
   }
 
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(

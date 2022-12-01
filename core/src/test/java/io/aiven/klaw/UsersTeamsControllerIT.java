@@ -6,9 +6,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -74,8 +74,6 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
-
     userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
@@ -90,8 +88,6 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    //        assertThat(response, CoreMatchers.containsString(ApiResultStatus.SUCCESS.value));
   }
 
   // Create team success

@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.enums;
 
 import lombok.extern.slf4j.Slf4j;
 import org.checkerframework.checker.nullness.qual.Nullable;

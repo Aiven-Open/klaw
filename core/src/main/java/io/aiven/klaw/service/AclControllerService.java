@@ -1,10 +1,10 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.MailType.ACL_DELETE_REQUESTED;
-import static io.aiven.klaw.model.MailType.ACL_REQUESTED;
-import static io.aiven.klaw.model.MailType.ACL_REQUEST_APPROVED;
-import static io.aiven.klaw.model.MailType.ACL_REQUEST_DENIED;
-import static io.aiven.klaw.model.MailType.ACL_REQUEST_FAILURE;
+import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_DENIED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_FAILURE;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,23 +17,22 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.AclIPPrincipleType;
-import io.aiven.klaw.model.AclPatternType;
 import io.aiven.klaw.model.AclRequestsModel;
-import io.aiven.klaw.model.AclType;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.KafkaFlavors;
-import io.aiven.klaw.model.MailType;
-import io.aiven.klaw.model.PermissionType;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.RequestStatus;
+import io.aiven.klaw.model.enums.AclIPPrincipleType;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.MailType;
+import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,14 +67,14 @@ public class AclControllerService {
 
   public ApiResponse createAcl(AclRequestsModel aclRequestsModel) throws KlawException {
     log.info("createAcl {}", aclRequestsModel);
-    String userDetails = getCurrentUserName();
+    String currentUserName = getCurrentUserName();
     aclRequestsModel.setAclType(RequestOperationType.CREATE.value);
-    aclRequestsModel.setUsername(userDetails);
-    int tenantId = commonUtilsService.getTenantId(userDetails);
+    aclRequestsModel.setUsername(currentUserName);
+    int tenantId = commonUtilsService.getTenantId(currentUserName);
 
     aclRequestsModel.setTeamId(
         manageDatabase.getTeamIdFromTeamName(tenantId, aclRequestsModel.getTeamname()));
-    aclRequestsModel.setRequestingteam(getMyTeamId(userDetails));
+    aclRequestsModel.setRequestingteam(commonUtilsService.getTeamId(currentUserName));
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
@@ -123,7 +122,7 @@ public class AclControllerService {
     handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
 
     aclRequestsDao.setTenantId(tenantId);
-    return executeAclRequestModel(userDetails, aclRequestsDao, ACL_REQUESTED);
+    return executeAclRequestModel(currentUserName, aclRequestsDao, ACL_REQUESTED);
   }
 
   void handleIpAddressAndCNString(AclRequestsModel aclRequestsModel, AclRequests aclRequestsDao) {
@@ -194,14 +193,14 @@ public class AclControllerService {
   public List<AclRequestsModel> getAclRequests(
       String pageNo, String currentPage, String requestsType) {
 
-    String userDetails = getCurrentUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
+    String userName = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<AclRequests> aclReqs =
-        dbHandle.getAllAclRequests(false, userDetails, "", requestsType, false, tenantId);
+        dbHandle.getAllAclRequests(false, userName, "", requestsType, false, tenantId);
 
     // tenant filtering
-    final Set<String> allowedEnvIdSet = getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     aclReqs =
         aclReqs.stream()
             .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
@@ -236,7 +235,7 @@ public class AclControllerService {
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
 
         // show approving info only before approvals
-        if (!RequestStatus.approved.name().equals(aclRequestsModel.getAclstatus())) {
+        if (!RequestStatus.APPROVED.value.equals(aclRequestsModel.getAclstatus())) {
           aclRequestsModel.setApprovingTeamDetails(
               updateApprovingInfo(
                   aclRequestsModel.getTopicname(),
@@ -262,7 +261,8 @@ public class AclControllerService {
     List<Topic> topicTeamsList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
     if (topicTeamsList.size() > 0) {
-      Integer teamId = getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
+      Integer teamId =
+          commonUtilsService.getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
       if (RequestOperationType.DELETE.value.equals(aclType)) teamId = team;
       List<UserInfo> userList =
@@ -377,7 +377,7 @@ public class AclControllerService {
     }
 
     // tenant filtering
-    final Set<String> allowedEnvIdSet = getEnvsFromUserId(userDetails);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
     createdAclReqs =
         createdAclReqs.stream()
             .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
@@ -431,7 +431,7 @@ public class AclControllerService {
         dbHandle.selectSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
-    if (!getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
     }
 
@@ -501,12 +501,12 @@ public class AclControllerService {
           .build();
     }
 
-    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
+    if (!RequestStatus.CREATED.value.equals(aclReq.getAclstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -584,12 +584,12 @@ public class AclControllerService {
       return ApiResponse.builder().result("Record not found !").build();
     }
 
-    if (!RequestStatus.created.name().equals(aclReq.getAclstatus())) {
+    if (!RequestStatus.CREATED.value.equals(aclReq.getAclstatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
     // tenant filtering
-    if (!getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
@@ -609,23 +609,6 @@ public class AclControllerService {
       log.error("Error ", e);
       throw new KlawException(e.getMessage());
     }
-  }
-
-  private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
-    // tenant filtering
-    try {
-      final Set<String> allowedEnvIdSet = getEnvsFromUserId(getCurrentUserName());
-      if (topicsFromSOT != null) {
-        topicsFromSOT =
-            topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdSet.contains(topic.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception exception) {
-      log.error("No environments/clusters found.", exception);
-      return new ArrayList<>();
-    }
-    return topicsFromSOT;
   }
 
   private String getCurrentUserName() {
@@ -654,13 +637,6 @@ public class AclControllerService {
     return envFound.orElse(null);
   }
 
-  // based on tenants
-  private Set<String> getEnvsFromUserId(String userName) {
-    int tenantId = commonUtilsService.getTenantId(userName);
-    Integer myTeamId = getMyTeamId(userName);
-    return new HashSet<>(manageDatabase.getTeamsAndAllowedEnvs(myTeamId, tenantId));
-  }
-
   public List<Map<String, String>> getConsumerOffsets(
       String envId, String consumerGroupId, String topicName) {
     List<Map<String, String>> consumerOffsetInfoList = new ArrayList<>();
@@ -686,9 +662,5 @@ public class AclControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 }

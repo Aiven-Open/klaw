@@ -1,13 +1,13 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +40,7 @@ public class UiConfigControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   public List<ActivityLog> showActivityLog(String env, String pageNo, String currentPage) {

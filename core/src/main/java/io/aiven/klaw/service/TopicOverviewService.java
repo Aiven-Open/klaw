@@ -11,11 +11,11 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -62,16 +62,16 @@ public class TopicOverviewService {
 
     String userName = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
 
-    Integer loggedInUserTeam = getMyTeamId(userName);
+    Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
     List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
 
     // tenant filtering
-    List<String> allowedEnvIdList = getEnvsFromUserId(userName);
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     topics =
         topics.stream()
-            .filter(topicObj -> allowedEnvIdList.contains(topicObj.getEnvironment()))
+            .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
     TopicOverview topicOverview = new TopicOverview();
@@ -110,7 +110,8 @@ public class TopicOverviewService {
     List<Topic> topicsSearchList =
         manageDatabase.getHandleDbRequests().getTopicTeam(topicNameSearch, tenantId);
     // tenant filtering
-    Integer topicOwnerTeamId = getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    Integer topicOwnerTeamId =
+        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
 
     enrichTopicInfoList(
         topicNameSearch,
@@ -490,41 +491,15 @@ public class TopicOverviewService {
     return hashMap;
   }
 
-  private List<Topic> getFilteredTopicsForTenant(List<Topic> topicsFromSOT) {
-    // tenant filtering
-    try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (topicsFromSOT != null) {
-        topicsFromSOT =
-            topicsFromSOT.stream()
-                .filter(topic -> allowedEnvIdList.contains(topic.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception exception) {
-      // this situation cannot happen, as every topic has an assigned team and this flow is
-      // triggered on topic overview, which means topic has an owner
-      log.error("No environments/clusters found. Error ignored.", exception);
-    }
-    return topicsFromSOT;
-  }
-
-  private List<String> getEnvsFromUserId(String userName) {
-    int tenantId = commonUtilsService.getTenantId(userName);
-    Integer myTeamId = getMyTeamId(userName);
-    return manageDatabase.getTeamsAndAllowedEnvs(myTeamId, tenantId);
-  }
-
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  private Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
-
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
             .filter(env -> Objects.equals(env.getId(), envId))

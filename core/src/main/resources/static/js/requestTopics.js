@@ -112,7 +112,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
                         $scope.oldtopicpartitions = output.topicContents.noOfPartitions;
                         $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
-                        if($scope.envTopicMap.defaultPartitions == $scope.addTopic.topicpartitions)
+                        if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
                             $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
                         $scope.addTopic.description = output.topicContents.description;
                     }

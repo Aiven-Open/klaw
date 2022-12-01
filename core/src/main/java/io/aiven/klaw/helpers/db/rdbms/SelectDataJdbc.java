@@ -27,11 +27,11 @@ import io.aiven.klaw.dao.TopicID;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.AclPatternType;
-import io.aiven.klaw.model.AclType;
-import io.aiven.klaw.model.KafkaClustersType;
-import io.aiven.klaw.model.RequestOperationType;
-import io.aiven.klaw.model.TopicRequestTypes;
+import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -564,7 +564,7 @@ public class SelectDataJdbc {
   }
 
   public UserInfo selectUserInfo(String username) {
-    Optional<UserInfo> userRec = userInfoRepo.findByUsername(username);
+    Optional<UserInfo> userRec = userInfoRepo.findByUsernameIgnoreCase(username);
     return userRec.orElse(null);
   }
 

@@ -1,8 +1,8 @@
 package io.aiven.klaw.controller;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
-import static io.aiven.klaw.model.AuthenticationType.LDAP;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 
 import io.aiven.klaw.service.UiControllerLoginService;
 import javax.servlet.http.HttpServletRequest;

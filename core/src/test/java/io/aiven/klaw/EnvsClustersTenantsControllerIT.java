@@ -5,11 +5,11 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.model.ApiResultStatus;
 import io.aiven.klaw.model.EnvModel;
-import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

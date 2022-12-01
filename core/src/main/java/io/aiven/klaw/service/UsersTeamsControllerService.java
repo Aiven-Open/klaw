@@ -1,8 +1,8 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.AuthenticationType.DATABASE;
-import static io.aiven.klaw.model.AuthenticationType.LDAP;
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
+import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -12,15 +12,16 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.EntityType;
-import io.aiven.klaw.model.MetadataOperationType;
-import io.aiven.klaw.model.NewUserStatus;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.NewUserStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UsersTeamsControllerService {
 
+  public static final String MASKED_PWD = "*******";
   private static final String SAAS = "saas";
 
   @Value("${klaw.login.authentication.type}")
@@ -91,7 +93,7 @@ public class UsersTeamsControllerService {
       copyProperties(userInfo, userInfoModel);
       userInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfoModel.getTeamId()));
-      userInfoModel.setUserPassword("*******");
+      userInfoModel.setUserPassword(MASKED_PWD);
       return userInfoModel;
     } else {
       return null;
@@ -100,10 +102,9 @@ public class UsersTeamsControllerService {
 
   public ApiResponse updateProfile(UserInfoModel updateUserObj) throws KlawException {
     log.info("updateProfile {}", updateUserObj);
-    Map<String, String> updateProfileResult = new HashMap<>();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
-    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(getUserName());
+    UserInfo userInfo = dbHandle.getUsersInfo(getUserName());
     userInfo.setFullname(updateUserObj.getFullname());
     userInfo.setMailid(updateUserObj.getMailid());
     try {
@@ -136,10 +137,14 @@ public class UsersTeamsControllerService {
       }
     }
 
+    return getApiResponseUpdateUser(newUser, existingUserInfo, tenantId);
+  }
+
+  private ApiResponse getApiResponseUpdateUser(
+      UserInfoModel newUser, UserInfo existingUserInfo, int tenantId) throws KlawException {
     String pwdUpdated = newUser.getUserPassword();
     String existingPwd;
-    String maskedPwd = "*******";
-    if (maskedPwd.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
+    if (MASKED_PWD.equals(pwdUpdated) && DATABASE.value.equals(authenticationType)) {
       existingPwd = existingUserInfo.getPwd();
       if (!"".equals(existingPwd)) {
         newUser.setUserPassword(decodePwd(existingPwd));
@@ -342,7 +347,7 @@ public class UsersTeamsControllerService {
 
   public ApiResponse deleteTeam(Integer teamId) throws KlawException {
     log.info("deleteTeam {}", teamId);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
@@ -357,7 +362,7 @@ public class UsersTeamsControllerService {
     }
 
     // own team cannot be deleted
-    if (Objects.equals(getMyTeamId(userDetails), teamId)) {
+    if (Objects.equals(commonUtilsService.getTeamId(userName), teamId)) {
       return ApiResponse.builder().result("Team cannot be deleted.").build();
     }
 
@@ -686,8 +691,7 @@ public class UsersTeamsControllerService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   Map<String, String> addTwoDefaultTeams(
@@ -925,10 +929,6 @@ public class UsersTeamsControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
   private Pattern getPattern() {

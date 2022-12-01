@@ -10,11 +10,11 @@ import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.KafkaClustersType;
 import io.aiven.klaw.model.KafkaConnectorModel;
-import io.aiven.klaw.model.PermissionType;
 import io.aiven.klaw.model.SyncConnectorUpdates;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,14 +71,14 @@ public class KafkaConnectSyncControllerService {
   public ApiResponse updateSyncConnectors(List<SyncConnectorUpdates> updatedSyncTopics)
       throws KlawException {
     log.info("updateSyncConnectors {}", updatedSyncTopics);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     // tenant filtering
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
     String syncCluster =
         manageDatabase.getTenantConfig().get(tenantId).getBaseSyncKafkaConnectCluster();
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
@@ -101,7 +101,9 @@ public class KafkaConnectSyncControllerService {
     if (updatedSyncTopics.size() > 0) {
       for (SyncConnectorUpdates topicUpdate : updatedSyncTopics) {
         // tenant filtering
-        if (!getEnvsFromUserId(userDetails).contains(topicUpdate.getEnvSelected())) {
+        if (!commonUtilsService
+            .getEnvsFromUserId(userName)
+            .contains(topicUpdate.getEnvSelected())) {
           return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
         existingTopics = getConnectorsFromName(topicUpdate.getConnectorName(), tenantId);
@@ -465,33 +467,8 @@ public class KafkaConnectSyncControllerService {
     return teamList;
   }
 
-  private List<KwKafkaConnector> getFilteredConnectorsForTenant(
-      List<KwKafkaConnector> connectorsFromSOT) {
-    // tenant filtering
-    try {
-      List<String> allowedEnvIdList = getEnvsFromUserId(getUserName());
-      if (connectorsFromSOT != null) {
-        connectorsFromSOT =
-            connectorsFromSOT.stream()
-                .filter(connector -> allowedEnvIdList.contains(connector.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      log.error("No environments/clusters found.", e);
-      return new ArrayList<>();
-    }
-    return connectorsFromSOT;
-  }
-
-  private List<String> getEnvsFromUserId(String userDetails) {
-    Integer userTeamId = getMyTeamId(userDetails);
-    return manageDatabase.getTeamsAndAllowedEnvs(
-        userTeamId, commonUtilsService.getTenantId(userDetails));
-  }
-
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 
   private Object getPrincipal() {
@@ -506,9 +483,5 @@ public class KafkaConnectSyncControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  private Integer getMyTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 }

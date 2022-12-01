@@ -8,10 +8,12 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwProperties;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.*;
-import io.aiven.klaw.model.ApiResultStatus;
-import io.aiven.klaw.model.EntityType;
-import io.aiven.klaw.model.PermissionType;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.PermissionType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -525,7 +527,6 @@ public class ServerConfigService {
   }
 
   private String getUserName() {
-    return mailService.getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    return mailService.getUserName(getPrincipal());
   }
 }
