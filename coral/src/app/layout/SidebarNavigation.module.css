@@ -9,9 +9,9 @@
   text-decoration: underline;
 }
 
-/*//@TODO color contrast is not AA or AAA conform*/
-/*temp class until we have a solution for that*/
+/*//@TODO color contrast from DS is not AA or AAA conform
+      primary-100 is used in the meantime */
 .link-active {
   /*Primary*/
-  color: #e41a4a;
+  color: #a70045;
 }

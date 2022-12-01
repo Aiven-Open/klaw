@@ -38,56 +38,58 @@ function createHeaderMenuListItem({
 
 function Header() {
   return (
-    <GridItem
-      htmlTag={"header"}
-      colStart={"1"}
-      colEnd={"12"}
-      height={"l5"}
-      backgroundColor={"primary-80"}
-      paddingX={"l2"}
-    >
-      <Flexbox
-        height={"full"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-        alignContent={"center"}
+    <>
+      <GridItem
+        htmlTag={"header"}
+        colStart={"1"}
+        colEnd={"12"}
+        height={"l5"}
+        backgroundColor={"primary-80"}
+        paddingX={"l2"}
       >
-        <a href={originLocationKlawAngular}>
-          <span style={{ color: "white" }} className={"visually-hidden"}>
-            Klaw homepage
-          </span>
-          <img
-            aria-hidden="true"
-            alt=""
-            src="/klaw_logo.png"
-            height={50}
-            width={150}
-          />
-        </a>
-        <nav aria-label={"Quick links"}>
-          <Flexbox htmlTag={"ul"} colGap={"l2"}>
-            {/*@TODO add correct link*/}
-            {createHeaderMenuListItem({
-              icon: notifications,
-              href: `${originLocationKlawAngular}/execTopics`,
-              linkText: "Go to approval requests",
-            })}
+        <Flexbox
+          height={"full"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+          alignContent={"center"}
+        >
+          <a href={originLocationKlawAngular}>
+            <span style={{ color: "white" }} className={"visually-hidden"}>
+              Klaw homepage
+            </span>
+            <img
+              aria-hidden="true"
+              alt=""
+              src="/klaw_logo.png"
+              height={50}
+              width={150}
+            />
+          </a>
+          <nav aria-label={"Quick links"}>
+            <Flexbox htmlTag={"ul"} colGap={"l2"}>
+              {/*@TODO add correct link*/}
+              {createHeaderMenuListItem({
+                icon: notifications,
+                href: `${originLocationKlawAngular}/execTopics`,
+                linkText: "Go to approval requests",
+              })}
 
-            {createHeaderMenuListItem({
-              icon: questionMark,
-              href: "https://www.klaw-project.io/docs",
-              linkText: "Go to Klaw documentation page",
-              rel: "noreferrer",
-            })}
-            {createHeaderMenuListItem({
-              icon: user,
-              href: `${originLocationKlawAngular}/myProfile`,
-              linkText: "Go to your profile",
-            })}
-          </Flexbox>
-        </nav>
-      </Flexbox>
-    </GridItem>
+              {createHeaderMenuListItem({
+                icon: questionMark,
+                href: "https://www.klaw-project.io/docs",
+                linkText: "Go to Klaw documentation page",
+                rel: "noreferrer",
+              })}
+              {createHeaderMenuListItem({
+                icon: user,
+                href: `${originLocationKlawAngular}/myProfile`,
+                linkText: "Go to your profile",
+              })}
+            </Flexbox>
+          </nav>
+        </Flexbox>
+      </GridItem>
+    </>
   );
 }
 

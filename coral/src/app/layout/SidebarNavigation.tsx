@@ -31,7 +31,9 @@ function createSidebarListItem({
       paddingLeft={"l2"}
     >
       <Icon icon={icon} />
-      <a href={href}>{linkText}</a>
+      <a href={href} aria-current={active && "page"}>
+        {linkText}
+      </a>
     </Flexbox>
   );
 }
