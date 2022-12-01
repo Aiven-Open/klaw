@@ -26,6 +26,9 @@
     "**/*.ts?(x)": [
       "prettier --check",
       "eslint"
+    ],
+    "**/*.css": [
+      "prettier --check"
     ]
   },
   "dependencies": {
