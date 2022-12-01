@@ -112,7 +112,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.admin.mailid}")
   private String kwAdminMailId;
 
-  @Value("${klaw.superadmin.default.password:'changethepassword'}")
+  @Value("${klaw.superadmin.default.password}")
   private String superAdminDefaultPwd;
 
   @Value("${klaw.version:1.0.0}")
@@ -195,7 +195,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         throw new KlawException(errorMsg);
       }
     } else {
-      // verify add user with superadmin role
+      // verify and add user with superadmin role
+      if (superAdminDefaultPwd.isBlank()) {
+        String errorMsg =
+            "Please configure klaw.superadmin.default.password with a valid password.";
+        log.error(errorMsg);
+        throw new KlawException(errorMsg);
+      }
       UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
       if (userExists == null) {
         handleDbRequests.addNewUser(
