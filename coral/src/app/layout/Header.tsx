@@ -1,40 +1,10 @@
-import { Flexbox, GridItem, Icon, Tooltip } from "@aivenio/design-system";
+import { Flexbox, GridItem } from "@aivenio/design-system";
 import questionMark from "@aivenio/design-system/dist/module/icons/questionMark";
 import user from "@aivenio/design-system/dist/module/icons/user";
 import notifications from "@aivenio/design-system/dist/module/icons/notifications";
-import data from "@aivenio/design-system/dist/src/icons/console";
+import HeaderMenuLink from "src/app/layout/HeaderMenuLink";
 
 const originLocationKlawAngular = window.location.origin;
-
-function createHeaderMenuListItem({
-  icon,
-  linkText,
-  href,
-  rel,
-}: {
-  icon: typeof data;
-  linkText: string;
-  href: string;
-  rel?: string;
-}) {
-  return (
-    <li>
-      <a href={href} rel={rel} style={{ color: "white" }}>
-        <span className={"visually-hidden"}>{linkText}</span>
-        <span aria-hidden={"true"}>
-          {/*DS does not fully support React18 now, where children */}
-          {/*is not a default prop for FC*/}
-          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-          {/*@ts-ignore*/}
-          <Tooltip content={linkText} placement="right">
-            {/*@TODO add correct link*/}
-            <Icon aria-hidden="true" icon={icon} fontSize={"20px"} />
-          </Tooltip>
-        </span>
-      </a>
-    </li>
-  );
-}
 
 function Header() {
   return (
@@ -67,23 +37,29 @@ function Header() {
         <nav aria-label={"Quick links"}>
           <Flexbox htmlTag={"ul"} colGap={"l2"}>
             {/*@TODO add correct link*/}
-            {createHeaderMenuListItem({
-              icon: notifications,
-              href: `${originLocationKlawAngular}/execTopics`,
-              linkText: "Go to approval requests",
-            })}
-
-            {createHeaderMenuListItem({
-              icon: questionMark,
-              href: "https://www.klaw-project.io/docs",
-              linkText: "Go to Klaw documentation page",
-              rel: "noreferrer",
-            })}
-            {createHeaderMenuListItem({
-              icon: user,
-              href: `${originLocationKlawAngular}/myProfile`,
-              linkText: "Go to your profile",
-            })}
+            <li>
+              <HeaderMenuLink
+                icon={notifications}
+                linkText={"Go to approval requests"}
+                href={`${originLocationKlawAngular}/execTopics`}
+              />
+            </li>
+            <li>
+              <HeaderMenuLink
+                icon={questionMark}
+                linkText={"Go to Klaw documentation page"}
+                href={"https://www.klaw-project.io/docs"}
+                rel={"noreferrer"}
+              />
+            </li>
+            {/*@TODO add correct link*/}
+            <li>
+              <HeaderMenuLink
+                icon={user}
+                linkText={"Go to your profile"}
+                href={`${originLocationKlawAngular}/myProfile`}
+              />
+            </li>
           </Flexbox>
         </nav>
       </Flexbox>

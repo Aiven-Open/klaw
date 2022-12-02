@@ -59,16 +59,12 @@ describe("Header.tsx", () => {
       expect(link).toBeEnabled();
       expect(link).toHaveAttribute("href", item.linkTo);
     });
+  });
 
-    it(`renders a Tooltip with an Icon, both hidden for assistive technology`, () => {
-      const nav = screen.getByRole("navigation", { name: "Quick links" });
-      const link = within(nav).getByRole("link", { name: item.name });
-      const tooltip = within(link).getByTestId("tooltip");
-      const icon = within(tooltip).getByTestId("ds-icon");
+  it("renders all links in the header menu", () => {
+    const nav = screen.getByRole("navigation", { name: "Quick links" });
+    const links = within(nav).getAllByRole("link");
 
-      expect(tooltip.parentElement).toHaveAttribute("aria-hidden", "true");
-      expect(tooltip).toBeEnabled();
-      expect(icon).toBeEnabled();
-    });
+    expect(links).toHaveLength(quickLinksNavItems.length);
   });
 });
