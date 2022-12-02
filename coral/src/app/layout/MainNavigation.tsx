@@ -42,18 +42,23 @@ function MainNavigation() {
             linkText={"Kafka Connector"}
           />
         </li>
+        {/*@TODO link missing*/}
         <li>
           <MainNavigationLink icon={code} href={`/`} linkText={"Schemas"} />
         </li>
         <li>
           <MainNavigationLink
             icon={people}
-            href={`/`}
+            href={`${originLocationKlawAngular}/users`}
             linkText={"Users and teams"}
           />
         </li>
         <li>
-          <MainNavigationLink icon={list} href={`/`} linkText={"Audit log"} />
+          <MainNavigationLink
+            icon={list}
+            href={`${originLocationKlawAngular}/activityLog`}
+            linkText={"Audit log"}
+          />
         </li>
 
         {/*//@TODO ask DS about color options Divider*/}
@@ -67,7 +72,11 @@ function MainNavigation() {
           }}
         ></li>
         <li>
-          <MainNavigationLink icon={cog} href={`/`} linkText={"Settings"} />
+          <MainNavigationLink
+            icon={cog}
+            href={`${originLocationKlawAngular}/serverConfig`}
+            linkText={"Settings"}
+          />
         </li>
       </ul>
     </Box>

@@ -23,9 +23,9 @@ const navLinks = [
   { name: "Topics", linkTo: "/topics" },
   { name: "Kafka Connector", linkTo: "http://localhost/kafkaConnectors" },
   { name: "Schemas", linkTo: "/" },
-  { name: "Users and teams", linkTo: "/" },
-  { name: "Audit log", linkTo: "/" },
-  { name: "Settings", linkTo: "/" },
+  { name: "Users and teams", linkTo: "http://localhost/users" },
+  { name: "Audit log", linkTo: "http://localhost/activityLog" },
+  { name: "Settings", linkTo: "http://localhost/serverConfig" },
 ];
 
 describe("SidebarNavigation.tsx", () => {
