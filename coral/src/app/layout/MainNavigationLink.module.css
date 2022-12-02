@@ -3,15 +3,15 @@
    accessibility standards */
 
 /*temp class until we have a solution for that*/
-.primary-navigation-link:hover,
-.primary-navigation-link:focus-within {
+.main-navigation-link:hover,
+.main-navigation-link:focus-within {
   /*Primary*/
   color: #e41a4a;
 }
 
 /*//@TODO color contrast from DS is not AA or AAA conform
-      primary-100 is used in the meantime */
-.primary-navigation-link-active {
+      main-100 is used in the meantime */
+.main-navigation-link-active {
   /*Primary*/
   color: #a70045;
 }

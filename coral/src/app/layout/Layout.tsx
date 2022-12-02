@@ -1,5 +1,5 @@
 import { Box, Grid } from "@aivenio/design-system";
-import SidebarNavigation from "src/app/layout/SidebarNavigation";
+import MainNavigation from "src/app/layout/MainNavigation";
 import Header from "src/app/layout/Header";
 import SkipLink from "src/app/layout/SkipLink";
 import { useRef } from "react";
@@ -18,7 +18,7 @@ function Layout({ children }: { children: JSX.Element }) {
         }}
       >
         <Header />
-        <SidebarNavigation />
+        <MainNavigation />
         <Box component={"main"} padding={"l4"}>
           <div ref={ref}>{children}</div>
         </Box>

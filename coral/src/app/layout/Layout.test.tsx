@@ -23,8 +23,8 @@ describe("Layout.tsx", () => {
     expect(header).toBeVisible();
   });
 
-  it("renders the primary navigation", () => {
-    const nav = screen.getByRole("navigation", { name: "Primary navigation" });
+  it("renders the main navigation", () => {
+    const nav = screen.getByRole("navigation", { name: "Main navigation" });
     expect(nav).toBeVisible();
   });
 

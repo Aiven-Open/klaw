@@ -1,4 +1,4 @@
-import SidebarNavigation from "src/app/layout/SidebarNavigation";
+import MainNavigation from "src/app/layout/MainNavigation";
 import { cleanup, screen, render, within } from "@testing-library/react";
 
 // mock out svgs to avoid clutter
@@ -20,30 +20,30 @@ const navLinks = [
     name: "Overview",
     linkTo: "http://localhost/index",
   },
-  { name: "Topics", linkTo: "/" },
+  { name: "Topics", linkTo: "/topics" },
   { name: "Kafka Connector", linkTo: "http://localhost/kafkaConnectors" },
   { name: "Schemas", linkTo: "/" },
-  { name: "User and teams", linkTo: "/" },
+  { name: "Users and teams", linkTo: "/" },
   { name: "Audit log", linkTo: "/" },
   { name: "Settings", linkTo: "/" },
 ];
 
 describe("SidebarNavigation.tsx", () => {
   beforeAll(() => {
-    render(<SidebarNavigation />);
+    render(<MainNavigation />);
   });
 
   afterAll(cleanup);
 
-  it("renders the primary navigation", () => {
-    const nav = screen.getByRole("navigation", { name: "Primary navigation" });
+  it("renders the main navigation", () => {
+    const nav = screen.getByRole("navigation", { name: "Main navigation" });
     expect(nav).toBeVisible();
   });
 
   navLinks.forEach((link) => {
     it(`renders a link for ${link.name}`, () => {
       const nav = screen.getByRole("navigation", {
-        name: "Primary navigation",
+        name: "Main navigation",
       });
 
       const navLink = within(nav).getByRole("link", { name: link.name });
@@ -52,9 +52,15 @@ describe("SidebarNavigation.tsx", () => {
     });
   });
 
+  it(`renders all navigation items`, () => {
+    const navLinks = screen.getAllByRole("link");
+
+    expect(navLinks).toHaveLength(navLinks.length);
+  });
+
   it(`renders icons for all nav links that are hidden from assistive technology`, () => {
     const nav = screen.getByRole("navigation", {
-      name: "Primary navigation",
+      name: "Main navigation",
     });
 
     const icons = within(nav).getAllByTestId("ds-icon");
