@@ -132,6 +132,8 @@ public interface HandleDbRequests {
 
   List<Team> selectAllTeams(int tenantId);
 
+  List<Team> selectTeams();
+
   Team selectTeamDetails(Integer teamId, int tenantId);
 
   Team selectTeamDetailsFromName(String teamName, int defaultTenantId);
@@ -166,6 +168,8 @@ public interface HandleDbRequests {
 
   List<Env> selectAllEnvs(int tenantId);
 
+  List<Env> selectEnvs();
+
   List<Env> selectAllKafkaEnvs(int tenantId);
 
   List<Env> selectAllSchemaRegEnvs(int tenantId);
@@ -179,6 +183,8 @@ public interface HandleDbRequests {
   Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties();
 
   List<KwProperties> selectAllKwPropertiesPerTenant(int tenantId);
+
+  List<KwProperties> selectKwProperties();
 
   String insertDefaultKwProperties(List<KwProperties> kwPropertiesList);
 
@@ -199,6 +205,8 @@ public interface HandleDbRequests {
   List<KwRolesPermissions> getRolesPermissionsPerTenant(int tenantId);
 
   List<KwClusters> getAllClusters(KafkaClustersType typeOfCluster, int tenantId);
+
+  List<KwClusters> getClusters();
 
   KwClusters getClusterDetails(int id, int tenantId);
 

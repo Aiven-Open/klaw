@@ -1144,4 +1144,20 @@ public class SelectDataJdbc {
   public int getAllTopicsCountInAllTenants() {
     return ((BigInteger) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
   }
+
+  public List<KwClusters> getClusters() {
+    return Lists.newArrayList(kwClusterRepo.findAll());
+  }
+
+  public List<Env> selectEnvs() {
+    return Lists.newArrayList(envRepo.findAll());
+  }
+
+  public List<Team> selectTeams() {
+    return Lists.newArrayList(teamRepo.findAll());
+  }
+
+  public List<KwProperties> selectKwProperties() {
+    return Lists.newArrayList(kwPropertiesRepo.findAll());
+  }
 }
