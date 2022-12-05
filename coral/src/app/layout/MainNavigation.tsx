@@ -8,8 +8,6 @@ import list from "@aivenio/design-system/dist/src/icons/list";
 import cog from "@aivenio/design-system/dist/src/icons/cog";
 import MainNavigationLink from "src/app/layout/MainNavigationLink";
 
-const originLocationKlawAngular = window.location.origin;
-
 function MainNavigation() {
   return (
     <Box
@@ -23,7 +21,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={database}
-            href={`${originLocationKlawAngular}/index`}
+            href={`/index`}
             linkText={"Overview"}
           />
         </li>
@@ -38,7 +36,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={layoutGroupBy}
-            href={`${originLocationKlawAngular}/kafkaConnectors`}
+            href={`/kafkaConnectors`}
             linkText={"Kafka Connector"}
           />
         </li>
@@ -49,14 +47,14 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={people}
-            href={`${originLocationKlawAngular}/users`}
+            href={`/users`}
             linkText={"Users and teams"}
           />
         </li>
         <li>
           <MainNavigationLink
             icon={list}
-            href={`${originLocationKlawAngular}/activityLog`}
+            href={`/activityLog`}
             linkText={"Audit log"}
           />
         </li>
@@ -74,7 +72,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={cog}
-            href={`${originLocationKlawAngular}/serverConfig`}
+            href={`/serverConfig`}
             linkText={"Settings"}
           />
         </li>

@@ -13,15 +13,13 @@ jest.mock("@aivenio/design-system", () => {
   };
 });
 
-// "http://localhost/" comes from window.location.origin
-// that represents the Angular app
 const quickLinksNavItems = [
-  { name: "Go to approval requests", linkTo: "http://localhost/execTopics" },
+  { name: "Go to approval requests", linkTo: "/execTopics" },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
   },
-  { name: "Go to your profile", linkTo: "http://localhost/myProfile" },
+  { name: "Go to your profile", linkTo: "/myProfile" },
 ];
 
 describe("Header.tsx", () => {

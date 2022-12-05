@@ -4,8 +4,6 @@ import user from "@aivenio/design-system/dist/module/icons/user";
 import notifications from "@aivenio/design-system/dist/module/icons/notifications";
 import HeaderMenuLink from "src/app/layout/HeaderMenuLink";
 
-const originLocationKlawAngular = window.location.origin;
-
 function Header() {
   return (
     <GridItem
@@ -22,7 +20,7 @@ function Header() {
         alignItems={"center"}
         alignContent={"center"}
       >
-        <a href={originLocationKlawAngular}>
+        <a href={"/"}>
           <span style={{ color: "white" }} className={"visually-hidden"}>
             Klaw homepage
           </span>
@@ -41,7 +39,7 @@ function Header() {
               <HeaderMenuLink
                 icon={notifications}
                 linkText={"Go to approval requests"}
-                href={`${originLocationKlawAngular}/execTopics`}
+                href={`/execTopics`}
               />
             </li>
             <li>
@@ -57,7 +55,7 @@ function Header() {
               <HeaderMenuLink
                 icon={user}
                 linkText={"Go to your profile"}
-                href={`${originLocationKlawAngular}/myProfile`}
+                href={`/myProfile`}
               />
             </li>
           </Flexbox>
