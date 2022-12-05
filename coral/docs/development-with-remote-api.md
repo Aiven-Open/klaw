@@ -29,4 +29,6 @@ Install `.cert/localhost.crt` in your list of locally trusted roots. You can fin
 
 ## Run development server with remote-api mode
 
-`pnpm run dev --mode remote-api`
+- `pnpm run dev`
+- login to Klaw with your credentials on `<YOUR_LOCALHOST>:5173/login`
+💡currently coral does not redirect you to the login if your access expires. If you're getting related errors from your API, please login again!  
