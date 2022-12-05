@@ -6,7 +6,7 @@ import "@aivenio/design-system/dist/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "/src/app/main.module.css";
-import { UnauthorizedError } from "src/services/api";
+import { isUnauthorizedError } from "src/services/api";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount: number, error: unknown) => {
-        if (error instanceof UnauthorizedError) {
+        if (isUnauthorizedError(error)) {
           return false;
         }
         return failureCount < 2;
