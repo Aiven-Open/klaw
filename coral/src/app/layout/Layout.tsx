@@ -1,4 +1,4 @@
-import { Box, Grid } from "@aivenio/design-system";
+import { Box, Grid, GridItem } from "@aivenio/design-system";
 import MainNavigation from "src/app/layout/MainNavigation";
 import Header from "src/app/layout/Header";
 import SkipLink from "src/app/layout/SkipLink";
@@ -17,7 +17,15 @@ function Layout({ children }: { children: JSX.Element }) {
           gridTemplateRows: "auto 1fr",
         }}
       >
-        <Header />
+        <GridItem
+          colStart={"1"}
+          colEnd={"12"}
+          height={"l5"}
+          backgroundColor={"primary-80"}
+          paddingX={"l2"}
+        >
+          <Header />
+        </GridItem>
         <MainNavigation />
         <Box component={"main"} padding={"l4"}>
           <div ref={ref}>{children}</div>
