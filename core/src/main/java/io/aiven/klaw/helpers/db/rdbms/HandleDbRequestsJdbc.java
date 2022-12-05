@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.KwMetrics;
 import io.aiven.klaw.dao.KwProperties;
 import io.aiven.klaw.dao.KwRolesPermissions;
 import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.SchemaRequest;
@@ -124,6 +125,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         false, requestor, RequestStatus.CREATED.value, false, tenantId);
   }
 
+  @Override
+  public List<TopicRequest> getAllTopicRequests() {
+    return jdbcSelectHelper.getAllTopicRequests();
+  }
+
   public List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsByStatus(
@@ -133,6 +139,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequestsByStatus(
         false, requestor, RequestStatus.CREATED.value, false, tenantId);
+  }
+
+  @Override
+  public List<KafkaConnectorRequest> getAllConnectorRequests() {
+    return jdbcSelectHelper.getAllConnectorRequests();
   }
 
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(
@@ -182,6 +193,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public List<KwKafkaConnector> getAllConnectors() {
+    return jdbcSelectHelper.getAllConnectors();
+  }
+
+  @Override
   public List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId) {
     return jdbcSelectHelper.getTopicDetailsPerEnv(topicName, envId, tenantId);
   }
@@ -202,8 +218,18 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public List<Topic> getAllTopics() {
+    return jdbcSelectHelper.getAllTopics();
+  }
+
+  @Override
   public List<Acl> getSyncAcls(String env, int tenantId) {
     return jdbcSelectHelper.selectSyncAcls(env, tenantId);
+  }
+
+  @Override
+  public List<Acl> getAllSubscriptions() {
+    return jdbcSelectHelper.getAllSubscriptions();
   }
 
   @Override
@@ -239,6 +265,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public List<AclRequests> getAllAclRequests() {
+    return jdbcSelectHelper.getAllAclRequests();
+  }
+
+  @Override
   public List<AclRequests> getCreatedAclRequestsByStatus(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
     return jdbcSelectHelper.selectAclRequests(
@@ -251,6 +282,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public List<SchemaRequest> getAllSchemaRequests() {
+    return jdbcSelectHelper.getAllSchemaRequests();
+  }
+
+  @Override
   public List<SchemaRequest> getCreatedSchemaRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectSchemaRequests(true, requestor, tenantId);
   }
@@ -258,6 +294,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId) {
     return jdbcSelectHelper.selectSchemaRequest(avroSchemaId, tenantId);
+  }
+
+  @Override
+  public List<MessageSchema> selectAllSchemas() {
+    return jdbcSelectHelper.selectAllSchemas();
   }
 
   @Override
@@ -313,6 +354,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
     return jdbcSelectHelper.selectAllRegisterUsersInfo();
+  }
+
+  @Override
+  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
+    return jdbcSelectHelper.getAllRegisterUsersInfo();
   }
 
   public UserInfo getUsersInfo(String username) {
@@ -386,6 +432,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public List<ActivityLog> selectActivityLog(
       String user, String env, boolean allReqs, int tenantId) {
     return jdbcSelectHelper.selectActivityLog(user, env, allReqs, tenantId);
+  }
+
+  @Override
+  public List<ActivityLog> getAllActivityLog() {
+    return jdbcSelectHelper.getAllActivityLog();
   }
 
   @Override

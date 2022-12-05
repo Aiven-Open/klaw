@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.KwMetrics;
 import io.aiven.klaw.dao.KwProperties;
 import io.aiven.klaw.dao.KwRolesPermissions;
 import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.SchemaRequest;
@@ -67,10 +68,14 @@ public interface HandleDbRequests {
 
   List<TopicRequest> getAllTopicRequests(String requestor, int tenantId);
 
+  List<TopicRequest> getAllTopicRequests();
+
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
 
   List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId);
+
+  List<KafkaConnectorRequest> getAllConnectorRequests();
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
@@ -93,6 +98,8 @@ public interface HandleDbRequests {
 
   List<KwKafkaConnector> getConnectors(String connectorName, int tenantId);
 
+  List<KwKafkaConnector> getAllConnectors();
+
   List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId);
 
   List<Topic> getTopicsFromEnv(String envId, int tenantId);
@@ -101,7 +108,11 @@ public interface HandleDbRequests {
 
   List<Topic> getAllTopics(int tenantId);
 
+  List<Topic> getAllTopics();
+
   List<Acl> getSyncAcls(String env, int tenantId);
+
+  List<Acl> getAllSubscriptions();
 
   List<Acl> getSyncAcls(String env, String topic, int tenantId);
 
@@ -119,14 +130,20 @@ public interface HandleDbRequests {
       boolean showRequestsOfAllTeams,
       int tenantId);
 
+  List<AclRequests> getAllAclRequests();
+
   List<AclRequests> getCreatedAclRequestsByStatus(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
 
   List<SchemaRequest> getAllSchemaRequests(boolean allReqs, String requestor, int tenantId);
 
+  List<SchemaRequest> getAllSchemaRequests();
+
   List<SchemaRequest> getCreatedSchemaRequests(String requestor, int tenantId);
 
   SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId);
+
+  List<MessageSchema> selectAllSchemas();
 
   List<Team> selectAllTeamsOfUsers(String username, int tenantId);
 
@@ -149,6 +166,8 @@ public interface HandleDbRequests {
   List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId);
 
   List<RegisterUserInfo> selectAllRegisterUsersInfo();
+
+  List<RegisterUserInfo> getAllRegisterUsersInfo();
 
   UserInfo getUsersInfo(String username);
 
@@ -179,6 +198,8 @@ public interface HandleDbRequests {
   Env selectEnvDetails(String env, int tenantId);
 
   List<ActivityLog> selectActivityLog(String user, String env, boolean allReqs, int tenantId);
+
+  List<ActivityLog> getAllActivityLog();
 
   Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties();
 

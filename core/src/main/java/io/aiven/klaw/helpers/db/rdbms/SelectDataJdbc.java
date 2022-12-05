@@ -1,32 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.AclID;
-import io.aiven.klaw.dao.AclRequestID;
-import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.ActivityLog;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.EnvID;
-import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.KafkaConnectorRequestID;
-import io.aiven.klaw.dao.KwClusterID;
-import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.KwKafkaConnector;
-import io.aiven.klaw.dao.KwProperties;
-import io.aiven.klaw.dao.KwRolesPermissions;
-import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.dao.ProductDetails;
-import io.aiven.klaw.dao.RegisterUserInfo;
-import io.aiven.klaw.dao.SchemaRequest;
-import io.aiven.klaw.dao.SchemaRequestID;
-import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.TeamID;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicID;
-import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.TopicRequestID;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -1159,5 +1134,45 @@ public class SelectDataJdbc {
 
   public List<KwProperties> selectKwProperties() {
     return Lists.newArrayList(kwPropertiesRepo.findAll());
+  }
+
+  public List<Topic> getAllTopics() {
+    return Lists.newArrayList(topicRepo.findAll());
+  }
+
+  public List<Acl> getAllSubscriptions() {
+    return Lists.newArrayList(aclRepo.findAll());
+  }
+
+  public List<MessageSchema> selectAllSchemas() {
+    return Lists.newArrayList(messageSchemaRepo.findAll());
+  }
+
+  public List<KwKafkaConnector> getAllConnectors() {
+    return Lists.newArrayList(kafkaConnectorRepo.findAll());
+  }
+
+  public List<ActivityLog> getAllActivityLog() {
+    return Lists.newArrayList(activityLogRepo.findAll());
+  }
+
+  public List<TopicRequest> getAllTopicRequests() {
+    return Lists.newArrayList(topicRequestsRepo.findAll());
+  }
+
+  public List<AclRequests> getAllAclRequests() {
+    return Lists.newArrayList(aclRequestsRepo.findAll());
+  }
+
+  public List<SchemaRequest> getAllSchemaRequests() {
+    return Lists.newArrayList(schemaRequestRepo.findAll());
+  }
+
+  public List<KafkaConnectorRequest> getAllConnectorRequests() {
+    return Lists.newArrayList(kafkaConnectorRequestsRepo.findAll());
+  }
+
+  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
+    return Lists.newArrayList(registerInfoRepo.findAll());
   }
 }
