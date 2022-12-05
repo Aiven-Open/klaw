@@ -15,6 +15,7 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      useErrorBoundary: (error: unknown) => isUnauthorizedError(error),
       retry: (failureCount: number, error: unknown) => {
         if (isUnauthorizedError(error)) {
           return false;
