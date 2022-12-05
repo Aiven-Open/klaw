@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "dev": "vite",
+    "dev": "vite --mode remote-api",
+    "dev-without-api": "vite",
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
     "prepare": "cd .. && husky install coral/.husky",
