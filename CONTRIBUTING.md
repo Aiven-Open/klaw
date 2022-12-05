@@ -8,15 +8,26 @@ Please read through this document before submitting any issues or pull requests.
 
 ## Content
 
-- [❤️ Code of Conduct](#-code-of-conduct)
-- [Opening an issue](#opening-an-issue)
-- [How to work on an issue](#how-to-work-on-an-issue)
-- [How to make a pull request](#how-to-make-a-pull-request)
-  - [When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
-- [How to merge a pull request](#how-to-merge-a-pull-request)
-- [Guideline commit messages](#guideline-commit-messages)
-  - [ℹ️ Semantic prefixes for commit messages](#-semantic-prefixes-for-commit-messages)
-  - [✍️ Writing a great commit message](#-writing-a-great-commit-message)
+- [Contributing Guidelines](#contributing-guidelines)
+  - [Content](#content)
+  - [❤️ Code of Conduct](#️-code-of-conduct)
+  - [Opening an issue](#opening-an-issue)
+  - [How to work on an issue](#how-to-work-on-an-issue)
+  - [How to make a pull request](#how-to-make-a-pull-request)
+    - [Developer Certificate of Origin](#developer-certificate-of-origin)
+      - [How to sign off commits](#how-to-sign-off-commits)
+      - [How to fix not signed off commits after the fact](#how-to-fix-not-signed-off-commits-after-the-fact)
+    - [✅ When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
+  - [How to merge a pull request](#how-to-merge-a-pull-request)
+    - [Squash and merge](#squash-and-merge)
+  - [Guideline commit messages](#guideline-commit-messages)
+    - [ℹ️ Semantic prefixes for commit messages](#ℹ️-semantic-prefixes-for-commit-messages)
+    - [✍️ Writing a great commit message](#️-writing-a-great-commit-message)
+      - [1. Add a short description as the first line](#1-add-a-short-description-as-the-first-line)
+      - [2. Use the "imperative mood" in the first line](#2-use-the-imperative-mood-in-the-first-line)
+      - [3. Separate your description with a new line from the body](#3-separate-your-description-with-a-new-line-from-the-body)
+      - [4. Use an optional body to explain why not how.](#4-use-an-optional-body-to-explain-why-not-how)
+      - [5. Wrap your body at 72 characters](#5-wrap-your-body-at-72-characters)
 
 ## ❤️ Code of Conduct
 
@@ -61,6 +72,38 @@ GitHub has detailed documentation on [how to create a PR](https://docs.github.co
 
 Be conscious of the scope of one PR. Sometimes it is tempting to get sidetracked for example by refactoring some unrelated code. We've all been there! But this should be a separate PR. Only add changes to your PR related and contribute to the issue you're solving.
 
+### Developer Certificate of Origin
+
+Klaw project requires contributors to adhere to the [Developer Certificate of Origin](https://developercertificate.org/), this means you must sign off your commits. We automatically check that all commit messages contain the `Signed-off-by:` line with your name and email.
+
+#### How to sign off commits
+
+To sign off commits you need to add the `-s` (or `--signoff`) flag to your commit command. For example:
+
+```
+git commit -s -m"docs: Update contribution guide with DCO guidelines"
+```
+
+#### How to fix not signed off commits after the fact
+
+If you opened a Pull Request but not all commits were signed off, no worries, it can be easily fixed. If you had only one commit, go and amend it like follows:
+
+```
+git commit --amend --signoff
+
+```
+
+In case of having multiple commits, you can rebase and sign off, the following command with sign off the last 3 commits:
+
+```
+git rebase --signoff HEAD~3
+```
+
+Once you are done, you need to force push your changes. We recommend using `--force-with-lease` when force pushing:
+
+```
+git push --force-with-lease origin/your-branch-name
+```
 
 ### ✅ When is your pull request ready to be merged?
 
