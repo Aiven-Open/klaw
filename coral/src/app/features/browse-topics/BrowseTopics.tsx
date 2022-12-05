@@ -6,27 +6,19 @@ import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
-import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
 import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
-
-const ALL_ENVIRONMENTS_VALUE = "ALL";
+import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [teamName, setTeamName] = useState<Team>(TEAM_NOT_INITIALIZED);
+  const [environment, setEnvironment] = useState(ENVIRONMENT_NOT_INITIALIZED);
+
   const initialPage = searchParams.get("page");
-  const initialEnv = searchParams.get("environment");
   const initialSearchTerm = searchParams.get("search");
-
   const [page, setPage] = useState(Number(initialPage) || 1);
-  const [environment, setEnvironment] = useState(
-    initialEnv || ALL_ENVIRONMENTS_VALUE
-  );
-
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm || "");
-
-  const { data: topicEnvs } = useGetEnvironments();
 
   const {
     data: topics,
@@ -46,18 +38,9 @@ function BrowseTopics() {
   return (
     <>
       <Flexbox direction={"row"} colGap={"l4"}>
-        {topicEnvs && (
-          <FlexboxItem width={"l7"}>
-            <SelectEnvironment
-              environments={[
-                { label: "All Environments", value: ALL_ENVIRONMENTS_VALUE },
-                ...topicEnvs.map((env) => ({ label: env.name, value: env.id })),
-              ]}
-              activeOption={environment}
-              selectEnvironment={selectEnvironment}
-            />
-          </FlexboxItem>
-        )}
+        <FlexboxItem width={"l7"}>
+          <SelectEnvironment onChange={setEnvironment} />
+        </FlexboxItem>
 
         <FlexboxItem width={"l7"}>
           <SelectTeam onChange={setTeamName} />
@@ -86,17 +69,6 @@ function BrowseTopics() {
       </Flexbox>
     </>
   );
-
-  function selectEnvironment(environment: string) {
-    setEnvironment(environment);
-    if (environment === ALL_ENVIRONMENTS_VALUE) {
-      searchParams.delete("environment");
-    } else {
-      searchParams.set("environment", environment);
-    }
-
-    setSearchParams(searchParams);
-  }
 
   function searchTopics(newSearchTerm: string) {
     setSearchTerm(newSearchTerm);

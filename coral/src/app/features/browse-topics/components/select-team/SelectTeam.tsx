@@ -1,7 +1,7 @@
 import { NativeSelect, Option } from "@aivenio/design-system";
 import { useEffect, useState } from "react";
 import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
-import { Team } from "src/domain/team";
+import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 import { useSearchParams } from "react-router-dom";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
@@ -13,7 +13,7 @@ function SelectTeam(props: SelectTeamProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialTeam = searchParams.get("team");
-  const [team, setTeam] = useState<Team>(ALL_TEAMS_VALUE);
+  const [team, setTeam] = useState<Team>(TEAM_NOT_INITIALIZED);
   const { onChange } = props;
 
   const { data: topicTeams } = useGetTeams();

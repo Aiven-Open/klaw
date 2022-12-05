@@ -4,9 +4,9 @@ import {
   TopicDTOApiResponse,
 } from "src/domain/topic/topic-types";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
+import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
-import isString from "lodash/isString";
 
 const getTopics = async ({
   currentPage = 1,
@@ -23,11 +23,11 @@ const getTopics = async ({
   // the optional team parameter
   // where we still need a way to represent an
   // option for "Select all teams" to users
-  const team = isString(teamName) && teamName !== ALL_TEAMS_VALUE && teamName;
+  const team = teamName !== ALL_TEAMS_VALUE && teamName;
 
   const params: Record<string, string> = {
     pageNo: currentPage.toString(),
-    env: environment,
+    env: environment || ALL_ENVIRONMENTS_VALUE,
     ...(team && { teamName: team }),
     ...(searchTerm && { topicnamesearch: searchTerm }),
   };

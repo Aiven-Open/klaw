@@ -146,7 +146,7 @@ describe("BrowseTopics.tsx", () => {
     it("renders a select element to filter topics by Kafka environment", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Kafka Environment",
+        name: "Kafka environment",
       });
 
       expect(select).toBeEnabled();
@@ -292,7 +292,7 @@ describe("BrowseTopics.tsx", () => {
     it("shows a select element for environments with `ALL` preselected", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Kafka Environment",
+        name: "Kafka environment",
       });
 
       expect(select).toHaveValue("ALL");
@@ -301,7 +301,7 @@ describe("BrowseTopics.tsx", () => {
     it("shows an information that the list is updated after user selected an environment", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Kafka Environment",
+        name: "Kafka environment",
       });
       const option = within(select).getByRole("option", {
         name: "DEV",
@@ -317,7 +317,7 @@ describe("BrowseTopics.tsx", () => {
     it("changes active selected option when user selects `DEV`", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Kafka Environment",
+        name: "Kafka environment",
       });
       const option = within(select).getByRole("option", {
         name: "DEV",
@@ -339,7 +339,7 @@ describe("BrowseTopics.tsx", () => {
       expect(getAllTopics()).toHaveLength(10);
 
       const select = screen.getByRole("combobox", {
-        name: "Kafka Environment",
+        name: "Kafka environment",
       });
       const option = within(select).getByRole("option", {
         name: "DEV",
