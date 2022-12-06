@@ -105,4 +105,4 @@ As a rule, please don't use css classes from the design system. All styles shoul
 
 ## Documentation
 
-[More detailed documentation](docs) about `coral` can be found in the `docs` folder
+[More detailed documentation](docs) about `coral` can be found in the `docs` folder.
