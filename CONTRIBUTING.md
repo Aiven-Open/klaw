@@ -12,6 +12,7 @@ Please read through this document before submitting any issues or pull requests.
 - [Opening an issue](#opening-an-issue)
 - [How to work on an issue](#how-to-work-on-an-issue)
 - [How to make a pull request](#how-to-make-a-pull-request)
+  - [Developer Certificate of Origin](#developer-certificate-of-origin)
   - [When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
 - [How to merge a pull request](#how-to-merge-a-pull-request)
 - [Guideline commit messages](#guideline-commit-messages)
@@ -61,6 +62,38 @@ GitHub has detailed documentation on [how to create a PR](https://docs.github.co
 
 Be conscious of the scope of one PR. Sometimes it is tempting to get sidetracked for example by refactoring some unrelated code. We've all been there! But this should be a separate PR. Only add changes to your PR related and contribute to the issue you're solving.
 
+### Developer Certificate of Origin
+
+Klaw project requires contributors to adhere to the [Developer Certificate of Origin](https://developercertificate.org/), this means you must sign off your commits. We automatically check that all commit messages contain the `Signed-off-by:` line with your name and email.
+
+#### How to sign off commits
+
+To sign off commits you need to add the `-s` (or `--signoff`) flag to your commit command. For example:
+
+```
+git commit -s -m"docs: Update contribution guide with DCO guidelines"
+```
+
+#### How to fix not signed off commits after the fact
+
+If you opened a Pull Request but not all commits were signed off, no worries, it can be easily fixed. If you had only one commit, go and amend it like follows:
+
+```
+git commit --amend --signoff
+
+```
+
+In case of having multiple commits, you can rebase and sign off, the following command with sign off the last 3 commits:
+
+```
+git rebase --signoff HEAD~3
+```
+
+Once you are done, you need to force push your changes. We recommend using `--force-with-lease` when force pushing:
+
+```
+git push --force-with-lease origin/your-branch-name
+```
 
 ### ✅ When is your pull request ready to be merged?
 
