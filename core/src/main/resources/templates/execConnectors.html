@@ -496,7 +496,7 @@
 										<table width="100%">
 											<tr>
 												<td align="left"><h3 class="card-title">Connector : {{ topicRequest.connectorName }}</h3></td>
-												<td align="right" ng-show="topicRequest.connectorStatus == 'created'">
+												<td align="right" ng-show="topicRequest.connectorStatus == 'created' && userlogged != topicRequest.requestor">
 													<button type="button" ng-click="execConnectorRequestUp(topicRequest.connectorId);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execConnectorRequestReject(topicRequest.connectorId);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
