@@ -60,6 +60,9 @@ public class UtilControllerService {
   @Value("${server.servlet.context-path:}")
   private String kwContextPath;
 
+  @Value("${klaw.coral.enabled:false}")
+  private boolean coralEnabled;
+
   @Value("${klaw.enable.sso:false}")
   private String ssoEnabled;
 
@@ -558,6 +561,9 @@ public class UtilControllerService {
       dashboardData.put("addDeleteEditClusters", addDeleteEditClusters);
       dashboardData.put("addDeleteEditEnvs", addDeleteEditEnvs);
       dashboardData.put("larit", "");
+
+      // coral attributes
+      dashboardData.put("coralEnabled", Boolean.toString(coralEnabled));
 
       return dashboardData;
     } else return null;
