@@ -8,26 +8,16 @@ Please read through this document before submitting any issues or pull requests.
 
 ## Content
 
-- [Contributing Guidelines](#contributing-guidelines)
-  - [Content](#content)
-  - [❤️ Code of Conduct](#️-code-of-conduct)
-  - [Opening an issue](#opening-an-issue)
-  - [How to work on an issue](#how-to-work-on-an-issue)
-  - [How to make a pull request](#how-to-make-a-pull-request)
-    - [Developer Certificate of Origin](#developer-certificate-of-origin)
-      - [How to sign off commits](#how-to-sign-off-commits)
-      - [How to fix not signed off commits after the fact](#how-to-fix-not-signed-off-commits-after-the-fact)
-    - [✅ When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
-  - [How to merge a pull request](#how-to-merge-a-pull-request)
-    - [Squash and merge](#squash-and-merge)
-  - [Guideline commit messages](#guideline-commit-messages)
-    - [ℹ️ Semantic prefixes for commit messages](#ℹ️-semantic-prefixes-for-commit-messages)
-    - [✍️ Writing a great commit message](#️-writing-a-great-commit-message)
-      - [1. Add a short description as the first line](#1-add-a-short-description-as-the-first-line)
-      - [2. Use the "imperative mood" in the first line](#2-use-the-imperative-mood-in-the-first-line)
-      - [3. Separate your description with a new line from the body](#3-separate-your-description-with-a-new-line-from-the-body)
-      - [4. Use an optional body to explain why not how.](#4-use-an-optional-body-to-explain-why-not-how)
-      - [5. Wrap your body at 72 characters](#5-wrap-your-body-at-72-characters)
+- [❤️ Code of Conduct](#-code-of-conduct)
+- [Opening an issue](#opening-an-issue)
+- [How to work on an issue](#how-to-work-on-an-issue)
+- [How to make a pull request](#how-to-make-a-pull-request)
+  - [Developer Certificate of Origin](#developer-certificate-of-origin)
+  - [When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
+- [How to merge a pull request](#how-to-merge-a-pull-request)
+- [Guideline commit messages](#guideline-commit-messages)
+  - [ℹ️ Semantic prefixes for commit messages](#-semantic-prefixes-for-commit-messages)
+  - [✍️ Writing a great commit message](#-writing-a-great-commit-message)
 
 ## ❤️ Code of Conduct
 
