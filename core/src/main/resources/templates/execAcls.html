@@ -502,7 +502,7 @@
 
 													<h3 ng-show="aclRequest.aclPatternType == 'PREFIXED'" class="card-title">Topic : <a href="topicOverview?topicname={{aclRequest.topicname}}">{{ aclRequest.topicname }}</a> (PREFIXED)</h3>
 												</td>
-												<td align="right" ng-show="aclRequest.aclstatus == 'created'">
+												<td align="right" ng-show="aclRequest.aclstatus == 'created' && userlogged != aclRequest.username">
 													<button type="button" ng-click="execAclRequest(aclRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execAclRequestDecline(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>

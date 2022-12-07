@@ -496,7 +496,7 @@
 										<table width="100%">
 											<tr>
 												<td align="left"><h3 class="card-title">Topic : {{ topicRequest.topicname }}</h3></td>
-												<td align="right" ng-show="topicRequest.topicstatus == 'created'">
+												<td align="right" ng-show="topicRequest.topicstatus == 'created' && userlogged != topicRequest.requestor">
 													<button type="button" ng-click="execTopicRequestUp(topicRequest.topicid);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execTopicRequestReject(topicRequest.topicid);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
