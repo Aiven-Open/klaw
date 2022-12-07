@@ -497,7 +497,7 @@
 									<div>
 										<table width="100%">
 											<tr>
-												<td align="left"><h3 class="card-title">Topic : {{ schemaRequest.topicname }}</h3></td>
+												<td align="right"  ng-show="schemaRequest.topicstatus == 'created' && userlogged != schemaRequest.username">
 												<td align="right"  ng-show="schemaRequest.topicstatus == 'created'">
 													<button type="button" ng-click="execSchemaRequest(schemaRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
