@@ -15,14 +15,12 @@ import {
 import { mockGetEnvironments } from "src/domain/environment";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-
-// This mirrors the formatting formation used in `/domain`
-// it's a temp implementation here and will be removed
-// as soon as we have the final API schema
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 describe("Topics", () => {
   beforeAll(() => {
     server.listen();
+    mockIntersectionObserver();
   });
 
   afterAll(() => {
@@ -76,17 +74,17 @@ describe("Topics", () => {
       expect(select).toBeEnabled();
     });
 
-    it("shows a list of topics", async () => {
-      const list = screen.getByRole("list", { name: "Topics" });
+    it("shows a table with topics", async () => {
+      const table = screen.getByRole("table", { name: /Topics overview/ });
 
-      expect(list).toBeVisible();
+      expect(table).toBeVisible();
     });
 
-    it("shows list items for each topic", () => {
-      const list = screen.getByRole("list", { name: "Topics" });
-      const listItem = within(list).getAllByRole("listitem");
+    it("shows a table row for each topic", () => {
+      const table = screen.getByRole("table", { name: /Topics overview/ });
+      const row = within(table).getAllByRole("rowheader");
 
-      expect(listItem).toHaveLength(mockedResponseTransformed.entries.length);
+      expect(row).toHaveLength(mockedResponseTransformed.entries.length);
     });
   });
 });

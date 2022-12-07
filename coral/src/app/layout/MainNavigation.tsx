@@ -15,6 +15,7 @@ function MainNavigation() {
       backgroundColor={"grey-0"}
       aria-label={"Main navigation"}
       width={"full"}
+      minHeight={"full"}
       paddingTop={"l2"}
     >
       <ul>

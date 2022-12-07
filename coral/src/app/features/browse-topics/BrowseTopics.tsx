@@ -1,7 +1,7 @@
 import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
-import TopicList from "src/app/features/browse-topics/components/topic-list/TopicList";
+import TopicTable from "src/app/features/browse-topics/components/topic-table/TopicTable";
 import { useState } from "react";
 import { Flexbox, FlexboxItem } from "@aivenio/design-system";
 import { useSearchParams } from "react-router-dom";
@@ -57,7 +57,13 @@ function BrowseTopics() {
         {isError && <div>Something went wrong 😔</div>}
 
         {!isLoading && !hasTopics && <div>No topics found</div>}
-        {hasTopics && <TopicList topics={topics.entries} />}
+        {hasTopics && (
+          <TopicTable
+            topics={topics.entries}
+            activePage={topics.currentPage}
+            totalPages={topics.totalPages}
+          />
+        )}
 
         {hasMultiplePages && (
           <Pagination

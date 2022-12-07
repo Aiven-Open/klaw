@@ -1,10 +1,10 @@
-import { Box, Grid, GridItem } from "@aivenio/design-system";
+import { Box, Flexbox, Grid, GridItem } from "@aivenio/design-system";
 import MainNavigation from "src/app/layout/MainNavigation";
 import Header from "src/app/layout/Header";
 import SkipLink from "src/app/layout/SkipLink";
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 
-function Layout({ children }: { children: JSX.Element }) {
+function Layout({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <>
@@ -26,10 +26,18 @@ function Layout({ children }: { children: JSX.Element }) {
         >
           <Header />
         </GridItem>
-        <MainNavigation />
-        <Box component={"main"} padding={"l4"}>
-          <div ref={ref}>{children}</div>
-        </Box>
+        <GridItem colStart={"1"} colEnd={"2"} rowStart={"2"}>
+          <MainNavigation />
+        </GridItem>
+        <GridItem colStart={"2"} colEnd={"12"}>
+          <Box component={"main"} padding={"l2"} width={"full"}>
+            <div ref={ref}>
+              <Flexbox direction={"column"} rowGap={"l2"}>
+                {children}
+              </Flexbox>
+            </div>
+          </Box>
+        </GridItem>
       </Grid>
     </>
   );
