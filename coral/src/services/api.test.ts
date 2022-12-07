@@ -1,9 +1,9 @@
 import api, {
   AbsolutePathname,
   HTTPMethod,
-  UnauthorizedError,
-  ClientError,
-  ServerError,
+  isClientError,
+  isServerError,
+  isUnauthorizedError,
 } from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { rest } from "msw";
@@ -126,8 +126,8 @@ describe("API client", () => {
         describe("When request done without authentication", () => {
           it("should throw UnauthorizedError", async () => {
             const isExpectedError = await unauthorized().catch(
-              (error: Error) => {
-                if (error instanceof UnauthorizedError) {
+              (error: unknown) => {
+                if (isUnauthorizedError(error)) {
                   expect(error.status).toBe(401);
                   expect(error.statusText).toBe("Unauthorized");
                   return true;
@@ -149,7 +149,7 @@ describe("API client", () => {
         describe("when request fails due 4xx status code", () => {
           it("should throw ClientError", async () => {
             const isExpectedError = await badRequest().catch((error: Error) => {
-              if (error instanceof ClientError) {
+              if (isClientError(error)) {
                 expect(error.status).toBe(400);
                 expect(error.statusText).toBe("Bad Request");
                 return true;
@@ -164,7 +164,7 @@ describe("API client", () => {
           it("should throw ServerError", async () => {
             const isExpectedError = await internalError().catch(
               (error: Error) => {
-                if (error instanceof ServerError) {
+                if (isServerError(error)) {
                   expect(error.status).toBe(500);
                   expect(error.statusText).toBe("Internal Server Error");
                   return true;

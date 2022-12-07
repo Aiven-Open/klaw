@@ -1,4 +1,5 @@
 import { getHTTPBaseAPIUrl } from "src/config";
+import isPlainObject from "lodash/isPlainObject";
 
 enum HTTPMethod {
   GET = "GET",
@@ -16,29 +17,86 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
-class HTTPError extends Error {
+type HTTPError = {
   status: number;
   statusText: string;
-  constructor(
-    status: number,
-    statusText: string,
-    message?: string,
-    options?: ErrorOptions
-  ) {
-    super(message, options);
-    this.status = status;
-    this.statusText = statusText;
-  }
+  data: SomeObject | string;
+  headers: Headers;
+};
+
+type UnauthorizedError = HTTPError & { status: 401 };
+type ClientError = HTTPError & {
+  status:
+    | 400
+    | 402
+    | 403
+    | 404
+    | 405
+    | 406
+    | 407
+    | 408
+    | 409
+    | 410
+    | 411
+    | 412
+    | 413
+    | 414
+    | 415
+    | 416
+    | 417
+    | 418
+    | 421
+    | 422
+    | 423
+    | 424
+    | 426
+    | 428
+    | 429
+    | 431
+    | 444
+    | 451
+    | 499;
+};
+type ServerError = HTTPError & {
+  status: 500 | 501 | 502 | 503 | 504 | 505 | 506 | 507 | 508 | 510 | 511 | 599;
+};
+
+function hasHTTPErrorProperties(
+  value: Record<string, unknown>
+): value is Record<keyof HTTPError, unknown> {
+  return (
+    "status" in value &&
+    "statusText" in value &&
+    "data" in value &&
+    "headers" in value
+  );
 }
 
-class ServerError extends HTTPError {}
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return isPlainObject(value);
+}
 
-class ClientError extends HTTPError {}
-
-class UnauthorizedError extends ClientError {
-  constructor(message?: string, options?: ErrorOptions) {
-    super(401, "Unauthorized", message, options);
+function isHTTPError(value: unknown): value is HTTPError {
+  if (isRecord(value) && hasHTTPErrorProperties(value)) {
+    return (
+      typeof value.status === "number" &&
+      typeof value.statusText === "string" &&
+      (typeof value.data === "string" || typeof value.data === "object")
+    );
   }
+  return false;
+}
+
+function isUnauthorizedError(value: unknown): value is UnauthorizedError {
+  return isHTTPError(value) && value.status === 401;
+}
+
+function isClientError(value: unknown): value is ClientError {
+  return isHTTPError(value) && value.status >= 400 && value.status < 500;
+}
+
+function isServerError(value: unknown): value is ServerError {
+  return isHTTPError(value) && value.status >= 500;
 }
 
 function isRedirectToPathname(response: Response, pathname: string): boolean {
@@ -51,7 +109,10 @@ function isRedirectToPathname(response: Response, pathname: string): boolean {
 
 function transformHTTPRedirectToLoginTo401(response: Response): Response {
   if (isRedirectToPathname(response, "/login")) {
-    throw new UnauthorizedError();
+    return new Response("Unauthorized", {
+      status: 401,
+      statusText: "Unauthorized",
+    });
   }
   return response;
 }
@@ -94,9 +155,9 @@ function withPayload<TBody extends SomeObject | URLSearchParams>(
   data: TBody
 ): Partial<RequestInit> {
   if (data instanceof URLSearchParams) {
-    return { method, redirect: "manual", ...withFormPayload(data) };
+    return { method, ...withFormPayload(data) };
   } else {
-    return { method, redirect: "manual", ...withJSONPayload(data) };
+    return { method, ...withJSONPayload(data) };
   }
 }
 
@@ -105,41 +166,47 @@ function withoutPayload(
 ): Partial<RequestInit> {
   return {
     method,
-    redirect: "manual",
     headers: {
       accept: CONTENT_TYPE_JSON,
     },
   };
 }
 
-const checkStatus = (response: Response): Response => {
+const checkStatus = (response: Response): Promise<Response> => {
   if (!response.ok) {
-    if (response.status === 401) {
-      throw new UnauthorizedError();
-    } else if (response.status >= 500) {
-      throw new ServerError(response.status, response.statusText);
-    } else if (response.status >= 400) {
-      throw new ClientError(response.status, response.statusText);
-    }
+    return Promise.reject(response);
   }
-  return response;
+  return Promise.resolve(response);
 };
 
-function parseResponseBody<T extends SomeObject>(response: Response): T {
+function parseResponseBody<T extends SomeObject>(
+  response: Response
+): Promise<T> {
   const contentType = response.headers.get("content-type");
   if (contentType === CONTENT_TYPE_JSON) {
     if (response.status === 204) {
-      return {} as unknown as T;
+      return Promise.resolve({} as unknown as T);
     } else {
-      return response.json() as unknown as T;
+      return response.json().then((data) => data as unknown as T);
     }
   } else {
-    return response.text() as unknown as T;
+    return response.text().then((data) => data as unknown as T);
   }
 }
 
-function handleHTTPError(error: Error): never {
-  throw error;
+function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
+  if (errorOrResponse instanceof Response) {
+    return parseResponseBody(errorOrResponse).then((body) => {
+      const httpError: HTTPError = {
+        data: body,
+        status: errorOrResponse.status,
+        statusText: errorOrResponse.statusText,
+        headers: errorOrResponse.headers,
+      };
+      return Promise.reject(httpError);
+    });
+  }
+  return Promise.reject(errorOrResponse);
 }
 
 function handleResponse<TResponse extends SomeObject>(
@@ -208,5 +275,5 @@ export default {
   delete: delete_,
 };
 
-export type { AbsolutePathname };
-export { HTTPMethod, ServerError, ClientError, UnauthorizedError };
+export type { AbsolutePathname, HTTPError };
+export { HTTPMethod, isUnauthorizedError, isServerError, isClientError };

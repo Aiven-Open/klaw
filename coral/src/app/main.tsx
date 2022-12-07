@@ -6,12 +6,25 @@ import "@aivenio/design-system/dist/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "/src/app/main.module.css";
+import { isUnauthorizedError } from "src/services/api";
 
 const DEV_MODE = import.meta.env.DEV;
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      useErrorBoundary: (error: unknown) => isUnauthorizedError(error),
+      retry: (failureCount: number, error: unknown) => {
+        if (isUnauthorizedError(error)) {
+          return false;
+        }
+        return failureCount < 2;
+      },
+    },
+  },
+});
 
 function prepare(): Promise<void | ServiceWorkerRegistration> {
   if (DEV_MODE) {
