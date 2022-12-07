@@ -3,6 +3,8 @@ import {
   within,
   cleanup,
   waitForElementToBeRemoved,
+  fireEvent,
+  waitFor,
 } from "@testing-library/react/pure";
 import Topics from "src/app/pages/topics";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -16,6 +18,8 @@ import { mockGetEnvironments } from "src/domain/environment";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+
+const { location } = window;
 
 describe("Topics", () => {
   beforeAll(() => {
@@ -56,6 +60,47 @@ describe("Topics", () => {
       });
 
       expect(headline).toBeVisible();
+    });
+
+    it("renders 'Request A New Topic' primary action in heading", async () => {
+      const headline = screen.getByRole("button", {
+        name: "Request A New Topic",
+      });
+
+      expect(headline).toBeVisible();
+    });
+
+    it("renders 'Request A New Topic' primary action in heading", async () => {
+      const primaryAction = screen.getByRole("button", {
+        name: "Request A New Topic",
+      });
+
+      expect(primaryAction).toBeVisible();
+    });
+
+    it("navigates to '/requestTopics' on clicking the primary action in heading", async () => {
+      // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
+      // But this delete is necessary to correctly mock window.location
+      // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
+      // Sources:
+      //  https://stackoverflow.com/questions/54090231/how-to-fix-error-not-implemented-navigation-except-hash-changes
+      //  https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href/
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete window.location;
+      window.location = {
+        href: "/topics",
+      } as Location;
+
+      const primaryAction = screen.getByRole("button", {
+        name: "Request A New Topic",
+      });
+
+      fireEvent.click(primaryAction);
+
+      waitFor(() => expect(window.location.href).toBe("/requestTopics"));
+
+      window.location = location;
     });
 
     it("renders a select element to filter topics by Kafka environment", async () => {
