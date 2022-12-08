@@ -1,23 +1,23 @@
 import {
-  screen,
-  within,
   cleanup,
-  waitForElementToBeRemoved,
-  fireEvent,
+  screen,
   waitFor,
+  waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
 import Topics from "src/app/pages/topics";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { server } from "src/services/api-mocks/server";
+import { mockGetEnvironments } from "src/domain/environment";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import {
   mockedResponseSinglePage,
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import { mockGetEnvironments } from "src/domain/environment";
-import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { server } from "src/services/api-mocks/server";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const { location } = window;
 
@@ -62,23 +62,16 @@ describe("Topics", () => {
       expect(headline).toBeVisible();
     });
 
-    it("renders 'Request A New Topic' primary action in heading", async () => {
-      const headline = screen.getByRole("button", {
+    it("renders 'Request A New Topic' button in heading", async () => {
+      const button = screen.getByRole("button", {
         name: "Request A New Topic",
       });
 
-      expect(headline).toBeVisible();
+      expect(button).toBeVisible();
+      expect(button).toBeEnabled();
     });
 
-    it("renders 'Request A New Topic' primary action in heading", async () => {
-      const primaryAction = screen.getByRole("button", {
-        name: "Request A New Topic",
-      });
-
-      expect(primaryAction).toBeVisible();
-    });
-
-    it("navigates to '/requestTopics' on clicking the primary action in heading", async () => {
+    it("navigates to '/requestTopics' when user clicks the button 'Request A New Topic'", async () => {
       // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
       // But this delete is necessary to correctly mock window.location
       // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
@@ -92,13 +85,40 @@ describe("Topics", () => {
         href: "/topics",
       } as Location;
 
-      const primaryAction = screen.getByRole("button", {
+      const button = screen.getByRole("button", {
         name: "Request A New Topic",
       });
 
-      fireEvent.click(primaryAction);
+      userEvent.click(button);
 
-      waitFor(() => expect(window.location.href).toBe("/requestTopics"));
+      await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
+
+      window.location = location;
+    });
+
+    it("navigates to '/requestTopics' when user presses Enter while 'Request A New Topic' button is focused", async () => {
+      // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
+      // But this delete is necessary to correctly mock window.location
+      // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
+      // Sources:
+      //  https://stackoverflow.com/questions/54090231/how-to-fix-error-not-implemented-navigation-except-hash-changes
+      //  https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href/
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete window.location;
+      window.location = {
+        href: "/topics",
+      } as Location;
+
+      const button = screen.getByRole("button", {
+        name: "Request A New Topic",
+      });
+
+      button.focus();
+
+      userEvent.keyboard("{Enter}");
+
+      await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
 
       window.location = location;
     });
