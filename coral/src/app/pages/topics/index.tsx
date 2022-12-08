@@ -1,14 +1,15 @@
 import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
-import { Flexbox, PageHeader } from "@aivenio/design-system";
+import { PageHeader } from "@aivenio/design-system";
+import Layout from "src/app/layout/Layout";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 
 const Topics = () => {
   return (
     <AuthenticationRequiredBoundary>
-      <Flexbox direction={"column"} rowGap={"l2"}>
+      <Layout>
         <PageHeader title={"Browse all topics"} />
         <BrowseTopics />
-      </Flexbox>
+      </Layout>
     </AuthenticationRequiredBoundary>
   );
 };

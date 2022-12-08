@@ -12,6 +12,7 @@ import userEvent from "@testing-library/user-event";
 import { mockGetEnvironments } from "src/domain/environment";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 jest.mock("@aivenio/design-system", () => {
   return {
@@ -24,6 +25,7 @@ jest.mock("@aivenio/design-system", () => {
 describe("BrowseTopics.tsx", () => {
   beforeAll(() => {
     server.listen();
+    mockIntersectionObserver();
   });
 
   afterAll(() => {
@@ -161,22 +163,27 @@ describe("BrowseTopics.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders the topic list", async () => {
+    it("renders the topic table with information about the pages", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
-      const list = screen.getByRole("list", { name: "Topics" });
 
-      expect(list).toBeVisible();
+      const table = screen.getByRole("table", {
+        name: `Topics overview, page 1 of 1`,
+      });
+
+      expect(table).toBeVisible();
     });
 
-    it("shows topic names as list item", async () => {
+    it("shows topic names row headers", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
 
-      const list = screen.getByRole("list", { name: "Topics" });
+      const table = screen.getByRole("table", {
+        name: "Topics overview, page 1 of 1",
+      });
 
-      const topicCard = within(list).getByText(
-        mockedResponseTransformed.entries[0].topicName
-      );
-      expect(topicCard).toBeVisible();
+      const rowHeader = within(table).getByRole("rowheader", {
+        name: mockedResponseTransformed.entries[0].topicName,
+      });
+      expect(rowHeader).toBeVisible();
     });
 
     it("does not render the pagination", async () => {
@@ -211,6 +218,14 @@ describe("BrowseTopics.tsx", () => {
       cleanup();
     });
 
+    it("renders the topic table with information about the pages", async () => {
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const pagination = screen.getByRole("table", {
+        name: "Topics overview, page 2 of 4",
+      });
+
+      expect(pagination).toBeVisible();
+    });
     it("shows a pagination", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const pagination = screen.getByRole("navigation", {
@@ -331,9 +346,9 @@ describe("BrowseTopics.tsx", () => {
 
     it("fetches new data when user selects `DEV`", async () => {
       const getAllTopics = () =>
-        within(screen.getByRole("list", { name: "Topics" })).getAllByRole(
-          "heading"
-        );
+        within(
+          screen.getByRole("table", { name: /Topics overview/ })
+        ).getAllByRole("rowheader");
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
 
       expect(getAllTopics()).toHaveLength(10);
@@ -397,9 +412,9 @@ describe("BrowseTopics.tsx", () => {
 
     it("fetches new data when user selects `TEST_TEAM_02`", async () => {
       const getAllTopics = () =>
-        within(screen.getByRole("list", { name: "Topics" })).getAllByRole(
-          "heading"
-        );
+        within(
+          screen.getByRole("table", { name: /Topics overview/ })
+        ).getAllByRole("rowheader");
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
 
       expect(getAllTopics()).toHaveLength(10);
