@@ -192,7 +192,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
 
       afterEach(cleanup);
 
-      xit(`updates button text for submenu item when user opens the menu`, async () => {
+      it(`updates button text for submenu item when user opens the menu`, async () => {
         const button = screen.getByRole("button");
         expect(button).toHaveTextContent(textButtonSubmenuClosed);
 
@@ -200,7 +200,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
         expect(button).toHaveTextContent(textButtonSubmenuOpened);
       });
 
-      xit(`shows the submenu link list when user opens the menu`, async () => {
+      it(`shows the submenu link list when user opens the menu`, async () => {
         const listHidden = screen.queryByRole("list");
         expect(listHidden).not.toBeInTheDocument();
 
