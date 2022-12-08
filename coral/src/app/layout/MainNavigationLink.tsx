@@ -3,7 +3,7 @@ import data from "@aivenio/design-system/dist/src/icons/console";
 import classes from "src/app/layout/MainNavigationLink.module.css";
 
 type MainNavigationLinkProps = {
-  icon: typeof data;
+  icon?: typeof data;
   href: string;
   linkText: string;
   active?: boolean;
@@ -12,12 +12,16 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
   const { icon, href, linkText, active } = props;
   return (
     <Box
-      marginBottom={"l1"}
       className={
         active ? classes.mainNavigationLinkActive : classes.mainNavigationLink
       }
-      paddingLeft={"l2"}
-      marginRight={"l2"}
+      marginTop={"-3"}
+      paddingTop={"3"}
+      paddingRight={"l2"}
+      paddingLeft={"l5"}
+      marginLeft={"-l3"}
+      marginBottom={"3"}
+      paddingBottom={"3"}
     >
       <a href={href} aria-current={active && "page"}>
         <Flexbox
@@ -26,7 +30,7 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
           alignItems={"center"}
           colGap={"l1"}
         >
-          <Icon icon={icon} />
+          {icon && <Icon icon={icon} />}
           <span>{linkText}</span>
         </Flexbox>
       </a>

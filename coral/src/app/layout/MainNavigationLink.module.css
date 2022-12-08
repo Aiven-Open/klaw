@@ -13,5 +13,6 @@
       main-100 is used in the meantime */
 .main-navigation-link-active {
   /*Primary*/
+  background-color: white;
   color: #a70045;
 }

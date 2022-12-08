@@ -16,7 +16,7 @@ jest.mock("@aivenio/design-system", () => {
 
 describe("MainNavigationLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
-  const mockIcon = "" as unknown as typeof data;
+  const mockIcon = "fake-icon" as unknown as typeof data;
 
   describe("renders a default link with required props", () => {
     beforeAll(() => {

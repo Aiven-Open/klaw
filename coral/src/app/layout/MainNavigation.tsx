@@ -2,11 +2,11 @@ import { Box } from "@aivenio/design-system";
 import database from "@aivenio/design-system/dist/src/icons/database";
 import codeBlock from "@aivenio/design-system/dist/src/icons/codeBlock";
 import layoutGroupBy from "@aivenio/design-system/dist/src/icons/layoutGroupBy";
-import code from "@aivenio/design-system/dist/src/icons/code";
 import people from "@aivenio/design-system/dist/src/icons/people";
 import list from "@aivenio/design-system/dist/src/icons/list";
 import cog from "@aivenio/design-system/dist/src/icons/cog";
 import MainNavigationLink from "src/app/layout/MainNavigationLink";
+import MainNavigationSubmenuList from "src/app/layout/MainNavigationSubmenuList";
 
 function MainNavigation() {
   return (
@@ -23,40 +23,58 @@ function MainNavigation() {
           <MainNavigationLink
             icon={database}
             href={`/index`}
-            linkText={"Overview"}
+            linkText={"Overviews"}
           />
         </li>
         <li>
-          <MainNavigationLink
+          <MainNavigationSubmenuList
+            expanded={true}
             icon={codeBlock}
-            href={`/topics`}
-            linkText={"Topics"}
-            active={true}
-          />
+            text={"Topics"}
+          >
+            <MainNavigationLink
+              href={`/topics`}
+              linkText={"All Topics"}
+              active={true}
+            />
+
+            <MainNavigationLink
+              href={`/execTopics`}
+              linkText={"Approval Requests"}
+            />
+
+            <MainNavigationLink
+              href={`/myTopicRequests`}
+              linkText={"My Team's Requests"}
+            />
+          </MainNavigationSubmenuList>
         </li>
         <li>
-          <MainNavigationLink
+          <MainNavigationSubmenuList
             icon={layoutGroupBy}
-            href={`/kafkaConnectors`}
-            linkText={"Kafka Connector"}
-          />
+            text={"Kafka Connector"}
+          >
+            <MainNavigationLink
+              href={`/kafkaConnectors`}
+              linkText={"All Connectors"}
+            />
+            <MainNavigationLink
+              href={`/kafkaConnectors`}
+              linkText={"Connectors Requests"}
+            />
+          </MainNavigationSubmenuList>
         </li>
-        {/*@TODO link missing*/}
-        <li>
-          <MainNavigationLink icon={code} href={`/`} linkText={"Schemas"} />
-        </li>
-        <li>
-          <MainNavigationLink
-            icon={people}
-            href={`/users`}
-            linkText={"Users and teams"}
-          />
-        </li>
+        <MainNavigationSubmenuList icon={people} text={"Users and Teams"}>
+          <MainNavigationLink href={`/users`} linkText={"Users"} />
+          <MainNavigationLink href={`/teams`} linkText={"Teams"} />
+          <MainNavigationLink href={`/execUsers`} linkText={"User Requests"} />
+        </MainNavigationSubmenuList>
+
         <li>
           <MainNavigationLink
             icon={list}
             href={`/activityLog`}
-            linkText={"Audit log"}
+            linkText={"Audit Log"}
           />
         </li>
 
