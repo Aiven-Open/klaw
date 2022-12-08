@@ -216,11 +216,11 @@ describe("MainNavigationSubmenuList.tsx", () => {
 
       it(`shows the submenu links when user has opened the menu`, async () => {
         const linkOne = testMainNavigationLinks[0].props.children;
-        const linkHidden = screen.getByRole("link", {
+        const linkHidden = screen.queryByRole("link", {
           name: linkOne,
           hidden: true,
         });
-        expect(linkHidden).not.toBeVisible();
+        expect(linkHidden).not.toBeInTheDocument();
 
         const button = screen.getByRole("button", {
           name: textButtonSubmenuClosed,
@@ -286,8 +286,11 @@ describe("MainNavigationSubmenuList.tsx", () => {
           name: textButtonSubmenuOpened,
         });
         await userEvent.click(button);
-        const link = screen.getByRole("link", { name: linkOne, hidden: true });
-        expect(link).not.toBeVisible();
+        const link = screen.queryByRole("link", {
+          name: linkOne,
+          hidden: true,
+        });
+        expect(link).not.toBeInTheDocument();
       });
     });
   });

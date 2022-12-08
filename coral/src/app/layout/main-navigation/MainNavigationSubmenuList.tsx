@@ -51,18 +51,19 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
       </button>
 
       <Box marginTop={"l1"} aria-hidden={open ? "false" : "true"}>
-        <Box
-          component={"ul"}
-          paddingLeft={"l3"}
-          aria-label={`${text} submenu`}
-          style={{ display: open ? "block" : "none" }}
-        >
-          {children.map((child, index) => {
-            return (
-              <li key={`${text.replaceAll(" ", "")}-${index}`}>{child}</li>
-            );
-          })}
-        </Box>
+        {open && (
+          <Box
+            component={"ul"}
+            paddingLeft={"l3"}
+            aria-label={`${text} submenu`}
+          >
+            {children.map((child, index) => {
+              return (
+                <li key={`${text.replaceAll(" ", "")}-${index}`}>{child}</li>
+              );
+            })}
+          </Box>
+        )}
       </Box>
     </>
   );

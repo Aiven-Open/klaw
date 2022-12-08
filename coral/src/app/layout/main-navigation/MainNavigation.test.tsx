@@ -217,7 +217,7 @@ describe("SidebarNavigation.tsx", () => {
               name: linkText,
               hidden: true,
             });
-            expect(link).not.toBeVisible();
+            expect(link).not.toBeInTheDocument();
           });
         });
       });
