@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -49,7 +50,8 @@ class SchemaServiceTest {
     when(getAdminClient.getRequestDetails(
             eq(getSchemaVersionsUrl),
             eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.SCHEMA_REGISTRY)))
+            eq(KafkaClustersType.SCHEMA_REGISTRY),
+            anyString()))
         .thenReturn(Pair.of(getSchemaVersionsUrl, restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/" + getSchemaVersionsUrl))
@@ -62,7 +64,8 @@ class SchemaServiceTest {
     when(getAdminClient.getRequestDetails(
             eq(getSchemaCompatibilityUrl),
             eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.SCHEMA_REGISTRY)))
+            eq(KafkaClustersType.SCHEMA_REGISTRY),
+            anyString()))
         .thenReturn(Pair.of(getSchemaCompatibilityUrl, restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/" + getSchemaCompatibilityUrl))
@@ -77,11 +80,12 @@ class SchemaServiceTest {
     when(getAdminClient.getRequestDetails(
             eq(getSchemaUrl),
             eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.SCHEMA_REGISTRY)))
+            eq(KafkaClustersType.SCHEMA_REGISTRY),
+            anyString()))
         .thenReturn(Pair.of(getSchemaUrl, restTemplate));
 
     when(getAdminClient.getRequestDetails(
-            eq(getSchemaUrl), eq(KafkaSupportedProtocol.PLAINTEXT), any()))
+            eq(getSchemaUrl), eq(KafkaSupportedProtocol.PLAINTEXT), any(), anyString()))
         .thenReturn(Pair.of(getSchemaUrl, restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/" + getSchemaUrl))
@@ -90,7 +94,7 @@ class SchemaServiceTest {
                 objectMapper.writeValueAsString(Collections.singletonMap("foo", "bar")),
                 MediaType.APPLICATION_JSON));
 
-    assertThat(schemaService.getSchema("env", KafkaSupportedProtocol.PLAINTEXT, "topic"))
+    assertThat(schemaService.getSchema("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", "topic"))
         .isNotEmpty();
   }
 }

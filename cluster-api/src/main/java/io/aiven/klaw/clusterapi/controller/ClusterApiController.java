@@ -106,16 +106,16 @@ public class ClusterApiController {
   }
 
   @RequestMapping(
-      value = "/getSchema/{bootstrapServers}/{protocol}/{clusterName}/{topicName}",
+      value = "/getSchema/{bootstrapServers}/{protocol}/{clusterIdentification}/{topicName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<Integer, Map<String, Object>>> getSchema(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String topicName,
-      @PathVariable String clusterName) {
+      @PathVariable String clusterIdentification) {
     Map<Integer, Map<String, Object>> schema =
-        schemaService.getSchema(bootstrapServers, protocol, topicName);
+        schemaService.getSchema(bootstrapServers, protocol, clusterIdentification, topicName);
     return new ResponseEntity<>(schema, HttpStatus.OK);
   }
 

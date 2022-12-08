@@ -113,6 +113,7 @@ public class UtilMethods {
         .fullSchema("{type:string}")
         .protocol(KafkaSupportedProtocol.PLAINTEXT)
         .topicName("testtopic")
+        .clusterIdentification("CLID1")
         .build();
   }
 

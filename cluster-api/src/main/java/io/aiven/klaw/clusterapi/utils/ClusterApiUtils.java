@@ -397,7 +397,10 @@ public class ClusterApiUtils {
   }
 
   public Pair<String, RestTemplate> getRequestDetails(
-      String suffixUrl, KafkaSupportedProtocol protocol, KafkaClustersType kafkaClustersType) {
+      String suffixUrl,
+      KafkaSupportedProtocol protocol,
+      KafkaClustersType kafkaClustersType,
+      String clusterIdentification) {
     RestTemplate restTemplate;
     String connectorsUrl = "";
 
@@ -406,11 +409,22 @@ public class ClusterApiUtils {
       restTemplate = new RestTemplate();
     } else if (SSL == protocol) {
       if (KafkaClustersType.KAFKA_CONNECT.equals(kafkaClustersType)) {
-        connectorsUrl =
-            HTTPS_PREFIX + adminClientProperties.getConnectCredentials() + "@" + suffixUrl;
+        String connectCredentials =
+            env.getProperty(clusterIdentification.toLowerCase() + ".klaw.kafkaconnect.credentials");
+        if (connectCredentials != null && !connectCredentials.isBlank()) {
+          connectorsUrl = HTTPS_PREFIX + connectCredentials + "@" + suffixUrl;
+        } else {
+          connectorsUrl = HTTPS_PREFIX + suffixUrl;
+        }
       } else if (KafkaClustersType.SCHEMA_REGISTRY.equals(kafkaClustersType)) {
-        connectorsUrl =
-            HTTPS_PREFIX + adminClientProperties.getSchemaRegistryCredentials() + "@" + suffixUrl;
+        String srCredentials =
+            env.getProperty(
+                clusterIdentification.toLowerCase() + ".klaw.schemaregistry.credentials");
+        if (srCredentials != null && !srCredentials.isBlank()) {
+          connectorsUrl = HTTPS_PREFIX + srCredentials + suffixUrl;
+        } else {
+          connectorsUrl = HTTPS_PREFIX + suffixUrl;
+        }
       }
       restTemplate = new RestTemplate(SslContextConfig.requestFactory);
     } else {

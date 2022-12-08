@@ -15,4 +15,6 @@ public class ClusterSchemaRequest implements Serializable {
   private String topicName;
 
   private String fullSchema;
+
+  private String clusterIdentification;
 }

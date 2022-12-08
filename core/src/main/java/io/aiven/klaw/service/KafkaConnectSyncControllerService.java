@@ -54,7 +54,11 @@ public class KafkaConnectSyncControllerService {
 
     Map<String, Object> res =
         clusterApiService.getConnectorDetails(
-            connectorName, kwClusters.getBootstrapServers(), kwClusters.getProtocol(), tenantId);
+            connectorName,
+            kwClusters.getBootstrapServers(),
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName() + kwClusters.getClusterId(),
+            tenantId);
 
     try {
       String schemaOfObj = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(res);
@@ -260,7 +264,11 @@ public class KafkaConnectSyncControllerService {
     Object configMap =
         clusterApiService
             .getConnectorDetails(
-                connectorName, kwClusters.getBootstrapServers(), kwClusters.getProtocol(), tenantId)
+                connectorName,
+                kwClusters.getBootstrapServers(),
+                kwClusters.getProtocol(),
+                kwClusters.getClusterName() + kwClusters.getClusterId(),
+                tenantId)
             .get("config");
     return WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(configMap);
   }
@@ -325,13 +333,18 @@ public class KafkaConnectSyncControllerService {
 
     // get from cluster
     List<KafkaConnectorModel> kafkaConnectorModelClusterList = new ArrayList<>();
-    String bootstrapHost =
+    KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
-            .get(envSelected.getClusterId())
-            .getBootstrapServers();
+            .get(envSelected.getClusterId());
+    String bootstrapHost = kwClusters.getBootstrapServers();
     try {
-      List<String> allConnectors = clusterApiService.getAllKafkaConnectors(bootstrapHost, tenantId);
+      List<String> allConnectors =
+          clusterApiService.getAllKafkaConnectors(
+              bootstrapHost,
+              kwClusters.getProtocol().getName(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
+              tenantId);
 
       if (connectorNameSearch != null && connectorNameSearch.length() > 0) {
         final String topicSearchFilter = connectorNameSearch;

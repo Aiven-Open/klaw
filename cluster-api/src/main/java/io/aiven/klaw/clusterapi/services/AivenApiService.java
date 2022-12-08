@@ -38,7 +38,7 @@ public class AivenApiService {
     String projectName = clusterAclRequest.getProjectName();
     String serviceName = clusterAclRequest.getServiceName();
 
-    LinkedHashMap<String, String> permissionsMap = new LinkedHashMap<>();
+    Map<String, String> permissionsMap = new HashMap<>();
     permissionsMap.put("topic", clusterAclRequest.getTopicName());
     permissionsMap.put("permission", clusterAclRequest.getPermission());
     permissionsMap.put("username", clusterAclRequest.getUsername());
@@ -47,7 +47,7 @@ public class AivenApiService {
         addAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);
 
     HttpHeaders headers = getHttpHeaders();
-    HttpEntity<LinkedHashMap<String, String>> request = new HttpEntity<>(permissionsMap, headers);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(permissionsMap, headers);
 
     try {
       ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);

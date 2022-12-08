@@ -56,7 +56,10 @@ public class SchemaService {
               + "-value/versions";
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(
-              suffixUrl, clusterSchemaRequest.getProtocol(), KafkaClustersType.SCHEMA_REGISTRY);
+              suffixUrl,
+              clusterSchemaRequest.getProtocol(),
+              KafkaClustersType.SCHEMA_REGISTRY,
+              clusterSchemaRequest.getClusterIdentification());
 
       Map<String, String> params = new HashMap<>();
       params.put("schema", clusterSchemaRequest.getFullSchema());
@@ -83,15 +86,20 @@ public class SchemaService {
   }
 
   public Map<Integer, Map<String, Object>> getSchema(
-      String environmentVal, KafkaSupportedProtocol protocol, String topicName) {
+      String environmentVal,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      String topicName) {
     try {
       log.info("Into getSchema request {} {} {}", topicName, environmentVal, protocol);
       if (environmentVal == null) {
         return null;
       }
 
-      List<Integer> versionsList = getSchemaVersions(environmentVal, topicName, protocol);
-      String schemaCompatibility = getSchemaCompatibility(environmentVal, topicName, protocol);
+      List<Integer> versionsList =
+          getSchemaVersions(environmentVal, topicName, protocol, clusterIdentification);
+      String schemaCompatibility =
+          getSchemaCompatibility(environmentVal, topicName, protocol, clusterIdentification);
       Map<Integer, Map<String, Object>> allSchemaObjects = new TreeMap<>();
 
       if (versionsList != null) {
@@ -100,7 +108,7 @@ public class SchemaService {
               environmentVal + "/subjects/" + topicName + "-value/versions/" + schemaVersion;
           Pair<String, RestTemplate> reqDetails =
               clusterApiUtils.getRequestDetails(
-                  suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY);
+                  suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
 
           Map<String, String> params = new HashMap<>();
 
@@ -126,7 +134,10 @@ public class SchemaService {
   }
 
   private List<Integer> getSchemaVersions(
-      String environmentVal, String topicName, KafkaSupportedProtocol protocol) {
+      String environmentVal,
+      String topicName,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification) {
     try {
       log.info("Into getSchema versions {} {}", topicName, environmentVal);
       if (environmentVal == null) {
@@ -135,7 +146,8 @@ public class SchemaService {
 
       String suffixUrl = environmentVal + "/subjects/" + topicName + "-value/versions";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY);
+          clusterApiUtils.getRequestDetails(
+              suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
 
       Map<String, String> params = new HashMap<>();
 
@@ -153,7 +165,10 @@ public class SchemaService {
   }
 
   private String getSchemaCompatibility(
-      String environmentVal, String topicName, KafkaSupportedProtocol protocol) {
+      String environmentVal,
+      String topicName,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification) {
     try {
       log.info("Into getSchema compatibility {} {}", topicName, environmentVal);
       if (environmentVal == null) {
@@ -162,7 +177,8 @@ public class SchemaService {
 
       String suffixUrl = environmentVal + "/config/" + topicName + "-value";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY);
+          clusterApiUtils.getRequestDetails(
+              suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
 
       Map<String, String> params = new HashMap<>();
 
@@ -184,7 +200,11 @@ public class SchemaService {
   }
 
   private boolean setSchemaCompatibility(
-      String environmentVal, String topicName, boolean isForce, KafkaSupportedProtocol protocol) {
+      String environmentVal,
+      String topicName,
+      boolean isForce,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification) {
     try {
       log.info("Into setSchema compatibility {} {}", topicName, environmentVal);
       if (environmentVal == null) {
@@ -193,7 +213,8 @@ public class SchemaService {
 
       String suffixUrl = environmentVal + "/config/" + topicName + "-value";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY);
+          clusterApiUtils.getRequestDetails(
+              suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
 
       Map<String, String> params = new HashMap<>();
       if (isForce) {
@@ -212,11 +233,12 @@ public class SchemaService {
   }
 
   protected ClusterStatus getSchemaRegistryStatus(
-      String environmentVal, KafkaSupportedProtocol protocol) {
+      String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
 
     String suffixUrl = environmentVal + "/subjects";
     Pair<String, RestTemplate> reqDetails =
-        clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY);
+        clusterApiUtils.getRequestDetails(
+            suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
 
     Map<String, String> params = new HashMap<>();
 

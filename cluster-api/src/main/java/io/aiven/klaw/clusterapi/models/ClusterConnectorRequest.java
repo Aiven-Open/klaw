@@ -16,4 +16,6 @@ public class ClusterConnectorRequest implements Serializable {
   @NotNull private String connectorConfig;
 
   @NotNull private String connectorName;
+
+  @NotNull private String clusterIdentification;
 }
