@@ -1,7 +1,7 @@
 import { Box, Flexbox, Grid, GridItem } from "@aivenio/design-system";
-import MainNavigation from "src/app/layout/MainNavigation";
-import Header from "src/app/layout/Header";
-import SkipLink from "src/app/layout/SkipLink";
+import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
+import Header from "src/app/layout/header/Header";
+import SkipLink from "src/app/layout/skip-link/SkipLink";
 import { ReactNode, useRef } from "react";
 
 function Layout({ children }: { children: ReactNode }) {

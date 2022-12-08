@@ -1,6 +1,6 @@
 import { Box, Flexbox, Icon } from "@aivenio/design-system";
 import data from "@aivenio/design-system/dist/src/icons/console";
-import classes from "src/app/layout/MainNavigationLink.module.css";
+import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
 
 type MainNavigationLinkProps = {
   icon?: typeof data;

@@ -1,4 +1,4 @@
-import MainNavigationSubmenuList from "src/app/layout/MainNavigationSubmenuList";
+import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { cleanup, screen, render, within } from "@testing-library/react";
 import data from "@aivenio/design-system/dist/src/icons/console";
 import userEvent from "@testing-library/user-event";

@@ -1,4 +1,4 @@
-import MainNavigation from "src/app/layout/MainNavigation";
+import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import { cleanup, screen, render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 

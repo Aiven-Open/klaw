@@ -1,4 +1,4 @@
-import Header from "src/app/layout/Header";
+import Header from "src/app/layout/header/Header";
 import { cleanup, screen, render, within } from "@testing-library/react";
 
 // mock out svgs to avoid clutter
@@ -45,7 +45,7 @@ describe("Header.tsx", () => {
     const link = screen.getByRole("link", { name: "Klaw homepage" });
     const logo = link.querySelector("img");
 
-    expect(logo).toHaveAttribute("src", "/klaw_logo.png");
+    expect(logo).toHaveAttribute("src", "/public/klaw_logo.png");
     expect(logo).toHaveAttribute("aria-hidden", "true");
   });
 

@@ -1,10 +1,10 @@
 import { Box, Flexbox, Icon } from "@aivenio/design-system";
 import data from "@aivenio/design-system/dist/src/icons/console";
-import classes from "src/app/layout/MainNavigationLink.module.css";
+import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
 import { ReactElement, useState } from "react";
 import caretDown from "@aivenio/design-system/dist/src/icons/caretDown";
 import caretUp from "@aivenio/design-system/dist/src/icons/caretUp";
-import MainNavigationLink from "src/app/layout/MainNavigationLink";
+import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 
 type MainNavigationSubmenuItemProps = {
   icon: typeof data;

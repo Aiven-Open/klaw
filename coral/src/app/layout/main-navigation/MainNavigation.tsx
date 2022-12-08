@@ -5,8 +5,8 @@ import layoutGroupBy from "@aivenio/design-system/dist/src/icons/layoutGroupBy";
 import people from "@aivenio/design-system/dist/src/icons/people";
 import list from "@aivenio/design-system/dist/src/icons/list";
 import cog from "@aivenio/design-system/dist/src/icons/cog";
-import MainNavigationLink from "src/app/layout/MainNavigationLink";
-import MainNavigationSubmenuList from "src/app/layout/MainNavigationSubmenuList";
+import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
+import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 
 function MainNavigation() {
   return (

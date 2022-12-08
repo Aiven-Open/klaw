@@ -1,4 +1,4 @@
-import MainNavigationLink from "src/app/layout/MainNavigationLink";
+import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import { cleanup, screen, render } from "@testing-library/react";
 import data from "@aivenio/design-system/dist/src/icons/console";
 

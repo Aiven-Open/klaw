@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import SkipLink from "src/app/layout/SkipLink";
+import SkipLink from "src/app/layout/skip-link/SkipLink";
 import userEvent from "@testing-library/user-event";
 
 describe("SkipLink.tsx", () => {

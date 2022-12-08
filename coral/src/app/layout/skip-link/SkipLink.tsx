@@ -1,4 +1,4 @@
-import classes from "src/app/layout/SkipLink.module.css";
+import classes from "src/app/layout/skip-link/SkipLink.module.css";
 import { MouseEvent, RefObject } from "react";
 
 type SkipLinkProps = {
