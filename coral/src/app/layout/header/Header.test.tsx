@@ -45,7 +45,7 @@ describe("Header.tsx", () => {
     const link = screen.getByRole("link", { name: "Klaw homepage" });
     const logo = link.querySelector("img");
 
-    expect(logo).toHaveAttribute("src", "/public/klaw_logo.png");
+    expect(logo).toHaveAttribute("src", "/klaw_logo.png");
     expect(logo).toHaveAttribute("aria-hidden", "true");
   });
 

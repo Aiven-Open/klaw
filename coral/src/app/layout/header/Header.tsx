@@ -20,7 +20,7 @@ function Header() {
         <img
           aria-hidden="true"
           alt=""
-          src="/public/klaw_logo.png"
+          src="/klaw_logo.png"
           height={50}
           width={150}
         />
