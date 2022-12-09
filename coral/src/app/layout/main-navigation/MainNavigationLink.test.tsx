@@ -1,4 +1,4 @@
-import MainNavigationLink from "src/app/layout/MainNavigationLink";
+import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import { cleanup, screen, render } from "@testing-library/react";
 import data from "@aivenio/design-system/dist/src/icons/console";
 
@@ -16,7 +16,7 @@ jest.mock("@aivenio/design-system", () => {
 
 describe("MainNavigationLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
-  const mockIcon = "" as unknown as typeof data;
+  const mockIcon = "fake-icon" as unknown as typeof data;
 
   describe("renders a default link with required props", () => {
     beforeAll(() => {

@@ -1,4 +1,4 @@
-import HeaderMenuLink from "src/app/layout/HeaderMenuLink";
+import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { cleanup, screen, render, within } from "@testing-library/react";
 import data from "@aivenio/design-system/dist/src/icons/console";
 

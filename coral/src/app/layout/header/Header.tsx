@@ -2,7 +2,7 @@ import { Flexbox } from "@aivenio/design-system";
 import questionMark from "@aivenio/design-system/dist/module/icons/questionMark";
 import user from "@aivenio/design-system/dist/module/icons/user";
 import notifications from "@aivenio/design-system/dist/module/icons/notifications";
-import HeaderMenuLink from "src/app/layout/HeaderMenuLink";
+import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 
 function Header() {
   return (
