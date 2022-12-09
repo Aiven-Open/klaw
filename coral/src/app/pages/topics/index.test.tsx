@@ -18,18 +18,9 @@ import {
 import { server } from "src/services/api-mocks/server";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 const { location } = window;
-
-const tabNavigateTo = async ({
-  targetElement,
-}: {
-  targetElement: HTMLElement;
-}) => {
-  while (document.activeElement !== targetElement) {
-    await userEvent.tab();
-  }
-};
 
 describe("Topics", () => {
   beforeAll(() => {
