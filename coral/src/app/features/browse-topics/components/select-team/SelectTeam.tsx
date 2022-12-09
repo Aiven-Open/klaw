@@ -48,7 +48,7 @@ function SelectTeam(props: SelectTeamProps) {
   } else {
     return (
       <NativeSelect
-        labelText="Team"
+        labelText="Filter By Team"
         value={team}
         onChange={(event) => onChangeEnv(event.target.value)}
       >

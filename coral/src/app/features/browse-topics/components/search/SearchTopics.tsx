@@ -1,9 +1,4 @@
-import {
-  Flexbox,
-  Icon,
-  InputBase,
-  PrimaryButton,
-} from "@aivenio/design-system";
+import { Grid, Icon, InputBase, PrimaryButton } from "@aivenio/design-system";
 import { FormEvent, useState } from "react";
 import searchItem from "@aivenio/design-system/dist/module/icons/search";
 
@@ -28,10 +23,14 @@ function SearchTopics(props: SearchTopicsProps) {
       <label className={"visually-hidden"} htmlFor={"topics-search"}>
         Search topics
       </label>
-      <Flexbox>
+      <Grid
+        cols={"2"}
+        rows={"1"}
+        style={{ gridTemplateColumns: "minmax(auto, 300px) auto" }}
+      >
         <InputBase
           type={"search"}
-          placeholder="Topic name"
+          placeholder="Search for…"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           id={"topics-search"}
@@ -44,7 +43,7 @@ function SearchTopics(props: SearchTopicsProps) {
             data-testid={"visually-hidden-search-icon"}
           />
         </PrimaryButton>
-      </Flexbox>
+      </Grid>
     </form>
   );
 }
