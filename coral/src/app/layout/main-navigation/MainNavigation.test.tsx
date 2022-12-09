@@ -38,6 +38,22 @@ const submenuItemTopics = [
   },
 ];
 
+// submenus from "Topics" can be removed
+// for this test case when "Topics"
+// is no longer open per default
+// keyboard a11y is tested in submenu component
+const navOrderFirstLevel = [
+  { name: "Overviews", isSubmenu: false },
+  { name: "Topics", isSubmenu: true },
+  { name: "All Topics", isSubmenu: false },
+  { name: "Approval Requests", isSubmenu: false },
+  { name: "My Team's Requests", isSubmenu: false },
+  { name: "Kafka Connector", isSubmenu: true },
+  { name: "Users and Teams", isSubmenu: true },
+  { name: "Audit Log", isSubmenu: false },
+  { name: "Settings", isSubmenu: false },
+];
+
 describe("SidebarNavigation.tsx", () => {
   describe("renders the main navigation in default state", () => {
     beforeAll(() => {
@@ -219,6 +235,77 @@ describe("SidebarNavigation.tsx", () => {
             });
             expect(link).not.toBeInTheDocument();
           });
+        });
+      });
+    });
+  });
+
+  describe("enables user to navigate with keyboard only", () => {
+    describe("user can navigate through first level navigation", () => {
+      beforeEach(() => {
+        render(<MainNavigation />);
+        const nav = screen.getByRole("navigation", { name: "Main navigation" });
+        nav.focus();
+      });
+
+      afterEach(cleanup);
+
+      const tabThroughLoop = async (times: number) => {
+        for (let i = times; i > 0; i--) {
+          await userEvent.tab();
+        }
+      };
+
+      navOrderFirstLevel.forEach((link, index) => {
+        const name = link.name;
+        const element = link.isSubmenu ? "button" : "link";
+        const numbersOfTabs = index + 1;
+
+        it(`sets focus to link ${link.name} when user tabs ${numbersOfTabs} times`, async () => {
+          await tabThroughLoop(numbersOfTabs);
+
+          const activeElement = screen.getByRole(element, {
+            name: new RegExp(name, "i"),
+          });
+
+          expect(activeElement).toHaveFocus();
+        });
+      });
+    });
+
+    describe("user can navigate backward through first level navigation", () => {
+      beforeEach(() => {
+        const lastElement =
+          navOrderFirstLevel[navOrderFirstLevel.length - 1].name;
+        render(<MainNavigation />);
+        const lastNavItem = screen.getByRole("link", {
+          name: lastElement,
+        });
+        lastNavItem.focus();
+      });
+
+      afterEach(cleanup);
+
+      const tabBackTrough = async (times: number) => {
+        for (let i = times; i > 0; i--) {
+          await userEvent.tab({ shift: true });
+        }
+      };
+
+      const navOrderReversed = [...navOrderFirstLevel].reverse();
+      navOrderReversed.forEach((link, index) => {
+        const name = link.name;
+        const element = link.isSubmenu ? "button" : "link";
+        const numbersOfTabs = index;
+
+        it(`sets focus to link ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
+          await tabBackTrough(numbersOfTabs);
+
+          const activeElement = screen.getByRole(element, {
+            name: new RegExp(name, "i"),
+          });
+
+          expect(activeElement).toHaveFocus();
         });
       });
     });

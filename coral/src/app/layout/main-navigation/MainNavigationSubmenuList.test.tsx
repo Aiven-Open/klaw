@@ -19,18 +19,23 @@ const textButtonSubmenuClosed = "Topics submenu, closed. Click to open.";
 const textButtonSubmenuOpened = "Topics submenu, open. Click to close.";
 const textSubmenuList = "Topics submenu";
 
+const subNavigationLinks = [
+  { name: "Submenu link one", href: "topcis-link-one" },
+  { name: "Submenu link two", href: "topcis-link-two" },
+  { name: "Submenu link three", href: "topcis-link-three" },
+];
+
 describe("MainNavigationSubmenuList.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
   const mockIcon = "" as unknown as typeof data;
 
-  const testMainNavigationLinks = [
-    <a key="1" href={"/topcis-link-one"}>
-      Submenu link one
-    </a>,
-    <a key="2" href={"/topcis-link-two"}>
-      Submenu link two
-    </a>,
-  ];
+  const testMainNavigationLinks = subNavigationLinks.map((link, index) => {
+    return (
+      <a key={`${index}`} href={`${link.href}`}>
+        {link.name}
+      </a>
+    );
+  });
 
   describe('renders a collapsed submenu when "expanded" is not explicit set', () => {
     beforeAll(() => {
@@ -161,7 +166,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
       const linkText = item.props.children;
       const href = item.props.href;
 
-      it(`renders ${linkText} link as list items of "Topics menu" list`, () => {
+      it(`renders "${linkText}" link as list items of "Topics menu" list`, () => {
         const list = screen.getByRole("list", {
           name: textSubmenuList,
         });
@@ -180,7 +185,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
     });
   });
 
-  describe("enables user to open and close the submenu", () => {
+  describe("enables user to open and close the submenu with mouse", () => {
     describe(`user can open a closed submenu`, () => {
       beforeEach(() => {
         render(
@@ -291,6 +296,137 @@ describe("MainNavigationSubmenuList.tsx", () => {
           hidden: true,
         });
         expect(link).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("enables user to navigate submenus with keyboard only", () => {
+    describe(`user can open and close submenu`, () => {
+      beforeEach(() => {
+        render(
+          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+            {testMainNavigationLinks}
+          </MainNavigationSubmenuList>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it(`opens the submenu when user presses "Enter"`, async () => {
+        const listHidden = screen.queryByRole("list", {
+          name: textSubmenuList,
+        });
+        expect(listHidden).not.toBeInTheDocument();
+
+        const button = screen.getByRole("button", {
+          name: textButtonSubmenuClosed,
+        });
+        button.focus();
+        await userEvent.keyboard("{Enter}");
+
+        const list = screen.getByRole("list", {
+          name: textSubmenuList,
+        });
+        expect(list).toBeEnabled();
+      });
+
+      it(`closes the submenu when user presses "Enter" on a open menu`, async () => {
+        const button = screen.getByRole("button", {
+          name: textButtonSubmenuClosed,
+        });
+        button.focus();
+        await userEvent.keyboard("{Enter}");
+
+        const list = screen.getByRole("list", {
+          name: textSubmenuList,
+        });
+        expect(list).toBeEnabled();
+
+        await userEvent.keyboard("{Enter}");
+
+        const listHidden = screen.queryByRole("list", {
+          name: textSubmenuList,
+        });
+        expect(listHidden).not.toBeInTheDocument();
+      });
+    });
+
+    describe(`user navigate through an open submenu`, () => {
+      beforeEach(() => {
+        render(
+          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+            {testMainNavigationLinks}
+          </MainNavigationSubmenuList>
+        );
+        const button = screen.getByRole("button", {
+          name: textButtonSubmenuClosed,
+        });
+        button.focus();
+      });
+
+      afterEach(cleanup);
+
+      const tabTrough = async (times: number) => {
+        for (let i = times; i > 0; i--) {
+          await userEvent.tab();
+        }
+      };
+
+      subNavigationLinks.forEach((link, index) => {
+        const numbersOfTabs = index + 1;
+        const name = link.name;
+
+        it(`focuses ${link.name} when user presses tab ${numbersOfTabs} times`, async () => {
+          await userEvent.keyboard("{Enter}");
+          await tabTrough(numbersOfTabs);
+          const link = screen.getByRole("link", { name });
+
+          expect(link).toHaveFocus();
+        });
+      });
+    });
+
+    describe(`user can navigate backward through an open submenu`, () => {
+      beforeEach(async () => {
+        render(
+          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+            {testMainNavigationLinks}
+          </MainNavigationSubmenuList>
+        );
+        const button = screen.getByRole("button", {
+          name: textButtonSubmenuClosed,
+        });
+        button.focus();
+        await userEvent.keyboard("{Enter}");
+
+        const lastElement =
+          subNavigationLinks[subNavigationLinks.length - 1].name;
+        const lastNavItem = screen.getByRole("link", {
+          name: lastElement,
+        });
+        lastNavItem.focus();
+      });
+
+      afterEach(cleanup);
+
+      const tabBackTrough = async (times: number) => {
+        for (let i = times; i > 0; i--) {
+          await userEvent.tab({ shift: true });
+        }
+      };
+
+      const submenuReversed = [...subNavigationLinks].reverse();
+      submenuReversed.forEach((link, index) => {
+        const numbersOfTabs = index;
+        const name = link.name;
+
+        it(`focuses ${link.name} when user presses tab ${numbersOfTabs} times`, async () => {
+          await tabBackTrough(numbersOfTabs);
+          const link = screen.getByRole("link", { name });
+
+          expect(link).toHaveFocus();
+          expect(true).toBeTruthy();
+        });
       });
     });
   });
