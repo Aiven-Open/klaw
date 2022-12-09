@@ -12,4 +12,14 @@ async function tabThroughBackward(times: number) {
   }
 }
 
-export { tabThroughForward, tabThroughBackward };
+async function tabNavigateTo({
+  targetElement,
+}: {
+  targetElement: HTMLElement;
+}) {
+  while (document.activeElement !== targetElement) {
+    await userEvent.tab();
+  }
+}
+
+export { tabThroughForward, tabThroughBackward, tabNavigateTo };
