@@ -1098,7 +1098,7 @@ public class TopicSyncControllerService {
       return ApiResponse.builder()
           .result(
               "Failure. Please sync up the team of the following topic(s) first in"
-                  + " main Sync cluster (klaw.syncdata.cluster)"
+                  + " main Sync cluster"
                   + " :"
                   + syncCluster
                   + ". \n Topics : "
@@ -1110,7 +1110,7 @@ public class TopicSyncControllerService {
       return ApiResponse.builder()
           .result(
               "Failure. The following topics are being synchronized with"
-                  + " a different team, when compared to main Sync cluster (klaw.syncdata.cluster)"
+                  + " a different team, when compared to main Sync cluster"
                   + " :"
                   + syncCluster
                   + ". \n Topics : "

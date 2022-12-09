@@ -421,7 +421,7 @@ public class ClusterApiUtils {
             env.getProperty(
                 clusterIdentification.toLowerCase() + ".klaw.schemaregistry.credentials");
         if (srCredentials != null && !srCredentials.isBlank()) {
-          connectorsUrl = HTTPS_PREFIX + srCredentials + suffixUrl;
+          connectorsUrl = HTTPS_PREFIX + srCredentials + "@" + suffixUrl;
         } else {
           connectorsUrl = HTTPS_PREFIX + suffixUrl;
         }

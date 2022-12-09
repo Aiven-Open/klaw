@@ -25,10 +25,4 @@ class AdminClientProperties {
 
   @Value("${klaw.retry.backoff.ms:15000}")
   private String retryBackOffMsConfig;
-
-  @Value("${klaw.aiven.kafkaconnect.credentials:credentials}")
-  private String connectCredentials;
-
-  @Value("${klaw.aiven.karapace.credentials}")
-  private String schemaRegistryCredentials;
 }

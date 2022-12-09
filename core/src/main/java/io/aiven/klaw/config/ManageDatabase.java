@@ -100,9 +100,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   @Autowired private DefaultDataService defaultDataService;
 
-  @Value("${klaw.org.name}")
-  private String orgName;
-
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
@@ -115,7 +112,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Value("${klaw.superadmin.default.password}")
   private String superAdminDefaultPwd;
 
-  @Value("${klaw.version:1.0.0}")
+  @Value("${klaw.version}")
   private String kwVersion;
 
   @Value("${klaw.jasypt.encryptor.secretkey}")
