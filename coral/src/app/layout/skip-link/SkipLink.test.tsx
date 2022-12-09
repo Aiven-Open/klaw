@@ -3,14 +3,17 @@ import SkipLink from "src/app/layout/skip-link/SkipLink";
 import userEvent from "@testing-library/user-event";
 
 describe("SkipLink.tsx", () => {
-  const mockedScrollFunction = jest.fn();
-  const div = document.createElement("div");
-  div.scrollIntoView = mockedScrollFunction;
+  let mockedScrollFunction;
+  let div: HTMLDivElement;
 
-  const mainContentRef = {
-    current: div,
-  };
   beforeEach(() => {
+    mockedScrollFunction = jest.fn();
+    div = document.createElement("div");
+
+    const mainContentRef = {
+      current: div,
+    };
+    div.scrollIntoView = mockedScrollFunction;
     render(
       <>
         <SkipLink mainContent={mainContentRef} />
@@ -20,8 +23,8 @@ describe("SkipLink.tsx", () => {
   });
 
   afterEach(() => {
+    jest.resetAllMocks();
     cleanup();
-    jest.clearAllMocks();
   });
 
   it("shows a button to skip to main content", () => {
@@ -34,6 +37,16 @@ describe("SkipLink.tsx", () => {
     expect(div).not.toHaveAttribute("tabindex", "-1");
     const button = screen.getByRole("button", { name: "Skip to main content" });
     await userEvent.click(button);
+
+    expect(div).toHaveAttribute("tabindex", "-1");
+    expect(div.scrollIntoView).toHaveBeenCalled();
+  });
+
+  it("moves focus to the main content when using keyboard", async () => {
+    expect(div).not.toHaveAttribute("tabindex", "-1");
+    const button = screen.getByRole("button", { name: "Skip to main content" });
+    button.focus();
+    await userEvent.keyboard("{Enter}");
 
     expect(div).toHaveAttribute("tabindex", "-1");
     expect(div.scrollIntoView).toHaveBeenCalled();
