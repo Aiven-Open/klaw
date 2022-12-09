@@ -58,7 +58,7 @@ const navOrderFirstLevel = [
   { name: "Settings", isSubmenu: false },
 ];
 
-describe("SidebarNavigation.tsx", () => {
+describe("MainNavigation.tsx", () => {
   describe("renders the main navigation in default state", () => {
     beforeAll(() => {
       render(<MainNavigation />);
@@ -260,13 +260,13 @@ describe("SidebarNavigation.tsx", () => {
         const numbersOfTabs = index + 1;
 
         it(`sets focus to link ${link.name} when user tabs ${numbersOfTabs} times`, async () => {
-          await tabThroughForward(numbersOfTabs);
-
-          const activeElement = screen.getByRole(element, {
+          const link = screen.getByRole(element, {
             name: new RegExp(name, "i"),
           });
+          expect(link).not.toHaveFocus();
+          await tabThroughForward(numbersOfTabs);
 
-          expect(activeElement).toHaveFocus();
+          expect(link).toHaveFocus();
         });
       });
     });
@@ -291,13 +291,13 @@ describe("SidebarNavigation.tsx", () => {
         const numbersOfTabs = index;
 
         it(`sets focus to link ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
-          await tabThroughBackward(numbersOfTabs);
-
-          const activeElement = screen.getByRole(element, {
+          const link = screen.getByRole(element, {
             name: new RegExp(name, "i"),
           });
+          index > 0 && expect(link).not.toHaveFocus();
+          await tabThroughBackward(numbersOfTabs);
 
-          expect(activeElement).toHaveFocus();
+          expect(link).toHaveFocus();
         });
       });
     });
