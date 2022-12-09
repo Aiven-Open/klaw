@@ -50,7 +50,7 @@ function SelectEnv(props: SelectEnvProps) {
   } else {
     return (
       <NativeSelect
-        labelText="Kafka environment"
+        labelText="Filter By Environment"
         value={environment}
         onChange={(event) => onChangeEnv(event.target.value)}
       >

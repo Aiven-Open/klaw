@@ -37,7 +37,7 @@ describe("SelectTeam.tsx", () => {
 
     it("shows a select element for Team", () => {
       const select = screen.getByRole("combobox", {
-        name: "Team",
+        name: "Filter By Team",
       });
 
       expect(select).toBeEnabled();
@@ -134,7 +134,7 @@ describe("SelectTeam.tsx", () => {
 
     it("updates state for api call when user selects a new team", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Team",
+        name: "Filter By Team",
       });
       const option = screen.getByRole("option", { name: optionToSelect });
 
@@ -145,7 +145,7 @@ describe("SelectTeam.tsx", () => {
 
     it("sets the team the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Team",
+        name: "Filter By Team",
       });
       const option = screen.getByRole("option", { name: optionToSelect });
 
@@ -186,7 +186,7 @@ describe("SelectTeam.tsx", () => {
 
     it("sets `TEST_TEAM_01` as search param when user selected it", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Team",
+        name: "Filter By Team",
       });
 
       const option = screen.getByRole("option", { name: optionToSelect });
