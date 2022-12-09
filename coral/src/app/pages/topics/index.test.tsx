@@ -21,6 +21,12 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const { location } = window;
 
+const tabNavigateTo = ({ targetElement }: { targetElement: HTMLElement }) => {
+  while (document.activeElement !== targetElement) {
+    userEvent.tab();
+  }
+};
+
 describe("Topics", () => {
   beforeAll(() => {
     server.listen();
@@ -114,7 +120,7 @@ describe("Topics", () => {
         name: "Request A New Topic",
       });
 
-      button.focus();
+      tabNavigateTo({ targetElement: button });
 
       userEvent.keyboard("{Enter}");
 
