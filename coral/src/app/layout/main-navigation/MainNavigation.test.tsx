@@ -1,6 +1,10 @@
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import { cleanup, screen, render, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import {
+  tabThroughBackward,
+  tabThroughForward,
+} from "src/services/test-utils/tabbing";
 
 // mock out svgs to avoid clutter
 jest.mock("@aivenio/design-system", () => {
@@ -250,19 +254,13 @@ describe("SidebarNavigation.tsx", () => {
 
       afterEach(cleanup);
 
-      const tabThroughLoop = async (times: number) => {
-        for (let i = times; i > 0; i--) {
-          await userEvent.tab();
-        }
-      };
-
       navOrderFirstLevel.forEach((link, index) => {
         const name = link.name;
         const element = link.isSubmenu ? "button" : "link";
         const numbersOfTabs = index + 1;
 
         it(`sets focus to link ${link.name} when user tabs ${numbersOfTabs} times`, async () => {
-          await tabThroughLoop(numbersOfTabs);
+          await tabThroughForward(numbersOfTabs);
 
           const activeElement = screen.getByRole(element, {
             name: new RegExp(name, "i"),
@@ -286,12 +284,6 @@ describe("SidebarNavigation.tsx", () => {
 
       afterEach(cleanup);
 
-      const tabBackTrough = async (times: number) => {
-        for (let i = times; i > 0; i--) {
-          await userEvent.tab({ shift: true });
-        }
-      };
-
       const navOrderReversed = [...navOrderFirstLevel].reverse();
       navOrderReversed.forEach((link, index) => {
         const name = link.name;
@@ -299,7 +291,7 @@ describe("SidebarNavigation.tsx", () => {
         const numbersOfTabs = index;
 
         it(`sets focus to link ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
-          await tabBackTrough(numbersOfTabs);
+          await tabThroughBackward(numbersOfTabs);
 
           const activeElement = screen.getByRole(element, {
             name: new RegExp(name, "i"),
