@@ -26,10 +26,25 @@ describe("Topics", () => {
   beforeAll(() => {
     server.listen();
     mockIntersectionObserver();
+
+    // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
+    // But this delete is necessary to correctly mock window.location
+    // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
+    // Sources:
+    //  https://stackoverflow.com/questions/54090231/how-to-fix-error-not-implemented-navigation-except-hash-changes
+    //  https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href/
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    delete window.location;
+    window.location = {
+      href: "/topics",
+    } as Location;
   });
 
   afterAll(() => {
     server.close();
+
+    window.location = location;
   });
 
   describe("renders default view with data from API", () => {
@@ -73,55 +88,25 @@ describe("Topics", () => {
     });
 
     it("navigates to '/requestTopics' when user clicks the button 'Request A New Topic'", async () => {
-      // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
-      // But this delete is necessary to correctly mock window.location
-      // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
-      // Sources:
-      //  https://stackoverflow.com/questions/54090231/how-to-fix-error-not-implemented-navigation-except-hash-changes
-      //  https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href/
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete window.location;
-      window.location = {
-        href: "/topics",
-      } as Location;
-
       const button = screen.getByRole("button", {
         name: "Request A New Topic",
       });
 
-      userEvent.click(button);
+      await userEvent.click(button);
 
       await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
-
-      window.location = location;
     });
 
     it("navigates to '/requestTopics' when user presses Enter while 'Request A New Topic' button is focused", async () => {
-      // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
-      // But this delete is necessary to correctly mock window.location
-      // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
-      // Sources:
-      //  https://stackoverflow.com/questions/54090231/how-to-fix-error-not-implemented-navigation-except-hash-changes
-      //  https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href/
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete window.location;
-      window.location = {
-        href: "/topics",
-      } as Location;
-
       const button = screen.getByRole("button", {
         name: "Request A New Topic",
       });
 
       tabNavigateTo({ targetElement: button });
 
-      userEvent.keyboard("{Enter}");
+      await userEvent.keyboard("{Enter}");
 
       await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
-
-      window.location = location;
     });
 
     it("renders a select element to filter topics by Kafka environment", async () => {
