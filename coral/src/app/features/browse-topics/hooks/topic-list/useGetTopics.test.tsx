@@ -3,8 +3,10 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
 import {
+  mockedResponseMultiplePage,
   mockedResponseMultiplePageTransformed,
   mockedResponseSinglePage,
+  mockedResponseTopicEnv,
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
@@ -135,7 +137,7 @@ describe("useGetTopics", () => {
     it("returns a list of topics with 2 pages if api call is successful", async () => {
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "multiple-pages-static",
+        response: { data: mockedResponseMultiplePage },
       });
 
       const { result } = await renderHook(
@@ -247,7 +249,7 @@ describe("useGetTopics", () => {
       ];
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "single-page-env-dev",
+        response: { data: mockedResponseTopicEnv },
       });
 
       const { result } = await renderHook(
