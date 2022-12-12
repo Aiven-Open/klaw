@@ -1,0 +1,75 @@
+/*
+ * Styles and classes in this file are use to
+ * improve overall accessibility of Klaw.
+ * Styles are separated into
+ * - global rules
+ *   -> not available by DS yet)
+ * - additional a11y-related custom classes
+ *   -> not available by DS yet)
+ * - overwriting DS styles
+ *   -> can be removed if styles in DS
+ *       or custom theme are covered
+*/
+
+:root {
+  --hover-indicator-primary-80: #e41a4a;
+  --active-indicator-primary-100: #a70045;
+  --focus-indicator-info-70: #0399e3;
+}
+
+/************************************************
+ * global styles, not covered by DS yet
+ ************************************************
+*/
+
+/*make border-radius and focus styles consistent for buttons that*/
+/*are used instead of DS (e.g. submenu)*/
+button {
+  border-radius: 0.125rem !important;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--focus-indicator-info-70) !important;
+  outline-offset: 2px !important;
+}
+
+a:focus-visible {
+  outline-offset: 2px;
+  /*represents info-70*/
+  outline-color: var(--focus-indicator-info-70);
+  box-shadow: 0 0 3px 0 #ddd;
+}
+
+/****************************************
+ * a11y-related custom classes
+ ****************************************
+*/
+
+:global(.visually-hidden) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  font-size: 18px;
+}
+
+/****************************************
+ * DS overwrites
+ ****************************************
+*/
+
+:root input:focus-visible,
+:root select:focus-visible {
+  outline: 1px solid var(--focus-indicator-info-70) !important;
+  outline-offset: 0 !important;
+}
+
+:root button:focus {
+  outline: 2px solid var(--focus-indicator-info-70) !important;
+  outline-offset: 0 !important;
+}
