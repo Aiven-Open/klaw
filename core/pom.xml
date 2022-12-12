@@ -28,7 +28,7 @@
         <jasyptencrypt.version>3.0.4</jasyptencrypt.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
         <snakeyaml.version>1.33</snakeyaml.version>
-        <spring.azure.ad.version>4.4.1</spring.azure.ad.version>
+        <spring.azure.ad.version>4.5.0</spring.azure.ad.version>
     </properties>
 
     <dependencies>
