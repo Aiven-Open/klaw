@@ -189,7 +189,7 @@ describe("BrowseTopics.tsx", () => {
     it("does not render the pagination", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const pagination = screen.queryByRole("navigation", {
-        name: "Pagination",
+        name: /Pagination/,
       });
 
       expect(pagination).not.toBeInTheDocument();
@@ -229,7 +229,7 @@ describe("BrowseTopics.tsx", () => {
     it("shows a pagination", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const pagination = screen.getByRole("navigation", {
-        name: "Pagination",
+        name: /Pagination/,
       });
 
       expect(pagination).toBeVisible();
@@ -237,9 +237,11 @@ describe("BrowseTopics.tsx", () => {
 
     it("shows page 2 as currently active page and the total page number", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
-      const activePageInformation = screen.getByText("You are on page 2 of 4");
+      const pagination = screen.getByRole("navigation", { name: /Pagination/ });
 
-      expect(activePageInformation).toBeVisible();
+      expect(pagination).toHaveAccessibleName(
+        "Pagination navigation, you're on page 2 of 4"
+      );
     });
   });
 
@@ -265,9 +267,11 @@ describe("BrowseTopics.tsx", () => {
     it("shows page 1 as currently active page and the total page number", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
 
-      const activePageInformation = screen.getByText("You are on page 1 of 10");
+      const pagination = screen.getByRole("navigation", { name: /Pagination/ });
 
-      expect(activePageInformation).toBeVisible();
+      expect(pagination).toHaveAccessibleName(
+        "Pagination navigation, you're on page 1 of 10"
+      );
     });
 
     it("fetches new data when user clicks on next page", async () => {
@@ -278,10 +282,10 @@ describe("BrowseTopics.tsx", () => {
 
       await userEvent.click(pageTwoButton);
 
-      const activePageInformation = await screen.findByText(
-        "You are on page 2 of 10"
-      );
-      expect(activePageInformation).toBeVisible();
+      const pagination = await screen.findByRole("navigation", {
+        name: "Pagination navigation, you're on page 1 of 10",
+      });
+      expect(pagination).toBeVisible();
     });
   });
 
