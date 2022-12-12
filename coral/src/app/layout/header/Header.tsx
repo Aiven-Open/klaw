@@ -3,6 +3,7 @@ import questionMark from "@aivenio/design-system/dist/module/icons/questionMark"
 import user from "@aivenio/design-system/dist/module/icons/user";
 import notifications from "@aivenio/design-system/dist/module/icons/notifications";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
+import logo from "src/app/layout/header/klaw_logo.png";
 
 function Header() {
   return (
@@ -17,13 +18,7 @@ function Header() {
         <span style={{ color: "white" }} className={"visually-hidden"}>
           Klaw homepage
         </span>
-        <img
-          aria-hidden="true"
-          alt=""
-          src="/klaw_logo.png"
-          height={50}
-          width={150}
-        />
+        <img aria-hidden="true" alt="" src={logo} height={50} width={150} />
       </a>
       <nav aria-label={"Quick links"}>
         <Flexbox htmlTag={"ul"} colGap={"l2"}>
