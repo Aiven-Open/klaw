@@ -2,7 +2,7 @@ package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.KafkaConnectService;
 import java.util.*;
 import javax.validation.Valid;

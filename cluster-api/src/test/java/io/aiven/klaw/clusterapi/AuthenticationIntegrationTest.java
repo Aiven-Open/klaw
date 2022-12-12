@@ -1,11 +1,11 @@
 package io.aiven.klaw.clusterapi;
 
-import static io.aiven.klaw.clusterapi.models.ClusterStatus.ONLINE;
+import static io.aiven.klaw.clusterapi.models.enums.ClusterStatus.ONLINE;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.Key;

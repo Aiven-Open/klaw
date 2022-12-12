@@ -1,12 +1,12 @@
 package io.aiven.klaw.clusterapi;
 
-import io.aiven.klaw.clusterapi.models.AclIPPrincipleType;
-import io.aiven.klaw.clusterapi.models.AclsNativeType;
+import io.aiven.klaw.clusterapi.models.enums.AclIPPrincipleType;
+import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
-import io.aiven.klaw.clusterapi.models.RequestOperationType;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
 import java.util.*;
 import org.apache.kafka.common.acl.AccessControlEntry;
 import org.apache.kafka.common.acl.AclBinding;

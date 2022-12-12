@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Properties;

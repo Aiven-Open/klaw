@@ -2,9 +2,9 @@ package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
-import io.aiven.klaw.clusterapi.models.KafkaClustersType;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;

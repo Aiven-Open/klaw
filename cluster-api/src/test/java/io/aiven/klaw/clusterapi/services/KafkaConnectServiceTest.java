@@ -10,8 +10,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.clusterapi.models.KafkaClustersType;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
 import org.apache.commons.lang3.tuple.Pair;

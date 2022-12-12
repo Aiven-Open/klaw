@@ -3,9 +3,11 @@ package io.aiven.klaw.clusterapi.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.AivenAclResponse;
 import io.aiven.klaw.clusterapi.models.AivenAclStruct;
-import io.aiven.klaw.clusterapi.models.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import java.util.*;
+
+import io.aiven.klaw.clusterapi.models.enums.AclAttributes;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -39,9 +41,9 @@ public class AivenApiService {
     String serviceName = clusterAclRequest.getServiceName();
 
     Map<String, String> permissionsMap = new HashMap<>();
-    permissionsMap.put("topic", clusterAclRequest.getTopicName());
-    permissionsMap.put("permission", clusterAclRequest.getPermission());
-    permissionsMap.put("username", clusterAclRequest.getUsername());
+    permissionsMap.put(AclAttributes.TOPIC.value, clusterAclRequest.getTopicName());
+    permissionsMap.put(AclAttributes.PERMISSION.value, clusterAclRequest.getPermission());
+    permissionsMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
 
     String uri =
         addAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);

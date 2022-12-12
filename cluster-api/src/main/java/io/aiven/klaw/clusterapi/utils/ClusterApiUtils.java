@@ -1,12 +1,12 @@
 package io.aiven.klaw.clusterapi.utils;
 
-import static io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol.PLAINTEXT;
-import static io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol.SSL;
+import static io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol.PLAINTEXT;
+import static io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol.SSL;
 
 import com.google.common.base.Strings;
 import io.aiven.klaw.clusterapi.config.SslContextConfig;
-import io.aiven.klaw.clusterapi.models.KafkaClustersType;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
