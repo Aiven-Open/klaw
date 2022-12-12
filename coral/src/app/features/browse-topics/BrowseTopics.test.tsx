@@ -1,5 +1,6 @@
 import { server } from "src/services/api-mocks/server";
 import {
+  mockedResponseMultiplePage,
   mockedResponseSinglePage,
   mockedResponseTransformed,
   mockTopicGetRequest,
@@ -208,7 +209,7 @@ describe("BrowseTopics.tsx", () => {
       });
       mockTopicGetRequest({
         mswInstance: server,
-        scenario: "multiple-pages-static",
+        response: { data: mockedResponseMultiplePage },
       });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });

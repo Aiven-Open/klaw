@@ -15,13 +15,11 @@ import { isObject } from "lodash";
 // don't use the same mocks for both, it gets confusing to maintain
 function mockTopicGetRequest({
   mswInstance,
-  scenario,
   response,
 }: {
   mswInstance: MswInstance;
-  scenario?: "multiple-pages-static" | "single-page-env-dev";
   response?: {
-    status: number;
+    status?: number;
     data: TopicDTOApiResponse | { message: string };
   };
 }) {
@@ -33,15 +31,8 @@ function mockTopicGetRequest({
       const team = req.url.searchParams.get("teamName");
       const search = req.url.searchParams.get("topicnamesearch");
 
-      // Passing an response will the precedence over scenario.
       if (isObject(response)) {
-        return res(ctx.status(response.status), ctx.json(response.data));
-      }
-
-      if (scenario === "multiple-pages-static") {
-        return res(ctx.status(200), ctx.json(mockedResponseMultiplePage));
-      } else if (scenario === "single-page-env-dev") {
-        return res(ctx.status(200), ctx.json(mockedResponseTopicEnv));
+        return res(ctx.status(response.status ?? 200), ctx.json(response.data));
       }
 
       // "DEV"
@@ -87,7 +78,7 @@ const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
   mockedResponseMultiplePage
 );
 
-const mockedResponseTopicEnv = [
+const mockedResponseTopicEnv: TopicDTOApiResponse = [
   [
     createMockTopic({
       topicName: "Topic 1",
@@ -156,4 +147,6 @@ export {
   mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
   mockedResponseSinglePage,
+  mockedResponseMultiplePage,
+  mockedResponseTopicEnv,
 };
