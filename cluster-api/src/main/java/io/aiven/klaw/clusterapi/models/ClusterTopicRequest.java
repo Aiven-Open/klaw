@@ -1,9 +1,8 @@
 package io.aiven.klaw.clusterapi.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
-
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Getter;
 

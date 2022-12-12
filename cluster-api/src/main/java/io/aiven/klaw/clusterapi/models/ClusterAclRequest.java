@@ -1,10 +1,9 @@
 package io.aiven.klaw.clusterapi.models;
 
-import java.io.Serializable;
-import javax.validation.constraints.NotNull;
-
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
+import java.io.Serializable;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 

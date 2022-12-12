@@ -1,8 +1,7 @@
 package io.aiven.klaw.clusterapi.models;
 
-import java.io.Serializable;
-
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import java.io.Serializable;
 import lombok.Builder;
 import lombok.Getter;
 
