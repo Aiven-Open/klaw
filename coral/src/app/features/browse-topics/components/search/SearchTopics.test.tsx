@@ -19,13 +19,17 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("shows a search input", () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
 
       expect(input).toBeEnabled();
     });
 
     it("shows a given search term as value", () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
 
       expect(input).toHaveValue(testSearchTerm);
     });
@@ -61,7 +65,9 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("updates value for user input", async () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
       expect(input).toHaveValue("");
 
       await userEvent.type(input, testSearchInput);
@@ -70,7 +76,9 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("submits search term when user clicks button", async () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
       const submitButton = screen.getByRole("button", {
         name: "Submit search",
       });
@@ -82,7 +90,9 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("submits search term when user presses enter", async () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
 
       await userEvent.type(input, testSearchInput);
       await userEvent.keyboard("{Enter}");
@@ -91,7 +101,9 @@ describe("SearchTopics.tsx", () => {
     });
 
     it("removes spaces at beginning and end of search term when users submits", async () => {
-      const input = screen.getByRole("searchbox", { name: "Search topics" });
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
 
       await userEvent.type(input, " awesome topic ");
       await userEvent.keyboard("{Enter}");

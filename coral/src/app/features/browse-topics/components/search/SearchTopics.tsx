@@ -21,7 +21,7 @@ function SearchTopics(props: SearchTopicsProps) {
   return (
     <form role={"search"} onSubmit={onSearchSubmit} aria-label={"Topics"}>
       <label className={"visually-hidden"} htmlFor={"topics-search"}>
-        Search topics
+        Search by topic name
       </label>
       <Grid
         cols={"2"}
@@ -30,7 +30,7 @@ function SearchTopics(props: SearchTopicsProps) {
       >
         <InputBase
           type={"search"}
-          placeholder="Search for…"
+          placeholder="Search by topic name"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           id={"topics-search"}
