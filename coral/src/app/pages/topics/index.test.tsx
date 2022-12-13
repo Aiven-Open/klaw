@@ -102,7 +102,7 @@ describe("Topics", () => {
         name: "Request A New Topic",
       });
 
-      tabNavigateTo({ targetElement: button });
+      await tabNavigateTo({ targetElement: button });
 
       await userEvent.keyboard("{Enter}");
 

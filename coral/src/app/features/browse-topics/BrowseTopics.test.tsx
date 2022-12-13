@@ -1,19 +1,20 @@
-import { server } from "src/services/api-mocks/server";
+import { cleanup, screen, within } from "@testing-library/react";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
+import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
+import { mockGetEnvironments } from "src/domain/environment";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import {
   mockedResponseMultiplePage,
   mockedResponseSinglePage,
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { cleanup, within, screen } from "@testing-library/react";
-import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import userEvent from "@testing-library/user-event";
-import { mockGetEnvironments } from "src/domain/environment";
-import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { server } from "src/services/api-mocks/server";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 jest.mock("@aivenio/design-system", () => {
   return {
@@ -428,6 +429,125 @@ describe("BrowseTopics.tsx", () => {
       });
 
       await userEvent.selectOptions(select, option);
+      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
+
+      expect(getAllTopics()).toHaveLength(2);
+    });
+  });
+
+  describe("handles user searching by topic name with search input", () => {
+    const testSearchInput = "Searched for topic";
+    const getAllTopics = () =>
+      within(
+        screen.getByRole("table", { name: /Topics overview/ })
+      ).getAllByRole("rowheader");
+
+    beforeEach(() => {
+      mockTopicGetRequest({
+        mswInstance: server,
+      });
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+      cleanup();
+    });
+
+    it("fetches new data when user enters text in input and clicks the search button", async () => {
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit search",
+      });
+
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      expect(getAllTopics()).toHaveLength(10);
+      expect(input).toHaveValue("");
+      expect(submitButton).toBeEnabled();
+
+      await userEvent.type(input, testSearchInput);
+
+      expect(input).toHaveValue(testSearchInput);
+
+      await userEvent.click(submitButton);
+      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
+
+      expect(getAllTopics()).toHaveLength(2);
+    });
+
+    it("fetches new data when when user enters text in input and presses 'Enter'", async () => {
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
+
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      expect(getAllTopics()).toHaveLength(10);
+      expect(input).toHaveValue("");
+
+      await userEvent.type(input, testSearchInput);
+
+      expect(input).toHaveValue(testSearchInput);
+
+      await userEvent.keyboard("{Enter}");
+      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
+
+      expect(getAllTopics()).toHaveLength(2);
+    });
+
+    it("can navigate to search input and submit button with keyboard", async () => {
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit search",
+      });
+
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      expect(getAllTopics()).toHaveLength(10);
+      expect(input).toHaveValue("");
+      expect(submitButton).toBeEnabled();
+
+      await tabNavigateTo({ targetElement: input });
+
+      expect(input).toHaveFocus();
+
+      await userEvent.tab();
+
+      expect(submitButton).toHaveFocus();
+    });
+
+    it("fetches new data when user enters text in input and presses 'Enter' on focused submit button", async () => {
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
+      });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit search",
+      });
+
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+
+      expect(getAllTopics()).toHaveLength(10);
+      expect(input).toHaveValue("");
+      expect(submitButton).toBeEnabled();
+
+      await tabNavigateTo({ targetElement: input });
+
+      expect(input).toHaveFocus();
+
+      await userEvent.type(input, testSearchInput);
+
+      expect(input).toHaveValue(testSearchInput);
+
+      await userEvent.tab();
+
+      expect(submitButton).toHaveFocus();
+
+      await userEvent.keyboard("{Enter}");
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
       expect(getAllTopics()).toHaveLength(2);
