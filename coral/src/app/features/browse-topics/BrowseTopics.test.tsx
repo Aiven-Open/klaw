@@ -220,12 +220,13 @@ describe("BrowseTopics.tsx", () => {
 
     it("renders the topic table with information about the pages", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
-      const pagination = screen.getByRole("table", {
+      const table = screen.getByRole("table", {
         name: "Topics overview, page 2 of 4",
       });
 
-      expect(pagination).toBeVisible();
+      expect(table).toBeVisible();
     });
+
     it("shows a pagination", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const pagination = screen.getByRole("navigation", {
