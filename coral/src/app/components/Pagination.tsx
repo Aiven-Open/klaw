@@ -21,17 +21,14 @@ function Pagination(props: PaginationProps) {
   const currentPageIsLastPage = activePage === totalPages;
 
   return (
-    <nav role="navigation" aria-label="Pagination">
+    <nav
+      role="navigation"
+      aria-label={`Pagination navigation, you're on page ${activePage} of ${totalPages}`}
+    >
       <Flexbox htmlTag={"ul"} colGap={"l1"} alignItems={"center"}>
-        <li>
-          <span tabIndex={0} className={"visually-hidden"}>
-            {`You are on page ${activePage} of ${totalPages}`}
-          </span>
-        </li>
         <li aria-hidden={currentPageIsFirstPage}>
           <GhostButton
             disabled={currentPageIsFirstPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(1)}
           >
             <span className={"visually-hidden"}>Go to first page</span>
@@ -41,7 +38,6 @@ function Pagination(props: PaginationProps) {
         <li aria-hidden={currentPageIsFirstPage}>
           <GhostButton
             disabled={currentPageIsFirstPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(activePage - 1)}
           >
             <span className={"visually-hidden"}>
@@ -50,14 +46,12 @@ function Pagination(props: PaginationProps) {
             <Icon aria-hidden={true} icon={chevronLeft} />
           </GhostButton>
         </li>
-        <li>
-          <span tabIndex={-1} aria-hidden={true} />
+        <li aria-hidden={true}>
           Page {activePage} of {totalPages}
         </li>
         <li aria-hidden={currentPageIsLastPage}>
           <GhostButton
             disabled={currentPageIsLastPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(activePage + 1)}
           >
             <span className={"visually-hidden"}>
@@ -69,7 +63,6 @@ function Pagination(props: PaginationProps) {
         <li aria-hidden={currentPageIsLastPage}>
           <GhostButton
             disabled={currentPageIsLastPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(totalPages)}
           >
             <span className={"visually-hidden"}>

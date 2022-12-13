@@ -64,12 +64,16 @@ function MainNavigation() {
             />
           </MainNavigationSubmenuList>
         </li>
-        <MainNavigationSubmenuList icon={people} text={"Users and Teams"}>
-          <MainNavigationLink href={`/users`} linkText={"Users"} />
-          <MainNavigationLink href={`/teams`} linkText={"Teams"} />
-          <MainNavigationLink href={`/execUsers`} linkText={"User Requests"} />
-        </MainNavigationSubmenuList>
-
+        <li>
+          <MainNavigationSubmenuList icon={people} text={"Users and Teams"}>
+            <MainNavigationLink href={`/users`} linkText={"Users"} />
+            <MainNavigationLink href={`/teams`} linkText={"Teams"} />
+            <MainNavigationLink
+              href={`/execUsers`}
+              linkText={"User Requests"}
+            />
+          </MainNavigationSubmenuList>
+        </li>
         <li>
           <MainNavigationLink
             icon={list}

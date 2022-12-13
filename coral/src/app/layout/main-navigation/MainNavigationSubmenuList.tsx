@@ -1,6 +1,6 @@
 import { Box, Flexbox, Icon } from "@aivenio/design-system";
 import data from "@aivenio/design-system/dist/src/icons/console";
-import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
+import classes from "src/app/layout/main-navigation/MainNavigationSubmenuList.module.css";
 import { ReactElement, useState } from "react";
 import caretDown from "@aivenio/design-system/dist/src/icons/caretDown";
 import caretUp from "@aivenio/design-system/dist/src/icons/caretUp";
@@ -27,13 +27,13 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
   return (
     <>
       <button
-        className={classes.mainNavigationLink}
+        className={classes.mainNavigationSubmenuButton}
         aria-expanded={open ? "true" : "false"}
         onClick={() => setOpen(!open)}
       >
         <Icon
           icon={open ? caretUp : caretDown}
-          style={{ position: "absolute", marginTop: "5px", marginLeft: "7px" }}
+          style={{ position: "absolute", marginTop: "5px", marginLeft: "2px" }}
         />
         <span className={"visually-hidden"}>{buttonText}</span>
         <div aria-hidden={"true"}>
@@ -41,7 +41,7 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
             direction={"row"}
             alignItems={"center"}
             colGap={"l1"}
-            paddingLeft={"l3"}
+            paddingLeft={"l2"}
             marginRight={"l2"}
           >
             <Icon icon={icon} />

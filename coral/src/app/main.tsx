@@ -5,8 +5,9 @@ import router from "src/app/router";
 import "@aivenio/design-system/dist/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import "/src/app/main.module.css";
 import { isUnauthorizedError } from "src/services/api";
+import "/src/app/main.module.css";
+import "/src/app/accessibility.module.css";
 
 const DEV_MODE = import.meta.env.DEV;
 

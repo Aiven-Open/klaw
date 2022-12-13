@@ -2,17 +2,12 @@
    defined and active styles is not meeting
    accessibility standards */
 
-/*temp class until we have a solution for that*/
 .main-navigation-link:hover,
 .main-navigation-link:focus-within {
-  /*Primary*/
-  color: #e41a4a;
+  color: var(--hover-indicator-primary-80);
 }
 
-/*//@TODO color contrast from DS is not AA or AAA conform
-      main-100 is used in the meantime */
 .main-navigation-link-active {
-  /*Primary*/
   background-color: white;
-  color: #a70045;
+  color: var(--active-indicator-primary-100);
 }
