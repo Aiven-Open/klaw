@@ -33,7 +33,7 @@ function MainNavigation() {
             text={"Topics"}
           >
             <MainNavigationLink
-              href={`/topics`}
+              href={"/coral/topics"}
               linkText={"All Topics"}
               active={true}
             />
