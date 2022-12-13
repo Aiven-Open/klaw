@@ -36,11 +36,12 @@ function TopicTable(props: TopicListProps) {
               align={"left"}
               className={classes.topicTableRowHead}
             >
-              {dot.topicName}
+              <a href={`/topicOverview?topicname=${dot.topicName}`}>
+                {dot.topicName}
+              </a>
             </th>
             <Table.Cell>
               <Flexbox htmlTag={"ul"} alignItems={"center"} gap={"2"}>
-                {/*<ul>*/}
                 {dot.environmentsList.map((env, index) => {
                   return (
                     <li key={index + env}>
@@ -48,7 +49,6 @@ function TopicTable(props: TopicListProps) {
                     </li>
                   );
                 })}
-                {/*</ul>*/}
               </Flexbox>
             </Table.Cell>
             <Table.Cell>{dot.teamname}</Table.Cell>
