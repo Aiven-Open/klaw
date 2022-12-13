@@ -11,10 +11,12 @@
  *       or custom theme are covered
 */
 :root {
-  --hover-indicator-primary-80: #e41a4a;
-  --active-indicator-primary-100: #a70045;
-  --focus-indicator-info-70: #0399e3;
-  --text-color-grey-70: #4a4b57;
+  --body-text-color: #4a4b57; /* DS value grey-70*/
+  --text-link-color: #e41a4a; /* DS value primary-80*/
+  --text-link-color-hover: #ff3554; /* DS value primary-70*/
+  --main-navigation-hover: #e41a4a; /* DS value primary-80*/
+  --main-navigation-active: #a70045; /* DS value primary-100*/
+  --interactive-elements-focus: #0399e3; /* DS value info-70*/
 }
 
 /************************************************
@@ -29,14 +31,23 @@ button {
 }
 
 button:focus-visible {
-  outline: 2px solid var(--focus-indicator-info-70) !important;
+  outline: 2px solid var(--interactive-elements-focus) !important;
   outline-offset: 2px !important;
+}
+
+a {
+  color: var(--text-link-color);
+}
+
+a:hover,
+a:focus {
+  color: var(--text-link-color-hover);
 }
 
 a:focus-visible {
   outline-offset: 2px;
   /*represents info-70*/
-  outline-color: var(--focus-indicator-info-70);
+  outline-color: var(--interactive-elements-focus);
   box-shadow: 0 0 3px 0 #ddd;
 }
 
@@ -65,12 +76,12 @@ a:focus-visible {
 
 :root input:focus-visible,
 :root select:focus-visible {
-  outline: 1px solid var(--focus-indicator-info-70) !important;
+  outline: 1px solid var(--interactive-elements-focus) !important;
   outline-offset: 0 !important;
 }
 
 :root button:focus {
-  outline: 2px solid var(--focus-indicator-info-70) !important;
+  outline: 2px solid var(--interactive-elements-focus) !important;
   outline-offset: 0 !important;
 }
 

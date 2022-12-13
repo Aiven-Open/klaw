@@ -4,5 +4,5 @@
 /*temp class until we have a solution for that*/
 .main-navigation-submenu-button:hover,
 .main-navigation-submenu-button:focus-within {
-  color: var(--hover-indicator-primary-80);
+  color: var(--main-navigation-hover);
 }
