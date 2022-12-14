@@ -17,10 +17,10 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
-jest.mock("@aivenio/design-system", () => {
+jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
-    ...jest.requireActual("@aivenio/design-system"),
+    ...jest.requireActual("@aivenio/aquarium"),
     Icon: jest.fn(),
   };
 });

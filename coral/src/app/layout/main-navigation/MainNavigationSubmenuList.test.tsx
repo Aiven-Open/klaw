@@ -1,13 +1,13 @@
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { cleanup, screen, render, within } from "@testing-library/react";
-import data from "@aivenio/design-system/dist/src/icons/console";
+import data from "@aivenio/aquarium/dist/src/icons/console";
 import userEvent from "@testing-library/user-event";
 
 // mock out svgs to avoid clutter
-jest.mock("@aivenio/design-system", () => {
+jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
-    ...jest.requireActual("@aivenio/design-system"),
+    ...jest.requireActual("@aivenio/aquarium"),
 
     Icon: () => {
       return <div data-testid={"ds-icon"}></div>;

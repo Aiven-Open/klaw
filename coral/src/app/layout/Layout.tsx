@@ -1,4 +1,4 @@
-import { Box, Flexbox, Grid, GridItem } from "@aivenio/design-system";
+import { Box, Flexbox, Grid, GridItem } from "@aivenio/aquarium";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import Header from "src/app/layout/header/Header";
 import SkipLink from "src/app/layout/skip-link/SkipLink";

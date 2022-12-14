@@ -1,12 +1,14 @@
+import data from "@aivenio/aquarium/dist/src/icons/console";
+import { cleanup, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
-import { cleanup, screen, render, within } from "@testing-library/react";
-import data from "@aivenio/design-system/dist/src/icons/console";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 // mock out svgs to avoid clutter
-jest.mock("@aivenio/design-system", () => {
+jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
-    ...jest.requireActual("@aivenio/design-system"),
+    ...jest.requireActual("@aivenio/aquarium"),
 
     Icon: () => {
       return <div data-testid={"ds-icon"}></div>;
@@ -14,48 +16,86 @@ jest.mock("@aivenio/design-system", () => {
   };
 });
 
+const linkText = "Go to your profile page";
+
 describe("HeaderMenuLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
   const mockIcon = "" as unknown as typeof data;
 
   describe("renders a default link with required props", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <HeaderMenuLink
           icon={mockIcon}
           href={"/myProfile"}
-          linkText={"Go to your profile page"}
+          linkText={linkText}
         />
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders a link with text dependent on a given property`, () => {
       const navLink = screen.getByRole("link", {
-        name: "Go to your profile page",
+        name: linkText,
       });
 
       expect(navLink).toBeVisible();
     });
 
-    it(`renders a href for that link dependent on a given  property`, () => {
+    it(`renders a href for that link dependent on a given property`, () => {
       const navLink = screen.getByRole("link", {
-        name: "Go to your profile page",
+        name: linkText,
       });
       expect(navLink).toHaveAttribute("href", "/myProfile");
     });
 
-    it(`renders a Tooltip with an Icon, both hidden for assistive technology`, () => {
-      const navLink = screen.getByRole("link", {
-        name: "Go to your profile page",
-      });
-      const tooltip = within(navLink).getByTestId("tooltip");
-      const icon = within(tooltip).getByTestId("ds-icon");
+    it(`renders an Icon`, async () => {
+      const icon = screen.getByTestId("ds-icon");
 
-      expect(tooltip.parentElement).toHaveAttribute("aria-hidden", "true");
-      expect(tooltip).toBeEnabled();
-      expect(icon).toBeEnabled();
+      expect(icon).toBeVisible();
+    });
+
+    it(`triggers the rendering of a Tooltip on mouse hover`, async () => {
+      const navLink = screen.getByRole("link", {
+        name: linkText,
+      });
+      const queryForToolTip = () => screen.queryByRole("tooltip");
+
+      expect(queryForToolTip()).toBeNull();
+
+      await userEvent.hover(navLink);
+
+      expect(queryForToolTip()).toBeVisible();
+      expect(queryForToolTip()).toHaveTextContent(linkText);
+
+      // Assert the tooltip disappears after hover event stops
+      cleanup();
+      expect(queryForToolTip()).toBeNull();
+    });
+
+    it(`triggers the rendering of a Tooltip on tab navigation`, async () => {
+      const navLink = screen.getByRole("link", {
+        name: linkText,
+      });
+      const queryForToolTip = () => screen.queryByRole("tooltip");
+
+      expect(queryForToolTip()).toBeNull();
+
+      await tabNavigateTo({ targetElement: navLink });
+
+      expect(queryForToolTip()).toBeVisible();
+      expect(queryForToolTip()).toHaveTextContent(linkText);
+
+      // Assert the tooltip disappears after losing focus
+      cleanup();
+      expect(queryForToolTip()).toBeNull();
+    });
+
+    it(`renders a hidden child with the tooltip text for assistive technology`, async () => {
+      const hiddenText = screen.getByText(linkText);
+
+      expect(hiddenText).toHaveClass("visually-hidden");
     });
   });
 
@@ -67,12 +107,12 @@ describe("HeaderMenuLink.tsx", () => {
         <HeaderMenuLink
           icon={mockIcon}
           href={"/myProfile"}
-          linkText={"Go to your profile page"}
+          linkText={linkText}
         />
       );
 
       const navLink = screen.getByRole("link", {
-        name: "Go to your profile page",
+        name: linkText,
       });
 
       expect(navLink).not.toHaveAttribute("rel");
@@ -83,13 +123,13 @@ describe("HeaderMenuLink.tsx", () => {
         <HeaderMenuLink
           icon={mockIcon}
           href={"/myProfile"}
-          linkText={"Go to your profile page"}
+          linkText={linkText}
           rel={"noreferrer"}
         />
       );
 
       const navLink = screen.getByRole("link", {
-        name: "Go to your profile page",
+        name: linkText,
       });
 
       expect(navLink).toHaveAttribute("rel", "noreferrer");

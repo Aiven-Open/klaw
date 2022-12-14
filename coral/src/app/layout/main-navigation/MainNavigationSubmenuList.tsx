@@ -1,9 +1,9 @@
-import { Box, Flexbox, Icon } from "@aivenio/design-system";
-import data from "@aivenio/design-system/dist/src/icons/console";
+import { Box, Flexbox, Icon } from "@aivenio/aquarium";
+import data from "@aivenio/aquarium/dist/src/icons/console";
 import classes from "src/app/layout/main-navigation/MainNavigationSubmenuList.module.css";
 import { ReactElement, useState } from "react";
-import caretDown from "@aivenio/design-system/dist/src/icons/caretDown";
-import caretUp from "@aivenio/design-system/dist/src/icons/caretUp";
+import caretDown from "@aivenio/aquarium/dist/src/icons/caretDown";
+import caretUp from "@aivenio/aquarium/dist/src/icons/caretUp";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 
 type MainNavigationSubmenuItemProps = {

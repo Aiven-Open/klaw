@@ -1,6 +1,6 @@
-import { Grid, Icon, InputBase, PrimaryButton } from "@aivenio/design-system";
+import { Grid, Icon, InputBase, PrimaryButton } from "@aivenio/aquarium";
 import { FormEvent, useState } from "react";
-import searchItem from "@aivenio/design-system/dist/module/icons/search";
+import searchItem from "@aivenio/aquarium/dist/module/icons/search";
 
 type SearchTopicsProps = {
   value: string;

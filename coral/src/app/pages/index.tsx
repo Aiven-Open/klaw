@@ -1,5 +1,5 @@
 import Layout from "src/app/layout/Layout";
-import { PageHeader } from "@aivenio/design-system";
+import { PageHeader } from "@aivenio/aquarium";
 
 const HomePage = () => {
   return (

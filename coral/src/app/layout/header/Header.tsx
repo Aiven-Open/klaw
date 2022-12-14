@@ -1,7 +1,7 @@
-import { Flexbox } from "@aivenio/design-system";
-import questionMark from "@aivenio/design-system/dist/module/icons/questionMark";
-import user from "@aivenio/design-system/dist/module/icons/user";
-import notifications from "@aivenio/design-system/dist/module/icons/notifications";
+import { Flexbox } from "@aivenio/aquarium";
+import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
+import user from "@aivenio/aquarium/dist/module/icons/user";
+import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import logo from "src/app/layout/header/klaw_logo.png";
 

@@ -7,10 +7,10 @@ import {
 } from "src/services/test-utils/tabbing";
 
 // mock out svgs to avoid clutter
-jest.mock("@aivenio/design-system", () => {
+jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
-    ...jest.requireActual("@aivenio/design-system"),
+    ...jest.requireActual("@aivenio/aquarium"),
 
     Icon: () => {
       return <div data-testid={"ds-icon"}></div>;

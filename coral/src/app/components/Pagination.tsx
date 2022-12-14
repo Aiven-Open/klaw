@@ -1,8 +1,8 @@
-import { Flexbox, GhostButton, Icon } from "@aivenio/design-system";
-import chevronBackward from "@aivenio/design-system/dist/src/icons/chevronBackward";
-import chevronLeft from "@aivenio/design-system/dist/src/icons/chevronLeft";
-import chevronRight from "@aivenio/design-system/dist/src/icons/chevronRight";
-import chevronForward from "@aivenio/design-system/dist/src/icons/chevronForward";
+import { Flexbox, GhostButton, Icon } from "@aivenio/aquarium";
+import chevronBackward from "@aivenio/aquarium/dist/src/icons/chevronBackward";
+import chevronLeft from "@aivenio/aquarium/dist/src/icons/chevronLeft";
+import chevronRight from "@aivenio/aquarium/dist/src/icons/chevronRight";
+import chevronForward from "@aivenio/aquarium/dist/src/icons/chevronForward";
 
 type PaginationProps = {
   activePage: number;

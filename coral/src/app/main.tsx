@@ -1,13 +1,14 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
+import "@aivenio/aquarium/dist/styles.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import router from "src/app/router";
-import "@aivenio/design-system/dist/styles.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { isUnauthorizedError } from "src/services/api";
-import "/src/app/main.module.css";
 import "/src/app/accessibility.module.css";
+import "/src/app/main.module.css";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -43,8 +44,10 @@ prepare().then(() => {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <RouterProvider router={router} />
-        {DEV_MODE && <ReactQueryDevtools />}
+        <AquariumContext>
+          <RouterProvider router={router} />
+          {DEV_MODE && <ReactQueryDevtools />}
+        </AquariumContext>
       </QueryClientProvider>
     </React.StrictMode>
   );

@@ -1,4 +1,4 @@
-import { Chip, Flexbox, Table } from "@aivenio/design-system";
+import { Chip, Flexbox, Table } from "@aivenio/aquarium";
 import { Topic } from "src/domain/topic";
 import classes from "src/app/features/browse-topics/components/topic-table/TopicTable.module.css";
 

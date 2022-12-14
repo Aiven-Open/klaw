@@ -3,7 +3,7 @@ import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
 import TopicTable from "src/app/features/browse-topics/components/topic-table/TopicTable";
 import { useState } from "react";
-import { Flexbox, FlexboxItem } from "@aivenio/design-system";
+import { Flexbox, FlexboxItem } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";

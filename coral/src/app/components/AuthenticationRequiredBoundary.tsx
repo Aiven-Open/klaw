@@ -1,4 +1,4 @@
-import { Flexbox, Typography } from "@aivenio/design-system";
+import { Flexbox, Typography } from "@aivenio/aquarium";
 import { Component, ReactElement } from "react";
 import { isUnauthorizedError } from "src/services/api";
 

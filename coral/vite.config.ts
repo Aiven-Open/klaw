@@ -113,7 +113,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     define: {
       // Vite does not use process.env (see https://vitejs.dev/guide/env-and-mode.html).
-      // If a library depends on process.env (like "@aivenio/design-system").
+      // If a library depends on process.env (like "@aivenio/aquarium").
       // ⛔ Note: there are stackoverflow answers / github issues that recommend e.g
       // ⛔ 'process.env': process.env or
       // ⛔ 'process.env': { ...process.env}
