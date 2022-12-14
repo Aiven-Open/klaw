@@ -27,8 +27,8 @@ function TopicTable(props: TopicListProps) {
         </Table.Cell>
       </Table.Head>
       <Table.Body>
-        {topics.map((dot) => (
-          <Table.Row key={dot.topicid}>
+        {topics.map((topic) => (
+          <Table.Row key={topic.topicid}>
             {/*Workaround to get right html element with scope*/}
             {/*until DS ready*/}
             <th
@@ -36,22 +36,22 @@ function TopicTable(props: TopicListProps) {
               align={"left"}
               className={classes.topicTableRowHead}
             >
-              {dot.topicName}
+              <a href={`/topicOverview?topicname=${topic.topicName}`}>
+                {topic.topicName}
+              </a>
             </th>
             <Table.Cell>
               <Flexbox htmlTag={"ul"} alignItems={"center"} gap={"2"}>
-                {/*<ul>*/}
-                {dot.environmentsList.map((env, index) => {
+                {topic.environmentsList.map((env, index) => {
                   return (
                     <li key={index + env}>
                       <Chip text={env} />
                     </li>
                   );
                 })}
-                {/*</ul>*/}
               </Flexbox>
             </Table.Cell>
-            <Table.Cell>{dot.teamname}</Table.Cell>
+            <Table.Cell>{topic.teamname}</Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>
