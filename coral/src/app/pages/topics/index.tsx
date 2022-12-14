@@ -1,6 +1,7 @@
 import { PageHeader } from "@aivenio/design-system";
 import add from "@aivenio/design-system/dist/src/icons/add";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
+import PreviewBanner from "src/app/components/PreviewBanner";
 import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
 import Layout from "src/app/layout/Layout";
 
@@ -8,6 +9,7 @@ const Topics = () => {
   return (
     <AuthenticationRequiredBoundary>
       <Layout>
+        <PreviewBanner linkTarget={"/browseTopics"} />
         <PageHeader
           title={"Browse all topics"}
           primaryAction={{
