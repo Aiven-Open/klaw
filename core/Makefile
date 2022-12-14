@@ -2,11 +2,11 @@ CORAL_ROOT = ../coral
 CORAL_DIST = $(CORAL_ROOT)/dist
 
 # This is installed as part of Maven
-PNPM = nodebuild/node/node_modules/.bin/pnpm
+PNPM = ../core/nodebuild/node/node_modules/.bin/pnpm
 
 $(CORAL_DIST): ../coral/index.html $(shell find $(CORAL_ROOT)/src)
-	$(PNPM) -C $(CORAL_ROOT) install --frozen-lockfile
-	$(PNPM) -C $(CORAL_ROOT) build --assetsDir assets/coral --mode springboot
+	cd $(CORAL_ROOT); $(PNPM) install --frozen-lockfile
+	cd $(CORAL_ROOT); $(PNPM) build --assetsDir assets/coral --mode springboot
 
 src/main/resources/templates/coral/index.html: $(CORAL_DIST)
 	mkdir -p $(shell dirname $@)
