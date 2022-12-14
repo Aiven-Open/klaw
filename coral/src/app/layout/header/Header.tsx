@@ -22,7 +22,6 @@ function Header() {
       </a>
       <nav aria-label={"Quick links"}>
         <Flexbox htmlTag={"ul"} colGap={"l2"}>
-          {/*@TODO add correct link*/}
           <li>
             <HeaderMenuLink
               icon={notifications}
@@ -38,7 +37,6 @@ function Header() {
               rel={"noreferrer"}
             />
           </li>
-          {/*@TODO add correct link*/}
           <li>
             <HeaderMenuLink
               icon={user}
