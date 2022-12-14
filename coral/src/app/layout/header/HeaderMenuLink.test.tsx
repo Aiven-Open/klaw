@@ -60,36 +60,40 @@ describe("HeaderMenuLink.tsx", () => {
       const navLink = screen.getByRole("link", {
         name: linkText,
       });
-      const queryForToolTip = () => screen.queryByRole("tooltip");
+      const tooltipBeforeHover = screen.queryByRole("tooltip");
 
-      expect(queryForToolTip()).toBeNull();
+      expect(tooltipBeforeHover).toBeNull();
 
       await userEvent.hover(navLink);
 
-      expect(queryForToolTip()).toBeVisible();
-      expect(queryForToolTip()).toHaveTextContent(linkText);
+      const tooltipAfterHover = screen.getByRole("tooltip");
+
+      expect(tooltipAfterHover).toBeVisible();
+      expect(tooltipAfterHover).toHaveTextContent(linkText);
 
       // Assert the tooltip disappears after hover event stops
       await userEvent.unhover(navLink);
-      expect(queryForToolTip()).toBeNull();
+      expect(tooltipBeforeHover).toBeNull();
     });
 
     it(`triggers the rendering of a Tooltip on tab navigation`, async () => {
       const navLink = screen.getByRole("link", {
         name: linkText,
       });
-      const queryForToolTip = () => screen.queryByRole("tooltip");
+      const tooltipBeforeFocus = screen.queryByRole("tooltip");
 
-      expect(queryForToolTip()).toBeNull();
+      expect(tooltipBeforeFocus).toBeNull();
 
       await tabNavigateTo({ targetElement: navLink });
 
-      expect(queryForToolTip()).toBeVisible();
-      expect(queryForToolTip()).toHaveTextContent(linkText);
+      const tooltipAfterFocus = screen.getByRole("tooltip");
+
+      expect(tooltipAfterFocus).toBeVisible();
+      expect(tooltipAfterFocus).toHaveTextContent(linkText);
 
       // Assert the tooltip disappears after losing focus
       await userEvent.tab();
-      expect(queryForToolTip()).toBeNull();
+      expect(tooltipBeforeFocus).toBeNull();
     });
 
     it(`renders a hidden child with the tooltip text for assistive technology`, async () => {
