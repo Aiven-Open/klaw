@@ -5,6 +5,7 @@ CORAL_DIST = $(CORAL_ROOT)/dist
 PNPM = nodebuild/node/node_modules/.bin/pnpm
 
 $(CORAL_DIST): ../coral/index.html $(shell find $(CORAL_ROOT)/src)
+	$(PNPM) -C $(CORAL_ROOT) install --frozen-lockfile
 	$(PNPM) -C $(CORAL_ROOT) build --assetsDir assets/coral --mode springboot
 
 src/main/resources/templates/coral/index.html: $(CORAL_DIST)
