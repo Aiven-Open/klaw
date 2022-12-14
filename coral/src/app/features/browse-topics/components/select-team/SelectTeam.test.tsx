@@ -7,6 +7,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
+const filterLabel = "Filter by team";
 describe("SelectTeam.tsx", () => {
   beforeAll(() => {
     server.listen();
@@ -37,7 +38,7 @@ describe("SelectTeam.tsx", () => {
 
     it("shows a select element for Team", () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterLabel,
       });
 
       expect(select).toBeEnabled();
@@ -134,7 +135,7 @@ describe("SelectTeam.tsx", () => {
 
     it("updates state for api call when user selects a new team", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterLabel,
       });
       const option = screen.getByRole("option", { name: optionToSelect });
 
@@ -145,7 +146,7 @@ describe("SelectTeam.tsx", () => {
 
     it("sets the team the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterLabel,
       });
       const option = screen.getByRole("option", { name: optionToSelect });
 
@@ -186,7 +187,7 @@ describe("SelectTeam.tsx", () => {
 
     it("sets `TEST_TEAM_01` as search param when user selected it", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterLabel,
       });
 
       const option = screen.getByRole("option", { name: optionToSelect });

@@ -12,6 +12,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 
+const filterLabel = "Filter by environment";
 describe("SelectEnvironment.tsx", () => {
   beforeAll(() => {
     server.listen();
@@ -45,7 +46,7 @@ describe("SelectEnvironment.tsx", () => {
 
     it("shows a select element for Kafka environments", () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterLabel,
       });
 
       expect(select).toBeEnabled();
@@ -142,7 +143,7 @@ describe("SelectEnvironment.tsx", () => {
 
     it("updates state for api call when user selects a new environment", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterLabel,
       });
       const option = screen.getByRole("option", {
         name: mockedEnvironmentDev.name,
@@ -155,7 +156,7 @@ describe("SelectEnvironment.tsx", () => {
 
     it("sets the environment the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterLabel,
       });
       const option = screen.getByRole("option", {
         name: mockedEnvironmentDev.name,
@@ -197,7 +198,7 @@ describe("SelectEnvironment.tsx", () => {
 
     it(`sets "${mockedEnvironmentTst.name}" as search param when user selected it`, async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterLabel,
       });
 
       const option = screen.getByRole("option", {
@@ -215,7 +216,7 @@ describe("SelectEnvironment.tsx", () => {
 
     it("removes search param when user chooses All environment", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterLabel,
       });
 
       const option = screen.getByRole("option", { name: "All environments" });
