@@ -10,7 +10,7 @@ default: $(EMBEDDED_INDEX_HTML)
 	@echo "TODO: ADD USAGE INSTRUCTIONS"
 
 $(CORAL_DIST_PATH): index.html $(wildcard src/**/*)
-	../core/nodebuild/node/node_modules/.bin/pnpm build --assetsDir assets/coral --mode springboot
+	pnpm build --assetsDir assets/coral --mode springboot
 
 $(EMBEDDED_INDEX_HTML): $(CORAL_DIST_PATH)
 	mkdir -p $(shell dirname $@)
