@@ -6,9 +6,9 @@
 
 - [About](#about)
 - [Installation and usage](#installation-and-usage)
+- [Usage: How to run Coral inside the Klaw application](#usage-how-to-run-coral-inside-the-klaw-application)
   - [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
     - [Scripts used and what they execute](#scripts-used-and-what-they-execute)
-  - [Usage: How to run Coral inside the Klaw application](#usage-how-to-run-coral-inside-the-klaw-application)
 - [Tech stack](#tech-stack)
   - [App development](#app-development)
   - [Testing](#testing)
@@ -22,12 +22,28 @@
 
 ## Installation and usage
 
-ℹ️ Coral uses `pnpm run` as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) it.
+** ℹRequirements**
+- [node](https://nodejs.org/en/) needs to be installed (see [npmcr](.npmrc) for version).
+- Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm. 
+
+### Usage: How to run Coral inside the Klaw application
+
+1. navigate to this directory
+2. run `pnpm install`
+3. run `make enable-coral-in-springboot` (see our [Makefile](Makefile)). This will enable Coral in Klaw. It also moves the Coral build files to the right directory.
+4. go to the root directory and follow the [instructions on how to run Klaw](../README.md#Install)
+
+➡️ Based on Springboot [application properties](https://github.com/aiven/klaw/blob/main/core/src/main/resources/application.properties#L5) configuration: 
+- Klaw will run in `https://localhost:9097` if TLS is enabled
+- Klaw will run in `http://localhost:9097` if TLS is not enabled
+
+### Usage: How to run Coral in development
 
 - navigate to this directory
 - run `pnpm install`
-- run `pnpm dev` to start the frontend app in development mode _with remote API_
-- run `pnpm dev-without-api` to start the frontend app in development mode without api
+- to start development mode, run:
+  - `pnpm dev`sto start the frontend app for development in development mode **with remote API**
+  - `pnpm dev-without-remote-api` to start the frontend app in development mode **without** api
 
 ℹ️ **Using a remote API**
 We recommend doing coral development with a remote API.
@@ -37,15 +53,14 @@ Please see our documentation: [Development with remote API](docs/development-wit
 If you want to run Coral without an API, you can do that, too.
 Please see our documentation: [Mocking an API for development](docs/mock-api-for-development.md)
 
-### Usage: How to run Coral in development
-
 ℹ️ You can see all our scripts in the [`package.json`](package.json).
 You can also run `pnpm` in your console to get a list of all available scripts.
 
 #### Scripts used and what they execute
 
 - `build`: builds the frontend app for production
-- `dev`: starts the frontend app for development
+- `dev`: starts the frontend app for development in development mode **with remote API**
+- `dev-without-api` starts the frontend app in development mode **without** api
 - `lint`: runs a code format check and if no error is found, lints the code.
   - the linting script does not mutate your code. See [Linting and code formatting](#linting-and-code-formatting) for more info.
 - `preview`: builds a preview production build _locally_
@@ -54,11 +69,6 @@ You can also run `pnpm` in your console to get a list of all available scripts.
 - `test`: runs all tests one time
 - `tsc`: runs the TypeScript compiler
 
-### Usage: How to run Coral inside the Klaw application
-
-1. in `/coral`, run `make enable-coral-in-springboot` (see our [Makefile](Makefile)). This will enable Coral in Klaw. It also add the current Coral build files in the right place.
-2. go to the root directory and follow the [instructions on how to run Klaw](../README.md#Install)
-3. Klaw will run in `http://localhost:9097` (note: it's `http` instead of `https`!)
 
 ## Tech stack
 
@@ -91,9 +101,9 @@ The script `lint` runs a prettier check and eslint after. It does not mutate you
 
 ## Styling
 
-We use the component library of Aiven's design system:
+Coral uses the component library of Aiven's design system:
 
-- 📃 [documentation](https://aiven-ds.netlify.app/)
+- 📃 [documentation](https://aquarium-library.aiven.io/)
 - the repository is open source, but `private` at the moment
 
 As a rule, please don't use css classes from the design system. All styles should be created by using the existing components and their properties.
