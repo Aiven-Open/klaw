@@ -70,7 +70,7 @@ describe("HeaderMenuLink.tsx", () => {
       expect(queryForToolTip()).toHaveTextContent(linkText);
 
       // Assert the tooltip disappears after hover event stops
-      cleanup();
+      await userEvent.unhover(navLink);
       expect(queryForToolTip()).toBeNull();
     });
 
@@ -88,7 +88,7 @@ describe("HeaderMenuLink.tsx", () => {
       expect(queryForToolTip()).toHaveTextContent(linkText);
 
       // Assert the tooltip disappears after losing focus
-      cleanup();
+      await userEvent.tab();
       expect(queryForToolTip()).toBeNull();
     });
 
