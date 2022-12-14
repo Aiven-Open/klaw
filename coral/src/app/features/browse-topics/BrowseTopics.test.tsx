@@ -11,6 +11,7 @@ import {
   mockedResponseTransformed,
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
+import api from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -23,6 +24,37 @@ jest.mock("@aivenio/design-system", () => {
     Icon: jest.fn(),
   };
 });
+
+interface GetTopicsParams {
+  pageNo?: string;
+  env?: string;
+  teamName?: string;
+  topicnamesearch?: string;
+}
+
+interface GetUrlWithParams extends GetTopicsParams {
+  route: string;
+}
+
+const getUrlWithParams = ({
+  route,
+  pageNo = "1",
+  env = "ALL",
+  teamName,
+  topicnamesearch,
+}: GetUrlWithParams) => {
+  const params: Record<string, string> = { pageNo, env };
+
+  if (teamName !== undefined) {
+    params.teamName = teamName;
+  }
+
+  if (topicnamesearch !== undefined) {
+    params.topicnamesearch = topicnamesearch;
+  }
+
+  return `/${route}?${new URLSearchParams(params)}`;
+};
 
 describe("BrowseTopics.tsx", () => {
   beforeAll(() => {
@@ -264,6 +296,7 @@ describe("BrowseTopics.tsx", () => {
 
     afterEach(() => {
       server.resetHandlers();
+      jest.clearAllMocks();
       cleanup();
     });
 
@@ -278,6 +311,11 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when user clicks on next page", async () => {
+      const spyGet = jest.spyOn(api, "get");
+      const url = getUrlWithParams({
+        route: "getTopics",
+        pageNo: "2",
+      });
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const pageTwoButton = screen.getByRole("button", {
         name: "Go to next page, page 2",
@@ -288,6 +326,8 @@ describe("BrowseTopics.tsx", () => {
       const pagination = await screen.findByRole("navigation", {
         name: "Pagination navigation, you're on page 1 of 10",
       });
+
+      expect(spyGet).toHaveBeenCalledWith(url);
       expect(pagination).toBeVisible();
     });
   });
@@ -308,6 +348,7 @@ describe("BrowseTopics.tsx", () => {
 
     afterEach(() => {
       server.resetHandlers();
+      jest.clearAllMocks();
       cleanup();
     });
 
@@ -352,6 +393,11 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when user selects `DEV`", async () => {
+      const spyGet = jest.spyOn(api, "get");
+      const url = getUrlWithParams({
+        route: "getTopics",
+        env: "1",
+      });
       const getAllTopics = () =>
         within(
           screen.getByRole("table", { name: /Topics overview/ })
@@ -370,6 +416,7 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.selectOptions(select, option);
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
+      expect(spyGet).toHaveBeenCalledWith(url);
       expect(getAllTopics()).toHaveLength(3);
     });
   });
@@ -390,6 +437,7 @@ describe("BrowseTopics.tsx", () => {
 
     afterEach(() => {
       server.resetHandlers();
+      jest.clearAllMocks();
       cleanup();
     });
 
@@ -418,6 +466,11 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when user selects `TEST_TEAM_02`", async () => {
+      const spyGet = jest.spyOn(api, "get");
+      const url = getUrlWithParams({
+        route: "getTopics",
+        teamName: "TEST_TEAM_02",
+      });
       const getAllTopics = () =>
         within(
           screen.getByRole("table", { name: /Topics overview/ })
@@ -435,7 +488,7 @@ describe("BrowseTopics.tsx", () => {
 
       await userEvent.selectOptions(select, option);
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
-
+      expect(spyGet).toHaveBeenCalledWith(url);
       expect(getAllTopics()).toHaveLength(2);
     });
   });
@@ -456,10 +509,16 @@ describe("BrowseTopics.tsx", () => {
 
     afterEach(() => {
       server.resetHandlers();
+      jest.clearAllMocks();
       cleanup();
     });
 
     it("fetches new data when user enters text in input and clicks the search button", async () => {
+      const spyGet = jest.spyOn(api, "get");
+      const url = getUrlWithParams({
+        route: "getTopics",
+        topicnamesearch: testSearchInput,
+      });
       const input = screen.getByRole("searchbox", {
         name: "Search by topic name",
       });
@@ -480,6 +539,7 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.click(submitButton);
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
+      expect(spyGet).toHaveBeenCalledWith(url);
       expect(getAllTopics()).toHaveLength(2);
     });
 
