@@ -3,7 +3,7 @@ import {
   Input as BaseInput,
   InputProps as BaseInputProps,
   Option,
-} from "@aivenio/design-system";
+} from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { memo } from "react";
 import {

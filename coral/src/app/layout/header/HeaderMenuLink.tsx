@@ -1,5 +1,6 @@
-import { Icon, Tooltip } from "@aivenio/design-system";
-import data from "@aivenio/design-system/dist/src/icons/console";
+import { Icon, Tooltip } from "@aivenio/aquarium";
+import data from "@aivenio/aquarium/dist/src/icons/console";
+import { useState } from "react";
 
 type HeaderMenuLinkProps = {
   icon: typeof data;
@@ -9,19 +10,39 @@ type HeaderMenuLinkProps = {
 };
 function HeaderMenuLink(props: HeaderMenuLinkProps) {
   const { icon, linkText, href, rel } = props;
+
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleOpen = () => setIsOpen(!isOpen);
+
   return (
-    <a href={href} rel={rel} style={{ color: "white" }}>
+    <a
+      href={href}
+      rel={rel}
+      // These mouse events are necessary because the Tooltip component does not show the popover on hover with React version >= 18
+      // @TODO: remove when aquarium is compatible with React version >= 18
+      onMouseEnter={toggleOpen}
+      onMouseLeave={toggleOpen}
+      // Allow displaying the tooltip when navigating with keyboard
+      // Because the Tooltip is rendered outside of the main DOM hierarchy, it is ignored by screen readers
+      // So we can display it with keyboard navigation for users who use keyboard navigation, but not a screen reader
+      onFocus={toggleOpen}
+      onBlur={toggleOpen}
+    >
       <span className={"visually-hidden"}>{linkText}</span>
-      <span aria-hidden={"true"}>
-        {/*DS does not fully support React18 now, where children */}
-        {/*is not a default prop for FC*/}
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-        {/*@ts-ignore*/}
-        <Tooltip content={linkText} placement="right">
-          {/*@TODO add correct link*/}
-          <Icon aria-hidden="true" icon={icon} fontSize={"20px"} />
-        </Tooltip>
-      </span>
+      {/*Aquarium does not fully support React 18 now, where children */}
+      {/*is not a default prop for FC*/}
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+      {/*@ts-ignore*/}
+      <Tooltip
+        // aria-hidden is currently not forwarded, but it is added for semantics purposes
+        aria-hidden="true"
+        content={linkText}
+        placement="right"
+        isOpen={isOpen}
+      >
+        {/* aria-hidden="true" is added natively to the Icon component */}
+        <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
+      </Tooltip>
     </a>
   );
 }

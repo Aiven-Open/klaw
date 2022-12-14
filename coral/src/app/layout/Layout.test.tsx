@@ -2,10 +2,10 @@ import Layout from "src/app/layout/Layout";
 import { cleanup, screen, render, within } from "@testing-library/react";
 
 // mock out svgs to avoid clutter
-jest.mock("@aivenio/design-system", () => {
+jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
-    ...jest.requireActual("@aivenio/design-system"),
+    ...jest.requireActual("@aivenio/aquarium"),
     Icon: () => null,
   };
 });

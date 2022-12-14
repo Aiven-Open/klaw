@@ -7,7 +7,7 @@ import {
   useForm,
 } from "src/app/components/Form";
 import { FieldErrors } from "react-hook-form";
-import { Flexbox, FlexboxItem } from "@aivenio/design-system";
+import { Flexbox, FlexboxItem } from "@aivenio/aquarium";
 import { useLoginUser } from "src/app/features/login/hooks/useLoginUser";
 import { useEffect } from "react";
 

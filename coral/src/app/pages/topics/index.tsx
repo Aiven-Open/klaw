@@ -1,5 +1,5 @@
-import { PageHeader } from "@aivenio/design-system";
-import add from "@aivenio/design-system/dist/src/icons/add";
+import { PageHeader } from "@aivenio/aquarium";
+import add from "@aivenio/aquarium/dist/src/icons/add";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 import PreviewBanner from "src/app/components/PreviewBanner";
 import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";

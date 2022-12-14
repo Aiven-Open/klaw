@@ -1,10 +1,10 @@
-import { Box } from "@aivenio/design-system";
-import database from "@aivenio/design-system/dist/src/icons/database";
-import codeBlock from "@aivenio/design-system/dist/src/icons/codeBlock";
-import layoutGroupBy from "@aivenio/design-system/dist/src/icons/layoutGroupBy";
-import people from "@aivenio/design-system/dist/src/icons/people";
-import list from "@aivenio/design-system/dist/src/icons/list";
-import cog from "@aivenio/design-system/dist/src/icons/cog";
+import { Box } from "@aivenio/aquarium";
+import database from "@aivenio/aquarium/dist/src/icons/database";
+import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
+import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
+import people from "@aivenio/aquarium/dist/src/icons/people";
+import list from "@aivenio/aquarium/dist/src/icons/list";
+import cog from "@aivenio/aquarium/dist/src/icons/cog";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 

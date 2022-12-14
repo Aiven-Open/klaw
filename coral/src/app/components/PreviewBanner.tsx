@@ -1,5 +1,5 @@
-import { Box, Flexbox, Icon, Typography } from "@aivenio/design-system";
-import infoSign from "@aivenio/design-system/dist/module/icons/infoSign";
+import { Box, Flexbox, Icon, Typography } from "@aivenio/aquarium";
+import infoSign from "@aivenio/aquarium/dist/module/icons/infoSign";
 
 function Link({
   text,

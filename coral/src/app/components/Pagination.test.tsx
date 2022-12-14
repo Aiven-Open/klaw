@@ -5,10 +5,10 @@ import userEvent from "@testing-library/user-event";
 const mockIconRender = jest.fn();
 // mocks out Icon component to avoid clutter
 // Icon is used purely decoratively
-jest.mock("@aivenio/design-system", () => {
+jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
-    ...jest.requireActual("@aivenio/design-system"),
+    ...jest.requireActual("@aivenio/aquarium"),
     Icon: () => mockIconRender(),
   };
 });

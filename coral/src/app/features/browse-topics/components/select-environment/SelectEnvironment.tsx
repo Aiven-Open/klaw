@@ -1,4 +1,4 @@
-import { NativeSelect, Option } from "@aivenio/design-system";
+import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useEffect, useState } from "react";
 import { ALL_ENVIRONMENTS_VALUE, Environment } from "src/domain/environment";
 import { useSearchParams } from "react-router-dom";

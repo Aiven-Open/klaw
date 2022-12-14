@@ -1,4 +1,4 @@
-import { NativeSelect, Option } from "@aivenio/design-system";
+import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useEffect, useState } from "react";
 import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
