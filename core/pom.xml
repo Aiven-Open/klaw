@@ -199,14 +199,25 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Compile and copy Coral</id>
+                        <id>Clean Coral assets before building</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>clean</phase>
+                        <configuration>
+                            <executable>make</executable>
+                            <commandlineArgs>clean</commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Compile and copy Coral assets</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
                         <phase>compile</phase>
                         <configuration>
                             <executable>make</executable>
-                            <commandlineArgs>-C ../coral ../core/src/main/resources/templates/coral/index.html ../core/src/main/resources/static/assets/coral</commandlineArgs>
+                            <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
                         </configuration>
                     </execution>
                 </executions>
