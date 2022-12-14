@@ -39,16 +39,10 @@ function HeaderMenuLink(props: HeaderMenuLinkProps) {
         content={linkText}
         placement="right"
         isOpen={isOpen}
-        id={href}
       >
         {/*@TODO add correct link*/}
         {/* aria-hidden="true" is added natively to the Icon component */}
-        <Icon
-          icon={icon}
-          fontSize={"20px"}
-          color={"grey-0"}
-          aria-describedby={href}
-        />
+        <Icon icon={icon} fontSize={"20px"} color={"grey-0"} />
       </Tooltip>
     </a>
   );
