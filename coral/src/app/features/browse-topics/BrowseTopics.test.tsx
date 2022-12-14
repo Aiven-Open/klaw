@@ -544,6 +544,11 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when when user enters text in input and presses 'Enter'", async () => {
+      const spyGet = jest.spyOn(api, "get");
+      const url = getUrlWithParams({
+        route: "getTopics",
+        topicnamesearch: testSearchInput,
+      });
       const input = screen.getByRole("searchbox", {
         name: "Search by topic name",
       });
@@ -560,6 +565,7 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.keyboard("{Enter}");
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
+      expect(spyGet).toHaveBeenCalledWith(url);
       expect(getAllTopics()).toHaveLength(2);
     });
 
@@ -587,6 +593,11 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when user enters text in input and presses 'Enter' on focused submit button", async () => {
+      const spyGet = jest.spyOn(api, "get");
+      const url = getUrlWithParams({
+        route: "getTopics",
+        topicnamesearch: testSearchInput,
+      });
       const input = screen.getByRole("searchbox", {
         name: "Search by topic name",
       });
@@ -615,6 +626,7 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.keyboard("{Enter}");
       await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
+      expect(spyGet).toHaveBeenCalledWith(url);
       expect(getAllTopics()).toHaveLength(2);
     });
   });
