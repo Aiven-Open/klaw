@@ -24,9 +24,13 @@
         <apachepoi.version>5.2.3</apachepoi.version>
         <commons-text.version>1.10.0</commons-text.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
+        <front-end-maven-plugin.version>1.12.1</front-end-maven-plugin.version>
         <h2.version>2.1.214</h2.version>
         <jasyptencrypt.version>3.0.4</jasyptencrypt.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
+        <node.version>v18.11.0</node.version>
+        <npm.version>8.19.2</npm.version>
+        <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <spring.azure.ad.version>4.4.1</spring.azure.ad.version>
     </properties>
@@ -152,6 +156,71 @@
                         <phase>test</phase>
                         <configuration>
                             <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Install node and npm for React components -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>${front-end-maven-plugin.version}</version>
+                <configuration>
+                    <workingDirectory>nodebuild</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <nodeVersion>${node.version}</nodeVersion>
+                            <npmVersion>${npm.version}</npmVersion>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Install pnpm. Clean and build React components -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-plugin.version}</version>
+                <executions>
+                    <!-- Install pnpm for React components -->
+                    <execution>
+                        <id>Install pnpm</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <basedir>nodebuild/node</basedir>
+                            <executable>bash</executable>
+                            <commandlineArgs>npm install pnpm</commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Clean Coral assets before building</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>clean</phase>
+                        <configuration>
+                            <executable>make</executable>
+                            <commandlineArgs>clean</commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Compile and copy Coral assets</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <configuration>
+                            <executable>make</executable>
+                            <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
                         </configuration>
                     </execution>
                 </executions>

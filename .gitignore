@@ -44,6 +44,7 @@ node_modules/
 coral/dist*
 core/src/main/resources/static/assets/coral*
 core/src/main/resources/templates/coral*
+core/nodebuild*
 
 # Coral development mode against remote Klaw API
 coral/.env.remote-api

@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: 16
+  NODE_VERSION: 18
   PNPM_VERSION: 7.13.4
   
 jobs:
