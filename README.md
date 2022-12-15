@@ -20,10 +20,6 @@ For the versions available, see the [tags on this repository](https://github.com
 
 ![Architecture](https://github.com/aiven/klaw/blob/main/arch.png)
 
-## Work in progress
-
-The directory `/coral` contains a React app. It's an ongoing rewrite of the existing Klaw frontend. The app Frontend app is not used in Klaw at the moment.
-
 ## Features:
 
 - Topics (approval): Create, Update, Delete, Promote
