@@ -28,7 +28,7 @@
         <h2.version>2.1.214</h2.version>
         <jasyptencrypt.version>3.0.4</jasyptencrypt.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
-        <node.version>v18.11.0</node.version>
+        <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
