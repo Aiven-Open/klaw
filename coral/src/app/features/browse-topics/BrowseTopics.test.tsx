@@ -56,6 +56,8 @@ const getUrlWithParams = ({
   return `/${route}?${new URLSearchParams(params)}`;
 };
 
+const filterByEnvironmentLabel = "Filter by environment";
+const filterByTeamLabel = "Filter by team";
 describe("BrowseTopics.tsx", () => {
   beforeAll(() => {
     server.listen();
@@ -182,7 +184,7 @@ describe("BrowseTopics.tsx", () => {
     it("renders a select element to filter topics by Kafka environment", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterByEnvironmentLabel,
       });
 
       expect(select).toBeEnabled();
@@ -191,7 +193,7 @@ describe("BrowseTopics.tsx", () => {
     it("renders a select element to filter topics by team", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterByTeamLabel,
       });
 
       expect(select).toBeEnabled();
@@ -355,7 +357,7 @@ describe("BrowseTopics.tsx", () => {
     it("shows a select element for environments with `ALL` preselected", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterByEnvironmentLabel,
       });
 
       expect(select).toHaveValue("ALL");
@@ -364,7 +366,7 @@ describe("BrowseTopics.tsx", () => {
     it("shows an information that the list is updated after user selected an environment", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterByEnvironmentLabel,
       });
       const option = within(select).getByRole("option", {
         name: "DEV",
@@ -380,7 +382,7 @@ describe("BrowseTopics.tsx", () => {
     it("changes active selected option when user selects `DEV`", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterByEnvironmentLabel,
       });
       const option = within(select).getByRole("option", {
         name: "DEV",
@@ -407,7 +409,7 @@ describe("BrowseTopics.tsx", () => {
       expect(getAllTopics()).toHaveLength(10);
 
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: filterByEnvironmentLabel,
       });
       const option = within(select).getByRole("option", {
         name: "DEV",
@@ -444,7 +446,7 @@ describe("BrowseTopics.tsx", () => {
     it("shows a select element for team with `All teams` preselected", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterByTeamLabel,
       });
 
       expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
@@ -453,7 +455,7 @@ describe("BrowseTopics.tsx", () => {
     it("changes active selected option when user selects `TEST_TEAM_02`", async () => {
       await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterByTeamLabel,
       });
       const option = within(select).getByRole("option", {
         name: "TEST_TEAM_02",
@@ -480,7 +482,7 @@ describe("BrowseTopics.tsx", () => {
       expect(getAllTopics()).toHaveLength(10);
 
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: filterByTeamLabel,
       });
       const option = within(select).getByRole("option", {
         name: "TEST_TEAM_02",

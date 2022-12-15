@@ -23,7 +23,7 @@ function MainNavigation() {
           <MainNavigationLink
             icon={database}
             href={`/index`}
-            linkText={"Overviews"}
+            linkText={"Dashboard"}
           />
         </li>
         <li>
@@ -52,15 +52,15 @@ function MainNavigation() {
         <li>
           <MainNavigationSubmenuList
             icon={layoutGroupBy}
-            text={"Kafka Connector"}
+            text={"Kafka Connectors"}
           >
             <MainNavigationLink
               href={`/kafkaConnectors`}
               linkText={"All Connectors"}
             />
             <MainNavigationLink
-              href={`/kafkaConnectors`}
-              linkText={"Connectors Requests"}
+              href={`/execConnectors`}
+              linkText={"Connector Requests"}
             />
           </MainNavigationSubmenuList>
         </li>

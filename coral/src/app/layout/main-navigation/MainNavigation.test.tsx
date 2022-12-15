@@ -20,7 +20,7 @@ jest.mock("@aivenio/aquarium", () => {
 
 const navLinks = [
   {
-    name: "Overviews",
+    name: "Dashboard",
     linkTo: "/index",
   },
   { name: "Audit Log", linkTo: "/activityLog" },
@@ -28,7 +28,7 @@ const navLinks = [
 ];
 
 const submenuItems = [
-  { name: "Kafka Connector", links: ["All Connectors", "Connectors Requests"] },
+  { name: "Kafka Connectors", links: ["All Connectors", "Connector Requests"] },
   { name: "Users and Teams", links: ["Users", "Teams", "User Requests"] },
 ];
 
@@ -47,12 +47,12 @@ const submenuItemTopics = [
 // is no longer open per default
 // keyboard a11y is tested in submenu component
 const navOrderFirstLevel = [
-  { name: "Overviews", isSubmenu: false },
+  { name: "Dashboard", isSubmenu: false },
   { name: "Topics", isSubmenu: true },
   { name: "All Topics", isSubmenu: false },
   { name: "Approval Requests", isSubmenu: false },
   { name: "My Team's Requests", isSubmenu: false },
-  { name: "Kafka Connector", isSubmenu: true },
+  { name: "Kafka Connectors", isSubmenu: true },
   { name: "Users and Teams", isSubmenu: true },
   { name: "Audit Log", isSubmenu: false },
   { name: "Settings", isSubmenu: false },

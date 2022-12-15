@@ -72,24 +72,24 @@ describe("Topics", () => {
 
     it("shows a headline", async () => {
       const headline = screen.getByRole("heading", {
-        name: "Browse all topics",
+        name: "All topics",
       });
 
       expect(headline).toBeVisible();
     });
 
-    it("renders 'Request A New Topic' button in heading", async () => {
+    it("renders 'Request new topic' button in heading", async () => {
       const button = screen.getByRole("button", {
-        name: "Request A New Topic",
+        name: "Request new topic",
       });
 
       expect(button).toBeVisible();
       expect(button).toBeEnabled();
     });
 
-    it("navigates to '/requestTopics' when user clicks the button 'Request A New Topic'", async () => {
+    it("navigates to '/requestTopics' when user clicks the button 'Request new topic'", async () => {
       const button = screen.getByRole("button", {
-        name: "Request A New Topic",
+        name: "Request new topic",
       });
 
       await userEvent.click(button);
@@ -97,9 +97,9 @@ describe("Topics", () => {
       await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
     });
 
-    it("navigates to '/requestTopics' when user presses Enter while 'Request A New Topic' button is focused", async () => {
+    it("navigates to '/requestTopics' when user presses Enter while 'Request new topic' button is focused", async () => {
       const button = screen.getByRole("button", {
-        name: "Request A New Topic",
+        name: "Request new topic",
       });
 
       await tabNavigateTo({ targetElement: button });
@@ -111,7 +111,7 @@ describe("Topics", () => {
 
     it("renders a select element to filter topics by Kafka environment", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Environment",
+        name: "Filter by environment",
       });
 
       expect(select).toBeEnabled();
@@ -119,7 +119,7 @@ describe("Topics", () => {
 
     it("renders a select element to filter topics by team", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter By Team",
+        name: "Filter by team",
       });
 
       expect(select).toBeEnabled();

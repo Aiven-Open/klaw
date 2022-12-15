@@ -11,9 +11,9 @@ const Topics = () => {
       <Layout>
         <PreviewBanner linkTarget={"/browseTopics"} />
         <PageHeader
-          title={"Browse all topics"}
+          title={"All topics"}
           primaryAction={{
-            text: "Request A New Topic",
+            text: "Request new topic",
             // @TODO Replace by useNavigate once the request page is implemented in coral
             onClick: () => (window.location.href = "/requestTopics"),
             icon: add,
