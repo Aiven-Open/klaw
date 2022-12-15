@@ -27,6 +27,8 @@ The directory `/coral` contains a React app. It's an ongoing rewrite of the exis
 ## Features:
 
 - Topics (approval): Create, Update, Delete, Promote
+  - React UI - New look and feel for Browse topics
+  
 - Acls (approval):  Create,Delete
 - Connectors (approval): Create
   - Any connector can be created as long as the required plugin libraries are installed on the server.  
@@ -50,7 +52,7 @@ The directory `/coral` contains a React app. It's an ongoing rewrite of the exis
 - Restore configuration (topics, acls)
 
 - Login 
-  - Active directory integration
+  - Azure / Active directory integration
   - Single Sign-on (OAuth2)
   - Based on database
   
@@ -103,6 +105,8 @@ The directory `/coral` contains a React app. It's an ongoing rewrite of the exis
 
 ### Manual
 mvn clean install
+
+Note - node, npm and pnpm are installed locally (required for React UI assets) through maven execution plugins.
 
 Builds two artifacts core/target/klaw-<version>.jar and cluster-api/target/cluster-api-<version>.jar
 
