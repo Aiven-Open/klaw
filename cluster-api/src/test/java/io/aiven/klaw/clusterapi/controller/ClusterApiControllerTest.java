@@ -10,16 +10,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.UtilMethods;
-import io.aiven.klaw.clusterapi.config.JwtRequestFilter;
-import io.aiven.klaw.clusterapi.models.AclType;
-import io.aiven.klaw.clusterapi.models.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
-import io.aiven.klaw.clusterapi.models.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.AclType;
+import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
@@ -29,16 +28,15 @@ import io.aiven.klaw.clusterapi.services.UtilComponentsService;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-@WebMvcTest(controllers = ClusterApiController.class)
-@AutoConfigureMockMvc(addFilters = false)
+@ExtendWith(SpringExtension.class)
 public class ClusterApiControllerTest {
 
   @MockBean private UtilComponentsService utilComponentsService;
@@ -47,15 +45,23 @@ public class ClusterApiControllerTest {
   @MockBean private SchemaService schemaService;
   @MockBean private MonitoringService monitoringService;
   @MockBean private AivenApiService aivenApiService;
-  @MockBean private JwtRequestFilter jwtRequestFilter;
 
-  @Autowired private MockMvc mvc;
+  private MockMvc mvc;
 
   private UtilMethods utilMethods;
 
   @BeforeEach
   public void setUp() throws Exception {
     utilMethods = new UtilMethods();
+    ClusterApiController clusterApiController =
+        new ClusterApiController(
+            utilComponentsService,
+            apacheKafkaAclService,
+            apacheKafkaTopicService,
+            schemaService,
+            monitoringService,
+            aivenApiService);
+    mvc = MockMvcBuilders.standaloneSetup(clusterApiController).dispatchOptions(true).build();
   }
 
   @Test

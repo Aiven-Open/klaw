@@ -579,6 +579,7 @@ public class KafkaConnectControllerService {
                 connectorRequest.getConnectortype(),
                 connectorRequest.getConnectorConfig(),
                 kafkaConnectHost,
+                kwClusters.getClusterName() + kwClusters.getClusterId(),
                 tenantId);
       } else {
         updateTopicReqStatus =
@@ -588,6 +589,7 @@ public class KafkaConnectControllerService {
                 connectorRequest.getConnectortype(),
                 jsonConnectorConfig,
                 kafkaConnectHost,
+                kwClusters.getClusterName() + kwClusters.getClusterId(),
                 tenantId);
       }
       if (Objects.equals(updateTopicReqStatus, ApiResultStatus.SUCCESS.value)) {

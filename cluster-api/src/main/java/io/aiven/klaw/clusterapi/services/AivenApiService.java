@@ -3,8 +3,9 @@ package io.aiven.klaw.clusterapi.services;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.AivenAclResponse;
 import io.aiven.klaw.clusterapi.models.AivenAclStruct;
-import io.aiven.klaw.clusterapi.models.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
+import io.aiven.klaw.clusterapi.models.enums.AclAttributes;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,16 +39,16 @@ public class AivenApiService {
     String projectName = clusterAclRequest.getProjectName();
     String serviceName = clusterAclRequest.getServiceName();
 
-    LinkedHashMap<String, String> permissionsMap = new LinkedHashMap<>();
-    permissionsMap.put("topic", clusterAclRequest.getTopicName());
-    permissionsMap.put("permission", clusterAclRequest.getPermission());
-    permissionsMap.put("username", clusterAclRequest.getUsername());
+    Map<String, String> permissionsMap = new HashMap<>();
+    permissionsMap.put(AclAttributes.TOPIC.value, clusterAclRequest.getTopicName());
+    permissionsMap.put(AclAttributes.PERMISSION.value, clusterAclRequest.getPermission());
+    permissionsMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
 
     String uri =
         addAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);
 
     HttpHeaders headers = getHttpHeaders();
-    HttpEntity<LinkedHashMap<String, String>> request = new HttpEntity<>(permissionsMap, headers);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(permissionsMap, headers);
 
     try {
       ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);

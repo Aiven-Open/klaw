@@ -2,7 +2,7 @@ package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.KafkaConnectService;
 import java.util.*;
 import javax.validation.Valid;
@@ -21,25 +21,31 @@ public class KafkaConnectController {
   @Autowired KafkaConnectService kafkaConnectService;
 
   @RequestMapping(
-      value = "/getAllConnectors/{kafkaConnectHost}/{protocol}",
+      value = "/getAllConnectors/{kafkaConnectHost}/{protocol}/{clusterIdentification}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<String>> getAllConnectors(
-      @PathVariable String kafkaConnectHost, @Valid @PathVariable KafkaSupportedProtocol protocol) {
+      @PathVariable String kafkaConnectHost,
+      @Valid @PathVariable KafkaSupportedProtocol protocol,
+      @PathVariable String clusterIdentification) {
     return new ResponseEntity<>(
-        kafkaConnectService.getConnectors(kafkaConnectHost, protocol), HttpStatus.OK);
+        kafkaConnectService.getConnectors(kafkaConnectHost, protocol, clusterIdentification),
+        HttpStatus.OK);
   }
 
   @RequestMapping(
-      value = "/getConnectorDetails/{connectorName}/{kafkaConnectHost}/{protocol}",
+      value =
+          "/getConnectorDetails/{connectorName}/{kafkaConnectHost}/{protocol}/{clusterIdentification}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, Object>> getConnectorDetails(
       @PathVariable String connectorName,
       @PathVariable String kafkaConnectHost,
-      @Valid @PathVariable KafkaSupportedProtocol protocol) {
+      @Valid @PathVariable KafkaSupportedProtocol protocol,
+      @PathVariable String clusterIdentification) {
     return new ResponseEntity<>(
-        kafkaConnectService.getConnectorDetails(connectorName, kafkaConnectHost, protocol),
+        kafkaConnectService.getConnectorDetails(
+            connectorName, kafkaConnectHost, protocol, clusterIdentification),
         HttpStatus.OK);
   }
 

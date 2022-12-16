@@ -1,11 +1,11 @@
 package io.aiven.klaw.clusterapi.services;
 
-import io.aiven.klaw.clusterapi.models.AclIPPrincipleType;
-import io.aiven.klaw.clusterapi.models.AclPatternType;
-import io.aiven.klaw.clusterapi.models.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
-import io.aiven.klaw.clusterapi.models.RequestOperationType;
+import io.aiven.klaw.clusterapi.models.enums.AclIPPrincipleType;
+import io.aiven.klaw.clusterapi.models.enums.AclPatternType;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
 import java.util.HashMap;

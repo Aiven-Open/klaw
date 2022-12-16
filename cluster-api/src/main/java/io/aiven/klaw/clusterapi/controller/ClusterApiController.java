@@ -1,13 +1,13 @@
 package io.aiven.klaw.clusterapi.controller;
 
-import io.aiven.klaw.clusterapi.models.AclType;
-import io.aiven.klaw.clusterapi.models.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.AclType;
+import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
@@ -106,16 +106,16 @@ public class ClusterApiController {
   }
 
   @RequestMapping(
-      value = "/getSchema/{bootstrapServers}/{protocol}/{clusterName}/{topicName}",
+      value = "/getSchema/{bootstrapServers}/{protocol}/{clusterIdentification}/{topicName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<Integer, Map<String, Object>>> getSchema(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String topicName,
-      @PathVariable String clusterName) {
+      @PathVariable String clusterIdentification) {
     Map<Integer, Map<String, Object>> schema =
-        schemaService.getSchema(bootstrapServers, protocol, topicName);
+        schemaService.getSchema(bootstrapServers, protocol, clusterIdentification, topicName);
     return new ResponseEntity<>(schema, HttpStatus.OK);
   }
 

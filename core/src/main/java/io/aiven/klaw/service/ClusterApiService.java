@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -350,6 +349,7 @@ public class ClusterApiService {
       String connectorType,
       String connectorConfig,
       String kafkaConnectHost,
+      String clusterIdentification,
       int tenantId)
       throws KlawException {
     log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
@@ -362,6 +362,7 @@ public class ClusterApiService {
               .connectorName(connectorName)
               .connectorConfig(connectorConfig)
               .protocol(protocol)
+              .clusterIdentification(clusterIdentification)
               .build();
 
       String uri;
@@ -569,6 +570,7 @@ public class ClusterApiService {
               .env(kwClusters.getBootstrapServers())
               .topicName(topicName)
               .fullSchema(schemaRequest.getSchemafull())
+              .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);
@@ -586,7 +588,7 @@ public class ClusterApiService {
   public TreeMap<Integer, Map<String, Object>> getAvroSchema(
       String schemaRegistryHost,
       KafkaSupportedProtocol protocol,
-      String clusterName,
+      String clusterIdentification,
       String topicName,
       int tenantId)
       throws Exception {
@@ -601,7 +603,7 @@ public class ClusterApiService {
               + uriGetSchema
               + schemaRegistryHost
               + URL_DELIMITER
-              + String.join(URL_DELIMITER, protocol.getName(), clusterName, topicName);
+              + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification, topicName);
 
       ResponseEntity<TreeMap<String, Map<String, Object>>> treeMapResponseEntity =
           getRestTemplate()
@@ -625,7 +627,11 @@ public class ClusterApiService {
   }
 
   public Map<String, Object> getConnectorDetails(
-      String connectorName, String kafkaConnectHost, KafkaSupportedProtocol protocol, int tenantId)
+      String connectorName,
+      String kafkaConnectHost,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      int tenantId)
       throws KlawException {
     log.info("getConnectorDetails {} {}", connectorName, kafkaConnectHost);
     getClusterApiProperties(tenantId);
@@ -636,10 +642,11 @@ public class ClusterApiService {
               "/topics/getConnectorDetails",
               connectorName,
               kafkaConnectHost,
-              protocol.getName());
+              protocol.getName(),
+              clusterIdentification);
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
-      ResponseEntity<LinkedHashMap<String, Object>> s =
+      ResponseEntity<Map<String, Object>> s =
           getRestTemplate()
               .exchange(
                   uriGetConnectorsFull,
@@ -654,12 +661,19 @@ public class ClusterApiService {
     }
   }
 
-  public ArrayList<String> getAllKafkaConnectors(String kafkaConnectHost, int tenantId)
+  public ArrayList<String> getAllKafkaConnectors(
+      String kafkaConnectHost, String protocol, String clusterIdentification, int tenantId)
       throws KlawException {
     log.info("getAllKafkaConnectors {}", kafkaConnectHost);
     getClusterApiProperties(tenantId);
     try {
-      String uriGetTopics = "/topics/getAllConnectors/" + kafkaConnectHost;
+      String uriGetTopics =
+          "/topics/getAllConnectors/"
+              + kafkaConnectHost
+              + "/"
+              + protocol
+              + "/"
+              + clusterIdentification;
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<ArrayList<String>> s =

@@ -1,4 +1,4 @@
-package io.aiven.klaw.clusterapi.models;
+package io.aiven.klaw.clusterapi.models.enums;
 
 public enum KafkaSupportedProtocol {
   PLAINTEXT("PLAINTEXT"),

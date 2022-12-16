@@ -1,11 +1,11 @@
 package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
-import io.aiven.klaw.clusterapi.models.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
-import io.aiven.klaw.clusterapi.models.KafkaClustersType;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,10 @@ public class KafkaConnectService {
             + clusterConnectorRequest.getConnectorName();
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(
-            suffixUrl, clusterConnectorRequest.getProtocol(), KafkaClustersType.KAFKA_CONNECT);
+            suffixUrl,
+            clusterConnectorRequest.getProtocol(),
+            KafkaClustersType.KAFKA_CONNECT,
+            clusterConnectorRequest.getClusterIdentification());
 
     try {
       reqDetails.getRight().delete(reqDetails.getLeft(), String.class);
@@ -66,7 +69,10 @@ public class KafkaConnectService {
             + "/config";
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(
-            suffixUrl, clusterConnectorRequest.getProtocol(), KafkaClustersType.KAFKA_CONNECT);
+            suffixUrl,
+            clusterConnectorRequest.getProtocol(),
+            KafkaClustersType.KAFKA_CONNECT,
+            clusterConnectorRequest.getClusterIdentification());
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
@@ -94,7 +100,10 @@ public class KafkaConnectService {
     String suffixUrl = clusterConnectorRequest.getEnv() + "/connectors";
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(
-            suffixUrl, clusterConnectorRequest.getProtocol(), KafkaClustersType.KAFKA_CONNECT);
+            suffixUrl,
+            clusterConnectorRequest.getProtocol(),
+            KafkaClustersType.KAFKA_CONNECT,
+            clusterConnectorRequest.getClusterIdentification());
 
     HttpHeaders headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
@@ -116,7 +125,8 @@ public class KafkaConnectService {
     }
   }
 
-  public List<String> getConnectors(String environmentVal, KafkaSupportedProtocol protocol) {
+  public List<String> getConnectors(
+      String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
     try {
       log.info("Into getConnectors {} {}", environmentVal, protocol);
       if (environmentVal == null) {
@@ -125,7 +135,8 @@ public class KafkaConnectService {
 
       String suffixUrl = environmentVal + "/connectors";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT);
+          clusterApiUtils.getRequestDetails(
+              suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT, clusterIdentification);
 
       Map<String, String> params = new HashMap<>();
       ResponseEntity<List<String>> responseList =
@@ -141,7 +152,10 @@ public class KafkaConnectService {
   }
 
   public Map<String, Object> getConnectorDetails(
-      String connector, String environmentVal, KafkaSupportedProtocol protocol) {
+      String connector,
+      String environmentVal,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification) {
     try {
       log.info("Into getConnectorDetails {} {}", environmentVal, protocol);
       if (environmentVal == null) {
@@ -150,7 +164,8 @@ public class KafkaConnectService {
 
       String suffixUrl = environmentVal + "/connectors" + "/" + connector;
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT);
+          clusterApiUtils.getRequestDetails(
+              suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT, clusterIdentification);
 
       Map<String, String> params = new HashMap<>();
 
@@ -173,10 +188,11 @@ public class KafkaConnectService {
   }
 
   protected ClusterStatus getKafkaConnectStatus(
-      String environment, KafkaSupportedProtocol protocol) {
+      String environment, KafkaSupportedProtocol protocol, String clusterIdentification) {
     String suffixUrl = environment + "/connectors";
     Pair<String, RestTemplate> reqDetails =
-        clusterApiUtils.getRequestDetails(suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT);
+        clusterApiUtils.getRequestDetails(
+            suffixUrl, protocol, KafkaClustersType.KAFKA_CONNECT, clusterIdentification);
     Map<String, String> params = new HashMap<>();
 
     try {

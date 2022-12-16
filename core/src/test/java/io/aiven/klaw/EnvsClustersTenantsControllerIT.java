@@ -160,10 +160,10 @@ public class EnvsClustersTenantsControllerIT {
     List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(1);
 
-    Map<String, Integer> linkedHashMap = (Map<String, Integer>) clusterModels.get(0);
+    Map<String, Integer> hashMap = (Map<String, Integer>) clusterModels.get(0);
 
     KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
-    kwClustersModel.setClusterId(linkedHashMap.get("clusterId"));
+    kwClustersModel.setClusterId(hashMap.get("clusterId"));
     kwClustersModel.setBootstrapServers("localhost:9093");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
     response =
@@ -238,13 +238,13 @@ public class EnvsClustersTenantsControllerIT {
     List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
     assertThat(clusterModels).hasSize(2);
 
-    Map<String, Integer> linkedHashMap = (Map) clusterModels.get(0);
+    Map<String, Integer> hashMap = (Map) clusterModels.get(0);
 
     response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteCluster")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .param("clusterId", "" + linkedHashMap.get("clusterId"))
+                    .param("clusterId", "" + hashMap.get("clusterId"))
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))

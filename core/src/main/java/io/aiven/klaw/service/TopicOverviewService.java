@@ -174,7 +174,7 @@ public class TopicOverviewService {
               clusterApiService.getAvroSchema(
                   kwClusters.getBootstrapServers(),
                   kwClusters.getProtocol(),
-                  kwClusters.getClusterName(),
+                  kwClusters.getClusterName() + kwClusters.getClusterId(),
                   topicNameSearch,
                   tenantId);
 

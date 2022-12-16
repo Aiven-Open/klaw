@@ -7,13 +7,13 @@ import java.nio.file.Files;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -21,9 +21,9 @@ import org.springframework.util.ResourceUtils;
 
 @Configuration
 @Slf4j
-public class SslContextConfig {
+public class SslContextConfig implements InitializingBean {
 
-  public static HttpComponentsClientHttpRequestFactory requestFactory;
+  private HttpComponentsClientHttpRequestFactory requestFactory;
 
   @Value("${server.ssl.trust-store:null}")
   private String trustStore;
@@ -40,8 +40,11 @@ public class SslContextConfig {
   @Value("${server.ssl.key-store-type:JKS}")
   private String keyStoreType;
 
-  @PostConstruct
-  public void setKwSSLContext() throws Exception {
+  public HttpComponentsClientHttpRequestFactory getClientHttpRequestFactory() {
+    return requestFactory;
+  }
+
+  private void setKwSSLContext() throws Exception {
     if (keyStore != null && !keyStore.equals("null")) {
       TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
       javax.net.ssl.SSLContext sslContext;
@@ -80,5 +83,10 @@ public class SslContextConfig {
       store.load(inputStream, secret.toCharArray());
     }
     return store;
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    setKwSSLContext();
   }
 }

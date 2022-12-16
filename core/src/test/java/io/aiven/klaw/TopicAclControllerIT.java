@@ -33,7 +33,6 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
@@ -565,7 +564,7 @@ public class TopicAclControllerIT {
 
     List response = OBJECT_MAPPER.readValue(res, List.class);
     Object obj = response.get(0);
-    LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
+    Map<String, Integer> hMap = (HashMap) obj;
 
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -627,7 +626,7 @@ public class TopicAclControllerIT {
 
     List response = OBJECT_MAPPER.readValue(res, List.class);
     Object obj = response.get(0);
-    LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
+    Map<String, Integer> hMap = (HashMap) obj;
     Integer reqNo = hMap.get("req_no");
 
     String resNew =
@@ -664,7 +663,7 @@ public class TopicAclControllerIT {
 
     List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
     Object obj = response.get(0);
-    LinkedHashMap<String, Integer> hMap = (LinkedHashMap) obj;
+    Map<String, Integer> hMap = (HashMap) obj;
 
     String responseNew =
         mvc.perform(

@@ -42,7 +42,7 @@ public class UtilControllerService {
 
   @Autowired private CommonUtilsService commonUtilsService;
 
-  @Value("${klaw.version:1.0.1}")
+  @Value("${klaw.version}")
   private String klawVersion;
 
   @Value("${klaw.login.authentication.type}")
