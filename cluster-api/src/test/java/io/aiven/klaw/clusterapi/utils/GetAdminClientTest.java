@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -21,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(MockitoExtension.class)
 public class GetAdminClientTest {
@@ -35,11 +37,14 @@ public class GetAdminClientTest {
   @Mock private ListTopicsResult listTopicsResult;
   @Mock private KafkaFuture<Set<String>> kafkaFuture;
   @Mock private HashMap<String, AdminClient> adminClientsMap;
+
+  @Mock private Map<String, RestTemplate> restTemplateMap;
   @Mock private AdminClientProperties adminClientProperties;
 
   @BeforeEach
-  public void setUp() throws Exception {
-    getAdminClient = new ClusterApiUtils(env, adminClientProperties, adminClientsMap);
+  public void setUp() {
+    getAdminClient =
+        new ClusterApiUtils(env, adminClientProperties, adminClientsMap, restTemplateMap);
     when(adminClientProperties.getRetriesConfig()).thenReturn("3");
     when(adminClientProperties.getRequestTimeOutMs()).thenReturn("15000");
     when(adminClientProperties.getRetryBackOffMsConfig()).thenReturn("15000");

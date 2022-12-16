@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-class AdminClientProperties {
+public class AdminClientProperties {
 
   @Value("${klaw.request.timeout.ms:15000}")
   private String requestTimeOutMs;
