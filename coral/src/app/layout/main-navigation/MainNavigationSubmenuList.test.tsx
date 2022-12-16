@@ -81,7 +81,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
         name: textButtonSubmenuClosed,
       });
       const text = within(button).getByText("Topics");
-      const wrappingElement = text.parentNode?.parentNode;
+      const wrappingElement = text.parentNode;
       // this is a brittle test because it depends on a certain DOM structure
       // it's the only way right now to confirm that the text node in the
       // button is aria-hidden and assistive technology does not
@@ -146,7 +146,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
         name: textButtonSubmenuOpened,
       });
       const text = within(button).getByText("Topics");
-      const wrappingElement = text.parentNode?.parentNode;
+      const wrappingElement = text.parentNode;
       // this is a brittle test because it depends on a certain DOM structure
       // it's the only way right now to confirm that the text node in the
       // button is aria-hidden and assistive technology does not

@@ -1,4 +1,4 @@
-import { Chip, Flexbox, Table } from "@aivenio/aquarium";
+import { Box, Chip, Table } from "@aivenio/aquarium";
 import { Topic } from "src/domain/topic";
 import classes from "src/app/features/browse-topics/components/topic-table/TopicTable.module.css";
 
@@ -41,7 +41,12 @@ function TopicTable(props: TopicListProps) {
               </a>
             </th>
             <Table.Cell>
-              <Flexbox htmlTag={"ul"} alignItems={"center"} gap={"2"}>
+              <Box
+                component={"ul"}
+                display={"flex"}
+                alignItems={"center"}
+                gap={"2"}
+              >
                 {topic.environmentsList.map((env, index) => {
                   return (
                     <li key={index + env}>
@@ -49,7 +54,7 @@ function TopicTable(props: TopicListProps) {
                     </li>
                   );
                 })}
-              </Flexbox>
+              </Box>
             </Table.Cell>
             <Table.Cell>{topic.teamname}</Table.Cell>
           </Table.Row>

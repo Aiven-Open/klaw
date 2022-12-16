@@ -1,4 +1,4 @@
-import { Box } from "@aivenio/aquarium";
+import { Box, Divider } from "@aivenio/aquarium";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
@@ -81,18 +81,10 @@ function MainNavigation() {
             linkText={"Audit Log"}
           />
         </li>
-
-        {/*//@TODO ask DS about color options Divider*/}
-        <li
-          aria-hidden={"true"}
-          className={"bg-grey-5"}
-          style={{
-            minHeight: "1px",
-            marginBottom: "20px",
-            marginTop: "20px",
-          }}
-        ></li>
         <li>
+          <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
+            <Divider direction="horizontal" size={2} />
+          </Box>
           <MainNavigationLink
             icon={cog}
             href={`/serverConfig`}

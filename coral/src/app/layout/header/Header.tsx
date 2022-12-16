@@ -1,4 +1,4 @@
-import { Flexbox } from "@aivenio/aquarium";
+import { Box } from "@aivenio/aquarium";
 import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
 import user from "@aivenio/aquarium/dist/module/icons/user";
 import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
@@ -7,8 +7,9 @@ import logo from "src/app/layout/header/klaw_logo.png";
 
 function Header() {
   return (
-    <Flexbox
-      htmlTag={"header"}
+    <Box
+      component={"header"}
+      display={"flex"}
       height={"full"}
       justifyContent={"space-between"}
       alignItems={"center"}
@@ -21,7 +22,7 @@ function Header() {
         <img aria-hidden="true" alt="" src={logo} height={50} width={150} />
       </a>
       <nav aria-label={"Quick links"}>
-        <Flexbox htmlTag={"ul"} colGap={"l2"}>
+        <Box component={"ul"} display={"flex"} colGap={"l2"}>
           <li>
             <HeaderMenuLink
               icon={notifications}
@@ -44,9 +45,9 @@ function Header() {
               href={`/myProfile`}
             />
           </li>
-        </Flexbox>
+        </Box>
       </nav>
-    </Flexbox>
+    </Box>
   );
 }
 
