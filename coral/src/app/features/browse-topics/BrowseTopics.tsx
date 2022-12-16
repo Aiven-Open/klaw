@@ -3,7 +3,7 @@ import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
 import TopicTable from "src/app/features/browse-topics/components/topic-table/TopicTable";
 import { useState } from "react";
-import { Flexbox, FlexboxItem } from "@aivenio/aquarium";
+import { Box, FlexboxItem } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
@@ -37,21 +37,36 @@ function BrowseTopics() {
 
   return (
     <>
-      <Flexbox direction={"column"} gap={"l1"}>
-        <Flexbox justifyContent={"end"} colGap={"l1"} maxWidth={"6xl"}>
-          <FlexboxItem alignSelf={"center"}>
-            <SearchTopics onChange={searchTopics} value={searchTerm} />
-          </FlexboxItem>
-        </Flexbox>
-        <Flexbox direction={"row"} colGap={"l1"} maxWidth={"6xl"}>
+      <Box display={"flex"} flexDirection={"column"} gap={"l1"}>
+        <Box
+          display={"flex"}
+          justifyContent={"end"}
+          colGap={"l1"}
+          maxWidth={"6xl"}
+        >
+          <SearchTopics onChange={searchTopics} value={searchTerm} />
+        </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          colGap={"l1"}
+          maxWidth={"6xl"}
+        >
+          {/*@TODO replace when Box has a grow prop*/}
           <FlexboxItem grow={1}>
             <SelectTeam onChange={setTeamName} />
           </FlexboxItem>
+          {/*@TODO replace when Box has a grow prop*/}
           <FlexboxItem grow={1}>
             <SelectEnvironment onChange={setEnvironment} />
           </FlexboxItem>
-        </Flexbox>
-        <Flexbox direction={"column"} alignItems={"center"} rowGap={"l4"}>
+        </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          rowGap={"l4"}
+        >
           {isPreviousData && <div>Filtering list...</div>}
           {isLoading && <div>Loading...</div>}
           {isError && <div>Something went wrong 😔</div>}
@@ -72,8 +87,8 @@ function BrowseTopics() {
               setActivePage={changePage}
             />
           )}
-        </Flexbox>
-      </Flexbox>
+        </Box>
+      </Box>
     </>
   );
 

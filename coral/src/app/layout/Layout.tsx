@@ -1,4 +1,4 @@
-import { Box, Flexbox, Grid, GridItem } from "@aivenio/aquarium";
+import { Box, Grid, GridItem } from "@aivenio/aquarium";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import Header from "src/app/layout/header/Header";
 import SkipLink from "src/app/layout/skip-link/SkipLink";
@@ -30,12 +30,14 @@ function Layout({ children }: { children: ReactNode }) {
           <MainNavigation />
         </GridItem>
         <GridItem colStart={"2"} colEnd={"12"}>
-          <Box component={"main"} padding={"l2"} width={"full"}>
-            <div ref={ref}>
-              <Flexbox direction={"column"} rowGap={"l2"}>
-                {children}
-              </Flexbox>
-            </div>
+          <Box
+            component={"main"}
+            display={"flex"}
+            flexDirection={"column"}
+            padding={"l2"}
+            width={"full"}
+          >
+            <div ref={ref}>{children}</div>
           </Box>
         </GridItem>
       </Grid>

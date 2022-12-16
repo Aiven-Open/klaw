@@ -1,4 +1,4 @@
-import { Flexbox, GhostButton, Icon } from "@aivenio/aquarium";
+import { Box, GhostButton, Icon } from "@aivenio/aquarium";
 import chevronBackward from "@aivenio/aquarium/dist/src/icons/chevronBackward";
 import chevronLeft from "@aivenio/aquarium/dist/src/icons/chevronLeft";
 import chevronRight from "@aivenio/aquarium/dist/src/icons/chevronRight";
@@ -25,7 +25,12 @@ function Pagination(props: PaginationProps) {
       role="navigation"
       aria-label={`Pagination navigation, you're on page ${activePage} of ${totalPages}`}
     >
-      <Flexbox htmlTag={"ul"} colGap={"l1"} alignItems={"center"}>
+      <Box
+        component={"ul"}
+        display={"flex"}
+        colGap={"l1"}
+        alignItems={"center"}
+      >
         <li aria-hidden={currentPageIsFirstPage}>
           <GhostButton
             disabled={currentPageIsFirstPage}
@@ -71,7 +76,7 @@ function Pagination(props: PaginationProps) {
             <Icon aria-hidden={true} icon={chevronForward} />
           </GhostButton>
         </li>
-      </Flexbox>
+      </Box>
     </nav>
   );
 }

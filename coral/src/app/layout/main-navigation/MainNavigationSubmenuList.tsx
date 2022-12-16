@@ -1,4 +1,4 @@
-import { Box, Flexbox, Icon } from "@aivenio/aquarium";
+import { Box, Icon } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import classes from "src/app/layout/main-navigation/MainNavigationSubmenuList.module.css";
 import { ReactElement, useState } from "react";
@@ -36,18 +36,19 @@ function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
           style={{ position: "absolute", marginTop: "5px", marginLeft: "2px" }}
         />
         <span className={"visually-hidden"}>{buttonText}</span>
-        <div aria-hidden={"true"}>
-          <Flexbox
-            direction={"row"}
-            alignItems={"center"}
-            colGap={"l1"}
-            paddingLeft={"l2"}
-            marginRight={"l2"}
-          >
-            <Icon icon={icon} />
-            <span>{text}</span>
-          </Flexbox>
-        </div>
+
+        <Box
+          display={"flex"}
+          aria-hidden={"true"}
+          flexDirection={"row"}
+          alignItems={"center"}
+          colGap={"l1"}
+          paddingLeft={"l2"}
+          marginRight={"l2"}
+        >
+          <Icon icon={icon} />
+          <span>{text}</span>
+        </Box>
       </button>
 
       <Box marginTop={"l1"} aria-hidden={open ? "false" : "true"}>

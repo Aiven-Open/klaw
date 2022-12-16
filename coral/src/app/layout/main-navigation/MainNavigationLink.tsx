@@ -1,4 +1,4 @@
-import { Box, Flexbox, Icon } from "@aivenio/aquarium";
+import { Box, Icon } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
 
@@ -24,15 +24,16 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
       paddingBottom={"3"}
     >
       <a href={href} aria-current={active && "page"}>
-        <Flexbox
-          htmlTag={"span"}
-          direction={"row"}
+        <Box
+          component={"span"}
+          display={"flex"}
+          flexDirection={"row"}
           alignItems={"center"}
           colGap={"l1"}
         >
           {icon && <Icon icon={icon} />}
           <span>{linkText}</span>
-        </Flexbox>
+        </Box>
       </a>
     </Box>
   );
