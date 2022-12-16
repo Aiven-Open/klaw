@@ -7,7 +7,7 @@ import {
   useForm,
 } from "src/app/components/Form";
 import { FieldErrors } from "react-hook-form";
-import { Flexbox, FlexboxItem } from "@aivenio/design-system";
+import { Box } from "@aivenio/aquarium";
 import { useLoginUser } from "src/app/features/login/hooks/useLoginUser";
 import { useEffect } from "react";
 
@@ -42,8 +42,13 @@ const LoginForm = () => {
   }
 
   return (
-    <Flexbox direction={"column"} alignItems={"center"}>
-      <FlexboxItem width={"3/5"}>
+    <Box
+      display={"flex"}
+      flexDirection={"column"}
+      alignItems={"center"}
+      width={"3/5"}
+    >
+      <Box width={"3/5"}>
         <Form {...form} onSubmit={onSubmitForm} onError={onErrorForm}>
           <TextInput<Schema>
             name={"username"}
@@ -61,8 +66,8 @@ const LoginForm = () => {
         </Form>
         {loginUser.isSuccess && <div>Login successful 🎉 </div>}
         {loginUser.isError && <div>Something went wrong 😞</div>}
-      </FlexboxItem>
-    </Flexbox>
+      </Box>
+    </Box>
   );
 };
 

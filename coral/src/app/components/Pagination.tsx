@@ -1,8 +1,8 @@
-import { Flexbox, GhostButton, Icon } from "@aivenio/design-system";
-import chevronBackward from "@aivenio/design-system/dist/src/icons/chevronBackward";
-import chevronLeft from "@aivenio/design-system/dist/src/icons/chevronLeft";
-import chevronRight from "@aivenio/design-system/dist/src/icons/chevronRight";
-import chevronForward from "@aivenio/design-system/dist/src/icons/chevronForward";
+import { Box, GhostButton, Icon } from "@aivenio/aquarium";
+import chevronBackward from "@aivenio/aquarium/dist/src/icons/chevronBackward";
+import chevronLeft from "@aivenio/aquarium/dist/src/icons/chevronLeft";
+import chevronRight from "@aivenio/aquarium/dist/src/icons/chevronRight";
+import chevronForward from "@aivenio/aquarium/dist/src/icons/chevronForward";
 
 type PaginationProps = {
   activePage: number;
@@ -21,17 +21,19 @@ function Pagination(props: PaginationProps) {
   const currentPageIsLastPage = activePage === totalPages;
 
   return (
-    <nav role="navigation" aria-label="Pagination">
-      <Flexbox htmlTag={"ul"} colGap={"l1"} alignItems={"center"}>
-        <li>
-          <span tabIndex={0} className={"visually-hidden"}>
-            {`You are on page ${activePage} of ${totalPages}`}
-          </span>
-        </li>
+    <nav
+      role="navigation"
+      aria-label={`Pagination navigation, you're on page ${activePage} of ${totalPages}`}
+    >
+      <Box
+        component={"ul"}
+        display={"flex"}
+        colGap={"l1"}
+        alignItems={"center"}
+      >
         <li aria-hidden={currentPageIsFirstPage}>
           <GhostButton
             disabled={currentPageIsFirstPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(1)}
           >
             <span className={"visually-hidden"}>Go to first page</span>
@@ -41,7 +43,6 @@ function Pagination(props: PaginationProps) {
         <li aria-hidden={currentPageIsFirstPage}>
           <GhostButton
             disabled={currentPageIsFirstPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(activePage - 1)}
           >
             <span className={"visually-hidden"}>
@@ -50,14 +51,12 @@ function Pagination(props: PaginationProps) {
             <Icon aria-hidden={true} icon={chevronLeft} />
           </GhostButton>
         </li>
-        <li>
-          <span tabIndex={-1} aria-hidden={true} />
+        <li aria-hidden={true}>
           Page {activePage} of {totalPages}
         </li>
         <li aria-hidden={currentPageIsLastPage}>
           <GhostButton
             disabled={currentPageIsLastPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(activePage + 1)}
           >
             <span className={"visually-hidden"}>
@@ -69,7 +68,6 @@ function Pagination(props: PaginationProps) {
         <li aria-hidden={currentPageIsLastPage}>
           <GhostButton
             disabled={currentPageIsLastPage}
-            tabIndex={0}
             onClick={() => onUpdatePage(totalPages)}
           >
             <span className={"visually-hidden"}>
@@ -78,7 +76,7 @@ function Pagination(props: PaginationProps) {
             <Icon aria-hidden={true} icon={chevronForward} />
           </GhostButton>
         </li>
-      </Flexbox>
+      </Box>
     </nav>
   );
 }

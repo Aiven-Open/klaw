@@ -1,9 +1,9 @@
 import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
-import TopicList from "src/app/features/browse-topics/components/topic-list/TopicList";
+import TopicTable from "src/app/features/browse-topics/components/topic-table/TopicTable";
 import { useState } from "react";
-import { Flexbox, FlexboxItem } from "@aivenio/design-system";
+import { Box, FlexboxItem } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
 import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
@@ -37,36 +37,58 @@ function BrowseTopics() {
 
   return (
     <>
-      <Flexbox direction={"row"} colGap={"l4"}>
-        <FlexboxItem width={"l7"}>
-          <SelectEnvironment onChange={setEnvironment} />
-        </FlexboxItem>
-
-        <FlexboxItem width={"l7"}>
-          <SelectTeam onChange={setTeamName} />
-        </FlexboxItem>
-
-        <FlexboxItem alignSelf={"center"}>
+      <Box display={"flex"} flexDirection={"column"} gap={"l1"}>
+        <Box
+          display={"flex"}
+          justifyContent={"end"}
+          colGap={"l1"}
+          maxWidth={"6xl"}
+        >
           <SearchTopics onChange={searchTopics} value={searchTerm} />
-        </FlexboxItem>
-      </Flexbox>
+        </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"row"}
+          colGap={"l1"}
+          maxWidth={"6xl"}
+        >
+          {/*@TODO replace when Box has a grow prop*/}
+          <FlexboxItem grow={1}>
+            <SelectTeam onChange={setTeamName} />
+          </FlexboxItem>
+          {/*@TODO replace when Box has a grow prop*/}
+          <FlexboxItem grow={1}>
+            <SelectEnvironment onChange={setEnvironment} />
+          </FlexboxItem>
+        </Box>
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          rowGap={"l4"}
+        >
+          {isPreviousData && <div>Filtering list...</div>}
+          {isLoading && <div>Loading...</div>}
+          {isError && <div>Something went wrong 😔</div>}
 
-      <Flexbox direction={"column"} alignItems={"center"} rowGap={"l4"}>
-        {isPreviousData && <div>Filtering list...</div>}
-        {isLoading && <div>Loading...</div>}
-        {isError && <div>Something went wrong 😔</div>}
+          {!isLoading && !hasTopics && <div>No topics found</div>}
+          {hasTopics && (
+            <TopicTable
+              topics={topics.entries}
+              activePage={topics.currentPage}
+              totalPages={topics.totalPages}
+            />
+          )}
 
-        {!isLoading && !hasTopics && <div>No topics found</div>}
-        {hasTopics && <TopicList topics={topics.entries} />}
-
-        {hasMultiplePages && (
-          <Pagination
-            activePage={topics.currentPage}
-            totalPages={topics.totalPages}
-            setActivePage={changePage}
-          />
-        )}
-      </Flexbox>
+          {hasMultiplePages && (
+            <Pagination
+              activePage={topics.currentPage}
+              totalPages={topics.totalPages}
+              setActivePage={changePage}
+            />
+          )}
+        </Box>
+      </Box>
     </>
   );
 

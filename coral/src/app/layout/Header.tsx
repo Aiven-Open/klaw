@@ -1,13 +1,15 @@
-import { Flexbox } from "@aivenio/design-system";
-import questionMark from "@aivenio/design-system/dist/module/icons/questionMark";
-import user from "@aivenio/design-system/dist/module/icons/user";
-import notifications from "@aivenio/design-system/dist/module/icons/notifications";
-import HeaderMenuLink from "src/app/layout/HeaderMenuLink";
+import { Box } from "@aivenio/aquarium";
+import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
+import user from "@aivenio/aquarium/dist/module/icons/user";
+import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
+import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
+import logo from "src/app/layout/header/klaw_logo.png";
 
 function Header() {
   return (
-    <Flexbox
-      htmlTag={"header"}
+    <Box
+      component={"header"}
+      display={"flex"}
       height={"full"}
       justifyContent={"space-between"}
       alignItems={"center"}
@@ -17,17 +19,10 @@ function Header() {
         <span style={{ color: "white" }} className={"visually-hidden"}>
           Klaw homepage
         </span>
-        <img
-          aria-hidden="true"
-          alt=""
-          src="/klaw_logo.png"
-          height={50}
-          width={150}
-        />
+        <img aria-hidden="true" alt="" src={logo} height={50} width={150} />
       </a>
       <nav aria-label={"Quick links"}>
-        <Flexbox htmlTag={"ul"} colGap={"l2"}>
-          {/*@TODO add correct link*/}
+        <Box component={"ul"} display={"flex"} colGap={"l2"}>
           <li>
             <HeaderMenuLink
               icon={notifications}
@@ -43,7 +38,6 @@ function Header() {
               rel={"noreferrer"}
             />
           </li>
-          {/*@TODO add correct link*/}
           <li>
             <HeaderMenuLink
               icon={user}
@@ -51,9 +45,9 @@ function Header() {
               href={`/myProfile`}
             />
           </li>
-        </Flexbox>
+        </Box>
       </nav>
-    </Flexbox>
+    </Box>
   );
 }
 
