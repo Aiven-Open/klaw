@@ -32,7 +32,7 @@
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
-        <spring.azure.ad.version>4.4.1</spring.azure.ad.version>
+        <spring.azure.ad.version>4.5.0</spring.azure.ad.version>
     </properties>
 
     <dependencies>
