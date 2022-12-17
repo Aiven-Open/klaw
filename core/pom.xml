@@ -213,7 +213,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Compile and copy Coral assets</id>
+                        <id>Build and copy Coral assets</id>
                         <goals>
                             <goal>exec</goal>
                         </goals>
