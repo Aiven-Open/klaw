@@ -143,23 +143,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>uglifyjs-files</id>
-                        <goals>
-                            <goal>java</goal>
-                        </goals>
-                        <phase>test</phase>
-                        <configuration>
-                            <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Install node and npm for React components -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
@@ -188,6 +171,16 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>${exec-maven-plugin.version}</version>
                 <executions>
+                    <execution>
+                        <id>uglifyjs-files</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <phase>test</phase>
+                        <configuration>
+                            <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
+                        </configuration>
+                    </execution>
                     <!-- Install pnpm for React components -->
                     <execution>
                         <id>Install pnpm</id>
