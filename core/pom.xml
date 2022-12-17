@@ -174,7 +174,7 @@
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
-                        <phase>generate-resources</phase>
+                        <phase>generate-sources</phase>
                         <configuration>
                             <nodeVersion>${node.version}</nodeVersion>
                             <npmVersion>${npm.version}</npmVersion>
@@ -191,7 +191,7 @@
                     <!-- Install pnpm for React components -->
                     <execution>
                         <id>Install pnpm</id>
-                        <phase>compile</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
@@ -217,7 +217,7 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
-                        <phase>compile</phase>
+                        <phase>generate-resources</phase>
                         <configuration>
                             <executable>make</executable>
                             <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
