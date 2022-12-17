@@ -1,12 +1,17 @@
 package io.aiven.klaw.clusterapi.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ClusterTopicRequest {
   @JsonProperty private String env;
 

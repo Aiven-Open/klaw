@@ -15,4 +15,6 @@ public class ClusterSchemaRequest implements Serializable {
   @JsonProperty private String topicName;
 
   @JsonProperty private String fullSchema;
+
+  @JsonProperty private String clusterIdentification;
 }

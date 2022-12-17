@@ -960,7 +960,9 @@ public class TopicControllerService {
       final String topicSearchFilter = topicNameSearch;
       topicFilteredList =
           topicsFromSOT.stream()
-              .filter(topic -> topic.getTopicname().contains(topicSearchFilter))
+              .filter(
+                  topic ->
+                      topic.getTopicname().toLowerCase().contains(topicSearchFilter.toLowerCase()))
               .collect(Collectors.toList());
 
       // searching documentation
@@ -969,7 +971,10 @@ public class TopicControllerService {
               .filter(
                   topic ->
                       (topic.getDocumentation() != null
-                          && topic.getDocumentation().contains(topicSearchFilter)))
+                          && topic
+                              .getDocumentation()
+                              .toLowerCase()
+                              .contains(topicSearchFilter.toLowerCase())))
               .collect(Collectors.toList());
 
       topicFilteredList.addAll(searchDocList);

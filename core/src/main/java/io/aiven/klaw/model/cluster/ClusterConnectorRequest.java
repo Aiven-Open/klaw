@@ -15,4 +15,6 @@ public class ClusterConnectorRequest implements Serializable {
   @JsonProperty private String connectorConfig;
 
   @JsonProperty private String connectorName;
+
+  @JsonProperty private String clusterIdentification;
 }

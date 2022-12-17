@@ -1,12 +1,12 @@
 package io.aiven.klaw.clusterapi.utils;
 
-import static io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol.PLAINTEXT;
-import static io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol.SSL;
+import static io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol.PLAINTEXT;
+import static io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol.SSL;
 
 import com.google.common.base.Strings;
 import io.aiven.klaw.clusterapi.config.SslContextConfig;
-import io.aiven.klaw.clusterapi.models.KafkaClustersType;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -33,6 +33,10 @@ public class ClusterApiUtils {
   public static final String HTTP_PREFIX = "http://";
   public static final String SHA_256 = "SHA_256";
   public static final String SHA_512 = "SHA_512";
+  public static final String KAFKA_CONNECT_CREDENTIALS_PROPERTY_SFX =
+      ".klaw.kafkaconnect.credentials";
+
+  public static final String KAFKA_SR_CREDENTIALS_PROPERTY_SFX = ".klaw.schemaregistry.credentials";
   private static MessageDigest messageDigest;
 
   static {
@@ -46,20 +50,26 @@ public class ClusterApiUtils {
   private final Environment env;
   private final Map<String, AdminClient> adminClientsMap;
 
+  private final Map<String, RestTemplate> restTemplateMap;
+
   private final AdminClientProperties adminClientProperties;
+
+  @Autowired private SslContextConfig sslContextConfig;
 
   @Autowired
   public ClusterApiUtils(Environment env, AdminClientProperties adminClientProperties) {
-    this(env, adminClientProperties, new HashMap<>());
+    this(env, adminClientProperties, new HashMap<>(), new HashMap<>());
   }
 
   ClusterApiUtils(
       Environment env,
       AdminClientProperties adminClientProperties,
-      Map<String, AdminClient> adminClientsMap) {
+      Map<String, AdminClient> adminClientsMap,
+      Map<String, RestTemplate> restTemplateMap) {
     this.env = env;
     this.adminClientsMap = adminClientsMap;
     this.adminClientProperties = adminClientProperties;
+    this.restTemplateMap = restTemplateMap;
   }
 
   //    public void removeSSLElementFromAdminClientMap(String protocol, String clusterName){
@@ -397,26 +407,58 @@ public class ClusterApiUtils {
   }
 
   public Pair<String, RestTemplate> getRequestDetails(
-      String suffixUrl, KafkaSupportedProtocol protocol, KafkaClustersType kafkaClustersType) {
-    RestTemplate restTemplate;
+      String suffixUrl,
+      KafkaSupportedProtocol protocol,
+      KafkaClustersType kafkaClustersType,
+      String clusterIdentification) {
     String connectorsUrl = "";
 
     if (PLAINTEXT == protocol) {
       connectorsUrl = HTTP_PREFIX + suffixUrl;
-      restTemplate = new RestTemplate();
-    } else if (SSL == protocol) {
-      if (KafkaClustersType.KAFKA_CONNECT.equals(kafkaClustersType)) {
-        connectorsUrl =
-            HTTPS_PREFIX + adminClientProperties.getConnectCredentials() + "@" + suffixUrl;
-      } else if (KafkaClustersType.SCHEMA_REGISTRY.equals(kafkaClustersType)) {
-        connectorsUrl =
-            HTTPS_PREFIX + adminClientProperties.getSchemaRegistryCredentials() + "@" + suffixUrl;
-      }
-      restTemplate = new RestTemplate(SslContextConfig.requestFactory);
-    } else {
-      restTemplate = new RestTemplate();
-    }
 
-    return Pair.of(connectorsUrl, restTemplate);
+      String plainRestTemplateKey = "PlainRestTemplate";
+      if (!restTemplateMap.containsKey(plainRestTemplateKey)) {
+        restTemplateMap.put(plainRestTemplateKey, new RestTemplate());
+      }
+      return Pair.of(connectorsUrl, restTemplateMap.get(plainRestTemplateKey));
+    } else if (SSL == protocol) {
+      connectorsUrl =
+          getConnectorsUrl(suffixUrl, kafkaClustersType, clusterIdentification, connectorsUrl);
+
+      String sslRestTemplateKey = "SSLRestTemplate";
+      if (!restTemplateMap.containsKey(sslRestTemplateKey)) {
+        restTemplateMap.put(
+            sslRestTemplateKey, new RestTemplate(sslContextConfig.getClientHttpRequestFactory()));
+      }
+      return Pair.of(connectorsUrl, restTemplateMap.get(sslRestTemplateKey));
+    }
+    return Pair.of(connectorsUrl, new RestTemplate());
+  }
+
+  private String getConnectorsUrl(
+      String suffixUrl,
+      KafkaClustersType kafkaClustersType,
+      String clusterIdentification,
+      String connectorsUrl) {
+    if (KafkaClustersType.KAFKA_CONNECT.equals(kafkaClustersType)) {
+      String connectCredentials =
+          env.getProperty(
+              clusterIdentification.toLowerCase().concat(KAFKA_CONNECT_CREDENTIALS_PROPERTY_SFX));
+      if (connectCredentials != null && !connectCredentials.isBlank()) {
+        connectorsUrl = HTTPS_PREFIX.concat(connectCredentials).concat("@").concat(suffixUrl);
+      } else {
+        connectorsUrl = HTTPS_PREFIX.concat(suffixUrl);
+      }
+    } else if (KafkaClustersType.SCHEMA_REGISTRY.equals(kafkaClustersType)) {
+      String srCredentials =
+          env.getProperty(
+              clusterIdentification.toLowerCase().concat(KAFKA_SR_CREDENTIALS_PROPERTY_SFX));
+      if (srCredentials != null && !srCredentials.isBlank()) {
+        connectorsUrl = HTTPS_PREFIX.concat(srCredentials).concat("@").concat(suffixUrl);
+      } else {
+        connectorsUrl = HTTPS_PREFIX.concat(suffixUrl);
+      }
+    }
+    return connectorsUrl;
   }
 }

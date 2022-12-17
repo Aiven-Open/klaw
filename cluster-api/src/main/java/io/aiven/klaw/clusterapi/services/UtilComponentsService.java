@@ -1,7 +1,7 @@
 package io.aiven.klaw.clusterapi.services;
 
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.*;
@@ -46,15 +46,19 @@ public class UtilComponentsService {
   //    }
 
   public ClusterStatus getStatus(
-      String environment, KafkaSupportedProtocol protocol, String clusterName, String clusterType) {
+      String environment,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      String clusterType) {
     log.info("getStatus {} {}", environment, protocol);
     switch (clusterType) {
       case "kafka":
-        return getStatusKafka(environment, protocol, clusterName);
+        return getStatusKafka(environment, protocol, clusterIdentification);
       case "schemaregistry":
-        return schemaService.getSchemaRegistryStatus(environment, protocol);
+        return schemaService.getSchemaRegistryStatus(environment, protocol, clusterIdentification);
       case "kafkaconnect":
-        return kafkaConnectService.getKafkaConnectStatus(environment, protocol);
+        return kafkaConnectService.getKafkaConnectStatus(
+            environment, protocol, clusterIdentification);
       default:
         return ClusterStatus.OFFLINE;
     }

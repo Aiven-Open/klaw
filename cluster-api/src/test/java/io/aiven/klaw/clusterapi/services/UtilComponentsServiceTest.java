@@ -6,14 +6,14 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.clusterapi.UtilMethods;
-import io.aiven.klaw.clusterapi.models.AclType;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
-import io.aiven.klaw.clusterapi.models.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
-import io.aiven.klaw.clusterapi.models.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.AclType;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
+import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -362,7 +362,7 @@ public class UtilComponentsServiceTest {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
     ApiResponse apiResponse = ApiResponse.builder().result("Schema created id : 101").build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(getAdminClient.getRequestDetails(any(), any(), any()))
+    when(getAdminClient.getRequestDetails(any(), any(), any(), anyString()))
         .thenReturn(Pair.of("", restTemplate));
     when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
         .thenReturn(new ResponseEntity<>("Schema created id : 101", HttpStatus.OK));
@@ -374,7 +374,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void postSchema2() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
-    when(getAdminClient.getRequestDetails(any(), any(), any()))
+    when(getAdminClient.getRequestDetails(any(), any(), any(), anyString()))
         .thenReturn(Pair.of("", restTemplate));
     when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
         .thenReturn(

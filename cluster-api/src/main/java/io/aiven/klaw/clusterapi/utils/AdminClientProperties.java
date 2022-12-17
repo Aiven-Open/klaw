@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Getter
 @Component
-class AdminClientProperties {
+public class AdminClientProperties {
 
   @Value("${klaw.request.timeout.ms:15000}")
   private String requestTimeOutMs;
@@ -25,10 +25,4 @@ class AdminClientProperties {
 
   @Value("${klaw.retry.backoff.ms:15000}")
   private String retryBackOffMsConfig;
-
-  @Value("${klaw.aiven.kafkaconnect.credentials:credentials}")
-  private String connectCredentials;
-
-  @Value("${klaw.aiven.karapace.credentials}")
-  private String schemaRegistryCredentials;
 }
