@@ -26,7 +26,7 @@
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <front-end-maven-plugin.version>1.12.1</front-end-maven-plugin.version>
         <h2.version>2.1.214</h2.version>
-        <jasyptencrypt.version>3.0.4</jasyptencrypt.version>
+        <jasyptencrypt.version>3.0.5</jasyptencrypt.version>
         <netty-all.version>4.1.80.Final</netty-all.version>
         <node.version>v18.11.0</node.version>
         <npm.version>8.19.2</npm.version>
