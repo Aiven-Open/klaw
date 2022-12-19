@@ -32,7 +32,6 @@
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
-        <spring.azure.ad.version>4.5.0</spring.azure.ad.version>
     </properties>
 
     <dependencies>
@@ -128,11 +127,6 @@
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>javax.mail-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.azure.spring</groupId>
-            <artifactId>spring-cloud-azure-starter-active-directory</artifactId>
-            <version>${spring.azure.ad.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>

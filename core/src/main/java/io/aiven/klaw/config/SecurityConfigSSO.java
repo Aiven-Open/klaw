@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
@@ -18,20 +17,22 @@ import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepo
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "true")
 @EnableWebSecurity
-public class SecurityConfigSSO extends WebSecurityConfigurerAdapter {
+public class SecurityConfigSSO {
 
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     log.info("SSO enabled");
     ConfigUtils.applyHttpSecurityConfig(http, coralEnabled);
+    return http.build();
   }
 
   @Bean
@@ -61,7 +62,7 @@ public class SecurityConfigSSO extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
+  public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
     final Properties globalUsers = new Properties();
     return new InMemoryUserDetailsManager(globalUsers);
   }

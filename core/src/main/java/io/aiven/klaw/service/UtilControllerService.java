@@ -63,11 +63,11 @@ public class UtilControllerService {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  @Value("${klaw.enable.sso:false}")
-  private String ssoEnabled;
+  @Value("${klaw.sso.server.loginurl.azure}")
+  private String ssoServerLoginUrlAzure;
 
-  @Value("${klaw.sso.server.loginurl:url}")
-  private String ssoServerLoginUrl;
+  @Value("${klaw.sso.server.loginurl.google}")
+  private String ssoServerLoginUrlGoogle;
 
   @Autowired private ConfigurableApplicationContext context;
 
@@ -596,9 +596,8 @@ public class UtilControllerService {
     Map<String, String> resultBasicInfo = new HashMap<>();
     resultBasicInfo.put("contextPath", kwContextPath);
 
-    if ("true".equals(ssoEnabled)) {
-      resultBasicInfo.put("ssoServerUrl", ssoServerLoginUrl);
-    }
+    resultBasicInfo.put("ssoServerUrlAzure", ssoServerLoginUrlAzure);
+    resultBasicInfo.put("ssoServerUrlGoogle", ssoServerLoginUrlGoogle);
 
     return resultBasicInfo;
   }

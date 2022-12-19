@@ -128,15 +128,21 @@ public class UiControllerLoginService {
       DefaultOAuth2User defaultOAuth2User =
           (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-      // if user does not exist in db
-      if (manageDatabase
-              .getHandleDbRequests()
-              .getUsersInfo((String) defaultOAuth2User.getAttributes().get("preferred_username"))
-          == null) {
+      String userName = null;
+      // Extract attributes for user verification/registration
+      String preferredUsername =
+          (String) defaultOAuth2User.getAttributes().get("preferred_username");
+      String emailAttribute = (String) defaultOAuth2User.getAttributes().get("email");
 
-        return registerStagingUser(
-            (String) defaultOAuth2User.getAttributes().get("preferred_username"),
-            defaultOAuth2User.getAttributes().get("name"));
+      if (preferredUsername != null) {
+        userName = preferredUsername;
+      } else if (emailAttribute != null) {
+        userName = emailAttribute;
+      }
+
+      // if user does not exist in db
+      if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
+        return registerStagingUser(userName, defaultOAuth2User.getAttributes().get("name"));
       }
 
       if (auth2AuthenticationToken.isAuthenticated()) {
