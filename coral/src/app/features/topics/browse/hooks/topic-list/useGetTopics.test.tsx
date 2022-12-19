@@ -12,8 +12,12 @@ import {
 } from "src/domain/topic/topic-api.msw";
 
 import { useGetTopics } from "src/app/features/topics/browse/hooks/topic-list/useGetTopics";
-import { createMockTopic } from "src/domain/topic/topic-test-helper";
+import {
+  createMockTopic,
+  createMockTopicApiResponse,
+} from "src/domain/topic/topic-test-helper";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
+import api from "src/services/api";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,8 +32,13 @@ const wrapper = ({ children }: { children: ReactElement }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
+function getSpyCallUrls(spy: jest.SpyInstance<Promise<unknown>>): URL[] {
+  return spy.mock.calls.map(([url]) => new URL(url, "http://localhost:8080"));
+}
+
 describe("useGetTopics", () => {
   const originalConsoleError = console.error;
+  const spyGet = jest.spyOn(api, "get");
 
   beforeAll(() => {
     server.listen();
@@ -37,6 +46,7 @@ describe("useGetTopics", () => {
 
   afterEach(() => {
     server.resetHandlers();
+    spyGet.mockClear();
   });
 
   afterAll(() => {
@@ -108,11 +118,11 @@ describe("useGetTopics", () => {
     });
   });
 
-  describe("handles paginated responses", () => {
+  describe("when called with a page number", () => {
     it("returns a list of topics with one page if api call is successful", async () => {
       mockTopicGetRequest({
         mswInstance: server,
-        response: { status: 200, data: mockedResponseSinglePage },
+        response: { data: mockedResponseSinglePage },
       });
 
       const { result } = await renderHook(
@@ -132,6 +142,13 @@ describe("useGetTopics", () => {
       });
 
       expect(result.current.data).toEqual(mockedResponseTransformed);
+
+      const apiCallUrls = getSpyCallUrls(spyGet);
+      expect(apiCallUrls.length).toBe(1);
+      expect(apiCallUrls[0].pathname).toEqual("/getTopics");
+      expect(apiCallUrls[0].searchParams.get("pageNo")).toEqual("1");
+      expect(apiCallUrls[0].searchParams.get("env")).toEqual("ALL");
+      expect(apiCallUrls[0].searchParams.get("teamName")).toEqual(null);
     });
 
     it("returns a list of topics with 2 pages if api call is successful", async () => {
@@ -159,11 +176,25 @@ describe("useGetTopics", () => {
       expect(result.current.data).toMatchObject(
         mockedResponseMultiplePageTransformed
       );
+
+      const apiCallUrls = getSpyCallUrls(spyGet);
+      expect(apiCallUrls.length).toBe(1);
+      expect(apiCallUrls[0].pathname).toEqual("/getTopics");
+      expect(apiCallUrls[0].searchParams.get("pageNo")).toEqual("2");
+      expect(apiCallUrls[0].searchParams.get("env")).toEqual("ALL");
+      expect(apiCallUrls[0].searchParams.get("teamName")).toEqual(null);
     });
 
-    it("returns a list of topics with current page set to 3", async () => {
+    it("includes 'pageNo' as a query parameter in the API request", async () => {
       mockTopicGetRequest({
         mswInstance: server,
+        response: {
+          data: createMockTopicApiResponse({
+            entries: 10,
+            currentPage: 3,
+            totalPages: 10,
+          }),
+        },
       });
 
       const { result } = await renderHook(
@@ -183,70 +214,20 @@ describe("useGetTopics", () => {
       });
 
       expect(result.current.data?.currentPage).toBe(3);
+
+      const apiCallUrls = getSpyCallUrls(spyGet);
+      expect(apiCallUrls.length).toBe(1);
+      expect(apiCallUrls[0].pathname).toEqual("/getTopics");
+      expect(Array.from(apiCallUrls[0].searchParams).length).toBe(2);
+      expect(apiCallUrls[0].searchParams.get("pageNo")).toEqual("3");
+      expect(apiCallUrls[0].searchParams.get("env")).toEqual("ALL");
+      expect(apiCallUrls[0].searchParams.get("teamName")).toEqual(null);
+      expect(apiCallUrls[0].searchParams.get("topicnamesearch")).toEqual(null);
     });
   });
 
-  describe("handles responses based on the environment", () => {
-    it("returns a list of three topics with `DEV` envs", async () => {
-      const expectedFilterByEnvResult = [
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "DevRel",
-          topicDeletable: false,
-          topicName: "Topic 1",
-          topicid: 1,
-          totalNoPages: "1",
-        },
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "DevRel",
-          topicDeletable: false,
-          topicName: "Topic 2",
-          topicid: 2,
-          totalNoPages: "1",
-        },
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "DevRel",
-          topicDeletable: false,
-          topicName: "Topic 3",
-          topicid: 3,
-          totalNoPages: "1",
-        },
-      ];
+  describe("when called with environment name", () => {
+    it("includes 'env' as a query parameter in the API request", async () => {
       mockTopicGetRequest({
         mswInstance: server,
         response: { data: mockedResponseTopicEnv },
@@ -268,54 +249,22 @@ describe("useGetTopics", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data?.entries).toEqual(expectedFilterByEnvResult);
+      const apiCallUrls = getSpyCallUrls(spyGet);
+      expect(apiCallUrls.length).toBe(1);
+      expect(apiCallUrls[0].pathname).toEqual("/getTopics");
+      expect(Array.from(apiCallUrls[0].searchParams).length).toBe(2);
+      expect(apiCallUrls[0].searchParams.get("pageNo")).toEqual("1");
+      expect(apiCallUrls[0].searchParams.get("env")).toEqual("DEV");
+      expect(apiCallUrls[0].searchParams.get("teamName")).toEqual(null);
+      expect(apiCallUrls[0].searchParams.get("topicnamesearch")).toEqual(null);
     });
   });
 
-  describe("handles responses based on the team", () => {
-    it("returns a list of two topics with `TEST_TEAM_02` team", async () => {
-      const expectedFilterByTeamResult = [
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV", "TEST"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "TEST_TEAM_02",
-          topicDeletable: false,
-          topicName: "Topic 1",
-          topicid: 1,
-          totalNoPages: "1",
-        },
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV", "TEST"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "TEST_TEAM_02",
-          topicDeletable: false,
-          topicName: "Topic 2",
-          topicid: 2,
-          totalNoPages: "1",
-        },
-      ];
+  describe("when called with team name", () => {
+    it("includes team name as a query parameter in the API request", async () => {
       mockTopicGetRequest({
         mswInstance: server,
+        response: { data: [] },
       });
 
       const { result } = await renderHook(
@@ -334,57 +283,29 @@ describe("useGetTopics", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data?.entries).toEqual(expectedFilterByTeamResult);
+      const apiCallUrls = getSpyCallUrls(spyGet);
+      expect(apiCallUrls.length).toBe(1);
+      expect(apiCallUrls[0].pathname).toEqual("/getTopics");
+      expect(Array.from(apiCallUrls[0].searchParams).length).toBe(3);
+      expect(apiCallUrls[0].searchParams.get("pageNo")).toEqual("1");
+      expect(apiCallUrls[0].searchParams.get("env")).toEqual("ALL");
+      expect(apiCallUrls[0].searchParams.get("teamName")).toEqual(
+        "TEST_TEAM_02"
+      );
+      expect(apiCallUrls[0].searchParams.get("topicnamesearch")).toEqual(null);
     });
   });
 
-  describe("handles responses based on a search term", () => {
+  describe("when called with searchTerm", () => {
     const searchTerm = "Searched for topic";
 
-    it(`returns a list of two topics matching a "${searchTerm}" search`, async () => {
-      const expectedSearchResult = [
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV", "TEST"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "TEST_TEAM_01",
-          topicDeletable: false,
-          topicName: "Searched for topic 1",
-          topicid: 1,
-          totalNoPages: "1",
-        },
-        {
-          allPageNos: ["1"],
-          cluster: "1",
-          clusterId: null,
-          currentPage: "1",
-          description: "Topic description",
-          documentation: null,
-          environmentsList: ["DEV", "TEST"],
-          noOfPartitions: 2,
-          noOfReplcias: "2",
-          sequence: "341",
-          showDeleteTopic: false,
-          showEditTopic: false,
-          teamname: "TEST_TEAM_02",
-          topicDeletable: false,
-          topicName: "Searched for topic 2",
-          topicid: 2,
-          totalNoPages: "1",
-        },
-      ];
+    it("includes search term as a query parameter in the API request", async () => {
       mockTopicGetRequest({
         mswInstance: server,
+        response: { data: [] },
       });
+
+      const spyGet = jest.spyOn(api, "get");
 
       const { result } = await renderHook(
         () =>
@@ -403,7 +324,16 @@ describe("useGetTopics", () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(result.current.data?.entries).toEqual(expectedSearchResult);
+      const apiCallUrls = getSpyCallUrls(spyGet);
+      expect(apiCallUrls.length).toBe(1);
+      expect(apiCallUrls[0].pathname).toEqual("/getTopics");
+      expect(Array.from(apiCallUrls[0].searchParams).length).toBe(3);
+      expect(apiCallUrls[0].searchParams.get("pageNo")).toEqual("1");
+      expect(apiCallUrls[0].searchParams.get("env")).toEqual("ALL");
+      expect(apiCallUrls[0].searchParams.get("teamName")).toEqual(null);
+      expect(apiCallUrls[0].searchParams.get("topicnamesearch")).toEqual(
+        "Searched for topic"
+      );
     });
   });
 });
