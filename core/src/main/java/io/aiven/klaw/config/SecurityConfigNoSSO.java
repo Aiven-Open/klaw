@@ -120,7 +120,7 @@ public class SecurityConfigNoSSO {
     final Properties globalUsers = new Properties();
     if (authenticationType != null && authenticationType.equals(DATABASE.value)) {
       log.info("Db authentication configured.");
-      log.info("Loading all users !!");
+      log.debug("Loading all users !!");
       List<UserInfo> users;
       try {
         users = manageTopics.selectAllUsersInfo();
