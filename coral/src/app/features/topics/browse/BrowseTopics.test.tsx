@@ -1,7 +1,7 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
-import BrowseTopics from "src/app/features/browse-topics/BrowseTopics";
+import BrowseTopics from "src/app/features/topics/browse/BrowseTopics";
 import { mockGetEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";

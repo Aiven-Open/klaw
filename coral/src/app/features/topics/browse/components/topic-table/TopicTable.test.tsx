@@ -1,6 +1,6 @@
 import { cleanup, screen, render, within } from "@testing-library/react";
 import { createMockTopic } from "src/domain/topic/topic-test-helper";
-import TopicTable from "src/app/features/browse-topics/components/topic-table/TopicTable";
+import TopicTable from "src/app/features/topics/browse/components/topic-table/TopicTable";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 

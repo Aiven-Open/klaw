@@ -1,12 +1,12 @@
-import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/useGetTopics";
+import { useGetTopics } from "src/app/features/topics/browse/hooks/topic-list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
-import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
-import TopicTable from "src/app/features/browse-topics/components/topic-table/TopicTable";
+import SelectTeam from "src/app/features/topics/browse/components/select-team/SelectTeam";
+import TopicTable from "src/app/features/topics/browse/components/topic-table/TopicTable";
 import { useState } from "react";
 import { Box, FlexboxItem } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
-import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
-import { SearchTopics } from "src/app/features/browse-topics/components/search/SearchTopics";
+import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
+import { SearchTopics } from "src/app/features/topics/browse/components/search/SearchTopics";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 
