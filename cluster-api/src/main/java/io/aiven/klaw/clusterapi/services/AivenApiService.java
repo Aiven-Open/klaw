@@ -21,6 +21,10 @@ public class AivenApiService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
+  private RestTemplate restTemplate;
+
+  private HttpHeaders httpHeaders;
+
   @Value("${klaw.clusters.accesstoken:accesstoken}")
   private String clusterAccessToken;
 
@@ -32,6 +36,12 @@ public class AivenApiService {
 
   @Value("${klaw.clusters.deleteacls.api:api}")
   private String deleteAclsApiEndpoint;
+
+  @Value("${klaw.clusters.addserviceaccount.api:api}")
+  private String addServiceAccountApiEndpoint;
+
+  @Value("${klaw.clusters.getserviceaccount.api:api}")
+  private String getServiceAccountApiEndpoint;
 
   public Map<String, String> createAcls(ClusterAclRequest clusterAclRequest) {
     Map<String, String> resultMap = new HashMap<>();
@@ -65,11 +75,8 @@ public class AivenApiService {
       aivenAclStructOptional.ifPresent(
           aivenAclStruct -> resultMap.put("aivenaclid", aivenAclStruct.getId()));
 
-      if (response.getStatusCode().equals(HttpStatus.OK)) {
-        resultMap.put("result", ApiResultStatus.SUCCESS.value);
-      } else {
-        resultMap.put("result", "Failure in adding acls" + response.getBody());
-      }
+      handleAclCreationResponse(
+          clusterAclRequest, resultMap, restTemplate, projectName, serviceName, response);
 
       return resultMap;
     } catch (Exception e) {
@@ -77,6 +84,92 @@ public class AivenApiService {
       resultMap.put("result", "Failure in adding acls" + e.getMessage());
       return resultMap;
     }
+  }
+
+  private void handleAclCreationResponse(
+      ClusterAclRequest clusterAclRequest,
+      Map<String, String> resultMap,
+      RestTemplate restTemplate,
+      String projectName,
+      String serviceName,
+      ResponseEntity<String> response) {
+    if (response.getStatusCode().equals(HttpStatus.OK)) {
+      log.info(
+          "Acl created. Project :{} Service : {} Topic : {}",
+          projectName,
+          serviceName,
+          clusterAclRequest.getTopicName());
+      if (!verifyIfServiceAccountExists(clusterAclRequest, restTemplate)) {
+        createServiceAccount(clusterAclRequest, restTemplate, resultMap);
+      } else {
+        resultMap.put("result", ApiResultStatus.SUCCESS.value);
+      }
+    } else {
+      log.error(
+          "Acl creation failure Project :{} Service : {} Topic : {}",
+          projectName,
+          serviceName,
+          clusterAclRequest.getTopicName());
+      resultMap.put("result", "Failure in adding acls" + response.getBody());
+    }
+  }
+
+  private void createServiceAccount(
+      ClusterAclRequest clusterAclRequest,
+      RestTemplate restTemplate,
+      Map<String, String> resultMap) {
+    log.debug("Creating service account clusterAclRequest :{}", clusterAclRequest);
+    String projectName = clusterAclRequest.getProjectName();
+    String serviceName = clusterAclRequest.getServiceName();
+    HttpHeaders headers = getHttpHeaders();
+    String uri =
+        addServiceAccountApiEndpoint
+            .replace("projectName", projectName)
+            .replace("serviceName", serviceName);
+    Map<String, String> requestMap = new HashMap<>();
+    requestMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(requestMap, headers);
+    try {
+      ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        log.info("Service account created successfully {}", clusterAclRequest);
+        resultMap.put("result", ApiResultStatus.SUCCESS.value);
+      } else {
+        log.info("Service account creation failure {}", clusterAclRequest);
+        resultMap.put("result", "Failure in adding service account " + response.getBody());
+      }
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      resultMap.put("result", "Failure in adding acls" + e.getMessage());
+    }
+  }
+
+  private boolean verifyIfServiceAccountExists(
+      ClusterAclRequest clusterAclRequest, RestTemplate restTemplate) {
+    log.debug("Verify if service account exists clusterAclRequest :{}", clusterAclRequest);
+    HttpHeaders headers = getHttpHeaders();
+    String uri =
+        getServiceAccountApiEndpoint
+            .replace("projectName", clusterAclRequest.getProjectName())
+            .replace("serviceName", clusterAclRequest.getServiceName())
+            .replace("userName", clusterAclRequest.getUsername());
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
+    try {
+      ResponseEntity<Map<String, Map<String, String>>> response =
+          restTemplate.exchange(
+              uri, HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        Map<String, Map<String, String>> responseMap = response.getBody();
+        if (responseMap != null
+            && responseMap.containsKey("user")
+            && responseMap.get("user").containsKey("username")) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Exception:", e);
+    }
+    return false;
   }
 
   public String deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {
@@ -164,12 +257,18 @@ public class AivenApiService {
   }
 
   private HttpHeaders getHttpHeaders() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("Authorization", "Bearer " + clusterAccessToken);
-    return headers;
+    if (this.httpHeaders == null) {
+      this.httpHeaders = new HttpHeaders();
+      this.httpHeaders.set("Authorization", "Bearer " + clusterAccessToken);
+      return this.httpHeaders;
+    }
+    return this.httpHeaders;
   }
 
   private RestTemplate getRestTemplate() {
-    return new RestTemplate();
+    if (this.restTemplate == null) {
+      this.restTemplate = new RestTemplate();
+    }
+    return this.restTemplate;
   }
 }
