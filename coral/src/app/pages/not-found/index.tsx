@@ -12,11 +12,11 @@ const NotFound = () => {
           </Typography.Heading>
 
           <Typography.LargeText>
-            If it should have been found, we are working on building it!
+            Sorry, the page you are looking for does not exist.
           </Typography.LargeText>
 
           <Typography.MediumText>
-            <a href={"/index"}>Go back to old interface</a>
+            <a href={"/index"}>Return to the old interface.</a>
           </Typography.MediumText>
         </Box>
       </Layout>

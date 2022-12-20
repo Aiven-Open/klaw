@@ -18,7 +18,7 @@ describe("NotFound", () => {
 
     it("renders a description", async () => {
       const description = screen.getByText(
-        "If it should have been found, we are working on building it!"
+        "Sorry, the page you are looking for does not exist."
       );
 
       expect(description).toBeVisible();
@@ -26,7 +26,7 @@ describe("NotFound", () => {
 
     it("renders a link to old interface index page", async () => {
       const link = screen.getByRole("link", {
-        name: "Go back to old interface",
+        name: "Return to the old interface.",
       });
 
       expect(link).toBeVisible();
@@ -35,7 +35,7 @@ describe("NotFound", () => {
 
     it("should allow navigating to link with keyboard", async () => {
       const link = screen.getByRole("link", {
-        name: "Go back to old interface",
+        name: "Return to the old interface.",
       });
 
       await tabNavigateTo({ targetElement: link });
