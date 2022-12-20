@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react/pure";
 import NotFound from "src/app/pages/not-found";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 describe("NotFound", () => {
   describe("renders a Not Found page with correct text", () => {
@@ -21,6 +22,25 @@ describe("NotFound", () => {
       );
 
       expect(description).toBeVisible();
+    });
+
+    it("renders a link to old interface index page", async () => {
+      const link = screen.getByRole("link", {
+        name: "Go back to old interface",
+      });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute("href", "/index");
+    });
+
+    it("should allow navigating to link with keyboard", async () => {
+      const link = screen.getByRole("link", {
+        name: "Go back to old interface",
+      });
+
+      await tabNavigateTo({ targetElement: link });
+
+      expect(link).toHaveFocus();
     });
   });
 });
