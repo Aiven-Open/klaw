@@ -1,4 +1,5 @@
-import { createBrowserRouter, Navigate, RouteObject } from "react-router-dom";
+import { createBrowserRouter, RouteObject } from "react-router-dom";
+import NotFound from "src/app/pages/not-found";
 import Topics from "src/app/pages/topics";
 import { getRouterBasename } from "src/config";
 
@@ -14,7 +15,7 @@ const routes: Array<RouteObject> = [
   },
   {
     path: "*",
-    element: <Navigate to="/topics" />,
+    element: <NotFound />,
   },
 ];
 
