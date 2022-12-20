@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import SelectTeam from "src/app/features/browse-topics/components/select-team/SelectTeam";
+import SelectTeam from "src/app/features/topics/browse/components/select-team/SelectTeam";
 import { server } from "src/services/api-mocks/server";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { customRender } from "src/services/test-utils/render-with-wrappers";

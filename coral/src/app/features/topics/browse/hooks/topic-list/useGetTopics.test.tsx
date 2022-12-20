@@ -11,7 +11,7 @@ import {
   mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
 
-import { useGetTopics } from "src/app/features/browse-topics/hooks/topic-list/useGetTopics";
+import { useGetTopics } from "src/app/features/topics/browse/hooks/topic-list/useGetTopics";
 import { createMockTopic } from "src/domain/topic/topic-test-helper";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 

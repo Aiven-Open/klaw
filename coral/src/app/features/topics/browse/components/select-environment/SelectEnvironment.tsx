@@ -2,7 +2,7 @@ import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useEffect, useState } from "react";
 import { ALL_ENVIRONMENTS_VALUE, Environment } from "src/domain/environment";
 import { useSearchParams } from "react-router-dom";
-import { useGetEnvironments } from "src/app/features/browse-topics/hooks/environment/useGetEnvironments";
+import { useGetEnvironments } from "src/app/features/topics/browse/hooks/environment/useGetEnvironments";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 
 type SelectEnvProps = {

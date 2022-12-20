@@ -1,6 +1,6 @@
 import { Box, Chip, Table } from "@aivenio/aquarium";
 import { Topic } from "src/domain/topic";
-import classes from "src/app/features/browse-topics/components/topic-table/TopicTable.module.css";
+import classes from "src/app/features/topics/browse/components/topic-table/TopicTable.module.css";
 
 type TopicListProps = {
   topics: Topic[];

@@ -1,6 +1,6 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useEffect, useState } from "react";
-import { useGetTeams } from "src/app/features/browse-topics/hooks/teams/useGetTeams";
+import { useGetTeams } from "src/app/features/topics/browse/hooks/teams/useGetTeams";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 import { useSearchParams } from "react-router-dom";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";

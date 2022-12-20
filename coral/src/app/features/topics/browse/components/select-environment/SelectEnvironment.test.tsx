@@ -5,7 +5,7 @@ import {
   EnvironmentDTO,
   mockGetEnvironments,
 } from "src/domain/environment";
-import SelectEnvironment from "src/app/features/browse-topics/components/select-environment/SelectEnvironment";
+import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { server } from "src/services/api-mocks/server";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
