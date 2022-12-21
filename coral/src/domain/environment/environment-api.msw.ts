@@ -2,7 +2,7 @@ import { MswInstance } from "src/services/api-mocks/types";
 import { rest } from "msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
-import { EnvironmentsGetResponse } from "src/domain/environment/environment-types";
+import { KlawApiResponse } from "types/utils";
 
 function mockGetEnvironments({
   mswInstance,
@@ -11,7 +11,7 @@ function mockGetEnvironments({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: EnvironmentsGetResponse | { message: string };
+    data: KlawApiResponse<"environmentsGet"> | { message: string };
   };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/getEnvs`;

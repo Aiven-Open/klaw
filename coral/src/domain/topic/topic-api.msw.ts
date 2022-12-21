@@ -1,6 +1,5 @@
 import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
-import { TopicDTOApiResponse } from "src/domain/topic/topic-types";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import {
   createMockTopic,
@@ -9,6 +8,7 @@ import {
 import { getHTTPBaseAPIUrl } from "src/config";
 
 import { isObject } from "lodash";
+import { KlawApiResponse } from "types/utils";
 // @TODO
 // create visible mocked responses and easy responses for different scenarios to use in tests
 // use json files from real api for mocked responses for web worker (more realistic(
@@ -20,7 +20,7 @@ function mockTopicGetRequest({
   mswInstance: MswInstance;
   response?: {
     status?: number;
-    data: TopicDTOApiResponse | { message: string };
+    data: KlawApiResponse<"topicsGet"> | { message: string };
   };
 }) {
   const base = getHTTPBaseAPIUrl();
@@ -62,12 +62,12 @@ function mockTopicGetRequest({
   );
 }
 
-const mockedResponseSinglePage: TopicDTOApiResponse =
+const mockedResponseSinglePage: KlawApiResponse<"topicsGet"> =
   createMockTopicApiResponse({
     entries: 10,
   });
 
-const mockedResponseMultiplePage: TopicDTOApiResponse =
+const mockedResponseMultiplePage: KlawApiResponse<"topicsGet"> =
   createMockTopicApiResponse({
     entries: 2,
     totalPages: 4,
@@ -78,7 +78,7 @@ const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
   mockedResponseMultiplePage
 );
 
-const mockedResponseTopicEnv: TopicDTOApiResponse = [
+const mockedResponseTopicEnv: KlawApiResponse<"topicsGet"> = [
   [
     createMockTopic({
       topicName: "Topic 1",

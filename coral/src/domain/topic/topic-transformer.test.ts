@@ -1,20 +1,17 @@
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
-import {
-  Topic,
-  TopicApiResponse,
-  TopicDTOApiResponse,
-} from "src/domain/topic/topic-types";
+import { Topic, TopicApiResponse } from "src/domain/topic/topic-types";
 import {
   baseTestObjectMockedTopic,
   createMockTopicApiResponse,
 } from "src/domain/topic/topic-test-helper";
+import { KlawApiResponse } from "types/utils";
 
 describe("topic-transformer.ts", () => {
   describe("'transformTopicApiResponse' transforms API response into list of topics", () => {
     const mockedTopic: Topic = baseTestObjectMockedTopic();
 
     it("transforms a response with two entries", () => {
-      const apiResponse: TopicDTOApiResponse = createMockTopicApiResponse({
+      const apiResponse = createMockTopicApiResponse({
         entries: 2,
       });
 
@@ -28,7 +25,7 @@ describe("topic-transformer.ts", () => {
     });
 
     it("transforms a response with four entries", () => {
-      const apiResponse: TopicDTOApiResponse = createMockTopicApiResponse({
+      const apiResponse = createMockTopicApiResponse({
         entries: 4,
       });
       const result: TopicApiResponse = {
@@ -41,7 +38,7 @@ describe("topic-transformer.ts", () => {
     });
 
     it("transforms a response with no entries", () => {
-      const apiResponse: TopicDTOApiResponse = [];
+      const apiResponse: KlawApiResponse<"topicsGet"> = [];
       const result: TopicApiResponse = {
         totalPages: 0,
         currentPage: 0,

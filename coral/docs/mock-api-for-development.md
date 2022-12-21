@@ -14,7 +14,7 @@ The API call looks like this:
 
 const getTeams = () => {
  return api
-   .get<TeamNamesGetResponse>("/getAllTeamsSUOnly")
+   .get<KlawApiResponse<"teamNamesGet">>("/getAllTeamsSUOnly")
    .then(transformTeamNamesGetResponse);
 };
 

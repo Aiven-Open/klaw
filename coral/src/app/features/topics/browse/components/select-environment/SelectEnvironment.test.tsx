@@ -2,7 +2,6 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
-  EnvironmentDTO,
   mockGetEnvironments,
 } from "src/domain/environment";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
@@ -53,7 +52,7 @@ describe("SelectEnvironment.tsx", () => {
     });
 
     it("renders a list of options for environments plus a option for `All environments`", () => {
-      mockedEnvironmentResponse.forEach((environment: EnvironmentDTO) => {
+      mockedEnvironmentResponse.forEach((environment) => {
         const option = screen.getByRole("option", {
           name: environment.name,
         });

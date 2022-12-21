@@ -1,7 +1,7 @@
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
 import { MswInstance } from "src/services/api-mocks/types";
-import { TeamNamesGetResponse } from "src/domain/team/team-types";
+import { KlawApiResponse } from "types/utils";
 
 function mockGetTeams({
   mswInstance,
@@ -10,7 +10,7 @@ function mockGetTeams({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: TeamNamesGetResponse | { message: string };
+    data: KlawApiResponse<"teamNamesGet"> | { message: string };
   };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/getAllTeamsSUOnly`;
