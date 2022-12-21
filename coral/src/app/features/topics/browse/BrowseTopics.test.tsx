@@ -16,6 +16,10 @@ import { server } from "src/services/api-mocks/server";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
+import {
+  createMockTopicApiResponse,
+  createMockTopic,
+} from "src/domain/topic/topic-test-helper";
 
 jest.mock("@aivenio/aquarium", () => {
   return {
@@ -292,7 +296,16 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { data: mockedTeamResponse },
       });
-      mockTopicGetRequest({ mswInstance: server });
+      mockTopicGetRequest({
+        mswInstance: server,
+        response: {
+          data: createMockTopicApiResponse({
+            entries: 10,
+            currentPage: 1,
+            totalPages: 10,
+          }),
+        },
+      });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
@@ -344,7 +357,33 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { data: mockedTeamResponse },
       });
-      mockTopicGetRequest({ mswInstance: server });
+
+      const topicsFilteredByTeam = [
+        [
+          createMockTopic({
+            topicName: "Topic 1",
+            topicId: 1,
+            environmentsList: ["DEV"],
+          }),
+          createMockTopic({
+            topicName: "Topic 1",
+            topicId: 2,
+            environmentsList: ["DEV"],
+          }),
+          createMockTopic({
+            topicName: "Topic 1",
+            topicId: 3,
+            environmentsList: ["DEV"],
+          }),
+        ],
+      ];
+      mockTopicGetRequest({
+        mswInstance: server,
+        responses: [
+          { data: mockedResponseSinglePage },
+          { data: topicsFilteredByTeam },
+        ],
+      });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
@@ -433,7 +472,28 @@ describe("BrowseTopics.tsx", () => {
         mswInstance: server,
         response: { data: mockedTeamResponse },
       });
-      mockTopicGetRequest({ mswInstance: server });
+
+      const responseWithTeamFilter = [
+        [
+          createMockTopic({
+            topicName: "Topic 1",
+            topicId: 1,
+            environmentsList: ["DEV"],
+          }),
+          createMockTopic({
+            topicName: "Topic 2",
+            topicId: 2,
+            environmentsList: ["DEV"],
+          }),
+        ],
+      ];
+      mockTopicGetRequest({
+        mswInstance: server,
+        responses: [
+          { data: mockedResponseSinglePage },
+          { data: responseWithTeamFilter },
+        ],
+      });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
@@ -505,6 +565,29 @@ describe("BrowseTopics.tsx", () => {
     beforeEach(() => {
       mockTopicGetRequest({
         mswInstance: server,
+        responses: [
+          { data: mockedResponseSinglePage },
+          {
+            data: [
+              [
+                {
+                  ...createMockTopic({
+                    topicName: "Topic 1",
+                    topicId: 1,
+                  }),
+                  teamname: "TEST_TEAM_02",
+                },
+                {
+                  ...createMockTopic({
+                    topicName: "Topic 2",
+                    topicId: 2,
+                  }),
+                  teamname: "TEST_TEAM_02",
+                },
+              ],
+            ],
+          },
+        ],
       });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
