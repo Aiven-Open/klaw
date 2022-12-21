@@ -10,15 +10,18 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -47,6 +50,9 @@ public class TopicOverviewServiceTest {
   @Mock private UserInfo userInfo;
 
   @Mock private ClusterApiService clusterApiService;
+
+  @Mock private Map<Integer, KwClusters> kwClustersHashMap;
+  @Mock private KwClusters kwClusters;
 
   private TopicOverviewService topicOverviewService;
 
@@ -93,6 +99,9 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
 
@@ -123,6 +132,9 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
 

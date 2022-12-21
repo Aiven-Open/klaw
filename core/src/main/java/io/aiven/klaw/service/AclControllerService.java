@@ -688,12 +688,24 @@ public class AclControllerService {
         return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
       }
 
+      // Get details from Cluster Api
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId, tenantId).getClusterId());
-      return clusterApiService.getAivenServiceAccountDetails(
-          kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
+      ApiResponse aivenServiceAccountDetails =
+          clusterApiService.getAivenServiceAccountDetails(
+              kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
+      if (aivenServiceAccountDetails.getData() != null
+          && aivenServiceAccountDetails.getData() instanceof Map) {
+        @SuppressWarnings("unchecked")
+        Map<String, String> data = (Map<String, String>) aivenServiceAccountDetails.getData();
+        if (data.isEmpty()) {
+          return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        }
+      }
+
+      return aivenServiceAccountDetails;
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service account credentials {} ", e.toString());
     }

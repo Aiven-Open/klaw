@@ -2,6 +2,7 @@ package io.aiven.klaw.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,7 +23,7 @@ public class ApiResponse {
 
   private String debugMessage;
 
-  private String result;
+  @NotNull private String result;
 
   private Object data;
 }

@@ -684,7 +684,7 @@
 															</div>
 
 															<div class="p-2 border-left" style="width:5%">
-																<a ng-show="aclRequest.showDeleteAcl == true" class="mytooltip" href="javascript:void(0)">
+																<a ng-show="aclRequest.showDeleteAcl == true && aclRequest.kafkaFlavorType == 'AIVEN_FOR_APACHE_KAFKA'" class="mytooltip" href="javascript:void(0)">
 																	<button  type="button" class="btn btn-instagram waves-effect btn-rounded waves-light"
 																			 ng-click="getAivenServiceAccount(aclRequest.environment, topicSelectedParam, aclRequest.acl_ssl, aclRequest.req_no)">
 																		<i class="fa fa-eye"></i>

@@ -259,6 +259,7 @@ public class UtilMethods {
     acl.setAclip("12.22.126.21");
     acl.setTopictype(AclType.PRODUCER.value);
     acl.setOtherParams("101");
+    acl.setTeamId(101);
     allTopicReqs.add(acl);
 
     return allTopicReqs;

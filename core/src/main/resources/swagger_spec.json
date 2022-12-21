@@ -3296,6 +3296,10 @@
         },
         "showDeleteAcl" : {
           "type" : "boolean"
+        },
+        "kafkaFlavorType" : {
+          "type" : "string",
+          "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "OTHERS" ]
         }
       }
     },
@@ -3469,6 +3473,7 @@
     },
     "ApiResponse" : {
       "type" : "object",
+      "required" : [ "result" ],
       "properties" : {
         "status" : {
           "type" : "string",

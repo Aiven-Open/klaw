@@ -708,10 +708,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }else{
                     swal({
                         title: "Success: ",
-                        text: "Password displayed at the top of the page !!"
+                        text: "Password is displayed above !!"
                     });
                     $scope.alert = "Password : " + output.data.password;
-                    $scope.showSuccessToast();
                 }
 
             }).error(
