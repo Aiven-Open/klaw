@@ -88,6 +88,8 @@ public class AclControllerServiceTest {
     Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
     KwClusters kwClusters = new KwClusters();
     kwClusters.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwClusters.setProjectName("project");
+    kwClusters.setServiceName("service");
     kwClusters.setClusterId(1);
     kwClustersMap.put(1, kwClusters);
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
@@ -544,6 +546,70 @@ public class AclControllerServiceTest {
 
     ApiResponse resultResp = aclControllerService.createDeleteAclSubscriptionRequest(reqNo);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(26)
+  public void getAivenServiceAccountDetails() throws KlawException {
+    String reqNo = "101";
+    stubUserInfo();
+    mockKafkaFlavor();
+    Map<String, String> serviceAccountInfoMap = new HashMap<>();
+    serviceAccountInfoMap.put("password", "password");
+    serviceAccountInfoMap.put("username", "username");
+
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value)
+            .data(serviceAccountInfoMap)
+            .build();
+    Acl acl = utilMethods.getAllAcls().get(1);
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    when(clusterApiService.getAivenServiceAccountDetails(
+            anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(apiResponse);
+
+    ApiResponse resultResp =
+        aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
+    Map<String, String> resultObj = (Map) resultResp.getData();
+
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultObj).hasSize(2);
+  }
+
+  @Test
+  @Order(27)
+  public void getAivenServiceAccountDetailsAccountDoesNotExist() throws KlawException {
+    String reqNo = "101";
+    stubUserInfo();
+    mockKafkaFlavor();
+    Map<String, String> serviceAccountInfoMap = new HashMap<>();
+
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value)
+            .data(serviceAccountInfoMap)
+            .build();
+    Acl acl = utilMethods.getAllAcls().get(1);
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    when(clusterApiService.getAivenServiceAccountDetails(
+            anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(apiResponse);
+
+    ApiResponse resultResp =
+        aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
+
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.FAILURE.value);
   }
 
   private AclRequestsModel getAclRequestProducer() {
