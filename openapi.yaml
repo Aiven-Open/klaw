@@ -129,6 +129,34 @@ paths:
                 type: array
                 items:
                   type: string
+  /getTopicTeam:
+    get:
+      operationId: topicGetTeam
+      summary: Get the name of the team a topic belongs to
+      tags:
+        - Topic
+      parameters:
+        - name: topicName
+          in: query
+          required: true
+          description: The name of the topic
+          schema:
+            type: string
+        - name: patternType
+          in: query
+          required: false
+          description: The pattern type of the topic
+          schema:
+            type: string
+            enum: ["LITERAL", "PREFIXED"]
+            default: "LITERAL"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicGetTeamResponse"
   /getAllTeamsSUOnly:
     get:
       operationId: teamNamesGet
@@ -439,3 +467,9 @@ components:
           totalNoPages,
           allPageNos,
         ]
+    TopicGetTeamResponse:
+      type: object
+      properties:
+        team:
+          type: string
+      required: [team]
