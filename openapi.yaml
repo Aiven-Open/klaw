@@ -134,6 +134,21 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Environment'
+  /getEnvsBaseClusterFilteredForTeam:
+    get:
+      operationId: getEnvsBaseClusterFilteredForTeam
+      summary: Get environments
+      tags:
+        - Environment
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Environment'
 components:
   schemas:
     CommonError:
