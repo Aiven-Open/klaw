@@ -106,6 +106,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TopicsGetResponse'
+  /createTopics:
+    post:
+      operationId: topicCreate
+      summary: Create topic request
+      tags:
+        - Topic
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/topicCreateRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericApiResponse'
+    
+  /getAdvancedTopicConfigs:
+    get:
+      operationId: topicAdvancedConfigGet
+      summary: Get advanced topic configuration options
+      tags:
+        - Topic
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/topicAdvancedConfigGetResponse'
   /getAllTeamsSUOnly:
     get:
       operationId: teamNamesGet
@@ -134,6 +167,21 @@ paths:
                 type: array
                 items: 
                   $ref: '#/components/schemas/Environment'
+  /getEnvsBaseClusterFilteredForTeam:
+    get:
+      operationId: getEnvsBaseClusterFilteredForTeam
+      summary: Get environments
+      tags:
+        - Environment
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Environment'
 components:
   schemas:
     CommonError:
@@ -143,6 +191,94 @@ components:
           title: message
           description: Description for user why a certain operation failed
           type: string
+    GenericApiResponse:
+      title: GenericApiResponse
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - 100 CONTINUE
+            - 101 SWITCHING_PROTOCOLS
+            - 102 PROCESSING
+            - 103 CHECKPOINT
+            - 200 OK
+            - 201 CREATED
+            - 202 ACCEPTED
+            - 203 NON_AUTHORITATIVE_INFORMATION
+            - 204 NO_CONTENT
+            - 205 RESET_CONTENT
+            - 206 PARTIAL_CONTENT
+            - 207 MULTI_STATUS
+            - 208 ALREADY_REPORTED
+            - 226 IM_USED
+            - 300 MULTIPLE_CHOICES
+            - 301 MOVED_PERMANENTLY
+            - 302 FOUND
+            - 302 MOVED_TEMPORARILY
+            - 303 SEE_OTHER
+            - 304 NOT_MODIFIED
+            - 305 USE_PROXY
+            - 307 TEMPORARY_REDIRECT
+            - 308 PERMANENT_REDIRECT
+            - 400 BAD_REQUEST
+            - 401 UNAUTHORIZED
+            - 402 PAYMENT_REQUIRED
+            - 403 FORBIDDEN
+            - 404 NOT_FOUND
+            - 405 METHOD_NOT_ALLOWED
+            - 406 NOT_ACCEPTABLE
+            - 407 PROXY_AUTHENTICATION_REQUIRED
+            - 408 REQUEST_TIMEOUT
+            - 409 CONFLICT
+            - 410 GONE
+            - 411 LENGTH_REQUIRED
+            - 412 PRECONDITION_FAILED
+            - 413 PAYLOAD_TOO_LARGE
+            - 413 REQUEST_ENTITY_TOO_LARGE
+            - 414 URI_TOO_LONG
+            - 414 REQUEST_URI_TOO_LONG
+            - 415 UNSUPPORTED_MEDIA_TYPE
+            - 416 REQUESTED_RANGE_NOT_SATISFIABLE
+            - 417 EXPECTATION_FAILED
+            - 418 I_AM_A_TEAPOT
+            - 419 INSUFFICIENT_SPACE_ON_RESOURCE
+            - 420 METHOD_FAILURE
+            - 421 DESTINATION_LOCKED
+            - 422 UNPROCESSABLE_ENTITY
+            - 423 LOCKED
+            - 424 FAILED_DEPENDENCY
+            - 425 TOO_EARLY
+            - 426 UPGRADE_REQUIRED
+            - 428 PRECONDITION_REQUIRED
+            - 429 TOO_MANY_REQUESTS
+            - 431 REQUEST_HEADER_FIELDS_TOO_LARGE
+            - 451 UNAVAILABLE_FOR_LEGAL_REASONS
+            - 500 INTERNAL_SERVER_ERROR
+            - 501 NOT_IMPLEMENTED
+            - 502 BAD_GATEWAY
+            - 503 SERVICE_UNAVAILABLE
+            - 504 GATEWAY_TIMEOUT
+            - 505 HTTP_VERSION_NOT_SUPPORTED
+            - 506 VARIANT_ALSO_NEGOTIATES
+            - 507 INSUFFICIENT_STORAGE
+            - 508 LOOP_DETECTED
+            - 509 BANDWIDTH_LIMIT_EXCEEDED
+            - 510 NOT_EXTENDED
+            - 511 NETWORK_AUTHENTICATION_REQUIRED
+        timestamp:
+          title: Timestamp
+          type: string
+          format: date-time
+          example: 2018-11-13T20:20:39+00:00
+        message:
+          type: string
+        debugMessage:
+          type: string
+        result:
+          type: string
+        data:
+          type: object
     UserAuthenticationRequest:
       type: object
       required:
@@ -414,3 +550,170 @@ components:
         totalNoPages,
         allPageNos,
       ]
+    topicAdvancedConfigGetResponse:
+        type: object
+        title: TopicAdvancedConfigGetResponse
+        example:
+          CLEANUP_POLICY: cleanup.policy
+          COMPRESSION_TYPE: compression.type
+          DELETE_RETENTION_MS: delete.retention.ms
+          FILE_DELETE_DELAY_MS: file.delete.delay.ms
+          FLUSH_MESSAGES: flush.messages
+          FLUSH_MS: flush.ms
+          FOLLOWER_REPLICATION_THROTTLED_REPLICAS: follower.replication.throttled.replicas
+          INDEX_INTERVAL_BYTES: index.interval.bytes
+          LEADER_REPLICATION_THROTTLED_REPLICAS: leader.replication.throttled.replicas
+          MAX_COMPACTION_LAG_MS: max.compaction.lag.ms
+          MAX_MESSAGE_BYTES: max.message.bytes
+          MESSAGE_DOWNCONVERSION_ENABLE: message.downconversion.enable
+          MESSAGE_FORMAT_VERSION: message.format.version
+          MESSAGE_TIMESTAMP_DIFFERENCE_MAX_MS: message.timestamp.difference.max.ms
+          MESSAGE_TIMESTAMP_TYPE: message.timestamp.type
+          MIN_CLEANABLE_DIRTY_RATIO: min.cleanable.dirty.ratio
+          MIN_COMPACTION_LAG_MS: min.compaction.lag.ms
+          MIN_INSYNC_REPLICAS: min.insync.replicas
+          PREALLOCATE: preallocate
+          RETENTION_BYTES: retention.bytes
+          RETENTION_MS: retention.ms
+          SEGMENT_BYTES: segment.bytes
+          SEGMENT_INDEX_BYTES: segment.index.bytes
+          SEGMENT_JITTER_MS: segment.jitter.ms
+          SEGMENT_MS: segment.ms
+          UNCLEAN_LEADER_ELECTION_ENABLE: unclean.leader.election.enable
+        additionalProperties:
+          title: configuration key
+          description: "Options are defined in: https://kafka.apache.org/documentation/#topicconfigs"
+          example: cleanup.policy
+          type: string
+    topicCreateRequest:
+      title: TopicCreateRequest
+      type: object
+      required: [
+        description,
+        environment,
+        replicationfactor,
+        teamname,
+        topicname,
+        topicpartitions,
+      ]
+      properties:
+        topicname:
+          type: string
+          title: Topic name
+          description: Kafka Topic name
+          example: "topicName"
+          pattern: ^[a-zA-Z0-9._-]{3,}$
+        environment:
+          type: string
+        topicpartitions:
+          type: integer
+          format: int32
+          minimum: 1
+        teamname:
+          title: Team name
+          type: string
+          pattern: ^[a-zA-z 0-9]*$
+          example: Marketing
+        remarks:
+          title: Remarks
+          description: Message for the approval
+          type: string
+          pattern: ^$|^[a-zA-Z 0-9_.,-]{3,}$
+        description:
+          title: Description
+          type: string
+          pattern: ^[a-zA-Z 0-9_.,-]{3,}$
+        replicationfactor:
+          title: Replication factor
+          type: string
+          example: "1"
+        environmentName:
+          title: Environment name
+          type: string
+          example: DEV
+        topicid:
+          title: Topic identifier
+          description: This identifier is used in Klaw metadata store to ensure uniquenes.
+          type: integer
+          format: int32
+          example: 1010
+        advancedTopicConfigEntries:
+          type: array
+          items:
+            type: object
+            properties:
+              configKey:
+                type: string
+              configValue:
+                type: string
+        appname:
+          title: App name
+          type: string
+        topictype:
+          title: Topic type
+          type: string
+          enum:
+            - Create
+            - Update
+            - Delete
+            - Claim
+        requestor:
+          title: Requestor
+          type: string
+        requesttime:
+          title: Request time
+          type: string
+          format: date-time
+          example: 2018-11-13T20:20:39+00:00
+        requesttimestring:
+          title: Request time string
+          type: string
+        topicstatus:
+          title: Topic status
+          type: string
+        approver:
+          title: Approver
+          type: string
+        approvingtime:
+          title: Approving time
+          type: string
+          format: date-time
+          example: 2018-11-13T20:20:39+00:00
+        sequence:
+          title: Sequence
+          type: string
+          deprecated: true
+        username:
+          title: Username
+          example: johndoe
+          type: string
+        totalNoPages:
+          title: Total number of pages
+          type: string
+          example: "1"
+        approvingTeamDetails:
+          type: string
+        otherParams:
+          type: string
+        teamId:
+          title: Team identifier
+          type: integer
+          format: int32
+          example: 1010
+        allPageNos:
+          title: All page numbers
+          description: List of all page numbers
+          type: array
+          items:
+            type: string
+          example: ["1"]
+        possibleTeams:
+          title: Possible teams
+          type: array
+          items:
+            type: string
+            example: [CRM, Sales, Marketing]
+        currentPage:
+          title: Current page number
+          type: string
+          example: "1"
