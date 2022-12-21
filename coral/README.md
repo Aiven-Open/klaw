@@ -101,9 +101,10 @@ The script `lint` runs a prettier check and eslint after. It does not mutate you
 
 ## Styling
 
-Coral uses the component library of Aiven's design system:
+Coral uses the component library of Aiven's Aquarium design system:
 
-- 📃 [documentation](https://aquarium-library.aiven.io/)
+- 📃 [documentation component library](https://aquarium-library.aiven.io/)
+- 📙 [more information about Aquarium DS](https://aquarium.aiven.io/43ae72f19/p/560f47-aquarium-ds)
 - the repository is open source, but `private` at the moment
 
 As a rule, please don't use css classes from the design system. All styles should be created by using the existing components and their properties.

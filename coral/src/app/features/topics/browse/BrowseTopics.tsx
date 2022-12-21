@@ -3,7 +3,7 @@ import { Pagination } from "src/app/components/Pagination";
 import SelectTeam from "src/app/features/topics/browse/components/select-team/SelectTeam";
 import TopicTable from "src/app/features/topics/browse/components/topic-table/TopicTable";
 import { useState } from "react";
-import { Box, FlexboxItem } from "@aivenio/aquarium";
+import { Box } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { SearchTopics } from "src/app/features/topics/browse/components/search/SearchTopics";
@@ -52,14 +52,12 @@ function BrowseTopics() {
           colGap={"l1"}
           maxWidth={"6xl"}
         >
-          {/*@TODO replace when Box has a grow prop*/}
-          <FlexboxItem grow={1}>
+          <Box grow={1}>
             <SelectTeam onChange={setTeamName} />
-          </FlexboxItem>
-          {/*@TODO replace when Box has a grow prop*/}
-          <FlexboxItem grow={1}>
+          </Box>
+          <Box grow={1}>
             <SelectEnvironment onChange={setEnvironment} />
-          </FlexboxItem>
+          </Box>
         </Box>
         <Box
           display={"flex"}
