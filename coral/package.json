@@ -30,6 +30,9 @@
     ],
     "**/*.css": [
       "prettier --check"
+    ],
+    "*.yaml": [
+      "prettier --check"
     ]
   },
   "dependencies": {

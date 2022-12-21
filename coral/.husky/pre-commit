@@ -2,6 +2,7 @@
 . "$(dirname "$0")/_/husky.sh"
 
 FRONTEND_ROOT="coral"
+OPENAPI_SPECS='openapi.yaml'
 GIT_ROOT=$(git rev-parse --show-toplevel)
 STAGED_FILES=$(git diff --staged --name-only)
 
@@ -11,3 +12,11 @@ then
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" tsc
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" test --bail
 fi
+
+if echo "$STAGED_FILES" | grep "$OPENAPI_SPECS";
+then
+    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged --config="$GIT_ROOT"/"$FRONTEND_ROOT"/package.json --cwd="$GIT_ROOT"
+fi
+
+
+
