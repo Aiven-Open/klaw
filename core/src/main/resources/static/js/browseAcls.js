@@ -32,6 +32,12 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
               setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
             }
 
+    $scope.showSuccessToast = function() {
+        var x = document.getElementById("successbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
+    }
+
     $scope.handleErrorMessage = function(error){
                 if(error != null && error.message != null){
                     $scope.alert = error.message;
@@ -671,6 +677,41 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         title: "Group Id: " + consumergroup,
                         text: result
                     });
+                }
+
+            }).error(
+                function(error)
+                {
+                    $scope.handleErrorMessage(error);
+                }
+            );
+        }
+
+        $scope.getAivenServiceAccount = function(environment, topicName, userName, aclReqNo){
+            $http({
+                method: "GET",
+                url: "getAivenServiceAccount",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'env' : environment,
+                    'topicName' : topicName,
+                    'userName' : userName,
+                    'aclReqNo' : aclReqNo
+                },
+            }).success(function(output) {
+                $scope.serviceAccountInfo = output;
+                if(output.result === 'failure')
+                {
+                    swal({
+                        title: "Failure:",
+                        text: "Could not retrieve service account details !!"
+                    });
+                }else{
+                    swal({
+                        title: "Success: ",
+                        text: "Password displayed at the top of the page !!"
+                    });
+                    $scope.alert = "Password : " + output.data.password;
+                    $scope.showSuccessToast();
                 }
 
             }).error(

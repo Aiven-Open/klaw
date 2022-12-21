@@ -6,6 +6,7 @@ import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.AivenApiService;
@@ -103,6 +104,25 @@ public class ClusterApiController {
       acls = aivenApiService.listAcls(projectName, serviceName);
     }
     return new ResponseEntity<>(acls, HttpStatus.OK);
+  }
+
+  /*
+  Based on the project, service and username, service account details are retrieved.
+   */
+  @RequestMapping(
+      value = "/serviceAccountDetails/project/{projectName}/service/{serviceName}/user/{userName}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> getServiceAccountCredentials(
+      @PathVariable String projectName,
+      @PathVariable String serviceName,
+      @PathVariable String userName) {
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .data(aivenApiService.getServiceAccountDetails(projectName, serviceName, userName))
+            .result(ApiResultStatus.SUCCESS.value)
+            .build();
+    return new ResponseEntity<>(apiResponse, HttpStatus.OK);
   }
 
   @RequestMapping(

@@ -99,8 +99,9 @@ public class AivenApiService {
           projectName,
           serviceName,
           clusterAclRequest.getTopicName());
-      if (!verifyIfServiceAccountExists(clusterAclRequest, restTemplate)) {
-        createServiceAccount(clusterAclRequest, restTemplate, resultMap);
+      if (getServiceAccountDetails(projectName, serviceName, clusterAclRequest.getUsername())
+          .isEmpty()) {
+        createServiceAccount(clusterAclRequest, resultMap);
       } else {
         resultMap.put("result", ApiResultStatus.SUCCESS.value);
       }
@@ -115,9 +116,7 @@ public class AivenApiService {
   }
 
   private void createServiceAccount(
-      ClusterAclRequest clusterAclRequest,
-      RestTemplate restTemplate,
-      Map<String, String> resultMap) {
+      ClusterAclRequest clusterAclRequest, Map<String, String> resultMap) {
     log.debug("Creating service account clusterAclRequest :{}", clusterAclRequest);
     String projectName = clusterAclRequest.getProjectName();
     String serviceName = clusterAclRequest.getServiceName();
@@ -130,7 +129,7 @@ public class AivenApiService {
     requestMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
     HttpEntity<Map<String, String>> request = new HttpEntity<>(requestMap, headers);
     try {
-      ResponseEntity<String> response = restTemplate.postForEntity(uri, request, String.class);
+      ResponseEntity<String> response = getRestTemplate().postForEntity(uri, request, String.class);
       if (response.getStatusCode().equals(HttpStatus.OK)) {
         log.info("Service account created successfully {}", clusterAclRequest);
         resultMap.put("result", ApiResultStatus.SUCCESS.value);
@@ -144,32 +143,43 @@ public class AivenApiService {
     }
   }
 
-  private boolean verifyIfServiceAccountExists(
-      ClusterAclRequest clusterAclRequest, RestTemplate restTemplate) {
-    log.debug("Verify if service account exists clusterAclRequest :{}", clusterAclRequest);
+  // Get Aiven service account details
+  public Map<String, String> getServiceAccountDetails(
+      String projectName, String serviceName, String userName) {
+    log.debug(
+        "Service account for project :{} service : {} user : {}",
+        projectName,
+        serviceName,
+        userName);
     HttpHeaders headers = getHttpHeaders();
     String uri =
         getServiceAccountApiEndpoint
-            .replace("projectName", clusterAclRequest.getProjectName())
-            .replace("serviceName", clusterAclRequest.getServiceName())
-            .replace("userName", clusterAclRequest.getUsername());
+            .replace("projectName", projectName)
+            .replace("serviceName", serviceName)
+            .replace("userName", userName);
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
     try {
       ResponseEntity<Map<String, Map<String, String>>> response =
-          restTemplate.exchange(
-              uri, HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
+          getRestTemplate()
+              .exchange(uri, HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
       if (response.getStatusCode().equals(HttpStatus.OK)) {
         Map<String, Map<String, String>> responseMap = response.getBody();
         if (responseMap != null
             && responseMap.containsKey("user")
             && responseMap.get("user").containsKey("username")) {
-          return true;
+          // Not sending the full service account details.
+          // Response only with username and password. Certificates are removed from the response.
+          Map<String, String> responseInnerMap = new HashMap<>();
+          Map<String, String> resultMap = responseMap.get("user");
+          responseInnerMap.put("password", resultMap.get("password"));
+          responseInnerMap.put("username", resultMap.get("username"));
+          return responseInnerMap;
         }
       }
     } catch (Exception e) {
       log.error("Exception:", e);
     }
-    return false;
+    return new HashMap<>();
   }
 
   public String deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {

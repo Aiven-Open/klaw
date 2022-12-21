@@ -1,0 +1,4744 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.2.0",
+    "title" : "Klaw Core",
+    "contact" : {
+      "email" : "info@klaw-project.io"
+    }
+  },
+  "basePath" : "/",
+  "paths" : {
+    "/addNewCluster" : {
+      "post" : {
+        "operationId" : "addNewCluster",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/KwClustersModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/addNewEnv" : {
+      "post" : {
+        "operationId" : "addNewEnv",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/EnvModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/addNewTeam" : {
+      "post" : {
+        "operationId" : "addNewTeam",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/TeamModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/addNewUser" : {
+      "post" : {
+        "operationId" : "addNewUser",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/UserInfoModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/addRoleId" : {
+      "post" : {
+        "operationId" : "addRoleId",
+        "parameters" : [ {
+          "name" : "roleId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/addTenantId" : {
+      "post" : {
+        "operationId" : "addTenantId",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/KwTenantModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/chPwd" : {
+      "post" : {
+        "operationId" : "changePwd",
+        "parameters" : [ {
+          "name" : "changePwd",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createAcl" : {
+      "post" : {
+        "operationId" : "createAcl",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/AclRequestsModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createClaimConnectorRequest" : {
+      "post" : {
+        "operationId" : "createClaimConnectorRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "connectorName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createClaimTopicRequest" : {
+      "post" : {
+        "operationId" : "createClaimTopicRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createConnector" : {
+      "post" : {
+        "operationId" : "createConnectorRequest",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/KafkaConnectorRequestModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createConnectorDeleteRequest" : {
+      "post" : {
+        "operationId" : "createConnectorDeleteRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "connectorName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createDeleteAclSubscriptionRequest" : {
+      "post" : {
+        "operationId" : "deleteAclSubscriptionRequest",
+        "parameters" : [ {
+          "name" : "req_no",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createTopicDeleteRequest" : {
+      "post" : {
+        "operationId" : "createTopicDeleteRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/createTopics" : {
+      "post" : {
+        "operationId" : "createTopicsRequest",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/TopicRequestModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteAclRequests" : {
+      "post" : {
+        "operationId" : "deleteAclRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "req_no",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteCluster" : {
+      "post" : {
+        "operationId" : "deleteCluster",
+        "parameters" : [ {
+          "name" : "clusterId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteConnectorRequests" : {
+      "post" : {
+        "operationId" : "deleteConnectorRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "connectorId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteEnvironmentRequest" : {
+      "post" : {
+        "operationId" : "deleteEnvironment",
+        "parameters" : [ {
+          "name" : "envId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "envType",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteRole" : {
+      "post" : {
+        "operationId" : "deleteRole",
+        "parameters" : [ {
+          "name" : "roleId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteSchemaRequests" : {
+      "post" : {
+        "operationId" : "deleteSchemaRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "req_no",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteTeamRequest" : {
+      "post" : {
+        "operationId" : "deleteTeam",
+        "parameters" : [ {
+          "name" : "teamId",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteTenant" : {
+      "post" : {
+        "operationId" : "deleteTenant",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteTopicRequests" : {
+      "post" : {
+        "operationId" : "deleteTopicRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/deleteUserRequest" : {
+      "post" : {
+        "operationId" : "deleteUser",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execAclRequest" : {
+      "post" : {
+        "operationId" : "approveAclRequests",
+        "parameters" : [ {
+          "name" : "req_no",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execAclRequestDecline" : {
+      "post" : {
+        "operationId" : "declineAclRequests",
+        "parameters" : [ {
+          "name" : "req_no",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "reasonForDecline",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execConnectorRequests" : {
+      "post" : {
+        "operationId" : "approveTopicRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "connectorId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execConnectorRequestsDecline" : {
+      "post" : {
+        "operationId" : "declineConnectorRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "connectorId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "reasonForDecline",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execNewUserRequestApprove" : {
+      "post" : {
+        "operationId" : "approveNewUserRequests",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execNewUserRequestDecline" : {
+      "post" : {
+        "operationId" : "declineNewUserRequests",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execSchemaRequests" : {
+      "post" : {
+        "operationId" : "execSchemaRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "avroSchemaReqId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execSchemaRequestsDecline" : {
+      "post" : {
+        "operationId" : "execSchemaRequestsDecline",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "avroSchemaReqId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "reasonForDecline",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execTopicRequests" : {
+      "post" : {
+        "operationId" : "approveTopicRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/execTopicRequestsDecline" : {
+      "post" : {
+        "operationId" : "declineTopicRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "reasonForDecline",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/getAclCommands" : {
+      "get" : {
+        "operationId" : "getAclCommand",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAclRequests" : {
+      "get" : {
+        "operationId" : "getAclRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "all"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/AclRequestsModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAcls" : {
+      "get" : {
+        "operationId" : "getAcls",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TopicOverview"
+            }
+          }
+        }
+      }
+    },
+    "/getAclsCountPerEnv" : {
+      "get" : {
+        "operationId" : "getAclsCountPerEnv",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sourceEnvSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getActivationInfo" : {
+      "get" : {
+        "operationId" : "getActivationInfo",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userActivationId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getActivityLogForTeamOverview" : {
+      "get" : {
+        "operationId" : "getActivityLogForTeamOverview",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "activityLogForTeam",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TeamOverview"
+            }
+          }
+        }
+      }
+    },
+    "/getActivityLogPerEnv" : {
+      "get" : {
+        "operationId" : "showActivityLog",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ActivityLog"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAdvancedTopicConfigs" : {
+      "get" : {
+        "operationId" : "getAdvancedTopicConfigs",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAivenServiceAccount" : {
+      "get" : {
+        "operationId" : "getAivenServiceAccountDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "userName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "aclReqNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/getAllServerConfig" : {
+      "get" : {
+        "operationId" : "getAllProperties",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ServerConfigProperties"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAllServerEditableConfig" : {
+      "get" : {
+        "operationId" : "getAllEditableProps",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAllTeamsSU" : {
+      "get" : {
+        "operationId" : "getAllTeamsSU",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TeamModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAllTeamsSUFromRegisterUsers" : {
+      "get" : {
+        "operationId" : "getAllTeamsSUFromRegisterUsers",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TeamModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAllTeamsSUOnly" : {
+      "get" : {
+        "operationId" : "getAllTeamsSUOnly",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getAuth" : {
+      "get" : {
+        "operationId" : "getAuth",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getBasicInfo" : {
+      "get" : {
+        "operationId" : "getBasicInfo",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getBrokerTopMetrics" : {
+      "get" : {
+        "operationId" : "getBrokerTopMetrics",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/JmxOverview"
+            }
+          }
+        }
+      }
+    },
+    "/getClusterDetails" : {
+      "get" : {
+        "operationId" : "getClusterDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "clusterId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KwClustersModel"
+            }
+          }
+        }
+      }
+    },
+    "/getClusterInfoFromEnv" : {
+      "get" : {
+        "operationId" : "getClusterInfoFromEnv",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "envType",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getClusters" : {
+      "get" : {
+        "operationId" : "getClusters",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "clusterType",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KwClustersModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getClustersPaginated" : {
+      "get" : {
+        "operationId" : "getClustersPaginated",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "clusterType",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "clusterId",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "searchClusterParam",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KwClustersModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getConnectorDetails" : {
+      "get" : {
+        "operationId" : "getConnectorDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "connectorName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getConnectorDetailsPerEnv" : {
+      "get" : {
+        "operationId" : "getConnectorDetailsPerEnv",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "connectorName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getConnectorOverview" : {
+      "get" : {
+        "operationId" : "getConnectorOverview",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "connectornamesearch",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ConnectorOverview"
+            }
+          }
+        }
+      }
+    },
+    "/getConnectorRequests" : {
+      "get" : {
+        "operationId" : "getConnectorRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "all"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KafkaConnectorRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getConnectors" : {
+      "get" : {
+        "operationId" : "getTopics",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "connectornamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "teamName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/definitions/KafkaConnectorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getConsumerOffsets" : {
+      "get" : {
+        "operationId" : "getConsumerOffsets",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "consumerGroupId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getCreatedAclRequests" : {
+      "get" : {
+        "operationId" : "getCreatedAclRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/AclRequestsModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getCreatedConnectorRequests" : {
+      "get" : {
+        "operationId" : "getCreatedConnectorRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KafkaConnectorRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getCreatedSchemaRequests" : {
+      "get" : {
+        "operationId" : "getCreatedSchemaRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SchemaRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getCreatedTopicRequests" : {
+      "get" : {
+        "operationId" : "getCreatedTopicRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TopicRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getDashboardStats" : {
+      "get" : {
+        "operationId" : "getDashboardStats",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getDbAuth" : {
+      "get" : {
+        "operationId" : "getDbAuth",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getEnvDetails" : {
+      "get" : {
+        "operationId" : "getEnvDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "envType",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/EnvModel"
+            }
+          }
+        }
+      }
+    },
+    "/getEnvParams" : {
+      "get" : {
+        "operationId" : "getEnvParams",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getEnvs" : {
+      "get" : {
+        "operationId" : "getEnvs",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getEnvsBaseCluster" : {
+      "get" : {
+        "operationId" : "getEnvsBaseCluster",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getEnvsBaseClusterFilteredForTeam" : {
+      "get" : {
+        "operationId" : "getEnvsBaseClusterFilteredForTeam",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getEnvsPaginated" : {
+      "get" : {
+        "operationId" : "getEnvsPaginated",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "envId",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getExtensionPeriods" : {
+      "get" : {
+        "operationId" : "getExtensionPeriods",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getKafkaConnectEnvs" : {
+      "get" : {
+        "operationId" : "getKafkaConnectEnvs",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getKafkaProtocols" : {
+      "get" : {
+        "operationId" : "getSupportedKafkaProtocols",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getKwPubkey" : {
+      "get" : {
+        "operationId" : "getKwPubkey",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getKwReport" : {
+      "get" : {
+        "operationId" : "getKwReport",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getMyProfileInfo" : {
+      "get" : {
+        "operationId" : "getMyProfileInfo",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UserInfoModel"
+            }
+          }
+        }
+      }
+    },
+    "/getMyTenantInfo" : {
+      "get" : {
+        "operationId" : "getMyTenantInfo",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/KwTenantModel"
+            }
+          }
+        }
+      }
+    },
+    "/getNewUserRequests" : {
+      "get" : {
+        "operationId" : "getNewUserRequests",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/RegisterUserInfoModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getPermissionDescriptions" : {
+      "get" : {
+        "operationId" : "getPermissionDescriptions",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getPermissions" : {
+      "get" : {
+        "operationId" : "getPermissions",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getRequestTypeStatuses" : {
+      "get" : {
+        "operationId" : "getRequestTypeStatuses",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getRoles" : {
+      "get" : {
+        "operationId" : "getRoles",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getRolesFromDb" : {
+      "get" : {
+        "operationId" : "getRolesFromDb",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSchemaOfTopic" : {
+      "get" : {
+        "operationId" : "getSchemaOfTopic",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "schemaVersionSearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TopicOverview"
+            }
+          }
+        }
+      }
+    },
+    "/getSchemaRegEnvs" : {
+      "get" : {
+        "operationId" : "getSchemaRegEnvs",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSchemaRequests" : {
+      "get" : {
+        "operationId" : "getSchemaRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "all"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/SchemaRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getStandardEnvNames" : {
+      "get" : {
+        "operationId" : "getStandardEnvNames",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSyncAcls" : {
+      "get" : {
+        "operationId" : "getSyncAcls",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "showAllAcls",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "false"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/AclInfo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSyncBackAcls" : {
+      "get" : {
+        "operationId" : "getSyncBackAcls",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "teamName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/AclInfo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSyncConnectors" : {
+      "get" : {
+        "operationId" : "getSyncTopics",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "connectornamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isBulkOption",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "false"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KafkaConnectorModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSyncConnectorsEnv" : {
+      "get" : {
+        "operationId" : "getSyncConnectorsEnv",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSyncEnv" : {
+      "get" : {
+        "operationId" : "getSyncEnv",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "object",
+                "additionalProperties" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getSyncTopics" : {
+      "get" : {
+        "operationId" : "getSyncTopics",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "showAllTopics",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "false"
+        }, {
+          "name" : "isBulkOption",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "false"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTeamDetails" : {
+      "get" : {
+        "operationId" : "getTeamDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "teamId",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "tenantName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/TeamModel"
+            }
+          }
+        }
+      }
+    },
+    "/getTeamsOverview" : {
+      "get" : {
+        "operationId" : "getTeamsOverview",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TeamOverview"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTenants" : {
+      "get" : {
+        "operationId" : "getTenants",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KwTenantModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTenantsInfo" : {
+      "get" : {
+        "operationId" : "getTenantsInfo",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "integer",
+                "format" : "int32"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicDetailsPerEnv" : {
+      "get" : {
+        "operationId" : "getTopicDetailsPerEnv",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "topicname",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "object"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicEvents" : {
+      "get" : {
+        "operationId" : "getTopicEvents",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "consumerGroupId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "offsetId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicRequests" : {
+      "get" : {
+        "operationId" : "getTopicRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "all"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TopicRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicTeam" : {
+      "get" : {
+        "operationId" : "getTopicTeam",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "patternType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "LITERAL",
+          "enum" : [ "PREFIXED", "LITERAL" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopics" : {
+      "get" : {
+        "operationId" : "getTopics",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "teamName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/definitions/TopicInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicsCountPerEnv" : {
+      "get" : {
+        "operationId" : "getTopicsCountPerEnv",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "sourceEnvSelected",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicsOnly" : {
+      "get" : {
+        "operationId" : "getTopicsOnly",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "isMyTeamTopics",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "false"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicsRowView" : {
+      "get" : {
+        "operationId" : "getTopicsRowView",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicnamesearch",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "teamName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "topicType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TopicInfo"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getUpdateEnvStatus" : {
+      "get" : {
+        "operationId" : "getUpdateEnvStatus",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "envId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getUserDetails" : {
+      "get" : {
+        "operationId" : "getUserDetails",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UserInfoModel"
+            }
+          }
+        }
+      }
+    },
+    "/getUserInfoFromRegistrationId" : {
+      "get" : {
+        "operationId" : "getRegistrationInfoFromId",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "userRegistrationId",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/RegisterUserInfoModel"
+            }
+          }
+        }
+      }
+    },
+    "/logout" : {
+      "post" : {
+        "operationId" : "logout",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/registerUser" : {
+      "post" : {
+        "operationId" : "registerUser",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RegisterUserInfoModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/registerUserSaas" : {
+      "post" : {
+        "operationId" : "registerUserSaas",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RegisterSaasUserInfoModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/resetCache" : {
+      "get" : {
+        "operationId" : "resetCache",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resetMemoryCache/{tenantName}/{entityType}/{operationType}" : {
+      "get" : {
+        "operationId" : "resetMemoryCache",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "tenantName",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "entityType",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "operationType",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/resetPassword" : {
+      "post" : {
+        "operationId" : "resetPassword",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/saveConnectorDocumentation" : {
+      "post" : {
+        "operationId" : "saveConnectorDocumentation",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/KafkaConnectorModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/saveTopicDocumentation" : {
+      "post" : {
+        "operationId" : "saveTopicDocumentation",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/TopicInfo"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/sendMessageToAdmin" : {
+      "post" : {
+        "operationId" : "sendMessageToAdmin",
+        "parameters" : [ {
+          "name" : "contactFormSubject",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "contactFormMessage",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/showUserList" : {
+      "get" : {
+        "operationId" : "showUsers",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "teamName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "searchUserParam",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/UserInfoModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/shutdownContext" : {
+      "get" : {
+        "operationId" : "shutdownApp",
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/testClusterApiConnection" : {
+      "get" : {
+        "operationId" : "testClusterApiConnection",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "clusterApiUrl",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/udpateTenant" : {
+      "post" : {
+        "operationId" : "udpateTenant",
+        "parameters" : [ {
+          "name" : "orgName",
+          "in" : "query",
+          "required" : true,
+          "type" : "string",
+          "pattern" : "^[a-zA-z ]*$"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/udpateTenantExtension" : {
+      "post" : {
+        "operationId" : "udpateTenantExtension",
+        "parameters" : [ {
+          "name" : "selectedTenantExtensionPeriod",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateKwCustomProperty" : {
+      "post" : {
+        "operationId" : "updateKwCustomProperty",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/KwPropertiesModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updatePermissions" : {
+      "post" : {
+        "operationId" : "updatePermissions",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/KwRolesPermissionsModel"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateProfile" : {
+      "post" : {
+        "operationId" : "updateProfile",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/UserInfoModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateSyncAcls" : {
+      "post" : {
+        "operationId" : "updateSyncAcls",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/SyncAclUpdates"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateSyncBackAcls" : {
+      "post" : {
+        "operationId" : "updateSyncBackAcls",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SyncBackAcls"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateSyncBackTopics" : {
+      "post" : {
+        "operationId" : "updateSyncBackTopics",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SyncBackTopics"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateSyncConnectors" : {
+      "post" : {
+        "operationId" : "updateSyncConnectors",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/SyncConnectorUpdates"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateSyncTopics" : {
+      "post" : {
+        "operationId" : "updateSyncTopics",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/SyncTopicUpdates"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateSyncTopicsBulk" : {
+      "post" : {
+        "operationId" : "updateSyncTopicsBulk",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SyncTopicsBulk"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateTeam" : {
+      "post" : {
+        "operationId" : "updateTeam",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/TeamModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/updateUser" : {
+      "post" : {
+        "operationId" : "updateUser",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/UserInfoModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/uploadSchema" : {
+      "post" : {
+        "operationId" : "uploadSchema",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/SchemaRequestModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AclInfo" : {
+      "type" : "object",
+      "properties" : {
+        "sequence" : {
+          "type" : "string"
+        },
+        "req_no" : {
+          "type" : "string"
+        },
+        "acl_ip" : {
+          "type" : "string"
+        },
+        "acl_ssl" : {
+          "type" : "string"
+        },
+        "topicname" : {
+          "type" : "string"
+        },
+        "topictype" : {
+          "type" : "string"
+        },
+        "consumergroup" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "teamname" : {
+          "type" : "string"
+        },
+        "teamid" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "operation" : {
+          "type" : "string"
+        },
+        "permission" : {
+          "type" : "string"
+        },
+        "transactionalId" : {
+          "type" : "string"
+        },
+        "aclPatternType" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "possibleTeams" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "currentPage" : {
+          "type" : "string"
+        },
+        "showDeleteAcl" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "AclRequestsModel" : {
+      "type" : "object",
+      "required" : [ "aclIpPrincipleType", "aclPatternType", "environment", "teamname", "topicname", "topictype" ],
+      "properties" : {
+        "remarks" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z 0-9_.,-]{3,}$"
+        },
+        "consumergroup" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+        },
+        "acl_ip" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "acl_ssl" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "aclPatternType" : {
+          "type" : "string"
+        },
+        "transactionalId" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+        },
+        "req_no" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "topicname" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "teamname" : {
+          "type" : "string"
+        },
+        "topictype" : {
+          "type" : "string"
+        },
+        "aclIpPrincipleType" : {
+          "type" : "string",
+          "enum" : [ "IP_ADDRESS", "PRINCIPAL", "USERNAME" ]
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "requestingteam" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "appname" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "requesttime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requesttimestring" : {
+          "type" : "string"
+        },
+        "aclstatus" : {
+          "type" : "string"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "approvingtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "aclType" : {
+          "type" : "string"
+        },
+        "aclResourceType" : {
+          "type" : "string"
+        },
+        "currentPage" : {
+          "type" : "string"
+        },
+        "otherParams" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "approvingTeamDetails" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ActivityLog" : {
+      "type" : "object",
+      "properties" : {
+        "req_no" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tenantId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "activityName" : {
+          "type" : "string"
+        },
+        "activityType" : {
+          "type" : "string"
+        },
+        "activityTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "activityTimeString" : {
+          "type" : "string"
+        },
+        "details" : {
+          "type" : "string"
+        },
+        "user" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "env" : {
+          "type" : "string"
+        },
+        "envName" : {
+          "type" : "string"
+        },
+        "team" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "currentPage" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "ApiResponse" : {
+      "type" : "object",
+      "properties" : {
+        "status" : {
+          "type" : "string",
+          "enum" : [ "CONTINUE", "SWITCHING_PROTOCOLS", "PROCESSING", "CHECKPOINT", "OK", "CREATED", "ACCEPTED", "NON_AUTHORITATIVE_INFORMATION", "NO_CONTENT", "RESET_CONTENT", "PARTIAL_CONTENT", "MULTI_STATUS", "ALREADY_REPORTED", "IM_USED", "MULTIPLE_CHOICES", "MOVED_PERMANENTLY", "FOUND", "MOVED_TEMPORARILY", "SEE_OTHER", "NOT_MODIFIED", "USE_PROXY", "TEMPORARY_REDIRECT", "PERMANENT_REDIRECT", "BAD_REQUEST", "UNAUTHORIZED", "PAYMENT_REQUIRED", "FORBIDDEN", "NOT_FOUND", "METHOD_NOT_ALLOWED", "NOT_ACCEPTABLE", "PROXY_AUTHENTICATION_REQUIRED", "REQUEST_TIMEOUT", "CONFLICT", "GONE", "LENGTH_REQUIRED", "PRECONDITION_FAILED", "PAYLOAD_TOO_LARGE", "REQUEST_ENTITY_TOO_LARGE", "URI_TOO_LONG", "REQUEST_URI_TOO_LONG", "UNSUPPORTED_MEDIA_TYPE", "REQUESTED_RANGE_NOT_SATISFIABLE", "EXPECTATION_FAILED", "I_AM_A_TEAPOT", "INSUFFICIENT_SPACE_ON_RESOURCE", "METHOD_FAILURE", "DESTINATION_LOCKED", "UNPROCESSABLE_ENTITY", "LOCKED", "FAILED_DEPENDENCY", "UPGRADE_REQUIRED", "PRECONDITION_REQUIRED", "TOO_MANY_REQUESTS", "REQUEST_HEADER_FIELDS_TOO_LARGE", "UNAVAILABLE_FOR_LEGAL_REASONS", "INTERNAL_SERVER_ERROR", "NOT_IMPLEMENTED", "BAD_GATEWAY", "SERVICE_UNAVAILABLE", "GATEWAY_TIMEOUT", "HTTP_VERSION_NOT_SUPPORTED", "VARIANT_ALSO_NEGOTIATES", "INSUFFICIENT_STORAGE", "LOOP_DETECTED", "BANDWIDTH_LIMIT_EXCEEDED", "NOT_EXTENDED", "NETWORK_AUTHENTICATION_REQUIRED" ]
+        },
+        "timestamp" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "message" : {
+          "type" : "string"
+        },
+        "debugMessage" : {
+          "type" : "string"
+        },
+        "result" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "object"
+        }
+      }
+    },
+    "ChartsJsOverview" : {
+      "type" : "object",
+      "properties" : {
+        "data" : {
+          "type" : "array",
+          "items" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "labels" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "colors" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "options" : {
+          "$ref" : "#/definitions/Options"
+        },
+        "series" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "titleForReport" : {
+          "type" : "string"
+        },
+        "xaxisLabel" : {
+          "type" : "string"
+        },
+        "yaxisLabel" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ConnectorOverview" : {
+      "type" : "object",
+      "properties" : {
+        "topicInfoList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KafkaConnectorModel"
+          }
+        },
+        "topicHistoryList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TopicHistory"
+          }
+        },
+        "promotionDetails" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "connectorExists" : {
+          "type" : "boolean"
+        },
+        "topicDocumentation" : {
+          "type" : "string"
+        },
+        "topicIdForDocumentation" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "EnvModel" : {
+      "type" : "object",
+      "required" : [ "clusterId", "name", "type" ],
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "name" : {
+          "type" : "string",
+          "minLength" : 3,
+          "maxLength" : 7,
+          "pattern" : "^[a-zA-Z0-9_-]{3,}$"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "topicprefix" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+        },
+        "topicsuffix" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+        },
+        "clusterId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tenantName" : {
+          "type" : "string"
+        },
+        "clusterName" : {
+          "type" : "string"
+        },
+        "envStatus" : {
+          "type" : "string"
+        },
+        "otherParams" : {
+          "type" : "string"
+        },
+        "defaultPartitions" : {
+          "type" : "string"
+        },
+        "maxPartitions" : {
+          "type" : "string"
+        },
+        "defaultReplicationFactor" : {
+          "type" : "string"
+        },
+        "maxReplicationFactor" : {
+          "type" : "string"
+        },
+        "showDeleteEnv" : {
+          "type" : "boolean"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "JmxOverview" : {
+      "type" : "object",
+      "properties" : {
+        "brokerTopMetricsOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        }
+      }
+    },
+    "KafkaConnectorModel" : {
+      "type" : "object",
+      "properties" : {
+        "sequence" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "connectorId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "connectorName" : {
+          "type" : "string"
+        },
+        "connectorConfig" : {
+          "type" : "string"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "environmentId" : {
+          "type" : "string"
+        },
+        "teamName" : {
+          "type" : "string"
+        },
+        "possibleTeams" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "currentPage" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string"
+        },
+        "documentation" : {
+          "type" : "string"
+        },
+        "environmentsList" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "showEditConnector" : {
+          "type" : "boolean"
+        },
+        "showDeleteConnector" : {
+          "type" : "boolean"
+        },
+        "connectorDeletable" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "KafkaConnectorRequestModel" : {
+      "type" : "object",
+      "required" : [ "connectorName", "description", "environment", "teamName" ],
+      "properties" : {
+        "connectorName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+        },
+        "connectorConfig" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "teamName" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z 0-9_.,-]{3,}$"
+        },
+        "description" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "connectorId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "connectortype" : {
+          "type" : "string"
+        },
+        "requestor" : {
+          "type" : "string"
+        },
+        "requesttime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requesttimestring" : {
+          "type" : "string"
+        },
+        "connectorStatus" : {
+          "type" : "string"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "approvingtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "sequence" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "approvingTeamDetails" : {
+          "type" : "string"
+        },
+        "otherParams" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "possibleTeams" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "currentPage" : {
+          "type" : "string"
+        }
+      }
+    },
+    "KwClustersModel" : {
+      "type" : "object",
+      "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ],
+      "properties" : {
+        "clusterId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "clusterName" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+        },
+        "bootstrapServers" : {
+          "type" : "string",
+          "minLength" : 6,
+          "maxLength" : 2147483647,
+          "pattern" : "^[a-zA-Z0-9._:,-]{3,}$"
+        },
+        "protocol" : {
+          "type" : "string",
+          "enum" : [ "PLAINTEXT", "SSL", "SASL_PLAIN", "SASL_SSL_PLAIN_MECHANISM", "SASL_SSL_GSSAPI_MECHANISM", "SASL_SSL_SCRAM_MECHANISM_256", "SASL_SSL_SCRAM_MECHANISM_512" ]
+        },
+        "clusterType" : {
+          "type" : "string"
+        },
+        "kafkaFlavor" : {
+          "type" : "string"
+        },
+        "projectName" : {
+          "type" : "string"
+        },
+        "serviceName" : {
+          "type" : "string"
+        },
+        "publicKey" : {
+          "type" : "string"
+        },
+        "showDeleteCluster" : {
+          "type" : "boolean"
+        },
+        "clusterStatus" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "KwPropertiesModel" : {
+      "type" : "object",
+      "properties" : {
+        "kwKey" : {
+          "type" : "string"
+        },
+        "kwValue" : {
+          "type" : "string"
+        },
+        "kwDesc" : {
+          "type" : "string"
+        }
+      }
+    },
+    "KwRolesPermissionsModel" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "roleId" : {
+          "type" : "string"
+        },
+        "permission" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "rolePermission" : {
+          "type" : "string"
+        },
+        "permissionEnabled" : {
+          "type" : "string"
+        }
+      }
+    },
+    "KwTenantModel" : {
+      "type" : "object",
+      "required" : [ "tenantDesc", "tenantName" ],
+      "properties" : {
+        "tenantName" : {
+          "type" : "string",
+          "minLength" : 12,
+          "maxLength" : 25,
+          "pattern" : "^[a-zA-Z0-9]{3,}$"
+        },
+        "tenantDesc" : {
+          "type" : "string",
+          "minLength" : 6,
+          "maxLength" : 25,
+          "pattern" : "^[a-zA-Z 0-9]{3,}$"
+        },
+        "tenantId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "licenseExpiryDate" : {
+          "type" : "string"
+        },
+        "contactPerson" : {
+          "type" : "string"
+        },
+        "inTrialPhase" : {
+          "type" : "boolean"
+        },
+        "numberOfDays" : {
+          "type" : "string"
+        },
+        "numberOfHours" : {
+          "type" : "string"
+        },
+        "orgName" : {
+          "type" : "string"
+        },
+        "authorizedToDelete" : {
+          "type" : "boolean"
+        },
+        "emailId" : {
+          "type" : "string"
+        },
+        "activeTenant" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Options" : {
+      "type" : "object",
+      "properties" : {
+        "title" : {
+          "$ref" : "#/definitions/Title"
+        },
+        "scales" : {
+          "$ref" : "#/definitions/Scales"
+        }
+      }
+    },
+    "RegisterSaasUserInfoModel" : {
+      "type" : "object",
+      "required" : [ "fullname" ],
+      "properties" : {
+        "fullname" : {
+          "type" : "string",
+          "minLength" : 4,
+          "maxLength" : 300,
+          "pattern" : "^[a-zA-z ]*$"
+        },
+        "mailid" : {
+          "type" : "string"
+        },
+        "recaptchaStr" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "registeredTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "registrationId" : {
+          "type" : "string"
+        },
+        "tenantName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "RegisterUserInfoModel" : {
+      "type" : "object",
+      "required" : [ "fullname", "username" ],
+      "properties" : {
+        "username" : {
+          "type" : "string",
+          "minLength" : 6,
+          "maxLength" : 300
+        },
+        "pwd" : {
+          "type" : "string"
+        },
+        "team" : {
+          "type" : "string"
+        },
+        "role" : {
+          "type" : "string"
+        },
+        "fullname" : {
+          "type" : "string",
+          "minLength" : 5,
+          "maxLength" : 50,
+          "pattern" : "^[a-zA-z ]*$"
+        },
+        "mailid" : {
+          "type" : "string"
+        },
+        "status" : {
+          "type" : "string"
+        },
+        "registeredTime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "registrationId" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tenantName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Scales" : {
+      "type" : "object",
+      "properties" : {
+        "yaxes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/YAx"
+          }
+        },
+        "xaxes" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/YAx"
+          }
+        }
+      }
+    },
+    "SchemaRequestModel" : {
+      "type" : "object",
+      "required" : [ "schemafull" ],
+      "properties" : {
+        "req_no" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "topicname" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "schemaversion" : {
+          "type" : "string"
+        },
+        "teamname" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "appname" : {
+          "type" : "string"
+        },
+        "schemafull" : {
+          "type" : "string",
+          "minLength" : 8,
+          "maxLength" : 2147483647
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "requesttime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requesttimestring" : {
+          "type" : "string"
+        },
+        "topicstatus" : {
+          "type" : "string"
+        },
+        "requesttype" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z 0-9_.-]{3,}$"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "approvingtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "approvingTeamDetails" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "currentPage" : {
+          "type" : "string"
+        }
+      }
+    },
+    "ServerConfigProperties" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "value" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SyncAclUpdates" : {
+      "type" : "object",
+      "properties" : {
+        "sequence" : {
+          "type" : "string"
+        },
+        "req_no" : {
+          "type" : "string"
+        },
+        "topicName" : {
+          "type" : "string"
+        },
+        "teamSelected" : {
+          "type" : "string"
+        },
+        "consumerGroup" : {
+          "type" : "string"
+        },
+        "aclIp" : {
+          "type" : "string"
+        },
+        "aclSsl" : {
+          "type" : "string"
+        },
+        "aclType" : {
+          "type" : "string"
+        },
+        "envSelected" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SyncBackAcls" : {
+      "type" : "object",
+      "properties" : {
+        "aclIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "sourceEnv" : {
+          "type" : "string"
+        },
+        "targetEnv" : {
+          "type" : "string"
+        },
+        "typeOfSync" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SyncBackTopics" : {
+      "type" : "object",
+      "properties" : {
+        "topicIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "sourceEnv" : {
+          "type" : "string"
+        },
+        "targetEnv" : {
+          "type" : "string"
+        },
+        "typeOfSync" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SyncConnectorUpdates" : {
+      "type" : "object",
+      "properties" : {
+        "sequence" : {
+          "type" : "string"
+        },
+        "req_no" : {
+          "type" : "string"
+        },
+        "connectorName" : {
+          "type" : "string"
+        },
+        "teamSelected" : {
+          "type" : "string"
+        },
+        "envSelected" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SyncTopicUpdates" : {
+      "type" : "object",
+      "properties" : {
+        "sequence" : {
+          "type" : "string"
+        },
+        "req_no" : {
+          "type" : "string"
+        },
+        "topicName" : {
+          "type" : "string"
+        },
+        "partitions" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "replicationFactor" : {
+          "type" : "string"
+        },
+        "teamSelected" : {
+          "type" : "string"
+        },
+        "envSelected" : {
+          "type" : "string"
+        }
+      }
+    },
+    "SyncTopicsBulk" : {
+      "type" : "object",
+      "properties" : {
+        "topicNames" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "sourceEnv" : {
+          "type" : "string"
+        },
+        "selectedTeam" : {
+          "type" : "string"
+        },
+        "typeOfSync" : {
+          "type" : "string"
+        },
+        "topicDetails" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object"
+          }
+        },
+        "topicSearchFilter" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TeamModel" : {
+      "type" : "object",
+      "required" : [ "contactperson", "teamname", "teamphone" ],
+      "properties" : {
+        "teamname" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-z 0-9]*$"
+        },
+        "teammail" : {
+          "type" : "string"
+        },
+        "teamphone" : {
+          "type" : "string",
+          "pattern" : "(^$|[0-9]*)"
+        },
+        "contactperson" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-z ]*$"
+        },
+        "tenantId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "app" : {
+          "type" : "string"
+        },
+        "showDeleteTeam" : {
+          "type" : "boolean"
+        },
+        "tenantName" : {
+          "type" : "string"
+        },
+        "envList" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "TeamOverview" : {
+      "type" : "object",
+      "properties" : {
+        "producerAclsPerTeamsOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "consumerAclsPerTeamsOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "aclsPerEnvOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "topicsPerTeamsOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "topicsPerTeamPerEnvOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "topicsPerEnvOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "partitionsPerEnvOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "activityLogOverview" : {
+          "$ref" : "#/definitions/ChartsJsOverview"
+        },
+        "tenantName" : {
+          "type" : "string"
+        }
+      }
+    },
+    "Title" : {
+      "type" : "object",
+      "properties" : {
+        "display" : {
+          "type" : "boolean"
+        },
+        "text" : {
+          "type" : "string"
+        },
+        "position" : {
+          "type" : "string"
+        },
+        "fontColor" : {
+          "type" : "string"
+        },
+        "fontFamily" : {
+          "type" : "string"
+        },
+        "fontStyle" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TopicConfigEntry" : {
+      "type" : "object",
+      "properties" : {
+        "configKey" : {
+          "type" : "string"
+        },
+        "configValue" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TopicHistory" : {
+      "type" : "object",
+      "properties" : {
+        "environmentName" : {
+          "type" : "string"
+        },
+        "teamName" : {
+          "type" : "string"
+        },
+        "requestedBy" : {
+          "type" : "string"
+        },
+        "requestedTime" : {
+          "type" : "string"
+        },
+        "approvedBy" : {
+          "type" : "string"
+        },
+        "approvedTime" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TopicInfo" : {
+      "type" : "object",
+      "properties" : {
+        "topicid" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sequence" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "currentPage" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "topicName" : {
+          "type" : "string"
+        },
+        "noOfPartitions" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "documentation" : {
+          "type" : "string"
+        },
+        "noOfReplcias" : {
+          "type" : "string"
+        },
+        "teamname" : {
+          "type" : "string"
+        },
+        "cluster" : {
+          "type" : "string"
+        },
+        "clusterId" : {
+          "type" : "string"
+        },
+        "environmentsList" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "showEditTopic" : {
+          "type" : "boolean"
+        },
+        "showDeleteTopic" : {
+          "type" : "boolean"
+        },
+        "topicDeletable" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "TopicOverview" : {
+      "type" : "object",
+      "properties" : {
+        "topicInfoList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TopicInfo"
+          }
+        },
+        "aclInfoList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/AclInfo"
+          }
+        },
+        "prefixedAclInfoList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/AclInfo"
+          }
+        },
+        "transactionalAclInfoList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/AclInfo"
+          }
+        },
+        "topicHistoryList" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TopicHistory"
+          }
+        },
+        "promotionDetails" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "topicExists" : {
+          "type" : "boolean"
+        },
+        "schemaDetails" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "schemaExists" : {
+          "type" : "boolean"
+        },
+        "prefixAclsExists" : {
+          "type" : "boolean"
+        },
+        "txnAclsExists" : {
+          "type" : "boolean"
+        },
+        "topicDocumentation" : {
+          "type" : "string"
+        },
+        "topicIdForDocumentation" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "TopicRequestModel" : {
+      "type" : "object",
+      "required" : [ "description", "environment", "replicationfactor", "teamname", "topicname", "topicpartitions" ],
+      "properties" : {
+        "topicname" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "topicpartitions" : {
+          "type" : "integer",
+          "format" : "int32",
+          "minimum" : 1
+        },
+        "teamname" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-z 0-9]*$"
+        },
+        "remarks" : {
+          "type" : "string",
+          "pattern" : "^$|^[a-zA-Z 0-9_.,-]{3,}$"
+        },
+        "description" : {
+          "type" : "string",
+          "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
+        },
+        "replicationfactor" : {
+          "type" : "string"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "topicid" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "advancedTopicConfigEntries" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TopicConfigEntry"
+          }
+        },
+        "appname" : {
+          "type" : "string"
+        },
+        "topictype" : {
+          "type" : "string"
+        },
+        "requestor" : {
+          "type" : "string"
+        },
+        "requesttime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requesttimestring" : {
+          "type" : "string"
+        },
+        "topicstatus" : {
+          "type" : "string"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "approvingtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "sequence" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "approvingTeamDetails" : {
+          "type" : "string"
+        },
+        "otherParams" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "possibleTeams" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "currentPage" : {
+          "type" : "string"
+        }
+      }
+    },
+    "UserInfoModel" : {
+      "type" : "object",
+      "required" : [ "fullname", "username" ],
+      "properties" : {
+        "username" : {
+          "type" : "string",
+          "minLength" : 6,
+          "maxLength" : 300
+        },
+        "userPassword" : {
+          "type" : "string"
+        },
+        "team" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "role" : {
+          "type" : "string"
+        },
+        "fullname" : {
+          "type" : "string",
+          "minLength" : 5,
+          "maxLength" : 50,
+          "pattern" : "^[a-zA-z ]*$"
+        },
+        "mailid" : {
+          "type" : "string"
+        },
+        "tenantName" : {
+          "type" : "string"
+        },
+        "tenantId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "YAx" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "string"
+        },
+        "type" : {
+          "type" : "string"
+        },
+        "display" : {
+          "type" : "boolean"
+        },
+        "position" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}

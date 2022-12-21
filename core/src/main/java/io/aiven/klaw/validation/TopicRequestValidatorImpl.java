@@ -42,6 +42,14 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
+    // Verify if topic request type is Create
+    if (!TopicRequestTypes.Create.name().equals(topicRequestModel.getTopictype())) {
+      updateConstraint(
+          constraintValidatorContext,
+          "Failure. Invalid Topic request type. Possible Value : Create");
+      return false;
+    }
+
     // tenant filtering
     if (!commonUtilsService
         .getEnvsFromUserId(topicControllerService.getUserName())

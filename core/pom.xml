@@ -32,6 +32,7 @@
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
+        <swagger-maven-plugin.version>3.1.8</swagger-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -209,6 +210,40 @@
                             <executable>make</executable>
                             <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>${swagger-maven-plugin.version}</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <locations>
+                                <location>io.aiven.klaw.controller</location>
+                            </locations>
+                            <basePath>/</basePath>
+                            <info>
+                                <title>Klaw Core</title>
+                                <version>${parent.version}</version>
+                                <contact>
+                                    <email>info@klaw-project.io</email>
+                                </contact>
+                            </info>
+                            <outputFormats>json</outputFormats>
+                            <swaggerFileName>swagger_spec</swaggerFileName>
+                            <swaggerDirectory>${project.basedir}/src/main/resources</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
