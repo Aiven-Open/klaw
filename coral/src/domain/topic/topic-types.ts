@@ -1,14 +1,13 @@
-import type { KlawApiResponse, KlawApiModel } from "types/utils";
+import type { KlawApiModel } from "types/utils";
 
-type TopicDTO = KlawApiModel<"TopicInfo">;
-
-type TopicApiResponse = {
+type Paginated<T> = {
   totalPages: number;
   currentPage: number;
-  entries: Topic[];
+  entries: T;
 };
 
-type Topic = TopicDTO;
-type TopicDTOApiResponse = KlawApiResponse<"topicsGet">;
+type TopicApiResponse = Paginated<Topic[]>;
 
-export type { TopicDTO, TopicApiResponse, Topic, TopicDTOApiResponse };
+type Topic = KlawApiModel<"TopicInfo">;
+
+export type { Topic, TopicApiResponse };

@@ -1,4 +1,5 @@
-import { Topic, TopicDTOApiResponse } from "src/domain/topic/topic-types";
+import { Topic } from "src/domain/topic/topic-types";
+import { KlawApiResponse } from "types/utils";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
@@ -66,8 +67,8 @@ function createMockTopicApiResponse({
   entries: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
   totalPages?: number;
   currentPage?: number;
-}): TopicDTOApiResponse {
-  const response: TopicDTOApiResponse = [[]];
+}): KlawApiResponse<"topicsGet"> {
+  const response: KlawApiResponse<"topicsGet"> = [[]];
 
   const totalPageNumber = currentPage > totalPages ? currentPage : totalPages;
   if (entries >= 4 && entries <= 6) {

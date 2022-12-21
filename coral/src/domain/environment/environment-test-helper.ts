@@ -1,6 +1,6 @@
-import { EnvironmentDTO } from "src/domain/environment/environment-types";
+import { KlawApiModel } from "types/utils";
 
-const defaultEnvironmentDTO: EnvironmentDTO = {
+const defaultEnvironmentDTO: KlawApiModel<"Environment"> = {
   id: "1",
   name: "DEV",
   type: "kafka",
@@ -23,8 +23,8 @@ const defaultEnvironmentDTO: EnvironmentDTO = {
 };
 
 function createMockEnvironmentDTO(
-  environment: Partial<EnvironmentDTO>
-): EnvironmentDTO {
+  environment: Partial<KlawApiModel<"Environment">>
+): KlawApiModel<"Environment"> {
   return { ...defaultEnvironmentDTO, ...environment };
 }
 

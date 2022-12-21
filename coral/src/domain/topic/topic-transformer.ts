@@ -1,11 +1,9 @@
-import {
-  TopicApiResponse,
-  TopicDTOApiResponse,
-} from "src/domain/topic/topic-types";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
+import { KlawApiResponse } from "types/utils";
 
 // @TODO check zod for this!
 function transformTopicApiResponse(
-  apiResponse: TopicDTOApiResponse
+  apiResponse: KlawApiResponse<"topicsGet">
 ): TopicApiResponse {
   if (apiResponse.length === 0) {
     return {

@@ -1,12 +1,10 @@
 import api from "src/services/api";
-import {
-  TopicApiResponse,
-  TopicDTOApiResponse,
-} from "src/domain/topic/topic-types";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
+import { KlawApiResponse } from "types/utils";
 
 const getTopics = async ({
   currentPage = 1,
@@ -33,7 +31,9 @@ const getTopics = async ({
   };
 
   return api
-    .get<TopicDTOApiResponse>(`/getTopics?${new URLSearchParams(params)}`)
+    .get<KlawApiResponse<"topicsGet">>(
+      `/getTopics?${new URLSearchParams(params)}`
+    )
     .then(transformTopicApiResponse);
 };
 
