@@ -183,6 +183,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Environment"
+  /getClusterInfoFromEnv:
+    get:
+      operationId: environmentGetClusterInfo
+      summary: Get information about the cluster from the selected environment
+      tags:
+        - Environment
+      parameters:
+        - name: envSelected
+          in: query
+          required: true
+          description: The environment for which to get the cluster info
+          schema:
+            type: string
+          example: "2"
+        - name: envType
+          in: query
+          required: true
+          description: The type of  environment for which to get the cluster info
+          schema:
+            type: string
+            example: "kafka"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentGetClusterInfoResponse"
 components:
   schemas:
     CommonError:
@@ -356,6 +384,14 @@ components:
           type: string
       required: [team]
       example: { "team": "Team A" }
+    EnvironmentGetClusterInfoResponse:
+      type: object
+      properties:
+        clusterName:
+          type: string
+          enum: ["true", "false"]
+      required: [clusterName]
+      example: { "aivenCluster": "false" }
     TeamNamesGetResponse:
       type: array
       items:
