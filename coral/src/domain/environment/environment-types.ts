@@ -1,8 +1,7 @@
-import { components, operations } from "types/api.d";
+import type { KlawApiResponse, KlawApiModel } from "types/utils";
 
-type EnvironmentsGetResponse =
-  operations["environmentsGet"]["responses"]["200"]["content"]["application/json"];
-type EnvironmentDTO = components["schemas"]["Environment"];
+type EnvironmentsGetResponse = KlawApiResponse<"environmentsGet">;
+type EnvironmentDTO = KlawApiModel<"Environment">;
 
 type Environment = {
   name: string;

@@ -1,4 +1,4 @@
-import { components } from "types/api.d";
+import type { KlawApiResponse } from "types/utils";
 // "teamName" is a optional parameter for the getTopics api,
 // but we still need an identifier in frontend
 // to be able to set "All teams" as a visible option
@@ -9,7 +9,7 @@ const TEAM_NOT_INITIALIZED = "931bd061-fb50-4b92-ae49-b1e8004324d3";
 
 type Team = string | typeof ALL_TEAMS_VALUE;
 
-type TeamNamesGetResponse = components["schemas"]["TeamNamesGetResponse"];
+type TeamNamesGetResponse = KlawApiResponse<"teamNamesGet">;
 
 export type { Team, TeamNamesGetResponse };
 export { ALL_TEAMS_VALUE, TEAM_NOT_INITIALIZED };

@@ -1,6 +1,6 @@
-import { components } from "types/api";
+import type { KlawApiResponse, KlawApiModel } from "types/utils";
 
-type TopicDTO = components["schemas"]["TopicInfo"];
+type TopicDTO = KlawApiModel<"TopicInfo">;
 
 type TopicApiResponse = {
   totalPages: number;
@@ -9,6 +9,6 @@ type TopicApiResponse = {
 };
 
 type Topic = TopicDTO;
-type TopicDTOApiResponse = components["schemas"]["TopicsGetResponse"];
+type TopicDTOApiResponse = KlawApiResponse<"topicsGet">;
 
 export type { TopicDTO, TopicApiResponse, Topic, TopicDTOApiResponse };
