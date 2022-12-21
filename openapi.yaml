@@ -106,6 +106,29 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TopicsGetResponse"
+  /getTopicsOnly:
+    get:
+      operationId: topicsGetOnly
+      summary: Get topic names list
+      tags:
+        - Topic
+      parameters:
+        - name: isMyTeamTopics
+          in: query
+          required: false
+          description: Set to true to only get the topic names for topics belonging to the team of the current user
+          schema:
+            type: string
+            default: "false"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
   /getAllTeamsSUOnly:
     get:
       operationId: teamNamesGet
