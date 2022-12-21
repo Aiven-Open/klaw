@@ -126,9 +126,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: string
+                $ref: "#/components/schemas/TopicsGetOnlyResponse"
   /getTopicTeam:
     get:
       operationId: topicGetTeam
@@ -346,6 +344,18 @@ components:
           topicName,
           totalNoPages,
         ]
+    TopicsGetOnlyResponse:
+      type: array
+      items:
+        type: string
+      example: ["myTopic", "otherTopic"]
+    TopicGetTeamResponse:
+      type: object
+      properties:
+        team:
+          type: string
+      required: [team]
+      example: { "team": "Team A" }
     TeamNamesGetResponse:
       type: array
       items:
@@ -467,9 +477,3 @@ components:
           totalNoPages,
           allPageNos,
         ]
-    TopicGetTeamResponse:
-      type: object
-      properties:
-        team:
-          type: string
-      required: [team]
