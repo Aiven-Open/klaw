@@ -3,7 +3,7 @@ info:
   title: Klaw - OpenAPI
   version: 1.0.0
   description: >
-    This specification is still a work in progess and is not yet implemented in any API. The purpose of this specification is to facilitate developers discussions. 
+    This specification is still a work in progess and is not yet implemented in any API. The purpose of this specification is to facilitate developers discussions.
   contact:
     email: info@klaw-project.io
   license:
@@ -29,7 +29,7 @@ paths:
       operationId: userAuthentication
       summary: Authenticate user
       description: >
-        Exchange username and password to an authentication token. 
+        Exchange username and password to an authentication token.
         The token can be later used as authentication mechanism for other API endpoints.
       tags:
         - User
@@ -38,20 +38,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserAuthenticationRequest'
+              $ref: "#/components/schemas/UserAuthenticationRequest"
       responses:
-        '200':
+        "200":
           description: Successful authentication
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/UserAuthenticationResponse'
-        '403':
+                $ref: "#/components/schemas/UserAuthenticationResponse"
+        "403":
           description: Invalid credentials
           content:
             application/json:
-              schema: 
-                $ref: '#/components/schemas/CommonError'
+              schema:
+                $ref: "#/components/schemas/CommonError"
               example:
                 message: Username and password did not match
   /getTopics:
@@ -105,7 +105,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TopicsGetResponse'
+                $ref: "#/components/schemas/TopicsGetResponse"
   /createTopics:
     post:
       operationId: topicCreate
@@ -117,15 +117,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/topicCreateRequest'
+              $ref: "#/components/schemas/topicCreateRequest"
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GenericApiResponse'
-    
+                $ref: "#/components/schemas/GenericApiResponse"
+
   /getAdvancedTopicConfigs:
     get:
       operationId: topicAdvancedConfigGet
@@ -138,7 +138,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/topicAdvancedConfigGetResponse'
+                $ref: "#/components/schemas/topicAdvancedConfigGetResponse"
   /getAllTeamsSUOnly:
     get:
       operationId: teamNamesGet
@@ -151,7 +151,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TeamNamesGetResponse'
+                $ref: "#/components/schemas/TeamNamesGetResponse"
   /getEnvs:
     get:
       operationId: environmentsGet
@@ -165,8 +165,8 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
-                  $ref: '#/components/schemas/Environment'
+                items:
+                  $ref: "#/components/schemas/Environment"
   /getEnvsBaseClusterFilteredForTeam:
     get:
       operationId: getEnvsBaseClusterFilteredForTeam
@@ -180,8 +180,8 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
-                  $ref: '#/components/schemas/Environment'
+                items:
+                  $ref: "#/components/schemas/Environment"
 components:
   schemas:
     CommonError:
@@ -317,7 +317,7 @@ components:
       items:
         type: array
         items:
-          $ref: '#/components/schemas/TopicInfo'
+          $ref: "#/components/schemas/TopicInfo"
     TopicInfo:
       type: object
       additionalProperties: false
@@ -389,7 +389,7 @@ components:
           deprecated: true
           nullable: true
         environmentsList:
-          title: Environments list 
+          title: Environments list
           description: List of environments where the topic is present.
           type: array
           items:
@@ -399,7 +399,7 @@ components:
           example: ["DEV", "TEST"]
         showEditTopic:
           title: Show edit topic
-          description: Describes if the user should see topic edit action. 
+          description: Describes if the user should see topic edit action.
           type: boolean
           example: false
         showDeleteTopic:
@@ -409,27 +409,28 @@ components:
           example: true
         topicDeletable:
           title: Topic deletable
-          description: Describes if the topic can be deleted. 
+          description: Describes if the topic can be deleted.
           example: true
           type: boolean
-      required: [
-        allPageNos,
-        cluster,
-        clusterId,
-        currentPage,
-        description,
-        documentation,
-        environmentsList,
-        noOfPartitions,
-        noOfReplcias,
-        showDeleteTopic,
-        showEditTopic,
-        teamname,
-        topicDeletable,
-        topicid,
-        topicName,
-        totalNoPages,
-      ]
+      required:
+        [
+          allPageNos,
+          cluster,
+          clusterId,
+          currentPage,
+          description,
+          documentation,
+          environmentsList,
+          noOfPartitions,
+          noOfReplcias,
+          showDeleteTopic,
+          showEditTopic,
+          teamname,
+          topicDeletable,
+          topicid,
+          topicName,
+          totalNoPages,
+        ]
     TeamNamesGetResponse:
       type: array
       items:
@@ -530,72 +531,74 @@ components:
           items:
             type: string
           example: ["1"]
-      required: [
-        id,
-        name,
-        type,
-        tenantId,
-        topicprefix,
-        topicsuffix,
-        clusterId,
-        tenantName,
-        clusterName,
-        envStatus,
-        otherParams,
-        defaultPartitions,
-        maxPartitions,
-        defaultReplicationFactor,
-        maxReplicationFactor,
-        showDeleteEnv,
-        totalNoPages,
-        allPageNos,
-      ]
+      required:
+        [
+          id,
+          name,
+          type,
+          tenantId,
+          topicprefix,
+          topicsuffix,
+          clusterId,
+          tenantName,
+          clusterName,
+          envStatus,
+          otherParams,
+          defaultPartitions,
+          maxPartitions,
+          defaultReplicationFactor,
+          maxReplicationFactor,
+          showDeleteEnv,
+          totalNoPages,
+          allPageNos,
+        ]
     topicAdvancedConfigGetResponse:
-        type: object
-        title: TopicAdvancedConfigGetResponse
-        example:
-          CLEANUP_POLICY: cleanup.policy
-          COMPRESSION_TYPE: compression.type
-          DELETE_RETENTION_MS: delete.retention.ms
-          FILE_DELETE_DELAY_MS: file.delete.delay.ms
-          FLUSH_MESSAGES: flush.messages
-          FLUSH_MS: flush.ms
-          FOLLOWER_REPLICATION_THROTTLED_REPLICAS: follower.replication.throttled.replicas
-          INDEX_INTERVAL_BYTES: index.interval.bytes
-          LEADER_REPLICATION_THROTTLED_REPLICAS: leader.replication.throttled.replicas
-          MAX_COMPACTION_LAG_MS: max.compaction.lag.ms
-          MAX_MESSAGE_BYTES: max.message.bytes
-          MESSAGE_DOWNCONVERSION_ENABLE: message.downconversion.enable
-          MESSAGE_FORMAT_VERSION: message.format.version
-          MESSAGE_TIMESTAMP_DIFFERENCE_MAX_MS: message.timestamp.difference.max.ms
-          MESSAGE_TIMESTAMP_TYPE: message.timestamp.type
-          MIN_CLEANABLE_DIRTY_RATIO: min.cleanable.dirty.ratio
-          MIN_COMPACTION_LAG_MS: min.compaction.lag.ms
-          MIN_INSYNC_REPLICAS: min.insync.replicas
-          PREALLOCATE: preallocate
-          RETENTION_BYTES: retention.bytes
-          RETENTION_MS: retention.ms
-          SEGMENT_BYTES: segment.bytes
-          SEGMENT_INDEX_BYTES: segment.index.bytes
-          SEGMENT_JITTER_MS: segment.jitter.ms
-          SEGMENT_MS: segment.ms
-          UNCLEAN_LEADER_ELECTION_ENABLE: unclean.leader.election.enable
-        additionalProperties:
-          title: configuration key
-          description: "Options are defined in: https://kafka.apache.org/documentation/#topicconfigs"
-          example: cleanup.policy
-          type: string
+      type: object
+      title: TopicAdvancedConfigGetResponse
+      example:
+        CLEANUP_POLICY: cleanup.policy
+        COMPRESSION_TYPE: compression.type
+        DELETE_RETENTION_MS: delete.retention.ms
+        FILE_DELETE_DELAY_MS: file.delete.delay.ms
+        FLUSH_MESSAGES: flush.messages
+        FLUSH_MS: flush.ms
+        FOLLOWER_REPLICATION_THROTTLED_REPLICAS: follower.replication.throttled.replicas
+        INDEX_INTERVAL_BYTES: index.interval.bytes
+        LEADER_REPLICATION_THROTTLED_REPLICAS: leader.replication.throttled.replicas
+        MAX_COMPACTION_LAG_MS: max.compaction.lag.ms
+        MAX_MESSAGE_BYTES: max.message.bytes
+        MESSAGE_DOWNCONVERSION_ENABLE: message.downconversion.enable
+        MESSAGE_FORMAT_VERSION: message.format.version
+        MESSAGE_TIMESTAMP_DIFFERENCE_MAX_MS: message.timestamp.difference.max.ms
+        MESSAGE_TIMESTAMP_TYPE: message.timestamp.type
+        MIN_CLEANABLE_DIRTY_RATIO: min.cleanable.dirty.ratio
+        MIN_COMPACTION_LAG_MS: min.compaction.lag.ms
+        MIN_INSYNC_REPLICAS: min.insync.replicas
+        PREALLOCATE: preallocate
+        RETENTION_BYTES: retention.bytes
+        RETENTION_MS: retention.ms
+        SEGMENT_BYTES: segment.bytes
+        SEGMENT_INDEX_BYTES: segment.index.bytes
+        SEGMENT_JITTER_MS: segment.jitter.ms
+        SEGMENT_MS: segment.ms
+        UNCLEAN_LEADER_ELECTION_ENABLE: unclean.leader.election.enable
+      additionalProperties:
+        title: configuration key
+        description: "Options are defined in: https://kafka.apache.org/documentation/#topicconfigs"
+        example: cleanup.policy
+        type: string
     topicCreateRequest:
       title: TopicCreateRequest
       type: object
-      required: [
-        description,
-        environment,
-        replicationfactor,
-        teamname,
-        topicname,
-        topicpartitions,
-      ]
+      required:
+        [
+          description,
+          environment,
+          replicationfactor,
+          teamname,
+          topicname,
+          topicpartitions,
+        ]
       properties:
         topicname:
           type: string
