@@ -21,6 +21,8 @@ tags:
     description: Team operations
   - name: Environment
     description: Environment operations
+  - name: ACL
+    description: ACL operations
 paths:
   /user/authenticate:
     summary: User authentication
@@ -259,6 +261,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/EnvironmentGetClusterInfoResponse"
+  /createAcl:
+    post:
+      tags:
+        - ACL
+      operationId: createAclRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAclRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericApiResponse"
 components:
   schemas:
     CommonError:
@@ -817,3 +837,107 @@ components:
           title: Current page number
           type: string
           example: "1"
+    CreateAclRequest:
+      required:
+        - aclPatternType
+        - topicname
+        - environment
+        - teamname
+        - topictype
+        - aclIpPrincipleType
+      type: object
+      properties:
+        remarks:
+          pattern: ^$|^[a-zA-Z 0-9_.,-]{3,}$
+          type: string
+          example: "This is a comment on this request."
+        consumergroup:
+          pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
+          type: string
+          example: "Group-one"
+        acl_ip:
+          type: array
+          nullable: true
+          items:
+            type: string
+        acl_ssl:
+          type: array
+          items:
+            type: string
+          example: ["username"]
+        aclPatternType:
+          type: string
+          example: "LITERAL"
+        transactionalId:
+          pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
+          type: string
+        req_no:
+          type: integer
+          format: int32
+          example: 100
+        topicname:
+          type: string
+          example: "myTopic"
+        environment:
+          type: string
+          example: "1"
+        environmentName:
+          type: string
+          example: "DEV"
+        teamname:
+          type: string
+          example: "Ospo"
+        teamId:
+          type: integer
+          format: int32
+          example: 1
+        requestingteam:
+          type: integer
+          format: int32
+          example: 1
+        appname:
+          type: string
+          example: "App"
+        topictype:
+          type: string
+          enum: ["Producer", "Consumer"]
+          example: "Producer"
+        username:
+          type: string
+          example: "User"
+        requesttime:
+          type: string
+          format: date-time
+        requesttimestring:
+          type: string
+        aclstatus:
+          type: string
+        approver:
+          type: string
+        approvingtime:
+          type: string
+          format: date-time
+          example: "2018-03-20T09:12:28Z"
+        aclType:
+          type: string
+        aclIpPrincipleType:
+          type: string
+          enum: ["IP_ADDRESS", "PRINCIPAL", "USERNAME"]
+          example: "PRINCIPAL"
+        aclResourceType:
+          type: string
+        currentPage:
+          type: string
+          example: "1"
+        otherParams:
+          type: string
+        totalNoPages:
+          type: string
+          example: "10"
+        allPageNos:
+          type: array
+          items:
+            type: string
+          example: ["1", "2"]
+        approvingTeamDetails:
+          type: string
