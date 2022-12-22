@@ -6,17 +6,26 @@
 export type paths = {
   /** User can authenticate themselves with their username and password */
   "/user/authenticate": {
-    /** Exchange username and password to an authentication token.  The token can be later used as authentication mechanism for other API endpoints. */
+    /** Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints. */
     post: operations["userAuthentication"];
   };
   "/getTopics": {
     get: operations["topicsGet"];
+  };
+  "/createTopics": {
+    post: operations["topicCreate"];
+  };
+  "/getAdvancedTopicConfigs": {
+    get: operations["topicAdvancedConfigGet"];
   };
   "/getAllTeamsSUOnly": {
     get: operations["teamNamesGet"];
   };
   "/getEnvs": {
     get: operations["environmentsGet"];
+  };
+  "/getEnvsBaseClusterFilteredForTeam": {
+    get: operations["getEnvsBaseClusterFilteredForTeam"];
   };
 };
 
@@ -28,6 +37,89 @@ export type components = {
        * @description Description for user why a certain operation failed
        */
       message?: string;
+    };
+    /** GenericApiResponse */
+    GenericApiResponse: {
+      /** @enum {string} */
+      status?:
+        | "100 CONTINUE"
+        | "101 SWITCHING_PROTOCOLS"
+        | "102 PROCESSING"
+        | "103 CHECKPOINT"
+        | "200 OK"
+        | "201 CREATED"
+        | "202 ACCEPTED"
+        | "203 NON_AUTHORITATIVE_INFORMATION"
+        | "204 NO_CONTENT"
+        | "205 RESET_CONTENT"
+        | "206 PARTIAL_CONTENT"
+        | "207 MULTI_STATUS"
+        | "208 ALREADY_REPORTED"
+        | "226 IM_USED"
+        | "300 MULTIPLE_CHOICES"
+        | "301 MOVED_PERMANENTLY"
+        | "302 FOUND"
+        | "302 MOVED_TEMPORARILY"
+        | "303 SEE_OTHER"
+        | "304 NOT_MODIFIED"
+        | "305 USE_PROXY"
+        | "307 TEMPORARY_REDIRECT"
+        | "308 PERMANENT_REDIRECT"
+        | "400 BAD_REQUEST"
+        | "401 UNAUTHORIZED"
+        | "402 PAYMENT_REQUIRED"
+        | "403 FORBIDDEN"
+        | "404 NOT_FOUND"
+        | "405 METHOD_NOT_ALLOWED"
+        | "406 NOT_ACCEPTABLE"
+        | "407 PROXY_AUTHENTICATION_REQUIRED"
+        | "408 REQUEST_TIMEOUT"
+        | "409 CONFLICT"
+        | "410 GONE"
+        | "411 LENGTH_REQUIRED"
+        | "412 PRECONDITION_FAILED"
+        | "413 PAYLOAD_TOO_LARGE"
+        | "413 REQUEST_ENTITY_TOO_LARGE"
+        | "414 URI_TOO_LONG"
+        | "414 REQUEST_URI_TOO_LONG"
+        | "415 UNSUPPORTED_MEDIA_TYPE"
+        | "416 REQUESTED_RANGE_NOT_SATISFIABLE"
+        | "417 EXPECTATION_FAILED"
+        | "418 I_AM_A_TEAPOT"
+        | "419 INSUFFICIENT_SPACE_ON_RESOURCE"
+        | "420 METHOD_FAILURE"
+        | "421 DESTINATION_LOCKED"
+        | "422 UNPROCESSABLE_ENTITY"
+        | "423 LOCKED"
+        | "424 FAILED_DEPENDENCY"
+        | "425 TOO_EARLY"
+        | "426 UPGRADE_REQUIRED"
+        | "428 PRECONDITION_REQUIRED"
+        | "429 TOO_MANY_REQUESTS"
+        | "431 REQUEST_HEADER_FIELDS_TOO_LARGE"
+        | "451 UNAVAILABLE_FOR_LEGAL_REASONS"
+        | "500 INTERNAL_SERVER_ERROR"
+        | "501 NOT_IMPLEMENTED"
+        | "502 BAD_GATEWAY"
+        | "503 SERVICE_UNAVAILABLE"
+        | "504 GATEWAY_TIMEOUT"
+        | "505 HTTP_VERSION_NOT_SUPPORTED"
+        | "506 VARIANT_ALSO_NEGOTIATES"
+        | "507 INSUFFICIENT_STORAGE"
+        | "508 LOOP_DETECTED"
+        | "509 BANDWIDTH_LIMIT_EXCEEDED"
+        | "510 NOT_EXTENDED"
+        | "511 NETWORK_AUTHENTICATION_REQUIRED";
+      /**
+       * Timestamp
+       * Format: date-time
+       * @example 2018-11-13T20:20:39.000Z
+       */
+      timestamp?: string;
+      message?: string;
+      debugMessage?: string;
+      result?: string;
+      data?: { [key: string]: unknown };
     };
     UserAuthenticationRequest: {
       /**
@@ -277,11 +369,153 @@ export type components = {
        */
       allPageNos: string[];
     };
+    /**
+     * TopicAdvancedConfigGetResponse
+     * @example {
+     *   "CLEANUP_POLICY": "cleanup.policy",
+     *   "COMPRESSION_TYPE": "compression.type",
+     *   "DELETE_RETENTION_MS": "delete.retention.ms",
+     *   "FILE_DELETE_DELAY_MS": "file.delete.delay.ms",
+     *   "FLUSH_MESSAGES": "flush.messages",
+     *   "FLUSH_MS": "flush.ms",
+     *   "FOLLOWER_REPLICATION_THROTTLED_REPLICAS": "follower.replication.throttled.replicas",
+     *   "INDEX_INTERVAL_BYTES": "index.interval.bytes",
+     *   "LEADER_REPLICATION_THROTTLED_REPLICAS": "leader.replication.throttled.replicas",
+     *   "MAX_COMPACTION_LAG_MS": "max.compaction.lag.ms",
+     *   "MAX_MESSAGE_BYTES": "max.message.bytes",
+     *   "MESSAGE_DOWNCONVERSION_ENABLE": "message.downconversion.enable",
+     *   "MESSAGE_FORMAT_VERSION": "message.format.version",
+     *   "MESSAGE_TIMESTAMP_DIFFERENCE_MAX_MS": "message.timestamp.difference.max.ms",
+     *   "MESSAGE_TIMESTAMP_TYPE": "message.timestamp.type",
+     *   "MIN_CLEANABLE_DIRTY_RATIO": "min.cleanable.dirty.ratio",
+     *   "MIN_COMPACTION_LAG_MS": "min.compaction.lag.ms",
+     *   "MIN_INSYNC_REPLICAS": "min.insync.replicas",
+     *   "PREALLOCATE": "preallocate",
+     *   "RETENTION_BYTES": "retention.bytes",
+     *   "RETENTION_MS": "retention.ms",
+     *   "SEGMENT_BYTES": "segment.bytes",
+     *   "SEGMENT_INDEX_BYTES": "segment.index.bytes",
+     *   "SEGMENT_JITTER_MS": "segment.jitter.ms",
+     *   "SEGMENT_MS": "segment.ms",
+     *   "UNCLEAN_LEADER_ELECTION_ENABLE": "unclean.leader.election.enable"
+     * }
+     */
+    topicAdvancedConfigGetResponse: { [key: string]: string };
+    /** TopicCreateRequest */
+    topicCreateRequest: {
+      /**
+       * Topic name
+       * @description Kafka Topic name
+       * @example topicName
+       */
+      topicname: string;
+      environment: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      /**
+       * Team name
+       * @example Marketing
+       */
+      teamname: string;
+      /**
+       * Remarks
+       * @description Message for the approval
+       */
+      remarks?: string;
+      /** Description */
+      description: string;
+      /**
+       * Replication factor
+       * @example 1
+       */
+      replicationfactor: string;
+      /**
+       * Environment name
+       * @example DEV
+       */
+      environmentName?: string;
+      /**
+       * Topic identifier
+       * Format: int32
+       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
+       * @example 1010
+       */
+      topicid?: number;
+      advancedTopicConfigEntries?: {
+        configKey?: string;
+        configValue?: string;
+      }[];
+      /** App name */
+      appname?: string;
+      /**
+       * Topic type
+       * @enum {string}
+       */
+      topictype?: "Create" | "Update" | "Delete" | "Claim";
+      /** Requestor */
+      requestor?: string;
+      /**
+       * Request time
+       * Format: date-time
+       * @example 2018-11-13T20:20:39.000Z
+       */
+      requesttime?: string;
+      /** Request time string */
+      requesttimestring?: string;
+      /** Topic status */
+      topicstatus?: string;
+      /** Approver */
+      approver?: string;
+      /**
+       * Approving time
+       * Format: date-time
+       * @example 2018-11-13T20:20:39.000Z
+       */
+      approvingtime?: string;
+      /**
+       * Sequence
+       * @deprecated
+       */
+      sequence?: string;
+      /**
+       * Username
+       * @example johndoe
+       */
+      username?: string;
+      /**
+       * Total number of pages
+       * @example 1
+       */
+      totalNoPages?: string;
+      approvingTeamDetails?: string;
+      otherParams?: string;
+      /**
+       * Team identifier
+       * Format: int32
+       * @example 1010
+       */
+      teamId?: number;
+      /**
+       * All page numbers
+       * @description List of all page numbers
+       * @example [
+       *   "1"
+       * ]
+       */
+      allPageNos?: string[];
+      /** Possible teams */
+      possibleTeams?: string[];
+      /**
+       * Current page number
+       * @example 1
+       */
+      currentPage?: string;
+    };
   };
 };
 
 export type operations = {
-  /** Exchange username and password to an authentication token.  The token can be later used as authentication mechanism for other API endpoints. */
+  /** Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints. */
   userAuthentication: {
     responses: {
       /** Successful authentication */
@@ -324,6 +558,31 @@ export type operations = {
       };
     };
   };
+  topicCreate: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GenericApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["topicCreateRequest"];
+      };
+    };
+  };
+  topicAdvancedConfigGet: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["topicAdvancedConfigGetResponse"];
+        };
+      };
+    };
+  };
   teamNamesGet: {
     responses: {
       /** OK */
@@ -344,6 +603,16 @@ export type operations = {
       };
     };
   };
+  getEnvsBaseClusterFilteredForTeam: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Environment"][];
+        };
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -351,6 +620,9 @@ export type external = {};
 export enum ApiPaths {
   userAuthentication = "/user/authenticate",
   topicsGet = "/getTopics",
+  topicCreate = "/createTopics",
+  topicAdvancedConfigGet = "/getAdvancedTopicConfigs",
   teamNamesGet = "/getAllTeamsSUOnly",
   environmentsGet = "/getEnvs",
+  getEnvsBaseClusterFilteredForTeam = "/getEnvsBaseClusterFilteredForTeam",
 }
