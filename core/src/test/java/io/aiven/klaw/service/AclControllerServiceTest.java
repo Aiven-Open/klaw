@@ -592,7 +592,7 @@ public class AclControllerServiceTest {
 
     ApiResponse apiResponse =
         ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value)
+            .result(ApiResultStatus.FAILURE.value)
             .data(serviceAccountInfoMap)
             .build();
     Acl acl = utilMethods.getAllAcls().get(1);

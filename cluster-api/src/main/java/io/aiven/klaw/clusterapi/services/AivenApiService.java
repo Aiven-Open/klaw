@@ -20,6 +20,9 @@ import org.springframework.web.client.RestTemplate;
 public class AivenApiService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String PROJECT_NAME = "projectName";
+  public static final String SERVICE_NAME = "serviceName";
+  public static final String USERNAME = "username";
 
   private RestTemplate restTemplate;
 
@@ -55,7 +58,7 @@ public class AivenApiService {
     permissionsMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
 
     String uri =
-        addAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);
+        addAclsApiEndpoint.replace(PROJECT_NAME, projectName).replace(SERVICE_NAME, serviceName);
 
     HttpHeaders headers = getHttpHeaders();
     HttpEntity<Map<String, String>> request = new HttpEntity<>(permissionsMap, headers);
@@ -75,8 +78,7 @@ public class AivenApiService {
       aivenAclStructOptional.ifPresent(
           aivenAclStruct -> resultMap.put("aivenaclid", aivenAclStruct.getId()));
 
-      handleAclCreationResponse(
-          clusterAclRequest, resultMap, restTemplate, projectName, serviceName, response);
+      handleAclCreationResponse(clusterAclRequest, resultMap, projectName, serviceName, response);
 
       return resultMap;
     } catch (Exception e) {
@@ -89,7 +91,6 @@ public class AivenApiService {
   private void handleAclCreationResponse(
       ClusterAclRequest clusterAclRequest,
       Map<String, String> resultMap,
-      RestTemplate restTemplate,
       String projectName,
       String serviceName,
       ResponseEntity<String> response) {
@@ -123,8 +124,8 @@ public class AivenApiService {
     HttpHeaders headers = getHttpHeaders();
     String uri =
         addServiceAccountApiEndpoint
-            .replace("projectName", projectName)
-            .replace("serviceName", serviceName);
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName);
     Map<String, String> requestMap = new HashMap<>();
     requestMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
     HttpEntity<Map<String, String>> request = new HttpEntity<>(requestMap, headers);
@@ -154,8 +155,8 @@ public class AivenApiService {
     HttpHeaders headers = getHttpHeaders();
     String uri =
         getServiceAccountApiEndpoint
-            .replace("projectName", projectName)
-            .replace("serviceName", serviceName)
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName)
             .replace("userName", userName);
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
     try {
@@ -166,13 +167,14 @@ public class AivenApiService {
         Map<String, Map<String, String>> responseMap = response.getBody();
         if (responseMap != null
             && responseMap.containsKey("user")
-            && responseMap.get("user").containsKey("username")) {
+            && responseMap.get("user").containsKey(USERNAME)) {
           // Not sending the full service account details.
-          // Response only with username and password. Certificates are removed from the response.
+          // Response enriched only with username and password. Certificates are removed from the
+          // response.
           Map<String, String> responseInnerMap = new HashMap<>();
           Map<String, String> resultMap = responseMap.get("user");
           responseInnerMap.put("password", resultMap.get("password"));
-          responseInnerMap.put("username", resultMap.get("username"));
+          responseInnerMap.put(USERNAME, resultMap.get(USERNAME));
           return responseInnerMap;
         }
       }
@@ -192,8 +194,8 @@ public class AivenApiService {
 
       String uri =
           deleteAclsApiEndpoint
-              .replace("projectName", projectName)
-              .replace("serviceName", serviceName)
+              .replace(PROJECT_NAME, projectName)
+              .replace(SERVICE_NAME, serviceName)
               .replace("aclId", aclId);
 
       HttpHeaders headers = getHttpHeaders();
@@ -214,7 +216,7 @@ public class AivenApiService {
     Set<Map<String, String>> acls = new HashSet<>();
 
     String uri =
-        listAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);
+        listAclsApiEndpoint.replace(PROJECT_NAME, projectName).replace(SERVICE_NAME, serviceName);
 
     HttpHeaders headers = getHttpHeaders();
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
@@ -241,7 +243,7 @@ public class AivenApiService {
             case "topic":
               aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
               break;
-            case "username":
+            case USERNAME:
               aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
               break;
           }

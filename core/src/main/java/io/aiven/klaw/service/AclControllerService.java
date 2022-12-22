@@ -693,19 +693,8 @@ public class AclControllerService {
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
               .get(getEnvDetails(envId, tenantId).getClusterId());
-      ApiResponse aivenServiceAccountDetails =
-          clusterApiService.getAivenServiceAccountDetails(
-              kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
-      if (aivenServiceAccountDetails.getData() != null
-          && aivenServiceAccountDetails.getData() instanceof Map) {
-        @SuppressWarnings("unchecked")
-        Map<String, String> data = (Map<String, String>) aivenServiceAccountDetails.getData();
-        if (data.isEmpty()) {
-          return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
-        }
-      }
-
-      return aivenServiceAccountDetails;
+      return clusterApiService.getAivenServiceAccountDetails(
+          kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service account credentials {} ", e.toString());
     }

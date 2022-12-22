@@ -127,7 +127,7 @@ public class AclController {
         aclControllerService.getConsumerOffsets(envId, consumerGroupId, topicName), HttpStatus.OK);
   }
 
-  // getAivenServiceAccountDetails for a subscription
+  // Aiven api call - get ServiceAccountDetails for a subscription
   @RequestMapping(
       value = "/getAivenServiceAccount",
       method = RequestMethod.GET,

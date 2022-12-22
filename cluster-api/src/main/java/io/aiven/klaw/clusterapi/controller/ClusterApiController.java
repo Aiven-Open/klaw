@@ -107,7 +107,7 @@ public class ClusterApiController {
   }
 
   /*
-  Based on the project, service and username, service account details are retrieved.
+  Based on the project, service and username, service account details (in Aiven system) are retrieved.
    */
   @RequestMapping(
       value = "/serviceAccountDetails/project/{projectName}/service/{serviceName}/user/{userName}",
@@ -117,11 +117,18 @@ public class ClusterApiController {
       @PathVariable String projectName,
       @PathVariable String serviceName,
       @PathVariable String userName) {
-    ApiResponse apiResponse =
-        ApiResponse.builder()
-            .data(aivenApiService.getServiceAccountDetails(projectName, serviceName, userName))
-            .result(ApiResultStatus.SUCCESS.value)
-            .build();
+    Map<String, String> serviceDetailsMap =
+        aivenApiService.getServiceAccountDetails(projectName, serviceName, userName);
+    ApiResponse apiResponse;
+    if (serviceDetailsMap.isEmpty()) {
+      apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    } else {
+      apiResponse =
+          ApiResponse.builder()
+              .data(aivenApiService.getServiceAccountDetails(projectName, serviceName, userName))
+              .result(ApiResultStatus.SUCCESS.value)
+              .build();
+    }
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
   }
 

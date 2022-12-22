@@ -703,7 +703,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 {
                     swal({
                         title: "Failure:",
-                        text: "Could not retrieve service account details !!"
+                        text: "Could not retrieve service account details, or doesn't exist !!"
                     });
                 }else{
                     swal({

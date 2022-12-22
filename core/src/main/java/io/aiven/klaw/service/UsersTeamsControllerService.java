@@ -687,6 +687,9 @@ public class UsersTeamsControllerService {
     UserInfoModel userInfoModel = new UserInfoModel();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails);
     copyProperties(userInfo, userInfoModel);
+    userInfoModel.setTeam(
+        manageDatabase.getTeamNameFromTeamId(
+            commonUtilsService.getTenantId(userDetails), userInfo.getTeamId()));
     return userInfoModel;
   }
 
