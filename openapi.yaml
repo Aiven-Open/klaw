@@ -21,6 +21,8 @@ tags:
     description: Team operations
   - name: Environment
     description: Environment operations
+  - name: ACL
+    description: ACL (Access Control List) operations on topics and consumer groups
 paths:
   /user/authenticate:
     summary: User authentication
@@ -106,6 +108,56 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TopicsGetResponse"
+  /getTopicsOnly:
+    get:
+      operationId: topicsGetOnly
+      summary: Get topic names list
+      tags:
+        - Topic
+      parameters:
+        - name: isMyTeamTopics
+          in: query
+          required: false
+          description: Set to true to only get the topic names for topics belonging to the team of the current user
+          schema:
+            $ref: "#/components/schemas/TopicsGetOnlyResponse"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /getTopicTeam:
+    get:
+      operationId: topicGetTeam
+      summary: Get the name of the team a topic belongs to
+      tags:
+        - Topic
+      parameters:
+        - name: topicName
+          in: query
+          required: true
+          description: The name of the topic
+          schema:
+            type: string
+        - name: patternType
+          in: query
+          required: false
+          description: The pattern type of the topic
+          schema:
+            type: string
+            enum: ["LITERAL", "PREFIXED"]
+            default: "LITERAL"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicGetTeamResponse"
   /createTopics:
     post:
       operationId: topicCreate
@@ -125,7 +177,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericApiResponse"
-
   /getAdvancedTopicConfigs:
     get:
       operationId: topicAdvancedConfigGet
@@ -182,6 +233,52 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Environment"
+  /getClusterInfoFromEnv:
+    get:
+      operationId: environmentGetClusterInfo
+      summary: Get information about the cluster from the selected environment
+      tags:
+        - Environment
+      parameters:
+        - name: envSelected
+          in: query
+          required: true
+          description: The environment for which to get the cluster info
+          schema:
+            type: string
+          example: "2"
+        - name: envType
+          in: query
+          required: true
+          description: The type of  environment for which to get the cluster info
+          schema:
+            type: string
+            example: "kafka"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnvironmentGetClusterInfoResponse"
+  /createAcl:
+    post:
+      tags:
+        - ACL
+      operationId: createAclRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AclRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericApiResponse"
 components:
   schemas:
     CommonError:
@@ -318,6 +415,18 @@ components:
         type: array
         items:
           $ref: "#/components/schemas/TopicInfo"
+    TopicsGetOnlyResponse:
+      type: array
+      items:
+        type: string
+      example: ["myTopic", "otherTopic"]
+    TopicGetTeamResponse:
+      type: object
+      properties:
+        team:
+          type: string
+      required: [team]
+      example: { "team": "Team A" }
     TopicInfo:
       type: object
       additionalProperties: false
@@ -587,6 +696,14 @@ components:
         description: "Options are defined in: https://kafka.apache.org/documentation/#topicconfigs"
         example: cleanup.policy
         type: string
+    EnvironmentGetClusterInfoResponse:
+      type: object
+      properties:
+        clusterName:
+          type: string
+          enum: ["true", "false"]
+      required: [clusterName]
+      example: { "aivenCluster": "false" }
     topicCreateRequest:
       title: TopicCreateRequest
       type: object
@@ -720,3 +837,126 @@ components:
           title: Current page number
           type: string
           example: "1"
+    AclRequest:
+      required:
+        - aclPatternType
+        - topicname
+        - environment
+        - teamname
+        - topictype
+        - aclIpPrincipleType
+      type: object
+      properties:
+        remarks:
+          pattern: ^$|^[a-zA-Z 0-9_.,-]{3,}$
+          type: string
+          example: "Hello, thank you."
+          description: "A comment on the request for the approver."
+        consumergroup:
+          pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
+          type: string
+          example: "Group-one"
+          description: "This is mandatory if topictype is consumer"
+        acl_ip:
+          type: array
+          items:
+            type: string
+          example: ["35.239.43.144", "35.239.43.145"]
+        acl_ssl:
+          type: array
+          items:
+            type: string
+          example: ["username", "username-two"]
+        aclPatternType:
+          type: string
+          enum: ["LITERAL", "PREFIXED"]
+          example: "LITERAL"
+          description: "If topictype is consumer, this field can only be LITERAL. If topictype is producer, this field can be LITERAL or PREFIXED"
+        transactionalId:
+          pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
+          type: string
+          example: "id-123"
+          description: "Only available if aclPatternType is LITERAL"
+        req_no:
+          type: integer
+          format: int32
+          example: 100
+        topicname:
+          type: string
+          example: "myTopic"
+          description: "Only topics available in chosen environment are allowed"
+        environment:
+          type: string
+          example: "1"
+          description: "ID of environment"
+        environmentName:
+          type: string
+          example: "DEV"
+          description: "Name of environment"
+        teamname:
+          type: string
+          example: "Ospo"
+        teamId:
+          type: integer
+          format: int32
+          example: 1
+        requestingteam:
+          type: integer
+          format: int32
+          example: 1
+        appname:
+          type: string
+          example: "App"
+        topictype:
+          type: string
+          enum: ["Producer", "Consumer"]
+          example: "Producer"
+        username:
+          type: string
+          example: "User"
+        requesttime:
+          type: string
+          format: date-time
+          example: "2018-03-20T09:12:28Z"
+        requesttimestring:
+          type: string
+          pattern: "dd-MMM-yyyy HH:mm:ss"
+          example: "10-11-2020 10:45:30"
+        aclstatus:
+          type: string
+          enum: ["created", "approved", "denied", "deleted"]
+          example: "created"
+        approver:
+          type: string
+        approvingtime:
+          type: string
+          format: date-time
+          example: "2018-03-20T09:12:28Z"
+        aclType:
+          type: string
+          enum: ["Producer", "Consumer"]
+          example: "Producer"
+        aclIpPrincipleType:
+          type: string
+          enum: ["IP_ADDRESS", "PRINCIPAL", "USERNAME"]
+          example: "PRINCIPAL"
+        aclResourceType:
+          type: string
+          example: "TOPIC"
+          description: "Other possible values GROUP, CLUSTER"
+        currentPage:
+          type: string
+          example: "1"
+        otherParams:
+          type: string
+        totalNoPages:
+          type: string
+          example: "10"
+        allPageNos:
+          type: array
+          items:
+            type: string
+          example: ["1", "2"]
+        approvingTeamDetails:
+          type: string
+          example: "DevRel"
