@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import java.util.List;
 import lombok.Data;
 
@@ -26,4 +27,5 @@ public class AclInfo {
   private List<String> possibleTeams;
   private String currentPage;
   private boolean showDeleteAcl;
+  private KafkaFlavors kafkaFlavorType;
 }

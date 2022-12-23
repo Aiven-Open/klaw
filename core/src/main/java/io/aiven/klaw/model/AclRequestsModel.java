@@ -57,6 +57,8 @@ public class AclRequestsModel implements Serializable {
 
   private Integer requestingteam;
 
+  private String requestingTeamName;
+
   private String appname;
 
   private String username;

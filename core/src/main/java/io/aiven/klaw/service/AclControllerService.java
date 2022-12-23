@@ -233,6 +233,8 @@ public class AclControllerService {
         }
         aclRequestsModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
+        aclRequestsModel.setRequestingTeamName(
+            manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getRequestingteam()));
 
         // show approving info only before approvals
         if (!RequestStatus.APPROVED.value.equals(aclRequestsModel.getAclstatus())) {
@@ -430,6 +432,11 @@ public class AclControllerService {
     Acl acl =
         dbHandle.selectSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
+
+    // Verify if user raising request belongs to the same team as the Subscription owner team
+    if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userDetails))) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
 
     if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
       return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
@@ -662,5 +669,37 @@ public class AclControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public ApiResponse getAivenServiceAccountDetails(
+      String envId, String topicName, String serviceAccount, String aclReqNo) {
+    String loggedInUser = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(loggedInUser);
+    log.info(
+        "Retrieving service account details for topic {} serviceAccount {}",
+        topicName,
+        serviceAccount);
+    try {
+      HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+      Acl acl =
+          dbHandle.selectSyncAclsFromReqNo(
+              Integer.parseInt(aclReqNo), commonUtilsService.getTenantId(loggedInUser));
+
+      // Verify if loggedInUser belongs to the same team as the Subscription owner team
+      if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(loggedInUser))) {
+        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      }
+
+      // Get details from Cluster Api
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(getEnvDetails(envId, tenantId).getClusterId());
+      return clusterApiService.getAivenServiceAccountDetails(
+          kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
+    } catch (Exception e) {
+      log.error("Ignoring error while retrieving service account credentials {} ", e.toString());
+    }
+    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
   }
 }

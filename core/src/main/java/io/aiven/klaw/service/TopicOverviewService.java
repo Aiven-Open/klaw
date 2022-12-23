@@ -16,6 +16,7 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -408,7 +409,8 @@ public class TopicOverviewService {
     for (Acl aclSotItem : aclsFromSOT) {
       mp = new AclInfo();
       mp.setEnvironment(aclSotItem.getEnvironment());
-      mp.setEnvironmentName(getEnvDetails(aclSotItem.getEnvironment(), tenantId).getName());
+      Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
+      mp.setEnvironmentName(envDetails.getName());
       mp.setTopicname(aclSotItem.getTopicname());
       mp.setAcl_ip(aclSotItem.getAclip());
       mp.setAcl_ssl(aclSotItem.getAclssl());
@@ -418,6 +420,12 @@ public class TopicOverviewService {
       mp.setTopictype(aclSotItem.getTopictype());
       mp.setAclPatternType(aclSotItem.getAclPatternType());
       mp.setReq_no(aclSotItem.getReq_no() + "");
+      mp.setKafkaFlavorType(
+          KafkaFlavors.of(
+              manageDatabase
+                  .getClusters(KafkaClustersType.KAFKA, tenantId)
+                  .get(envDetails.getClusterId())
+                  .getKafkaFlavor()));
       if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam))
         mp.setShowDeleteAcl(true);
 

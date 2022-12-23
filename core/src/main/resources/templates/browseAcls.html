@@ -683,6 +683,21 @@
 																</a>
 															</div>
 
+															<div class="p-2 border-left" style="width:5%">
+																<a ng-show="aclRequest.showDeleteAcl == true && aclRequest.kafkaFlavorType == 'AIVEN_FOR_APACHE_KAFKA'" class="mytooltip" href="javascript:void(0)">
+																	<button  type="button" class="btn btn-instagram waves-effect btn-rounded waves-light"
+																			 ng-click="getAivenServiceAccount(aclRequest.environment, topicSelectedParam, aclRequest.acl_ssl, aclRequest.req_no)">
+																		<i class="fa fa-eye"></i>
+																	</button>
+																	<span class="tooltip-content5">
+																		<span class="tooltip-text3">
+																			<span class="tooltip-inner2">Click to view Service Account Password.
+																			</span>
+																		</span>
+																	</span>
+																</a>
+															</div>
+
 															<div class="p-2" style="width:5%">
 																<button ng-show="aclRequest.showDeleteAcl == true && dashboardDetails.requestItems=='Authorized'" ng-click="deleteAcls(aclRequest.req_no, aclRequest.teamname)" type="button" class="btn btn-sm btn-danger btn-circle"><i class="fa fa-times"></i>
 																</button>
@@ -1001,6 +1016,7 @@
 
 			</div>
 
+			<div id="successbar">{{ alert }}</div>
 			<div id="alertbar">{{ alertnote }}</div>
 		</div>
 		<footer class="footer">

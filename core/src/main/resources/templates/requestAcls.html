@@ -598,11 +598,11 @@
 									<div ng-if="aivenCluster=='true'" class="row">
 										<div class="col-md-12">
 											<div class="form-group">
-												<label class="control-label">Acl Username based</label>
+												<label class="control-label">Acl Service Account based</label>
 												<div class="demo-radio-button" ng-init="acl_ip_ssl='SSL'">
 													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="acl_ip_ssl"
 														   name="group1" type="radio" id="radio_2" value="SSL" checked/>
-													<label for="radio_2">Username</label>
+													<label for="radio_2">Service Account</label>
 												</div>
 
 											</div>
@@ -672,7 +672,7 @@
 									<div ng-if="aivenCluster=='true'" class="row">
 										<div class="col-md-6">
 											<div class="form-group">
-												<label>Username</label>
+												<label>Service Account</label>
 												<table>
 													<tr valign="top" ng-repeat="onessl in acl_ssl track by $index">
 														<td width="95%">
@@ -692,7 +692,8 @@
 													</tr>
 												</table>
 
-												<small class="form-control-feedback"> Ex: alice</small>
+												<small class="form-control-feedback"> Ex: alice</small><br>
+												<small class="form-control-feedback"> <b>Note:</b> Service Account is created in Aiven Console if it doesn't exist !</small>
 											</div>
 										</div>
 										<!--/span-->

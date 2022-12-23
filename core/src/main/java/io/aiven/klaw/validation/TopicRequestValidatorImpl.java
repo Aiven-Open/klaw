@@ -42,6 +42,14 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
+    // Verify if topic request type is Create
+    if (!TopicRequestTypes.Create.name().equals(topicRequestModel.getTopictype())) {
+      updateConstraint(
+          constraintValidatorContext,
+          "Failure. Invalid Topic request type. Possible Value : Create");
+      return false;
+    }
+
     // tenant filtering
     if (!commonUtilsService
         .getEnvsFromUserId(topicControllerService.getUserName())
@@ -74,6 +82,12 @@ public class TopicRequestValidatorImpl
       updateConstraint(
           constraintValidatorContext,
           "Failure. Tenant configuration in Server config is missing. Please configure.");
+      return false;
+    }
+
+    // Verify if topic requesting team exists
+    if (!commonUtilsService.verifyIfTeamExists(tenantId, topicRequestModel.getTeamname())) {
+      updateConstraint(constraintValidatorContext, "Failure. Team doesn't exist.");
       return false;
     }
 

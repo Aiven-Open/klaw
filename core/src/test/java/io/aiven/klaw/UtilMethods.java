@@ -259,6 +259,7 @@ public class UtilMethods {
     acl.setAclip("12.22.126.21");
     acl.setTopictype(AclType.PRODUCER.value);
     acl.setOtherParams("101");
+    acl.setTeamId(101);
     allTopicReqs.add(acl);
 
     return allTopicReqs;
@@ -321,7 +322,7 @@ public class UtilMethods {
     TopicRequestModel topicRequest = new TopicRequestModel();
     topicRequest.setTopicid(topicId);
     topicRequest.setTeamId(1001); // INFRATEAM
-    topicRequest.setTeamname("INFRAMTEAM");
+    topicRequest.setTeamname("INFRATEAM");
     topicRequest.setUsername("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);

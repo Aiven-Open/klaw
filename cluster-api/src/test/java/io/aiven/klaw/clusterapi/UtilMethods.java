@@ -1,5 +1,7 @@
 package io.aiven.klaw.clusterapi;
 
+import io.aiven.klaw.clusterapi.models.AivenAclResponse;
+import io.aiven.klaw.clusterapi.models.AivenAclStruct;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
@@ -131,5 +133,36 @@ public class UtilMethods {
         .aclNativeType(AclsNativeType.NATIVE.name())
         .aclIpPrincipleType(AclIPPrincipleType.PRINCIPAL.name())
         .build();
+  }
+
+  public ClusterAclRequest getAivenAclRequest(String aclType) {
+    return ClusterAclRequest.builder()
+        .env("localhost")
+        .topicName("testtopic")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .clusterName("clusterName")
+        .requestOperationType(RequestOperationType.CREATE)
+        .aclNativeType(AclsNativeType.AIVEN.name())
+        .aclIpPrincipleType(AclIPPrincipleType.PRINCIPAL.name())
+        .projectName("testproject")
+        .serviceName("testservice")
+        .username("testuser")
+        .permission("write")
+        .build();
+  }
+
+  public AivenAclResponse getAivenAclResponse() {
+    AivenAclResponse aivenAclResponse = new AivenAclResponse();
+    AivenAclStruct aivenAclStruct = new AivenAclStruct();
+    AivenAclStruct[] aivenAclStructs = new AivenAclStruct[1];
+    aivenAclStruct.setId("testid");
+    aivenAclStruct.setTopic("testtopic");
+    aivenAclStruct.setPermission("write");
+    aivenAclStruct.setUsername("testuser");
+    aivenAclStructs[0] = aivenAclStruct;
+    aivenAclResponse.setAcl(aivenAclStructs);
+    aivenAclResponse.setMessage("success");
+
+    return aivenAclResponse;
   }
 }

@@ -18,7 +18,9 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -225,5 +227,33 @@ public class AclControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$", hasSize(1)));
+  }
+
+  @Test
+  public void getAivenServiceAccount() throws Exception {
+    Map<String, String> serviceAccountInfoMap = new HashMap<>();
+    serviceAccountInfoMap.put("password", "password");
+    serviceAccountInfoMap.put("username", "username");
+
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value)
+            .data(serviceAccountInfoMap)
+            .build();
+    when(aclControllerService.getAivenServiceAccountDetails(
+            anyString(), anyString(), anyString(), anyString()))
+        .thenReturn(apiResponse);
+
+    mvcAcls
+        .perform(
+            MockMvcRequestBuilders.get("/getAivenServiceAccount")
+                .param("env", "DEV")
+                .param("topicName", "testtopic")
+                .param("userName", "kwuser")
+                .param("aclReqNo", "101")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data", aMapWithSize(2)));
   }
 }

@@ -20,6 +20,13 @@ import org.springframework.web.client.RestTemplate;
 public class AivenApiService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String PROJECT_NAME = "projectName";
+  public static final String SERVICE_NAME = "serviceName";
+  public static final String USERNAME = "username";
+
+  private RestTemplate restTemplate;
+
+  private HttpHeaders httpHeaders;
 
   @Value("${klaw.clusters.accesstoken:accesstoken}")
   private String clusterAccessToken;
@@ -33,6 +40,12 @@ public class AivenApiService {
   @Value("${klaw.clusters.deleteacls.api:api}")
   private String deleteAclsApiEndpoint;
 
+  @Value("${klaw.clusters.addserviceaccount.api:api}")
+  private String addServiceAccountApiEndpoint;
+
+  @Value("${klaw.clusters.getserviceaccount.api:api}")
+  private String getServiceAccountApiEndpoint;
+
   public Map<String, String> createAcls(ClusterAclRequest clusterAclRequest) {
     Map<String, String> resultMap = new HashMap<>();
     RestTemplate restTemplate = getRestTemplate();
@@ -45,7 +58,7 @@ public class AivenApiService {
     permissionsMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
 
     String uri =
-        addAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);
+        addAclsApiEndpoint.replace(PROJECT_NAME, projectName).replace(SERVICE_NAME, serviceName);
 
     HttpHeaders headers = getHttpHeaders();
     HttpEntity<Map<String, String>> request = new HttpEntity<>(permissionsMap, headers);
@@ -65,11 +78,7 @@ public class AivenApiService {
       aivenAclStructOptional.ifPresent(
           aivenAclStruct -> resultMap.put("aivenaclid", aivenAclStruct.getId()));
 
-      if (response.getStatusCode().equals(HttpStatus.OK)) {
-        resultMap.put("result", ApiResultStatus.SUCCESS.value);
-      } else {
-        resultMap.put("result", "Failure in adding acls" + response.getBody());
-      }
+      handleAclCreationResponse(clusterAclRequest, resultMap, projectName, serviceName, response);
 
       return resultMap;
     } catch (Exception e) {
@@ -77,6 +86,102 @@ public class AivenApiService {
       resultMap.put("result", "Failure in adding acls" + e.getMessage());
       return resultMap;
     }
+  }
+
+  private void handleAclCreationResponse(
+      ClusterAclRequest clusterAclRequest,
+      Map<String, String> resultMap,
+      String projectName,
+      String serviceName,
+      ResponseEntity<String> response) {
+    if (response.getStatusCode().equals(HttpStatus.OK)) {
+      log.info(
+          "Acl created. Project :{} Service : {} Topic : {}",
+          projectName,
+          serviceName,
+          clusterAclRequest.getTopicName());
+      if (getServiceAccountDetails(projectName, serviceName, clusterAclRequest.getUsername())
+          .isEmpty()) {
+        createServiceAccount(clusterAclRequest, resultMap);
+      } else {
+        resultMap.put("result", ApiResultStatus.SUCCESS.value);
+      }
+    } else {
+      log.error(
+          "Acl creation failure Project :{} Service : {} Topic : {}",
+          projectName,
+          serviceName,
+          clusterAclRequest.getTopicName());
+      resultMap.put("result", "Failure in adding acls" + response.getBody());
+    }
+  }
+
+  private void createServiceAccount(
+      ClusterAclRequest clusterAclRequest, Map<String, String> resultMap) {
+    log.debug("Creating service account clusterAclRequest :{}", clusterAclRequest);
+    String projectName = clusterAclRequest.getProjectName();
+    String serviceName = clusterAclRequest.getServiceName();
+    HttpHeaders headers = getHttpHeaders();
+    String uri =
+        addServiceAccountApiEndpoint
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName);
+    Map<String, String> requestMap = new HashMap<>();
+    requestMap.put(AclAttributes.USERNAME.value, clusterAclRequest.getUsername());
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(requestMap, headers);
+    try {
+      ResponseEntity<String> response = getRestTemplate().postForEntity(uri, request, String.class);
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        log.info("Service account created successfully {}", clusterAclRequest);
+        resultMap.put("result", ApiResultStatus.SUCCESS.value);
+      } else {
+        log.info("Service account creation failure {}", clusterAclRequest);
+        resultMap.put("result", "Failure in adding service account " + response.getBody());
+      }
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      resultMap.put("result", "Failure in adding acls" + e.getMessage());
+    }
+  }
+
+  // Get Aiven service account details
+  public Map<String, String> getServiceAccountDetails(
+      String projectName, String serviceName, String userName) {
+    log.debug(
+        "Service account for project :{} service : {} user : {}",
+        projectName,
+        serviceName,
+        userName);
+    HttpHeaders headers = getHttpHeaders();
+    String uri =
+        getServiceAccountApiEndpoint
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName)
+            .replace("userName", userName);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
+    try {
+      ResponseEntity<Map<String, Map<String, String>>> response =
+          getRestTemplate()
+              .exchange(uri, HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        Map<String, Map<String, String>> responseMap = response.getBody();
+        if (responseMap != null
+            && responseMap.containsKey("user")
+            && responseMap.get("user").containsKey(USERNAME)) {
+          // Not sending the full service account details.
+          // Response enriched only with username and password. Certificates are removed from the
+          // response.
+          Map<String, String> responseInnerMap = new HashMap<>();
+          Map<String, String> resultMap = responseMap.get("user");
+          responseInnerMap.put("password", resultMap.get("password"));
+          responseInnerMap.put(USERNAME, resultMap.get(USERNAME));
+          return responseInnerMap;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Exception:", e);
+    }
+    return new HashMap<>();
   }
 
   public String deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {
@@ -89,8 +194,8 @@ public class AivenApiService {
 
       String uri =
           deleteAclsApiEndpoint
-              .replace("projectName", projectName)
-              .replace("serviceName", serviceName)
+              .replace(PROJECT_NAME, projectName)
+              .replace(SERVICE_NAME, serviceName)
               .replace("aclId", aclId);
 
       HttpHeaders headers = getHttpHeaders();
@@ -111,7 +216,7 @@ public class AivenApiService {
     Set<Map<String, String>> acls = new HashSet<>();
 
     String uri =
-        listAclsApiEndpoint.replace("projectName", projectName).replace("serviceName", serviceName);
+        listAclsApiEndpoint.replace(PROJECT_NAME, projectName).replace(SERVICE_NAME, serviceName);
 
     HttpHeaders headers = getHttpHeaders();
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
@@ -138,7 +243,7 @@ public class AivenApiService {
             case "topic":
               aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
               break;
-            case "username":
+            case USERNAME:
               aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
               break;
           }
@@ -164,12 +269,18 @@ public class AivenApiService {
   }
 
   private HttpHeaders getHttpHeaders() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.set("Authorization", "Bearer " + clusterAccessToken);
-    return headers;
+    if (this.httpHeaders == null) {
+      this.httpHeaders = new HttpHeaders();
+      this.httpHeaders.set("Authorization", "Bearer " + clusterAccessToken);
+      return this.httpHeaders;
+    }
+    return this.httpHeaders;
   }
 
   private RestTemplate getRestTemplate() {
-    return new RestTemplate();
+    if (this.restTemplate == null) {
+      this.restTemplate = new RestTemplate();
+    }
+    return this.restTemplate;
   }
 }

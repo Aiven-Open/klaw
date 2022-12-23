@@ -433,6 +433,10 @@ public class CommonUtilsService {
     return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
   }
 
+  public boolean verifyIfTeamExists(int tenantId, String teamName) {
+    return manageDatabase.getTeamIdFromTeamName(tenantId, teamName) != null;
+  }
+
   public Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
