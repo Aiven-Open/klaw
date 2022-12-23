@@ -85,6 +85,12 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
+    // Verify if topic requesting team exists
+    if (!commonUtilsService.verifyIfTeamExists(tenantId, topicRequestModel.getTeamname())) {
+      updateConstraint(constraintValidatorContext, "Failure. Team doesn't exist.");
+      return false;
+    }
+
     // Check if topic is owned by a different team, applicable on update requests
     List<Topic> topics =
         topicControllerService.getTopicFromName(topicRequestModel.getTopicname(), tenantId);

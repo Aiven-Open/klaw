@@ -618,7 +618,7 @@ public class EnvsClustersTenantsControllerService {
           envActualList.stream()
               .anyMatch(
                   en ->
-                      Objects.equals(en.getName(), newEnv.getName())
+                      Objects.equals(en.getName().toLowerCase(), newEnv.getName().toLowerCase())
                           && Objects.equals(en.getType(), newEnv.getType())
                           && Objects.equals(en.getTenantId(), newEnv.getTenantId())
                           && Objects.equals(en.getEnvExists(), "true")); // 504 change

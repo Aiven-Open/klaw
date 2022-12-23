@@ -233,6 +233,8 @@ public class AclControllerService {
         }
         aclRequestsModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
+        aclRequestsModel.setRequestingTeamName(
+            manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getRequestingteam()));
 
         // show approving info only before approvals
         if (!RequestStatus.APPROVED.value.equals(aclRequestsModel.getAclstatus())) {

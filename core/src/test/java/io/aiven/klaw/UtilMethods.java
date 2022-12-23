@@ -322,7 +322,7 @@ public class UtilMethods {
     TopicRequestModel topicRequest = new TopicRequestModel();
     topicRequest.setTopicid(topicId);
     topicRequest.setTeamId(1001); // INFRATEAM
-    topicRequest.setTeamname("INFRAMTEAM");
+    topicRequest.setTeamname("INFRATEAM");
     topicRequest.setUsername("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);

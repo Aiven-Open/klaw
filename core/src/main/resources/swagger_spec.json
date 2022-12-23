@@ -3365,6 +3365,9 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "requestingTeamName" : {
+          "type" : "string"
+        },
         "appname" : {
           "type" : "string"
         },
@@ -4049,13 +4052,13 @@
     "Scales" : {
       "type" : "object",
       "properties" : {
-        "xaxes" : {
+        "yaxes" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/YAx"
           }
         },
-        "yaxes" : {
+        "xaxes" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/YAx"

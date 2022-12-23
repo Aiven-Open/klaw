@@ -317,7 +317,10 @@ public class InsertDataJdbc {
 
     // making unique teamnames per tenant
     if (teamRepo.findAllByTenantId(team.getTenantId()).stream()
-        .anyMatch(team1 -> Objects.equals(team1.getTeamname(), team.getTeamname()))) {
+        .anyMatch(
+            team1 ->
+                Objects.equals(
+                    team1.getTeamname().toLowerCase(), team.getTeamname().toLowerCase()))) {
       return "Failure. Team already exists";
     }
 
