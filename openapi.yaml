@@ -22,7 +22,7 @@ tags:
   - name: Environment
     description: Environment operations
   - name: ACL
-    description: ACL operations
+    description: ACL (Access Control List) operations on topics and consumer groups
 paths:
   /user/authenticate:
     summary: User authentication
@@ -861,7 +861,7 @@ components:
           type: array
           items:
             type: string
-          example: ["35.239.43.144"]
+          example: ["35.239.43.144", "35.239.43.145"]
         acl_ssl:
           type: array
           items:
@@ -871,7 +871,7 @@ components:
           type: string
           enum: ["LITERAL", "PREFIXED"]
           example: "LITERAL"
-          description: "If topictype is consumer, can only be LITERAL. If topictype is producer, can be LITERAL or PREFIXED"
+          description: "If topictype is consumer, this field can only be LITERAL. If topictype is producer, this field can be LITERAL or PREFIXED"
         transactionalId:
           pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
           type: string
@@ -924,7 +924,7 @@ components:
           example: "10-11-2020 10:45:30"
         aclstatus:
           type: string
-          enum: ["created", "approved", "denied"]
+          enum: ["created", "approved", "denied", "deleted"]
           example: "created"
         approver:
           type: string
@@ -942,6 +942,8 @@ components:
           example: "PRINCIPAL"
         aclResourceType:
           type: string
+          example: "TOPIC"
+          description: "Other possible values GROUP, CLUSTER"
         currentPage:
           type: string
           example: "1"
@@ -957,3 +959,4 @@ components:
           example: ["1", "2"]
         approvingTeamDetails:
           type: string
+          example: "DevRel"
