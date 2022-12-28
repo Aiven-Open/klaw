@@ -39,6 +39,12 @@ export type paths = {
   "/createAcl": {
     post: operations["createAclRequest"];
   };
+  "/getSchemaRegEnvs": {
+    get: operations["schemaRegEnvsGet"];
+  };
+  "/uploadSchema": {
+    post: operations["uploadSchema"];
+  };
 };
 
 export type components = {
@@ -669,6 +675,141 @@ export type components = {
       /** @example DevRel */
       approvingTeamDetails?: string;
     };
+    /** SchemaRequest */
+    SchemaRequest: {
+      /**
+       * req_no
+       * Format: int32
+       */
+      req_no?: number;
+      /**
+       * Topic name
+       * @description Kafka Topic name
+       * @example testtopic
+       */
+      topicname?: string;
+      /**
+       * environment
+       * @description Id of the environment
+       * @example 3
+       */
+      environment?: string;
+      /**
+       * environmentName
+       * @description Name of the environment
+       * @example DEV
+       */
+      environmentName?: string;
+      /**
+       * schemaversion
+       * @description SchemaRequest version
+       * @example 1.0
+       */
+      schemaversion?: string;
+      /**
+       * Team name
+       * @description Topic owner team name
+       * @example Infra
+       */
+      teamname?: string;
+      /**
+       * Team ID
+       * Format: int32
+       * @description Team identifier
+       * @example 1010
+       */
+      teamId?: number;
+      /**
+       * App name
+       * @example App
+       */
+      appname?: string;
+      /**
+       * schemafull
+       * @example {
+       *   "doc": "exampleTopic",
+       *   "fields": [
+       *     {
+       *       "default": "123456",
+       *        "doc": "test",
+       *       "name": "test",
+       *       "namespace": "test",
+       *       "type": "string"
+       *  }
+       *   ],
+       *   "name": "exampleTopic",
+       *   "namespace": "exampleTopic",
+       *   "type": "record"
+       * }
+       */
+      schemafull: string;
+      /**
+       * username
+       * @description Username
+       * @example jon.snow@klaw-project.io
+       */
+      username?: string;
+      /**
+       * Request time
+       * Format: date-time
+       * @example 2018-11-13T20:20:39.000Z
+       */
+      requesttime?: string;
+      /**
+       * Request time string representation
+       * @example 28-Dec-2022 14:54:57
+       */
+      requesttimestring?: string;
+      /**
+       * Topic status
+       * @example created
+       */
+      topicstatus?: string;
+      /**
+       * Type of request
+       * @example Create
+       */
+      requesttype?: string;
+      /**
+       * Remarks
+       * @description SchemaRequest specific comment
+       * @example Please approve
+       */
+      remarks?: string;
+      /** Approver */
+      approver?: string;
+      /**
+       * Approving time
+       * Format: date-time
+       * @example 2022-11-13T20:20:39.000Z
+       */
+      approvingtime?: string;
+      /**
+       * Approving team details
+       * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
+       */
+      approvingTeamDetails?: string;
+      /**
+       * Total number of pages
+       * @example 3
+       */
+      totalNoPages?: string;
+      /**
+       * All page numbers
+       * @description List of all page numbers
+       * @example [
+       *   "1",
+       *   "2",
+       *   "3"
+       * ]
+       */
+      allPageNos?: string[];
+      /**
+       * Current page number
+       * @example 2
+       */
+      currentPage?: string;
+    };
   };
 };
 
@@ -838,6 +979,31 @@ export type operations = {
       };
     };
   };
+  schemaRegEnvsGet: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["Environment"][];
+        };
+      };
+    };
+  };
+  uploadSchema: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["GenericApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SchemaRequest"];
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -854,4 +1020,6 @@ export enum ApiPaths {
   getEnvsBaseClusterFilteredForTeam = "/getEnvsBaseClusterFilteredForTeam",
   environmentGetClusterInfo = "/getClusterInfoFromEnv",
   createAclRequest = "/createAcl",
+  schemaRegEnvsGet = "/getSchemaRegEnvs",
+  uploadSchema = "/uploadSchema",
 }
