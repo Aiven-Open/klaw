@@ -1,5 +1,9 @@
-import { getTopicNames, getTopics } from "src/domain/topic/topic-api";
-import { Topic, TopicNames } from "src/domain/topic/topic-types";
+import {
+  getTopicNames,
+  getTopics,
+  getTopicTeam,
+} from "src/domain/topic/topic-api";
+import { Topic, TopicNames, TopicTeam } from "src/domain/topic/topic-types";
 
-export type { Topic, TopicNames };
-export { getTopics, getTopicNames };
+export type { Topic, TopicNames, TopicTeam };
+export { getTopics, getTopicNames, getTopicTeam };

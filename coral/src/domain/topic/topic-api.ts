@@ -50,4 +50,18 @@ const getTopicNames = async ({
   );
 };
 
-export { getTopics, getTopicNames };
+const getTopicTeam = async ({
+  topicName,
+  patternType = "LITERAL",
+}: {
+  topicName: string;
+  patternType?: "LITERAL" | "PREFIXED";
+}) => {
+  const params = { topicName, patternType };
+
+  return await api.get<KlawApiResponse<"topicGetTeam">>(
+    `/getTopicTeam?${new URLSearchParams(params)}`
+  );
+};
+
+export { getTopics, getTopicNames, getTopicTeam };

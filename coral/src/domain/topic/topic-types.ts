@@ -10,5 +10,6 @@ type TopicApiResponse = Paginated<Topic[]>;
 
 type Topic = KlawApiModel<"TopicInfo">;
 type TopicNames = KlawApiModel<"TopicsGetOnlyResponse">;
+type TopicTeam = KlawApiModel<"TopicGetTeamResponse">;
 
-export type { Topic, TopicNames, TopicApiResponse };
+export type { Topic, TopicNames, TopicTeam, TopicApiResponse };

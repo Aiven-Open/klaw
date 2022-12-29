@@ -1,6 +1,10 @@
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
-import { getTopicNames, getTopics } from "src/domain/topic/topic-api";
+import {
+  getTopicNames,
+  getTopics,
+  getTopicTeam,
+} from "src/domain/topic/topic-api";
 
 const topicsQuery = ({
   currentPage,
@@ -38,4 +42,18 @@ const topicNamesQuery = ({
   };
 };
 
-export { topicsQuery, topicNamesQuery };
+const topicTeamQuery = ({
+  topicName,
+  patternType = "LITERAL",
+}: {
+  topicName: string;
+  patternType?: "LITERAL" | "PREFIXED";
+}) => {
+  return {
+    queryKey: ["topicTeam", topicName, patternType],
+    queryFn: () => getTopicTeam({ topicName, patternType }),
+    keepPreviousData: true,
+  };
+};
+
+export { topicsQuery, topicNamesQuery, topicTeamQuery };
