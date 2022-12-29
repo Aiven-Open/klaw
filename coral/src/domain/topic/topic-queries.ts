@@ -1,8 +1,8 @@
-import { getTopics } from "src/domain/topic/topic-api";
-import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
+import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
+import { getTopicNames, getTopics } from "src/domain/topic/topic-api";
 
-export const topicsQuery = ({
+const topicsQuery = ({
   currentPage,
   environment,
   teamName,
@@ -23,3 +23,19 @@ export const topicsQuery = ({
       environment !== ENVIRONMENT_NOT_INITIALIZED,
   };
 };
+
+const topicNamesQuery = ({
+  onlyMyTeamTopics,
+}: Partial<{
+  onlyMyTeamTopics: boolean;
+}> = {}) => {
+  const isMyTeamTopics = onlyMyTeamTopics ?? false;
+
+  return {
+    queryKey: ["topicNames", isMyTeamTopics],
+    queryFn: () => getTopicNames({ onlyMyTeamTopics }),
+    keepPreviousData: true,
+  };
+};
+
+export { topicsQuery, topicNamesQuery };

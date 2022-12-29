@@ -1,5 +1,5 @@
-import { Topic } from "src/domain/topic/topic-types";
-import { getTopics } from "src/domain/topic/topic-api";
+import { getTopicNames, getTopics } from "src/domain/topic/topic-api";
+import { Topic, TopicNames } from "src/domain/topic/topic-types";
 
-export type { Topic };
-export { getTopics };
+export type { Topic, TopicNames };
+export { getTopics, getTopicNames };
