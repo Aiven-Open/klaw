@@ -433,10 +433,7 @@ export type components = {
      *   "aivenCluster": "false"
      * }
      */
-    EnvironmentGetClusterInfoResponse: {
-      /** @enum {string} */
-      clusterName: "true" | "false";
-    };
+    EnvironmentGetClusterInfoResponse: { [key: string]: "true" | "false" };
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
