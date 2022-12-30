@@ -1,4 +1,4 @@
-import { KlawApiModel } from "types/utils";
+import { KlawApiRequest } from "types/utils";
 
 // Several types are dependent on topictype when it is "Consumer":
 // - aclPatternType can only be "LITERAL"
@@ -7,7 +7,7 @@ import { KlawApiModel } from "types/utils";
 // So we define two types depending on the topictype
 
 type CreateAclRequestTopicTypeProducer = Pick<
-  KlawApiModel<"AclRequest">,
+  KlawApiRequest<"createAclRequest">,
   | "remarks"
   | "aclPatternType"
   | "topicname"
@@ -20,7 +20,7 @@ type CreateAclRequestTopicTypeProducer = Pick<
 > & { topictype: "Producer" };
 
 type CreateAclRequestTopicTypeConsumer = Pick<
-  KlawApiModel<"AclRequest">,
+  KlawApiRequest<"createAclRequest">,
   | "remarks"
   | "aclPatternType"
   | "topicname"
