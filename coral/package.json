@@ -31,7 +31,7 @@
     "**/*.css": [
       "prettier --check"
     ],
-    "*.yaml": [
+    "../openapi.yaml": [
       "prettier --check"
     ]
   },
