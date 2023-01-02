@@ -30,8 +30,8 @@ public class ResourceClientController {
   @Value("${resourceserver.api.url:testResourceUrl}")
   private String resourceUrl;
 
-  @Value("${spring.security.oauth2.client.provider.klaw.user-info-uri:testResourceUrl}")
-  private String userInfoUri;
+  @Value("${klaw.ad.username.attribute:preferred_username}")
+  private String preferredUsernameAttribute;
 
   private static final String authorizationRequestBaseUri = "oauth2/authorize-client";
   Map<String, String> oauth2AuthenticationUrls = new HashMap<>();
@@ -67,7 +67,7 @@ public class ResourceClientController {
       OAuth2AuthorizedClient client =
           authorizedClientService.loadAuthorizedClient(
               authentication.getAuthorizedClientRegistrationId(),
-              (String) defaultOAuth2User.getAttributes().get("preferred_username"));
+              (String) defaultOAuth2User.getAttributes().get(preferredUsernameAttribute));
       if (client == null) {
         return ("redirect:oauthLogin");
       }

@@ -524,6 +524,15 @@
 												</select>
 											</div>
 										</div>
+
+										<div class="col-md-6" ng-if="dashboardDetails.adAuthRoleEnabled=='true'">
+											<div class="form-group">
+												<label>Select a Role</label>
+												<select disabled class="form-control custom-select" ng-model="userDetails.role" ng-options="roleid as roleid for roleid in rolelist">
+
+												</select>
+											</div>
+										</div>
 										<!--/span-->
 									</div>
 

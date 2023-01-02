@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
@@ -27,7 +28,7 @@ public class MailUtils {
   @Value("${klaw.admin.mailid}")
   private String kwSaasAdminMailId;
 
-  @Value("${spring.security.oauth2.client.provider.klaw.user-name-attribute:preferred_username}")
+  @Value("${klaw.ad.username.attribute:preferred_username}")
   private String preferredUsername;
 
   private static final String SUPERUSER_MAILID_KEY = "klaw.superuser.mailid";
@@ -334,7 +335,7 @@ public class MailUtils {
         () -> {
           String emailId;
 
-          String emailIdTeam;
+          String emailIdTeam = null;
           try {
             if (registrationRequest) {
               emailId = otherMailId;
@@ -343,10 +344,10 @@ public class MailUtils {
             }
 
             try {
-              emailIdTeam = dbHandle.selectAllTeamsOfUsers(username, tenantId).get(0).getTeammail();
+              List<Team> allTeams = dbHandle.selectAllTeamsOfUsers(username, tenantId);
+              if (!allTeams.isEmpty()) emailIdTeam = allTeams.get(0).getTeammail();
             } catch (Exception e) {
-              log.error("Exception:", e);
-              emailIdTeam = null;
+              log.error("Exception :", e);
             }
 
             if (emailId != null) {

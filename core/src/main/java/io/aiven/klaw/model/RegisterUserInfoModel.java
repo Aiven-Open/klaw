@@ -24,6 +24,8 @@ public class RegisterUserInfoModel implements Serializable {
 
   private String team;
 
+  private Integer teamId;
+
   private String role;
 
   @Size(min = 5, max = 50, message = "Name must be above 4 characters")

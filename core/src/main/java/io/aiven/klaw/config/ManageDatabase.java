@@ -54,6 +54,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
 
+  private static Map<Integer, List<Team>> teamsPerTenant;
+
   // key is tenant id, value is list of envs
   private static Map<Integer, List<String>> envsOfTenantsMap;
 
@@ -201,6 +203,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       }
       UserInfo userExists = handleDbRequests.getUsersInfo(superAdminDefaultUserName);
       if (userExists == null) {
+        log.info("Adding user {}", superAdminDefaultUserName);
         handleDbRequests.addNewUser(
             defaultDataService.getUser(
                 KwConstants.DEFAULT_TENANT_ID,
@@ -343,6 +346,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return teamsAndAllowedEnvsPerTenant.get(tenantId).keySet();
   }
 
+  public Set<String> getTeamNamesForTenant(int tenantId) {
+    return teamsPerTenant.get(tenantId).stream().map(Team::getTeamname).collect(Collectors.toSet());
+  }
+
   public Integer getTeamIdFromTeamName(int tenantId, String teamName) {
     Optional<Map.Entry<Integer, String>> optionalTeam;
     if (teamName != null) {
@@ -431,10 +438,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   private void loadTenantTeamsForAllTenants() {
     teamsAndAllowedEnvsPerTenant = new HashMap<>();
     teamIdAndNamePerTenant = new HashMap<>();
+    teamsPerTenant = new HashMap<>();
     List<Team> allTeams;
 
     for (Integer tenantId : tenantMap.keySet()) {
       allTeams = handleDbRequests.selectAllTeams(tenantId);
+      teamsPerTenant.put(tenantId, allTeams);
       loadTenantTeamsForOneTenant(allTeams, tenantId);
     }
   }
@@ -442,6 +451,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
     if (allTeams == null) {
       allTeams = handleDbRequests.selectAllTeams(tenantId);
+      teamsPerTenant.put(tenantId, allTeams);
     }
 
     Map<Integer, List<String>> teamsAndAllowedEnvs = new HashMap<>();

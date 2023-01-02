@@ -310,6 +310,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.selectAllRegisterUsersInfo();
   }
 
+  @Override
+  public List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userName) {
+    return jdbcSelectHelper.selectAllStagingRegisterUsersInfo(userName);
+  }
+
   public UserInfo getUsersInfo(String username) {
     return jdbcSelectHelper.selectUserInfo(username);
   }

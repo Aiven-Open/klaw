@@ -679,6 +679,10 @@ public class SelectDataJdbc {
     return registerInfoRepo.findAllByStatus("PENDING");
   }
 
+  public List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userId) {
+    return registerInfoRepo.findAllByUsernameAndStatus(userId, "STAGING");
+  }
+
   public RegisterUserInfo selectRegisterUsersInfo(String username) {
     Optional<RegisterUserInfo> registerUserRec = registerInfoRepo.findById(username);
     return registerUserRec.orElse(null);
