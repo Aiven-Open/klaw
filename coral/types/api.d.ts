@@ -811,7 +811,7 @@ export type operations = {
         /** The environment for which to get the cluster info */
         envSelected: string;
         /** The type of  environment for which to get the cluster info */
-        envType: string;
+        envType: unknown;
       };
     };
     responses: {

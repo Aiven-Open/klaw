@@ -252,8 +252,10 @@ paths:
           required: true
           description: The type of  environment for which to get the cluster info
           schema:
-            type: string
-            example: "kafka"
+            type:
+              type: string
+              enum: ["kafka", "kafkaconnect", "schema"]
+              example: "kafka"
       responses:
         "200":
           description: OK
