@@ -1,3 +1,4 @@
+import { Environment } from "src/domain/environment/environment-types";
 import { KlawApiModel } from "types/utils";
 
 const defaultEnvironmentDTO: KlawApiModel<"Environment"> = {
@@ -28,4 +29,19 @@ function createMockEnvironmentDTO(
   return { ...defaultEnvironmentDTO, ...environment };
 }
 
-export { createMockEnvironmentDTO };
+const defaultEnvironment: Environment = {
+  name: "DEV",
+  id: "1",
+  defaultPartitions: undefined,
+  defaultReplicationFactor: undefined,
+  maxPartitions: undefined,
+  maxReplicationFactor: undefined,
+  topicNamePrefix: undefined,
+  topicNameSuffix: undefined,
+};
+
+function createEnvironment(environment: Partial<Environment>): Environment {
+  return { ...defaultEnvironment, ...environment };
+}
+
+export { createMockEnvironmentDTO, createEnvironment };

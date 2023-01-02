@@ -10,6 +10,7 @@ import { mockedEnvironmentResponse } from "src/domain/environment/environment-ap
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
+import { createEnvironment } from "src/domain/environment/environment-test-helper";
 
 const filterLabel = "Filter by environment";
 describe("SelectEnvironment.tsx", () => {
@@ -21,8 +22,14 @@ describe("SelectEnvironment.tsx", () => {
     server.close();
   });
 
-  const mockedEnvironmentDev: Environment = mockedEnvironmentResponse[0];
-  const mockedEnvironmentTst: Environment = mockedEnvironmentResponse[1];
+  const mockedEnvironmentDev: Environment = createEnvironment({
+    name: "DEV",
+    id: "1",
+  });
+  const mockedEnvironmentTst: Environment = createEnvironment({
+    name: "TST",
+    id: "2",
+  });
 
   describe("renders all necessary elements", () => {
     const mockedOnChange = jest.fn();

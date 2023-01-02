@@ -1,8 +1,14 @@
 import { KlawApiModel } from "types/utils";
 
 type Environment = {
-  name: string;
-  id: string;
+  name: KlawApiModel<"Environment">["name"];
+  id: KlawApiModel<"Environment">["id"];
+  defaultPartitions: number | undefined;
+  defaultReplicationFactor: number | undefined;
+  maxPartitions: number | undefined;
+  maxReplicationFactor: number | undefined;
+  topicNamePrefix: string | undefined;
+  topicNameSuffix: string | undefined;
 };
 type ClusterInfo = KlawApiModel<"environmentGetClusterInfoResponse">;
 

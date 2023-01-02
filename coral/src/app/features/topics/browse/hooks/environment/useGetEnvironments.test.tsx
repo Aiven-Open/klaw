@@ -81,8 +81,26 @@ describe("useGetEnvironments", () => {
       });
 
       expect(result.current.data).toEqual([
-        { name: "DEV", id: "1" },
-        { name: "TST", id: "2" },
+        {
+          name: "DEV",
+          id: "1",
+          maxPartitions: undefined,
+          maxReplicationFactor: undefined,
+          topicNamePrefix: undefined,
+          topicNameSuffix: undefined,
+          defaultPartitions: undefined,
+          defaultReplicationFactor: undefined,
+        },
+        {
+          name: "TST",
+          id: "2",
+          maxPartitions: undefined,
+          maxReplicationFactor: undefined,
+          topicNamePrefix: undefined,
+          topicNameSuffix: undefined,
+          defaultPartitions: undefined,
+          defaultReplicationFactor: undefined,
+        },
       ]);
     });
   });
