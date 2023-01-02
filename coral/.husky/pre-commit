@@ -6,17 +6,9 @@ OPENAPI_SPECS='openapi.yaml'
 GIT_ROOT=$(git rev-parse --show-toplevel)
 STAGED_FILES=$(git diff --staged --name-only)
 
-if echo "$STAGED_FILES" | grep -q "$FRONTEND_ROOT";
+if echo "$STAGED_FILES" | grep -q -e "$FRONTEND_ROOT" -e "$OPENAPI_SPECS";
 then
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" tsc
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" test --bail
 fi
-
-if echo "$STAGED_FILES" | grep "$OPENAPI_SPECS";
-then
-    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged --config="$GIT_ROOT"/"$FRONTEND_ROOT"/package.json --cwd="$GIT_ROOT"
-fi
-
-
-
