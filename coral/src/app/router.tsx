@@ -2,6 +2,7 @@ import { createBrowserRouter, RouteObject } from "react-router-dom";
 import NotFound from "src/app/pages/not-found";
 import Topics from "src/app/pages/topics";
 import { getRouterBasename } from "src/config";
+import RequestTopic from "src/app/pages/topics/request";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -12,6 +13,10 @@ const routes: Array<RouteObject> = [
   {
     path: "/topics",
     element: <Topics />,
+  },
+  {
+    path: "/topics/request",
+    element: <RequestTopic />,
   },
   {
     path: "*",

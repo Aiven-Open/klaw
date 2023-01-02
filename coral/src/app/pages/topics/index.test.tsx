@@ -1,7 +1,6 @@
 import {
   cleanup,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react/pure";
@@ -21,6 +20,12 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 const { location } = window;
+
+const mockedNavigator = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedNavigator,
+}));
 
 describe("Topics", () => {
   beforeAll(() => {
@@ -94,7 +99,7 @@ describe("Topics", () => {
 
       await userEvent.click(button);
 
-      await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
+      expect(mockedNavigator).toHaveBeenCalledWith("/topics/request");
     });
 
     it("navigates to '/requestTopics' when user presses Enter while 'Request new topic' button is focused", async () => {
@@ -106,7 +111,7 @@ describe("Topics", () => {
 
       await userEvent.keyboard("{Enter}");
 
-      await waitFor(() => expect(window.location.href).toBe("/requestTopics"));
+      expect(mockedNavigator).toHaveBeenCalledWith("/topics/request");
     });
 
     it("renders a select element to filter topics by Kafka environment", async () => {
