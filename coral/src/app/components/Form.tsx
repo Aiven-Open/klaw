@@ -19,6 +19,7 @@ import {
   UseFormProps as _UseFormProps,
   UseFormReturn,
 } from "react-hook-form";
+import type { FormState } from "react-hook-form";
 import { ZodSchema } from "zod";
 import get from "lodash/get";
 
@@ -153,14 +154,13 @@ function _NumberInput<T extends FieldValues>({
   formContext: form,
   ...props
 }: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
-  const { errors } = form.formState;
-  const error = get(errors, name)?.message as string;
+  const error = parseFieldErrorMessage(form.formState, name);
   return (
     <BaseInput
       {...props}
       type="number"
       {...form.register(name)}
-      valid={error ? false : undefined}
+      valid={error === undefined}
       error={error}
     />
   );
@@ -204,10 +204,25 @@ const SubmitButtonMemo = memo(
   }
 ) as typeof _SubmitButton;
 
-// eslint-disable-next-line import/group-exports
+// eslint-disable-next-line import/exports-last,import/group-exports
 export const SubmitButton = <T extends FieldValues>(
   props: ButtonProps
 ): React.ReactElement<ButtonProps> => {
   const ctx = useFormContext<T>();
   return <SubmitButtonMemo formContext={ctx} {...props} />;
 };
+
+function parseFieldErrorMessage<T extends FieldValues>(
+  { errors }: FormState<T>,
+  name: keyof T
+): undefined | string {
+  if (name in errors) {
+    const fieldError = errors.name;
+    if (fieldError !== undefined) {
+      if (typeof fieldError.message === "string") {
+        return fieldError.message;
+      }
+    }
+  }
+  return undefined;
+}
