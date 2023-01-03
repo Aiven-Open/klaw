@@ -19,8 +19,6 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
-const { location } = window;
-
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -31,25 +29,10 @@ describe("Topics", () => {
   beforeAll(() => {
     server.listen();
     mockIntersectionObserver();
-
-    // This TS disabling is because of "The operand of a 'delete' operator must be optional." TS error.
-    // But this delete is necessary to correctly mock window.location
-    // Without it, we get "Error: Not implemented: navigation (except hash changes)" in JSDOM
-    // Sources:
-    //  https://stackoverflow.com/questions/54090231/how-to-fix-error-not-implemented-navigation-except-hash-changes
-    //  https://remarkablemark.org/blog/2021/04/14/jest-mock-window-location-href/
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    delete window.location;
-    window.location = {
-      href: "/topics",
-    } as Location;
   });
 
   afterAll(() => {
     server.close();
-
-    window.location = location;
   });
 
   describe("renders default view with data from API", () => {
