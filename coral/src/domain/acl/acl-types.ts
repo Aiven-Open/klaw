@@ -4,12 +4,16 @@ import { KlawApiRequest } from "types/utils";
 // - aclPatternType can only be "LITERAL"
 // - consumergroup is required
 // - transactionalId becomes available
-// So we define two types depending on the topictype
+// So we define three types:
+// - BaseCreateAclRequest has all the properties for a create ACL request
+// - CreateAclRequestTopicTypeProducer makes the relevant property mandatory
+// - CreateAclRequestTopicTypeConsumer adds transactionalId and make relevant properties mandatory
 
-type CreateAclRequestTopicTypeProducer = Pick<
+type BaseCreateAclRequest = Pick<
   KlawApiRequest<"createAclRequest">,
   | "remarks"
   | "aclPatternType"
+  | "topictype"
   | "topicname"
   | "environment"
   | "teamname"
@@ -17,20 +21,14 @@ type CreateAclRequestTopicTypeProducer = Pick<
   | "consumergroup"
   | "acl_ssl"
   | "acl_ip"
-> & { topictype: "Producer" };
+>;
 
-type CreateAclRequestTopicTypeConsumer = Pick<
-  KlawApiRequest<"createAclRequest">,
-  | "remarks"
-  | "aclPatternType"
-  | "topicname"
-  | "environment"
-  | "teamname"
-  | "aclIpPrincipleType"
-  | "acl_ssl"
-  | "acl_ip"
-  | "transactionalId"
-> & {
+type CreateAclRequestTopicTypeProducer = BaseCreateAclRequest & {
+  topictype: "Producer";
+};
+
+type CreateAclRequestTopicTypeConsumer = BaseCreateAclRequest & {
+  transactionalId?: string;
   topictype: "Consumer";
   aclPatternType: "LITERAL";
   consumergroup: string;
