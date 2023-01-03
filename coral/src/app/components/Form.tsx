@@ -2,6 +2,8 @@ import {
   PrimaryButton,
   Input as BaseInput,
   InputProps as BaseInputProps,
+  Textarea as BaseTextarea,
+  TextareaProps as BaseTextareaProps,
   Option,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -182,6 +184,36 @@ export const NumberInput = <T extends FieldValues>(
 };
 
 NumberInput.Skeleton = BaseInput.Skeleton;
+
+//
+// <Textarea>
+//
+function _Textarea<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseTextareaProps & FormInputProps<T> & FormRegisterProps<T>) {
+  const error = parseFieldErrorMessage(form.formState, name);
+  return (
+    <BaseTextarea
+      {...props}
+      {...form.register(name)}
+      valid={error === undefined}
+      error={error}
+    />
+  );
+}
+const TextareaMemo = memo(_Textarea, () => false) as typeof _Textarea;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const Textarea = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseTextareaProps
+): React.ReactElement<FormInputProps<T> & BaseInputProps> => {
+  const ctx = useFormContext<T>();
+  return <TextareaMemo formContext={ctx} {...props} />;
+};
+
+Textarea.Skeleton = BaseTextarea.Skeleton;
 
 type ButtonProps = React.ComponentProps<typeof PrimaryButton>;
 
