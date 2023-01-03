@@ -19,6 +19,7 @@ import {
   UseFormProps as _UseFormProps,
   UseFormReturn,
 } from "react-hook-form";
+import type { FormState } from "react-hook-form";
 import { ZodSchema } from "zod";
 import get from "lodash/get";
 
@@ -145,6 +146,43 @@ export const TextInput = <T extends FieldValues>(
 
 TextInput.Skeleton = BaseInput.Skeleton;
 
+//
+// <NumberInput>
+//
+function _NumberInput<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
+  const error = parseFieldErrorMessage(form.formState, name);
+  return (
+    <BaseInput
+      {...props}
+      type="number"
+      {...form.register(name)}
+      valid={error === undefined}
+      error={error}
+    />
+  );
+}
+
+const NumberInputMemo = memo(
+  _NumberInput, // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_prev: FormRegisterProps, _next: FormRegisterProps) => {
+    return false;
+  }
+) as typeof _NumberInput;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const NumberInput = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseInputProps
+): React.ReactElement<FormInputProps<T> & BaseInputProps> => {
+  const ctx = useFormContext<T>();
+  return <NumberInputMemo formContext={ctx} {...props} />;
+};
+
+NumberInput.Skeleton = BaseInput.Skeleton;
+
 type ButtonProps = React.ComponentProps<typeof PrimaryButton>;
 
 function _SubmitButton<T extends FieldValues>({
@@ -166,10 +204,25 @@ const SubmitButtonMemo = memo(
   }
 ) as typeof _SubmitButton;
 
-// eslint-disable-next-line import/group-exports
+// eslint-disable-next-line import/exports-last,import/group-exports
 export const SubmitButton = <T extends FieldValues>(
   props: ButtonProps
 ): React.ReactElement<ButtonProps> => {
   const ctx = useFormContext<T>();
   return <SubmitButtonMemo formContext={ctx} {...props} />;
 };
+
+function parseFieldErrorMessage<T extends FieldValues>(
+  { errors }: FormState<T>,
+  name: keyof T
+): undefined | string {
+  if (name in errors) {
+    const fieldError = errors.name;
+    if (fieldError !== undefined) {
+      if (typeof fieldError.message === "string") {
+        return fieldError.message;
+      }
+    }
+  }
+  return undefined;
+}
