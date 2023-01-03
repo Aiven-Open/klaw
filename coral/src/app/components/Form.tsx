@@ -4,6 +4,8 @@ import {
   InputProps as BaseInputProps,
   Textarea as BaseTextarea,
   TextareaProps as BaseTextareaProps,
+  NativeSelect as BaseNativeSelect,
+  NativeSelectProps as BaseNativeSelectProps,
   Option,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -227,6 +229,49 @@ function _SubmitButton<T extends FieldValues>({
     <PrimaryButton {...props} type="submit" disabled={!isDirty || !isValid} />
   );
 }
+
+//
+// <NativeSelect>
+//
+function _NativeSelect<T extends FieldValues>({
+  name,
+  formContext: form,
+  onChange,
+  onBlur,
+  disabled,
+  ...props
+}: BaseNativeSelectProps & FormInputProps<T> & FormRegisterProps<T>) {
+  const { isSubmitting } = form.formState;
+  const error = parseFieldErrorMessage(form.formState, name);
+  return (
+    <BaseNativeSelect
+      {...props}
+      {...form.register(name, {
+        disabled: disabled || isSubmitting,
+        onChange,
+        onBlur,
+      })}
+      name={name}
+      valid={error === undefined}
+      error={error}
+    />
+  );
+}
+
+const NativeSelectMemo = memo(
+  _NativeSelect,
+  () => false
+) as typeof _NativeSelect;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const NativeSelect = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseNativeSelectProps
+): React.ReactElement<FormInputProps<T> & BaseNativeSelectProps> => {
+  const ctx = useFormContext<T>();
+  return <NativeSelectMemo formContext={ctx} {...props} />;
+};
+
+NativeSelect.Skeleton = BaseNativeSelect.Skeleton;
 
 const SubmitButtonMemo = memo(
   _SubmitButton,
