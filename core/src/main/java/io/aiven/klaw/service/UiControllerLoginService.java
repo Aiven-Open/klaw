@@ -16,6 +16,7 @@ import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
@@ -143,7 +144,9 @@ public class UiControllerLoginService {
   }
 
   public String checkAnonymousLogin(
-      String uri, OAuth2AuthenticationToken auth2AuthenticationToken) {
+      String uri,
+      OAuth2AuthenticationToken auth2AuthenticationToken,
+      HttpServletResponse response) {
     try {
       DefaultOAuth2User defaultOAuth2User =
           (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -177,6 +180,12 @@ public class UiControllerLoginService {
       }
     } catch (Exception e) {
       log.error("Exception:", e);
+      try {
+        // Display error to the user based on error code
+        response.sendRedirect("login?errorCode=AD101");
+      } catch (IOException ex) {
+        log.error("Ignore error from response redirect !");
+      }
       return oauthLoginPage;
     }
   }
@@ -282,7 +291,7 @@ public class UiControllerLoginService {
         return uri;
       } else {
         if (authentication instanceof OAuth2AuthenticationToken) {
-          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication);
+          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication, response);
         } else {
           return oauthLoginPage;
         }
