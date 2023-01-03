@@ -439,7 +439,7 @@ export type components = {
      *   "aivenCluster": "false"
      * }
      */
-    EnvironmentGetClusterInfoResponse: { [key: string]: "true" | "false" };
+    environmentGetClusterInfoResponse: { [key: string]: "true" | "false" };
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
@@ -550,7 +550,7 @@ export type components = {
        */
       currentPage?: string;
     };
-    AclRequest: {
+    aclRequest: {
       /**
        * @description A comment on the request for the approver.
        * @example Hello, thank you.
@@ -726,6 +726,7 @@ export type components = {
       appname?: string;
       /**
        * schemafull
+       * @description A valid json/avro schema
        * @example {
        *   "doc": "exampleTopic",
        *   "fields": [

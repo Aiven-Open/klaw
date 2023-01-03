@@ -735,7 +735,7 @@ components:
         description: "Options are defined in: https://kafka.apache.org/documentation/#topicconfigs"
         example: cleanup.policy
         type: string
-    EnvironmentGetClusterInfoResponse:
+    environmentGetClusterInfoResponse:
       type: object
       additionalProperties:
         type: string
@@ -874,7 +874,7 @@ components:
           title: Current page number
           type: string
           example: "1"
-    AclRequest:
+    aclRequest:
       required:
         - aclPatternType
         - topicname
@@ -1044,6 +1044,7 @@ components:
           type: string
         schemafull:
           title: schemafull
+          description: A valid json/avro schema
           maxLength: 2147483647
           minLength: 8
           type: string
