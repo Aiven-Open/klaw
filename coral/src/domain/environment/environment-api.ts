@@ -21,7 +21,7 @@ const getClusterInfo = async ({
 }): Promise<ClusterInfo> => {
   const params = new URLSearchParams({ envSelected, envType });
   return api.get<KlawApiResponse<"environmentGetClusterInfo">>(
-    `/getClusterInfoFromEnv?${new URLSearchParams(params)}`
+    `/getClusterInfoFromEnv?${params}`
   );
 };
 
