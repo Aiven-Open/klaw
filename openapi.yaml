@@ -17,15 +17,15 @@ tags:
   - name: User
     description: User API endpoints
   - name: Topic
-    description: Topic operations
+    description: Topic API endpoints
   - name: Team
-    description: Team operations
+    description: Team API endpoints
   - name: Environment
-    description: Environment operations
+    description: Environment API endpoints
   - name: ACL
-    description: ACL (Access Control List) operations on topics and consumer groups
+    description: ACL (Access Control List) API endpoints on topics and consumer groups
   - name: SchemaRequest
-    description: SchemaRequest operations
+    description: SchemaRequest API endpoints
 paths:
   /user/authenticate:
     summary: User authentication
