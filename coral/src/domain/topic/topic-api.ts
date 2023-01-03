@@ -37,29 +37,31 @@ const getTopics = async ({
     .then(transformTopicApiResponse);
 };
 
-const getTopicNames = async ({
-  onlyMyTeamTopics,
-}: Partial<{
+type GetTopicNamesArgs = Partial<{
   onlyMyTeamTopics: boolean;
-}> = {}) => {
+}>;
+
+const getTopicNames = async ({ onlyMyTeamTopics }: GetTopicNamesArgs = {}) => {
   const isMyTeamTopics = onlyMyTeamTopics ?? false;
   const params = { isMyTeamTopics: isMyTeamTopics.toString() };
 
-  return await api.get<KlawApiResponse<"topicsGetOnly">>(
+  return api.get<KlawApiResponse<"topicsGetOnly">>(
     `/getTopicsOnly?${new URLSearchParams(params)}`
   );
 };
 
+interface GetTopicTeamArgs {
+  topicName: string;
+  patternType?: "LITERAL" | "PREFIXED";
+}
+
 const getTopicTeam = async ({
   topicName,
   patternType = "LITERAL",
-}: {
-  topicName: string;
-  patternType?: "LITERAL" | "PREFIXED";
-}) => {
+}: GetTopicTeamArgs) => {
   const params = { topicName, patternType };
 
-  return await api.get<KlawApiResponse<"topicGetTeam">>(
+  return api.get<KlawApiResponse<"topicGetTeam">>(
     `/getTopicTeam?${new URLSearchParams(params)}`
   );
 };
