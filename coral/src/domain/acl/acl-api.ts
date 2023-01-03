@@ -3,14 +3,17 @@ import {
   CreateAclRequestTopicTypeConsumer,
 } from "src/domain/acl/acl-types";
 import api from "src/services/api";
-import { KlawApiResponse } from "types/utils";
+import { KlawApiRequest, KlawApiResponse } from "types/utils";
 
-const postAclRequest = (
+const createAclRequest = (
   aclParams:
     | CreateAclRequestTopicTypeProducer
     | CreateAclRequestTopicTypeConsumer
 ): Promise<KlawApiResponse<"createAclRequest">> => {
-  return api.post("/createAcl", aclParams);
+  return api.post<
+    KlawApiResponse<"createAclRequest">,
+    KlawApiRequest<"createAclRequest">
+  >("/createAcl", aclParams);
 };
 
-export { postAclRequest };
+export { createAclRequest };
