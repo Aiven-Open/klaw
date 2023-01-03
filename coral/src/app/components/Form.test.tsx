@@ -10,6 +10,7 @@ import {
   PasswordInput,
   SubmitErrorHandler,
   SubmitHandler,
+  Textarea,
   TextInput,
   useForm,
 } from "src/app/components/Form";
@@ -153,7 +154,7 @@ describe("Form", () => {
     });
   });
 
-  describe.only("<NumberInput>", () => {
+  describe("<NumberInput>", () => {
     const schema = z.object({
       name: z.preprocess(
         (value) => parseInt(z.string().parse(value), 10),
@@ -193,6 +194,39 @@ describe("Form", () => {
 
       await user.clear(screen.getByLabelText("NumberInput"));
       await user.type(screen.getByLabelText("NumberInput"), "20{tab}");
+      await waitFor(() => expect(screen.queryByText(errorMsg)).toBeNull());
+    });
+  });
+
+  describe("<Textarea>", () => {
+    const schema = z.object({ name: z.string().max(255) });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <Textarea<Schema> name="name" labelText="Textarea" />,
+        { schema }
+      );
+    });
+
+    it("should render label", () => {
+      expect(screen.queryByLabelText("Textarea")).toBeVisible();
+    });
+
+    it("should sync value to form state", async () => {
+      await typeText("value{tab}");
+      await submit();
+      assertSubmitted({ name: "value" });
+    });
+
+    it("should render errors after blur event and hide them after valid input", async () => {
+      const errorMsg = "String must contain at most 255 character(s)";
+      const tooLongValue = "a".repeat(256);
+      await typeText(`${tooLongValue}{tab}`);
+      await waitFor(() => expect(screen.queryByText(errorMsg)).toBeVisible());
+
+      const okValue = "a".repeat(255);
+      await typeText(`${okValue}{tab}`);
       await waitFor(() => expect(screen.queryByText(errorMsg)).toBeNull());
     });
   });
