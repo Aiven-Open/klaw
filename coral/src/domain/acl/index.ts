@@ -1,10 +1,10 @@
-import { createAclRequest } from "src/domain/acl/acl-queries";
+import { createAclRequestMutation } from "src/domain/acl/acl-mutations";
 import {
   CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
 } from "src/domain/acl/acl-types";
 
-export { createAclRequest };
+export { createAclRequestMutation };
 export type {
   CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,

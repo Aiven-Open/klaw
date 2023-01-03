@@ -1,17 +1,17 @@
-import { postAclRequest } from "src/domain/acl/acl-api";
+import { createAclRequest } from "src/domain/acl/acl-api";
 import {
   CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
 } from "src/domain/acl/acl-types";
 
-const createAclRequest = (
+const createAclRequestMutation = (
   aclParams:
     | CreateAclRequestTopicTypeProducer
     | CreateAclRequestTopicTypeConsumer
 ) => {
   return {
-    mutationFn: () => postAclRequest(aclParams),
+    mutationFn: () => createAclRequest(aclParams),
   };
 };
 
-export { createAclRequest };
+export { createAclRequestMutation };
