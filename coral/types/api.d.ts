@@ -12,6 +12,12 @@ export type paths = {
   "/getTopics": {
     get: operations["topicsGet"];
   };
+  "/getTopicsOnly": {
+    get: operations["topicsGetOnly"];
+  };
+  "/getTopicTeam": {
+    get: operations["topicGetTeam"];
+  };
   "/createTopics": {
     post: operations["topicCreate"];
   };
@@ -26,6 +32,12 @@ export type paths = {
   };
   "/getEnvsBaseClusterFilteredForTeam": {
     get: operations["getEnvsBaseClusterFilteredForTeam"];
+  };
+  "/getClusterInfoFromEnv": {
+    get: operations["environmentGetClusterInfo"];
+  };
+  "/createAcl": {
+    post: operations["createAclRequest"];
   };
 };
 
@@ -149,6 +161,21 @@ export type components = {
       tokenType: "JWT";
     };
     TopicsGetResponse: components["schemas"]["TopicInfo"][][];
+    /**
+     * @example [
+     *   "myTopic",
+     *   "otherTopic"
+     * ]
+     */
+    TopicsGetOnlyResponse: string[];
+    /**
+     * @example {
+     *   "team": "Team A"
+     * }
+     */
+    TopicGetTeamResponse: {
+      team: string;
+    };
     TopicInfo: {
       /**
        * Topic identifier
@@ -401,6 +428,12 @@ export type components = {
      * }
      */
     topicAdvancedConfigGetResponse: { [key: string]: string };
+    /**
+     * @example {
+     *   "aivenCluster": "false"
+     * }
+     */
+    EnvironmentGetClusterInfoResponse: { [key: string]: "true" | "false" };
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
@@ -511,6 +544,131 @@ export type components = {
        */
       currentPage?: string;
     };
+    AclRequest: {
+      /**
+       * @description A comment on the request for the approver.
+       * @example Hello, thank you.
+       */
+      remarks?: string;
+      /**
+       * @description This is mandatory if topictype is consumer
+       * @example Group-one
+       */
+      consumergroup?: string;
+      /**
+       * @example [
+       *   "35.239.43.144",
+       *   "35.239.43.145"
+       * ]
+       */
+      acl_ip?: string[];
+      /**
+       * @example [
+       *   "username",
+       *   "username-two"
+       * ]
+       */
+      acl_ssl?: string[];
+      /**
+       * @description If topictype is consumer, this field can only be LITERAL. If topictype is producer, this field can be LITERAL or PREFIXED
+       * @example LITERAL
+       * @enum {string}
+       */
+      aclPatternType: "LITERAL" | "PREFIXED";
+      /**
+       * @description Only available if aclPatternType is LITERAL
+       * @example id-123
+       */
+      transactionalId?: string;
+      /**
+       * Format: int32
+       * @example 100
+       */
+      req_no?: number;
+      /**
+       * @description Only topics available in chosen environment are allowed
+       * @example myTopic
+       */
+      topicname: string;
+      /**
+       * @description ID of environment
+       * @example 1
+       */
+      environment: string;
+      /**
+       * @description Name of environment
+       * @example DEV
+       */
+      environmentName?: string;
+      /** @example Ospo */
+      teamname: string;
+      /**
+       * Format: int32
+       * @example 1
+       */
+      teamId?: number;
+      /**
+       * Format: int32
+       * @example 1
+       */
+      requestingteam?: number;
+      /** @example App */
+      appname?: string;
+      /**
+       * @example Producer
+       * @enum {string}
+       */
+      topictype: "Producer" | "Consumer";
+      /** @example User */
+      username?: string;
+      /**
+       * Format: date-time
+       * @example 2018-03-20T09:12:28Z
+       */
+      requesttime?: string;
+      /** @example 10-11-2020 10:45:30 */
+      requesttimestring?: string;
+      /**
+       * @example created
+       * @enum {string}
+       */
+      aclstatus?: "created" | "approved" | "denied" | "deleted";
+      approver?: string;
+      /**
+       * Format: date-time
+       * @example 2018-03-20T09:12:28Z
+       */
+      approvingtime?: string;
+      /**
+       * @example Producer
+       * @enum {string}
+       */
+      aclType?: "Producer" | "Consumer";
+      /**
+       * @example PRINCIPAL
+       * @enum {string}
+       */
+      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+      /**
+       * @description Other possible values GROUP, CLUSTER
+       * @example TOPIC
+       */
+      aclResourceType?: string;
+      /** @example 1 */
+      currentPage?: string;
+      otherParams?: string;
+      /** @example 10 */
+      totalNoPages?: string;
+      /**
+       * @example [
+       *   "1",
+       *   "2"
+       * ]
+       */
+      allPageNos?: string[];
+      /** @example DevRel */
+      approvingTeamDetails?: string;
+    };
   };
 };
 
@@ -554,6 +712,40 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["TopicsGetResponse"];
+        };
+      };
+    };
+  };
+  topicsGetOnly: {
+    parameters: {
+      query: {
+        /** Set to true to only get the topic names for topics belonging to the team of the current user */
+        isMyTeamTopics?: components["schemas"]["TopicsGetOnlyResponse"];
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  topicGetTeam: {
+    parameters: {
+      query: {
+        /** The name of the topic */
+        topicName: string;
+        /** The pattern type of the topic */
+        patternType?: "LITERAL" | "PREFIXED";
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicGetTeamResponse"];
         };
       };
     };
@@ -613,6 +805,39 @@ export type operations = {
       };
     };
   };
+  environmentGetClusterInfo: {
+    parameters: {
+      query: {
+        /** The environment for which to get the cluster info */
+        envSelected: string;
+        /** The type of  environment for which to get the cluster info */
+        envType: unknown;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvironmentGetClusterInfoResponse"];
+        };
+      };
+    };
+  };
+  createAclRequest: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GenericApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AclRequest"];
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -620,9 +845,13 @@ export type external = {};
 export enum ApiPaths {
   userAuthentication = "/user/authenticate",
   topicsGet = "/getTopics",
+  topicsGetOnly = "/getTopicsOnly",
+  topicGetTeam = "/getTopicTeam",
   topicCreate = "/createTopics",
   topicAdvancedConfigGet = "/getAdvancedTopicConfigs",
   teamNamesGet = "/getAllTeamsSUOnly",
   environmentsGet = "/getEnvs",
   getEnvsBaseClusterFilteredForTeam = "/getEnvsBaseClusterFilteredForTeam",
+  environmentGetClusterInfo = "/getClusterInfoFromEnv",
+  createAclRequest = "/createAcl",
 }

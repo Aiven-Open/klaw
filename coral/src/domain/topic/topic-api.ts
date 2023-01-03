@@ -1,9 +1,9 @@
-import api from "src/services/api";
-import { TopicApiResponse } from "src/domain/topic/topic-types";
-import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
+import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
+import api from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
 const getTopics = async ({
@@ -37,4 +37,33 @@ const getTopics = async ({
     .then(transformTopicApiResponse);
 };
 
-export { getTopics };
+type GetTopicNamesArgs = Partial<{
+  onlyMyTeamTopics: boolean;
+}>;
+
+const getTopicNames = async ({ onlyMyTeamTopics }: GetTopicNamesArgs = {}) => {
+  const isMyTeamTopics = onlyMyTeamTopics ?? false;
+  const params = { isMyTeamTopics: isMyTeamTopics.toString() };
+
+  return api.get<KlawApiResponse<"topicsGetOnly">>(
+    `/getTopicsOnly?${new URLSearchParams(params)}`
+  );
+};
+
+interface GetTopicTeamArgs {
+  topicName: string;
+  patternType?: "LITERAL" | "PREFIXED";
+}
+
+const getTopicTeam = async ({
+  topicName,
+  patternType = "LITERAL",
+}: GetTopicTeamArgs) => {
+  const params = { topicName, patternType };
+
+  return api.get<KlawApiResponse<"topicGetTeam">>(
+    `/getTopicTeam?${new URLSearchParams(params)}`
+  );
+};
+
+export { getTopics, getTopicNames, getTopicTeam };
