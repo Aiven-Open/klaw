@@ -145,6 +145,44 @@ export const TextInput = <T extends FieldValues>(
 
 TextInput.Skeleton = BaseInput.Skeleton;
 
+//
+// <NumberInput>
+//
+function _NumberInput<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseInputProps & FormInputProps<T> & FormRegisterProps<T>) {
+  const { errors } = form.formState;
+  const error = get(errors, name)?.message as string;
+  return (
+    <BaseInput
+      {...props}
+      type="number"
+      {...form.register(name)}
+      valid={error ? false : undefined}
+      error={error}
+    />
+  );
+}
+
+const NumberInputMemo = memo(
+  _NumberInput, // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_prev: FormRegisterProps, _next: FormRegisterProps) => {
+    return false;
+  }
+) as typeof _NumberInput;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const NumberInput = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseInputProps
+): React.ReactElement<FormInputProps<T> & BaseInputProps> => {
+  const ctx = useFormContext<T>();
+  return <NumberInputMemo formContext={ctx} {...props} />;
+};
+
+NumberInput.Skeleton = BaseInput.Skeleton;
+
 type ButtonProps = React.ComponentProps<typeof PrimaryButton>;
 
 function _SubmitButton<T extends FieldValues>({

@@ -6,6 +6,7 @@ import React from "react";
 import type { DeepPartial, FieldValues } from "react-hook-form";
 import {
   Form,
+  NumberInput,
   PasswordInput,
   SubmitErrorHandler,
   SubmitHandler,
@@ -82,7 +83,7 @@ describe("Form", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
   };
 
-  const assertSubmitted = (data: Record<string, string>) => {
+  const assertSubmitted = (data: Record<string, string | number>) => {
     expect(onSubmit).toHaveBeenCalledWith(data, expect.anything());
   };
 
@@ -149,6 +150,50 @@ describe("Form", () => {
 
       await typeText("abc{tab}");
       await waitFor(() => expect(screen.queryByText("error")).toBeNull());
+    });
+  });
+
+  describe.only("<NumberInput>", () => {
+    const schema = z.object({
+      name: z.preprocess(
+        (value) => parseInt(z.string().parse(value), 10),
+        z.number().max(100)
+      ),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <NumberInput<Schema> name="name" labelText="NumberInput" />,
+        { schema }
+      );
+    });
+
+    it('renders <input type="number"', () => {
+      const input = screen.getByLabelText("NumberInput");
+      expect(input).toBeVisible();
+      expect(input.getAttribute("type")).toBe("number");
+      screen.getByRole("spinbutton", { name: "NumberInput" });
+    });
+
+    it("should sync value to form state", async () => {
+      await user.type(
+        screen.getByRole("spinbutton", { name: "NumberInput" }),
+        "20"
+      );
+      await submit();
+      assertSubmitted({ name: 20 });
+    });
+
+    it("should render errors after blur event and hide them after valid input", async () => {
+      const errorMsg = "Number must be less than or equal to 100";
+      await user.clear(screen.getByLabelText("NumberInput"));
+      await user.type(screen.getByLabelText("NumberInput"), "200{tab}");
+      await waitFor(() => expect(screen.queryByText(errorMsg)).toBeVisible());
+
+      await user.clear(screen.getByLabelText("NumberInput"));
+      await user.type(screen.getByLabelText("NumberInput"), "20{tab}");
+      await waitFor(() => expect(screen.queryByText(errorMsg)).toBeNull());
     });
   });
 
