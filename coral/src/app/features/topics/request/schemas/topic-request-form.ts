@@ -125,48 +125,35 @@ const useExtendedFormValidationAndTriggers = (
     form.getValues([
       "environment",
       "topicname",
-      "replicationfactor",
       "topicpartitions",
+      "replicationfactor",
     ]);
   useEffect(() => {
     // When environment is updated, update partitions and replication factors to default is exists
     if (isInitialized && environment !== undefined) {
-      const {
-        maxPartitions,
-        maxReplicationFactor,
-        defaultPartitions,
-        defaultReplicationFactor,
-      } = environment;
+      const nextTopicPartitions = findNextValue({
+        currentValue: topicPartitions,
+        environmentMax: environment.maxPartitions,
+        environmentDefault: environment.defaultPartitions,
+        fallbackDefault: 2,
+      });
+      form.setValue("topicpartitions", nextTopicPartitions.toString(), {
+        shouldValidate: false,
+      });
 
-      if (isNumber(defaultPartitions)) {
-        form.setValue("topicpartitions", defaultPartitions.toString(), {
+      const nextReplicationFactorValue = findNextValue({
+        currentValue: replicationFactor,
+        environmentMax: environment.maxReplicationFactor,
+        environmentDefault: environment.defaultReplicationFactor,
+        fallbackDefault: 1,
+      });
+      form.setValue(
+        "replicationfactor",
+        nextReplicationFactorValue.toString(),
+        {
           shouldValidate: false,
-        });
-      } else if (
-        isNumber(maxPartitions) &&
-        parseInt(topicPartitions, 10) > maxPartitions
-      ) {
-        form.setValue("topicpartitions", maxPartitions.toString(), {
-          shouldValidate: false,
-        });
-      }
-
-      if (isNumber(defaultReplicationFactor)) {
-        form.setValue(
-          "replicationfactor",
-          defaultReplicationFactor.toString(),
-          {
-            shouldValidate: false,
-          }
-        );
-      } else if (
-        isNumber(maxReplicationFactor) &&
-        parseInt(replicationFactor, 10) > maxReplicationFactor
-      ) {
-        form.setValue("replicationfactor", maxReplicationFactor.toString(), {
-          shouldValidate: false,
-        });
-      }
+        }
+      );
 
       if (topicName.length > 0) {
         form.trigger(["replicationfactor", "topicpartitions", "topicname"]);
@@ -192,6 +179,34 @@ const useExtendedFormValidationAndTriggers = (
     }
   }, [topicName]);
 };
+
+type FoobarArgs = {
+  currentValue: string;
+  environmentMax: z.infer<typeof environmentField>["maxPartitions"];
+  environmentDefault: z.infer<typeof environmentField>["defaultPartitions"];
+  fallbackDefault: number;
+};
+function findNextValue({
+  currentValue,
+  environmentMax,
+  environmentDefault,
+  fallbackDefault,
+}: FoobarArgs): number {
+  if (isNumber(environmentDefault)) {
+    return environmentDefault;
+  }
+
+  const currentValueAsNumber = parseInt(currentValue, 10);
+  // parseInt("", 10) = NaN
+  if (!Number.isNaN(currentValueAsNumber)) {
+    if (isNumber(environmentMax) && currentValueAsNumber > environmentMax) {
+      return environmentMax;
+    } else {
+      return currentValueAsNumber;
+    }
+  }
+  return fallbackDefault;
+}
 
 export type Schema = z.infer<typeof formSchema>;
 export default formSchema;
