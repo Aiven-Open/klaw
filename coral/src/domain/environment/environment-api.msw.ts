@@ -4,6 +4,7 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { getHTTPBaseAPIUrl } from "src/config";
 import { KlawApiResponse } from "types/utils";
 import { operations } from "types/api";
+import { ClusterInfo } from "src/domain/environment/environment-types";
 
 type MockApi<T extends keyof operations> = {
   mswInstance: MswInstance;
@@ -41,8 +42,38 @@ const mockedEnvironmentResponse = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
   createMockEnvironmentDTO({ name: "TST", id: "2" }),
 ];
+
+interface GetClusterInfoFromEnvRequestArgs {
+  mswInstance: MswInstance;
+  response: KlawApiResponse<"environmentGetClusterInfo">;
+  envSelected: string;
+  envType: string;
+}
+
+function mockGetClusterInfoFromEnv({
+  mswInstance,
+  response,
+  envSelected,
+  envType,
+}: GetClusterInfoFromEnvRequestArgs) {
+  const params = new URLSearchParams({ envSelected, envType });
+  const url = `${getHTTPBaseAPIUrl()}/getClusterInfoFromEnv?${params}`;
+
+  mswInstance.use(
+    rest.get(url, async (req, res, ctx) => {
+      return res(ctx.status(200), ctx.json(response));
+    })
+  );
+}
+
+const mockedResponseGetClusterInfoFromEnv: ClusterInfo = {
+  aiven: "true",
+};
+
 export {
   mockGetEnvironments,
   mockGetEnvironmentsForTeam,
   mockedEnvironmentResponse,
+  mockGetClusterInfoFromEnv,
+  mockedResponseGetClusterInfoFromEnv,
 };
