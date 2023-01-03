@@ -10,7 +10,6 @@ import com.nimbusds.jose.shaded.json.JSONArray;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.RegisterUserInfoModel;
@@ -25,6 +24,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -147,54 +147,65 @@ public class UiControllerLoginService {
       String uri,
       OAuth2AuthenticationToken auth2AuthenticationToken,
       HttpServletResponse response) {
-    try {
-      DefaultOAuth2User defaultOAuth2User =
-          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      // Extract attributes for user verification/registration
-      String userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
+    DefaultOAuth2User defaultOAuth2User =
+        (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    // Extract attributes for user verification/registration
+    String userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
 
-      // if user does not exist in db
-      if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
-        String roleFromClaim = null, teamFromClaim = null;
-        if (enableUserAuthorizationFromAD) {
-          roleFromClaim = getRoleFromTokenAuthorities(defaultOAuth2User, userName);
-          Set<String> klawTeams = manageDatabase.getTeamNamesForTenant(DEFAULT_TENANT_ID);
-
-          //          roleFromClaim =
-          //              extractClaimsFromAD(defaultOAuth2User, userName, rolesAttribute,
-          // klawRoles);
-          teamFromClaim =
-              extractClaimsFromAD(defaultOAuth2User, userName, teamsAttribute, klawTeams);
+    // if user does not exist in db
+    if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
+      String roleFromClaim = null, teamFromClaim = null;
+      Pair<Boolean, String> roleValidationPair = Pair.of(null, null);
+      Pair<Boolean, String> teamValidationPair = Pair.of(null, null);
+      // If enableUserAuthorizationFromAD true, retrieve roles and teams from AD token and match
+      // with klaw metadata
+      if (enableUserAuthorizationFromAD) {
+        Set<String> klawRoles =
+            manageDatabase.getRolesPermissionsPerTenant(DEFAULT_TENANT_ID).keySet();
+        Set<String> klawTeams = manageDatabase.getTeamNamesForTenant(DEFAULT_TENANT_ID);
+        roleValidationPair =
+            getRoleFromTokenAuthorities(defaultOAuth2User, userName, klawRoles, response);
+        if (!roleValidationPair.getLeft()) {
+          try {
+            // Display error to the user based on error code
+            response.sendRedirect("login?errorCode=" + roleValidationPair.getRight());
+          } catch (IOException ex) {
+            log.error("Ignore error from response redirect !");
+          }
+          return oauthLoginPage;
         }
-        return registerStagingUser(
-            userName,
-            defaultOAuth2User.getAttributes().get(nameAttribute),
-            roleFromClaim,
-            teamFromClaim);
+        teamValidationPair =
+            extractClaimsFromAD(defaultOAuth2User, userName, "teams", klawTeams, response);
+        if (!teamValidationPair.getLeft()) {
+          try {
+            // Display error to the user based on error code
+            response.sendRedirect("login?errorCode=" + teamValidationPair.getRight());
+          } catch (IOException ex) {
+            log.error("Ignore error from response redirect !");
+          }
+          return oauthLoginPage;
+        }
       }
+      return registerStagingUser(
+          userName,
+          defaultOAuth2User.getAttributes().get(nameAttribute),
+          roleFromClaim,
+          teamFromClaim);
+    }
 
-      if (auth2AuthenticationToken.isAuthenticated()) {
-        return uri;
-      } else {
-        return oauthLoginPage;
-      }
-    } catch (Exception e) {
-      log.error("Exception:", e);
-      try {
-        // Display error to the user based on error code
-        response.sendRedirect("login?errorCode=AD101");
-      } catch (IOException ex) {
-        log.error("Ignore error from response redirect !");
-      }
+    if (auth2AuthenticationToken.isAuthenticated()) {
+      return uri;
+    } else {
       return oauthLoginPage;
     }
   }
 
-  private String getRoleFromTokenAuthorities(DefaultOAuth2User defaultOAuth2User, String userName)
-      throws KlawException {
-
+  private Pair<Boolean, String> getRoleFromTokenAuthorities(
+      DefaultOAuth2User defaultOAuth2User,
+      String userName,
+      Set<String> klawRoles,
+      HttpServletResponse response) {
     String roleFromClaim = null;
-    Set<String> klawRoles = manageDatabase.getRolesPermissionsPerTenant(DEFAULT_TENANT_ID).keySet();
     Collection<? extends GrantedAuthority> authorities = defaultOAuth2User.getAuthorities();
     int claimMatched = 0;
     for (GrantedAuthority authority : authorities) {
@@ -205,33 +216,26 @@ public class UiControllerLoginService {
       }
     }
 
-    if (claimMatched == 0) {
-      String errorTxt =
-          "No roles in AD are configured for the user. Please make sure a matching"
-              + " role is configured in AD. Denying login !! : ";
-      log.error(errorTxt + "{}", userName);
-      throw new KlawException(errorTxt + userName);
-    } else if (claimMatched > 1) {
-      String errorTxt =
-          "Multiple roles in AD are configured for the user. Please make sure only one matching"
-              + " role is configured in AD. Denying login !! : ";
-      log.error(errorTxt + "{}", userName);
-      throw new KlawException(errorTxt + userName);
+    Pair<Boolean, String> claimValidationPair =
+        validateClaims(claimMatched, userName, "roles", response);
+    if (claimValidationPair.getLeft()) // valid claim
+    return Pair.of(Boolean.TRUE, roleFromClaim);
+    else {
+      return claimValidationPair;
     }
-    return roleFromClaim;
+    //    return roleFromClaim;
   }
 
-  private String extractClaimsFromAD(
+  private Pair<Boolean, String> extractClaimsFromAD(
       DefaultOAuth2User defaultOAuth2User,
       String userName,
       String claimKey,
-      Set<String> klawRolesTeams)
-      throws KlawException {
+      Set<String> klawRolesTeams,
+      HttpServletResponse response) {
     String claimValue = null;
     int claimMatched = 0;
     try {
       JSONArray jsonArray = (JSONArray) defaultOAuth2User.getAttributes().get(claimKey);
-
       for (Object jsonObject : jsonArray) {
         String jsonElement = jsonObject.toString();
         if (klawRolesTeams.stream().anyMatch(jsonElement::equalsIgnoreCase)) {
@@ -244,23 +248,44 @@ public class UiControllerLoginService {
     }
     // Multiple roles/teams matched : Klaw roles/teams against AD roles/teams. throw exception -
     // deny login
+    Pair<Boolean, String> claimValidationPair =
+        validateClaims(claimMatched, userName, claimKey, response);
+    if (claimValidationPair.getLeft()) {
+      return Pair.of(Boolean.TRUE, claimValue);
+    } else {
+      return claimValidationPair;
+    }
+  }
+
+  // if no claims matched, or mulitple claims matched, deny login to the user. claimType can be
+  // 'roles' or 'teams'.
+  private Pair<Boolean, String> validateClaims(
+      int claimMatched, String userName, String claimType, HttpServletResponse response) {
+    String errorCode = "";
+    Boolean validClaim = Boolean.TRUE;
     if (claimMatched == 0) {
       String errorTxt =
-          "No teams in AD are configured for the user. Please make sure a matching"
-              + " team is configured in AD. Denying login !! : ";
+          "No matching "
+              + claimType
+              + "s are configured. Please make sure only one matching "
+              + claimType
+              + " from Klaw is configured in AD. Denying login !! : ";
       log.error(errorTxt + "{}", userName);
-      throw new KlawException(errorTxt + userName);
+      if (claimType.equals("roles")) errorCode = "AD101";
+      else errorCode = "AD102";
+      validClaim = Boolean.FALSE;
     } else if (claimMatched > 1) {
       String errorTxt =
           "Multiple "
-              + claimKey
-              + " in AD are configured for the user. Please make sure only one matching"
-              + " role or team is configured in AD. Denying login !! : ";
+              + claimType
+              + "s in AD are configured for the user. Please make sure only one matching"
+              + " role is configured in AD. Denying login !! : ";
       log.error(errorTxt + "{}", userName);
-      throw new KlawException(errorTxt + userName);
+      if (claimType.equals("roles")) errorCode = "AD103";
+      else errorCode = "AD104";
+      validClaim = Boolean.FALSE;
     }
-
-    return claimValue;
+    return Pair.of(validClaim, errorCode);
   }
 
   public String checkAuth(
