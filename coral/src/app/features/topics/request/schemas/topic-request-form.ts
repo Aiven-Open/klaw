@@ -8,9 +8,9 @@ const topicNameField = z
   .min(1, { message: "Topic name can not be empty" })
   .max(255, { message: "Topic name length can not exceed 255 characters" });
 
-const topicpartitionsField = z.string();
+const topicPartitionsField = z.string();
 
-const replicationfactorField = z.string();
+const replicationFactorField = z.string();
 
 const environmentField = z.object({
   name: z.string(),
@@ -26,8 +26,8 @@ const environmentField = z.object({
 const formSchema = z
   .object({
     environment: environmentField,
-    topicpartitions: topicpartitionsField,
-    replicationfactor: replicationfactorField,
+    topicpartitions: topicPartitionsField,
+    replicationfactor: replicationFactorField,
     topicname: topicNameField,
     remarks: z.string(),
     description: z.string(),
@@ -39,7 +39,7 @@ const formSchema = z
 function validateReplicationFactor(
   val: {
     environment: z.infer<typeof environmentField>;
-    replicationfactor: z.infer<typeof replicationfactorField>;
+    replicationfactor: z.infer<typeof replicationFactorField>;
   },
   ctx: RefinementCtx
 ) {
@@ -65,7 +65,7 @@ function validateReplicationFactor(
 function validateTopicPartitions(
   val: {
     environment: z.infer<typeof environmentField>;
-    topicpartitions: z.infer<typeof topicpartitionsField>;
+    topicpartitions: z.infer<typeof topicPartitionsField>;
   },
   ctx: RefinementCtx
 ) {
