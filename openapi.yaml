@@ -831,6 +831,7 @@ components:
         approver:
           title: Approver
           type: string
+          example: jon.snow@klaw-project.io
         approvingtime:
           title: Approving time
           type: string
@@ -842,8 +843,8 @@ components:
           deprecated: true
         username:
           title: Username
-          example: johndoe
           type: string
+          example: jon.snow@klaw-project.io
         totalNoPages:
           title: Total number of pages
           type: string
