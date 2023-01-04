@@ -47,10 +47,13 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 public class CommonUtilsService {
 
   @Value("${klaw.enable.authorization.ad:false}")
-  private String enableUserAuthorizationFromAD;
+  private boolean enableUserAuthorizationFromAD;
 
-  @Value("${spring.security.oauth2.client.provider.klaw.user-name-attribute:preferred_username}")
-  private String preferredUsername;
+  @Value("${klaw.ad.username.attribute:preferred_username}")
+  private String preferredUsernameAttribute;
+
+  @Value("${klaw.ad.email.attribute:email}")
+  private String emailAttribute;
 
   @Value("${klaw.saas.ssl.clientcerts.location:./tmp/}")
   private String clientCertsLocation;
@@ -61,13 +64,7 @@ public class CommonUtilsService {
   @Value("${klaw.saas.ssl.clusterapi.truststore.pwd:./tmp}")
   private String trustStorePwd;
 
-  @Value("${klaw.metadata.kafkamode:false}")
-  private boolean metadataKafkaMode;
-
   @Autowired ManageDatabase manageDatabase;
-
-  //    @Autowired(required = false)
-  //    KafkaProducerConsumerService kafkaProducerConsumerService;
 
   private static HttpComponentsClientHttpRequestFactory requestFactory =
       ClusterApiService.requestFactory;
@@ -88,15 +85,11 @@ public class CommonUtilsService {
   }
 
   String getAuthority(Object principal) {
-    if ("true".equals(enableUserAuthorizationFromAD)) {
+    if (enableUserAuthorizationFromAD) {
       if (principal instanceof DefaultOAuth2User) {
         DefaultOAuth2User defaultOAuth2User = (DefaultOAuth2User) principal;
-        Object[] authorities = defaultOAuth2User.getAuthorities().toArray();
-        if (authorities.length > 0) {
-          return (String) authorities[0];
-        } else {
-          return "";
-        }
+        String userName = extractUserNameFromOAuthUser(defaultOAuth2User);
+        return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getRole();
       } else if (principal instanceof String) {
         return manageDatabase.getHandleDbRequests().getUsersInfo((String) principal).getRole();
       } else if (principal instanceof UserDetails) {
@@ -107,7 +100,6 @@ public class CommonUtilsService {
         } else {
           return "";
         }
-
       } else {
         return "";
       }
@@ -121,12 +113,25 @@ public class CommonUtilsService {
     }
   }
 
+  public String extractUserNameFromOAuthUser(DefaultOAuth2User defaultOAuth2User) {
+    String preferredUsername =
+        (String) defaultOAuth2User.getAttributes().get(preferredUsernameAttribute);
+    String email = (String) defaultOAuth2User.getAttributes().get(emailAttribute);
+    String userName = null;
+    if (preferredUsername != null) {
+      userName = preferredUsername;
+    } else if (email != null) {
+      userName = email;
+    }
+    return userName;
+  }
+
   public String getUserName(Object principal) {
-    return UtilMethods.getUserName(principal, preferredUsername);
+    return UtilMethods.getUserName(principal, preferredUsernameAttribute);
   }
 
   public String getCurrentUserName() {
-    return UtilMethods.getUserName(preferredUsername);
+    return UtilMethods.getUserName(preferredUsernameAttribute);
   }
 
   public boolean isNotAuthorizedUser(Object principal, PermissionType permissionType) {

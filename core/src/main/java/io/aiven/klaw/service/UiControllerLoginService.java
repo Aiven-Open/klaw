@@ -1,25 +1,35 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.*;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.nimbusds.jose.shaded.json.JSONArray;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.RegisterUserInfoModel;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -35,6 +45,18 @@ public class UiControllerLoginService {
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
+
+  @Value("${klaw.enable.authorization.ad:false}")
+  private boolean enableUserAuthorizationFromAD;
+
+  @Value("${klaw.ad.roles.attribute:roles}")
+  private String rolesAttribute;
+
+  @Value("${klaw.ad.teams.attribute:teams}")
+  private String teamsAttribute;
+
+  @Value("${klaw.ad.name.attribute:name}")
+  private String nameAttribute;
 
   @Value("${klaw.enable.sso:false}")
   private String ssoEnabled;
@@ -123,37 +145,148 @@ public class UiControllerLoginService {
   }
 
   public String checkAnonymousLogin(
-      String uri, OAuth2AuthenticationToken auth2AuthenticationToken) {
-    try {
-      DefaultOAuth2User defaultOAuth2User =
-          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      String uri,
+      OAuth2AuthenticationToken auth2AuthenticationToken,
+      HttpServletResponse response) {
+    DefaultOAuth2User defaultOAuth2User =
+        (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    // Extract attributes for user verification/registration
+    String userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
 
-      String userName = null;
-      // Extract attributes for user verification/registration
-      String preferredUsername =
-          (String) defaultOAuth2User.getAttributes().get("preferred_username");
-      String emailAttribute = (String) defaultOAuth2User.getAttributes().get("email");
+    // if user does not exist in db
+    if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
+      Pair<Boolean, String> roleValidationPair = Pair.of(null, null);
+      Pair<Boolean, String> teamValidationPair = Pair.of(null, null);
+      // If enableUserAuthorizationFromAD is true, retrieve roles and teams from AD token and match
+      // with klaw metadata
+      if (enableUserAuthorizationFromAD) {
+        Set<String> klawRoles =
+            manageDatabase.getRolesPermissionsPerTenant(DEFAULT_TENANT_ID).keySet();
+        Set<String> klawTeams = manageDatabase.getTeamNamesForTenant(DEFAULT_TENANT_ID);
 
-      if (preferredUsername != null) {
-        userName = preferredUsername;
-      } else if (emailAttribute != null) {
-        userName = emailAttribute;
+        // extract role from AD token authorities
+        roleValidationPair =
+            getRoleFromTokenAuthorities(defaultOAuth2User, userName, klawRoles, response);
+        if (!roleValidationPair.getLeft()) {
+          sendResponse(response, roleValidationPair);
+          return oauthLoginPage;
+        }
+
+        // extract team from AD attribute configured at klaw.ad.teams.attribute
+        teamValidationPair =
+            extractClaimsFromAD(defaultOAuth2User, userName, teamsAttribute, klawTeams, response);
+        if (!teamValidationPair.getLeft()) {
+          sendResponse(response, teamValidationPair);
+          return oauthLoginPage;
+        }
       }
+      return registerStagingUser(
+          userName,
+          defaultOAuth2User.getAttributes().get(nameAttribute),
+          roleValidationPair.getRight(),
+          teamValidationPair.getRight());
+    }
 
-      // if user does not exist in db
-      if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
-        return registerStagingUser(userName, defaultOAuth2User.getAttributes().get("name"));
-      }
-
-      if (auth2AuthenticationToken.isAuthenticated()) {
-        return uri;
-      } else {
-        return oauthLoginPage;
-      }
-    } catch (Exception e) {
-      log.error("Exception:", e);
+    if (auth2AuthenticationToken.isAuthenticated()) {
+      return uri;
+    } else {
       return oauthLoginPage;
     }
+  }
+
+  // redirect the user to login page with error display
+  private static void sendResponse(
+      HttpServletResponse response, Pair<Boolean, String> validationPair) {
+    try {
+      // Display error to the user based on error code
+      response.sendRedirect("login?errorCode=" + validationPair.getRight());
+    } catch (IOException ex) {
+      log.error("Ignore error from response redirect !");
+    }
+  }
+
+  private Pair<Boolean, String> getRoleFromTokenAuthorities(
+      DefaultOAuth2User defaultOAuth2User,
+      String userName,
+      Set<String> klawRoles,
+      HttpServletResponse response) {
+    String roleFromClaim = null;
+    Collection<? extends GrantedAuthority> authorities = defaultOAuth2User.getAuthorities();
+    int claimMatched = 0;
+    for (GrantedAuthority authority : authorities) {
+      String authorityRole = authority.getAuthority().substring(5); // ex : ROLE_USER
+      if (klawRoles.stream().anyMatch(authorityRole::equalsIgnoreCase)) {
+        claimMatched++;
+        roleFromClaim = authorityRole;
+      }
+    }
+
+    Pair<Boolean, String> claimValidationPair =
+        validateClaims(claimMatched, userName, "roles", response);
+    if (claimValidationPair.getLeft()) { // valid claim
+      return Pair.of(Boolean.TRUE, roleFromClaim);
+    } else {
+      return claimValidationPair;
+    }
+  }
+
+  private Pair<Boolean, String> extractClaimsFromAD(
+      DefaultOAuth2User defaultOAuth2User,
+      String userName,
+      String claimKey,
+      Set<String> klawRolesTeams,
+      HttpServletResponse response) {
+    String claimValue = null;
+    int claimMatched = 0;
+    try {
+      JSONArray jsonArray = (JSONArray) defaultOAuth2User.getAttributes().get(claimKey);
+      for (Object jsonObject : jsonArray) {
+        String jsonElement = jsonObject.toString();
+        if (klawRolesTeams.stream().anyMatch(jsonElement::equalsIgnoreCase)) {
+          claimMatched++;
+          claimValue = jsonElement;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Error in retrieving claims, ignore");
+    }
+    // Multiple roles/teams matched : Klaw roles/teams against AD roles/teams. throw exception -
+    // deny login
+    Pair<Boolean, String> claimValidationPair =
+        validateClaims(claimMatched, userName, "teams", response);
+    if (claimValidationPair.getLeft()) {
+      return Pair.of(Boolean.TRUE, claimValue);
+    } else {
+      return claimValidationPair;
+    }
+  }
+
+  // if no claims matched, or mulitple claims matched, deny registering/login to the user. claimType
+  // can be 'roles' or 'teams'.
+  private Pair<Boolean, String> validateClaims(
+      int claimMatched, String userName, String claimType, HttpServletResponse response) {
+    String errorCode = "";
+    Boolean validClaim = Boolean.TRUE;
+    if (claimMatched == 0) {
+      if (claimType.equals("roles")) {
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_101;
+        log.error(AD_ERROR_101_NO_MATCHING_ROLE + "{}", userName);
+      } else {
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_102;
+        log.error(AD_ERROR_102_NO_MATCHING_TEAM + "{}", userName);
+      }
+      validClaim = Boolean.FALSE;
+    } else if (claimMatched > 1) {
+      if (claimType.equals("roles")) {
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_103;
+        log.error(AD_ERROR_103_MULTIPLE_MATCHING_ROLE + "{}", userName);
+      } else {
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_104;
+        log.error(AD_ERROR_104_MULTIPLE_MATCHING_TEAM + "{}", userName);
+      }
+      validClaim = Boolean.FALSE;
+    }
+    return Pair.of(validClaim, errorCode);
   }
 
   public String checkAuth(
@@ -172,8 +305,7 @@ public class UiControllerLoginService {
                       .getHandleDbRequests()
                       .getUsersInfo(userDetails.getUsername())
                       .getRole())
-          && commonUtilsService.getTenantId(userDetails.getUsername())
-              == KwConstants.DEFAULT_TENANT_ID) {
+          && commonUtilsService.getTenantId(userDetails.getUsername()) == DEFAULT_TENANT_ID) {
         return getReturningPage(uri);
       } else {
         uri = "index";
@@ -185,7 +317,7 @@ public class UiControllerLoginService {
         return uri;
       } else {
         if (authentication instanceof OAuth2AuthenticationToken) {
-          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication);
+          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication, response);
         } else {
           return oauthLoginPage;
         }
@@ -196,7 +328,8 @@ public class UiControllerLoginService {
   }
 
   // register user with staging status, and forward to signup
-  public String registerStagingUser(String userName, Object fullName) {
+  public String registerStagingUser(
+      String userName, Object fullName, String roleFromAD, String teamFromAD) {
     try {
       log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
@@ -214,7 +347,10 @@ public class UiControllerLoginService {
         RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
         registerUserInfoModel.setRegistrationId(randomId);
         registerUserInfoModel.setStatus(NewUserStatus.STAGING.value);
-        registerUserInfoModel.setTeam(KwConstants.STAGINGTEAM);
+        registerUserInfoModel.setTeam(
+            Objects.requireNonNullElse(teamFromAD, KwConstants.STAGINGTEAM));
+        registerUserInfoModel.setRole(
+            Objects.requireNonNullElse(roleFromAD, KwConstants.USER_ROLE));
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");
@@ -223,12 +359,13 @@ public class UiControllerLoginService {
         RegisterUserInfo registerUserInfo = new RegisterUserInfo();
         copyProperties(registerUserInfoModel, registerUserInfo);
         registerUserInfo.setTeamId(
-            manageDatabase.getTeamIdFromTeamName(
-                KwConstants.DEFAULT_TENANT_ID, registerUserInfo.getTeam()));
+            manageDatabase.getTeamIdFromTeamName(DEFAULT_TENANT_ID, registerUserInfo.getTeam()));
+        registerUserInfo.setTenantId(DEFAULT_TENANT_ID);
 
-        manageDatabase.getHandleDbRequests().registerUserForAD(registerUserInfo);
-
-        return "redirect:" + "register?userRegistrationId=" + randomId;
+        String result = manageDatabase.getHandleDbRequests().registerUserForAD(registerUserInfo);
+        if (result.equals(ApiResultStatus.SUCCESS.value))
+          return "redirect:" + "register?userRegistrationId=" + randomId;
+        else return "";
       }
     } catch (Exception e) {
       log.error("Unable to find mail/name fields.", e);

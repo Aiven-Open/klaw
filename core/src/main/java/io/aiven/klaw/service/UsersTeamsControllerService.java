@@ -467,10 +467,6 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    if (ACTIVE_DIRECTORY.value.equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
-      newUser.setRole("NA");
-    }
-
     try {
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -747,13 +743,30 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result("User already exists.").build();
     }
 
+    // get the user details from db
+    List<RegisterUserInfo> stagingRegisterUsersInfo =
+        manageDatabase
+            .getHandleDbRequests()
+            .selectAllStagingRegisterUsersInfo(newUser.getUsername());
+
+    // enrich user info
+    if (!stagingRegisterUsersInfo.isEmpty()) {
+      RegisterUserInfo registerUserInfo = stagingRegisterUsersInfo.get(0);
+      newUser.setTeamId(registerUserInfo.getTeamId());
+      newUser.setTeam(
+          manageDatabase.getTeamNameFromTeamId(
+              registerUserInfo.getTenantId(), registerUserInfo.getTeamId()));
+      newUser.setRole(registerUserInfo.getRole());
+      newUser.setTenantId(registerUserInfo.getTenantId());
+    }
+
     try {
       newUser.setStatus(NewUserStatus.PENDING.value);
       newUser.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
 
       if (isExternal) { // not saas
-        newUser.setTeam(KwConstants.STAGINGTEAM);
-        newUser.setRole(KwConstants.USER_ROLE);
+        newUser.setTeam(Objects.requireNonNullElse(newUser.getTeam(), KwConstants.STAGINGTEAM));
+        newUser.setRole(Objects.requireNonNullElse(newUser.getRole(), KwConstants.USER_ROLE));
       }
 
       RegisterUserInfo registerUserInfo = new RegisterUserInfo();
@@ -769,10 +782,14 @@ public class UsersTeamsControllerService {
       } else {
         if (newUser.getTenantName() == null
             || newUser.getTenantName().equals("")) { // join default tenant
-          registerUserInfo.setTeamId(
-              manageDatabase.getTeamIdFromTeamName(
-                  KwConstants.DEFAULT_TENANT_ID, newUser.getTeam()));
-          registerUserInfo.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+          if (null == registerUserInfo.getTeamId()) {
+            registerUserInfo.setTeamId(
+                manageDatabase.getTeamIdFromTeamName(
+                    KwConstants.DEFAULT_TENANT_ID, newUser.getTeam()));
+          }
+          if (registerUserInfo.getTenantId() == 0) { // check for tenantId if 0
+            registerUserInfo.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+          }
         } else { // join existing tenant
           try {
             int tenantId = getTenantId(newUser.getTenantName());

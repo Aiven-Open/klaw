@@ -790,7 +790,7 @@ public class ClusterApiService {
     return store;
   }
 
-  private HttpHeaders createHeaders(String username) {
+  private HttpHeaders createHeaders(String username) throws KlawException {
     HttpHeaders httpHeaders = new HttpHeaders();
     String authHeader = "Bearer " + generateToken(username);
     httpHeaders.set("Authorization", authHeader);
@@ -798,7 +798,14 @@ public class ClusterApiService {
     return httpHeaders;
   }
 
-  private String generateToken(String username) {
+  private String generateToken(String username) throws KlawException {
+    if (clusterApiAccessBase64Secret.isBlank()) {
+      String errorTxt =
+          "CONFIGURE CLUSTER API SECRET FOR CLUSTER OPERATIONS. klaw.clusterapi.access.base64.secret";
+      log.error(errorTxt);
+      throw new KlawException(errorTxt);
+    }
+
     Key hmacKey =
         new SecretKeySpec(
             Base64.decodeBase64(clusterApiAccessBase64Secret),
@@ -815,7 +822,7 @@ public class ClusterApiService {
         .compact();
   }
 
-  private HttpEntity<String> getHttpEntity() {
+  private HttpEntity<String> getHttpEntity() throws KlawException {
     HttpHeaders headers = createHeaders(clusterApiUser);
     headers.setContentType(MediaType.APPLICATION_JSON);
 

@@ -466,7 +466,7 @@
 										<th>Username</th>
 										<th width="20%">Name</th>
 										<th>Team</th>
-										<th ng-if="dashboardDetails.adAuthRoleEnabled=='false'">Role</th>
+										<th>Role</th>
 										<th>EmailId</th>
 										<th width="10%" ng-show="dashboardDetails.addUser=='Authorized'">Edit</th>
 										<th width="10%" ng-show="dashboardDetails.addUser=='Authorized'">Delete</th>
@@ -477,7 +477,7 @@
 										<td>{{ userDetails.username }}</td>
 										<td>{{ userDetails.fullname }}</td>
 										<td><a href="teams">{{ userDetails.team }}</a></td>
-										<td ng-if="dashboardDetails.adAuthRoleEnabled=='false'"><span class="badge badge-info">{{ userDetails.role }}</span></td>
+										<td><span class="badge badge-info">{{ userDetails.role }}</span></td>
 
 										<td>{{ userDetails.mailid }}</td>
 										<td ng-show="dashboardDetails.addUser=='Authorized'">

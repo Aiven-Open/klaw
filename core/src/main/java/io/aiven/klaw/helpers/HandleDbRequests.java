@@ -148,6 +148,8 @@ public interface HandleDbRequests {
 
   List<RegisterUserInfo> selectAllRegisterUsersInfo();
 
+  List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userId);
+
   UserInfo getUsersInfo(String username);
 
   RegisterUserInfo getRegisterUsersInfo(String username);

@@ -15,14 +15,30 @@ app.controller("loginSaasCtrl", function($scope, $http, $location, $window) {
 	// getting a "text/plain" response which is not able to be
 	// parsed. 
 	$http.defaults.headers.common['Accept'] = 'application/json';
+    $scope.alert = "";
+
+        $scope.validateErrors = function(){
+            const sPageURL = window.location.search.substring(1);
+            const sURLVariables = sPageURL.split('&');
+            for (let i = 0; i < sURLVariables.length; i++)
+            {
+                const sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] === "errorCode")
+                {
+                    $scope.alert = $scope.dashboardDetails[sParameterName[1]];
+                }
+            }
+        }
 
         $scope.getBasicInfo = function() {
+
             $http({
                        method: "GET",
                        url: "getBasicInfo",
                        headers : { 'Content-Type' : 'application/json' }
                    }).success(function(output) {
                        $scope.dashboardDetails = output;
+                       $scope.validateErrors();
                    }).error(
                        function(error)
                        {

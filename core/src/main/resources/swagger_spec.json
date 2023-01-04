@@ -4015,6 +4015,10 @@
         "team" : {
           "type" : "string"
         },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "role" : {
           "type" : "string"
         },

@@ -29,7 +29,6 @@ import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePattern;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,18 +37,10 @@ public class ApacheKafkaAclService {
 
   private static final long TIME_OUT_SECS_FOR_ACLS = 5;
 
-  private Environment env;
-
-  private ClusterApiUtils clusterApiUtils;
+  private final ClusterApiUtils clusterApiUtils;
 
   public ApacheKafkaAclService(ClusterApiUtils clusterApiUtils) {
     this.clusterApiUtils = clusterApiUtils;
-  }
-
-  public ApacheKafkaAclService() {}
-
-  public ApacheKafkaAclService(Environment env) {
-    this.env = env;
   }
 
   public synchronized Set<Map<String, String>> loadAcls(
