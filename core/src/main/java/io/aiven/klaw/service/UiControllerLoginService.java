@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.*;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
@@ -268,19 +269,19 @@ public class UiControllerLoginService {
     Boolean validClaim = Boolean.TRUE;
     if (claimMatched == 0) {
       if (claimType.equals("roles")) {
-        errorCode = "AD101";
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_101;
         log.error(AD_ERROR_101_NO_MATCHING_ROLE + "{}", userName);
       } else {
-        errorCode = "AD102";
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_102;
         log.error(AD_ERROR_102_NO_MATCHING_TEAM + "{}", userName);
       }
       validClaim = Boolean.FALSE;
     } else if (claimMatched > 1) {
       if (claimType.equals("roles")) {
-        errorCode = "AD103";
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_103;
         log.error(AD_ERROR_103_MULTIPLE_MATCHING_ROLE + "{}", userName);
       } else {
-        errorCode = "AD104";
+        errorCode = ACTIVE_DIRECTORY_ERR_CODE_104;
         log.error(AD_ERROR_104_MULTIPLE_MATCHING_TEAM + "{}", userName);
       }
       validClaim = Boolean.FALSE;

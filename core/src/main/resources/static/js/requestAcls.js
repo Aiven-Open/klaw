@@ -187,8 +187,10 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         params: {'envSelected' : envName, 'envType' : 'kafka' },
                     }).success(function(output) {
                         $scope.aivenCluster = output.aivenCluster;
-                        if($scope.aivenCluster === 'false')
+                        if($scope.aivenCluster === 'false'){
                             $scope.acl_ip_ssl = 'IP';
+                            $scope.selectedAclType="IP_ADDRESS";
+                        }
                         else{
                             $scope.acl_ip_ssl = 'SSL';
                             $scope.selectedAclType="PRINCIPAL";
