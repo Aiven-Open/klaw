@@ -34,7 +34,7 @@ export type paths = {
     get: operations["envsBaseClusterFilteredForTeamGet"];
   };
   "/getClusterInfoFromEnv": {
-    get: operations["environmentGetClusterInfoGet"];
+    get: operations["clusterInfoFromEnvironmentGet"];
   };
   "/createAcl": {
     post: operations["createAclRequest"];
@@ -951,13 +951,13 @@ export type operations = {
       };
     };
   };
-  environmentGetClusterInfoGet: {
+  clusterInfoFromEnvironmentGet: {
     parameters: {
       query: {
         /** The environment for which to get the cluster info */
         envSelected: string;
         /** The type of  environment for which to get the cluster info */
-        envType: unknown;
+        envType: "kafka" | "kafkaconnect" | "schema";
       };
     };
     responses: {
@@ -1023,7 +1023,7 @@ export enum ApiPaths {
   teamNamesGet = "/getAllTeamsSUOnly",
   environmentsGet = "/getEnvs",
   envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
-  environmentGetClusterInfoGet = "/getClusterInfoFromEnv",
+  clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",

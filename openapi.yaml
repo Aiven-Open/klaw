@@ -238,7 +238,7 @@ paths:
                   $ref: "#/components/schemas/Environment"
   /getClusterInfoFromEnv:
     get:
-      operationId: environmentGetClusterInfoGet
+      operationId: clusterInfoFromEnvironmentGet
       summary: Get information about the cluster from the selected environment
       tags:
         - Environment
@@ -255,10 +255,9 @@ paths:
           required: true
           description: The type of  environment for which to get the cluster info
           schema:
-            type:
-              type: string
-              enum: ["kafka", "kafkaconnect", "schema"]
-              example: "kafka"
+            type: string
+            enum: [kafka, kafkaconnect, schema]
+            example: kafka
       responses:
         "200":
           description: OK
