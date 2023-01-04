@@ -31,10 +31,10 @@ export type paths = {
     get: operations["environmentsGet"];
   };
   "/getEnvsBaseClusterFilteredForTeam": {
-    get: operations["getEnvsBaseClusterFilteredForTeam"];
+    get: operations["envsBaseClusterFilteredForTeamGet"];
   };
   "/getClusterInfoFromEnv": {
-    get: operations["environmentGetClusterInfo"];
+    get: operations["environmentGetClusterInfoGet"];
   };
   "/createAcl": {
     post: operations["createAclRequest"];
@@ -43,7 +43,7 @@ export type paths = {
     get: operations["schemaRegEnvsGet"];
   };
   "/uploadSchema": {
-    post: operations["uploadSchema"];
+    post: operations["schemaUpload"];
   };
 };
 
@@ -503,7 +503,10 @@ export type components = {
       requesttimestring?: string;
       /** Topic status */
       topicstatus?: string;
-      /** Approver */
+      /**
+       * Approver
+       * @example jon.snow@klaw-project.io
+       */
       approver?: string;
       /**
        * Approving time
@@ -518,7 +521,7 @@ export type components = {
       sequence?: string;
       /**
        * Username
-       * @example johndoe
+       * @example jon.snow@klaw-project.io
        */
       username?: string;
       /**
@@ -587,6 +590,7 @@ export type components = {
        */
       transactionalId?: string;
       /**
+       * unique identifier
        * Format: int32
        * @example 100
        */
@@ -678,7 +682,7 @@ export type components = {
     /** SchemaRequest */
     SchemaRequest: {
       /**
-       * req_no
+       * unique identifier
        * Format: int32
        */
       req_no?: number;
@@ -937,7 +941,7 @@ export type operations = {
       };
     };
   };
-  getEnvsBaseClusterFilteredForTeam: {
+  envsBaseClusterFilteredForTeamGet: {
     responses: {
       /** OK */
       200: {
@@ -947,7 +951,7 @@ export type operations = {
       };
     };
   };
-  environmentGetClusterInfo: {
+  environmentGetClusterInfoGet: {
     parameters: {
       query: {
         /** The environment for which to get the cluster info */
@@ -990,7 +994,7 @@ export type operations = {
       };
     };
   };
-  uploadSchema: {
+  schemaUpload: {
     responses: {
       /** OK */
       200: {
@@ -1018,9 +1022,9 @@ export enum ApiPaths {
   topicAdvancedConfigGet = "/getAdvancedTopicConfigs",
   teamNamesGet = "/getAllTeamsSUOnly",
   environmentsGet = "/getEnvs",
-  getEnvsBaseClusterFilteredForTeam = "/getEnvsBaseClusterFilteredForTeam",
-  environmentGetClusterInfo = "/getClusterInfoFromEnv",
+  envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
+  environmentGetClusterInfoGet = "/getClusterInfoFromEnv",
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
-  uploadSchema = "/uploadSchema",
+  schemaUpload = "/uploadSchema",
 }
