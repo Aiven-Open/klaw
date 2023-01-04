@@ -64,6 +64,22 @@ public class KwConstants {
   public static final String MAIL_PASSWORDRESET_CONTENT =
       "Dear User, \\nYou have requested for reset password on your Klaw account. \\n\\nUser name : %s \\nYour new Password : %s ";
 
+  public static final String AD_ERROR_101_NO_MATCHING_ROLE =
+      "No matching role is configured. Please make sure only one matching role"
+          + " from Klaw is configured in AD. Denying login !!";
+
+  public static final String AD_ERROR_102_NO_MATCHING_TEAM =
+      "No matching team is configured. Please make sure only one matching team"
+          + " from Klaw is configured in AD. Denying login !!";
+
+  public static final String AD_ERROR_103_MULTIPLE_MATCHING_ROLE =
+      "Multiple matching roles are configured. Please make sure only one matching role"
+          + " from Klaw is configured in AD. Denying login !!";
+
+  public static final String AD_ERROR_104_MULTIPLE_MATCHING_TEAM =
+      "Multiple matching teams are configured. Please make sure only one matching team"
+          + " from Klaw is configured in AD. Denying login !!";
+
   public static final String REPORTS_LOCATION = "/tmp/";
   public static final String MAIL_NOTIFICATIONS_ENABLE = "true";
   public static final String GETSCHEMAS_ENABLE = "false";

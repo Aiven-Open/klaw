@@ -1,5 +1,9 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.AD_ERROR_101_NO_MATCHING_ROLE;
+import static io.aiven.klaw.helpers.KwConstants.AD_ERROR_102_NO_MATCHING_TEAM;
+import static io.aiven.klaw.helpers.KwConstants.AD_ERROR_103_MULTIPLE_MATCHING_ROLE;
+import static io.aiven.klaw.helpers.KwConstants.AD_ERROR_104_MULTIPLE_MATCHING_TEAM;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 
@@ -598,6 +602,12 @@ public class UtilControllerService {
 
     resultBasicInfo.put("ssoServerUrlAzure", ssoServerLoginUrlAzure);
     resultBasicInfo.put("ssoServerUrlGoogle", ssoServerLoginUrlGoogle);
+
+    // error codes of active directory authorization errors
+    resultBasicInfo.put("AD101", AD_ERROR_101_NO_MATCHING_ROLE);
+    resultBasicInfo.put("AD102", AD_ERROR_102_NO_MATCHING_TEAM);
+    resultBasicInfo.put("AD103", AD_ERROR_103_MULTIPLE_MATCHING_ROLE);
+    resultBasicInfo.put("AD104", AD_ERROR_104_MULTIPLE_MATCHING_TEAM);
 
     return resultBasicInfo;
   }

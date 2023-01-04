@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
+import static io.aiven.klaw.helpers.KwConstants.*;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
@@ -154,49 +154,53 @@ public class UiControllerLoginService {
 
     // if user does not exist in db
     if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
-      String roleFromClaim = null, teamFromClaim = null;
       Pair<Boolean, String> roleValidationPair = Pair.of(null, null);
       Pair<Boolean, String> teamValidationPair = Pair.of(null, null);
-      // If enableUserAuthorizationFromAD true, retrieve roles and teams from AD token and match
+      // If enableUserAuthorizationFromAD is true, retrieve roles and teams from AD token and match
       // with klaw metadata
       if (enableUserAuthorizationFromAD) {
         Set<String> klawRoles =
             manageDatabase.getRolesPermissionsPerTenant(DEFAULT_TENANT_ID).keySet();
         Set<String> klawTeams = manageDatabase.getTeamNamesForTenant(DEFAULT_TENANT_ID);
+
+        // extract role from AD token authorities
         roleValidationPair =
             getRoleFromTokenAuthorities(defaultOAuth2User, userName, klawRoles, response);
         if (!roleValidationPair.getLeft()) {
-          try {
-            // Display error to the user based on error code
-            response.sendRedirect("login?errorCode=" + roleValidationPair.getRight());
-          } catch (IOException ex) {
-            log.error("Ignore error from response redirect !");
-          }
+          sendResponse(response, roleValidationPair);
           return oauthLoginPage;
         }
+
+        // extract team from AD attribute configured at klaw.ad.teams.attribute
         teamValidationPair =
-            extractClaimsFromAD(defaultOAuth2User, userName, "teams", klawTeams, response);
+            extractClaimsFromAD(defaultOAuth2User, userName, teamsAttribute, klawTeams, response);
         if (!teamValidationPair.getLeft()) {
-          try {
-            // Display error to the user based on error code
-            response.sendRedirect("login?errorCode=" + teamValidationPair.getRight());
-          } catch (IOException ex) {
-            log.error("Ignore error from response redirect !");
-          }
+          sendResponse(response, teamValidationPair);
           return oauthLoginPage;
         }
       }
       return registerStagingUser(
           userName,
           defaultOAuth2User.getAttributes().get(nameAttribute),
-          roleFromClaim,
-          teamFromClaim);
+          roleValidationPair.getRight(),
+          teamValidationPair.getRight());
     }
 
     if (auth2AuthenticationToken.isAuthenticated()) {
       return uri;
     } else {
       return oauthLoginPage;
+    }
+  }
+
+  // redirect the user to login page with error display
+  private static void sendResponse(
+      HttpServletResponse response, Pair<Boolean, String> validationPair) {
+    try {
+      // Display error to the user based on error code
+      response.sendRedirect("login?errorCode=" + validationPair.getRight());
+    } catch (IOException ex) {
+      log.error("Ignore error from response redirect !");
     }
   }
 
@@ -218,12 +222,11 @@ public class UiControllerLoginService {
 
     Pair<Boolean, String> claimValidationPair =
         validateClaims(claimMatched, userName, "roles", response);
-    if (claimValidationPair.getLeft()) // valid claim
-    return Pair.of(Boolean.TRUE, roleFromClaim);
-    else {
+    if (claimValidationPair.getLeft()) { // valid claim
+      return Pair.of(Boolean.TRUE, roleFromClaim);
+    } else {
       return claimValidationPair;
     }
-    //    return roleFromClaim;
   }
 
   private Pair<Boolean, String> extractClaimsFromAD(
@@ -249,7 +252,7 @@ public class UiControllerLoginService {
     // Multiple roles/teams matched : Klaw roles/teams against AD roles/teams. throw exception -
     // deny login
     Pair<Boolean, String> claimValidationPair =
-        validateClaims(claimMatched, userName, claimKey, response);
+        validateClaims(claimMatched, userName, "teams", response);
     if (claimValidationPair.getLeft()) {
       return Pair.of(Boolean.TRUE, claimValue);
     } else {
@@ -257,32 +260,29 @@ public class UiControllerLoginService {
     }
   }
 
-  // if no claims matched, or mulitple claims matched, deny login to the user. claimType can be
-  // 'roles' or 'teams'.
+  // if no claims matched, or mulitple claims matched, deny registering/login to the user. claimType
+  // can be 'roles' or 'teams'.
   private Pair<Boolean, String> validateClaims(
       int claimMatched, String userName, String claimType, HttpServletResponse response) {
     String errorCode = "";
     Boolean validClaim = Boolean.TRUE;
     if (claimMatched == 0) {
-      String errorTxt =
-          "No matching "
-              + claimType
-              + "s are configured. Please make sure only one matching "
-              + claimType
-              + " from Klaw is configured in AD. Denying login !! : ";
-      log.error(errorTxt + "{}", userName);
-      if (claimType.equals("roles")) errorCode = "AD101";
-      else errorCode = "AD102";
+      if (claimType.equals("roles")) {
+        errorCode = "AD101";
+        log.error(AD_ERROR_101_NO_MATCHING_ROLE + "{}", userName);
+      } else {
+        errorCode = "AD102";
+        log.error(AD_ERROR_102_NO_MATCHING_TEAM + "{}", userName);
+      }
       validClaim = Boolean.FALSE;
     } else if (claimMatched > 1) {
-      String errorTxt =
-          "Multiple "
-              + claimType
-              + "s in AD are configured for the user. Please make sure only one matching"
-              + " role is configured in AD. Denying login !! : ";
-      log.error(errorTxt + "{}", userName);
-      if (claimType.equals("roles")) errorCode = "AD103";
-      else errorCode = "AD104";
+      if (claimType.equals("roles")) {
+        errorCode = "AD103";
+        log.error(AD_ERROR_103_MULTIPLE_MATCHING_ROLE + "{}", userName);
+      } else {
+        errorCode = "AD104";
+        log.error(AD_ERROR_104_MULTIPLE_MATCHING_TEAM + "{}", userName);
+      }
       validClaim = Boolean.FALSE;
     }
     return Pair.of(validClaim, errorCode);

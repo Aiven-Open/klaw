@@ -18,28 +18,27 @@ app.controller("loginSaasCtrl", function($scope, $http, $location, $window) {
     $scope.alert = "";
 
         $scope.validateErrors = function(){
-            var sPageURL = window.location.search.substring(1);
-            var sURLVariables = sPageURL.split('&');
-            for (var i = 0; i < sURLVariables.length; i++)
+            const sPageURL = window.location.search.substring(1);
+            const sURLVariables = sPageURL.split('&');
+            for (let i = 0; i < sURLVariables.length; i++)
             {
-                var sParameterName = sURLVariables[i].split('=');
+                const sParameterName = sURLVariables[i].split('=');
                 if (sParameterName[0] === "errorCode")
                 {
-                    if(sParameterName[1] === "AD101"){
-                        $scope.alert = "Please make sure a matching role/team from Klaw is configured in AD Authorities/Attributes. Denying login !!";
-                    }
+                    $scope.alert = $scope.dashboardDetails[sParameterName[1]];
                 }
             }
         }
 
         $scope.getBasicInfo = function() {
-            $scope.validateErrors();
+
             $http({
                        method: "GET",
                        url: "getBasicInfo",
                        headers : { 'Content-Type' : 'application/json' }
                    }).success(function(output) {
                        $scope.dashboardDetails = output;
+                       $scope.validateErrors();
                    }).error(
                        function(error)
                        {
