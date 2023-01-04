@@ -1,10 +1,10 @@
 # Code owners for the different sections of Klaw
 
-# By default the Open Source team
-*       @aiven/aiven-open-source
+# By default the Klaw team (this is the catch all clause)
+*       @aiven/klaw-team
 
-# Coral change owners are the frontend team and the open source team as a backup
-/coral  @aiven/klaw-team-frontend @aiven/aiven-open-source
+# Coral change owners are the frontend team
+/coral  @aiven/klaw-team-frontend
 
-# Java change owners are the backend team and the open source team as a backup
-/src    @aiven/klaw-team-backend @aiven/aiven-open-source
+# Java change owners are the backend team
+/src    @aiven/klaw-team-backend
