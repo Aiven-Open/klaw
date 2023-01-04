@@ -223,7 +223,7 @@ paths:
                   $ref: "#/components/schemas/Environment"
   /getEnvsBaseClusterFilteredForTeam:
     get:
-      operationId: getEnvsBaseClusterFilteredForTeam
+      operationId: envsBaseClusterFilteredForTeamGet
       summary: Get environments
       tags:
         - Environment
@@ -238,7 +238,7 @@ paths:
                   $ref: "#/components/schemas/Environment"
   /getClusterInfoFromEnv:
     get:
-      operationId: environmentGetClusterInfo
+      operationId: environmentGetClusterInfoGet
       summary: Get information about the cluster from the selected environment
       tags:
         - Environment
@@ -301,7 +301,7 @@ paths:
                   $ref: "#/components/schemas/Environment"
   /uploadSchema:
     post:
-      operationId: uploadSchema
+      operationId: schemaUpload
       summary: post schema upload
       tags:
         - SchemaRequest
