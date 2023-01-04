@@ -6,6 +6,7 @@ import React from "react";
 import type { DeepPartial, FieldValues } from "react-hook-form";
 import {
   Form,
+  NativeSelect,
   NumberInput,
   PasswordInput,
   SubmitErrorHandler,
@@ -228,6 +229,47 @@ describe("Form", () => {
       const okValue = "a".repeat(255);
       await typeText(`${okValue}{tab}`);
       await waitFor(() => expect(screen.queryByText(errorMsg)).toBeNull());
+    });
+  });
+
+  describe("<NativeSelect>", () => {
+    const schema = z.object({ name: z.enum(["helsinki", "berlin", "london"]) });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <NativeSelect<Schema> name="name" labelText="NativeSelect">
+          <option value="helsinki">Helsinki</option>
+          <option value="berlin">Berlin</option>
+          <option value="london">London</option>
+        </NativeSelect>,
+        { schema }
+      );
+    });
+
+    it("should render label", () => {
+      expect(screen.getByLabelText("NativeSelect")).toBeVisible();
+    });
+
+    it("should render a combobox", () => {
+      screen.getByRole("combobox", { name: "NativeSelect" });
+    });
+
+    it("should default to first available option", async () => {
+      expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
+        "Helsinki"
+      );
+      await submit();
+      assertSubmitted({ name: "helsinki" });
+    });
+
+    it("should sync value to form state when choosing another option", async () => {
+      await user.selectOptions(screen.getByLabelText("NativeSelect"), "berlin");
+      expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
+        "Berlin"
+      );
+      await submit();
+      assertSubmitted({ name: "berlin" });
     });
   });
 
