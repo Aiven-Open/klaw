@@ -3,7 +3,8 @@ info:
   title: Klaw - OpenAPI
   version: 1.0.0
   description: >
-    This specification is still a work in progess and is not yet implemented in any API. The purpose of this specification is to facilitate developers discussions.
+    This specification is still a work in progress and is not yet implemented in any API. The purpose of this 
+    specification is to facilitate developers discussions.
   contact:
     email: info@klaw-project.io
   license:
@@ -16,13 +17,15 @@ tags:
   - name: User
     description: User API endpoints
   - name: Topic
-    description: Topic operations
+    description: Topic API endpoints
   - name: Team
-    description: Team operations
+    description: Team API endpoints
   - name: Environment
-    description: Environment operations
+    description: Environment API endpoints
   - name: ACL
-    description: ACL (Access Control List) operations on topics and consumer groups
+    description: ACL (Access Control List) API endpoints on topics and consumer groups
+  - name: SchemaRequest
+    description: SchemaRequest API endpoints
 paths:
   /user/authenticate:
     summary: User authentication
@@ -220,7 +223,7 @@ paths:
                   $ref: "#/components/schemas/Environment"
   /getEnvsBaseClusterFilteredForTeam:
     get:
-      operationId: getEnvsBaseClusterFilteredForTeam
+      operationId: envsBaseClusterFilteredForTeamGet
       summary: Get environments
       tags:
         - Environment
@@ -235,7 +238,7 @@ paths:
                   $ref: "#/components/schemas/Environment"
   /getClusterInfoFromEnv:
     get:
-      operationId: environmentGetClusterInfo
+      operationId: clusterInfoFromEnvironmentGet
       summary: Get information about the cluster from the selected environment
       tags:
         - Environment
@@ -252,10 +255,9 @@ paths:
           required: true
           description: The type of  environment for which to get the cluster info
           schema:
-            type:
-              type: string
-              enum: ["kafka", "kafkaconnect", "schema"]
-              example: "kafka"
+            type: string
+            enum: [kafka, kafkaconnect, schema]
+            example: kafka
       responses:
         "200":
           description: OK
@@ -279,6 +281,40 @@ paths:
           description: OK
           content:
             application/json:
+              schema:
+                $ref: "#/components/schemas/GenericApiResponse"
+  /getSchemaRegEnvs:
+    get:
+      operationId: schemaRegEnvsGet
+      summary: get schema registry environments
+      tags:
+        - SchemaRequest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Environment"
+  /uploadSchema:
+    post:
+      operationId: schemaUpload
+      summary: post schema upload
+      tags:
+        - SchemaRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/SchemaRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
               schema:
                 $ref: "#/components/schemas/GenericApiResponse"
 components:
@@ -698,7 +734,7 @@ components:
         description: "Options are defined in: https://kafka.apache.org/documentation/#topicconfigs"
         example: cleanup.policy
         type: string
-    EnvironmentGetClusterInfoResponse:
+    environmentGetClusterInfoResponse:
       type: object
       additionalProperties:
         type: string
@@ -794,6 +830,7 @@ components:
         approver:
           title: Approver
           type: string
+          example: jon.snow@klaw-project.io
         approvingtime:
           title: Approving time
           type: string
@@ -805,8 +842,8 @@ components:
           deprecated: true
         username:
           title: Username
-          example: johndoe
           type: string
+          example: jon.snow@klaw-project.io
         totalNoPages:
           title: Total number of pages
           type: string
@@ -837,7 +874,7 @@ components:
           title: Current page number
           type: string
           example: "1"
-    AclRequest:
+    aclRequest:
       required:
         - aclPatternType
         - topicname
@@ -878,6 +915,7 @@ components:
           example: "id-123"
           description: "Only available if aclPatternType is LITERAL"
         req_no:
+          title: unique identifier
           type: integer
           format: int32
           example: 100
@@ -920,7 +958,7 @@ components:
           example: "2018-03-20T09:12:28Z"
         requesttimestring:
           type: string
-          pattern: "dd-MMM-yyyy HH:mm:ss"
+          pattern: dd-MMM-yyyy HH:mm:ss
           example: "10-11-2020 10:45:30"
         aclstatus:
           type: string
@@ -960,3 +998,110 @@ components:
         approvingTeamDetails:
           type: string
           example: "DevRel"
+    SchemaRequest:
+      title: SchemaRequest
+      required:
+        - schemafull
+      type: object
+      properties:
+        req_no:
+          title: unique identifier
+          type: integer
+          format: int32
+        topicname:
+          title: Topic name
+          description: Kafka Topic name
+          type: string
+          example: "testtopic"
+        environment:
+          title: environment
+          description: Id of the environment
+          type: string
+          example: "3"
+        environmentName:
+          title: environmentName
+          description: Name of the environment
+          type: string
+          example: "DEV"
+        schemaversion:
+          title: schemaversion
+          description: SchemaRequest version
+          type: string
+          example: "1.0"
+        teamname:
+          title: Team name
+          description: Topic owner team name
+          type: string
+          example: "Infra"
+        teamId:
+          title: Team ID
+          description: Team identifier
+          type: integer
+          format: int32
+          example: 1010
+        appname:
+          title: App name
+          example: "App"
+          type: string
+        schemafull:
+          title: schemafull
+          description: A valid json/avro schema
+          maxLength: 2147483647
+          minLength: 8
+          type: string
+          example: "{\n  \"doc\": \"exampleTopic\",\n  \"fields\": [\n    {\n      \"default\": \"123456\",\n       \"doc\": \"test\",\n      \"name\": \"test\",\n      \"namespace\": \"test\",\n      \"type\": \"string\"\n }\n  ],\n  \"name\": \"exampleTopic\",\n  \"namespace\": \"exampleTopic\",\n  \"type\": \"record\"\n}"
+        username:
+          title: username
+          description: Username
+          example: jon.snow@klaw-project.io
+          type: string
+        requesttime:
+          title: Request time
+          type: string
+          format: date-time
+          example: 2018-11-13T20:20:39+00:00
+        requesttimestring:
+          title: Request time string representation
+          type: string
+          example: "28-Dec-2022 14:54:57"
+        topicstatus:
+          title: Topic status
+          type: string
+          example: "created"
+        requesttype:
+          title: Type of request
+          type: string
+          example: "Create"
+        remarks:
+          title: Remarks
+          description: SchemaRequest specific comment
+          pattern: "^$|^[a-zA-Z 0-9_.-]{3,}$"
+          type: string
+          example: "Please approve"
+        approver:
+          title: Approver
+          type: string
+        approvingtime:
+          title: Approving time
+          type: string
+          format: date-time
+          example: 2022-11-13T20:20:39+00:00
+        approvingTeamDetails:
+          title: Approving team details
+          type: string
+          example: "Team : Stark, Users : jonsnow,sansastark,aryastark,branstark"
+        totalNoPages:
+          title: Total number of pages
+          type: string
+          example: "3"
+        allPageNos:
+          title: All page numbers
+          description: List of all page numbers
+          type: array
+          items:
+            type: string
+          example: ["1", "2", "3"]
+        currentPage:
+          title: Current page number
+          type: string
+          example: "2"
