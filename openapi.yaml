@@ -916,6 +916,7 @@ components:
           example: "id-123"
           description: "Only available if aclPatternType is LITERAL"
         req_no:
+          title: unique identifier
           type: integer
           format: int32
           example: 100
@@ -1005,7 +1006,7 @@ components:
       type: object
       properties:
         req_no:
-          title: req_no
+          title: unique identifier
           type: integer
           format: int32
         topicname:
