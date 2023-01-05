@@ -61,7 +61,7 @@ public class SslContextConfig implements InitializingBean {
           | UnrecoverableKeyException
           | IOException e) {
         log.error("Exception:", e);
-        throw new Exception("Unable to load TLS certs");
+        throw new Exception("Unable to load TLS selfsignedcerts");
       }
       SSLConnectionSocketFactory csf;
       if (sslContext != null) {

@@ -38,7 +38,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @TestPropertySource(locations = "classpath:application.properties")
 @TestMethodOrder(OrderAnnotation.class)
 @DirtiesContext
-public class AuthenticationIntegrationTest {
+public class AuthenticationIntegrationIT {
 
   public static final String KWCLUSTERAPIUSER = "kwclusterapiuser";
   public static final String AUTHORIZATION = "Authorization";
