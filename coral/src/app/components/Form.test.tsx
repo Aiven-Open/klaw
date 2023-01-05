@@ -1,6 +1,11 @@
-import { Button } from "@aivenio/aquarium";
-import type { RenderResult } from "@testing-library/react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { Button, RadioButton as BaseRadioButton } from "@aivenio/aquarium";
+import {
+  cleanup,
+  render,
+  RenderResult,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import type { DeepPartial, FieldValues } from "react-hook-form";
@@ -9,6 +14,8 @@ import {
   NativeSelect,
   NumberInput,
   PasswordInput,
+  RadioButton,
+  RadioButtonGroup,
   SubmitErrorHandler,
   SubmitHandler,
   Textarea,
@@ -317,5 +324,98 @@ describe("Form", () => {
       await user.type(passwordInput, "abc{tab}");
       await waitFor(() => expect(screen.queryByText("error")).toBeNull());
     });
+  });
+
+  describe("<RadioButton>", () => {
+    const schema = z.object({
+      city: z.string(),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <RadioButton<Schema> name="city" value="Berlin">
+          Berlin
+        </RadioButton>,
+        { schema }
+      );
+    });
+
+    it("should render a RadioButton", () => {
+      expect(screen.getByRole("radio")).toBeVisible();
+    });
+
+    it("should render correct label", () => {
+      expect(screen.getByLabelText("Berlin")).toBeVisible();
+    });
+
+    it("should default to RadioButton being unchecked when no default values are provided", async () => {
+      expect(screen.getByRole("radio")).not.toBeChecked();
+    });
+
+    it("should sync value to form state when clicking RadioButton", async () => {
+      const berlinRadio = screen.getByRole("radio");
+      expect(berlinRadio).not.toBeChecked();
+
+      await user.click(berlinRadio);
+      expect(berlinRadio).toBeChecked();
+
+      await submit();
+      assertSubmitted({ city: "Berlin" });
+    });
+
+    // @TODO accesibility testing once tab navigation is fixed for RadioButton
+  });
+
+  describe("<RadioButtonGroup>", () => {
+    const schema = z.object({
+      city: z.enum(["Berlin", "Helsinki"]),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <RadioButtonGroup<Schema> name="city">
+          <BaseRadioButton value="Berlin">Berlin</BaseRadioButton>
+          <BaseRadioButton value="Helsinki">Helsinki</BaseRadioButton>
+        </RadioButtonGroup>,
+        { schema }
+      );
+    });
+
+    it("should render two RadioButton", () => {
+      expect(screen.getAllByRole("radio")).toHaveLength(2);
+    });
+
+    it("should render correct label", () => {
+      expect(screen.getByLabelText("Berlin")).toBeVisible();
+      expect(screen.getByLabelText("Helsinki")).toBeVisible();
+    });
+
+    it("should default to both RadioButton being unchecked when no default values are provided", async () => {
+      expect(screen.getByLabelText("Berlin")).not.toBeChecked();
+      expect(screen.getByLabelText("Helsinki")).not.toBeChecked();
+    });
+
+    it("should sync value to form state when clicking RadioButtons", async () => {
+      const berlinRadio = screen.getByLabelText("Berlin");
+      const helsinkiRadio = screen.getByLabelText("Helsinki");
+
+      await user.click(berlinRadio);
+      expect(berlinRadio).toBeChecked();
+      expect(helsinkiRadio).not.toBeChecked();
+
+      await submit();
+      assertSubmitted({ city: "Berlin" });
+
+      await user.click(helsinkiRadio);
+      expect(berlinRadio).not.toBeChecked();
+      expect(helsinkiRadio).toBeChecked();
+
+      await submit();
+      assertSubmitted({ city: "Helsinki" });
+    });
+
+    // @TODO accesibility testing once tab navigation is fixed for RadioButtonGroup
   });
 });
