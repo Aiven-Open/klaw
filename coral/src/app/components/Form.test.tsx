@@ -367,7 +367,7 @@ describe("Form", () => {
     // @TODO accesibility testing once tab navigation is fixed for RadioButton
   });
 
-  describe("<_RadioButtonGroup>", () => {
+  describe("<RadioButtonGroup>", () => {
     const schema = z.object({
       city: z.enum(["Berlin", "Helsinki"]),
     });

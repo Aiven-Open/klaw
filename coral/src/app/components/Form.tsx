@@ -294,7 +294,6 @@ function _RadioButton<T extends FieldValues>({
   formContext: form,
   ...props
 }: BaseRadioButtonProps & FormInputProps<T> & FormRegisterProps<T>) {
-  console.log(props);
   return <BaseRadioButton {...props} {...form.register(name)} name={name} />;
 }
 
