@@ -6,6 +6,10 @@ import {
   TextareaProps as BaseTextareaProps,
   NativeSelect as BaseNativeSelect,
   NativeSelectProps as BaseNativeSelectProps,
+  RadioButton as BaseRadioButton,
+  RadioButtonProps as BaseRadioButtonProps,
+  RadioButtonGroup as BaseRadioButtonGroup,
+  RadioButtonGroupProps as BaseRadioButtonGroupProps,
   Option,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,6 +26,7 @@ import {
   useFormContext,
   UseFormProps as _UseFormProps,
   UseFormReturn,
+  Controller as _Controller,
 } from "react-hook-form";
 import type { FormState } from "react-hook-form";
 import { ZodSchema } from "zod";
@@ -280,6 +285,79 @@ const SubmitButtonMemo = memo(
     return false;
   }
 ) as typeof _SubmitButton;
+
+//
+// <RadioButton>
+//
+function _RadioButton<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseRadioButtonProps & FormInputProps<T> & FormRegisterProps<T>) {
+  console.log(props);
+  return <BaseRadioButton {...props} {...form.register(name)} name={name} />;
+}
+
+const RadioButtonMemo = memo(_RadioButton, () => false) as typeof _RadioButton;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const RadioButton = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseRadioButtonProps
+): React.ReactElement<FormInputProps<T> & BaseRadioButtonProps> => {
+  const ctx = useFormContext<T>();
+  return <RadioButtonMemo formContext={ctx} {...props} />;
+};
+
+RadioButton.Skeleton = BaseRadioButton.Skeleton;
+
+//
+// <RadioButtonGroup>
+//
+function _RadioButtonGroup<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseRadioButtonGroupProps & FormInputProps<T> & FormRegisterProps<T>) {
+  return (
+    <_Controller
+      name={name}
+      control={form.control}
+      render={({ field: { value, name }, fieldState: { error } }) => {
+        return (
+          <BaseRadioButtonGroup
+            {...props}
+            {...form.register(name)}
+            name={name}
+            value={value}
+            onChange={(value) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, value as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            error={error?.message}
+          />
+        );
+      }}
+    />
+  );
+}
+
+const RadioButtonGroupMemo = memo(
+  _RadioButtonGroup,
+  () => false
+) as typeof _RadioButtonGroup;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const RadioButtonGroup = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseRadioButtonGroupProps
+): React.ReactElement<FormInputProps<T> & BaseRadioButtonGroupProps> => {
+  const ctx = useFormContext<T>();
+  return <RadioButtonGroupMemo formContext={ctx} {...props} />;
+};
+
+RadioButtonGroup.Skeleton = BaseRadioButtonGroup.Skeleton;
 
 // eslint-disable-next-line import/exports-last,import/group-exports
 export const SubmitButton = <T extends FieldValues>(
