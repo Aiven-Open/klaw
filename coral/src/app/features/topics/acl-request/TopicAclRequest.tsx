@@ -1,7 +1,13 @@
-import { Box } from "@aivenio/aquarium";
+import {
+  Box,
+  RadioButton as BaseRadioButton,
+  RadioButtonGroup as BaseRadioButtonGroup,
+} from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
+import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
 import {
   ClusterInfo,
   clusterInfoFromEnvironment,
@@ -10,16 +16,16 @@ import {
   mockGetEnvironments,
 } from "src/domain/environment";
 import {
-  mockGetClusterInfoFromEnv,
   mockedResponseGetClusterInfoFromEnv,
+  mockGetClusterInfoFromEnv,
 } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { TopicNames, TopicTeam } from "src/domain/topic";
 import {
-  mockGetTopicNames,
   mockedResponseTopicNames,
-  mockGetTopicTeam,
   mockedResponseTopicTeamLiteral,
+  mockGetTopicNames,
+  mockGetTopicTeam,
 } from "src/domain/topic/topic-api.msw";
 import {
   topicNamesQuery,
@@ -56,6 +62,7 @@ const mockedData = [
 const TopicAclRequest = () => {
   const { topicName = "" } = useParams();
   const navigate = useNavigate();
+  const [topicType, setTopicType] = useState("Consumer");
 
   useEffect(() => {
     mockGetEnvironments({
@@ -106,29 +113,45 @@ const TopicAclRequest = () => {
     clusterInfoFromEnvironment({ envSelected, envType })
   );
 
-  const isLoading =
-    environments === undefined ||
-    topicNames === undefined ||
-    topicTeam === undefined ||
-    clusterInfo === undefined;
+  const TopicTypeField = (
+    <BaseRadioButtonGroup
+      labelText="TopicType"
+      name="topicType"
+      onChange={(value) => setTopicType(value)}
+    >
+      <BaseRadioButton value="Consumer" checked={topicType === "Consumer"}>
+        Consumer
+      </BaseRadioButton>
+      <BaseRadioButton value="Producer" checked={topicType === "Producer"}>
+        Producer
+      </BaseRadioButton>
+    </BaseRadioButtonGroup>
+  );
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (
+    topicNames === undefined ||
+    environments === undefined ||
+    topicTeam === undefined ||
+    clusterInfo === undefined
+  ) {
+    return <div>Loading</div>;
   }
 
   return (
     <Box style={{ maxWidth: 600 }}>
-      <div>Topic name: {topicName}</div>
-      <div>Topic team: {topicTeam.team}</div>
-      <div>Cluster info: {JSON.stringify(clusterInfo)}</div>
-      <div>Environments:</div>
-      {environments.map((env) => (
-        <li key={env.id}>{env.name}</li>
-      ))}
-      <div>Topic names:</div>
-      {topicNames.map((topicName) => (
-        <li key={topicName}>{topicName}</li>
-      ))}
+      {topicType === "Consumer" ? (
+        <TopicConsumerForm
+          renderTopicTypeField={() => TopicTypeField}
+          topicName={topicName}
+          topicTeam={topicTeam.team}
+        />
+      ) : (
+        <TopicProducerForm
+          renderTopicTypeField={() => TopicTypeField}
+          topicName={topicName}
+          topicTeam={topicTeam.team}
+        />
+      )}
     </Box>
   );
 };
