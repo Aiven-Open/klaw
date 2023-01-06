@@ -36,7 +36,7 @@
     ]
   },
   "dependencies": {
-    "@aivenio/aquarium": "^1.1.0",
+    "@aivenio/aquarium": "^1.2.1",
     "@hookform/resolvers": "^2.9.10",
     "@tanstack/react-query": "^4.14.1",
     "react": "^18.2.0",
