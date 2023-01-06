@@ -96,9 +96,9 @@ public class KafkaConnectControllerService {
           return ApiResponse.builder()
               .result("Failure. Invalid config. connector.class is not configured")
               .build();
-        } else if (!jsonNode.has("topic")) {
+        } else if (!jsonNode.has("topics") && !jsonNode.has("topics.regex")) {
           return ApiResponse.builder()
-              .result("Failure. Invalid config. topic is not configured")
+              .result("Failure. Invalid config. topics/topics.regex is not configured")
               .build();
         }
 
@@ -114,9 +114,7 @@ public class KafkaConnectControllerService {
 
     topicRequestReq.setRequestor(userName);
     topicRequestReq.setUsername(userName);
-
     Integer userTeamId = commonUtilsService.getTeamId(userName);
-
     topicRequestReq.setTeamId(userTeamId);
     String envSelected = topicRequestReq.getEnvironment();
 
@@ -142,18 +140,18 @@ public class KafkaConnectControllerService {
     List<KwKafkaConnector> kafkaConnectorList =
         getConnectorsFromName(topicRequestReq.getConnectorName(), tenantId);
 
-    if (kafkaConnectorList != null
-        && kafkaConnectorList.size() > 0
+    if (!kafkaConnectorList.isEmpty()
         && !Objects.equals(kafkaConnectorList.get(0).getTeamId(), topicRequestReq.getTeamId())) {
       return ApiResponse.builder()
           .result("Failure. This connector is owned by a different team.")
           .build();
     }
+
     boolean promotionOrderCheck =
         checkInPromotionOrder(
             topicRequestReq.getConnectorName(), topicRequestReq.getEnvironment(), orderOfEnvs);
 
-    if (kafkaConnectorList != null && kafkaConnectorList.size() > 0) {
+    if (!kafkaConnectorList.isEmpty()) {
       if (promotionOrderCheck) {
         int devTopicFound =
             (int)
@@ -186,24 +184,22 @@ public class KafkaConnectControllerService {
       }
     }
 
-    if (kafkaConnectorList != null) {
-      if (manageDatabase
-              .getHandleDbRequests()
-              .selectConnectorRequests(
-                  topicRequestReq.getConnectorName(),
-                  topicRequestReq.getEnvironment(),
-                  RequestStatus.CREATED.value,
-                  tenantId)
-              .size()
-          > 0) {
-        return ApiResponse.builder().result("Failure. A connector request already exists.").build();
-      }
+    if (manageDatabase
+            .getHandleDbRequests()
+            .selectConnectorRequests(
+                topicRequestReq.getConnectorName(),
+                topicRequestReq.getEnvironment(),
+                RequestStatus.CREATED.value,
+                tenantId)
+            .size()
+        > 0) {
+      return ApiResponse.builder().result("Failure. A connector request already exists.").build();
     }
 
     // Ignore connector exists check if Update request
     if (!TopicRequestTypes.Update.name().equals(topicRequestReq.getConnectortype())) {
       boolean topicExists = false;
-      if (kafkaConnectorList != null) {
+      if (!kafkaConnectorList.isEmpty()) {
         topicExists =
             kafkaConnectorList.stream()
                 .anyMatch(
