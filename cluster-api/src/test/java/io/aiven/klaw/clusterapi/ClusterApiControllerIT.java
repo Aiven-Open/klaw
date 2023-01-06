@@ -2,6 +2,8 @@ package io.aiven.klaw.clusterapi;
 
 import static io.aiven.klaw.clusterapi.models.enums.ClusterStatus.ONLINE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.acl.AccessControlEntryFilter;
@@ -129,27 +132,10 @@ public class ClusterApiControllerIT {
   public void createTopics() throws Exception {
     String topicName = "testtopic";
     ClusterTopicRequest clusterTopicRequest =
-        ClusterTopicRequest.builder()
-            .clusterName("DEV2")
-            .topicName(topicName)
-            .env(bootStrapServersSsl)
-            .protocol(KafkaSupportedProtocol.SSL)
-            .partitions(1)
-            .replicationFactor(Short.parseShort("1"))
-            .build();
+            createTopicRequest(topicName);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
     String url = "/topics/createTopics";
-    mvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonReq)
-                .header(
-                    AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse();
+    executeCreateTopicRequest(jsonReq, url);
 
     embeddedKafkaBroker.doWithAdmin(
         adminClient -> {
@@ -182,17 +168,7 @@ public class ClusterApiControllerIT {
             .build();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterAclRequest);
     String url = "/topics/createAcls";
-    mvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonReq)
-                .header(
-                    AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse();
+    executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
         new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
@@ -236,17 +212,7 @@ public class ClusterApiControllerIT {
             .build();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterAclRequest);
     String url = "/topics/createAcls";
-    mvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonReq)
-                .header(
-                    AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse();
+    executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
         new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
@@ -309,17 +275,7 @@ public class ClusterApiControllerIT {
             .build();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterAclRequest);
     String url = "/topics/createAcls";
-    mvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonReq)
-                .header(
-                    AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse();
+    executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
         new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
@@ -366,17 +322,7 @@ public class ClusterApiControllerIT {
             .build();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterAclRequest);
     String url = "/topics/createAcls";
-    mvc.perform(
-            MockMvcRequestBuilders.post(url)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonReq)
-                .header(
-                    AUTHORIZATION,
-                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse();
+    executeCreateTopicRequest(jsonReq, url);
 
     ResourcePatternFilter resourceFilter =
         new ResourcePatternFilter(ResourceType.TOPIC, topicName, PatternType.LITERAL);
@@ -423,6 +369,56 @@ public class ClusterApiControllerIT {
     Collection<AclBinding> aclBindings1 = aclBindingFutureList.get(0).get();
 
     assertThat(aclBindings1.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(8)
+  public void createTopicsWhenTopicAlreadyExists() throws Exception {
+    String topicName = "testtopic";
+    ClusterTopicRequest clusterTopicRequest =
+            createTopicRequest(topicName);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
+    String url = "/topics/createTopics";
+    //ensure Topic has already been created in this integration test
+    executeCreateTopicRequest(jsonReq, url);
+    //attempt to create a topic that already exists.
+    MockHttpServletResponse returnedValue = executeCreateTopicRequest(jsonReq,url);
+
+    assertTrue(returnedValue.getContentAsString().contains("TopicExistsException"));
+    embeddedKafkaBroker.doWithAdmin(
+            adminClient -> {
+              try {
+                Set<String> topicsSet = adminClient.listTopics().names().get();
+                assertThat(topicsSet).contains(topicName);
+              } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+              }
+            });
+  }
+
+  private MockHttpServletResponse executeCreateTopicRequest(String jsonReq, String url) throws Exception {
+   return mvc.perform(
+                    MockMvcRequestBuilders.post(url)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonReq)
+                            .header(
+                                    AUTHORIZATION,
+                                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+  }
+
+  private static ClusterTopicRequest createTopicRequest(String topicName) {
+    return ClusterTopicRequest.builder()
+            .clusterName("DEV2")
+            .topicName(topicName)
+            .env(bootStrapServersSsl)
+            .protocol(KafkaSupportedProtocol.SSL)
+            .partitions(1)
+            .replicationFactor(Short.parseShort("1"))
+            .build();
   }
 
   private String generateToken(
