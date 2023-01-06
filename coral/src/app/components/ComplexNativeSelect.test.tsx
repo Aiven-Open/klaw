@@ -212,16 +212,6 @@ describe("ComplexNativeSelect.tsx", () => {
       expect(onBlurMock).toHaveBeenCalledWith(testOptions[0]);
     });
 
-    //TODO check why this is not working
-    xit("enables user to select an option with keyboard", async () => {
-      const select = screen.getByRole("combobox", { name: labelText });
-      select.focus();
-      await userEvent.keyboard("{ArrowDown}{ArrowDown}{Enter}");
-      await userEvent.tab();
-
-      expect(onBlurMock).toHaveBeenCalledWith(testOptions[0]);
-    });
-
     it("does not set an value and call onBlur if user didn't select an option", async () => {
       const select = screen.getByRole("combobox", { name: labelText });
       await userEvent.tab();
