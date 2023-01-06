@@ -20,6 +20,7 @@ import {
   SubmitHandler,
   Textarea,
   TextInput,
+  ComplexNativeSelect,
   useForm,
 } from "src/app/components/Form";
 import { z, ZodSchema } from "zod";
@@ -417,5 +418,102 @@ describe("Form", () => {
     });
 
     // @TODO accesibility testing once tab navigation is fixed for RadioButtonGroup
+  });
+
+  describe("<ComplexNativeSelect>", () => {
+    const schema = z.object({
+      name: z.object({
+        name: z.string(),
+        id: z.string(),
+        age: z.number(),
+      }),
+    });
+
+    type Schema = z.infer<typeof schema>;
+
+    type TestOption = {
+      id: string;
+      name: string;
+      age: number;
+    };
+
+    const testOptions: Array<TestOption> = [
+      { id: "1", name: "one", age: 1 },
+      { id: "2", name: "two", age: 2 },
+      { id: "3", name: "three", age: 3 },
+    ];
+
+    beforeEach(() => {
+      results = renderForm(
+        <ComplexNativeSelect<Schema, TestOption>
+          name="name"
+          options={testOptions}
+          labelText="ComplexNativeSelect"
+          identifierValue={"id"}
+          identifierName={"name"}
+          placeholder={"Please select"}
+        />,
+        { schema }
+      );
+    });
+
+    it("renders a select element with a given placeholder", () => {
+      const select = screen.getByRole("combobox", {
+        name: "ComplexNativeSelect",
+      });
+
+      expect(select).toBeEnabled();
+      expect(select).toHaveDisplayValue("Please select");
+    });
+
+    it("syncs value to form state when user chooses an option", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "ComplexNativeSelect",
+      });
+
+      const selectedOption = testOptions[1];
+      const option = screen.getByRole("option", {
+        name: selectedOption.name,
+      });
+
+      await user.selectOptions(select, option);
+      await user.tab();
+
+      expect(select).toHaveDisplayValue(selectedOption.name);
+      await submit();
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        { name: selectedOption },
+        expect.anything()
+      );
+    });
+
+    it("does not syncs value to form state when user did not choose an option", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "ComplexNativeSelect",
+      });
+      select.focus();
+      await user.tab();
+
+      expect(select).toHaveDisplayValue("Please select");
+      await submit();
+
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it("shows an error when user did not choose an option and wants to submit", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "ComplexNativeSelect",
+      });
+      expect(select).toBeValid();
+
+      select.focus();
+      await user.tab();
+
+      await submit();
+
+      expect(select).toBeInvalid();
+      expect(screen.getByText("Required")).toBeVisible();
+    });
   });
 });

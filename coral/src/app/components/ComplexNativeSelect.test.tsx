@@ -1,7 +1,6 @@
 import { cleanup, render, within, screen } from "@testing-library/react";
 import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
 import userEvent from "@testing-library/user-event";
-import { waitFor } from "@testing-library/react/pure";
 
 type TestOption = {
   id: string;

@@ -11,6 +11,7 @@ import {
   RadioButtonGroup as BaseRadioButtonGroup,
   RadioButtonGroupProps as BaseRadioButtonGroupProps,
   Option,
+  OptionType,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { memo } from "react";
@@ -31,6 +32,10 @@ import {
 import type { FormState } from "react-hook-form";
 import { ZodSchema } from "zod";
 import get from "lodash/get";
+import {
+  ComplexNativeSelect as BaseComplexNativeSelect,
+  ComplexNativeSelectProps as BaseComplexNativeSelectProps,
+} from "src/app/components/ComplexNativeSelect";
 
 type FormInputProps<T extends FieldValues = FieldValues> = {
   name: FieldPath<T>;
@@ -380,3 +385,64 @@ function parseFieldErrorMessage<T extends FieldValues>(
   }
   return undefined;
 }
+
+// <ComplexNativeSelect>
+//
+function _ComplexNativeSelect<
+  T extends FieldValues,
+  FieldValue extends string | OptionType
+>({
+  name,
+  formContext: form,
+  disabled,
+  ...props
+}: Omit<BaseComplexNativeSelectProps<FieldValue>, "value" | "onBlur"> &
+  FormInputProps<T> &
+  FormRegisterProps<T>) {
+  return (
+    <_Controller
+      name={name}
+      control={form.control}
+      render={({ field: { name }, fieldState: { error } }) => {
+        const { isSubmitting } = form.formState;
+
+        return (
+          <BaseComplexNativeSelect
+            {...props}
+            name={name}
+            disabled={disabled || isSubmitting}
+            onBlur={(option) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, option as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            helperText={error?.message}
+            valid={error ? false : undefined}
+          />
+        );
+      }}
+    />
+  );
+}
+
+const ComplexNativeSelectMemo = memo(
+  _ComplexNativeSelect,
+  () => false
+) as typeof _ComplexNativeSelect;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const ComplexNativeSelect = <
+  T extends FieldValues,
+  FieldValue extends string | OptionType
+>(
+  props: FormInputProps<T> &
+    Omit<BaseComplexNativeSelectProps<FieldValue>, "value" | "onBlur">
+): React.ReactElement<
+  FormInputProps<T> &
+    Omit<BaseComplexNativeSelectProps<FieldValue>, "value" | "onBlur">
+> => {
+  const ctx = useFormContext<T>();
+  return <ComplexNativeSelectMemo formContext={ctx} {...props} />;
+};
