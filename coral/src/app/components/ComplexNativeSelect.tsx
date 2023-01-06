@@ -1,32 +1,40 @@
-import { NativeSelect } from "@aivenio/aquarium";
-import { ChangeEvent } from "react";
+import { NativeSelect, NativeSelectProps } from "@aivenio/aquarium";
+import { omit } from "lodash";
+import { ChangeEvent, useState } from "react";
 
-type ComplexNativeSelectProps<T> = {
-  options: Array<T>;
-  onBlur: (option: T | undefined) => void;
-  optionToString: (opt: T) => string;
-  getValue: (opt: T) => string;
-  placeholder: string;
-  labelText: string;
-  disabled?: boolean;
-  defaultValue?: string;
-  required?: boolean;
-  error?: string;
-};
+type ComplexNativeSelectProps<ComplexNativeSelectOptionType> =
+  NativeSelectProps & {
+    options: Array<ComplexNativeSelectOptionType>;
+    identifierValue: keyof ComplexNativeSelectOptionType;
+    identifierName: keyof ComplexNativeSelectOptionType;
+    onBlur: (option: ComplexNativeSelectOptionType | undefined) => void;
+    placeholder: string;
+    activeOption?: ComplexNativeSelectOptionType;
+  };
 
-function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
+function ComplexNativeSelect<ComplexNativeSelectOptionType>(
+  props: ComplexNativeSelectProps<ComplexNativeSelectOptionType>
+) {
   const {
     options,
     onBlur,
-    disabled = false,
-    required = false,
-    defaultValue,
-    labelText,
-    optionToString,
+    identifierValue,
+    identifierName,
     placeholder,
-    getValue,
-    error,
+    activeOption,
   } = props;
+
+  const [activeValue, setActiveValue] = useState<
+    ComplexNativeSelectOptionType | undefined
+  >(activeOption || undefined);
+
+  function getValue(option: ComplexNativeSelectOptionType): string {
+    return String((option as ComplexNativeSelectOptionType)[identifierValue]);
+  }
+
+  function getName(option: ComplexNativeSelectOptionType): string {
+    return String((option as ComplexNativeSelectOptionType)[identifierName]);
+  }
 
   // the placeholder behavior will be covered by DS NativeSelect
   // soon, this is a temp solution
@@ -37,22 +45,29 @@ function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
     } else {
       const newOption = options.find((option) => getValue(option) === value);
       if (newOption) {
+        setActiveValue(newOption);
         onBlur(newOption);
       }
     }
   }
 
+  const nativeSelectProps = omit(
+    props,
+    "options",
+    "identifierValue",
+    "identifierName",
+    "activeOption"
+  );
+
   return (
     <NativeSelect
+      {...nativeSelectProps}
+      value={activeValue && getValue(activeValue)}
       onBlur={setNewOption}
-      disabled={disabled}
-      labelText={labelText}
-      required={required}
-      defaultValue={defaultValue || placeholderValue}
-      valid={error ? false : undefined}
-      helperText={error}
+      onChange={setNewOption}
+      {...(!activeOption && { defaultValue: placeholderValue })}
     >
-      {!defaultValue && (
+      {!activeOption && (
         <option key={placeholderValue} value={placeholderValue} disabled={true}>
           {placeholder}
         </option>
@@ -61,7 +76,7 @@ function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
         const value = getValue(option);
         return (
           <option key={value} value={value}>
-            {optionToString(option)}
+            {getName(option)}
           </option>
         );
       })}

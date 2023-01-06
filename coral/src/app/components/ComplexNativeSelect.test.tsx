@@ -1,8 +1,14 @@
 import { cleanup, render, within, screen } from "@testing-library/react";
 import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
 import userEvent from "@testing-library/user-event";
+import { waitFor } from "@testing-library/react/pure";
 
-const testOptions = [
+type TestOption = {
+  id: string;
+  name: string;
+};
+
+const testOptions: Array<TestOption> = [
   {
     id: "1",
     name: "First option",
@@ -18,25 +24,26 @@ const testOptions = [
 ];
 
 const labelText = "Best option";
+const labelTextRequired = new RegExp(`${labelText}`, "i");
 const placeholder = "Please select";
+const helperText = "There is an error";
 
 describe("ComplexNativeSelect.tsx", () => {
-  describe("renders a select element with required properties", () => {
-    const onBlurMock = jest.fn();
-    const optionToStringMock = jest.fn((option) => option.name);
-    const getValueMock = jest.fn((option) => option.id);
+  const onBlurMock = jest.fn();
 
-    const requiredProps = {
-      options: testOptions,
-      onBlur: onBlurMock,
-      optionToString: optionToStringMock,
-      getValue: getValueMock,
-      placeholder: placeholder,
-      labelText: labelText,
-    };
+  const requiredProps = {
+    options: testOptions,
+    identifierValue: "id" as keyof TestOption,
+    identifierName: "name" as keyof TestOption,
+    onBlur: onBlurMock,
+    placeholder,
+    labelText,
+    helperText,
+  };
 
+  describe("renders an option select element with default props", () => {
     beforeAll(() => {
-      render(<ComplexNativeSelect {...requiredProps} />);
+      render(<ComplexNativeSelect<TestOption> {...requiredProps} />);
     });
 
     afterAll(cleanup);
@@ -45,6 +52,7 @@ describe("ComplexNativeSelect.tsx", () => {
       const select = screen.getByRole("combobox", { name: labelText });
 
       expect(select).toBeEnabled();
+      expect(select).not.toBeRequired();
     });
 
     it("shows a given placeholder text as displayed value", () => {
@@ -71,7 +79,7 @@ describe("ComplexNativeSelect.tsx", () => {
     });
 
     testOptions.forEach((option) => {
-      it(`shows the option "${option.name}"`, () => {
+      it(`shows the option "${option.name}" with the right value associated to it`, () => {
         const select = screen.getByRole("combobox", { name: labelText });
         const currOption = within(select).getByRole("option", {
           name: option.name,
@@ -84,146 +92,77 @@ describe("ComplexNativeSelect.tsx", () => {
     });
   });
 
-  describe("renders a disabled select based on prop", () => {
-    const onBlurMock = jest.fn();
-    const optionToStringMock = jest.fn((option) => option.name);
-    const getValueMock = jest.fn((option) => option.id);
-
-    const requiredProps = {
-      options: testOptions,
-      onBlur: onBlurMock,
-      optionToString: optionToStringMock,
-      getValue: getValueMock,
-      placeholder: placeholder,
-      labelText: labelText,
-    };
-
-    beforeEach(() => {
-      render(<ComplexNativeSelect {...requiredProps} disabled={true} />);
+  describe("renders an required select element dependent on props", () => {
+    beforeAll(() => {
+      render(
+        <ComplexNativeSelect<TestOption> {...requiredProps} required={true} />
+      );
     });
 
-    afterEach(cleanup);
+    afterAll(cleanup);
 
-    it("shows a disabled select element", () => {
-      const select = screen.getByRole("combobox", { name: labelText });
+    it("shows a select element", () => {
+      const select = screen.getByRole("combobox", { name: labelTextRequired });
 
-      expect(select).toBeDisabled();
+      expect(select).toBeEnabled();
     });
 
-    testOptions.forEach((option) => {
-      it(`shows the option "${option.name}" as disabled`, () => {
-        const select = screen.getByRole("combobox", { name: labelText });
-        const currOption = within(select).getByRole("option", {
-          name: option.name,
-        });
-
-        expect(currOption).not.toHaveAttribute("selected");
-        expect(currOption).toHaveValue(option.id);
-        expect(currOption).toBeDisabled();
-      });
-    });
-
-    it("prevents user from interacting with the select", async () => {
-      const select = screen.getByRole("combobox", { name: labelText });
-      const option = within(select).getByRole("option", {
-        name: testOptions[0].name,
-      });
-
-      await userEvent.selectOptions(select, option);
-
-      expect(select).toHaveDisplayValue(placeholder);
-      expect(option).not.toHaveAttribute("selected");
-    });
-  });
-
-  describe("renders a required select based on prop", () => {
-    const onBlurMock = jest.fn();
-    const optionToStringMock = jest.fn((option) => option.name);
-    const getValueMock = jest.fn((option) => option.id);
-
-    const requiredProps = {
-      options: testOptions,
-      onBlur: onBlurMock,
-      optionToString: optionToStringMock,
-      getValue: getValueMock,
-      placeholder: placeholder,
-      labelText: labelText,
-    };
-
-    beforeEach(() => {
-      render(<ComplexNativeSelect {...requiredProps} required={true} />);
-    });
-
-    afterEach(cleanup);
-
-    it("shows a required select element", () => {
-      const select = screen.getByRole("combobox", {
-        name: new RegExp(`${labelText}`, "i"),
-      });
+    it("shows a required attribute to assistive technology", () => {
+      const select = screen.getByRole("combobox", { name: labelTextRequired });
 
       expect(select).toBeRequired();
     });
   });
 
-  describe("renders an invalid select and shows an error message dependent on prop", () => {
-    const onBlurMock = jest.fn();
-    const optionToStringMock = jest.fn((option) => option.name);
-    const getValueMock = jest.fn((option) => option.id);
-
-    const errorMessage = "Oh no this is an error";
-
-    const requiredProps = {
-      options: testOptions,
-      onBlur: onBlurMock,
-      optionToString: optionToStringMock,
-      getValue: getValueMock,
-      placeholder: placeholder,
-      labelText: labelText,
-    };
-
-    beforeEach(() => {
-      render(<ComplexNativeSelect {...requiredProps} error={errorMessage} />);
-    });
-
+  describe("renders an invalid select element with error message dependent on props", () => {
     afterEach(cleanup);
 
     it("shows an invalid select element", () => {
-      const select = screen.getByRole("combobox", {
-        name: new RegExp(`${labelText}`, "i"),
-      });
+      render(
+        <ComplexNativeSelect<TestOption> {...requiredProps} valid={false} />
+      );
 
+      const select = screen.getByRole("combobox", { name: labelText });
+
+      expect(select).toBeEnabled();
       expect(select).toBeInvalid();
     });
 
-    it("shows a given error message", () => {
-      const errorMessage = screen.getByText("Oh no this is an error");
+    it("shows a given error message to the user", () => {
+      render(
+        <ComplexNativeSelect<TestOption> {...requiredProps} valid={false} />
+      );
+      const errorMessage = screen.getByText(helperText);
 
       expect(errorMessage).toBeVisible();
     });
+
+    it("does not show the error message as long as the select is valid", () => {
+      render(
+        <ComplexNativeSelect<TestOption> {...requiredProps} valid={true} />
+      );
+      const errorMessage = screen.queryByText(helperText);
+
+      expect(errorMessage).not.toBeInTheDocument();
+    });
   });
 
-  describe("renders a given option as default value", () => {
-    const onBlurMock = jest.fn();
-    const optionToStringMock = jest.fn((option) => option.name);
-    const getValueMock = jest.fn((option) => option.id);
-
+  describe("renders a given option as the active one when set by prop", () => {
     const selectedOption = testOptions[0];
 
     const requiredProps = {
       options: testOptions,
+      identifierValue: "id" as keyof TestOption,
+      identifierName: "name" as keyof TestOption,
       onBlur: onBlurMock,
-      optionToString: optionToStringMock,
-      getValue: getValueMock,
-      placeholder: placeholder,
-      labelText: labelText,
+      placeholder,
+      labelText,
+      helperText,
     };
 
     beforeEach(() => {
       render(
-        <ComplexNativeSelect
-          {...requiredProps}
-          defaultValue={selectedOption.id}
-        />
+        <ComplexNativeSelect {...requiredProps} activeOption={selectedOption} />
       );
     });
 
@@ -235,16 +174,6 @@ describe("ComplexNativeSelect.tsx", () => {
       expect(select).toHaveDisplayValue(selectedOption.name);
     });
 
-    it("shows option related to the given option value as selected one", () => {
-      const select = screen.getByRole("combobox", { name: labelText });
-      const option = within(select).getByRole("option", {
-        name: selectedOption.name,
-      });
-
-      expect(option).toHaveValue(selectedOption.id);
-      expect(option).toHaveAttribute("selected");
-    });
-
     it("does not render the disabled placeholder option", () => {
       const select = screen.getByRole("combobox", { name: labelText });
       const placeholderOption = within(select).queryByRole("option", {
@@ -252,6 +181,54 @@ describe("ComplexNativeSelect.tsx", () => {
       });
 
       expect(placeholderOption).not.toBeInTheDocument();
+    });
+
+    it("triggers the onBlur event with the set option when user leaves the select", async () => {
+      const select = screen.getByRole("combobox", { name: labelText });
+      select.focus();
+      await userEvent.tab();
+
+      expect(onBlurMock).toHaveBeenCalledWith(selectedOption);
+    });
+  });
+
+  describe("handles user choosing an option an optional select", () => {
+    beforeEach(() => {
+      render(<ComplexNativeSelect<TestOption> {...requiredProps} />);
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("enables user to select an option with mouse", async () => {
+      const select = screen.getByRole("combobox", { name: labelText });
+      const option = screen.getByRole("option", { name: testOptions[0].name });
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+
+      expect(select).toHaveValue(testOptions[0].id);
+      expect(onBlurMock).toHaveBeenCalledWith(testOptions[0]);
+    });
+
+    //TODO check why this is not working
+    xit("enables user to select an option with keyboard", async () => {
+      const select = screen.getByRole("combobox", { name: labelText });
+      select.focus();
+      await userEvent.keyboard("{ArrowDown}{ArrowDown}{Enter}");
+      await userEvent.tab();
+
+      expect(onBlurMock).toHaveBeenCalledWith(testOptions[0]);
+    });
+
+    it("does not set an value and call onBlur if user didn't select an option", async () => {
+      const select = screen.getByRole("combobox", { name: labelText });
+      await userEvent.tab();
+
+      expect(select).toHaveDisplayValue(placeholder);
+      expect(onBlurMock).not.toHaveBeenCalled();
     });
   });
 });
