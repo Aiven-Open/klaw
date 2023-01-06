@@ -1,8 +1,8 @@
 package io.aiven.klaw.validation;
 
 import io.aiven.klaw.model.KwClustersModel;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

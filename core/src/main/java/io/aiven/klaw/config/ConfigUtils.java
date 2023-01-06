@@ -50,7 +50,7 @@ public class ConfigUtils {
     http.csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers(getStaticResources(coralEnabled).toArray(new String[0]))
+        .requestMatchers(getStaticResources(coralEnabled).toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .authenticated()

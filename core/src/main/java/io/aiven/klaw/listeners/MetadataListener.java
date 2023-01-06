@@ -3,7 +3,7 @@ package io.aiven.klaw.listeners;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.enums.EntityType;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;

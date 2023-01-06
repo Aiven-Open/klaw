@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames.ID_TOKEN;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 
-import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.gson.JsonArray;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -177,11 +177,11 @@ public class ActiveDirectoryAuthorizationIT {
     claims.put("sub", 123);
     claims.put("preferred_username", "newuser"); // new user who doesn't exist
     if (teams.equals("VALID")) { // add one valid team
-      JSONArray jsonArray = new JSONArray();
+      JsonArray jsonArray = new JsonArray();
       jsonArray.add(INFRATEAM);
       claims.put("teams", jsonArray);
     } else if (teams.equals("MULTIPLE")) { // add multiple valid teams
-      JSONArray jsonArray = new JSONArray();
+      JsonArray jsonArray = new JsonArray();
       jsonArray.add(INFRATEAM);
       jsonArray.add(STAGINGTEAM);
       claims.put("teams", jsonArray);

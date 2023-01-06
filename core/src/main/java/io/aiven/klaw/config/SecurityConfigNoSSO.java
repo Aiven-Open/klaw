@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -27,6 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
+@Configuration
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
 @Slf4j
 public class SecurityConfigNoSSO {
@@ -66,8 +68,8 @@ public class SecurityConfigNoSSO {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf()
         .disable()
-        .authorizeRequests()
-        .antMatchers(ConfigUtils.getStaticResources(coralEnabled).toArray(new String[0]))
+        .authorizeHttpRequests()
+        .requestMatchers(ConfigUtils.getStaticResources(coralEnabled).toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .fullyAuthenticated()

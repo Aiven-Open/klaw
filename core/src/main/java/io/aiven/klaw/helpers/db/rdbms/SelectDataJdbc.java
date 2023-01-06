@@ -1146,6 +1146,6 @@ public class SelectDataJdbc {
   }
 
   public int getAllTopicsCountInAllTenants() {
-    return ((BigInteger) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+    return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
   }
 }

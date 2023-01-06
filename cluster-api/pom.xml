@@ -18,12 +18,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <!-- the list is sorted-->
         <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <guava.version>31.1-jre</guava.version>
-        <kafka.client.version>3.1.2</kafka.client.version>
-        <spring-kafka-test.version>2.9.4</spring-kafka-test.version>
+        <kafka.client.version>3.3.1</kafka.client.version>
+        <spring-kafka-test.version>3.0.1</spring-kafka-test.version>
     </properties>
 
     <dependencies>
@@ -42,8 +42,6 @@
             <artifactId>spring-kafka-test</artifactId>
             <version>${spring-kafka-test.version}</version>
             <scope>test</scope>
-            <exclusions>
-            </exclusions>
         </dependency>
     </dependencies>
 

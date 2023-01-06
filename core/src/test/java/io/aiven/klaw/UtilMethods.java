@@ -24,7 +24,7 @@ public class UtilMethods {
     return new HttpHeaders() {
       {
         String auth = username + ":" + password;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII), false);
         String authHeader = "Basic " + new String(encodedAuth);
         set("Authorization", authHeader);
       }

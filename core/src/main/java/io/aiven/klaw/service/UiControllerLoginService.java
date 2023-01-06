@@ -7,7 +7,8 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.gson.JsonArray;
+import com.nimbusds.jose.shaded.gson.JsonPrimitive;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
@@ -16,14 +17,14 @@ import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,9 +240,9 @@ public class UiControllerLoginService {
     String claimValue = null;
     int claimMatched = 0;
     try {
-      JSONArray jsonArray = (JSONArray) defaultOAuth2User.getAttributes().get(claimKey);
+      JsonArray jsonArray = (JsonArray) defaultOAuth2User.getAttributes().get(claimKey);
       for (Object jsonObject : jsonArray) {
-        String jsonElement = jsonObject.toString();
+        String jsonElement = ((JsonPrimitive) jsonObject).getAsString();
         if (klawRolesTeams.stream().anyMatch(jsonElement::equalsIgnoreCase)) {
           claimMatched++;
           claimValue = jsonElement;
