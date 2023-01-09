@@ -377,7 +377,6 @@ function _RadioButtonGroup<T extends FieldValues>({
         return (
           <BaseRadioButtonGroup
             {...props}
-            {...form.register(name)}
             name={name}
             value={value}
             onChange={(value) => {
