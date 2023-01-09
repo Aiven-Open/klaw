@@ -1,4 +1,7 @@
-import { TopicApiResponse } from "src/domain/topic/topic-types";
+import {
+  TopicAdvancedConfigurationOptions,
+  TopicApiResponse,
+} from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
 
 // @TODO check zod for this!
@@ -20,4 +23,13 @@ function transformTopicApiResponse(
   };
 }
 
-export { transformTopicApiResponse };
+function transformGetTopicAdvanvedConfigOptionsResponse(
+  apiResponse: KlawApiResponse<"topicAdvancedConfigGet">
+): TopicAdvancedConfigurationOptions[] {
+  return Object.entries(apiResponse).map(([key, name]) => ({ key, name }));
+}
+
+export {
+  transformTopicApiResponse,
+  transformGetTopicAdvanvedConfigOptionsResponse,
+};

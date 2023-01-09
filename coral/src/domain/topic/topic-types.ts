@@ -12,4 +12,15 @@ type Topic = KlawApiModel<"TopicInfo">;
 type TopicNames = KlawApiModel<"TopicsGetOnlyResponse">;
 type TopicTeam = KlawApiModel<"TopicGetTeamResponse">;
 
-export type { Topic, TopicNames, TopicTeam, TopicApiResponse };
+type TopicAdvancedConfigurationOptions = {
+  key: string;
+  name: string;
+};
+
+export type {
+  Topic,
+  TopicNames,
+  TopicTeam,
+  TopicApiResponse,
+  TopicAdvancedConfigurationOptions,
+};
