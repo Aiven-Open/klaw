@@ -11,6 +11,7 @@ import React from "react";
 import type { DeepPartial, FieldValues } from "react-hook-form";
 import {
   Form,
+  MultiInput,
   NativeSelect,
   NumberInput,
   PasswordInput,
@@ -93,7 +94,9 @@ describe("Form", () => {
     await user.click(screen.getByRole("button", { name: "Submit" }));
   };
 
-  const assertSubmitted = (data: Record<string, string | number>) => {
+  const assertSubmitted = (
+    data: Record<string, string | number | string[]>
+  ) => {
     expect(onSubmit).toHaveBeenCalledWith(data, expect.anything());
   };
 
@@ -514,6 +517,49 @@ describe("Form", () => {
 
       expect(select).toBeInvalid();
       expect(screen.getByText("Required")).toBeVisible();
+    });
+  });
+  describe("<MultiInput>", () => {
+    const schema = z.object({
+      cities: z.string().array(),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <MultiInput<Schema> name="cities" labelText="Cities" />,
+        { schema }
+      );
+    });
+
+    it("should render a MultiInput", () => {
+      expect(screen.getByRole("textbox")).toBeVisible();
+    });
+
+    it("should render correct label", () => {
+      expect(screen.getByLabelText("Cities")).toBeVisible();
+    });
+
+    it("should sync value to form state when typing into MultiInput", async () => {
+      const citiesInput = screen.getByRole<HTMLInputElement>("textbox");
+
+      await user.type(citiesInput, "Berlin");
+      expect(citiesInput.value).toBe("Berlin");
+      await userEvent.keyboard("{Enter}");
+
+      await user.type(citiesInput, "Helsinki");
+      expect(citiesInput.value).toBe("Helsinki");
+      await user.keyboard("{Enter}");
+
+      const berlinPill = screen.getByText("Berlin");
+      const helsinkiPill = screen.getByText("Helsinki");
+      expect(berlinPill).toBeVisible();
+      expect(helsinkiPill).toBeVisible();
+      expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+
+      await submit();
+      assertSubmitted({ cities: ["Berlin", "Helsinki"] });
     });
   });
 });
