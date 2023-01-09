@@ -118,17 +118,12 @@ public class TopicSyncControllerServiceTest {
   @Order(1)
   public void updateSyncTopicsSuccess() throws KlawException {
     stubUserInfo();
-    // mock DB
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
-
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
-    // Mock Common Utils
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-
-    //    Mock DB Requests
     when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse result =
@@ -203,7 +198,10 @@ public class TopicSyncControllerServiceTest {
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
-            .thenReturn(createAPIResponse(HttpStatus.OK, "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
+        .thenReturn(
+            createAPIResponse(
+                HttpStatus.OK,
+                "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
 
     // execute
     ApiResponse retval =
@@ -225,8 +223,10 @@ public class TopicSyncControllerServiceTest {
     verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
 
     // This should pass when clusterApi is updated
-         assertNotEquals("Error :Could not approve topic request. Please contact Administrator.",retval.getResult());
-     assertEquals("success",retval.getResult());
+    assertNotEquals(
+        "Error :Could not approve topic request. Please contact Administrator.",
+        retval.getResult());
+    assertEquals("success", retval.getResult());
   }
 
   @Test
@@ -276,7 +276,10 @@ public class TopicSyncControllerServiceTest {
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
-            .thenReturn(createAPIResponse(HttpStatus.OK, "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
+        .thenReturn(
+            createAPIResponse(
+                HttpStatus.OK,
+                "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
 
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -296,10 +299,10 @@ public class TopicSyncControllerServiceTest {
 
     verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
 
-        assertNotEquals(
-                "Error :Could not approve topic request. Please contact Administrator.",
-                retval.getResult());
-        assertEquals("success", retval.getResult());
+    assertNotEquals(
+        "Error :Could not approve topic request. Please contact Administrator.",
+        retval.getResult());
+    assertEquals("success", retval.getResult());
   }
 
   @Test
@@ -350,13 +353,13 @@ public class TopicSyncControllerServiceTest {
     mockSelectedOnlyTopics(2, "UnitTest-02", test.getId());
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
-            .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
-            .thenThrow(
-                    new KlawException("Could not approve topic request. Please contact Administrator."));
+        .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
+        .thenThrow(
+            new KlawException("Could not approve topic request. Please contact Administrator."));
 
     ApiResponse retval =
-            topicSyncControllerService.updateSyncBackTopics(
-                    createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
+        topicSyncControllerService.updateSyncBackTopics(
+            createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
 
     // verfiy only 1 topic Request is sent to the manage database
     verify(handleDbRequests).requestForTopic(topicRequestCaptor.capture());
@@ -373,8 +376,8 @@ public class TopicSyncControllerServiceTest {
     verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
 
     assertEquals(
-            "Error :Could not approve topic request. Please contact Administrator.",
-            retval.getResult());
+        "Error :Could not approve topic request. Please contact Administrator.",
+        retval.getResult());
   }
 
   private List<Team> getAvailableTeams() {
@@ -424,8 +427,7 @@ public class TopicSyncControllerServiceTest {
     return topic;
   }
 
-  private ResponseEntity<ApiResponse> createAPIResponse(
-      HttpStatus status, String resultStatus) {
+  private ResponseEntity<ApiResponse> createAPIResponse(HttpStatus status, String resultStatus) {
     return ResponseEntity.status(status)
         .body(ApiResponse.builder().status(status).result(resultStatus).build());
   }
