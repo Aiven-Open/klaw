@@ -2,19 +2,16 @@ import { NativeSelect, NativeSelectProps } from "@aivenio/aquarium";
 import { omit } from "lodash";
 import { ChangeEvent, useState } from "react";
 
-type ComplexNativeSelectProps<ComplexNativeSelectOptionType> =
-  NativeSelectProps & {
-    options: Array<ComplexNativeSelectOptionType>;
-    identifierValue: keyof ComplexNativeSelectOptionType;
-    identifierName: keyof ComplexNativeSelectOptionType;
-    onBlur: (option: ComplexNativeSelectOptionType | undefined) => void;
-    placeholder: string;
-    activeOption?: ComplexNativeSelectOptionType;
-  };
+type ComplexNativeSelectProps<T> = NativeSelectProps & {
+  options: Array<T>;
+  identifierValue: keyof T;
+  identifierName: keyof T;
+  onBlur: (option: T | undefined) => void;
+  placeholder: string;
+  activeOption?: T;
+};
 
-function ComplexNativeSelect<ComplexNativeSelectOptionType>(
-  props: ComplexNativeSelectProps<ComplexNativeSelectOptionType>
-) {
+function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
   const {
     options,
     onBlur,
@@ -24,16 +21,16 @@ function ComplexNativeSelect<ComplexNativeSelectOptionType>(
     activeOption,
   } = props;
 
-  const [activeValue, setActiveValue] = useState<
-    ComplexNativeSelectOptionType | undefined
-  >(activeOption || undefined);
+  const [activeValue, setActiveValue] = useState<T | undefined>(
+    activeOption || undefined
+  );
 
-  function getValue(option: ComplexNativeSelectOptionType): string {
-    return String((option as ComplexNativeSelectOptionType)[identifierValue]);
+  function getValue(option: T): string {
+    return String((option as T)[identifierValue]);
   }
 
-  function getName(option: ComplexNativeSelectOptionType): string {
-    return String((option as ComplexNativeSelectOptionType)[identifierName]);
+  function getName(option: T): string {
+    return String((option as T)[identifierName]);
   }
 
   // the placeholder behavior will be covered by DS NativeSelect
