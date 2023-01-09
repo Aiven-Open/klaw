@@ -113,15 +113,25 @@ public class ApacheKafkaTopicService {
     } catch (NumberFormatException e) {
       log.error("Invalid replica assignment string", e);
       throw e;
-    } catch (ExecutionException | InterruptedException e) {
-      String errorMessage;
-      if (e instanceof ExecutionException) {
-        errorMessage = e.getCause().getMessage();
-      } else {
-        Thread.currentThread().interrupt();
-        errorMessage = e.getMessage();
+    } catch (ExecutionException e) {
+      log.error(
+          "Unable to create topic {}, {}",
+          clusterTopicRequest.getTopicName(),
+          e.getCause().getMessage());
+      // TopicExistsException is wrapped in ExecutionException so we have to dig into the lower
+      // exception.
+      if (e.getMessage().contains("TopicExistsException")) {
+        log.warn(
+            "Topic: {} already exists in {}",
+            clusterTopicRequest.getTopicName(),
+            clusterTopicRequest.getEnv());
+        return ApiResponse.builder().result(e.getMessage()).build();
       }
-      log.error("Unable to create topic {}, {}", clusterTopicRequest.getTopicName(), errorMessage);
+      throw e;
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.error(
+          "Unable to create topic {}, {}", clusterTopicRequest.getTopicName(), e.getMessage());
       throw e;
     } catch (Exception e) {
       log.error("Exception:", e);
