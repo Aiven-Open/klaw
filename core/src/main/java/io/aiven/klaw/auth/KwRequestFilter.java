@@ -1,29 +1,27 @@
 package io.aiven.klaw.auth;
 
-import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
-
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.service.ValidateCaptchaService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
-@Component
 @Slf4j
 public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -35,20 +33,28 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
 
   @Autowired ValidateCaptchaService validateCaptchaService;
 
-  @Autowired ManageDatabase manageDatabase;
+  ManageDatabase manageDatabase;
 
   @Autowired KwAuthenticationService kwAuthenticationService;
 
-  @Lazy private AuthenticationManager authenticationManager;
+  private AuthenticationManager authenticationManager;
 
-  @Autowired private KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
+  private KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
 
-  @Autowired private KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+  private KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+
+  public KwRequestFilter(AuthenticationManager authenticationManager, ManageDatabase manageDatabase, KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler, KwAuthenticationFailureHandler kwAuthenticationFailureHandler) {
+    this.authenticationManager = authenticationManager;
+    this.manageDatabase = manageDatabase;
+    this.kwAuthenticationSuccessHandler = kwAuthenticationSuccessHandler;
+    this.kwAuthenticationFailureHandler = kwAuthenticationFailureHandler;
+    super.setAuthenticationManager(this.authenticationManager);
+  }
 
   @Override
-  @Autowired
-  public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {
-    super.setAuthenticationManager(authenticationManager);
+//  @Autowired
+  public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+    super.setAuthenticationManager(this.authenticationManager);
   }
 
   // this is the starting method for authentication.

@@ -1,11 +1,8 @@
 package io.aiven.klaw.config;
 
-import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
-import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
-
-import io.aiven.klaw.auth.KwRequestFilter;
+import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
+import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import io.aiven.klaw.dao.UserInfo;
-import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +22,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 @EnableWebSecurity
 @Configuration
@@ -34,6 +38,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigNoSSO {
 
   @Autowired private ManageDatabase manageTopics;
+
+  @Autowired
+  KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+
+  @Autowired
+  KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -58,14 +68,15 @@ public class SecurityConfigNoSSO {
 
   @Autowired LdapTemplate ldapTemplate;
 
-  @Autowired private KwRequestFilter kwRequestFilterup;
+//  private KwRequestFilter kwRequestFilterup;
+  private AuthenticationManager authenticationManager;
 
   private void shutdownApp() {
     // ((ConfigurableApplicationContext) contextApp).close();
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
     http.csrf()
         .disable()
         .authorizeHttpRequests()
@@ -84,7 +95,7 @@ public class SecurityConfigNoSSO {
         .logoutSuccessUrl("/login");
 
     //         Add a filter to validate the username/pwd with every request
-    http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
+//    http.addFilterBefore(new KwRequestFilter(authenticationConfiguration.getAuthenticationManager(), manageTopics, kwAuthenticationSuccessHandler, kwAuthenticationFailureHandler), UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
@@ -102,7 +113,8 @@ public class SecurityConfigNoSSO {
       return new ProviderManager(
           Collections.singletonList(activeDirectoryLdapAuthenticationProvider()));
     }
-    return authenticationConfiguration.getAuthenticationManager();
+    this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
+    return this.authenticationManager;
   }
 
   public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
