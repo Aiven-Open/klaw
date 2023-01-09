@@ -4,6 +4,8 @@ import {
   InputProps as BaseInputProps,
   Textarea as BaseTextarea,
   TextareaProps as BaseTextareaProps,
+  MultiInput as BaseMultiInput,
+  MultiInputProps as BaseMultiInputProps,
   NativeSelect as BaseNativeSelect,
   NativeSelectProps as BaseNativeSelectProps,
   RadioButton as BaseRadioButton,
@@ -241,6 +243,51 @@ function _SubmitButton<T extends FieldValues>({
 }
 
 //
+// <MultiInput>
+//
+function _MultiInput<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: BaseMultiInputProps<T> & FormInputProps<T> & FormRegisterProps<T>) {
+  return (
+    <_Controller
+      name={name}
+      control={form.control}
+      render={({ field: { value, name }, fieldState: { error } }) => {
+        return (
+          <BaseMultiInput
+            {...props}
+            name={name}
+            value={value}
+            onChange={(value) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, value as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            error={error?.message}
+          />
+        );
+      }}
+    />
+  );
+}
+
+const MultiInputMemo = memo(_MultiInput) as typeof _MultiInput;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const MultiInput = <T extends FieldValues>(
+  props: FormInputProps<T> & BaseMultiInputProps<T>
+): React.ReactElement<FormInputProps<T> & BaseMultiInputProps<T>> => {
+  const ctx = useFormContext<T>();
+  return <MultiInputMemo formContext={ctx} {...props} />;
+};
+
+MultiInput.Skeleton = BaseMultiInput.Skeleton;
+
+//
 // <NativeSelect>
 //
 function _NativeSelect<T extends FieldValues>({
@@ -330,7 +377,6 @@ function _RadioButtonGroup<T extends FieldValues>({
         return (
           <BaseRadioButtonGroup
             {...props}
-            {...form.register(name)}
             name={name}
             value={value}
             onChange={(value) => {
