@@ -239,7 +239,7 @@ paths:
   /getClusterInfoFromEnv:
     get:
       operationId: clusterInfoFromEnvironmentGet
-      summary: Get information about the cluster from the selected environment
+      summary: "Get flavor of Kafka cluster (Aiven cluster or other type of cluster)"
       tags:
         - Environment
       parameters:
@@ -736,6 +736,7 @@ components:
         type: string
     environmentGetClusterInfoResponse:
       type: object
+      description: Flavor of Kafka cluster (Aiven or other)
       required: ["aivenCluster"]
       properties:
         aivenCluster:

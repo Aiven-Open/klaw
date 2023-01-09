@@ -435,6 +435,7 @@ export type components = {
      */
     topicAdvancedConfigGetResponse: { [key: string]: string };
     /**
+     * @description Flavor of Kafka cluster (Aiven or other)
      * @example {
      *   "aivenCluster": "false"
      * }
