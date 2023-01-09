@@ -3,7 +3,7 @@ info:
   title: Klaw - OpenAPI
   version: 1.0.0
   description: >
-    This specification is still a work in progress and is not yet implemented in any API. The purpose of this 
+    This specification is still a work in progress and is not yet implemented in any API. The purpose of this
     specification is to facilitate developers discussions.
   contact:
     email: info@klaw-project.io
@@ -239,7 +239,7 @@ paths:
   /getClusterInfoFromEnv:
     get:
       operationId: clusterInfoFromEnvironmentGet
-      summary: Get information about the cluster from the selected environment
+      summary: "Get flavor of Kafka cluster (Aiven cluster or other type of cluster)"
       tags:
         - Environment
       parameters:
@@ -736,9 +736,12 @@ components:
         type: string
     environmentGetClusterInfoResponse:
       type: object
-      additionalProperties:
-        type: string
-        enum: ["true", "false"]
+      description: Flavor of Kafka cluster (Aiven or other)
+      required: ["aivenCluster"]
+      properties:
+        aivenCluster:
+          type: string
+          enum: ["true", "false"]
       example: { "aivenCluster": "false" }
     topicCreateRequest:
       title: TopicCreateRequest

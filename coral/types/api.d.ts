@@ -435,11 +435,15 @@ export type components = {
      */
     topicAdvancedConfigGetResponse: { [key: string]: string };
     /**
+     * @description Flavor of Kafka cluster (Aiven or other)
      * @example {
      *   "aivenCluster": "false"
      * }
      */
-    environmentGetClusterInfoResponse: { [key: string]: "true" | "false" };
+    environmentGetClusterInfoResponse: {
+      /** @enum {string} */
+      aivenCluster: "true" | "false";
+    };
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
