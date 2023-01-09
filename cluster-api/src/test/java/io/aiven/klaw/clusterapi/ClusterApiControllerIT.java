@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.acl.AccessControlEntryFilter;
@@ -67,6 +68,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
 @EmbeddedKafka
+@Slf4j
 public class ClusterApiControllerIT {
 
   public static final String KWCLUSTERAPIUSER = "kwclusterapiuser";
@@ -142,7 +144,7 @@ public class ClusterApiControllerIT {
             Set<String> topicsSet = adminClient.listTopics().names().get();
             assertThat(topicsSet).contains(topicName);
           } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            log.error("Error : ", e);
           }
         });
   }
@@ -395,7 +397,7 @@ public class ClusterApiControllerIT {
             Set<String> topicsSet = adminClient.listTopics().names().get();
             assertThat(topicsSet).contains(topicName);
           } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            log.error("Error : ", e);
           }
         });
   }

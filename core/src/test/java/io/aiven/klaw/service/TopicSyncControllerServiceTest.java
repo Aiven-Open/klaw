@@ -1,20 +1,38 @@
 package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.SyncBackTopics;
+import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -42,6 +60,8 @@ public class TopicSyncControllerServiceTest {
   public static final String ALL_TOPICS = "ALL_TOPICS";
   public static final int TENANT_ID = 1;
   public static final String USERNAME = "kwusera";
+  public static final String TOPIC_NAME_1 = "unittest-01";
+  public static final String TOPIC_NAME_2 = "unittest-02";
   @Mock private ClusterApiService clusterApiService;
 
   @Mock private UserDetails userDetails;
@@ -80,7 +100,7 @@ public class TopicSyncControllerServiceTest {
   public void setUp() throws Exception {
     this.topicSyncControllerService = new TopicSyncControllerService();
     utilMethods = new UtilMethods();
-    EnvironmentSetUp();
+    environmentSetUp();
 
     ReflectionTestUtils.setField(topicSyncControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(topicSyncControllerService, "mailService", mailService);
@@ -97,7 +117,7 @@ public class TopicSyncControllerServiceTest {
     loginMock();
   }
 
-  private void EnvironmentSetUp() {
+  private void environmentSetUp() {
     env.setId("1");
     env.setName("DEV");
 
@@ -193,7 +213,7 @@ public class TopicSyncControllerServiceTest {
   public void approveTopicRequestAllTopicsWhereOneTopicIsAlreadyCreated() throws KlawException {
     // mock
     stubUserInfo();
-    MockMultipleTopics();
+    mockMultipleTopics();
     mockGetTopicsFromEnv();
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
@@ -215,18 +235,17 @@ public class TopicSyncControllerServiceTest {
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two topics but one already exists so only one should be added to the database.
-    assertEquals(1, req.size());
-    assertEquals(1, update.size());
+    assertThat(req.size()).isEqualTo(1);
+    assertThat(update.size()).isEqualTo(1);
     // we expect all request to also be updated to approved
-    assertEquals(req.size(), update.size());
+    assertThat(req.size()).isEqualTo(update.size());
 
-    verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
+    verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
     // This should pass when clusterApi is updated
-    assertNotEquals(
-        "Error :Could not approve topic request. Please contact Administrator.",
-        retval.getResult());
-    assertEquals("success", retval.getResult());
+    assertThat(retval.getResult())
+        .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
+    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -234,7 +253,7 @@ public class TopicSyncControllerServiceTest {
   public void approveTopicRequestAllTopicsCreateAll() throws KlawException {
 
     stubUserInfo();
-    MockMultipleTopics();
+    mockMultipleTopics();
     mockGetTopicsFromEnv();
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
@@ -253,26 +272,25 @@ public class TopicSyncControllerServiceTest {
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two new topics both should be added to the database.
-    assertEquals(2, req.size());
-    assertEquals(2, update.size());
+    assertThat(req.size()).isEqualTo(2);
+    assertThat(update.size()).isEqualTo(2);
     // we expect all request to also be updated to approved
-    verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
+    verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
-    verifyCaptureContents(req, update, 1, 2, "UnitTest-02");
-    assertNotEquals(
-        "Error :Could not approve topic request. Please contact Administrator.",
-        retval.getResult());
-    assertEquals("success", retval.getResult());
+    verifyCaptureContents(req, update, 1, 2, TOPIC_NAME_2);
+    assertThat(retval.getResult())
+        .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
+    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(7)
   public void approveTopicRequestSelectedWhereOneTopicIsAlreadyCreated() throws KlawException {
     stubUserInfo();
-    MockMultipleTopics();
-    mockSelectedOnlyTopics(1, "UnitTest-01", env.getId());
+    mockMultipleTopics();
+    mockSelectedOnlyTopics(1, TOPIC_NAME_1, env.getId());
 
-    mockSelectedOnlyTopics(2, "UnitTest-02", test.getId());
+    mockSelectedOnlyTopics(2, TOPIC_NAME_2, test.getId());
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
@@ -292,17 +310,16 @@ public class TopicSyncControllerServiceTest {
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two topics but one already exists so only one should be added to the database.
-    assertEquals(1, req.size());
-    assertEquals(1, update.size());
+    assertThat(req.size()).isEqualTo(1);
+    assertThat(update.size()).isEqualTo(1);
     // we expect all request to also be updated to approved
-    assertEquals(req.size(), update.size());
+    assertThat(req.size()).isEqualTo(update.size());
 
-    verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
+    verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
-    assertNotEquals(
-        "Error :Could not approve topic request. Please contact Administrator.",
-        retval.getResult());
-    assertEquals("success", retval.getResult());
+    assertThat(retval.getResult())
+        .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
+    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -310,10 +327,10 @@ public class TopicSyncControllerServiceTest {
   public void approveTopicRequestSelectedCreateAll() throws KlawException {
 
     stubUserInfo();
-    MockMultipleTopics();
-    mockSelectedOnlyTopics(1, "UnitTest-01", env.getId());
+    mockMultipleTopics();
+    mockSelectedOnlyTopics(1, TOPIC_NAME_1, env.getId());
 
-    mockSelectedOnlyTopics(2, "UnitTest-02", test.getId());
+    mockSelectedOnlyTopics(2, TOPIC_NAME_2, test.getId());
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value));
@@ -330,27 +347,26 @@ public class TopicSyncControllerServiceTest {
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two new topics both should be added to the database.
-    assertEquals(2, req.size());
-    assertEquals(2, update.size());
+    assertThat(req.size()).isEqualTo(2);
+    assertThat(update.size()).isEqualTo(2);
     // we expect all request to also be updated to approved
-    assertEquals(req.size(), update.size());
+    assertThat(req.size()).isEqualTo(update.size());
 
-    verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
-    verifyCaptureContents(req, update, 1, 2, "UnitTest-02");
-    assertNotEquals(
-        "Error :Could not approve topic request. Please contact Administrator.",
-        retval.getResult());
-    assertEquals("success", retval.getResult());
+    verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
+    verifyCaptureContents(req, update, 1, 2, TOPIC_NAME_2);
+    assertThat(retval.getResult())
+        .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
+    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(9)
   public void approveTopicRequestSelectedUnexpectedExceptionFromClusterApi() throws KlawException {
     stubUserInfo();
-    MockMultipleTopics();
-    mockSelectedOnlyTopics(1, "UnitTest-01", env.getId());
+    mockMultipleTopics();
+    mockSelectedOnlyTopics(1, TOPIC_NAME_1, env.getId());
 
-    mockSelectedOnlyTopics(2, "UnitTest-02", test.getId());
+    mockSelectedOnlyTopics(2, TOPIC_NAME_2, test.getId());
     when(clusterApiService.approveTopicRequests(
             any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
@@ -368,16 +384,15 @@ public class TopicSyncControllerServiceTest {
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two topics but one already exists so only one should be added to the database.
-    assertEquals(1, req.size());
-    assertEquals(1, update.size());
+    assertThat(req.size()).isEqualTo(1);
+    assertThat(update.size()).isEqualTo(1);
     // we expect all request to also be updated to approved
-    assertEquals(req.size(), update.size());
+    assertThat(req.size()).isEqualTo(update.size());
 
-    verifyCaptureContents(req, update, 0, 1, "UnitTest-01");
+    verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
-    assertEquals(
-        "Error :Could not approve topic request. Please contact Administrator.",
-        retval.getResult());
+    assertThat(retval.getResult())
+        .isEqualTo("Error :Could not approve topic request. Please contact Administrator.");
   }
 
   private List<Team> getAvailableTeams() {
@@ -432,34 +447,34 @@ public class TopicSyncControllerServiceTest {
         .body(ApiResponse.builder().status(status).result(resultStatus).build());
   }
 
-  private void MockMultipleTopics() {
+  private void mockMultipleTopics() {
 
     when(handleDbRequests.requestForTopic(any()))
         .thenReturn(
             new HashMap<String, String>() {
               {
-                put("result", "success");
+                put("result", ApiResultStatus.SUCCESS.value);
                 put("topicId", "1");
               }
             })
         .thenReturn(
             new HashMap<String, String>() {
               {
-                put("result", "success");
+                put("result", ApiResultStatus.SUCCESS.value);
                 put("topicId", "2");
               }
             });
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(createTopic(Integer.valueOf(1), "UnitTest-01", env.getId())))
-        .thenReturn(List.of(createTopic(Integer.valueOf(2), "UnitTest-02", env.getId())));
+        .thenReturn(List.of(createTopic(Integer.valueOf(1), TOPIC_NAME_1, env.getId())))
+        .thenReturn(List.of(createTopic(Integer.valueOf(2), TOPIC_NAME_2, env.getId())));
   }
 
   private void mockGetTopicsFromEnv() {
     when(handleDbRequests.getTopicsFromEnv(env.getId(), TENANT_ID))
         .thenReturn(
             List.of(
-                createTopic(Integer.valueOf(1), "UnitTest-01", env.getId()),
-                createTopic(Integer.valueOf(2), "UnitTest-02", test.getId())));
+                createTopic(Integer.valueOf(1), TOPIC_NAME_1, env.getId()),
+                createTopic(Integer.valueOf(2), TOPIC_NAME_2, test.getId())));
   }
 
   private void mockSelectedOnlyTopics(int topicId, String topicName, String envId) {
@@ -469,12 +484,12 @@ public class TopicSyncControllerServiceTest {
 
   private void verifyCaptureContents(
       List<TopicRequest> req, List<TopicRequest> update, int entry, int topicId, String topicName) {
-    assertEquals(req.size(), update.size());
-    assertEquals(req.get(entry).getTopicid(), update.get(entry).getTopicid());
+    assertThat(req.size()).isEqualTo(update.size());
+    assertThat(req.get(entry).getTopicid()).isEqualTo(update.get(entry).getTopicid());
     // Check it is the expected topic.
     TopicRequest topicReq = req.get(entry);
-    assertEquals(test.getId(), topicReq.getEnvironment());
-    assertEquals(topicId, topicReq.getTopicid());
-    assertEquals(topicName, topicReq.getTopicname());
+    assertThat(topicReq.getEnvironment()).isEqualTo(test.getId());
+    assertThat(topicReq.getTopicid()).isEqualTo(topicId);
+    assertThat(topicReq.getTopicname()).isEqualTo(topicName);
   }
 }
