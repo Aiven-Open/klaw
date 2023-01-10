@@ -181,7 +181,6 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
             serviceInput['environment'] = $scope.addSchema.envName;
             serviceInput['topicname'] = $scope.addSchema.topicname;
-            serviceInput['teamname'] = $scope.teamname;
             serviceInput['appname'] = "App";
             serviceInput['remarks'] = $scope.addSchema.remarks;
             serviceInput['schemafull'] = $scope.addSchema.schemafull;

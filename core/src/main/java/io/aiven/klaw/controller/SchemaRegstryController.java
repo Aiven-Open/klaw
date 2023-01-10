@@ -76,7 +76,9 @@ public class SchemaRegstryController {
         HttpStatus.OK);
   }
 
-  @PostMapping(value = "/uploadSchema")
+  @PostMapping(
+      value = "/uploadSchema",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> uploadSchema(
       @Valid @RequestBody SchemaRequestModel addSchemaRequest) throws KlawException {
     return new ResponseEntity<>(

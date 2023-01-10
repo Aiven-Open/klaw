@@ -367,7 +367,6 @@ public class UtilMethods {
     List<SchemaRequestModel> schemaList = new ArrayList<>();
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setEnvironment("1");
-    schemaRequest.setTeamname("Seahorses");
     schemaRequest.setUsername("kwusera");
     schemaRequest.setSchemafull("schemafdsfsd");
     schemaRequest.setTeamId(1001);
