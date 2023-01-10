@@ -264,7 +264,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/EnvironmentGetClusterInfoResponse"
+                $ref: "#/components/schemas/environmentGetClusterInfoResponse"
   /createAcl:
     post:
       tags:
@@ -274,7 +274,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AclRequest"
+              $ref: "#/components/schemas/aclRequest"
         required: true
       responses:
         "200":
@@ -314,7 +314,7 @@ paths:
         "200":
           description: OK
           content:
-            "*/*":
+            application/json:
               schema:
                 $ref: "#/components/schemas/GenericApiResponse"
 components:
@@ -447,6 +447,15 @@ components:
           example: JWT
           type: string
           enum: [JWT]
+    TopicRequestTypes:
+      title: Type of request related to topic
+      type: string
+      enum:
+        - Create
+        - Update
+        - Delete
+        - Claim
+      example: Update
     TopicsGetResponse:
       type: array
       items:
@@ -743,6 +752,15 @@ components:
           type: string
           enum: ["true", "false"]
       example: { "aivenCluster": "false" }
+    RequestStatus:
+      type: string
+      title: Status of a request
+      enum:
+        - created
+        - deleted
+        - declined
+        - approved
+      example: created
     topicCreateRequest:
       title: TopicCreateRequest
       type: object
@@ -828,8 +846,7 @@ components:
           title: Request time string
           type: string
         topicstatus:
-          title: Topic status
-          type: string
+          $ref: "#/components/schemas/RequestStatus"
         approver:
           title: Approver
           type: string
@@ -1068,13 +1085,9 @@ components:
           type: string
           example: "28-Dec-2022 14:54:57"
         topicstatus:
-          title: Topic status
-          type: string
-          example: "created"
+          $ref: "#/components/schemas/RequestStatus"
         requesttype:
-          title: Type of request
-          type: string
-          example: "Create"
+          $ref: "#/components/schemas/TopicRequestTypes"
         remarks:
           title: Remarks
           description: SchemaRequest specific comment
