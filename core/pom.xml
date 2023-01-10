@@ -210,10 +210,12 @@
                             <executable>make</executable>
                             <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
                             <!-- Ignore errors during the execution of this plugin to unblock the user during build process -->
-                            <successCodes>0</successCodes>
-                            <successCodes>1</successCodes>
-                            <!-- Continue to build if pnpm is not installed -->
-                            <successCodes>2</successCodes>
+                            <successCodes>
+                                <successCode>0</successCode>
+                                <successCode>1</successCode>
+                                <!-- Continue to build if pnpm is not installed -->
+                                <successCode>2</successCode>
+                            </successCodes>
                         </configuration>
                     </execution>
                 </executions>
