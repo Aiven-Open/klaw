@@ -93,15 +93,15 @@ const TopicConsumerForm = ({
     >
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
         <GridItem>
-          <NativeSelect
-            name="topicName"
-            readOnly={topicName !== ""}
-            labelText="Topic name"
-            required
-          >
+          <NativeSelect name="topicName" labelText="Topic name" required>
             <Option key={"Placeholder"}>-- Select Topic --</Option>
             {topicNames.map((name) => (
-              <Option key={name} value={name} selected={topicName === name}>
+              <Option
+                key={name}
+                value={name}
+                selected={topicName === name}
+                disabled={topicName !== name}
+              >
                 {name}
               </Option>
             ))}
@@ -135,11 +135,12 @@ const TopicConsumerForm = ({
           <RadioButtonGroup
             name="aclPatternType"
             labelText="Topic pattern type"
-            readOnly
             required
           >
             <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>
-            <BaseRadioButton value="PREFIXED">Prefixed</BaseRadioButton>
+            <BaseRadioButton value="PREFIXED" disabled>
+              Prefixed
+            </BaseRadioButton>
           </RadioButtonGroup>
         </GridItem>
 
@@ -148,11 +149,11 @@ const TopicConsumerForm = ({
             name="aclIpPrincipleType"
             labelText="IP or Username based"
             required
-            // Only PRINCIPAL allowed if isAivenCluster:
-            readOnly={isAivenCluster}
           >
-            <BaseRadioButton value="IP_ADDRESS">IP</BaseRadioButton>
             <BaseRadioButton value="PRINCIPAL">Username</BaseRadioButton>
+            <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
+              IP
+            </BaseRadioButton>
           </RadioButtonGroup>
         </GridItem>
         <GridItem>{renderAclIpPrincipleTypeInput()} </GridItem>
