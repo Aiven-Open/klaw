@@ -139,28 +139,28 @@
     <build>
         <plugins>
             <!-- Install node and npm for React components -->
-            <plugin>
-                <groupId>com.github.eirslett</groupId>
-                <artifactId>frontend-maven-plugin</artifactId>
-                <version>${front-end-maven-plugin.version}</version>
-                <configuration>
-                    <workingDirectory>nodebuild</workingDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>install node and npm</id>
-                        <goals>
-                            <goal>install-node-and-npm</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <nodeVersion>${node.version}</nodeVersion>
-                            <npmVersion>${npm.version}</npmVersion>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Install pnpm. Clean and build React components -->
+<!--            <plugin>-->
+<!--                <groupId>com.github.eirslett</groupId>-->
+<!--                <artifactId>frontend-maven-plugin</artifactId>-->
+<!--                <version>${front-end-maven-plugin.version}</version>-->
+<!--                <configuration>-->
+<!--                    <workingDirectory>nodebuild</workingDirectory>-->
+<!--                </configuration>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>install node and npm</id>-->
+<!--                        <goals>-->
+<!--                            <goal>install-node-and-npm</goal>-->
+<!--                        </goals>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <configuration>-->
+<!--                            <nodeVersion>${node.version}</nodeVersion>-->
+<!--                            <npmVersion>${npm.version}</npmVersion>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -176,19 +176,19 @@
                             <mainClass>io.aiven.klaw.uglify.UglifyFiles</mainClass>
                         </configuration>
                     </execution>
-                    <!-- Install pnpm for React components -->
-                    <execution>
-                        <id>Install pnpm</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <basedir>nodebuild/node</basedir>
-                            <executable>bash</executable>
-                            <commandlineArgs>npm install pnpm</commandlineArgs>
-                        </configuration>
-                    </execution>
+                    <!-- Install pnpm. Clean and build React components -->
+<!--                    <execution>-->
+<!--                        <id>Install pnpm</id>-->
+<!--                        <phase>generate-resources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>exec</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <basedir>nodebuild/node</basedir>-->
+<!--                            <executable>bash</executable>-->
+<!--                            <commandlineArgs>npm install pnpm</commandlineArgs>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
                     <execution>
                         <id>Clean Coral assets before building</id>
                         <goals>
@@ -209,6 +209,11 @@
                         <configuration>
                             <executable>make</executable>
                             <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
+                            <!-- Ignore errors during the execution of this plugin to unblock the user during build process -->
+                            <successCodes>0</successCodes>
+                            <successCodes>1</successCodes>
+                            <!-- Continue to build if pnpm is not installed -->
+                            <successCodes>2</successCodes>
                         </configuration>
                     </execution>
                 </executions>
