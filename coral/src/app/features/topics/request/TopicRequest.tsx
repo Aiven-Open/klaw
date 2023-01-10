@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { FieldErrorsImpl, SubmitHandler } from "react-hook-form";
 import { Box, Divider, Flexbox, FlexboxItem } from "@aivenio/aquarium";
 import {
@@ -18,8 +18,8 @@ import SelectOrNumberInput from "src/app/features/topics/request/components/Sele
 import type { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
-import { useGetEnvironmentsForTeam } from "src/app/features/topics/request/hooks/useGetEnvironmentsForTeam";
 import { Environment } from "src/domain/environment";
+import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 
 const mockedData = [
   createMockEnvironmentDTO({
@@ -59,8 +59,10 @@ function TopicRequest() {
       });
     }
   }, []);
-  const { data: environments } = useGetEnvironmentsForTeam();
-
+  const { data: environments } = useQuery<Environment[], Error>(
+    ["environments-for-team"],
+    getEnvironmentsForTeam
+  );
   const defaultValues = Array.isArray(environments)
     ? {
         environment: undefined,
