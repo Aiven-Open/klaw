@@ -166,6 +166,12 @@ export type components = {
        */
       tokenType: "JWT";
     };
+    /**
+     * Type of request related to topic
+     * @example Update
+     * @enum {string}
+     */
+    TopicRequestTypes: "Create" | "Update" | "Delete" | "Claim";
     TopicsGetResponse: components["schemas"]["TopicInfo"][][];
     /**
      * @example [
@@ -444,6 +450,12 @@ export type components = {
       /** @enum {string} */
       aivenCluster: "true" | "false";
     };
+    /**
+     * Status of a request
+     * @example created
+     * @enum {string}
+     */
+    RequestStatus: "created" | "deleted" | "declined" | "approved";
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
@@ -505,8 +517,7 @@ export type components = {
       requesttime?: string;
       /** Request time string */
       requesttimestring?: string;
-      /** Topic status */
-      topicstatus?: string;
+      topicstatus?: components["schemas"]["RequestStatus"];
       /**
        * Approver
        * @example jon.snow@klaw-project.io
@@ -769,16 +780,8 @@ export type components = {
        * @example 28-Dec-2022 14:54:57
        */
       requesttimestring?: string;
-      /**
-       * Topic status
-       * @example created
-       */
-      topicstatus?: string;
-      /**
-       * Type of request
-       * @example Create
-       */
-      requesttype?: string;
+      topicstatus?: components["schemas"]["RequestStatus"];
+      requesttype?: components["schemas"]["TopicRequestTypes"];
       /**
        * Remarks
        * @description SchemaRequest specific comment
@@ -968,7 +971,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvironmentGetClusterInfoResponse"];
+          "application/json": components["schemas"]["environmentGetClusterInfoResponse"];
         };
       };
     };
@@ -984,7 +987,7 @@ export type operations = {
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["AclRequest"];
+        "application/json": components["schemas"]["aclRequest"];
       };
     };
   };
@@ -1003,7 +1006,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "*/*": components["schemas"]["GenericApiResponse"];
+          "application/json": components["schemas"]["GenericApiResponse"];
         };
       };
     };
