@@ -3207,6 +3207,7 @@
     "/uploadSchema" : {
       "post" : {
         "operationId" : "uploadSchema",
+        "produces" : [ "application/json" ],
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
