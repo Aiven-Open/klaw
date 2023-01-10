@@ -189,28 +189,33 @@
 <!--                            <commandlineArgs>npm install pnpm</commandlineArgs>-->
 <!--                        </configuration>-->
 <!--                    </execution>-->
-<!--                    <execution>-->
-<!--                        <id>Clean Coral assets before building</id>-->
-<!--                        <goals>-->
-<!--                            <goal>exec</goal>-->
-<!--                        </goals>-->
-<!--                        <phase>clean</phase>-->
-<!--                        <configuration>-->
-<!--                            <executable>make</executable>-->
-<!--                            <commandlineArgs>clean</commandlineArgs>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                    <execution>-->
-<!--                        <id>Build and copy Coral assets</id>-->
-<!--                        <goals>-->
-<!--                            <goal>exec</goal>-->
-<!--                        </goals>-->
-<!--                        <phase>generate-resources</phase>-->
-<!--                        <configuration>-->
-<!--                            <executable>make</executable>-->
-<!--                            <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
+                    <execution>
+                        <id>Clean Coral assets before building</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>clean</phase>
+                        <configuration>
+                            <executable>make</executable>
+                            <commandlineArgs>clean</commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Build and copy Coral assets</id>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <executable>make</executable>
+                            <commandlineArgs>src/main/resources/templates/coral/index.html src/main/resources/static/assets/coral</commandlineArgs>
+                            <!-- Ignore errors during the execution of this plugin to unblock the user during build process -->
+                            <successCodes>0</successCodes>
+                            <successCodes>1</successCodes>
+                            <!-- Continue to build if pnpm is not installed -->
+                            <successCodes>2</successCodes>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

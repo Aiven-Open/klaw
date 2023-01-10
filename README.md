@@ -102,7 +102,7 @@ For the versions available, see the [tags on this repository](https://github.com
 ### Manual
 mvn clean install
 
-Note - node, npm and pnpm are installed locally (required for React UI assets) through maven execution plugins.
+Optional step : For new React UI assets, make sure pnpm is pre installed which is required to build coral assets.
 
 Builds two artifacts core/target/klaw-<version>.jar and cluster-api/target/cluster-api-<version>.jar
 

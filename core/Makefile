@@ -1,8 +1,8 @@
 CORAL_ROOT = ../coral
 CORAL_DIST = $(CORAL_ROOT)/dist
 
-# This is installed as part of Maven
-PNPM = ../core/nodebuild/node/node_modules/.bin/pnpm
+# Make sure pnpm is pre installed
+PNPM = pnpm
 
 $(CORAL_DIST): ../coral/index.html $(shell find $(CORAL_ROOT)/src)
 	cd $(CORAL_ROOT); $(PNPM) install --frozen-lockfile
