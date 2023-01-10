@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.UUID;
+import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
@@ -85,13 +86,13 @@ public class KwAuthenticationService {
   private DirContext bindAsUser(String username, String password) {
     String bindUrl = this.adUrl;
     Hashtable<String, Object> env = new Hashtable<>();
-    env.put("java.naming.security.authentication", "simple");
+    env.put(Context.SECURITY_AUTHENTICATION, "simple");
     String bindPrincipal = this.createBindPrincipal(username);
-    env.put("java.naming.security.principal", bindPrincipal);
-    env.put("java.naming.provider.url", bindUrl);
-    env.put("java.naming.security.credentials", password);
-    env.put("java.naming.factory.initial", "com.sun.jndi.ldap.LdapCtxFactory");
-    env.put("java.naming.factory.object", DefaultDirObjectFactory.class.getName());
+    env.put(Context.SECURITY_PRINCIPAL, bindPrincipal);
+    env.put(Context.PROVIDER_URL, bindUrl);
+    env.put(Context.SECURITY_CREDENTIALS, password);
+    env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+    env.put(Context.OBJECT_FACTORIES, DefaultDirObjectFactory.class.getName());
 
     try {
       return this.contextFactory.createContext(env);
@@ -151,11 +152,9 @@ public class KwAuthenticationService {
   private String rootDnFromDomain(String domain) {
     String[] tokens = StringUtils.tokenizeToStringArray(domain, ".");
     StringBuilder root = new StringBuilder();
-    String[] var4 = tokens;
-    int var5 = tokens.length;
 
-    for (int var6 = 0; var6 < var5; ++var6) {
-      String token = var4[var6];
+    for (int i = 0; i < tokens.length; ++i) {
+      String token = tokens[i];
       if (root.length() > 0) {
         root.append(',');
       }
