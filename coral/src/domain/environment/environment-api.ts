@@ -12,6 +12,13 @@ const getEnvironments = async (): Promise<Environment[]> => {
     .then(transformEnvironmentApiResponse);
 };
 
+const getEnvironmentsForTeam = (): Promise<Environment[]> => {
+  const url = "/getEnvsBaseClusterFilteredForTeam";
+  return api
+    .get<KlawApiResponse<"envsBaseClusterFilteredForTeamGet">>(url)
+    .then(transformEnvironmentApiResponse);
+};
+
 const getClusterInfo = async ({
   envSelected,
   envType,
@@ -25,4 +32,4 @@ const getClusterInfo = async ({
   );
 };
 
-export { getEnvironments, getClusterInfo };
+export { getEnvironments, getClusterInfo, getEnvironmentsForTeam };
