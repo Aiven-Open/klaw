@@ -155,7 +155,10 @@ const TopicAclRequest = () => {
         <TopicProducerForm
           renderTopicTypeField={() => TopicTypeField}
           topicName={topicName}
+          topicNames={topicNames}
           topicTeam={topicTeam.team}
+          environments={environments}
+          isAivenCluster={isAivenCluster}
         />
       )}
     </Box>
