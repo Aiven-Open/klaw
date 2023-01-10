@@ -115,9 +115,10 @@ const TopicAclRequest = () => {
 
   const TopicTypeField = (
     <BaseRadioButtonGroup
-      labelText="TopicType"
+      labelText="Topic type"
       name="topicType"
       onChange={(value) => setTopicType(value)}
+      required
     >
       <BaseRadioButton value="Consumer" checked={topicType === "Consumer"}>
         Consumer
@@ -137,13 +138,18 @@ const TopicAclRequest = () => {
     return <div>Loading</div>;
   }
 
+  const isAivenCluster = clusterInfo.aivenCluster === "true";
+
   return (
-    <Box style={{ maxWidth: 600 }}>
+    <Box maxWidth={"4xl"}>
       {topicType === "Consumer" ? (
         <TopicConsumerForm
           renderTopicTypeField={() => TopicTypeField}
           topicName={topicName}
+          topicNames={topicNames}
           topicTeam={topicTeam.team}
+          environments={environments}
+          isAivenCluster={isAivenCluster}
         />
       ) : (
         <TopicProducerForm

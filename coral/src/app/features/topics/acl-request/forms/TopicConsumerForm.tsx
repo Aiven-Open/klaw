@@ -1,20 +1,46 @@
+import {
+  Box,
+  Divider,
+  Grid,
+  GridItem,
+  Option,
+  RadioButton as BaseRadioButton,
+  SecondaryButton,
+} from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { FieldErrorsImpl } from "react-hook-form";
-import { Form, SubmitHandler, useForm } from "src/app/components/Form";
+import {
+  Form,
+  MultiInput,
+  NativeSelect,
+  RadioButtonGroup,
+  SubmitButton,
+  SubmitHandler,
+  Textarea,
+  TextInput,
+  useForm,
+} from "src/app/components/Form";
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
+import { Environment } from "src/domain/environment";
 
 interface TopicConsumerFormProps {
   topicName: string;
+  topicNames: string[];
   topicTeam: string;
+  environments: Environment[];
+  isAivenCluster: boolean;
   renderTopicTypeField: () => JSX.Element;
 }
 
 const TopicConsumerForm = ({
   topicName,
+  topicNames,
   topicTeam,
+  environments,
   renderTopicTypeField,
+  isAivenCluster,
 }: TopicConsumerFormProps) => {
   const topicConsumerForm = useForm<TopicConsumerFormSchema>({
     schema: topicConsumerFormSchema,
@@ -28,9 +54,23 @@ const TopicConsumerForm = ({
       environment: undefined,
       teamname: topicTeam,
       topictype: "Consumer",
-      aclIpPrincipleType: "USERNAME",
+      aclIpPrincipleType: isAivenCluster ? "PRINCIPAL" : undefined,
     },
   });
+
+  const renderAclIpPrincipleTypeInput = () => {
+    const type = topicConsumerForm.getValues("aclIpPrincipleType");
+
+    if (type === undefined) {
+      return <Box style={{ height: "87px" }} />;
+    }
+
+    return type === "IP_ADDRESS" ? (
+      <MultiInput name="acl_ip" labelText="IPs" />
+    ) : (
+      <MultiInput name="acl_ssl" labelText="Usernames" />
+    );
+  };
 
   const { mutate } = useMutation(() => Promise.resolve());
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
@@ -46,16 +86,90 @@ const TopicConsumerForm = ({
   };
 
   return (
-    <>
-      <b>CONSUMER FORM</b>
-      <Form
-        {...topicConsumerForm}
-        onSubmit={onSubmitTopicConsumer}
-        onError={onErrorTopicConsumer}
-      >
-        {renderTopicTypeField()}
-      </Form>
-    </>
+    <Form
+      {...topicConsumerForm}
+      onSubmit={onSubmitTopicConsumer}
+      onError={onErrorTopicConsumer}
+    >
+      <Grid cols="2" minWidth={"fit"} colGap={"9"}>
+        <GridItem>
+          <NativeSelect
+            name="topicName"
+            readOnly={topicName !== ""}
+            labelText="Topic name"
+            required
+          >
+            <Option key={"Placeholder"}>-- Select Topic --</Option>
+            {topicNames.map((name) => (
+              <Option key={name} value={name} selected={topicName === name}>
+                {name}
+              </Option>
+            ))}
+          </NativeSelect>
+        </GridItem>
+        <GridItem>
+          <NativeSelect
+            name="environment"
+            labelText="Select environment"
+            required
+          >
+            <Option key={"Placeholder"}>-- Select Environment --</Option>
+            {environments.map((env) => (
+              <Option key={env.id} value={env.id}>
+                {env.name}
+              </Option>
+            ))}
+          </NativeSelect>
+        </GridItem>
+
+        <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
+          <Divider />
+        </GridItem>
+
+        <GridItem>{renderTopicTypeField()}</GridItem>
+        <GridItem>
+          <TextInput name="consumergroup" labelText="Consumer group" required />
+        </GridItem>
+
+        <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
+          <RadioButtonGroup
+            name="aclPatternType"
+            labelText="Topic pattern type"
+            readOnly
+            required
+          >
+            <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>
+            <BaseRadioButton value="PREFIXED">Prefixed</BaseRadioButton>
+          </RadioButtonGroup>
+        </GridItem>
+
+        <GridItem>
+          <RadioButtonGroup
+            name="aclIpPrincipleType"
+            labelText="IP or Username based"
+            required
+            // Only PRINCIPAL allowed if isAivenCluster:
+            readOnly={isAivenCluster}
+          >
+            <BaseRadioButton value="IP_ADDRESS">IP</BaseRadioButton>
+            <BaseRadioButton value="PRINCIPAL">Username</BaseRadioButton>
+          </RadioButtonGroup>
+        </GridItem>
+        <GridItem>{renderAclIpPrincipleTypeInput()} </GridItem>
+
+        <GridItem colSpan={"span-2"} minWidth={"full"} paddingBottom={"l2"}>
+          <Textarea name="remarks" labelText="Remarks" />
+        </GridItem>
+      </Grid>
+      <Grid cols={"2"} colGap={"4"} width={"fit"}>
+        <GridItem>
+          <SubmitButton>Submit</SubmitButton>
+        </GridItem>
+        <GridItem>
+          <SecondaryButton>Cancel</SecondaryButton>
+        </GridItem>
+      </Grid>
+    </Form>
   );
 };
 
