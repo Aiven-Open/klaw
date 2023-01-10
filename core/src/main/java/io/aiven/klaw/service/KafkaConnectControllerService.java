@@ -102,6 +102,12 @@ public class KafkaConnectControllerService {
               .build();
         }
 
+        if (jsonNode.has("topics") && jsonNode.has("topics.regex")) {
+          return ApiResponse.builder()
+              .result("Failure. Invalid config. topics and topics.regex both cannot be configured.")
+              .build();
+        }
+
         Map<String, Object> resultMap =
             OBJECT_MAPPER.convertValue(jsonNode, new TypeReference<>() {});
         topicRequestReq.setConnectorConfig(

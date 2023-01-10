@@ -144,6 +144,21 @@ public class KafkaConnectControllerServiceTest {
         .isEqualTo("Failure. Invalid config. topics/topics.regex is not configured");
   }
 
+  // both topics and topics regex are configured which is not correct
+  @Test
+  @Order(4)
+  public void createConnectorRequestParameterTopicsTopicRegexExist() throws KlawException {
+    KafkaConnectorRequestModel kafkaConnectorRequestModel = getConnectRequestModel();
+    kafkaConnectorRequestModel.setConnectorConfig(getInvalidValidConnConfigTopicsTopicsRegex());
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    ApiResponse apiResponse =
+        kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
+    assertThat(apiResponse.getResult())
+        .isEqualTo("Failure. Invalid config. topics and topics.regex both cannot be configured.");
+  }
+
   private KafkaConnectorRequestModel getConnectRequestModel() {
     KafkaConnectorRequestModel kafkaConnectorRequestModel = new KafkaConnectorRequestModel();
     kafkaConnectorRequestModel.setConnectorConfig(getValidConnConfig());
@@ -167,6 +182,17 @@ public class KafkaConnectControllerServiceTest {
     return "{\n"
         + "    \"name\": \"testconn\",\n"
         + "    \"topic\":\"testtopic\",\n"
+        + "    \"tasks.max\": \"1\",\n"
+        + "    \"connector.class\": \"io.confluent.connect.storage.tools.SchemaSourceConnector\"\n"
+        + "}";
+  }
+
+  // topics and topics.regex both are not allowed in a config
+  private String getInvalidValidConnConfigTopicsTopicsRegex() {
+    return "{\n"
+        + "    \"name\": \"testconn\",\n"
+        + "    \"topics\":\"testtopic\",\n"
+        + "    \"topics.regex\":\"pattern\",\n"
         + "    \"tasks.max\": \"1\",\n"
         + "    \"connector.class\": \"io.confluent.connect.storage.tools.SchemaSourceConnector\"\n"
         + "}";
