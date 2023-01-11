@@ -113,18 +113,18 @@ const TopicAclRequest = () => {
     clusterInfoFromEnvironment({ envSelected, envType })
   );
 
-  const TopicTypeField = (
+  const ACLTypeField = (
     <BaseRadioButtonGroup
-      labelText="Topic type"
+      labelText="ACL type"
       name="topicType"
       onChange={(value) => setTopicType(value)}
       required
     >
-      <BaseRadioButton value="Consumer" checked={topicType === "Consumer"}>
-        Consumer
-      </BaseRadioButton>
       <BaseRadioButton value="Producer" checked={topicType === "Producer"}>
         Producer
+      </BaseRadioButton>
+      <BaseRadioButton value="Consumer" checked={topicType === "Consumer"}>
+        Consumer
       </BaseRadioButton>
     </BaseRadioButtonGroup>
   );
@@ -144,7 +144,7 @@ const TopicAclRequest = () => {
     <Box maxWidth={"4xl"}>
       {topicType === "Consumer" ? (
         <TopicConsumerForm
-          renderTopicTypeField={() => TopicTypeField}
+          renderACLTypeField={() => ACLTypeField}
           topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
@@ -153,7 +153,7 @@ const TopicAclRequest = () => {
         />
       ) : (
         <TopicProducerForm
-          renderTopicTypeField={() => TopicTypeField}
+          renderACLTypeField={() => ACLTypeField}
           topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}

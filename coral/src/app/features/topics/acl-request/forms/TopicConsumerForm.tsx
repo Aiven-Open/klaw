@@ -31,7 +31,7 @@ interface TopicConsumerFormProps {
   topicTeam: string;
   environments: Environment[];
   isAivenCluster: boolean;
-  renderTopicTypeField: () => JSX.Element;
+  renderACLTypeField: () => JSX.Element;
 }
 
 const TopicConsumerForm = ({
@@ -39,7 +39,7 @@ const TopicConsumerForm = ({
   topicNames,
   topicTeam,
   environments,
-  renderTopicTypeField,
+  renderACLTypeField,
   isAivenCluster,
 }: TopicConsumerFormProps) => {
   const topicConsumerForm = useForm<TopicConsumerFormSchema>({
@@ -51,7 +51,7 @@ const TopicConsumerForm = ({
       acl_ssl: undefined,
       aclPatternType: "LITERAL",
       topicname: topicName,
-      environment: undefined,
+      environment: "placeholder",
       teamname: topicTeam,
       topictype: "Consumer",
       aclIpPrincipleType: isAivenCluster ? "PRINCIPAL" : undefined,
@@ -66,9 +66,19 @@ const TopicConsumerForm = ({
     }
 
     return type === "IP_ADDRESS" ? (
-      <MultiInput name="acl_ip" labelText="IPs" />
+      <MultiInput
+        name="acl_ip"
+        labelText="IP addresses"
+        placeholder="192.168.1.1, 2606:4700:4700::1111"
+        required
+      />
     ) : (
-      <MultiInput name="acl_ssl" labelText="Usernames" />
+      <MultiInput
+        name="acl_ssl"
+        labelText="SSL DN strings / Usernames"
+        placeholder="CN=myhost, Alice"
+        required
+      />
     );
   };
 
@@ -93,19 +103,7 @@ const TopicConsumerForm = ({
     >
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
         <GridItem>
-          <NativeSelect name="topicName" labelText="Topic name" required>
-            <Option key={"Placeholder"}>-- Select Topic --</Option>
-            {topicNames.map((name) => (
-              <Option
-                key={name}
-                value={name}
-                selected={topicName === name}
-                disabled={topicName !== name}
-              >
-                {name}
-              </Option>
-            ))}
-          </NativeSelect>
+          <GridItem>{renderACLTypeField()}</GridItem>
         </GridItem>
         <GridItem>
           <NativeSelect
@@ -113,7 +111,9 @@ const TopicConsumerForm = ({
             labelText="Select environment"
             required
           >
-            <Option key={"Placeholder"}>-- Select Environment --</Option>
+            <Option key={"Placeholder"} value="placeholder" disabled>
+              -- Select Environment --
+            </Option>
             {environments.map((env) => (
               <Option key={env.id} value={env.id}>
                 {env.name}
@@ -126,40 +126,47 @@ const TopicConsumerForm = ({
           <Divider />
         </GridItem>
 
-        <GridItem>{renderTopicTypeField()}</GridItem>
         <GridItem>
-          <TextInput name="consumergroup" labelText="Consumer group" required />
+          <NativeSelect name="topicName" labelText="Topic name" required>
+            <Option key={"Placeholder"} disabled>
+              -- Select Topic --
+            </Option>
+            {topicNames.map((name) => (
+              <Option key={name} value={name}>
+                {name}
+              </Option>
+            ))}
+          </NativeSelect>
         </GridItem>
-
-        <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
-          <RadioButtonGroup
-            name="aclPatternType"
-            labelText="Topic pattern type"
+        <GridItem>
+          <TextInput
+            name="consumergroup"
+            labelText="Consumer group"
+            placeholder="Add consumer group here"
             required
-          >
-            <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>
-            <BaseRadioButton value="PREFIXED" disabled>
-              Prefixed
-            </BaseRadioButton>
-          </RadioButtonGroup>
+          />
         </GridItem>
 
         <GridItem>
           <RadioButtonGroup
             name="aclIpPrincipleType"
-            labelText="IP or Username based"
+            labelText="IP or Principal based"
             required
           >
-            <BaseRadioButton value="PRINCIPAL">Username</BaseRadioButton>
             <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
               IP
             </BaseRadioButton>
+            <BaseRadioButton value="PRINCIPAL">Principal</BaseRadioButton>
           </RadioButtonGroup>
         </GridItem>
         <GridItem>{renderAclIpPrincipleTypeInput()} </GridItem>
 
         <GridItem colSpan={"span-2"} minWidth={"full"} paddingBottom={"l2"}>
-          <Textarea name="remarks" labelText="Remarks" />
+          <Textarea
+            name="remarks"
+            labelText="Remarks"
+            placeholder="Comments about this request."
+          />
         </GridItem>
       </Grid>
       <Grid cols={"2"} colGap={"4"} width={"fit"}>

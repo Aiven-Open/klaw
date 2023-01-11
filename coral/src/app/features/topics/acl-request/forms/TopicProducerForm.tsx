@@ -1,13 +1,14 @@
 import {
+  Box,
+  Divider,
   Grid,
   GridItem,
-  Divider,
-  SecondaryButton,
   Option,
   RadioButton as BaseRadioButton,
-  Box,
+  SecondaryButton,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { FieldErrorsImpl } from "react-hook-form";
 import {
   Form,
@@ -17,6 +18,7 @@ import {
   SubmitButton,
   SubmitHandler,
   Textarea,
+  TextInput,
   useForm,
 } from "src/app/components/Form";
 import topicProducerFormSchema, {
@@ -30,7 +32,7 @@ interface TopicProducerFormProps {
   topicTeam: string;
   environments: Environment[];
   isAivenCluster: boolean;
-  renderTopicTypeField: () => JSX.Element;
+  renderACLTypeField: () => JSX.Element;
 }
 
 const TopicProducerForm = ({
@@ -38,7 +40,7 @@ const TopicProducerForm = ({
   topicNames,
   topicTeam,
   environments,
-  renderTopicTypeField,
+  renderACLTypeField,
   isAivenCluster,
 }: TopicProducerFormProps) => {
   const topicProducerForm = useForm<TopicProducerFormSchema>({
@@ -49,12 +51,25 @@ const TopicProducerForm = ({
       acl_ssl: undefined,
       aclPatternType: undefined,
       topicname: topicName,
-      environment: undefined,
+      environment: "placeholder",
       teamname: topicTeam,
       topictype: "Producer",
       aclIpPrincipleType: isAivenCluster ? "PRINCIPAL" : undefined,
+      transactionalId: undefined,
     },
   });
+
+  const aclIpPrincipleType = topicProducerForm.getValues("aclIpPrincipleType");
+  useEffect(() => {
+    topicProducerForm.resetField("acl_ip");
+    topicProducerForm.resetField("acl_ssl");
+  }, [aclIpPrincipleType]);
+
+  const aclPatternType = topicProducerForm.getValues("aclPatternType");
+  useEffect(() => {
+    topicProducerForm.resetField("topicname");
+    topicProducerForm.resetField("transactionalId");
+  }, [aclPatternType]);
 
   const renderAclIpPrincipleTypeInput = () => {
     const type = topicProducerForm.getValues("aclIpPrincipleType");
@@ -64,20 +79,47 @@ const TopicProducerForm = ({
     }
 
     return type === "IP_ADDRESS" ? (
-      <MultiInput name="acl_ip" labelText="IPs" required />
+      <MultiInput
+        name="acl_ip"
+        labelText="IP addresses"
+        placeholder="192.168.1.1, 2606:4700:4700::1111"
+        required
+      />
     ) : (
-      <MultiInput name="acl_ssl" labelText="Usernames" required />
+      <MultiInput
+        name="acl_ssl"
+        labelText="SSL DN strings / Usernames"
+        placeholder="CN=myhost, Alice"
+        required
+      />
     );
   };
 
-  const renderPrefixInput = () => {
-    const isPrefixed = topicProducerForm.getValues("aclPatternType");
-
-    if (isPrefixed === "LITERAL") {
+  const renderAclPatternTypeInput = () => {
+    if (aclPatternType === undefined) {
       return <Box style={{ height: "87px" }} />;
     }
 
-    return <MultiInput name="acl_ip" labelText="Prefix" required />;
+    if (aclPatternType === "LITERAL") {
+      return (
+        <GridItem>
+          <NativeSelect name="topicname" labelText="Topic name" required>
+            <Option key={"Placeholder"} disabled>
+              -- Select Topic --
+            </Option>
+            {topicNames.map((name) => (
+              <Option key={name} value={name}>
+                {name}
+              </Option>
+            ))}
+          </NativeSelect>
+        </GridItem>
+      );
+    }
+
+    if (aclPatternType === "PREFIXED") {
+      return <TextInput name="topicname" labelText="Prefix" required />;
+    }
   };
 
   const { mutate } = useMutation(() => Promise.resolve());
@@ -100,28 +142,16 @@ const TopicProducerForm = ({
       onError={onErrorTopicProducer}
     >
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-        <GridItem>
-          <NativeSelect name="topicName" labelText="Topic name" required>
-            <Option key={"Placeholder"}>-- Select Topic --</Option>
-            {topicNames.map((name) => (
-              <Option
-                key={name}
-                value={name}
-                selected={topicName === name}
-                disabled={topicName !== name}
-              >
-                {name}
-              </Option>
-            ))}
-          </NativeSelect>
-        </GridItem>
+        <GridItem>{renderACLTypeField()}</GridItem>
         <GridItem>
           <NativeSelect
             name="environment"
             labelText="Select environment"
             required
           >
-            <Option key={"Placeholder"}>-- Select Environment --</Option>
+            <Option key={"Placeholder"} value="placeholder" disabled>
+              -- Select Environment --
+            </Option>
             {environments.map((env) => (
               <Option key={env.id} value={env.id}>
                 {env.name}
@@ -134,10 +164,6 @@ const TopicProducerForm = ({
           <Divider />
         </GridItem>
 
-        <GridItem>{renderTopicTypeField()}</GridItem>
-        <GridItem>
-          <Box style={{ height: "87px" }} />
-        </GridItem>
         <GridItem>
           <RadioButtonGroup
             name="aclPatternType"
@@ -149,24 +175,37 @@ const TopicProducerForm = ({
           </RadioButtonGroup>
         </GridItem>
         <GridItem>
-          <GridItem>{renderPrefixInput()}</GridItem>
+          <GridItem>{renderAclPatternTypeInput()}</GridItem>
         </GridItem>
+
+        <GridItem colSpan={"span-2"}>
+          <TextInput
+            name="transactionalId"
+            labelText="Transactional ID"
+            placeholder="Necessary for exactly-once semantics on producer"
+            helperText="Necessary for exactly-once semantics on producer"
+          />
+        </GridItem>
+
         <GridItem>
           <RadioButtonGroup
             name="aclIpPrincipleType"
             labelText="IP or Username based"
             required
           >
-            <BaseRadioButton value="PRINCIPAL">Username</BaseRadioButton>
             <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
               IP
             </BaseRadioButton>
+            <BaseRadioButton value="PRINCIPAL">Principal</BaseRadioButton>
           </RadioButtonGroup>
         </GridItem>
-
         <GridItem>{renderAclIpPrincipleTypeInput()} </GridItem>
         <GridItem colSpan={"span-2"} minWidth={"full"}>
-          <Textarea name="remarks" labelText="Remarks" />
+          <Textarea
+            name="remarks"
+            labelText="Remarks"
+            placeholder="Comments about this request."
+          />
         </GridItem>
       </Grid>
       <Grid cols={"2"} colGap={"4"} width={"fit"}>
@@ -176,7 +215,7 @@ const TopicProducerForm = ({
         <GridItem>
           <SecondaryButton>Cancel</SecondaryButton>
         </GridItem>
-      </Grid>{" "}
+      </Grid>
     </Form>
   );
 };
