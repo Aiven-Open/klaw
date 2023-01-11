@@ -8,11 +8,11 @@ import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 

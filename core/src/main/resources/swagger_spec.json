@@ -2929,8 +2929,7 @@
           "name" : "orgName",
           "in" : "query",
           "required" : true,
-          "type" : "string",
-          "pattern" : "^[a-zA-z ]*$"
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -3306,15 +3305,12 @@
     },
     "AclRequestsModel" : {
       "type" : "object",
-      "required" : [ "aclIpPrincipleType", "aclPatternType", "environment", "teamname", "topicname", "topictype" ],
       "properties" : {
         "remarks" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z 0-9_.,-]{3,}$"
+          "type" : "string"
         },
         "consumergroup" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+          "type" : "string"
         },
         "acl_ip" : {
           "type" : "array",
@@ -3332,8 +3328,7 @@
           "type" : "string"
         },
         "transactionalId" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+          "type" : "string"
         },
         "req_no" : {
           "type" : "integer",
@@ -3477,7 +3472,6 @@
     },
     "ApiResponse" : {
       "type" : "object",
-      "required" : [ "result" ],
       "properties" : {
         "status" : {
           "type" : "string",
@@ -3578,16 +3572,12 @@
     },
     "EnvModel" : {
       "type" : "object",
-      "required" : [ "clusterId", "name", "type" ],
       "properties" : {
         "id" : {
           "type" : "string"
         },
         "name" : {
-          "type" : "string",
-          "minLength" : 3,
-          "maxLength" : 7,
-          "pattern" : "^[a-zA-Z0-9_-]{3,}$"
+          "type" : "string"
         },
         "type" : {
           "type" : "string"
@@ -3597,12 +3587,10 @@
           "format" : "int32"
         },
         "topicprefix" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+          "type" : "string"
         },
         "topicsuffix" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
+          "type" : "string"
         },
         "clusterId" : {
           "type" : "integer",
@@ -3726,11 +3714,9 @@
     },
     "KafkaConnectorRequestModel" : {
       "type" : "object",
-      "required" : [ "connectorName", "description", "environment", "teamName" ],
       "properties" : {
         "connectorName" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          "type" : "string"
         },
         "connectorConfig" : {
           "type" : "string"
@@ -3742,12 +3728,10 @@
           "type" : "string"
         },
         "remarks" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z 0-9_.,-]{3,}$"
+          "type" : "string"
         },
         "description" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
+          "type" : "string"
         },
         "environmentName" : {
           "type" : "string"
@@ -3817,21 +3801,16 @@
     },
     "KwClustersModel" : {
       "type" : "object",
-      "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ],
       "properties" : {
         "clusterId" : {
           "type" : "integer",
           "format" : "int32"
         },
         "clusterName" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          "type" : "string"
         },
         "bootstrapServers" : {
-          "type" : "string",
-          "minLength" : 6,
-          "maxLength" : 2147483647,
-          "pattern" : "^[a-zA-Z0-9._:,-]{3,}$"
+          "type" : "string"
         },
         "protocol" : {
           "type" : "string",
@@ -3909,19 +3888,12 @@
     },
     "KwTenantModel" : {
       "type" : "object",
-      "required" : [ "tenantDesc", "tenantName" ],
       "properties" : {
         "tenantName" : {
-          "type" : "string",
-          "minLength" : 12,
-          "maxLength" : 25,
-          "pattern" : "^[a-zA-Z0-9]{3,}$"
+          "type" : "string"
         },
         "tenantDesc" : {
-          "type" : "string",
-          "minLength" : 6,
-          "maxLength" : 25,
-          "pattern" : "^[a-zA-Z 0-9]{3,}$"
+          "type" : "string"
         },
         "tenantId" : {
           "type" : "integer",
@@ -3969,13 +3941,9 @@
     },
     "RegisterSaasUserInfoModel" : {
       "type" : "object",
-      "required" : [ "fullname" ],
       "properties" : {
         "fullname" : {
-          "type" : "string",
-          "minLength" : 4,
-          "maxLength" : 300,
-          "pattern" : "^[a-zA-z ]*$"
+          "type" : "string"
         },
         "mailid" : {
           "type" : "string"
@@ -4003,12 +3971,9 @@
     },
     "RegisterUserInfoModel" : {
       "type" : "object",
-      "required" : [ "fullname", "username" ],
       "properties" : {
         "username" : {
-          "type" : "string",
-          "minLength" : 6,
-          "maxLength" : 300
+          "type" : "string"
         },
         "pwd" : {
           "type" : "string"
@@ -4024,10 +3989,7 @@
           "type" : "string"
         },
         "fullname" : {
-          "type" : "string",
-          "minLength" : 5,
-          "maxLength" : 50,
-          "pattern" : "^[a-zA-z ]*$"
+          "type" : "string"
         },
         "mailid" : {
           "type" : "string"
@@ -4073,7 +4035,6 @@
     },
     "SchemaRequestModel" : {
       "type" : "object",
-      "required" : [ "schemafull" ],
       "properties" : {
         "req_no" : {
           "type" : "integer",
@@ -4102,9 +4063,7 @@
           "type" : "string"
         },
         "schemafull" : {
-          "type" : "string",
-          "minLength" : 8,
-          "maxLength" : 2147483647
+          "type" : "string"
         },
         "username" : {
           "type" : "string"
@@ -4123,8 +4082,7 @@
           "type" : "string"
         },
         "remarks" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z 0-9_.-]{3,}$"
+          "type" : "string"
         },
         "approver" : {
           "type" : "string"
@@ -4314,22 +4272,18 @@
     },
     "TeamModel" : {
       "type" : "object",
-      "required" : [ "contactperson", "teamname", "teamphone" ],
       "properties" : {
         "teamname" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-z 0-9]*$"
+          "type" : "string"
         },
         "teammail" : {
           "type" : "string"
         },
         "teamphone" : {
-          "type" : "string",
-          "pattern" : "(^$|[0-9]*)"
+          "type" : "string"
         },
         "contactperson" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-z ]*$"
+          "type" : "string"
         },
         "tenantId" : {
           "type" : "integer",
@@ -4583,31 +4537,25 @@
     },
     "TopicRequestModel" : {
       "type" : "object",
-      "required" : [ "description", "environment", "replicationfactor", "teamname", "topicname", "topicpartitions" ],
       "properties" : {
         "topicname" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          "type" : "string"
         },
         "environment" : {
           "type" : "string"
         },
         "topicpartitions" : {
           "type" : "integer",
-          "format" : "int32",
-          "minimum" : 1
+          "format" : "int32"
         },
         "teamname" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-z 0-9]*$"
+          "type" : "string"
         },
         "remarks" : {
-          "type" : "string",
-          "pattern" : "^$|^[a-zA-Z 0-9_.,-]{3,}$"
+          "type" : "string"
         },
         "description" : {
-          "type" : "string",
-          "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
+          "type" : "string"
         },
         "replicationfactor" : {
           "type" : "string"
@@ -4689,12 +4637,9 @@
     },
     "UserInfoModel" : {
       "type" : "object",
-      "required" : [ "fullname", "username" ],
       "properties" : {
         "username" : {
-          "type" : "string",
-          "minLength" : 6,
-          "maxLength" : 300
+          "type" : "string"
         },
         "userPassword" : {
           "type" : "string"
@@ -4710,10 +4655,7 @@
           "type" : "string"
         },
         "fullname" : {
-          "type" : "string",
-          "minLength" : 5,
-          "maxLength" : 50,
-          "pattern" : "^[a-zA-z ]*$"
+          "type" : "string"
         },
         "mailid" : {
           "type" : "string"

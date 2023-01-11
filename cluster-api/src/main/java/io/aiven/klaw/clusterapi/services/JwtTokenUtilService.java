@@ -8,7 +8,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base64;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -58,7 +58,7 @@ public class JwtTokenUtilService implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     if (clusterApiSecret != null && !clusterApiSecret.trim().equals("")) {
       try {
-        decodedSecret = Base64.decodeBase64(clusterApiSecret.getBytes());
+        decodedSecret = Base64.decodeBase64(clusterApiSecret);
         return;
       } catch (Exception e) {
         throw new Exception(

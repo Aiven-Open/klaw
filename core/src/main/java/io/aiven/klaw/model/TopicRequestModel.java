@@ -2,12 +2,12 @@ package io.aiven.klaw.model;
 
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.validation.TopicRequestValidator;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

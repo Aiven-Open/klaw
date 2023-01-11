@@ -16,7 +16,7 @@
     <description>Aiven Klaw - Core Api with user interface and cluster-api connectivity</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- the list is sorted-->
@@ -62,7 +62,7 @@
         </dependency>
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -126,8 +126,8 @@
             <artifactId>liquibase-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -234,7 +234,7 @@
                             <basePath>/</basePath>
                             <info>
                                 <title>Klaw Core</title>
-                                <version>${parent.version}</version>
+                                <version>${project.parent.version}</version>
                                 <contact>
                                     <email>info@klaw-project.io</email>
                                 </contact>
