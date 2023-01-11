@@ -18,7 +18,7 @@ const SchemaRequest = () => {
               linkTarget={`/requestSchema?topicname=${topicName}`}
             />
             <PageHeader title={`Request new schema for topic "${topicName}"`} />
-            <TopicSchemaRequest topicName={topicName} />
+            <TopicSchemaRequest topicName={"topicName"} />
           </>
         )}
       </Layout>
