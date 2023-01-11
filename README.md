@@ -119,6 +119,15 @@ java -jar cluster-api/target/cluster-api-<version>.jar --spring.config.location=
 3. [Optional] edit any configs using `make edit-core-config` for Klaw Core or `make edit-cluster-api-config` for Klaw-Cluster-API
 4. To run, you can use `make run-core` and `make run-cluster-api` in different terminal windows or you can run `make -j2 run-core run-cluster-api` to execute both (NOTE: this will mix output and make debugging harder)
 
+### With `docker`
+#### Dockerhub
+Each official release is available on docker in the two repositories.
+The [klaw-core](https://hub.docker.com/r/aivenoy/klaw-core) docker hub page contains an example docker-compose file which will help download and deploy Klaw. 
+The [cluster-api](https://hub.docker.com/r/aivenoy/klaw-cluster-api) can also be found separately on docker hub.
+
+#### Locally
+This project also has the ability to build and deploy local docker images using scripts provided in Klaw/docker-scripts .
+
 ## License
 
 Klaw is licensed under the Apache license, version 2.0.  Full license text is
