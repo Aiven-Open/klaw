@@ -8,6 +8,7 @@ import {
   SecondaryButton,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { FieldErrorsImpl } from "react-hook-form";
 import {
   Form,
@@ -45,18 +46,22 @@ const TopicConsumerForm = ({
   const topicConsumerForm = useForm<TopicConsumerFormSchema>({
     schema: topicConsumerFormSchema,
     defaultValues: {
-      remarks: undefined,
-      consumergroup: undefined,
-      acl_ip: undefined,
-      acl_ssl: undefined,
       aclPatternType: "LITERAL",
       topicname: topicName,
       environment: "placeholder",
-      teamname: topicTeam,
       topictype: "Consumer",
       aclIpPrincipleType: isAivenCluster ? "PRINCIPAL" : undefined,
     },
   });
+
+  // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
+  // Not doing so results in values from one field to be persisted to the other after switching
+  // Which causes errors
+  const aclIpPrincipleType = topicConsumerForm.getValues("aclIpPrincipleType");
+  useEffect(() => {
+    topicConsumerForm.resetField("acl_ip");
+    topicConsumerForm.resetField("acl_ssl");
+  }, [aclIpPrincipleType]);
 
   const renderAclIpPrincipleTypeInput = () => {
     const type = topicConsumerForm.getValues("aclIpPrincipleType");
@@ -86,7 +91,7 @@ const TopicConsumerForm = ({
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
     data
   ) => {
-    console.log(data);
+    console.log(data, topicTeam);
     mutate();
   };
   const onErrorTopicConsumer = (

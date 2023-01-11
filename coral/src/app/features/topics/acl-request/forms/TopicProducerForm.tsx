@@ -52,23 +52,26 @@ const TopicProducerForm = ({
       aclPatternType: undefined,
       topicname: topicName,
       environment: "placeholder",
-      teamname: topicTeam,
       topictype: "Producer",
       aclIpPrincipleType: isAivenCluster ? "PRINCIPAL" : undefined,
       transactionalId: undefined,
     },
   });
 
+  // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
+  // Not doing so results in values from one field to be persisted to the other after switching
+  // Which causes errors
   const aclIpPrincipleType = topicProducerForm.getValues("aclIpPrincipleType");
   useEffect(() => {
     topicProducerForm.resetField("acl_ip");
     topicProducerForm.resetField("acl_ssl");
   }, [aclIpPrincipleType]);
 
+  // Reset values of topicname when user switches between LITERAL and PREFIXED
+  // Avoids conflict when entering a prefix that is not an existing topic name
   const aclPatternType = topicProducerForm.getValues("aclPatternType");
   useEffect(() => {
     topicProducerForm.resetField("topicname");
-    topicProducerForm.resetField("transactionalId");
   }, [aclPatternType]);
 
   const renderAclIpPrincipleTypeInput = () => {
@@ -126,7 +129,7 @@ const TopicProducerForm = ({
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
     data
   ) => {
-    console.log(data);
+    console.log(data, topicTeam);
     mutate();
   };
   const onErrorTopicProducer = (
@@ -190,7 +193,7 @@ const TopicProducerForm = ({
         <GridItem>
           <RadioButtonGroup
             name="aclIpPrincipleType"
-            labelText="IP or Username based"
+            labelText="IP or Principal based"
             required
           >
             <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
