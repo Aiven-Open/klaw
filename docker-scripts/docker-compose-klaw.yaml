@@ -1,0 +1,18 @@
+---
+version: '3'
+services:
+  klaw-core:
+    image: klaw-core:latest
+    environment:
+      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
+    network_mode: "host"
+    extra_hosts:
+      - "moby:127.0.0.1"
+  
+  klaw-cluster-api:
+    image: klaw-cluster-api:latest
+    network_mode: "host"
+    environment:
+      KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
+    extra_hosts:
+      - "moby:127.0.0.1"
