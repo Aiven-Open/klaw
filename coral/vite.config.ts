@@ -14,8 +14,10 @@ import fs from "fs";
  * 2. $BASE_URL
  * 3. undefined (default)
  */
-function getRouterBasename(env: Record<string, string>): string | undefined {
-  return env.VITE_ROUTER_BASENAME ?? env.BASE_URL ?? undefined;
+function getRouterBasename(
+  environment: Record<string, string>
+): string | undefined {
+  return environment.VITE_ROUTER_BASENAME ?? environment.BASE_URL ?? undefined;
 }
 
 /**
@@ -26,8 +28,10 @@ function getRouterBasename(env: Record<string, string>): string | undefined {
  * The $VITE_API_BASE_URL variable allows API to be consumed from another origin.
  * Also, this make it easy to override the API base url for unittests.
  */
-function getApiBaseUrl(env: Record<string, string>): string | undefined {
-  return env.VITE_API_BASE_URL ?? undefined;
+function getApiBaseUrl(
+  environment: Record<string, string>
+): string | undefined {
+  return environment.VITE_API_BASE_URL ?? undefined;
 }
 
 /**
@@ -35,20 +39,20 @@ function getApiBaseUrl(env: Record<string, string>): string | undefined {
  *
  * @param  {[type]} environment
  *
- * run development server in HTTP mode if if $VITE_SERVER_CERTIFICATE_PATH
+ * run development server in HTTP mode if is $VITE_SERVER_CERTIFICATE_PATH
  * and $VITE_SERVER_CERTIFICATE_KEY_PATH are defined. This is needed when
  * using a remote backend that is running under HTTPS.
  */
 function getServerHTTPSConfig(
-  env: Record<string, string>
+  environment: Record<string, string>
 ): false | { key: Buffer; cert: Buffer } {
   if (
-    env.VITE_SERVER_CERTIFICATE_PATH &&
-    env.VITE_SERVER_CERTIFICATE_KEY_PATH
+    environment.VITE_SERVER_CERTIFICATE_PATH &&
+    environment.VITE_SERVER_CERTIFICATE_KEY_PATH
   ) {
     return {
-      key: fs.readFileSync(env.VITE_SERVER_CERTIFICATE_KEY_PATH),
-      cert: fs.readFileSync(env.VITE_SERVER_CERTIFICATE_PATH),
+      key: fs.readFileSync(environment.VITE_SERVER_CERTIFICATE_KEY_PATH),
+      cert: fs.readFileSync(environment.VITE_SERVER_CERTIFICATE_PATH),
     };
   }
   return false;
@@ -61,8 +65,8 @@ function getServerHTTPSConfig(
  *
  * Use $VITE_PROXY_TARGET or Klaw API development default (http://localhost:9097)
  */
-function getProxyTarget(env: Record<string, string>): string {
-  const origin = env.VITE_PROXY_TARGET ?? "http://localhost:9097";
+function getProxyTarget(environment: Record<string, string>): string {
+  const origin = environment.VITE_PROXY_TARGET ?? "http://localhost:9097";
   return `${new URL(origin).origin}`;
 }
 
@@ -74,7 +78,7 @@ function getProxyTarget(env: Record<string, string>): string {
  * Use $VITE_PROXY_TARGET or Klaw API development default (http://localhost:9097)
  */
 function getServerProxyConfig(
-  env: Record<string, string>
+  environment: Record<string, string>
 ): Record<string, string | ProxyOptions> | undefined {
   const LEGACY_LOGIN_RESOURCES = [
     "/login",
@@ -86,7 +90,7 @@ function getServerProxyConfig(
     "/assets/plugins/",
     "/assets/images/",
   ];
-  const target = getProxyTarget(env);
+  const target = getProxyTarget(environment);
   const secure = false;
   return {
     "/api": {
@@ -123,7 +127,7 @@ export default defineConfig(({ mode }) => {
     define: {
       // Vite does not use process.env (see https://vitejs.dev/guide/env-and-mode.html).
       // If a library depends on process.env (like "@aivenio/aquarium").
-      // ⛔ Note: there are stackoverflow answers / github issues that recommend e.g
+      // ⛔ Note: there are stackoverflow answers / GitHub issues that recommend e.g
       // ⛔ 'process.env': process.env or
       // ⛔ 'process.env': { ...process.env}
       // ⛔️ Don't do that! This can expose unwanted env vars in production builds.
