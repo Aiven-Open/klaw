@@ -783,9 +783,9 @@ public class ClusterApiService {
           | KeyStoreException
           | CertificateException
           | UnrecoverableKeyException
-          | IOException e) {
+          | IOException
+          | KeyManagementException e) {
         log.error("Exception: ", e);
-      } catch (KeyManagementException e) {
         throw new RuntimeException(e);
       }
     }
