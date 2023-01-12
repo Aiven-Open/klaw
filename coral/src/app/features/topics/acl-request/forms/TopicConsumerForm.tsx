@@ -77,9 +77,7 @@ const TopicConsumerForm = ({
       onError={onErrorTopicConsumer}
     >
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-        <GridItem>
-          <GridItem>{renderAclTypeField()}</GridItem>
-        </GridItem>
+        <GridItem>{renderAclTypeField()}</GridItem>
         <GridItem>
           <EnvironmentField environments={environments} />
         </GridItem>

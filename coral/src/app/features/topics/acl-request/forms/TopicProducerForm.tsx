@@ -113,12 +113,10 @@ const TopicProducerForm = ({
           </RadioButtonGroup>
         </GridItem>
         <GridItem>
-          <GridItem>
-            <TopicNameOrPrefixField
-              topicNames={topicNames}
-              aclPatternType={aclPatternType}
-            />
-          </GridItem>
+          <TopicNameOrPrefixField
+            topicNames={topicNames}
+            aclPatternType={aclPatternType}
+          />
         </GridItem>
 
         <GridItem colSpan={"span-2"}>

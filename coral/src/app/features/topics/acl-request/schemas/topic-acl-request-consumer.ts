@@ -3,10 +3,7 @@ import { z } from "zod";
 
 const topicConsumerFormSchema = z
   .object({
-    remarks: z
-      .string()
-      // .min(5, { message: "Remarks must be at least 5 characters long." })
-      .optional(),
+    remarks: z.string().optional(),
     consumergroup: z
       .string()
       .min(1, { message: "Consumer group cannot be empty." }),
