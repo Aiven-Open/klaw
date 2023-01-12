@@ -47,6 +47,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -57,7 +58,7 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(MockitoExtension.class)
 public class UtilComponentsServiceTest {
 
-  @Mock private ClusterApiUtils getAdminClient;
+  @Mock private ClusterApiUtils clusterApiUtils;
 
   @Mock private Environment env;
 
@@ -99,17 +100,17 @@ public class UtilComponentsServiceTest {
 
   @BeforeEach
   public void setUp() {
-    utilComponentsService = new UtilComponentsService(env, getAdminClient);
-    apacheKafkaAclService = new ApacheKafkaAclService(getAdminClient);
-    apacheKafkaTopicService = new ApacheKafkaTopicService(getAdminClient);
-    schemaService = new SchemaService(getAdminClient);
+    utilComponentsService = new UtilComponentsService(env, clusterApiUtils);
+    apacheKafkaAclService = new ApacheKafkaAclService(clusterApiUtils);
+    apacheKafkaTopicService = new ApacheKafkaTopicService(clusterApiUtils);
+    schemaService = new SchemaService(clusterApiUtils);
     utilMethods = new UtilMethods();
   }
 
   // If no cluster type is defined, return
   @Test
   public void getStatusOnline() throws Exception {
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     ClusterStatus result =
         utilComponentsService.getStatus("localhost", KafkaSupportedProtocol.PLAINTEXT, "", "kafka");
@@ -136,7 +137,7 @@ public class UtilComponentsServiceTest {
   public void loadAcls1() throws Exception {
     List<AclBinding> listAclBindings = utilMethods.getListAclBindings(accessControlEntry);
 
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.describeAcls(any(AclBindingFilter.class))).thenReturn(describeAclsResult);
     when(describeAclsResult.values()).thenReturn(kafkaFutureCollection);
@@ -154,7 +155,7 @@ public class UtilComponentsServiceTest {
   public void loadAcls2() throws Exception {
     List<AclBinding> listAclBindings = utilMethods.getListAclBindings(accessControlEntry);
 
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.describeAcls(any(AclBindingFilter.class))).thenReturn(describeAclsResult);
     when(describeAclsResult.values()).thenReturn(kafkaFutureCollection);
@@ -170,7 +171,7 @@ public class UtilComponentsServiceTest {
 
   @Test
   public void loadAcls3() throws Exception {
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.describeAcls(any())).thenThrow(new RuntimeException("Describe Acls Error"));
 
@@ -182,7 +183,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void loadTopics() throws Exception {
     Set<String> list = new HashSet<>();
-    when(getAdminClient.getAdminClient(
+    when(clusterApiUtils.getAdminClient(
             anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.listTopics(any())).thenReturn(listTopicsResult);
@@ -224,7 +225,7 @@ public class UtilComponentsServiceTest {
             .clusterName("")
             .build();
 
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.createTopics(any())).thenReturn(createTopicsResult);
     when(createTopicsResult.values()).thenReturn(futureTocpiCreateResult);
@@ -266,7 +267,7 @@ public class UtilComponentsServiceTest {
                       .replicationFactor(Short.parseShort("1aa"))
                       .clusterName("")
                       .build();
-              when(getAdminClient.getAdminClient(
+              when(clusterApiUtils.getAdminClient(
                       any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
                   .thenReturn(adminClient);
               apacheKafkaTopicService.createTopic(clusterTopicRequest);
@@ -296,7 +297,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void createProducerAcl1() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAclRequest(AclType.CONSUMER.value);
-    when(getAdminClient.getAdminClient(
+    when(clusterApiUtils.getAdminClient(
             anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.createAcls(any())).thenReturn(createAclsResult);
@@ -313,7 +314,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void createProducerAcl2() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAclRequest(AclType.CONSUMER.value);
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.createAcls(any())).thenReturn(createAclsResult);
     when(createAclsResult.all()).thenReturn(kFutureVoid);
@@ -329,7 +330,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void createConsumerAcl1() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAclRequest(AclType.CONSUMER.value);
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.createAcls(any())).thenReturn(createAclsResult);
     when(createAclsResult.all()).thenReturn(kFutureVoid);
@@ -344,7 +345,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void createConsumerAcl2() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAclRequest(AclType.CONSUMER.value);
-    when(getAdminClient.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.createAcls(any())).thenReturn(createAclsResult);
     when(createAclsResult.all()).thenReturn(kFutureVoid);
@@ -362,8 +363,8 @@ public class UtilComponentsServiceTest {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
     ApiResponse apiResponse = ApiResponse.builder().result("Schema created id : 101").build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
-    when(getAdminClient.getRequestDetails(any(), any(), any(), anyString()))
-        .thenReturn(Pair.of("", restTemplate));
+    when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
+    when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
     when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
         .thenReturn(new ResponseEntity<>("Schema created id : 101", HttpStatus.OK));
 
@@ -374,8 +375,8 @@ public class UtilComponentsServiceTest {
   @Test
   public void postSchema2() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
-    when(getAdminClient.getRequestDetails(any(), any(), any(), anyString()))
-        .thenReturn(Pair.of("", restTemplate));
+    when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
+    when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
     when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
         .thenReturn(
             new ResponseEntity<>(

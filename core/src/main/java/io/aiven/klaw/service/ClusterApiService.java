@@ -60,6 +60,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
 import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
 import org.apache.hc.client5.http.socket.PlainConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.config.Registry;
 import org.apache.hc.core5.http.config.RegistryBuilder;
@@ -765,7 +766,8 @@ public class ClusterApiService {
         builder
             .loadKeyMaterial(getStore(keyStorePwd, keyStore), keyStorePwd.toCharArray())
             .loadTrustMaterial(acceptingTrustStrategy);
-        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
+        SSLConnectionSocketFactory sslsf =
+            new SSLConnectionSocketFactory(builder.build(), NoopHostnameVerifier.INSTANCE);
         Registry<ConnectionSocketFactory> registry =
             RegistryBuilder.<ConnectionSocketFactory>create()
                 .register("http", new PlainConnectionSocketFactory())

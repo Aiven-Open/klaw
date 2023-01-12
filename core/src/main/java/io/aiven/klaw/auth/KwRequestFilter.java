@@ -57,7 +57,6 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
     this.kwInstallationType = kwInstallationType;
     this.authenticationType = authenticationType;
     super.setAuthenticationManager(authenticationManager);
-    super.setAuthenticationSuccessHandler(kwAuthenticationSuccessHandler);
   }
 
   // this is the starting method for authentication.

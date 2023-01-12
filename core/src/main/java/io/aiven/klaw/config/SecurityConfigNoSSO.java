@@ -102,18 +102,19 @@ public class SecurityConfigNoSSO {
         .logout()
         .logoutSuccessUrl("/login");
 
+    // TODO enable this block for custom security filter/authentication
     //         Add a filter to validate the username/pwd with every request
-    //    http.addFilterBefore(
-    //        new KwRequestFilter(
-    //                authenticationManager(authenticationConfiguration),
-    //            kwAuthenticationSuccessHandler,
-    //            validateCaptchaService,
-    //            manageTopics,
-    //            kwAuthenticationService,
-    //            kwAuthenticationFailureHandler,
-    //            kwInstallationType,
-    //            authenticationType),
-    //        UsernamePasswordAuthenticationFilter.class);
+    //        http.addFilterBefore(
+    //            new KwRequestFilter(
+    //                    authenticationManager(authenticationConfiguration),
+    //                kwAuthenticationSuccessHandler,
+    //                validateCaptchaService,
+    //                manageTopics,
+    //                kwAuthenticationService,
+    //                kwAuthenticationFailureHandler,
+    //                kwInstallationType,
+    //                authenticationType),
+    //            UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
