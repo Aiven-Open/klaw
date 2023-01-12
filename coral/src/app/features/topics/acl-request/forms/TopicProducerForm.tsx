@@ -1,9 +1,7 @@
 import {
-  Box,
   Divider,
   Grid,
   GridItem,
-  Option,
   RadioButton as BaseRadioButton,
   SecondaryButton,
 } from "@aivenio/aquarium";
@@ -12,15 +10,17 @@ import { useEffect } from "react";
 import { FieldErrorsImpl } from "react-hook-form";
 import {
   Form,
-  MultiInput,
-  NativeSelect,
   RadioButtonGroup,
   SubmitButton,
   SubmitHandler,
-  Textarea,
   TextInput,
   useForm,
 } from "src/app/components/Form";
+import AclIpPrincipleTypeField from "src/app/features/topics/acl-request/fields/AclIpPrincipleTypeField";
+import EnvironmentField from "src/app/features/topics/acl-request/fields/EnvironmentField";
+import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrPrincipalField";
+import RemarksField from "src/app/features/topics/acl-request/fields/RemarksField";
+import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/TopicNameOrPrefixField";
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
@@ -32,7 +32,7 @@ interface TopicProducerFormProps {
   topicTeam: string;
   environments: Environment[];
   isAivenCluster: boolean;
-  renderACLTypeField: () => JSX.Element;
+  renderAclTypeField: () => JSX.Element;
 }
 
 const TopicProducerForm = ({
@@ -40,7 +40,7 @@ const TopicProducerForm = ({
   topicNames,
   topicTeam,
   environments,
-  renderACLTypeField,
+  renderAclTypeField,
   isAivenCluster,
 }: TopicProducerFormProps) => {
   const topicProducerForm = useForm<TopicProducerFormSchema>({
@@ -58,10 +58,11 @@ const TopicProducerForm = ({
     },
   });
 
+  const { aclIpPrincipleType, aclPatternType } = topicProducerForm.getValues();
+
   // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
   // Not doing so results in values from one field to be persisted to the other after switching
   // Which causes errors
-  const aclIpPrincipleType = topicProducerForm.getValues("aclIpPrincipleType");
   useEffect(() => {
     topicProducerForm.resetField("acl_ip");
     topicProducerForm.resetField("acl_ssl");
@@ -69,61 +70,9 @@ const TopicProducerForm = ({
 
   // Reset values of topicname when user switches between LITERAL and PREFIXED
   // Avoids conflict when entering a prefix that is not an existing topic name
-  const aclPatternType = topicProducerForm.getValues("aclPatternType");
   useEffect(() => {
     topicProducerForm.resetField("topicname");
   }, [aclPatternType]);
-
-  const renderAclIpPrincipleTypeInput = () => {
-    const type = topicProducerForm.getValues("aclIpPrincipleType");
-
-    if (type === undefined) {
-      return <Box style={{ height: "87px" }} />;
-    }
-
-    return type === "IP_ADDRESS" ? (
-      <MultiInput
-        name="acl_ip"
-        labelText="IP addresses"
-        placeholder="192.168.1.1, 2606:4700:4700::1111"
-        required
-      />
-    ) : (
-      <MultiInput
-        name="acl_ssl"
-        labelText="SSL DN strings / Usernames"
-        placeholder="CN=myhost, Alice"
-        required
-      />
-    );
-  };
-
-  const renderAclPatternTypeInput = () => {
-    if (aclPatternType === undefined) {
-      return <Box style={{ height: "87px" }} />;
-    }
-
-    if (aclPatternType === "LITERAL") {
-      return (
-        <GridItem>
-          <NativeSelect name="topicname" labelText="Topic name" required>
-            <Option key={"Placeholder"} disabled>
-              -- Select Topic --
-            </Option>
-            {topicNames.map((name) => (
-              <Option key={name} value={name}>
-                {name}
-              </Option>
-            ))}
-          </NativeSelect>
-        </GridItem>
-      );
-    }
-
-    if (aclPatternType === "PREFIXED") {
-      return <TextInput name="topicname" labelText="Prefix" required />;
-    }
-  };
 
   const { mutate } = useMutation(() => Promise.resolve());
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
@@ -137,7 +86,6 @@ const TopicProducerForm = ({
   ) => {
     console.log("Form error", err);
   };
-
   return (
     <Form
       {...topicProducerForm}
@@ -145,22 +93,9 @@ const TopicProducerForm = ({
       onError={onErrorTopicProducer}
     >
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-        <GridItem>{renderACLTypeField()}</GridItem>
+        <GridItem>{renderAclTypeField()}</GridItem>
         <GridItem>
-          <NativeSelect
-            name="environment"
-            labelText="Select environment"
-            required
-          >
-            <Option key={"Placeholder"} value="placeholder" disabled>
-              -- Select Environment --
-            </Option>
-            {environments.map((env) => (
-              <Option key={env.id} value={env.id}>
-                {env.name}
-              </Option>
-            ))}
-          </NativeSelect>
+          <EnvironmentField environments={environments} />
         </GridItem>
 
         <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
@@ -178,7 +113,12 @@ const TopicProducerForm = ({
           </RadioButtonGroup>
         </GridItem>
         <GridItem>
-          <GridItem>{renderAclPatternTypeInput()}</GridItem>
+          <GridItem>
+            <TopicNameOrPrefixField
+              topicNames={topicNames}
+              aclPatternType={aclPatternType}
+            />
+          </GridItem>
         </GridItem>
 
         <GridItem colSpan={"span-2"}>
@@ -191,26 +131,16 @@ const TopicProducerForm = ({
         </GridItem>
 
         <GridItem>
-          <RadioButtonGroup
-            name="aclIpPrincipleType"
-            labelText="IP or Principal based"
-            required
-          >
-            <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
-              IP
-            </BaseRadioButton>
-            <BaseRadioButton value="PRINCIPAL">Principal</BaseRadioButton>
-          </RadioButtonGroup>
+          <AclIpPrincipleTypeField isAivenCluster={isAivenCluster} />
         </GridItem>
-        <GridItem>{renderAclIpPrincipleTypeInput()} </GridItem>
+        <GridItem>
+          <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />
+        </GridItem>
         <GridItem colSpan={"span-2"} minWidth={"full"}>
-          <Textarea
-            name="remarks"
-            labelText="Remarks"
-            placeholder="Comments about this request."
-          />
+          <RemarksField />
         </GridItem>
       </Grid>
+
       <Grid cols={"2"} colGap={"4"} width={"fit"}>
         <GridItem>
           <SubmitButton>Submit</SubmitButton>

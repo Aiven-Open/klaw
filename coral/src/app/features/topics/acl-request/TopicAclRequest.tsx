@@ -1,11 +1,8 @@
-import {
-  Box,
-  RadioButton as BaseRadioButton,
-  RadioButtonGroup as BaseRadioButtonGroup,
-} from "@aivenio/aquarium";
+import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
 import {
@@ -62,7 +59,7 @@ const mockedData = [
 const TopicAclRequest = () => {
   const { topicName = "" } = useParams();
   const navigate = useNavigate();
-  const [topicType, setTopicType] = useState("Consumer");
+  const [topicType, setTopicType] = useState("Producer");
 
   useEffect(() => {
     mockGetEnvironments({
@@ -113,22 +110,6 @@ const TopicAclRequest = () => {
     clusterInfoFromEnvironment({ envSelected, envType })
   );
 
-  const ACLTypeField = (
-    <BaseRadioButtonGroup
-      labelText="ACL type"
-      name="topicType"
-      onChange={(value) => setTopicType(value)}
-      required
-    >
-      <BaseRadioButton value="Producer" checked={topicType === "Producer"}>
-        Producer
-      </BaseRadioButton>
-      <BaseRadioButton value="Consumer" checked={topicType === "Consumer"}>
-        Consumer
-      </BaseRadioButton>
-    </BaseRadioButtonGroup>
-  );
-
   if (
     topicNames === undefined ||
     environments === undefined ||
@@ -144,7 +125,9 @@ const TopicAclRequest = () => {
     <Box maxWidth={"4xl"}>
       {topicType === "Consumer" ? (
         <TopicConsumerForm
-          renderACLTypeField={() => ACLTypeField}
+          renderAclTypeField={() => (
+            <AclTypeField topicType={topicType} handleChange={setTopicType} />
+          )}
           topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
@@ -153,7 +136,9 @@ const TopicAclRequest = () => {
         />
       ) : (
         <TopicProducerForm
-          renderACLTypeField={() => ACLTypeField}
+          renderAclTypeField={() => (
+            <AclTypeField topicType={topicType} handleChange={setTopicType} />
+          )}
           topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
