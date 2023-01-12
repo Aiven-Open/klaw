@@ -3,7 +3,10 @@ package io.aiven.klaw.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,6 +43,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 public class ServerConfigServiceTest {
 
+  public static final String KLAW_TENANT_CONFIG = "klaw.tenant.config";
   @Mock private CommonUtilsService commonUtilsService;
   ServerConfigService serverConfigService;
 
@@ -119,7 +123,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -127,7 +131,7 @@ public class ServerConfigServiceTest {
     assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo("klaw.tenant.config");
+    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
     TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
 
     assertThat(tenantConfig.getTenantModel().getBaseSyncEnvironment()).isEqualTo("1");
@@ -163,7 +167,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -171,7 +175,7 @@ public class ServerConfigServiceTest {
     assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo("klaw.tenant.config");
+    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
     TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
 
     assertThat(tenantConfig.getTenantModel().getBaseSyncEnvironment()).isEqualTo("1");
@@ -200,7 +204,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -208,7 +212,7 @@ public class ServerConfigServiceTest {
     assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo("klaw.tenant.config");
+    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
     TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
 
     assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
@@ -248,7 +252,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -285,7 +289,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -296,9 +300,9 @@ public class ServerConfigServiceTest {
 
   @Test
   @Order(8)
-  public void givenInvalidJson_returnFailure() throws KlawException, JsonProcessingException {
+  public void givenInvalidJson_returnFailure() throws KlawException {
     stubValidateTests();
-    KwPropertiesModel request = createKwPropertiesModel("klaw.tenant.config", "{}");
+    KwPropertiesModel request = createKwPropertiesModel(KLAW_TENANT_CONFIG, "{}");
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -326,7 +330,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -352,7 +356,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -360,7 +364,7 @@ public class ServerConfigServiceTest {
     assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo("klaw.tenant.config");
+    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
     TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
 
     assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
@@ -388,7 +392,7 @@ public class ServerConfigServiceTest {
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     KwPropertiesModel request =
-        createKwPropertiesModel("klaw.tenant.config", mapper.writeValueAsString(config));
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
     // Execute
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
@@ -396,7 +400,7 @@ public class ServerConfigServiceTest {
     assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo("klaw.tenant.config");
+    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
     TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
 
     assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
@@ -437,14 +441,14 @@ public class ServerConfigServiceTest {
                 createEnv("DEV_CONN", "4", "kafkaconnect"),
                 createEnv("TST_CONN", "5", "kafkaconnect"),
                 createEnv("UAT_CONN", "6", "kafkaconnect")));
-    ;
+
     when(managedb.getSchemaRegEnvList(anyInt()))
         .thenReturn(
             List.of(
                 createEnv("DEV_SCH", "7", "schemaregistry"),
                 createEnv("TST_SCH", "8", "schemaregistry"),
                 createEnv("UAT_SCH", "9", "schemaregistry")));
-    ;
+
     when(managedb.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(handleDbRequests.updateKwProperty(any(), eq(101)))
         .thenReturn(ApiResultStatus.SUCCESS.value);

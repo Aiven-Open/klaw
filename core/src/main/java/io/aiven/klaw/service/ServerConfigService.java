@@ -433,8 +433,6 @@ public class ServerConfigService {
     List<String> envListSchemaRegistryStr = new ArrayList<>();
     schemaList.forEach(a -> envListSchemaRegistryStr.add(a.getName()));
 
-    // initialise to false tenantMap should update to true and if not we should be returning false
-    // in any scenario that it passes over the validation.
     boolean tenantCheck;
     try {
       tenantCheck = tenantMap.containsValue(dynamicObj.getTenantModel().getTenantName());
