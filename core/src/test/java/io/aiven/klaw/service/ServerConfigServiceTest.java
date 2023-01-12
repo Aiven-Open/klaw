@@ -24,6 +24,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -409,6 +410,101 @@ public class ServerConfigServiceTest {
         .isEqualTo("8");
     assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
         .isEqualTo("9");
+  }
+
+  @Test
+  @Order(12)
+  public void givenRequestForConfig_returnCorrectConfig()
+      throws KlawException, JsonProcessingException {
+    stubValidateTests();
+
+    when(managedb.getKwPropertiesMap(101)).thenReturn(buildFullDbObject());
+
+    // Execute
+    List<Map<String, String>> response = serverConfigService.getAllEditableProps();
+    TenantConfig tenantConfig =
+        mapper.readValue(response.get(0).get("kwvalue"), TenantConfig.class);
+    verify(managedb, times(1)).getKwPropertiesMap(101);
+    // assert that the order is as specified in getJsonString
+
+    assertThat(tenantConfig.getTenantModel().getBaseSyncEnvironment()).isEqualTo("DEV");
+    assertThat(tenantConfig.getTenantModel().getOrderOfTopicPromotionEnvsList().get(0))
+        .isEqualTo("DEV");
+    assertThat(tenantConfig.getTenantModel().getOrderOfTopicPromotionEnvsList().get(1))
+        .isEqualTo("UAT");
+    assertThat(tenantConfig.getTenantModel().getOrderOfTopicPromotionEnvsList().get(2))
+        .isEqualTo("TST");
+    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
+        .isEqualTo("DEV_SCH");
+    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
+        .isEqualTo("TST_SCH");
+    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
+        .isEqualTo("UAT_SCH");
+
+    assertThat(tenantConfig.getTenantModel().getOrderOfConnectorsPromotionEnvsList().get(0))
+        .isEqualTo("UAT_CONN");
+    assertThat(tenantConfig.getTenantModel().getOrderOfConnectorsPromotionEnvsList().get(1))
+        .isEqualTo("TST_CONN");
+    assertThat(tenantConfig.getTenantModel().getOrderOfConnectorsPromotionEnvsList().get(2))
+        .isEqualTo("DEV_CONN");
+
+    // ensure all parts are correctly being formatted back from the codes.
+    assertThat(tenantConfig.getTenantModel().getRequestConnectorsEnvironmentsList().get(0))
+        .isEqualTo("TST_CONN");
+    assertThat(tenantConfig.getTenantModel().getRequestSchemaEnvironmentsList().get(0))
+        .isEqualTo("DEV_SCH");
+    assertThat(tenantConfig.getTenantModel().getRequestTopicsEnvironmentsList().get(0))
+        .isEqualTo("DEV");
+  }
+
+  @Test
+  @Order(13)
+  public void givenRequestForConfigWithNoneSet_returnCorrectConfig()
+      throws KlawException, JsonProcessingException {
+    stubValidateTests();
+    TenantConfig config = new TenantConfig();
+    config.setTenantModel(null);
+    Map<String, Map<String, String>> dbObject = new HashMap<>();
+    Map<String, String> map = new HashMap();
+
+    map.put("kwvalue", mapper.writeValueAsString(config));
+    map.put("kwkey", KLAW_TENANT_CONFIG);
+    map.put("kwdes", "Desc");
+    map.put("tenantid", "101");
+    dbObject.put(KLAW_TENANT_CONFIG, map);
+
+    when(managedb.getKwPropertiesMap(101)).thenReturn(dbObject);
+
+    // Execute
+    List<Map<String, String>> response = serverConfigService.getAllEditableProps();
+    TenantConfig tenantConfig =
+        mapper.readValue(response.get(0).get("kwvalue"), TenantConfig.class);
+    verify(managedb, times(1)).getKwPropertiesMap(101);
+    // assert that the order is as specified in getJsonString
+    assertThat(tenantConfig.getTenantModel()).isNull();
+  }
+
+  private Map<String, Map<String, String>> buildFullDbObject() throws JsonProcessingException {
+    // This object is created using IDs from stubValidateTests()
+    KwTenantConfigModel prop =
+        addKafkaTopicInformation(
+            new KwTenantConfigModel(), "1", Arrays.asList("1", "2", "3"), "1", "3", "2");
+    prop = addSchemaRegInformation(prop, Arrays.asList("7", "8", "9"), "7", "8", "9");
+    prop = addKafkaConnInformation(prop, Arrays.asList("5", "6", "4"), "6", "5", "4");
+
+    prop.setTenantName("default");
+    TenantConfig config = new TenantConfig();
+    config.setTenantModel(prop);
+    Map<String, Map<String, String>> dbObject = new HashMap<>();
+    Map<String, String> map = new HashMap();
+
+    map.put("kwvalue", mapper.writeValueAsString(config));
+    map.put("kwkey", KLAW_TENANT_CONFIG);
+    map.put("kwdes", "Desc");
+    map.put("tenantid", "101");
+    dbObject.put(KLAW_TENANT_CONFIG, map);
+
+    return dbObject;
   }
 
   private static KwPropertiesModel createKwPropertiesModel(String key, String value) {

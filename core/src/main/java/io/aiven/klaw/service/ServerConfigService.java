@@ -283,6 +283,19 @@ public class ServerConfigService {
         tenant.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
 
+      if (tenant.getOrderOfSchemaPromotionEnvsList() != null) {
+        List<String> tmpSchemaOrderList1 = new ArrayList<>();
+        tenant
+            .getOrderOfSchemaPromotionEnvsList()
+            .forEach(
+                a -> {
+                  if (getSchemaEnvDetails(a, tenantId) != null) {
+                    tmpSchemaOrderList1.add(getSchemaEnvDetails(a, tenantId).getName());
+                  }
+                });
+        tenant.setOrderOfSchemaPromotionEnvsList(tmpSchemaOrderList1);
+      }
+
       // kafka
       if (tenant.getRequestTopicsEnvironmentsList() != null) {
         List<String> tmpReqTopicList = new ArrayList<>();
@@ -309,6 +322,19 @@ public class ServerConfigService {
                   }
                 });
         tenant.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
+      }
+
+      if (tenant.getRequestSchemaEnvironmentsList() != null) {
+        List<String> tmpSchemaRequest = new ArrayList<>();
+        tenant
+            .getRequestSchemaEnvironmentsList()
+            .forEach(
+                a -> {
+                  if (getSchemaEnvDetails(a, tenantId) != null) {
+                    tmpSchemaRequest.add(getSchemaEnvDetails(a, tenantId).getName());
+                  }
+                });
+        tenant.setRequestSchemaEnvironmentsList(tmpSchemaRequest);
       }
     }
   }
@@ -502,6 +528,14 @@ public class ServerConfigService {
   public Env getKafkaConnectEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaConnectEnvList(tenantId).stream()
+            .filter(env -> Objects.equals(env.getId(), envId))
+            .findFirst();
+    return envFound.orElse(null);
+  }
+
+  public Env getSchemaEnvDetails(String envId, int tenantId) {
+    Optional<Env> envFound =
+        manageDatabase.getSchemaRegEnvList(tenantId).stream()
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
