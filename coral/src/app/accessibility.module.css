@@ -85,7 +85,7 @@ a:focus-visible {
   outline-offset: 0 !important;
 }
 
-:root label span {
+:root label span:not([class*="error"]) {
   /*represents grey-70 */
   color: #4a4b57 !important;
   /*represents body-small*/
