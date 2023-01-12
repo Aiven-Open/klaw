@@ -10,7 +10,7 @@ With several downloads every week, many more companies which did not adopt a sol
 
 * Bootstrap UI, Angular, Javascript, HTML, CSS 
 * [Maven](https://maven.apache.org/) - Dependency Management
-* Java, Spring boot, Spring security, SQL, Apache Kafka Admin client 
+* Java (Jdk 17), Spring boot 3, Spring security, SQL, Apache Kafka Admin client 
 
 ## Versioning
 
