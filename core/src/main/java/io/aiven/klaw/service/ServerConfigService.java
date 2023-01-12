@@ -53,9 +53,15 @@ public class ServerConfigService {
 
   private static List<ServerConfigProperties> listProps;
 
-  public ServerConfigService(Environment env, CommonUtilsService commonUtilsService) {
+  public ServerConfigService(
+      Environment env,
+      CommonUtilsService commonUtilsService,
+      MailUtils mailService,
+      ManageDatabase manageDatabase) {
     this.env = env;
     this.commonUtilsService = commonUtilsService;
+    this.mailService = mailService;
+    this.manageDatabase = manageDatabase;
   }
 
   @PostConstruct
@@ -356,6 +362,19 @@ public class ServerConfigService {
         tenantModel.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
 
+      if (tenantModel.getOrderOfSchemaPromotionEnvsList() != null) {
+        List<String> tmpSchemaOrderList = new ArrayList<>();
+        tenantModel
+            .getOrderOfSchemaPromotionEnvsList()
+            .forEach(
+                a ->
+                    tmpSchemaOrderList.add(
+                        getSchemaEnvDetailsFromName(
+                                a, getTenantIdFromName(tenantModel.getTenantName()))
+                            .getId()));
+        tenantModel.setOrderOfSchemaPromotionEnvsList(tmpSchemaOrderList);
+      }
+
       // kafka
       if (tenantModel.getRequestTopicsEnvironmentsList() != null) {
         List<String> tmpReqTopicList = new ArrayList<>();
@@ -382,6 +401,20 @@ public class ServerConfigService {
                             .getId()));
         tenantModel.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
       }
+
+      // Schema Registry
+      if (tenantModel.getRequestSchemaEnvironmentsList() != null) {
+        List<String> tmpReqSchemaList = new ArrayList<>();
+        tenantModel
+            .getRequestSchemaEnvironmentsList()
+            .forEach(
+                a ->
+                    tmpReqSchemaList.add(
+                        getSchemaEnvDetailsFromName(
+                                a, getTenantIdFromName(tenantModel.getTenantName()))
+                            .getId()));
+        tenantModel.setRequestSchemaEnvironmentsList(tmpReqSchemaList);
+      }
     }
   }
 
@@ -389,6 +422,7 @@ public class ServerConfigService {
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
     List<Env> envList = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> envKafkaConnectList = manageDatabase.getKafkaConnectEnvList(tenantId);
+    List<Env> schemaList = manageDatabase.getSchemaRegEnvList(tenantId);
 
     List<String> envListStr = new ArrayList<>();
     envList.forEach(a -> envListStr.add(a.getName()));
@@ -396,61 +430,37 @@ public class ServerConfigService {
     List<String> envListKafkaConnectStr = new ArrayList<>();
     envKafkaConnectList.forEach(a -> envListKafkaConnectStr.add(a.getName()));
 
+    List<String> envListSchemaRegistryStr = new ArrayList<>();
+    schemaList.forEach(a -> envListSchemaRegistryStr.add(a.getName()));
+
+    // initialise to false tenantMap should update to true and if not we should be returning false
+    // in any scenario that it passes over the validation.
     boolean tenantCheck;
     try {
       tenantCheck = tenantMap.containsValue(dynamicObj.getTenantModel().getTenantName());
 
       if (tenantCheck) {
-
         KwTenantConfigModel tenantModel = dynamicObj.getTenantModel();
         // syncClusterCheck
-        if (tenantModel.getBaseSyncEnvironment() != null
-            && !envListStr.contains(tenantModel.getBaseSyncEnvironment())) {
-          return false;
-        }
-
+        isBaseSyncValid(tenantModel.getBaseSyncEnvironment(), envListStr);
         // syncClusterKafkaConnectCheck
-        if (tenantModel.getBaseSyncKafkaConnectCluster() != null
-            && !envListKafkaConnectStr.contains(tenantModel.getBaseSyncKafkaConnectCluster())) {
-          return false;
-        }
-
+        isBaseSyncValid(tenantModel.getBaseSyncKafkaConnectCluster(), envListKafkaConnectStr);
         // orderOfenvs check
-        if (tenantModel.getOrderOfTopicPromotionEnvsList() != null) {
-          for (String orderOfTopicPromotionEnv : tenantModel.getOrderOfTopicPromotionEnvsList()) {
-            if (!envListStr.contains(orderOfTopicPromotionEnv)) {
-              return false;
-            }
-          }
-        }
-
-        // orderOfConnectEnvs check
-        if (tenantModel.getOrderOfConnectorsPromotionEnvsList() != null) {
-          for (String orderOfConnectorsPromotionEnv :
-              tenantModel.getOrderOfConnectorsPromotionEnvsList()) {
-            if (!envListKafkaConnectStr.contains(orderOfConnectorsPromotionEnv)) {
-              return false;
-            }
-          }
-        }
-
-        // requestTopics check
-        if (tenantModel.getRequestTopicsEnvironmentsList() != null) {
-          for (String requestTopicEnvs : tenantModel.getRequestTopicsEnvironmentsList()) {
-            if (!envListStr.contains(requestTopicEnvs)) {
-              return false;
-            }
-          }
-        }
-
+        isResourceAlreadyCreated(tenantModel.getOrderOfTopicPromotionEnvsList(), envListStr);
+        // check that all Kafka Connectors in the ordered list already exist as resources.
+        isResourceAlreadyCreated(
+            tenantModel.getOrderOfConnectorsPromotionEnvsList(), envListKafkaConnectStr);
+        // Check that all schema registries exist that have been defined in the config.
+        isResourceAlreadyCreated(
+            tenantModel.getOrderOfSchemaPromotionEnvsList(), envListSchemaRegistryStr);
+        // requestTopic Check
+        isResourceAlreadyCreated(tenantModel.getRequestTopicsEnvironmentsList(), envListStr);
         // requestConnectors check
-        if (tenantModel.getRequestConnectorsEnvironmentsList() != null) {
-          for (String requestConnectorEnvs : tenantModel.getRequestConnectorsEnvironmentsList()) {
-            if (!envListKafkaConnectStr.contains(requestConnectorEnvs)) {
-              return false;
-            }
-          }
-        }
+        isResourceAlreadyCreated(
+            tenantModel.getRequestConnectorsEnvironmentsList(), envListKafkaConnectStr);
+        // Schema Check
+        isResourceAlreadyCreated(
+            tenantModel.getRequestSchemaEnvironmentsList(), envListSchemaRegistryStr);
       }
     } catch (Exception e) {
       log.error(dynamicObj + "", e);
@@ -458,6 +468,29 @@ public class ServerConfigService {
     }
 
     return tenantCheck;
+  }
+
+  private void isBaseSyncValid(String baseSync, List<String> existingResources)
+      throws KlawException {
+    if (baseSync != null && !existingResources.contains(baseSync)) {
+      throw new KlawException(
+          "Base Sync Resource "
+              + baseSync
+              + " must be created before being added to the Tenant Model");
+    }
+  }
+
+  private void isResourceAlreadyCreated(List<String> namedResources, List<String> existingResources)
+      throws KlawException {
+
+    if (namedResources != null) {
+      for (String res : namedResources) {
+        if (!existingResources.contains(res)) {
+          throw new KlawException(
+              "Resource " + res + " must be created before being added to the Tenant Model");
+        }
+      }
+    }
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
@@ -479,6 +512,17 @@ public class ServerConfigService {
   public Env getEnvDetailsFromName(String envName, Integer tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
+            .filter(
+                env ->
+                    Objects.equals(env.getName(), envName)
+                        && Objects.equals(env.getTenantId(), tenantId))
+            .findFirst();
+    return envFound.orElse(null);
+  }
+
+  public Env getSchemaEnvDetailsFromName(String envName, Integer tenantId) {
+    Optional<Env> envFound =
+        manageDatabase.getSchemaRegEnvList(tenantId).stream()
             .filter(
                 env ->
                     Objects.equals(env.getName(), envName)
