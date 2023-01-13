@@ -16,7 +16,7 @@
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
     "prepare": "cd .. && husky install coral/.husky",
-    "preview": "vite preview",
+    "preview": "vite build --mode remote-api && cp mockServiceWorker.js dist/mockServiceWorker.js && vite preview --mode remote-api",
     "reformat": "prettier --write src",
     "test": "jest",
     "test-dev": "jest --watch",

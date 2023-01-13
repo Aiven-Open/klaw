@@ -146,6 +146,12 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      port: 5173,
+      https: getServerHTTPSConfig(environment),
+      proxy: getServerProxyConfig(environment),
+    },
+    preview: {
+      port: 5173,
       https: getServerHTTPSConfig(environment),
       proxy: getServerProxyConfig(environment),
     },
