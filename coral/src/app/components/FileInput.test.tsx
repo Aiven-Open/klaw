@@ -42,7 +42,6 @@ describe("FileInput.tsx", () => {
       const fileInput = screen.getByLabelText<HTMLInputElement>(testLabelText);
 
       expect(fileInput).toBeEnabled();
-      expect(fileInput).not.toBeRequired();
       expect(fileInput.tagName).toBe("INPUT");
     });
 

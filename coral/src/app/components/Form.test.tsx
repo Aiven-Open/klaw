@@ -3,6 +3,7 @@ import { cleanup, RenderResult, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   ComplexNativeSelect,
+  FileInput,
   MultiInput,
   NativeSelect,
   NumberInput,
@@ -466,6 +467,7 @@ describe("Form", () => {
       expect(screen.getByText("Required")).toBeVisible();
     });
   });
+
   describe("<MultiInput>", () => {
     const schema = z.object({
       cities: z.string().array(),
@@ -507,6 +509,75 @@ describe("Form", () => {
 
       await submit();
       assertSubmitted({ cities: ["Berlin", "Helsinki"] });
+    });
+  });
+
+  describe("<FileInput>", () => {
+    const schema = z.object({
+      image: z.instanceof(File),
+    });
+
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <FileInput<Schema>
+          name={"image"}
+          labelText={"Please upload a file"}
+          buttonText={"Upload"}
+          noFileText={"No file chose"}
+        />,
+        { schema, onSubmit, onError }
+      );
+    });
+
+    it("renders a file upload input", () => {
+      // input type=file does not have a role to look for
+      const fileInput = screen.getByLabelText<HTMLInputElement>(
+        "Please upload a file"
+      );
+
+      expect(fileInput).toBeEnabled();
+      expect(fileInput.tagName).toBe("INPUT");
+    });
+
+    it("syncs value to form state when user uploads a file", async () => {
+      const fileName = "my-awesome-dog.jpeg";
+      const testFile: File = new File(["I am a dog picture"], fileName, {
+        type: "image/jpeg",
+      });
+
+      const fileInput = screen.getByLabelText<HTMLInputElement>(
+        "Please upload a file"
+      );
+      await user.upload(fileInput, testFile);
+
+      expect(fileInput.files?.[0]).toBe(testFile);
+      await submit();
+
+      expect(onSubmit).toHaveBeenCalledWith(
+        { image: testFile },
+        expect.anything()
+      );
+    });
+
+    it("shows an error for an invalid file", async () => {
+      const fileName = "my-awesome-dog-not-file";
+      const invalidInput = { name: fileName };
+
+      const fileInput = screen.getByLabelText<HTMLInputElement>(
+        "Please upload a file"
+      );
+      // it's invalid input on purpose
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      await user.upload(fileInput, invalidInput);
+
+      await submit();
+      const errorMessage = screen.getByText("Input not instance of File");
+      expect(onSubmit).not.toHaveBeenCalled();
+
+      expect(errorMessage).toBeVisible();
     });
   });
 });
