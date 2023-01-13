@@ -15,6 +15,10 @@ type TopicTeam = KlawApiModel<"TopicGetTeamResponse">;
 type TopicAdvancedConfigurationOptions = {
   key: string;
   name: string;
+  documentation?: {
+    link: string;
+    text: string;
+  };
 };
 
 export type {

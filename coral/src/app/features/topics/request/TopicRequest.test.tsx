@@ -6,6 +6,10 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
 import { server } from "src/services/api-mocks/server";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
+import {
+  defaultGetTopicAdvanvedConfigOptionsResponse,
+  mockGetTopicAdvanvedConfigOptions,
+} from "src/domain/topic/topic-api.msw";
 
 describe("<TopicRequest />", () => {
   let user: ReturnType<typeof userEvent.setup>;
@@ -34,12 +38,13 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      mockGetTopicAdvanvedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+        },
+      });
+      customRender(<TopicRequest />, { queryClient: true });
     });
     afterAll(() => {
       cleanup();
@@ -125,6 +130,12 @@ describe("<TopicRequest />", () => {
             ],
           },
         });
+        mockGetTopicAdvanvedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultGetTopicAdvanvedConfigOptionsResponse,
+          },
+        });
 
         customRender(
           <AquariumContext>
@@ -169,6 +180,12 @@ describe("<TopicRequest />", () => {
                 topicsuffix: "-test",
               }),
             ],
+          },
+        });
+        mockGetTopicAdvanvedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultGetTopicAdvanvedConfigOptionsResponse,
           },
         });
 
@@ -230,6 +247,12 @@ describe("<TopicRequest />", () => {
               defaultReplicationFactor: "4",
             }),
           ],
+        },
+      });
+      mockGetTopicAdvanvedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultGetTopicAdvanvedConfigOptionsResponse,
         },
       });
 
@@ -336,6 +359,12 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
+      mockGetTopicAdvanvedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+        },
+      });
 
       customRender(
         <AquariumContext>
@@ -408,6 +437,45 @@ describe("<TopicRequest />", () => {
           );
         });
       });
+    });
+  });
+
+  describe("AdvancedConfiguration", () => {
+    beforeAll(async () => {
+      mockGetEnvironmentsForTeam({
+        mswInstance: server,
+        response: {
+          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
+        },
+      });
+
+      mockGetTopicAdvanvedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicRequest />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+
+      await screen.findByLabelText("Environment");
+      await screen.findByRole("option", { name: "DEV" });
+    });
+    afterAll(() => {
+      cleanup();
+    });
+
+    it("has field which accepts value", async () => {
+      const mockedAdvancedConfig = screen.getByTestId("advancedConfiguration");
+      await user.type(mockedAdvancedConfig, '{{"another":"value"}');
+      expect(mockedAdvancedConfig).toHaveDisplayValue(
+        JSON.stringify({ another: "value" })
+      );
     });
   });
 });
