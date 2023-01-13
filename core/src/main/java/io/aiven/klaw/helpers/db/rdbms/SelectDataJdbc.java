@@ -1,32 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import com.google.common.collect.Lists;
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.AclID;
-import io.aiven.klaw.dao.AclRequestID;
-import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.ActivityLog;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.EnvID;
-import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.KafkaConnectorRequestID;
-import io.aiven.klaw.dao.KwClusterID;
-import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.KwKafkaConnector;
-import io.aiven.klaw.dao.KwProperties;
-import io.aiven.klaw.dao.KwRolesPermissions;
-import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.dao.ProductDetails;
-import io.aiven.klaw.dao.RegisterUserInfo;
-import io.aiven.klaw.dao.SchemaRequest;
-import io.aiven.klaw.dao.SchemaRequestID;
-import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.TeamID;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicID;
-import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.TopicRequestID;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -51,7 +26,6 @@ import io.aiven.klaw.repository.TenantRepo;
 import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -718,7 +692,7 @@ public class SelectDataJdbc {
       for (Object[] actvty : activityCount) {
         hashMap = new HashMap<>();
         hashMap.put("dateofactivity", "" + actvty[0]);
-        hashMap.put("activitycount", "" + ((BigInteger) actvty[1]).intValue());
+        hashMap.put("activitycount", "" + ((Long) actvty[1]).intValue());
 
         totalActivityLogCount.add(hashMap);
       }
@@ -741,7 +715,7 @@ public class SelectDataJdbc {
       for (Object[] actvty : activityCount) {
         hashMap = new HashMap<>();
         hashMap.put("dateofactivity", "" + actvty[0]);
-        hashMap.put("activitycount", "" + ((BigInteger) actvty[1]).intValue());
+        hashMap.put("activitycount", "" + ((Long) actvty[1]).intValue());
 
         totalActivityLogCount.add(hashMap);
       }
@@ -760,7 +734,7 @@ public class SelectDataJdbc {
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         hashMap.put("cluster", (String) topic[0]);
-        hashMap.put("topicscount", "" + ((BigInteger) topic[1]).intValue());
+        hashMap.put("topicscount", "" + ((Long) topic[1]).intValue());
 
         totalTopicCount.add(hashMap);
       }
@@ -808,7 +782,7 @@ public class SelectDataJdbc {
       for (Object[] topic : topics) {
         hashMap = new HashMap<>();
         hashMap.put("cluster", (String) topic[0]);
-        hashMap.put("aclscount", "" + ((BigInteger) topic[1]).intValue());
+        hashMap.put("aclscount", "" + ((Long) topic[1]).intValue());
 
         totalAclsCount.add(hashMap);
       }
@@ -833,10 +807,10 @@ public class SelectDataJdbc {
         hashMap = new HashMap<>();
         if (teamId != null) {
           hashMap.put("teamid", "" + teamId);
-          hashMap.put("topicscount", "" + ((BigInteger) topic[0]).intValue());
+          hashMap.put("topicscount", "" + ((Long) topic[0]).intValue());
         } else {
           hashMap.put("teamid", "" + topic[0]);
-          hashMap.put("topicscount", "" + ((BigInteger) topic[1]).intValue());
+          hashMap.put("topicscount", "" + ((Long) topic[1]).intValue());
         }
 
         totalTopicCount.add(hashMap);
@@ -871,10 +845,10 @@ public class SelectDataJdbc {
         hashMap = new HashMap<>();
         if (teamId != null) {
           hashMap.put("teamid", "" + teamId);
-          hashMap.put("aclscount", "" + ((BigInteger) topic[0]).intValue());
+          hashMap.put("aclscount", "" + ((Long) topic[0]).intValue());
         } else {
           hashMap.put("teamid", "" + topic[0]);
-          hashMap.put("aclscount", "" + ((BigInteger) topic[1]).intValue());
+          hashMap.put("aclscount", "" + ((Long) topic[1]).intValue());
         }
 
         totalAclCount.add(hashMap);
@@ -895,7 +869,7 @@ public class SelectDataJdbc {
         hashMap = new HashMap<>();
         if (selectEnvDetails((String) topic[0], tenantId) != null) {
           hashMap.put("cluster", selectEnvDetails((String) topic[0], tenantId).getName());
-          hashMap.put("topicscount", "" + ((BigInteger) topic[1]).intValue());
+          hashMap.put("topicscount", "" + ((Long) topic[1]).intValue());
           totalTopicCount.add(hashMap);
         } else {
           log.error("Error: Environment not found for env {}", topic[0]);
@@ -1101,51 +1075,48 @@ public class SelectDataJdbc {
   }
 
   public int findAllKafkaComponentsCountForEnv(String env, int tenantId) {
-    return ((BigInteger) topicRepo.findAllTopicsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((BigInteger) topicRequestsRepo.findAllTopicRequestsCountForEnv(env, tenantId).get(0)[0])
+    return ((Long) topicRepo.findAllTopicsCountForEnv(env, tenantId).get(0)[0]).intValue()
+        + ((Long) topicRequestsRepo.findAllTopicRequestsCountForEnv(env, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger) aclRepo.findAllAclsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((BigInteger) aclRequestsRepo.findAllAclRequestsCountForEnv(env, tenantId).get(0)[0])
+        + ((Long) aclRepo.findAllAclsCountForEnv(env, tenantId).get(0)[0]).intValue()
+        + ((Long) aclRequestsRepo.findAllAclRequestsCountForEnv(env, tenantId).get(0)[0])
             .intValue();
   }
 
   public int findAllConnectorComponentsCountForEnv(String env, int tenantId) {
-    return ((BigInteger) kafkaConnectorRepo.findAllConnectorCountForEnv(env, tenantId).get(0)[0])
+    return ((Long) kafkaConnectorRepo.findAllConnectorCountForEnv(env, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger)
+        + ((Long)
                 kafkaConnectorRequestsRepo.findAllConnectorRequestsCountForEnv(env, tenantId)
                     .get(0)[0])
             .intValue();
   }
 
   public int findAllSchemaComponentsCountForEnv(String env, int tenantId) {
-    return ((BigInteger)
-                schemaRequestRepo.findAllSchemaRequestsCountForEnv(env, tenantId).get(0)[0])
+    return ((Long) schemaRequestRepo.findAllSchemaRequestsCountForEnv(env, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger) messageSchemaRepo.findAllSchemaCountForEnv(env, tenantId).get(0)[0])
-            .intValue();
+        + ((Long) messageSchemaRepo.findAllSchemaCountForEnv(env, tenantId).get(0)[0]).intValue();
   }
 
   public int findAllComponentsCountForTeam(Integer teamId, int tenantId) {
-    return ((BigInteger) schemaRequestRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+    return ((Long) schemaRequestRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger) messageSchemaRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+        + ((Long) messageSchemaRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger) kafkaConnectorRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+        + ((Long) kafkaConnectorRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger)
+        + ((Long)
                 kafkaConnectorRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger) topicRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+        + ((Long) topicRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue()
+        + ((Long) topicRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue()
-        + ((BigInteger) topicRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue()
-        + ((BigInteger) aclRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue()
-        + ((BigInteger) aclRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+        + ((Long) aclRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue()
+        + ((Long) aclRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue();
   }
 
   public int getAllTopicsCountInAllTenants() {
-    return ((BigInteger) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+    return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
   }
 }

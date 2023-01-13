@@ -6,7 +6,12 @@ import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,16 +60,14 @@ public class SchemaService {
               + clusterSchemaRequest.getTopicName()
               + "-value/versions";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(
-              suffixUrl,
-              clusterSchemaRequest.getProtocol(),
-              KafkaClustersType.SCHEMA_REGISTRY,
-              clusterSchemaRequest.getClusterIdentification());
+          clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
 
       Map<String, String> params = new HashMap<>();
       params.put("schema", clusterSchemaRequest.getFullSchema());
 
-      HttpHeaders headers = new HttpHeaders();
+      HttpHeaders headers =
+          clusterApiUtils.createHeaders(
+              clusterSchemaRequest.getClusterIdentification(), KafkaClustersType.SCHEMA_REGISTRY);
       headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
       HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
       ResponseEntity<String> responseNew =
@@ -107,15 +110,19 @@ public class SchemaService {
           String suffixUrl =
               environmentVal + "/subjects/" + topicName + "-value/versions/" + schemaVersion;
           Pair<String, RestTemplate> reqDetails =
-              clusterApiUtils.getRequestDetails(
-                  suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
+              clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
           Map<String, String> params = new HashMap<>();
+          HttpHeaders headers =
+              clusterApiUtils.createHeaders(
+                  clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
+          HttpEntity<Object> request = new HttpEntity<>(headers);
 
           ResponseEntity<Map<String, Object>> responseNew =
               reqDetails
                   .getRight()
-                  .exchange(reqDetails.getLeft(), HttpMethod.GET, null, GET_SCHEMA_TYPEREF, params);
+                  .exchange(
+                      reqDetails.getLeft(), HttpMethod.GET, request, GET_SCHEMA_TYPEREF, params);
           Map<String, Object> schemaResponse = responseNew.getBody();
           if (schemaResponse != null) {
             schemaResponse.put("compatibility", schemaCompatibility);
@@ -146,16 +153,22 @@ public class SchemaService {
 
       String suffixUrl = environmentVal + "/subjects/" + topicName + "-value/versions";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(
-              suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
+          clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       Map<String, String> params = new HashMap<>();
+      HttpHeaders headers =
+          clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
+      HttpEntity<Object> request = new HttpEntity<>(headers);
 
       ResponseEntity<List<Integer>> responseList =
           reqDetails
               .getRight()
               .exchange(
-                  reqDetails.getLeft(), HttpMethod.GET, null, GET_SCHEMAVERSIONS_TYPEREF, params);
+                  reqDetails.getLeft(),
+                  HttpMethod.GET,
+                  request,
+                  GET_SCHEMAVERSIONS_TYPEREF,
+                  params);
       log.info("Schema versions " + responseList);
       return responseList.getBody();
     } catch (Exception e) {
@@ -177,18 +190,20 @@ public class SchemaService {
 
       String suffixUrl = environmentVal + "/config/" + topicName + "-value";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(
-              suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
+          clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       Map<String, String> params = new HashMap<>();
 
+      HttpHeaders headers =
+          clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
+      HttpEntity<Object> request = new HttpEntity<>(headers);
       ResponseEntity<Map<String, String>> responseList =
           reqDetails
               .getRight()
               .exchange(
                   reqDetails.getLeft(),
                   HttpMethod.GET,
-                  null,
+                  request,
                   GET_SCHEMA_COMPATIBILITY_TYPEREF,
                   params);
       log.info("Schema compatibility " + responseList);
@@ -213,17 +228,18 @@ public class SchemaService {
 
       String suffixUrl = environmentVal + "/config/" + topicName + "-value";
       Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(
-              suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
+          clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       Map<String, String> params = new HashMap<>();
       if (isForce) {
         params.put("compatibility", "NONE");
       } else params.put("compatibility", defaultSchemaCompatibility);
 
-      HttpHeaders headers = new HttpHeaders();
+      HttpHeaders headers =
+          clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
       headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
       HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
       return true;
     } catch (Exception e) {
@@ -236,14 +252,17 @@ public class SchemaService {
       String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
 
     String suffixUrl = environmentVal + "/subjects";
-    Pair<String, RestTemplate> reqDetails =
-        clusterApiUtils.getRequestDetails(
-            suffixUrl, protocol, KafkaClustersType.SCHEMA_REGISTRY, clusterIdentification);
+    Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
-    Map<String, String> params = new HashMap<>();
+    HttpHeaders headers =
+        clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
+    HttpEntity<Object> request = new HttpEntity<>(headers);
 
     try {
-      reqDetails.getRight().getForEntity(reqDetails.getLeft(), Object.class, params);
+      reqDetails
+          .getRight()
+          .exchange(
+              reqDetails.getLeft(), HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
       return ClusterStatus.ONLINE;
     } catch (RestClientException e) {
       log.error("Exception:", e);

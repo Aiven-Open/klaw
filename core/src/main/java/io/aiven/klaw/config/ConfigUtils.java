@@ -49,8 +49,8 @@ public class ConfigUtils {
       throws Exception {
     http.csrf()
         .disable()
-        .authorizeRequests()
-        .antMatchers(getStaticResources(coralEnabled).toArray(new String[0]))
+        .authorizeHttpRequests()
+        .requestMatchers(getStaticResources(coralEnabled).toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .authenticated()

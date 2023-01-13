@@ -3,15 +3,22 @@ package io.aiven.klaw.config;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
-import io.aiven.klaw.auth.KwRequestFilter;
+import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
+import io.aiven.klaw.auth.KwAuthenticationService;
+import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import io.aiven.klaw.dao.UserInfo;
-import java.util.*;
+import io.aiven.klaw.service.ValidateCaptchaService;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,14 +31,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
 @Slf4j
+@Configuration
 public class SecurityConfigNoSSO {
 
   @Autowired private ManageDatabase manageTopics;
+
+  @Autowired KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+
+  @Autowired KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
+
+  @Autowired KwAuthenticationService kwAuthenticationService;
+
+  @Autowired ValidateCaptchaService validateCaptchaService;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -54,25 +69,31 @@ public class SecurityConfigNoSSO {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
+  @Value("${klaw.installation.type:onpremise}")
+  private String kwInstallationType;
+
   @Autowired LdapTemplate ldapTemplate;
 
-  @Autowired private KwRequestFilter kwRequestFilterup;
+  private AuthenticationManager authenticationManager;
 
   private void shutdownApp() {
     // ((ConfigurableApplicationContext) contextApp).close();
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain securityFilterChain(
+      HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
     http.csrf()
         .disable()
-        .authorizeRequests()
-        .antMatchers(ConfigUtils.getStaticResources(coralEnabled).toArray(new String[0]))
+        .authorizeHttpRequests()
+        .requestMatchers(ConfigUtils.getStaticResources(coralEnabled).toArray(new String[0]))
         .permitAll()
         .anyRequest()
         .fullyAuthenticated()
         .and()
         .formLogin()
+        .successHandler(kwAuthenticationSuccessHandler)
+        .failureHandler(kwAuthenticationFailureHandler)
         .failureForwardUrl("/login?error")
         .failureUrl("/login?error")
         .loginPage("/login")
@@ -81,8 +102,6 @@ public class SecurityConfigNoSSO {
         .logout()
         .logoutSuccessUrl("/login");
 
-    //         Add a filter to validate the username/pwd with every request
-    http.addFilterBefore(kwRequestFilterup, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
@@ -97,10 +116,13 @@ public class SecurityConfigNoSSO {
           adDomain,
           adRootDn,
           adFilter);
-      return new ProviderManager(
-          Collections.singletonList(activeDirectoryLdapAuthenticationProvider()));
+      this.authenticationManager =
+          new ProviderManager(
+              Collections.singletonList(activeDirectoryLdapAuthenticationProvider()));
+    } else {
+      this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
     }
-    return authenticationConfiguration.getAuthenticationManager();
+    return this.authenticationManager;
   }
 
   public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {

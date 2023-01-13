@@ -1,7 +1,29 @@
 package io.aiven.klaw;
 
-import io.aiven.klaw.dao.*;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.MessageSchema;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.EnvModel;
+import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.SchemaRequestModel;
+import io.aiven.klaw.model.ServerConfigProperties;
+import io.aiven.klaw.model.SyncAclUpdates;
+import io.aiven.klaw.model.SyncTopicUpdates;
+import io.aiven.klaw.model.TeamModel;
+import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
@@ -12,7 +34,12 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpHeaders;
@@ -24,7 +51,7 @@ public class UtilMethods {
     return new HttpHeaders() {
       {
         String auth = username + ":" + password;
-        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII));
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(StandardCharsets.US_ASCII), false);
         String authHeader = "Basic " + new String(encodedAuth);
         set("Authorization", authHeader);
       }

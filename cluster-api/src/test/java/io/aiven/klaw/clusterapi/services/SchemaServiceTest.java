@@ -1,8 +1,6 @@
 package io.aiven.klaw.clusterapi.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -10,7 +8,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
@@ -48,10 +45,7 @@ class SchemaServiceTest {
     // getSchemaVersions
     String getSchemaVersionsUrl = "env/subjects/topic-value/versions";
     when(getAdminClient.getRequestDetails(
-            eq(getSchemaVersionsUrl),
-            eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.SCHEMA_REGISTRY),
-            anyString()))
+            eq(getSchemaVersionsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(getSchemaVersionsUrl, restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/" + getSchemaVersionsUrl))
@@ -62,10 +56,7 @@ class SchemaServiceTest {
     // getSchemaCompatibility
     String getSchemaCompatibilityUrl = "env/config/topic-value";
     when(getAdminClient.getRequestDetails(
-            eq(getSchemaCompatibilityUrl),
-            eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.SCHEMA_REGISTRY),
-            anyString()))
+            eq(getSchemaCompatibilityUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(getSchemaCompatibilityUrl, restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/" + getSchemaCompatibilityUrl))
@@ -77,15 +68,10 @@ class SchemaServiceTest {
 
     // getSchema
     String getSchemaUrl = "env/subjects/topic-value/versions/1";
-    when(getAdminClient.getRequestDetails(
-            eq(getSchemaUrl),
-            eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.SCHEMA_REGISTRY),
-            anyString()))
+    when(getAdminClient.getRequestDetails(eq(getSchemaUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(getSchemaUrl, restTemplate));
 
-    when(getAdminClient.getRequestDetails(
-            eq(getSchemaUrl), eq(KafkaSupportedProtocol.PLAINTEXT), any(), anyString()))
+    when(getAdminClient.getRequestDetails(eq(getSchemaUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(getSchemaUrl, restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/" + getSchemaUrl))
