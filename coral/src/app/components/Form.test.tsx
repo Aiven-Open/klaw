@@ -1,52 +1,19 @@
-import { Button, RadioButton as BaseRadioButton } from "@aivenio/aquarium";
-import {
-  cleanup,
-  render,
-  RenderResult,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { RadioButton as BaseRadioButton } from "@aivenio/aquarium";
+import { cleanup, RenderResult, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import React from "react";
-import type { DeepPartial, FieldValues } from "react-hook-form";
 import {
-  Form,
+  ComplexNativeSelect,
   MultiInput,
   NativeSelect,
   NumberInput,
   PasswordInput,
   RadioButton,
   RadioButtonGroup,
-  SubmitErrorHandler,
-  SubmitHandler,
   Textarea,
   TextInput,
-  ComplexNativeSelect,
-  useForm,
 } from "src/app/components/Form";
-import { z, ZodSchema } from "zod";
-
-type WrapperProps<T extends FieldValues> = {
-  schema: ZodSchema;
-  defaultValues?: DeepPartial<T>;
-  onSubmit: SubmitHandler<T>;
-  onError: SubmitErrorHandler<T>;
-};
-
-const Wrapper = <T extends FieldValues>({
-  schema,
-  defaultValues,
-  onSubmit,
-  onError,
-  children,
-}: React.PropsWithChildren<WrapperProps<T>>): React.ReactElement => {
-  const form = useForm<T>({ schema, defaultValues });
-  return (
-    <Form onSubmit={onSubmit} onError={onError} {...form}>
-      {children}
-    </Form>
-  );
-};
+import { renderForm } from "src/services/test-utils/render-form";
+import { z } from "zod";
 
 describe("Form", () => {
   const onSubmit = jest.fn();
@@ -63,26 +30,6 @@ describe("Form", () => {
     onSubmit.mockClear();
     onError.mockClear();
   });
-
-  const renderForm = <T extends FieldValues>(
-    children: React.ReactNode,
-    {
-      schema,
-      defaultValues,
-    }: { schema: ZodSchema; defaultValues?: DeepPartial<T> }
-  ) => {
-    return render(
-      <Wrapper<T>
-        schema={schema}
-        defaultValues={defaultValues}
-        onSubmit={onSubmit}
-        onError={onError}
-      >
-        {children}
-        <Button type="submit" title="Submit" />
-      </Wrapper>
-    );
-  };
 
   const typeText = async (value: string) => {
     const el = screen.getByRole("textbox");
@@ -107,7 +54,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <TextInput<Schema> name="name" labelText="TextInput" />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -139,7 +86,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <TextInput<Schema> name="name" labelText="TextInput" />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -178,7 +125,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <NumberInput<Schema> name="name" labelText="NumberInput" />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -217,7 +164,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <Textarea<Schema> name="name" labelText="Textarea" />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -254,7 +201,7 @@ describe("Form", () => {
           <option value="berlin">Berlin</option>
           <option value="london">London</option>
         </NativeSelect>,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -291,7 +238,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <PasswordInput<Schema> name="password" labelText="PasswordInput" />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -341,7 +288,7 @@ describe("Form", () => {
         <RadioButton<Schema> name="city" value="Berlin">
           Berlin
         </RadioButton>,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -383,7 +330,7 @@ describe("Form", () => {
           <BaseRadioButton value="Berlin">Berlin</BaseRadioButton>
           <BaseRadioButton value="Helsinki">Helsinki</BaseRadioButton>
         </RadioButtonGroup>,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -456,7 +403,7 @@ describe("Form", () => {
           identifierName={"name"}
           placeholder={"Please select"}
         />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
@@ -528,7 +475,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <MultiInput<Schema> name="cities" labelText="Cities" />,
-        { schema }
+        { schema, onSubmit, onError }
       );
     });
 
