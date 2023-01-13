@@ -1,4 +1,4 @@
-import { Icon, Box } from "@aivenio/aquarium";
+import { Icon, Box, Typography, Grid, GridItem } from "@aivenio/aquarium";
 import { omit, uniqueId } from "lodash";
 import { InputHTMLAttributes, useRef } from "react";
 import classes from "src/app/components/FileInput.module.css";
@@ -9,11 +9,11 @@ type FileInputProps = InputHTMLAttributes<HTMLInputElement> & {
   labelText: string;
   helperText: string;
   noFileText: string;
-  fileName?: string;
+  accept: string;
 };
 
 function FileInput(props: FileInputProps) {
-  const { valid, labelText, helperText, noFileText, fileName } = props;
+  const { valid, labelText, helperText, noFileText } = props;
 
   const inputRef = useRef<null | HTMLInputElement>(null);
   const inputId = uniqueId("file_upload_");
@@ -32,27 +32,55 @@ function FileInput(props: FileInputProps) {
   }
 
   return (
-    <div className={classes.wrapper}>
-      <div
-        className={classes.overlay}
-        aria-hidden={"true"}
-        onClick={handleWrapperClick}
+    <div>
+      <Box aria-hidden={true} marginBottom={"2"}>
+        <Typography.Caption fontWeight={"500"}>
+          {labelText}
+          {props.required && <span className={"text-error-50"}>*</span>}
+        </Typography.Caption>
+      </Box>
+      <Grid
+        colGap={"l1"}
+        cols={"2"}
+        rows={"1"}
+        style={{
+          gridTemplateColumns: "max-content auto",
+        }}
       >
-        <Box display={"flex"} alignItems={"center"}>
+        <GridItem
+          colStart={"1"}
+          colEnd={"1"}
+          rowStart={"1"}
+          rowEnd={"1"}
+          width={"fit"}
+        >
           <Box
-            component={"div"}
+            aria-hidden={true}
             display={"flex"}
             alignItems={"center"}
-            colGap={"2"}
-            borderWidth={"1px"}
-            borderColor={"grey-30"}
-            borderRadius={"2px"}
-            paddingX={"l1"}
-            paddingY={"3"}
+            backgroundColor={"white"}
+            className={`${classes.fakeButton}`}
+            onClick={handleWrapperClick}
           >
-            <Icon icon={cloudUpload} />
-            <span>{labelText}</span>
+            <Box
+              component={"div"}
+              display={"flex"}
+              alignItems={"center"}
+              colGap={"2"}
+              borderWidth={"1px"}
+              borderColor={"grey-30"}
+              borderRadius={"2px"}
+              paddingX={"l1"}
+              paddingY={"3"}
+              className={`${!valid && "border-error-50"}`}
+            >
+              <Icon icon={cloudUpload} />
+              <span>{labelText}</span>
+            </Box>
           </Box>
+        </GridItem>
+
+        <GridItem colStart={"2"} colEnd={"2"} rowStart={"1"} rowEnd={"1"}>
           <Box
             grow={"1"}
             borderWidth={"1px"}
@@ -61,41 +89,46 @@ function FileInput(props: FileInputProps) {
             backgroundColor={"grey-5"}
             paddingX={"l1"}
             paddingY={"3"}
-            marginLeft={"l1"}
+            aria-hidden={true}
           >
-            {fileName ? fileName : noFileText}
+            {inputRef.current?.files?.[0].name || noFileText}
           </Box>
-        </Box>
-      </div>
-      <div className={classes.fileInputWrapper}>
-        <Box display={"flex"} flexDirection={"column"} colGap={"1"}>
-          <label
-            htmlFor={inputId}
-            className={`${classes.fileInputLabel} ${
-              !valid && "border-error-50"
-            }`}
-          >
-            {labelText}
+        </GridItem>
+
+        <GridItem
+          className={classes.fileInputWrapper}
+          colStart={"1"}
+          colEnd={"1"}
+          rowStart={"1"}
+          rowEnd={"1"}
+        >
+          <label htmlFor={inputId}>
+            <span className={"visually-hidden"}>
+              {inputRef.current?.files?.[0].name
+                ? `Uploaded file, name: ${inputRef.current?.files?.[0].name}. Click to upload new file.`
+                : labelText}
+            </span>
             <input
               {...propsPassed}
               id={inputId}
               type={"file"}
               ref={inputRef}
+              aria-required={props.required}
               aria-invalid={`${!valid}`}
-              className={classes.fileInput}
+              className={`${classes.fileInput}`}
               {...(!valid && { "aria-describedby": errorMessageId })}
             />
           </label>
-          <Box
-            component={"p"}
-            marginTop={"1"}
-            marginBottom={"3"}
-            className={"text-error-50 typography-caption-default"}
-          >
-            {valid ? <>&nbsp;</> : <>{helperText}</>}
-          </Box>
+        </GridItem>
+        <Box
+          component={"p"}
+          marginTop={"1"}
+          marginBottom={"3"}
+          className={"text-error-50 typography-caption-default"}
+        >
+          {valid ? <>&nbsp;</> : <>{helperText}</>}
         </Box>
-      </div>
+      </Grid>
     </div>
   );
 }
