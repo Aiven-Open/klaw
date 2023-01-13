@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:latest
+FROM amazoncorretto:17.0.5-alpine
 ARG PROJECT_VERSION
 ENV RELEASE_VERSION=$PROJECT_VERSION
 ARG JAR_FILE=./target/klaw-${RELEASE_VERSION}.jar
