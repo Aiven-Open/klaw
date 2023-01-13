@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
+import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
 import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
 import {
@@ -116,7 +117,11 @@ const TopicAclRequest = () => {
     topicTeam === undefined ||
     clusterInfo === undefined
   ) {
-    return <div>Loading</div>;
+    return (
+      <Box maxWidth={"4xl"}>
+        <SkeletonForm />
+      </Box>
+    );
   }
 
   const isAivenCluster = clusterInfo.aivenCluster === "true";
