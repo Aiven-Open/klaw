@@ -1,4 +1,4 @@
-FROM amazoncorretto:17.0.5-alpine
+FROM eclipse-temurin:17-jre
 ARG PROJECT_VERSION
 ENV RELEASE_VERSION=$PROJECT_VERSION
 ARG JAR_FILE=./target/klaw-${RELEASE_VERSION}.jar
