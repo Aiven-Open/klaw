@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:latest
+FROM eclipse-temurin:17-jre
 ARG PROJECT_VERSION
 ENV RELEASE_VERSION=$PROJECT_VERSION
 ARG JAR_FILE=./target/klaw-${RELEASE_VERSION}.jar
