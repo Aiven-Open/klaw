@@ -297,6 +297,8 @@ public class ServerConfigServiceTest {
     // verify
     assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(0)).updateKwProperty(any(), eq(101));
+    assertThat(response.getResult())
+        .isEqualTo("Failure. Resource UTA must be created before being added to the Tenant Model");
   }
 
   @Test
@@ -310,7 +312,7 @@ public class ServerConfigServiceTest {
     // verify
     assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     assertThat(response.getResult())
-        .isEqualTo("Failure. Invalid json / incorrect name values. Check tenant and env details.");
+        .isEqualTo("Failure. Please check if the environment names exist.");
   }
 
   @Test
