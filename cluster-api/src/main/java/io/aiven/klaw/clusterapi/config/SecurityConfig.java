@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @Slf4j
+@Configuration
 public class SecurityConfig {
   @Value("${klaw.clusterapi.access.username:kwuser}")
   private String clusterApiUser;
@@ -35,7 +37,7 @@ public class SecurityConfig {
     http.csrf().disable();
     http.formLogin().disable();
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    http.authorizeRequests().anyRequest().fullyAuthenticated();
+    http.authorizeHttpRequests().anyRequest().fullyAuthenticated();
     http.addFilterBefore(
         new JwtRequestFilter(userDetailsService, jwtTokenUtilService),
         UsernamePasswordAuthenticationFilter.class);

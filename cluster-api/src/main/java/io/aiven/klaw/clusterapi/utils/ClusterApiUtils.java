@@ -9,7 +9,6 @@ import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -20,8 +19,10 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,6 +30,8 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ClusterApiUtils {
 
+  private static final String PLAIN_REST_TEMPLATE = "PlainRestTemplate";
+  private static final String SSL_REST_TEMPLATE = "SSLRestTemplate";
   public static final String HTTPS_PREFIX = "https://";
   public static final String HTTP_PREFIX = "http://";
   public static final String SHA_256 = "SHA_256";
@@ -82,7 +85,7 @@ public class ClusterApiUtils {
   //    }
 
   private String getHash(String envHost) {
-    return new String(Base64.getEncoder().encode(messageDigest.digest(envHost.getBytes())));
+    return new String(Base64.encodeBase64(messageDigest.digest(envHost.getBytes()), false));
   }
 
   public AdminClient getAdminClient(
@@ -407,58 +410,46 @@ public class ClusterApiUtils {
   }
 
   public Pair<String, RestTemplate> getRequestDetails(
-      String suffixUrl,
-      KafkaSupportedProtocol protocol,
-      KafkaClustersType kafkaClustersType,
-      String clusterIdentification) {
+      String suffixUrl, KafkaSupportedProtocol protocol) {
     String connectorsUrl = "";
 
     if (PLAINTEXT == protocol) {
       connectorsUrl = HTTP_PREFIX + suffixUrl;
-
-      String plainRestTemplateKey = "PlainRestTemplate";
-      if (!restTemplateMap.containsKey(plainRestTemplateKey)) {
-        restTemplateMap.put(plainRestTemplateKey, new RestTemplate());
+      if (!restTemplateMap.containsKey(PLAIN_REST_TEMPLATE)) {
+        restTemplateMap.put(PLAIN_REST_TEMPLATE, new RestTemplate());
       }
-      return Pair.of(connectorsUrl, restTemplateMap.get(plainRestTemplateKey));
+      return Pair.of(connectorsUrl, restTemplateMap.get(PLAIN_REST_TEMPLATE));
     } else if (SSL == protocol) {
-      connectorsUrl =
-          getConnectorsUrl(suffixUrl, kafkaClustersType, clusterIdentification, connectorsUrl);
-
-      String sslRestTemplateKey = "SSLRestTemplate";
-      if (!restTemplateMap.containsKey(sslRestTemplateKey)) {
+      connectorsUrl = HTTPS_PREFIX.concat(suffixUrl);
+      if (!restTemplateMap.containsKey(SSL_REST_TEMPLATE)) {
         restTemplateMap.put(
-            sslRestTemplateKey, new RestTemplate(sslContextConfig.getClientHttpRequestFactory()));
+            SSL_REST_TEMPLATE, new RestTemplate(sslContextConfig.getClientHttpRequestFactory()));
       }
-      return Pair.of(connectorsUrl, restTemplateMap.get(sslRestTemplateKey));
+      return Pair.of(connectorsUrl, restTemplateMap.get(SSL_REST_TEMPLATE));
     }
     return Pair.of(connectorsUrl, new RestTemplate());
   }
 
-  private String getConnectorsUrl(
-      String suffixUrl,
-      KafkaClustersType kafkaClustersType,
-      String clusterIdentification,
-      String connectorsUrl) {
-    if (KafkaClustersType.KAFKA_CONNECT.equals(kafkaClustersType)) {
-      String connectCredentials =
-          env.getProperty(
-              clusterIdentification.toLowerCase().concat(KAFKA_CONNECT_CREDENTIALS_PROPERTY_SFX));
-      if (connectCredentials != null && !connectCredentials.isBlank()) {
-        connectorsUrl = HTTPS_PREFIX.concat(connectCredentials).concat("@").concat(suffixUrl);
-      } else {
-        connectorsUrl = HTTPS_PREFIX.concat(suffixUrl);
-      }
-    } else if (KafkaClustersType.SCHEMA_REGISTRY.equals(kafkaClustersType)) {
-      String srCredentials =
+  public HttpHeaders createHeaders(
+      String clusterIdentification, KafkaClustersType kafkaClustersType) {
+    String credentials = null;
+    if (KafkaClustersType.SCHEMA_REGISTRY.equals(kafkaClustersType)) {
+      credentials =
           env.getProperty(
               clusterIdentification.toLowerCase().concat(KAFKA_SR_CREDENTIALS_PROPERTY_SFX));
-      if (srCredentials != null && !srCredentials.isBlank()) {
-        connectorsUrl = HTTPS_PREFIX.concat(srCredentials).concat("@").concat(suffixUrl);
-      } else {
-        connectorsUrl = HTTPS_PREFIX.concat(suffixUrl);
-      }
+    } else if (KafkaClustersType.KAFKA_CONNECT.equals(kafkaClustersType)) {
+      credentials =
+          env.getProperty(
+              clusterIdentification.toLowerCase().concat(KAFKA_CONNECT_CREDENTIALS_PROPERTY_SFX));
     }
-    return connectorsUrl;
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    if (credentials != null) {
+      byte[] encodedAuth = Base64.encodeBase64(credentials.getBytes(), false);
+      String authHeader = "Basic " + new String(encodedAuth);
+      httpHeaders.set("Authorization", authHeader);
+    }
+
+    return httpHeaders;
   }
 }

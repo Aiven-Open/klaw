@@ -40,6 +40,7 @@ specifiers:
   react-hook-form: ^7.38.0
   react-router-dom: ^6.4.2
   react-test-renderer: ^18.2.0
+  rollup-plugin-visualizer: ^5.9.0
   ts-jest: ^29.0.3
   ts-node: ^10.9.1
   typescript: ^4.6.4
@@ -90,6 +91,7 @@ devDependencies:
   openapi-typescript: 5.4.1
   prettier: 2.7.1
   react-test-renderer: 18.2.0_react@18.2.0
+  rollup-plugin-visualizer: 5.9.0
   ts-jest: 29.0.3_7yfpbkrrkkmtlepb2un4d37cti
   ts-node: 10.9.1_id5sxmpllzol2kp2zgqrnepaum
   typescript: 4.8.4
@@ -6540,6 +6542,22 @@ packages:
       glob: 7.2.3
     dev: true
 
+  /rollup-plugin-visualizer/5.9.0:
+    resolution: {integrity: sha512-bbDOv47+Bw4C/cgs0czZqfm8L82xOZssk4ayZjG40y9zbXclNk7YikrZTDao6p7+HDiGxrN0b65SgZiVm9k1Cg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    peerDependencies:
+      rollup: 2.x || 3.x
+    peerDependenciesMeta:
+      rollup:
+        optional: true
+    dependencies:
+      open: 8.4.0
+      picomatch: 2.3.1
+      source-map: 0.7.4
+      yargs: 17.6.0
+    dev: true
+
   /rollup/2.78.1:
     resolution: {integrity: sha512-VeeCgtGi4P+o9hIg+xz4qQpRl6R401LWEXBmxYKOV4zlF82lyhgh2hTZnheFUbANE8l2A41F458iwj2vEYaXJg==}
     engines: {node: '>=10.0.0'}
@@ -6689,6 +6707,11 @@ packages:
   /source-map/0.6.1:
     resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /source-map/0.7.4:
+    resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
+    engines: {node: '>= 8'}
     dev: true
 
   /sourcemap-codec/1.4.8:

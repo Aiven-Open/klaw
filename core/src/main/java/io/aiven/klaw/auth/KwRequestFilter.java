@@ -4,50 +4,58 @@ import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.service.ValidateCaptchaService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
-@Component
 @Slf4j
 public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
 
-  @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
-  @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
-  @Autowired ValidateCaptchaService validateCaptchaService;
+  private final ValidateCaptchaService validateCaptchaService;
 
-  @Autowired ManageDatabase manageDatabase;
+  private final ManageDatabase manageDatabase;
 
-  @Autowired KwAuthenticationService kwAuthenticationService;
+  final KwAuthenticationService kwAuthenticationService;
 
-  @Lazy private AuthenticationManager authenticationManager;
+  private final AuthenticationManager authenticationManager;
 
-  @Autowired private KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
+  private final KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
 
-  @Autowired private KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+  private final KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
 
-  @Override
-  @Autowired
-  public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {
+  public KwRequestFilter(
+      AuthenticationManager authenticationManager,
+      KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler,
+      ValidateCaptchaService validateCaptchaService,
+      ManageDatabase manageDatabase,
+      KwAuthenticationService kwAuthenticationService,
+      KwAuthenticationFailureHandler kwAuthenticationFailureHandler,
+      String kwInstallationType,
+      String authenticationType) {
+    this.authenticationManager = authenticationManager;
+    super.setAuthenticationManager(authenticationManager);
+    this.kwAuthenticationSuccessHandler = kwAuthenticationSuccessHandler;
+    this.validateCaptchaService = validateCaptchaService;
+    this.manageDatabase = manageDatabase;
+    this.kwAuthenticationService = kwAuthenticationService;
+    this.kwAuthenticationFailureHandler = kwAuthenticationFailureHandler;
+    this.kwInstallationType = kwInstallationType;
+    this.authenticationType = authenticationType;
     super.setAuthenticationManager(authenticationManager);
   }
 
@@ -64,6 +72,7 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
       }
     }
 
+    // TODO move this logic to UserLoginService
     if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
       // Check if user exists in kw database
       if (manageDatabase.getHandleDbRequests().getUsersInfo(request.getParameter("username"))

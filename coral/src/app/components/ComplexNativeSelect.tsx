@@ -1,5 +1,5 @@
 import { NativeSelect, NativeSelectProps } from "@aivenio/aquarium";
-import { omit } from "lodash";
+import omit from "lodash/omit";
 import { ChangeEvent, useState } from "react";
 
 type ComplexNativeSelectProps<T> = NativeSelectProps & {

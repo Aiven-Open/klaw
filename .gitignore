@@ -51,3 +51,7 @@ coral/.env.remote-api
 
 # Coral HTTPS development environment default self signed certificate path 
 coral/.cert*
+
+# Coral bundle analysis
+coral/stats.html
+

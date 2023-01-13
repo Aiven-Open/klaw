@@ -58,9 +58,6 @@ public class UsersTeamsControllerService {
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
-  @Value("${klaw.enable.authorization.ad:false}")
-  private String adAuthRoleEnabled;
-
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 

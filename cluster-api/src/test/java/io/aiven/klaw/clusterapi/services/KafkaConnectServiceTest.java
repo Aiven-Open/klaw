@@ -2,7 +2,6 @@ package io.aiven.klaw.clusterapi.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -10,7 +9,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
@@ -45,8 +43,7 @@ class KafkaConnectServiceTest {
   // TODO need to add proper return value
   @Test
   public void getConnectors_returnList() throws JsonProcessingException {
-    when(getAdminClient.getRequestDetails(
-            any(), eq(KafkaSupportedProtocol.PLAINTEXT), any(), anyString()))
+    when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors", restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors"))
@@ -62,11 +59,7 @@ class KafkaConnectServiceTest {
   // TODO need to add proper return value
   @Test
   public void getConnectorDetails_returnMap() throws JsonProcessingException {
-    when(getAdminClient.getRequestDetails(
-            any(),
-            eq(KafkaSupportedProtocol.PLAINTEXT),
-            eq(KafkaClustersType.KAFKA_CONNECT),
-            anyString()))
+    when(getAdminClient.getRequestDetails(any(), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of("/env/connectors/conn1", restTemplate));
     this.mockRestServiceServer
         .expect(requestTo("/env/connectors/conn1"))

@@ -1,12 +1,14 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
-import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.AclRequestsModel;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
