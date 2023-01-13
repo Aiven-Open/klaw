@@ -1,4 +1,4 @@
-import { Textarea } from "@aivenio/aquarium";
+import { Textarea } from "src/app/components/Form";
 
 const RemarksField = () => (
   <Textarea
