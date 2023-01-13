@@ -290,8 +290,10 @@ public class ServerConfigService {
         tenant.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
       // The Schema Entry is saved in the DB IN ORDER as provided by the user with the Schema ID
-      // Here we must translate the Schema ID back to the Schema Name for human readablity while also maintaining the provided order.
-      // The schema promotion list is processed if it is not null and cycled through matching individual schema IDs against a list of Schema Envs retrieved from the DB.
+      // Here we must translate the Schema ID back to the Schema Name for human readablity while
+      // also maintaining the provided order.
+      // The schema promotion list is processed if it is not null and cycled through matching
+      // individual schema IDs against a list of Schema Envs retrieved from the DB.
       if (tenant.getOrderOfSchemaPromotionEnvsList() != null) {
         List<String> tmpSchemaOrderList1 = new ArrayList<>();
         tenant
@@ -335,7 +337,8 @@ public class ServerConfigService {
 
       // The Schema Entry is saved in the DB with the Schema ID
       // Here we must translate the Schema ID back to the Schema Name for human readablity.
-      // The schema Request list is processed if it is not null and cycled through matching individual schema IDs against a list of Schema Envs retrieved from the DB.
+      // The schema Request list is processed if it is not null and cycled through matching
+      // individual schema IDs against a list of Schema Envs retrieved from the DB.
       if (tenant.getRequestSchemaEnvironmentsList() != null) {
         List<String> tmpSchemaRequest = new ArrayList<>();
         tenant
@@ -400,8 +403,10 @@ public class ServerConfigService {
         tenantModel.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
 
-      // The Tenant Model is updated where the Schema Name is changed to the Schema ID when saved in the DB.
-      // Here we check the list is not null and cycle through each name mapping them to the correct Schema ENV ID so it can be stored correctly.
+      // The Tenant Model is updated where the Schema Name is changed to the Schema ID when saved in
+      // the DB.
+      // Here we check the list is not null and cycle through each name mapping them to the correct
+      // Schema ENV ID so it can be stored correctly.
       // In this case the order is maintained as it is provided by the user for promotion purposes.
       if (tenantModel.getOrderOfSchemaPromotionEnvsList() != null) {
         List<String> tmpSchemaOrderList = new ArrayList<>();
@@ -444,8 +449,10 @@ public class ServerConfigService {
       }
 
       // Schema Registry
-      // The Tenant Model is updated where the Schema Name is changed to the Schema ID when saved in the DB.
-      //Here we check the list is not null and cycle through each name mapping them to the correct Schema ENV ID so it can be stored correctly.
+      // The Tenant Model is updated where the Schema Name is changed to the Schema ID when saved in
+      // the DB.
+      // Here we check the list is not null and cycle through each name mapping them to the correct
+      // Schema ENV ID so it can be stored correctly.
       if (tenantModel.getRequestSchemaEnvironmentsList() != null) {
         List<String> tmpReqSchemaList = new ArrayList<>();
         tenantModel
