@@ -6,14 +6,18 @@ import cloudUpload from "@aivenio/aquarium/dist/src/icons/cloudUpload";
 
 type FileInputProps = InputHTMLAttributes<HTMLInputElement> & {
   valid: boolean;
+  // labelText is where the important information for
+  // visual and AT users is transported!
   labelText: string;
+  // buttonText is not conveyed to e.g. screen reader
+  // users, treat is as more decorative text
+  buttonText: string;
   helperText: string;
   noFileText: string;
-  accept: string;
 };
 
 function FileInput(props: FileInputProps) {
-  const { valid, labelText, helperText, noFileText } = props;
+  const { valid, labelText, buttonText, helperText, noFileText } = props;
 
   const inputRef = useRef<null | HTMLInputElement>(null);
   const inputId = uniqueId("file_upload_");
@@ -22,6 +26,7 @@ function FileInput(props: FileInputProps) {
   const propsPassed = omit(props, [
     "valid",
     "labelText",
+    "buttonText",
     "helperText",
     "noFileText",
     "fileName",
@@ -33,7 +38,11 @@ function FileInput(props: FileInputProps) {
 
   return (
     <div>
-      <Box aria-hidden={true} marginBottom={"2"}>
+      <Box
+        aria-hidden={true}
+        marginBottom={"2"}
+        data-testid="file-input-fake-label"
+      >
         <Typography.Caption fontWeight={"500"}>
           {labelText}
           {props.required && <span className={"text-error-50"}>*</span>}
@@ -61,6 +70,7 @@ function FileInput(props: FileInputProps) {
             backgroundColor={"white"}
             className={`${classes.fakeButton}`}
             onClick={handleWrapperClick}
+            data-testid="file-input-fake-button"
           >
             <Box
               component={"div"}
@@ -75,7 +85,7 @@ function FileInput(props: FileInputProps) {
               className={`${!valid && "border-error-50"}`}
             >
               <Icon icon={cloudUpload} />
-              <span>{labelText}</span>
+              <span>{buttonText}</span>
             </Box>
           </Box>
         </GridItem>
@@ -90,6 +100,7 @@ function FileInput(props: FileInputProps) {
             paddingX={"l1"}
             paddingY={"3"}
             aria-hidden={true}
+            data-testid="file-input-filename-info"
           >
             {inputRef.current?.files?.[0].name || noFileText}
           </Box>
@@ -122,6 +133,7 @@ function FileInput(props: FileInputProps) {
         </GridItem>
         <Box
           component={"p"}
+          id={errorMessageId}
           marginTop={"1"}
           marginBottom={"3"}
           className={"text-error-50 typography-caption-default"}
