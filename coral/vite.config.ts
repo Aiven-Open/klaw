@@ -1,5 +1,6 @@
-import { defineConfig, loadEnv, ProxyOptions } from "vite";
+import { defineConfig, loadEnv, PluginOption, ProxyOptions } from "vite";
 import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
 import { resolve } from "path";
 import fs from "fs";
 
@@ -106,11 +107,19 @@ function getServerProxyConfig(
   };
 }
 
+function getPlugins(environment: Record<string, string>): PluginOption[] {
+  const plugins: PluginOption[] = [react()];
+  if (environment.BUNDLE_ANALYZE) {
+    plugins.push(visualizer());
+  }
+  return plugins;
+}
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "");
   return {
-    plugins: [react()],
+    plugins: getPlugins(environment),
     define: {
       // Vite does not use process.env (see https://vitejs.dev/guide/env-and-mode.html).
       // If a library depends on process.env (like "@aivenio/aquarium").
@@ -121,7 +130,9 @@ export default defineConfig(({ mode }) => {
       "process.env": {
         ROUTER_BASENAME: getRouterBasename(environment),
         API_BASE_URL: getApiBaseUrl(environment),
-        FEATURE_FLAG_TOPIC_REQUEST: ["development", "remote-api"].includes(mode).toString()
+        FEATURE_FLAG_TOPIC_REQUEST: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {
