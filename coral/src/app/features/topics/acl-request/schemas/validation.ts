@@ -20,4 +20,8 @@ const ipv6 = `
 
 const isIpRegex = new RegExp(`(?:^${ipv4}$)|(?:^${ipv6}$)`);
 
-export { isIpRegex };
+const validateAclPrincipleValue = (value: string[] | undefined) => {
+  return value !== undefined && value.length >= 1;
+};
+
+export { isIpRegex, validateAclPrincipleValue };
