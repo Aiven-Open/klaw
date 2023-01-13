@@ -21,6 +21,7 @@ import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -530,22 +531,22 @@ public class ServerConfigServiceTest {
     when(managedb.getKafkaEnvList(anyInt()))
         .thenReturn(
             List.of(
-                createEnv("DEV", "1", "kafka"),
-                createEnv("TST", "2", "kafka"),
-                createEnv("UAT", "3", "kafka")));
+                createEnv("DEV", "1", KafkaClustersType.KAFKA.value),
+                createEnv("TST", "2", KafkaClustersType.KAFKA.value),
+                createEnv("UAT", "3", KafkaClustersType.KAFKA.value)));
     when(managedb.getKafkaConnectEnvList(anyInt()))
         .thenReturn(
             List.of(
-                createEnv("DEV_CONN", "4", "kafkaconnect"),
-                createEnv("TST_CONN", "5", "kafkaconnect"),
-                createEnv("UAT_CONN", "6", "kafkaconnect")));
+                createEnv("DEV_CONN", "4", KafkaClustersType.KAFKA_CONNECT.value),
+                createEnv("TST_CONN", "5", KafkaClustersType.KAFKA_CONNECT.value),
+                createEnv("UAT_CONN", "6", KafkaClustersType.KAFKA_CONNECT.value)));
 
     when(managedb.getSchemaRegEnvList(anyInt()))
         .thenReturn(
             List.of(
-                createEnv("DEV_SCH", "7", "schemaregistry"),
-                createEnv("TST_SCH", "8", "schemaregistry"),
-                createEnv("UAT_SCH", "9", "schemaregistry")));
+                createEnv("DEV_SCH", "7", KafkaClustersType.SCHEMA_REGISTRY.value),
+                createEnv("TST_SCH", "8", KafkaClustersType.SCHEMA_REGISTRY.value),
+                createEnv("UAT_SCH", "9", KafkaClustersType.SCHEMA_REGISTRY.value)));
 
     when(managedb.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(handleDbRequests.updateKwProperty(any(), eq(101)))
