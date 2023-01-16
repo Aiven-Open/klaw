@@ -10,6 +10,9 @@ import { isUnauthorizedError } from "src/services/api";
 import "/src/app/accessibility.module.css";
 import "/src/app/main.module.css";
 
+// https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
+import "/src/services/configure-monaco-editor";
+
 const DEV_MODE = import.meta.env.DEV;
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
