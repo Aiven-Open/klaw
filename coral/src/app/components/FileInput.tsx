@@ -22,6 +22,7 @@ function FileInput(props: FileInputProps) {
   const inputRef = useRef<null | HTMLInputElement>(null);
   const inputId = uniqueId("file_upload_");
   const errorMessageId = uniqueId("file_upload_error_message");
+  const currentFileName = inputRef.current?.files?.[0]?.name;
 
   const inputAttributes = omit(props, [
     "valid",
@@ -102,7 +103,7 @@ function FileInput(props: FileInputProps) {
             aria-hidden={true}
             data-testid="file-input-filename-info"
           >
-            {inputRef.current?.files?.[0]?.name || noFileText}
+            {currentFileName || noFileText}
           </Box>
         </GridItem>
 
@@ -115,7 +116,7 @@ function FileInput(props: FileInputProps) {
         >
           <label htmlFor={inputId}>
             <span className={"visually-hidden"}>
-              {inputRef.current?.files?.[0]?.name
+              {currentFileName
                 ? `Uploaded file, name: ${inputRef.current?.files?.[0]?.name}. Click to upload new file.`
                 : labelText}
             </span>
