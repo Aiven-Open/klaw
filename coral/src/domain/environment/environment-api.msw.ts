@@ -53,11 +53,8 @@ interface GetClusterInfoFromEnvRequestArgs {
 function mockGetClusterInfoFromEnv({
   mswInstance,
   response,
-  envSelected,
-  envType,
 }: GetClusterInfoFromEnvRequestArgs) {
-  const params = new URLSearchParams({ envSelected, envType });
-  const url = `${getHTTPBaseAPIUrl()}/getClusterInfoFromEnv?${params}`;
+  const url = `${getHTTPBaseAPIUrl()}/getClusterInfoFromEnv`;
 
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {

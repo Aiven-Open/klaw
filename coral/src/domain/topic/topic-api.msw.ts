@@ -164,14 +164,10 @@ interface MockGetTopicNamesRequestArgs {
 function mockGetTopicNames({
   mswInstance,
   response,
-  isMyTeamTopics = false,
 }: MockGetTopicNamesRequestArgs) {
   const base = getHTTPBaseAPIUrl();
-  const params = new URLSearchParams({
-    isMyTeamTopics: isMyTeamTopics.toString(),
-  });
 
-  const handler = rest.get(`${base}/getTopicsOnly?${params}`, (_, res, ctx) => {
+  const handler = rest.get(`${base}/getTopicsOnly`, (_, res, ctx) => {
     return res.once(ctx.status(200), ctx.json(response));
   });
 
@@ -198,13 +194,10 @@ interface MockGetTopicTeamRequestArgs {
 function mockGetTopicTeam({
   mswInstance,
   response,
-  topicName,
-  patternType = "LITERAL",
 }: MockGetTopicTeamRequestArgs) {
   const base = getHTTPBaseAPIUrl();
-  const params = new URLSearchParams({ topicName, patternType });
 
-  const handler = rest.get(`${base}/getTopicTeam?${params}`, (_, res, ctx) => {
+  const handler = rest.get(`${base}/getTopicTeam`, (_, res, ctx) => {
     return res.once(ctx.status(200), ctx.json(response));
   });
 
