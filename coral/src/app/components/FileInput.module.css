@@ -1,22 +1,22 @@
 /*z-index and positions are needed to */
 /*get the right focus behavior for*/
 
-.fake-button {
+.fakeButton {
   position: relative;
   z-index: 2;
   cursor: pointer;
 }
 
-.file-input-wrapper {
+.fileInputWrapper {
   position: relative;
   z-index: 1;
 }
 
-.file-input-wrapper:focus-within {
+.fileInputWrapper:focus-within {
   outline: 2px solid var(--interactive-elements-focus) !important;
 }
 
-.file-input {
+.fileInput {
   /*the width is an arbitrary value*/
   /*it has to be small enough to hide*/
   /*the input field behind the fake-button*/
