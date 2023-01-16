@@ -23,7 +23,7 @@ function FileInput(props: FileInputProps) {
   const inputId = uniqueId("file_upload_");
   const errorMessageId = uniqueId("file_upload_error_message");
 
-  const propsPassed = omit(props, [
+  const inputAttributes = omit(props, [
     "valid",
     "labelText",
     "buttonText",
@@ -120,7 +120,7 @@ function FileInput(props: FileInputProps) {
                 : labelText}
             </span>
             <input
-              {...propsPassed}
+              {...inputAttributes}
               id={inputId}
               type={"file"}
               ref={inputRef}
