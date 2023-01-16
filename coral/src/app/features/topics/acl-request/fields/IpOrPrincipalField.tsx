@@ -6,7 +6,7 @@ import {
 } from "src/domain/acl";
 
 interface IpOrPrincipalFieldProps {
-  aclIpPrincipleType:
+  aclIpPrincipleType?:
     | CreateAclRequestTopicTypeProducer["aclIpPrincipleType"]
     | CreateAclRequestTopicTypeConsumer["aclIpPrincipleType"];
 }
@@ -14,25 +14,30 @@ interface IpOrPrincipalFieldProps {
 const IpOrPrincipalField = ({
   aclIpPrincipleType,
 }: IpOrPrincipalFieldProps) => {
-  if (aclIpPrincipleType === undefined) {
-    return <Box style={{ height: "87px" }} />;
+  if (aclIpPrincipleType === "IP_ADDRESS") {
+    return (
+      <MultiInput
+        name="acl_ip"
+        labelText="IP addresses"
+        placeholder="192.168.1.1, 2606:4700:4700::1111"
+        required
+      />
+    );
   }
 
-  return aclIpPrincipleType === "IP_ADDRESS" ? (
-    <MultiInput
-      name="acl_ip"
-      labelText="IP addresses"
-      placeholder="192.168.1.1, 2606:4700:4700::1111"
-      required
-    />
-  ) : (
-    <MultiInput
-      name="acl_ssl"
-      labelText="SSL DN strings / Usernames"
-      placeholder="CN=myhost, Alice"
-      required
-    />
-  );
+  if (aclIpPrincipleType === "PRINCIPAL") {
+    return (
+      <MultiInput
+        name="acl_ssl"
+        labelText="SSL DN strings / Usernames"
+        placeholder="CN=myhost, Alice"
+        required
+      />
+    );
+  }
+
+  // Return empty element matching the height of other inputs to prevent layout shift
+  return <Box data-testid={"empty"} style={{ height: "87px" }} />;
 };
 
 export default IpOrPrincipalField;

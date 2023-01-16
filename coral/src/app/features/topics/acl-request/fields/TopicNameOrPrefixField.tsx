@@ -21,7 +21,7 @@ const TopicNameOrPrefixField = ({
   }
 
   // Return empty element matching the height of other inputs to prevent layout shift
-  return <Box style={{ height: "87px" }} />;
+  return <Box data-testid="empty" style={{ height: "87px" }} />;
 };
 
 export default TopicNameOrPrefixField;
