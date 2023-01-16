@@ -16,7 +16,7 @@ import {
   OptionType,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { memo } from "react";
+import React, { ChangeEvent, memo } from "react";
 import {
   FieldError,
   FieldPath,
@@ -38,6 +38,10 @@ import {
   ComplexNativeSelect as BaseComplexNativeSelect,
   ComplexNativeSelectProps as BaseComplexNativeSelectProps,
 } from "src/app/components/ComplexNativeSelect";
+import {
+  FileInput as BaseFileInput,
+  FileInputProps as BaseFileInputProps,
+} from "src/app/components/FileInput";
 
 type FormInputProps<T extends FieldValues = FieldValues> = {
   name: FieldPath<T>;
@@ -491,4 +495,56 @@ export const ComplexNativeSelect = <
 > => {
   const ctx = useFormContext<T>();
   return <ComplexNativeSelectMemo formContext={ctx} {...props} />;
+};
+
+//
+// <FileUpload>
+// This not part of Aiven core implementation but an input
+// custom for Klaw use cases.
+function _FileInput<T extends FieldValues>({
+  name,
+  formContext: form,
+  ...props
+}: Omit<BaseFileInputProps, "valid" | "helperText"> &
+  FormInputProps<T> &
+  FormRegisterProps<T>) {
+  return (
+    <_Controller
+      name={name}
+      control={form.control}
+      render={({ field: { name }, fieldState: { error } }) => {
+        const { isSubmitting } = form.formState;
+
+        return (
+          <BaseFileInput
+            {...props}
+            name={name}
+            disabled={props.disabled || isSubmitting}
+            valid={!error}
+            helperText={error?.message || ""}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const file = error ? "" : (event.target?.files?.[0] as any);
+              form.setValue(name, file, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+          />
+        );
+      }}
+    />
+  );
+}
+
+const FileInputMemo = memo(_FileInput) as typeof _FileInput;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const FileInput = <T extends FieldValues>(
+  props: FormInputProps<T> & Omit<BaseFileInputProps, "valid" | "helperText">
+): React.ReactElement<
+  FormInputProps<T> & Omit<BaseFileInputProps, "valid" | "helperText">
+> => {
+  const ctx = useFormContext<T>();
+  return <FileInputMemo formContext={ctx} {...props} />;
 };

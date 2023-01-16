@@ -1,0 +1,34 @@
+/*z-index and positions are needed to */
+/*get the right focus behavior for*/
+
+.fakeButton {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.fileInputWrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.fileInputWrapper:focus-within {
+  outline: 2px solid var(--interactive-elements-focus) !important;
+}
+
+.fileInput {
+  /*the width is an arbitrary value*/
+  /*it has to be small enough to hide*/
+  /*the input field behind the fake-button*/
+  /*I chose a bigger width instead of*/
+  /*opting for a very save "1px" */
+  /*because visual focus information */
+  /*are a bit confusing when element*/
+  /*is focused by the screen reader: */
+  /*- screen reader applies its own focus on the */
+  /*input element (with this width here)*/
+  /*and there is an additional visual feedback*/
+  /*based on our styles - but that is applied*/
+  /*to the fake-button.*/
+  width: 80px;
+}
