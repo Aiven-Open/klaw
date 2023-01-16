@@ -63,25 +63,27 @@ const TopicAclRequest = () => {
   const [topicType, setTopicType] = useState("Producer");
 
   useEffect(() => {
-    mockGetEnvironments({
-      mswInstance: window.msw,
-      response: { data: mockedData },
-    });
-    mockGetTopicNames({
-      mswInstance: window.msw,
-      response: mockedResponseTopicNames,
-    });
-    mockGetTopicTeam({
-      mswInstance: window.msw,
-      response: mockedResponseTopicTeamLiteral,
-      topicName,
-    });
-    mockGetClusterInfoFromEnv({
-      mswInstance: window.msw,
-      response: mockedResponseGetClusterInfoFromEnv,
-      envSelected: "1",
-      envType: "kafka",
-    });
+    if (window.msw !== undefined) {
+      mockGetEnvironments({
+        mswInstance: window.msw,
+        response: { data: mockedData },
+      });
+      mockGetTopicNames({
+        mswInstance: window.msw,
+        response: mockedResponseTopicNames,
+      });
+      mockGetTopicTeam({
+        mswInstance: window.msw,
+        response: mockedResponseTopicTeamLiteral,
+        topicName,
+      });
+      mockGetClusterInfoFromEnv({
+        mswInstance: window.msw,
+        response: mockedResponseGetClusterInfoFromEnv,
+        envSelected: "1",
+        envType: "kafka",
+      });
+    }
   }, []);
 
   const { data: topicNames } = useQuery<TopicNames, Error>(["topic-names"], {
@@ -117,11 +119,7 @@ const TopicAclRequest = () => {
     topicTeam === undefined ||
     clusterInfo === undefined
   ) {
-    return (
-      <Box maxWidth={"4xl"}>
-        <SkeletonForm />
-      </Box>
-    );
+    return <SkeletonForm />;
   }
 
   const isAivenCluster = clusterInfo.aivenCluster === "true";

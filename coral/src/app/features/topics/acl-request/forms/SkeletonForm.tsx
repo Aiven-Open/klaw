@@ -1,4 +1,5 @@
 import {
+  Box,
   Divider,
   Flexbox,
   Grid,
@@ -14,48 +15,50 @@ import {
 
 const SkeletonForm = () => {
   return (
-    <Grid cols="2" minWidth={"fit"} colGap={"9"}>
-      <GridItem>
-        <Flexbox gap={"4"}>
-          <RadioButton.Skeleton />
-          <RadioButton.Skeleton />
-        </Flexbox>
-      </GridItem>
-      <GridItem>
-        <NativeSelect.Skeleton />
-      </GridItem>
+    <Box data-testid={"skeleton"} maxWidth={"4xl"}>
+      <Grid cols="2" minWidth={"fit"} colGap={"9"}>
+        <GridItem>
+          <Flexbox gap={"4"}>
+            <RadioButton.Skeleton data-testid="skeleton" />
+            <RadioButton.Skeleton />
+          </Flexbox>
+        </GridItem>
+        <GridItem>
+          <NativeSelect.Skeleton />
+        </GridItem>
 
-      <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
-        <Divider />
-      </GridItem>
+        <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
+          <Divider />
+        </GridItem>
 
-      <GridItem>
-        <Flexbox gap={"4"}>
-          <RadioButton.Skeleton />
-          <RadioButton.Skeleton />
-        </Flexbox>{" "}
-      </GridItem>
-      <GridItem>
-        <TextInput.Skeleton />
-      </GridItem>
+        <GridItem>
+          <Flexbox gap={"4"}>
+            <RadioButton.Skeleton />
+            <RadioButton.Skeleton />
+          </Flexbox>{" "}
+        </GridItem>
+        <GridItem>
+          <TextInput.Skeleton />
+        </GridItem>
 
-      <GridItem colSpan={"span-2"}>
-        <TextInput.Skeleton />
-      </GridItem>
+        <GridItem colSpan={"span-2"}>
+          <TextInput.Skeleton />
+        </GridItem>
 
-      <GridItem>
-        <Flexbox gap={"4"}>
-          <RadioButton.Skeleton />
-          <RadioButton.Skeleton />
-        </Flexbox>
-      </GridItem>
-      <GridItem>
-        <MultiInput.Skeleton />
-      </GridItem>
-      <GridItem colSpan={"span-2"} minWidth={"full"}>
-        <Textarea.Skeleton />
-      </GridItem>
-    </Grid>
+        <GridItem>
+          <Flexbox gap={"4"}>
+            <RadioButton.Skeleton />
+            <RadioButton.Skeleton />
+          </Flexbox>
+        </GridItem>
+        <GridItem>
+          <MultiInput.Skeleton />
+        </GridItem>
+        <GridItem colSpan={"span-2"} minWidth={"full"}>
+          <Textarea.Skeleton />
+        </GridItem>
+      </Grid>
+    </Box>
   );
 };
 
