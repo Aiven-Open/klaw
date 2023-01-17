@@ -142,6 +142,23 @@ public class ClusterApiController {
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
   }
 
+  /*
+  Based on the project, service, user service accounts (in Aiven system) are retrieved.
+   */
+  @RequestMapping(
+      value = "/serviceAccounts/project/{projectName}/service/{serviceName}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> getServiceAccounts(
+      @PathVariable String projectName, @PathVariable String serviceName) {
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .data(aivenApiService.getServiceAccountUsers(projectName, serviceName))
+            .result(ApiResultStatus.SUCCESS.value)
+            .build();
+    return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+  }
+
   @RequestMapping(
       value = "/getSchema/{bootstrapServers}/{protocol}/{clusterIdentification}/{topicName}",
       method = RequestMethod.GET,

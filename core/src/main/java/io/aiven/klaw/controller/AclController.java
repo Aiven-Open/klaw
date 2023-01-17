@@ -143,4 +143,13 @@ public class AclController {
         aclControllerService.getAivenServiceAccountDetails(envId, topicName, userName, aclReqNo),
         HttpStatus.OK);
   }
+
+  // Aiven api call - get ServiceAccounts for an environment
+  @RequestMapping(
+      value = "/getAivenServiceAccounts",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> getAivenServiceAccounts(@RequestParam("env") String envId) {
+    return new ResponseEntity<>(aclControllerService.getAivenServiceAccounts(envId), HttpStatus.OK);
+  }
 }

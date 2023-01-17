@@ -10,8 +10,10 @@ import io.aiven.klaw.clusterapi.UtilMethods;
 import io.aiven.klaw.clusterapi.models.AivenAclResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -57,6 +59,10 @@ public class AivenApiServiceTest {
         aivenApiService,
         "addServiceAccountApiEndpoint",
         "https://api.aiven.io/v1/project/projectName/service/serviceName/user");
+    ReflectionTestUtils.setField(
+        aivenApiService,
+        "serviceDetailsApiEndpoint",
+        "https://api.aiven.io/v1/project/projectName/service/serviceName");
     ReflectionTestUtils.setField(aivenApiService, "clusterAccessToken", "testtoken");
     ReflectionTestUtils.setField(aivenApiService, "restTemplate", restTemplate);
     utilMethods = new UtilMethods();
@@ -178,6 +184,63 @@ public class AivenApiServiceTest {
 
     Map<String, String> response = aivenApiService.createAcls(clusterAclRequest);
     assertThat(response.get("result")).contains("Failure");
+  }
+
+  // Get service accounts
+  @Test
+  public void getServiceAccounts() {
+    // get service account stubs
+    String getServiceAccountUri =
+        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice";
+
+    Map<String, Map<String, Object>> serviceAccountsResponse = new HashMap<>();
+    Map<String, Object> userNameMap = new HashMap<>();
+    ArrayList<HashMap<String, Object>> userList = new ArrayList<>();
+    HashMap<String, Object> userNameMapObj1 = new HashMap<>();
+    userNameMapObj1.put("username", "user1");
+
+    HashMap<String, Object> userNameMapObj2 = new HashMap<>();
+    userNameMapObj2.put("username", "user2");
+
+    userList.add(userNameMapObj1);
+    userList.add(userNameMapObj2);
+
+    userNameMap.put("users", userList);
+    serviceAccountsResponse.put("service", userNameMap);
+    ResponseEntity responseEntityServiceAccount =
+        new ResponseEntity<>(serviceAccountsResponse, HttpStatus.OK);
+
+    when(restTemplate.exchange(
+            eq(getServiceAccountUri),
+            eq(HttpMethod.GET),
+            any(),
+            (ParameterizedTypeReference<Object>) any()))
+        .thenReturn(responseEntityServiceAccount);
+
+    Set<String> response = aivenApiService.getServiceAccountUsers("testproject", "testservice");
+    assertThat(response).contains("user1", "user2");
+  }
+
+  // Get service accounts
+  @Test
+  public void getServiceAccountsDontExist() {
+    // get service account stubs
+    String getServiceAccountUri =
+        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice";
+
+    Map<String, Map<String, Object>> serviceAccountsResponse = new HashMap<>();
+    ResponseEntity responseEntityServiceAccount =
+        new ResponseEntity<>(serviceAccountsResponse, HttpStatus.OK);
+
+    when(restTemplate.exchange(
+            eq(getServiceAccountUri),
+            eq(HttpMethod.GET),
+            any(),
+            (ParameterizedTypeReference<Object>) any()))
+        .thenReturn(responseEntityServiceAccount);
+
+    Set<String> response = aivenApiService.getServiceAccountUsers("testproject", "testservice");
+    assertThat(response).hasSize(0);
   }
 
   @Disabled

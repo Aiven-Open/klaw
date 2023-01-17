@@ -1,10 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_DENIED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_FAILURE;
+import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -699,6 +695,24 @@ public class AclControllerService {
           kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service account credentials {} ", e.toString());
+    }
+    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+  }
+
+  public ApiResponse getAivenServiceAccounts(String envId) {
+    String loggedInUser = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(loggedInUser);
+    log.info("Retrieving service accounts for environment {}", envId);
+    try {
+      // Get details from Cluster Api
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(getEnvDetails(envId, tenantId).getClusterId());
+      return clusterApiService.getAivenServiceAccounts(
+          kwClusters.getProjectName(), kwClusters.getServiceName(), tenantId);
+    } catch (Exception e) {
+      log.error("Ignoring error while retrieving service accounts {} ", e.toString());
     }
     return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
   }
