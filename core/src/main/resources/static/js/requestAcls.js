@@ -194,6 +194,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         else{
                             $scope.acl_ip_ssl = 'SSL';
                             $scope.selectedAclType="PRINCIPAL";
+                            $scope.getAivenServiceAccounts(envName);
                         }
                     }).error(
                         function(error)
@@ -202,6 +203,22 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         }
                     );
             }
+
+        $scope.getAivenServiceAccounts = function(environment){
+            $http({
+                method: "GET",
+                url: "getAivenServiceAccounts",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'env' : environment},
+            }).success(function(output) {
+                $scope.serviceAccounts = output.data;
+            }).error(
+                function(error)
+                {
+                    $scope.handleErrorMessage(error);
+                }
+            );
+        }
 
             // set default
             $scope.disable_consumergrp = false;

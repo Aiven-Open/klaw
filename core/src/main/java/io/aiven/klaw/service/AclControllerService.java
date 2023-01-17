@@ -702,4 +702,22 @@ public class AclControllerService {
     }
     return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
   }
+
+  public ApiResponse getAivenServiceAccounts(String envId) {
+    String loggedInUser = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(loggedInUser);
+    log.info("Retrieving service accounts for environment {}", envId);
+    try {
+      // Get details from Cluster Api
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(getEnvDetails(envId, tenantId).getClusterId());
+      return clusterApiService.getAivenServiceAccounts(
+          kwClusters.getProjectName(), kwClusters.getServiceName(), tenantId);
+    } catch (Exception e) {
+      log.error("Ignoring error while retrieving service accounts {} ", e.toString());
+    }
+    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+  }
 }

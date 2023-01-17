@@ -6,11 +6,23 @@ import io.aiven.klaw.clusterapi.models.AivenAclStruct;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.enums.AclAttributes;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +57,9 @@ public class AivenApiService {
 
   @Value("${klaw.clusters.getserviceaccount.api:api}")
   private String getServiceAccountApiEndpoint;
+
+  @Value("${klaw.clusters.servicedetails.api:api}")
+  private String serviceDetailsApiEndpoint;
 
   public Map<String, String> createAcls(ClusterAclRequest clusterAclRequest) {
     Map<String, String> resultMap = new HashMap<>();
@@ -182,6 +197,38 @@ public class AivenApiService {
       log.error("Exception:", e);
     }
     return new HashMap<>();
+  }
+
+  // Get Aiven service accounts
+  public Set<String> getServiceAccountUsers(String projectName, String serviceName) {
+    log.debug("Services account for project :{} service : {}", projectName, serviceName);
+    Set<String> serviceAccountsSet = new HashSet<>();
+    HttpHeaders headers = getHttpHeaders();
+    String uri =
+        serviceDetailsApiEndpoint
+            .replace(PROJECT_NAME, projectName)
+            .replace(SERVICE_NAME, serviceName);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
+    try {
+      ResponseEntity<Map<String, Map<String, Object>>> response =
+          getRestTemplate()
+              .exchange(uri, HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
+      if (response.getStatusCode().equals(HttpStatus.OK)) {
+        Map<String, Map<String, Object>> responseMap = response.getBody();
+        if (responseMap != null && responseMap.containsKey("service")) {
+          Map<String, Object> serviceDetailsMap = responseMap.get("service");
+          if (serviceDetailsMap.containsKey("users")) {
+            ArrayList<HashMap<String, Object>> userList =
+                (ArrayList) serviceDetailsMap.get("users");
+            userList.forEach(a -> serviceAccountsSet.add((String) a.get("username")));
+            return serviceAccountsSet;
+          }
+        }
+      }
+    } catch (Exception e) {
+      log.error("Exception:", e);
+    }
+    return new HashSet<>();
   }
 
   public String deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {

@@ -585,6 +585,32 @@ public class ClusterApiService {
     }
   }
 
+  public ApiResponse getAivenServiceAccounts(String projectName, String serviceName, int tenantId)
+      throws KlawException {
+    getClusterApiProperties(tenantId);
+    try {
+      String uriGetServiceAccounts =
+          clusterConnUrl + "/topics/serviceAccounts/project/projectName/service/serviceName";
+      uriGetServiceAccounts =
+          uriGetServiceAccounts
+              .replace("projectName", projectName)
+              .replace("serviceName", serviceName);
+
+      HttpEntity<String> entity = getHttpEntity();
+      ResponseEntity<ApiResponse> apiResponseResponseEntity =
+          getRestTemplate()
+              .exchange(
+                  uriGetServiceAccounts,
+                  HttpMethod.GET,
+                  entity,
+                  new ParameterizedTypeReference<>() {});
+      return apiResponseResponseEntity.getBody();
+    } catch (Exception e) {
+      log.error("Error from getAivenServiceAccounts", e);
+      throw new KlawException("Could not retrieve service accounts. Please contact Administrator.");
+    }
+  }
+
   ResponseEntity<ApiResponse> postSchema(
       SchemaRequest schemaRequest, String env, String topicName, int tenantId)
       throws KlawException {

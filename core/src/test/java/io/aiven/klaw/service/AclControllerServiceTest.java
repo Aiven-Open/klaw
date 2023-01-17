@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -610,6 +611,64 @@ public class AclControllerServiceTest {
         aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
 
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.FAILURE.value);
+  }
+
+  @Test
+  @Order(28)
+  public void getAivenServiceAccounts() throws KlawException {
+    stubUserInfo();
+    mockKafkaFlavor();
+    Set<String> serviceAccountInfoSet = new HashSet<>();
+    serviceAccountInfoSet.add("user1");
+    serviceAccountInfoSet.add("user2");
+
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value)
+            .data(serviceAccountInfoSet)
+            .build();
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+
+    when(clusterApiService.getAivenServiceAccounts(anyString(), anyString(), anyInt()))
+        .thenReturn(apiResponse);
+
+    ApiResponse resultResp = aclControllerService.getAivenServiceAccounts("1");
+    Set<String> resultObj = (Set) resultResp.getData();
+
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultObj).hasSize(2);
+  }
+
+  @Test
+  @Order(29)
+  public void getAivenServiceAccountsDontExist() throws KlawException {
+    stubUserInfo();
+    mockKafkaFlavor();
+    Set<String> serviceAccountInfoSet = new HashSet<>();
+
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value)
+            .data(serviceAccountInfoSet)
+            .build();
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+
+    when(clusterApiService.getAivenServiceAccounts(anyString(), anyString(), anyInt()))
+        .thenReturn(apiResponse);
+
+    ApiResponse resultResp = aclControllerService.getAivenServiceAccounts("1");
+    Set<String> resultObj = (Set) resultResp.getData();
+
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultObj).hasSize(0);
   }
 
   private AclRequestsModel getAclRequestProducer() {
