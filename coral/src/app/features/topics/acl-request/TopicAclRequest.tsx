@@ -2,17 +2,24 @@ import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
 import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
+import topicConsumerFormSchema, {
+  TopicConsumerFormSchema,
+} from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
+import topicProducerFormSchema, {
+  TopicProducerFormSchema,
+} from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
 import {
   ClusterInfo,
-  clusterInfoFromEnvironment,
   Environment,
   getEnvironments,
   mockGetEnvironments,
 } from "src/domain/environment";
+import { getClusterInfo } from "src/domain/environment/environment-api";
 import {
   mockedResponseGetClusterInfoFromEnv,
   mockGetClusterInfoFromEnv,
@@ -80,11 +87,28 @@ const TopicAclRequest = () => {
       mockGetClusterInfoFromEnv({
         mswInstance: window.msw,
         response: mockedResponseGetClusterInfoFromEnv,
-        envSelected: "1",
-        envType: "kafka",
       });
     }
   }, []);
+
+  const topicProducerForm = useForm<TopicProducerFormSchema>({
+    schema: topicProducerFormSchema,
+    defaultValues: {
+      topicname: topicName,
+      environment: "placeholder",
+      topictype: "Producer",
+    },
+  });
+
+  const topicConsumerForm = useForm<TopicConsumerFormSchema>({
+    schema: topicConsumerFormSchema,
+    defaultValues: {
+      aclPatternType: "LITERAL",
+      topicname: topicName,
+      environment: "placeholder",
+      topictype: "Consumer",
+    },
+  });
 
   const { data: topicNames } = useQuery<TopicNames, Error>(["topic-names"], {
     ...topicNamesQuery(),
@@ -106,23 +130,44 @@ const TopicAclRequest = () => {
     ["topic-team", topicName],
     topicTeamQuery({ topicName })
   );
-  const envSelected = "1";
-  const envType = "kafka";
+
+  const selectedEnvironment =
+    topicType === "Producer"
+      ? topicProducerForm.watch("environment")
+      : topicConsumerForm.watch("environment");
+  const selectedEnvironmentType =
+    environments?.find((env) => env.id === selectedEnvironment)?.type || "";
   const { data: clusterInfo } = useQuery<ClusterInfo, Error>(
-    ["cluster-info", envSelected, envType],
-    clusterInfoFromEnvironment({ envSelected, envType })
+    ["cluster-info", selectedEnvironment],
+    {
+      queryFn: () =>
+        getClusterInfo({
+          envSelected: selectedEnvironment,
+          envType: selectedEnvironmentType,
+        }),
+
+      keepPreviousData: false,
+      enabled:
+        selectedEnvironment !== "placeholder" && environments !== undefined,
+      onSettled: (data) => {
+        const isAivenCluster = data?.aivenCluster === "true";
+        // Enable the only possible option when the environment chosen is Aiven Kafka flavor
+        if (isAivenCluster) {
+          return topicType === "Producer"
+            ? topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL")
+            : topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+        }
+      },
+    }
   );
 
   if (
     topicNames === undefined ||
     environments === undefined ||
-    topicTeam === undefined ||
-    clusterInfo === undefined
+    topicTeam === undefined
   ) {
     return <SkeletonForm />;
   }
-
-  const isAivenCluster = clusterInfo.aivenCluster === "true";
 
   return (
     <Box maxWidth={"4xl"}>
@@ -131,22 +176,24 @@ const TopicAclRequest = () => {
           renderAclTypeField={() => (
             <AclTypeField topicType={topicType} handleChange={setTopicType} />
           )}
+          topicConsumerForm={topicConsumerForm}
           topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
           environments={environments}
-          isAivenCluster={isAivenCluster}
+          clusterInfo={clusterInfo}
         />
       ) : (
         <TopicProducerForm
           renderAclTypeField={() => (
             <AclTypeField topicType={topicType} handleChange={setTopicType} />
           )}
+          topicProducerForm={topicProducerForm}
           topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
           environments={environments}
-          isAivenCluster={isAivenCluster}
+          clusterInfo={clusterInfo}
         />
       )}
     </Box>

@@ -17,6 +17,7 @@ const IpOrPrincipalField = ({
   if (aclIpPrincipleType === "IP_ADDRESS") {
     return (
       <MultiInput
+        key="acl_ip"
         name="acl_ip"
         labelText="IP addresses"
         placeholder="192.168.1.1, 2606:4700:4700::1111"
@@ -28,6 +29,7 @@ const IpOrPrincipalField = ({
   if (aclIpPrincipleType === "PRINCIPAL") {
     return (
       <MultiInput
+        key="acl_ssl"
         name="acl_ssl"
         labelText="SSL DN strings / Usernames"
         placeholder="CN=myhost, Alice"

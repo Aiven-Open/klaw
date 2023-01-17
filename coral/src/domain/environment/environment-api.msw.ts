@@ -46,8 +46,6 @@ const mockedEnvironmentResponse = [
 interface GetClusterInfoFromEnvRequestArgs {
   mswInstance: MswInstance;
   response: KlawApiResponse<"clusterInfoFromEnvironmentGet">;
-  envSelected: string;
-  envType: string;
 }
 
 function mockGetClusterInfoFromEnv({

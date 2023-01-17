@@ -6,64 +6,54 @@ import {
   SecondaryButton,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { FieldErrorsImpl } from "react-hook-form";
+import { useEffect, useRef } from "react";
+import { FieldErrorsImpl, UseFormReturn } from "react-hook-form";
 import {
   Form,
   RadioButtonGroup,
   SubmitButton,
   SubmitHandler,
   TextInput,
-  useForm,
 } from "src/app/components/Form";
 import AclIpPrincipleTypeField from "src/app/features/topics/acl-request/fields/AclIpPrincipleTypeField";
 import EnvironmentField from "src/app/features/topics/acl-request/fields/EnvironmentField";
 import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrPrincipalField";
 import RemarksField from "src/app/features/topics/acl-request/fields/RemarksField";
 import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/TopicNameOrPrefixField";
-import topicProducerFormSchema, {
-  TopicProducerFormSchema,
-} from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
-import { Environment } from "src/domain/environment";
+import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
+import { ClusterInfo, Environment } from "src/domain/environment";
 
 interface TopicProducerFormProps {
+  topicProducerForm: UseFormReturn<TopicProducerFormSchema>;
   topicName: string;
   topicNames: string[];
   topicTeam: string;
   environments: Environment[];
-  isAivenCluster: boolean;
   renderAclTypeField: () => JSX.Element;
+  clusterInfo?: ClusterInfo;
 }
 
 const TopicProducerForm = ({
-  topicName,
+  topicProducerForm,
   topicNames,
   topicTeam,
   environments,
   renderAclTypeField,
-  isAivenCluster,
+  clusterInfo,
 }: TopicProducerFormProps) => {
-  const topicProducerForm = useForm<TopicProducerFormSchema>({
-    schema: topicProducerFormSchema,
-    defaultValues: {
-      remarks: undefined,
-      acl_ip: undefined,
-      acl_ssl: undefined,
-      aclPatternType: undefined,
-      topicname: topicName,
-      environment: "placeholder",
-      topictype: "Producer",
-      aclIpPrincipleType: isAivenCluster ? "PRINCIPAL" : undefined,
-      transactionalId: undefined,
-    },
-  });
-
   const { aclIpPrincipleType, aclPatternType } = topicProducerForm.getValues();
+  const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
+  const { current: initialAclPatternType } = useRef(aclPatternType);
 
   // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
-  // Not doing so results in values from one field to be persisted to the other after switching
+  // Not doing so results in values persisting to the form values if a value is entered and the field is then switched
   // Which causes errors
   useEffect(() => {
+    // Prevents resetting when switching from Producer to Consumer forms
+    if (aclIpPrincipleType === initialAclIpPrincipleType) {
+      return;
+    }
+
     topicProducerForm.resetField("acl_ip");
     topicProducerForm.resetField("acl_ssl");
   }, [aclIpPrincipleType]);
@@ -71,6 +61,10 @@ const TopicProducerForm = ({
   // Reset values of topicname when user switches between LITERAL and PREFIXED
   // Avoids conflict when entering a prefix that is not an existing topic name
   useEffect(() => {
+    // Prevents resetting when switching from Producer to Consumer forms
+    if (aclPatternType === initialAclPatternType) {
+      return;
+    }
     topicProducerForm.resetField("topicname");
   }, [aclPatternType]);
 
@@ -129,7 +123,7 @@ const TopicProducerForm = ({
         </GridItem>
 
         <GridItem>
-          <AclIpPrincipleTypeField isAivenCluster={isAivenCluster} />
+          <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
         </GridItem>
         <GridItem>
           <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />

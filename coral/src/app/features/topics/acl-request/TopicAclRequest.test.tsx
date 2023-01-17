@@ -79,8 +79,6 @@ describe("<TopicAclRequest />", () => {
       mockGetClusterInfoFromEnv({
         mswInstance: server,
         response: mockedResponseGetClusterInfoFromEnv,
-        envSelected: "1",
-        envType: "kafka",
       });
       customRender(
         <AquariumContext>
