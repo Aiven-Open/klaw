@@ -90,6 +90,7 @@ describe("useGetEnvironments", () => {
           topicNameSuffix: undefined,
           defaultPartitions: undefined,
           defaultReplicationFactor: undefined,
+          type: "kafka",
         },
         {
           name: "TST",
@@ -100,6 +101,7 @@ describe("useGetEnvironments", () => {
           topicNameSuffix: undefined,
           defaultPartitions: undefined,
           defaultReplicationFactor: undefined,
+          type: "kafka",
         },
       ]);
     });
