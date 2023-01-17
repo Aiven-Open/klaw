@@ -171,6 +171,7 @@ public class TopicOverviewService {
               manageDatabase
                   .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
                   .get(schemaEnv.getClusterId());
+
           SortedMap<Integer, Map<String, Object>> schemaObjects =
               clusterApiService.getAvroSchema(
                   kwClusters.getBootstrapServers(),
@@ -178,72 +179,91 @@ public class TopicOverviewService {
                   kwClusters.getClusterName() + kwClusters.getClusterId(),
                   topicNameSearch,
                   tenantId);
+          // If the schemaObject is null ie does not exist do not try to manipulate it.
+          if (schemaObjects != null && !schemaObjects.isEmpty()) {
 
-          Integer latestSchemaVersion = schemaObjects.firstKey();
-          Set<Integer> allVersions = schemaObjects.keySet();
-          List<Integer> allVersionsList = new ArrayList<>(allVersions);
+            Integer latestSchemaVersion = schemaObjects.firstKey();
+            Set<Integer> allVersions = schemaObjects.keySet();
+            List<Integer> allVersionsList = new ArrayList<>(allVersions);
 
-          try {
-            if (schemaVersionSearch != null
-                && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
-              schemaVersionSearch = "";
+            try {
+              if (schemaVersionSearch != null
+                  && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
+                schemaVersionSearch = "";
+              }
+            } catch (NumberFormatException ignored) {
             }
-          } catch (NumberFormatException ignored) {
-          }
 
-          // get latest version
-          if (schemaVersionSearch != null && schemaVersionSearch.equals("")) {
-            hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
-            schemaOfObj = (String) hashMapSchemaObj.get("schema");
-            schemaMap.put("isLatest", "true");
-            schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-            schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-            schemaMap.put("version", "" + latestSchemaVersion);
+            // get latest version
+            if (schemaVersionSearch != null && schemaVersionSearch.equals("")) {
+              hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
+              schemaOfObj = (String) hashMapSchemaObj.get("schema");
+              schemaMap.put("isLatest", "true");
+              schemaMap.put("id", hashMapSchemaObj.get("id") + "");
+              schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
+              schemaMap.put("version", "" + latestSchemaVersion);
 
-            if (schemaObjects.size() > 1) {
-              schemaMap.put("showNext", "true");
-              schemaMap.put("showPrev", "false");
-              int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
-              schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
-            }
-          } else {
-            hashMapSchemaObj =
-                schemaObjects.get(Integer.parseInt(Objects.requireNonNull(schemaVersionSearch)));
-            schemaOfObj = (String) hashMapSchemaObj.get("schema");
-            schemaMap.put("isLatest", "false");
-            schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-            schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-            schemaMap.put("version", "" + schemaVersionSearch);
-
-            if (schemaObjects.size() > 1) {
-              int indexOfVersion = allVersionsList.indexOf(Integer.parseInt(schemaVersionSearch));
-              if (indexOfVersion + 1 == allVersionsList.size()) {
-                schemaMap.put("showNext", "false");
-                schemaMap.put("showPrev", "true");
-                schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
-              } else {
+              if (schemaObjects.size() > 1) {
                 schemaMap.put("showNext", "true");
-                schemaMap.put("showPrev", "true");
-                schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
+                schemaMap.put("showPrev", "false");
+                int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
                 schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
               }
+            } else {
+              hashMapSchemaObj =
+                  schemaObjects.get(Integer.parseInt(Objects.requireNonNull(schemaVersionSearch)));
+              schemaOfObj = (String) hashMapSchemaObj.get("schema");
+              schemaMap.put("isLatest", "false");
+              schemaMap.put("id", hashMapSchemaObj.get("id") + "");
+              schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
+              schemaMap.put("version", "" + schemaVersionSearch);
+
+              if (schemaObjects.size() > 1) {
+                int indexOfVersion = allVersionsList.indexOf(Integer.parseInt(schemaVersionSearch));
+                if (indexOfVersion + 1 == allVersionsList.size()) {
+                  schemaMap.put("showNext", "false");
+                  schemaMap.put("showPrev", "true");
+                  schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
+                } else {
+                  schemaMap.put("showNext", "true");
+                  schemaMap.put("showPrev", "true");
+                  schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
+                  schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
+                }
+              }
             }
+
+            schemaMap.put("env", schemaEnv.getName());
+            dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
+            schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
+            schemaMap.put("content", schemaOfObj);
+
+            schemaDetails.add(schemaMap);
+            topicOverview.setSchemaExists(true);
+
+            // Set Promotion Details
+            processSchemaPromotionDetails(topicOverview, tenantId, schemaEnv);
+            log.info("Getting schema details for: " + topicNameSearch);
           }
-
-          schemaMap.put("env", schemaEnv.getName());
-          dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
-          schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-          schemaMap.put("content", schemaOfObj);
-
-          schemaDetails.add(schemaMap);
-          topicOverview.setSchemaExists(true);
-          log.info("Getting schema " + topicNameSearch);
         } catch (Exception e) {
           log.error("Error ", e);
         }
       }
+
       if (topicOverview.isSchemaExists()) topicOverview.setSchemaDetails(schemaDetails);
     }
+  }
+
+  private void processSchemaPromotionDetails(
+      TopicOverview topicOverview, int tenantId, Env schemaEnv) {
+    log.info("SchemaEnv Id {}", schemaEnv.getId());
+    Map<String, String> promotionDetails = new HashMap<>();
+    generatePromotionDetails(
+        tenantId,
+        promotionDetails,
+        Arrays.asList(schemaEnv.getId()),
+        mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS"));
+    topicOverview.setPromotionDetails(promotionDetails);
   }
 
   private void updateTopicOverviewItems(
@@ -470,24 +490,8 @@ public class TopicOverviewService {
       if (topics != null && topics.size() > 0) {
         List<String> envList =
             topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
-
-        // tenant filtering
-        String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
-        envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-        String lastEnv = envList.get(envList.size() - 1);
-        List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
-
-        if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
-          hashMap.put("status", "NO_PROMOTION"); // PRD
-        } else {
-          hashMap.put("status", ApiResultStatus.SUCCESS.value);
-          hashMap.put("sourceEnv", lastEnv);
-          String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
-          hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
-          hashMap.put("targetEnvId", targetEnv);
-        }
-
+        generatePromotionDetails(
+            tenantId, hashMap, envList, mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS"));
         return hashMap;
       }
     } catch (Exception e) {
@@ -497,6 +501,27 @@ public class TopicOverviewService {
     }
 
     return hashMap;
+  }
+
+  private void generatePromotionDetails(
+      int tenantId, Map<String, String> hashMap, List<String> envList, String orderOfEnvs) {
+    if (envList != null && envList.size() > 0) {
+      // tenant filtering
+      envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+
+      String lastEnv = envList.get(envList.size() - 1);
+      List<String> orderedEnvs = Arrays.asList(orderOfEnvs.split(","));
+
+      if (orderedEnvs.indexOf(lastEnv) == orderedEnvs.size() - 1) {
+        hashMap.put("status", "NO_PROMOTION"); // PRD
+      } else {
+        hashMap.put("status", ApiResultStatus.SUCCESS.value);
+        hashMap.put("sourceEnv", lastEnv);
+        String targetEnv = orderedEnvs.get(orderedEnvs.indexOf(lastEnv) + 1);
+        hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
+        hashMap.put("targetEnvId", targetEnv);
+      }
+    }
   }
 
   private String getUserName() {
@@ -509,9 +534,10 @@ public class TopicOverviewService {
 
   public Env getEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
+        envFound =
+            manageDatabase.getAllEnvList(tenantId).stream()
+                .filter(env -> Objects.equals(env.getId(), envId))
+                .findFirst();
     return envFound.orElse(null);
   }
 }

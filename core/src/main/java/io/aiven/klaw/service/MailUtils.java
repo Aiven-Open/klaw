@@ -393,6 +393,11 @@ public class MailUtils {
               .getRequestConnectorsEnvironmentsList()
               .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           break;
+        case "ORDER_OF_SCHEMA_ENVS":
+          tenantModel
+              .getOrderOfSchemaPromotionEnvsList()
+              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          break;
       }
 
       return intOrderEnvsList.stream().map(String::valueOf).collect(Collectors.joining(","));
