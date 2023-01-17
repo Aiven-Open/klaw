@@ -1,5 +1,12 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_DENIED;
+import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_FAILURE;
+import static org.springframework.beans.BeanUtils.copyProperties;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
@@ -22,12 +29,6 @@ import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,13 +39,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_DENIED;
-import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_FAILURE;
-import static org.springframework.beans.BeanUtils.copyProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
