@@ -252,6 +252,20 @@ public class TopicOverviewServiceTest {
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
     assertThat(returnedValue.getPromotionDetails()).isNullOrEmpty();
+    assertThat(returnedValue.isTopicExists()).isFalse();
+  }
+
+  @Test
+  @Order(8)
+  public void givenASchemaThatDoesntExist_ReturnNoPromotion() throws Exception {
+    stubUserInfo();
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
+
+    TopicOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "3");
+    assertThat(returnedValue.getPromotionDetails()).isNullOrEmpty();
+    assertThat(returnedValue.isSchemaExists()).isFalse();
   }
 
   private Topic createTopic(String topicName) {
