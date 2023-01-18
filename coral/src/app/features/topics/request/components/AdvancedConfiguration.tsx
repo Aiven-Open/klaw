@@ -241,7 +241,7 @@ function findMatchesFromModel(
     .filter(({ matches }) => matches.length > 0);
 }
 
-function unknownConfigKeyIntoMarker(
+function parseUnknownConfigKeyMatchIntoMarker(
   configKey: string,
   match: editor.FindMatch
 ): editor.IMarkerData {
@@ -283,7 +283,9 @@ const validateUnknownConfigurationKeys = ({
     if (model) {
       const markers = findMatchesFromModel(unknownConfigKeys, model)
         .map(({ configName, matches }) =>
-          matches.map((match) => unknownConfigKeyIntoMarker(configName, match))
+          matches.map((match) =>
+            parseUnknownConfigKeyMatchIntoMarker(configName, match)
+          )
         )
         .reduce((acc, curr) => [...acc, ...curr], []);
       setModelMarkers(model, "custom-component-validation", markers);
