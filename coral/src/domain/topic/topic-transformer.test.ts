@@ -63,7 +63,7 @@ describe("topic-transformer.ts", () => {
           name: "min.compaction.lag.ms",
           documentation: {
             link: "https://kafka.apache.org/documentation/#topicconfigs_min.compaction.lag.ms",
-            text: "",
+            text: "Specify the minimum time a message will remain uncompacted in the log.",
           },
         },
       ];
