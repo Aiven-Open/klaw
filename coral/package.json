@@ -19,6 +19,7 @@
     "preview": "vite preview",
     "reformat": "prettier --write src",
     "test": "jest",
+    "test-ci": "jest --run-in-band --ci",
     "test-dev": "jest --watch",
     "tsc": "tsc",
     "bundle-analyze": "BUNDLE_ANALYZE=1 vite build",
