@@ -10,52 +10,44 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
+@Component
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
 @Slf4j
 public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
 
+  @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
+  @Value("${klaw.installation.type:onpremise}")
   private String kwInstallationType;
 
-  private final ValidateCaptchaService validateCaptchaService;
+  @Autowired ValidateCaptchaService validateCaptchaService;
 
-  private final ManageDatabase manageDatabase;
+  @Lazy ManageDatabase manageDatabase;
 
-  final KwAuthenticationService kwAuthenticationService;
+  @Autowired KwAuthenticationService kwAuthenticationService;
 
-  private final AuthenticationManager authenticationManager;
+  @Lazy private AuthenticationManager authenticationManager;
 
-  private final KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
+  @Autowired private KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
 
-  private final KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+  @Autowired private KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
 
-  public KwRequestFilter(
-      AuthenticationManager authenticationManager,
-      KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler,
-      ValidateCaptchaService validateCaptchaService,
-      ManageDatabase manageDatabase,
-      KwAuthenticationService kwAuthenticationService,
-      KwAuthenticationFailureHandler kwAuthenticationFailureHandler,
-      String kwInstallationType,
-      String authenticationType) {
-    this.authenticationManager = authenticationManager;
-    super.setAuthenticationManager(authenticationManager);
-    this.kwAuthenticationSuccessHandler = kwAuthenticationSuccessHandler;
-    this.validateCaptchaService = validateCaptchaService;
-    this.manageDatabase = manageDatabase;
-    this.kwAuthenticationService = kwAuthenticationService;
-    this.kwAuthenticationFailureHandler = kwAuthenticationFailureHandler;
-    this.kwInstallationType = kwInstallationType;
-    this.authenticationType = authenticationType;
+  @Override
+  @Autowired
+  public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {
     super.setAuthenticationManager(authenticationManager);
   }
 
@@ -72,7 +64,6 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
       }
     }
 
-    // TODO move this logic to UserLoginService
     if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
       // Check if user exists in kw database
       if (manageDatabase.getHandleDbRequests().getUsersInfo(request.getParameter("username"))
@@ -109,5 +100,6 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
       throws IOException, ServletException {
     super.setAuthenticationSuccessHandler(kwAuthenticationSuccessHandler);
     super.successfulAuthentication(request, response, chain, authResult);
+    chain.doFilter(request, response);
   }
 }

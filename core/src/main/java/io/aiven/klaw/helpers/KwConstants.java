@@ -83,4 +83,28 @@ public class KwConstants {
 
   public static final int DAYS_EXPIRY_DEFAULT_TENANT = 365 * 10;
   public static final int DAYS_TRIAL_PERIOD = 7;
+
+  public static final String URI_CLUSTER_API = "/topics/getApiStatus";
+  public static final String URI_KAFKA_SR_CONN_STATUS = "/topics/getStatus/";
+  public static final String URI_GET_CONSUMER_OFFSETS = "/topics/getConsumerOffsets/";
+  public static final String URI_GET_TOPIC_CONTENTS = "/topics/getTopicContents/";
+  public static final String URI_GET_ACLS = "/topics/getAcls/";
+  public static final String URI_CREATE_ACLS = "/topics/createAcls";
+  public static final String URI_DELETE_ACLS = "/topics/deleteAcls";
+  public static final String URI_GET_TOPICS = "/topics/getTopics/";
+  public static final String URI_CREATE_TOPICS = "/topics/createTopics";
+  public static final String URI_UPDATE_TOPICS = "/topics/updateTopics";
+  public static final String URI_DELETE_TOPICS = "/topics/deleteTopics";
+  public static final String URI_POST_CONNECTOR = "/topics/postConnector";
+  public static final String URI_UPDATE_CONNECTOR = "/topics/updateConnector";
+  public static final String URI_DELETE_CONNECTOR = "/topics/deleteConnector";
+  public static final String URI_CONNECTOR_DETAILS = "/topics/getConnectorDetails";
+  public static final String URI_GET_ALL_CONNECTORS = "/topics/getAllConnectors/";
+  public static final String URI_POST_SCHEMA = "/topics/postSchema";
+  public static final String URI_GET_SCHEMA = "/topics/getSchema/";
+  public static final String URI_GET_METRICS = "/metrics/getMetrics";
+  public static final String URI_AIVEN_SERVICE_ACCOUNT_DETAIL =
+      "/topics/serviceAccountDetails/project/projectName/service/serviceName/user/userName";
+  public static final String URI_AIVEN_SERVICE_ACCOUNTS =
+      "/topics/serviceAccounts/project/projectName/service/serviceName";
 }

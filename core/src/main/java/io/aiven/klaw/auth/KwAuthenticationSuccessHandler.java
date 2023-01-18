@@ -2,7 +2,6 @@ package io.aiven.klaw.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -20,18 +19,18 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
 
   @Override
   public void onAuthenticationSuccess(
-      HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-      throws IOException {
+      HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
     log.info("User logged in : {}", ((UserDetails) authentication.getPrincipal()).getUsername());
     super.clearAuthenticationAttributes(request);
-    response.sendRedirect(contextPath.concat(getRedirectPage(request)));
+    this.setAlwaysUseDefaultTargetUrl(false);
+    this.setDefaultTargetUrl(contextPath.concat(getRedirectPage(request)));
   }
 
   private String getRedirectPage(HttpServletRequest request) {
     DefaultSavedRequest defaultSavedRequest =
         (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
     String loggedInQuery = "loggedin=true";
-    String indexPage = "index";
+    String indexPage = "/index";
     String urlSeparator = "?";
     String defaultPage = indexPage.concat(urlSeparator).concat(loggedInQuery);
 
