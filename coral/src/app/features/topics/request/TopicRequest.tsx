@@ -147,17 +147,23 @@ function TopicRequest() {
           <Box paddingY={"l1"}>
             <Divider />
           </Box>
-
-          <Textarea<Schema>
-            name="description"
-            labelText="Description"
-            rows={5}
-          />
-          <Textarea<Schema>
-            name="remarks"
-            labelText="Message for approval"
-            rows={5}
-          />
+          <Box component={Flexbox} gap={"l1"}>
+            <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <Textarea<Schema>
+                name="description"
+                labelText="Description"
+                rows={5}
+              />
+            </Box>
+            <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              {" "}
+              <Textarea<Schema>
+                name="remarks"
+                labelText="Message for approval"
+                rows={5}
+              />
+            </Box>
+          </Box>
         </Box>
 
         <SubmitButton>Request topic</SubmitButton>

@@ -72,15 +72,15 @@ function AdvancedConfiguration({ name }: Props) {
         Advanced Topic Configuration
       </Typography.Subheading>
       <Typography.Caption>
-        Instead of hiding instructions, we could have those inline here. For the
-        supported values refer to official{" "}
+        For advanced topic-level configurations, refer to the official{" "}
         <a
           href="https://kafka.apache.org/documentation/#topicconfigs"
           target="_blank"
           rel="noreferrer"
         >
           Apache Kafka Documentation
-        </a>{" "}
+        </a>
+        .
       </Typography.Caption>
       <BorderBox borderColor="grey-20">
         <_Controller
