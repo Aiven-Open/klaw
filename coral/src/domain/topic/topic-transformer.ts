@@ -133,7 +133,7 @@ const ADVANCED_TOPIC_CONFIG_DOCUMENTATION: Record<
   },
 };
 
-function transformGetTopicAdvanvedConfigOptionsResponse(
+function transformgetTopicAdvancedConfigOptionsResponse(
   apiResponse: KlawApiResponse<"topicAdvancedConfigGet">
 ): TopicAdvancedConfigurationOptions[] {
   return Object.entries(apiResponse).map(([key, name]) => ({
@@ -145,5 +145,5 @@ function transformGetTopicAdvanvedConfigOptionsResponse(
 
 export {
   transformTopicApiResponse,
-  transformGetTopicAdvanvedConfigOptionsResponse,
+  transformgetTopicAdvancedConfigOptionsResponse,
 };

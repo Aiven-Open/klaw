@@ -2,7 +2,7 @@ import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
-  transformGetTopicAdvanvedConfigOptionsResponse,
+  transformgetTopicAdvancedConfigOptionsResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
@@ -72,16 +72,16 @@ const getTopicTeam = async ({
   );
 };
 
-const getTopicAdvanvedConfigOptions = (): Promise<
+const getTopicAdvancedConfigOptions = (): Promise<
   TopicAdvancedConfigurationOptions[]
 > =>
   api
     .get<KlawApiResponse<"topicAdvancedConfigGet">>("/getAdvancedTopicConfigs")
-    .then(transformGetTopicAdvanvedConfigOptionsResponse);
+    .then(transformgetTopicAdvancedConfigOptionsResponse);
 
 export {
   getTopics,
   getTopicNames,
   getTopicTeam,
-  getTopicAdvanvedConfigOptions,
+  getTopicAdvancedConfigOptions,
 };

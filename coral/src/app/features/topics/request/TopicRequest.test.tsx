@@ -7,8 +7,8 @@ import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-a
 import { server } from "src/services/api-mocks/server";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
 import {
-  defaultGetTopicAdvanvedConfigOptionsResponse,
-  mockGetTopicAdvanvedConfigOptions,
+  defaultgetTopicAdvancedConfigOptionsResponse,
+  mockgetTopicAdvancedConfigOptions,
 } from "src/domain/topic/topic-api.msw";
 
 describe("<TopicRequest />", () => {
@@ -38,10 +38,10 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
-      mockGetTopicAdvanvedConfigOptions({
+      mockgetTopicAdvancedConfigOptions({
         mswInstance: server,
         response: {
-          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
         },
       });
       customRender(<TopicRequest />, { queryClient: true });
@@ -130,10 +130,10 @@ describe("<TopicRequest />", () => {
             ],
           },
         });
-        mockGetTopicAdvanvedConfigOptions({
+        mockgetTopicAdvancedConfigOptions({
           mswInstance: server,
           response: {
-            data: defaultGetTopicAdvanvedConfigOptionsResponse,
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
           },
         });
 
@@ -182,10 +182,10 @@ describe("<TopicRequest />", () => {
             ],
           },
         });
-        mockGetTopicAdvanvedConfigOptions({
+        mockgetTopicAdvancedConfigOptions({
           mswInstance: server,
           response: {
-            data: defaultGetTopicAdvanvedConfigOptionsResponse,
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
           },
         });
 
@@ -249,10 +249,10 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
-      mockGetTopicAdvanvedConfigOptions({
+      mockgetTopicAdvancedConfigOptions({
         mswInstance: server,
         response: {
-          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
         },
       });
 
@@ -359,10 +359,10 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
-      mockGetTopicAdvanvedConfigOptions({
+      mockgetTopicAdvancedConfigOptions({
         mswInstance: server,
         response: {
-          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
         },
       });
 
@@ -449,10 +449,10 @@ describe("<TopicRequest />", () => {
         },
       });
 
-      mockGetTopicAdvanvedConfigOptions({
+      mockgetTopicAdvancedConfigOptions({
         mswInstance: server,
         response: {
-          data: defaultGetTopicAdvanvedConfigOptionsResponse,
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
         },
       });
 

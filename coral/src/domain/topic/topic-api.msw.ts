@@ -45,7 +45,7 @@ function mockTopicGetRequest({
   mswInstance.use(...handlers);
 }
 
-function mockGetTopicAdvanvedConfigOptions({
+function mockgetTopicAdvancedConfigOptions({
   mswInstance,
   response,
 }: {
@@ -63,7 +63,7 @@ function mockGetTopicAdvanvedConfigOptions({
   );
 }
 
-const defaultGetTopicAdvanvedConfigOptionsResponse = {
+const defaultgetTopicAdvancedConfigOptionsResponse = {
   CLEANUP_POLICY: "cleanup.policy",
   COMPRESSION_TYPE: "compression.type",
   DELETE_RETENTION_MS: "delete.retention.ms",
@@ -138,11 +138,11 @@ const mockedResponseTransformed = transformTopicApiResponse(
 
 export {
   mockTopicGetRequest,
-  mockGetTopicAdvanvedConfigOptions,
+  mockgetTopicAdvancedConfigOptions,
   mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
   mockedResponseSinglePage,
   mockedResponseMultiplePage,
   mockedResponseTopicEnv,
-  defaultGetTopicAdvanvedConfigOptionsResponse,
+  defaultgetTopicAdvancedConfigOptionsResponse,
 };

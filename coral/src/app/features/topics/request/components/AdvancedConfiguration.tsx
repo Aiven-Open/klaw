@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import isString from "lodash/isString";
 import { Position, editor } from "monaco-editor";
 import { useEffect, useRef } from "react";
-import { getTopicAdvanvedConfigOptions } from "src/domain/topic/topic-api";
+import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { TopicAdvancedConfigurationOptions } from "src/domain/topic/topic-types";
 import { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
 import { BorderBox, Box, Flexbox, Typography } from "@aivenio/aquarium";
@@ -24,8 +24,8 @@ function AdvancedConfiguration({ name }: Props) {
   const monaco = useMonaco();
 
   const { data: advancedConfigurationOptions } = useQuery({
-    queryKey: ["getTopicAdvanvedConfigOptions"],
-    queryFn: getTopicAdvanvedConfigOptions,
+    queryKey: ["getTopicAdvancedConfigOptions"],
+    queryFn: getTopicAdvancedConfigOptions,
   });
 
   useEffect(
