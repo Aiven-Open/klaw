@@ -140,7 +140,9 @@ function setupAutocompleteAndTooltips(
       }
     );
     const hoverProvider = monaco.languages.registerHoverProvider("json", {
-      provideHover: wordMatchesOptionName(advancedConfigurationOptions),
+      provideHover: showConfigDocumentationOnKeyHover(
+        advancedConfigurationOptions
+      ),
     });
 
     return () => {
@@ -180,7 +182,7 @@ const autocompleteOptionNames = (
   };
 };
 
-const wordMatchesOptionName = (
+const showConfigDocumentationOnKeyHover = (
   options: TopicAdvancedConfigurationOptions[]
 ) => {
   return (model: editor.ITextModel, position: Position) => {
