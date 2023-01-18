@@ -2,7 +2,7 @@
 /*technology like screenreader and while navigating*/
 /*Klaw with the keyboard. */
 
-.skip-link {
+.skipLink {
   position: absolute;
   left: -10000px;
   top: auto;
@@ -11,11 +11,11 @@
   overflow: hidden;
 }
 
-.skip-link:hover {
+.skipLink:hover {
   cursor: default;
 }
 
-.skip-link:focus-visible {
+.skipLink:focus-visible {
   position: absolute;
   top: 0;
   left: calc(50% - 100px);

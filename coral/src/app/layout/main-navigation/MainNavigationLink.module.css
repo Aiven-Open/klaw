@@ -2,18 +2,18 @@
    defined and active styles is not meeting
    accessibility standards */
 
-.main-navigation-link a {
+.mainNavigationLink a {
   color: var(--body-text-color);
 }
 
-.main-navigation-link a:hover,
-.main-navigation-link:focus-within {
+.mainNavigationLink a:hover,
+.mainNavigationLink:focus-within {
   color: var(--main-navigation-hover);
 }
 
-.main-navigation-link-active a {
+.mainNavigationLinkActive a {
   color: var(--main-navigation-active);
 }
-.main-navigation-link-active {
+.mainNavigationLinkActive {
   background-color: white;
 }
