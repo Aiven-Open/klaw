@@ -470,7 +470,21 @@ describe("<TopicRequest />", () => {
       cleanup();
     });
 
-    it("has field which accepts value", async () => {
+    it("renders a sub heading", () => {
+      screen.getByRole("heading", { name: "Advanced Topic Configuration" });
+    });
+
+    it("renders a link to official kafka documentation", () => {
+      const link = screen.getByRole("link", {
+        name: "Apache Kafka Documentation",
+      });
+      expect(link).toHaveAttribute(
+        "href",
+        "https://kafka.apache.org/documentation/#topicconfigs"
+      );
+    });
+
+    it("renders a field which accespts JSON values", async () => {
       const mockedAdvancedConfig = screen.getByTestId("advancedConfiguration");
       await user.type(mockedAdvancedConfig, '{{"another":"value"}');
       expect(mockedAdvancedConfig).toHaveDisplayValue(
