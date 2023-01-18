@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import jakarta.validation.Valid;
@@ -93,8 +94,9 @@ public class SchemaRegstryController {
   @PostMapping(
       value = "/promote/schema",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> promoteSchema(
-      @Valid @RequestBody SchemaRequestModel promoteSchemaReq) throws KlawException {
-    return uploadSchema(promoteSchemaReq);
+  public ResponseEntity<ApiResponse> promoteSchema(@RequestBody SchemaPromotion promoteSchemaReq)
+      throws Exception {
+
+    return ResponseEntity.ok(schemaRegstryControllerService.promoteSchema(promoteSchemaReq));
   }
 }

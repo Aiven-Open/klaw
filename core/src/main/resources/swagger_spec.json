@@ -1951,7 +1951,7 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/TopicOverview"
+              "$ref" : "#/definitions/SchemaOverview"
             }
           }
         }
@@ -2685,7 +2685,7 @@
           "name" : "body",
           "required" : false,
           "schema" : {
-            "$ref" : "#/definitions/SchemaRequestModel"
+            "$ref" : "#/definitions/SchemaPromotion"
           }
         } ],
         "responses" : {
@@ -4055,6 +4055,74 @@
         }
       }
     },
+    "SchemaOverview" : {
+      "type" : "object",
+      "properties" : {
+        "topicExists" : {
+          "type" : "boolean"
+        },
+        "schemaExists" : {
+          "type" : "boolean"
+        },
+        "prefixAclsExists" : {
+          "type" : "boolean"
+        },
+        "txnAclsExists" : {
+          "type" : "boolean"
+        },
+        "allSchemaVersions" : {
+          "type" : "array",
+          "items" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        },
+        "schemaPromotionDetails" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "schemaDetails" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "SchemaPromotion" : {
+      "type" : "object",
+      "properties" : {
+        "targetEnvironment" : {
+          "type" : "string"
+        },
+        "sourceEnvironment" : {
+          "type" : "string"
+        },
+        "topicName" : {
+          "type" : "string"
+        },
+        "schemaVersion" : {
+          "type" : "string"
+        },
+        "schemaFull" : {
+          "type" : "string"
+        },
+        "forceRegister" : {
+          "type" : "boolean"
+        },
+        "appName" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string"
+        }
+      }
+    },
     "SchemaRequestModel" : {
       "type" : "object",
       "properties" : {
@@ -4102,6 +4170,9 @@
         },
         "requesttype" : {
           "type" : "string"
+        },
+        "forceRegister" : {
+          "type" : "boolean"
         },
         "remarks" : {
           "type" : "string"
@@ -4491,6 +4562,18 @@
     "TopicOverview" : {
       "type" : "object",
       "properties" : {
+        "topicExists" : {
+          "type" : "boolean"
+        },
+        "schemaExists" : {
+          "type" : "boolean"
+        },
+        "prefixAclsExists" : {
+          "type" : "boolean"
+        },
+        "txnAclsExists" : {
+          "type" : "boolean"
+        },
         "topicInfoList" : {
           "type" : "array",
           "items" : {
@@ -4521,32 +4604,11 @@
             "$ref" : "#/definitions/TopicHistory"
           }
         },
-        "promotionDetails" : {
+        "topicPromotionDetails" : {
           "type" : "object",
           "additionalProperties" : {
             "type" : "string"
           }
-        },
-        "topicExists" : {
-          "type" : "boolean"
-        },
-        "schemaDetails" : {
-          "type" : "array",
-          "items" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        },
-        "schemaExists" : {
-          "type" : "boolean"
-        },
-        "prefixAclsExists" : {
-          "type" : "boolean"
-        },
-        "txnAclsExists" : {
-          "type" : "boolean"
         },
         "topicDocumentation" : {
           "type" : "string"

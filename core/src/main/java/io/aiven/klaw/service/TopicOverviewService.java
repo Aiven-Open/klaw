@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
@@ -140,15 +141,15 @@ public class TopicOverviewService {
     return topicOverview;
   }
 
-  public TopicOverview getSchemaOfTopic(String topicNameSearch, String schemaVersionSearch) {
+  public SchemaOverview getSchemaOfTopic(String topicNameSearch, String schemaVersionSearch) {
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    TopicOverview topicOverview = new TopicOverview();
-    topicOverview.setTopicExists(true);
+    SchemaOverview schemaOverview = new SchemaOverview();
+    schemaOverview.setTopicExists(true);
     boolean retrieveSchemas = true;
     updateAvroSchema(
-        topicNameSearch, schemaVersionSearch, handleDb, retrieveSchemas, topicOverview, tenantId);
-    return topicOverview;
+        topicNameSearch, schemaVersionSearch, handleDb, retrieveSchemas, schemaOverview, tenantId);
+    return schemaOverview;
   }
 
   private void updateAvroSchema(
@@ -156,9 +157,9 @@ public class TopicOverviewService {
       String schemaVersionSearch,
       HandleDbRequests handleDb,
       boolean retrieveSchemas,
-      TopicOverview topicOverview,
+      SchemaOverview schemaOverview,
       int tenantId) {
-    if (topicOverview.isTopicExists() && retrieveSchemas) {
+    if (schemaOverview.isTopicExists() && retrieveSchemas) {
       List<Map<String, String>> schemaDetails = new ArrayList<>();
       Map<String, String> schemaMap = new HashMap<>();
       List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
@@ -185,7 +186,7 @@ public class TopicOverviewService {
             Integer latestSchemaVersion = schemaObjects.firstKey();
             Set<Integer> allVersions = schemaObjects.keySet();
             List<Integer> allVersionsList = new ArrayList<>(allVersions);
-
+            schemaOverview.setAllSchemaVersions(allVersionsList);
             try {
               if (schemaVersionSearch != null
                   && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
@@ -239,10 +240,10 @@ public class TopicOverviewService {
             schemaMap.put("content", schemaOfObj);
 
             schemaDetails.add(schemaMap);
-            topicOverview.setSchemaExists(true);
+            schemaOverview.setSchemaExists(true);
 
             // Set Promotion Details
-            processSchemaPromotionDetails(topicOverview, tenantId, schemaEnv);
+            processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv);
             log.info("Getting schema details for: " + topicNameSearch);
           }
         } catch (Exception e) {
@@ -250,12 +251,12 @@ public class TopicOverviewService {
         }
       }
 
-      if (topicOverview.isSchemaExists()) topicOverview.setSchemaDetails(schemaDetails);
+      if (schemaOverview.isSchemaExists()) schemaOverview.setSchemaDetails(schemaDetails);
     }
   }
 
   private void processSchemaPromotionDetails(
-      TopicOverview topicOverview, int tenantId, Env schemaEnv) {
+      SchemaOverview schemaOverview, int tenantId, Env schemaEnv) {
     log.info("SchemaEnv Id {}", schemaEnv.getId());
     Map<String, String> promotionDetails = new HashMap<>();
     generatePromotionDetails(
@@ -263,7 +264,7 @@ public class TopicOverviewService {
         promotionDetails,
         Arrays.asList(schemaEnv.getId()),
         mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS"));
-    topicOverview.setPromotionDetails(promotionDetails);
+    schemaOverview.setSchemaPromotionDetails(promotionDetails);
   }
 
   private void updateTopicOverviewItems(
@@ -277,7 +278,8 @@ public class TopicOverviewService {
       Integer topicOwnerTeam) {
     try {
       if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
-        topicOverview.setPromotionDetails(getTopicPromotionEnv(topicNameSearch, topics, tenantId));
+        topicOverview.setTopicPromotionDetails(
+            getTopicPromotionEnv(topicNameSearch, topics, tenantId));
 
         if (topicInfoList.size() > 0) {
           TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
@@ -290,12 +292,12 @@ public class TopicOverviewService {
       } else {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("status", "not_authorized");
-        topicOverview.setPromotionDetails(hashMap);
+        topicOverview.setTopicPromotionDetails(hashMap);
       }
     } catch (Exception e) {
       Map<String, String> hashMap = new HashMap<>();
       hashMap.put("status", "not_authorized");
-      topicOverview.setPromotionDetails(hashMap);
+      topicOverview.setTopicPromotionDetails(hashMap);
     }
   }
 

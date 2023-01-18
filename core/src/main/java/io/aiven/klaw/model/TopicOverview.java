@@ -5,18 +5,13 @@ import java.util.Map;
 import lombok.Data;
 
 @Data
-public class TopicOverview {
+public class TopicOverview extends Overview {
   List<TopicInfo> topicInfoList;
   List<AclInfo> aclInfoList;
   List<AclInfo> prefixedAclInfoList;
   List<AclInfo> transactionalAclInfoList;
   private List<TopicHistory> topicHistoryList;
-  Map<String, String> promotionDetails;
-  boolean topicExists;
-  List<Map<String, String>> schemaDetails;
-  boolean schemaExists;
-  boolean prefixAclsExists;
-  boolean txnAclsExists;
+  Map<String, String> topicPromotionDetails;
 
   String topicDocumentation;
   Integer topicIdForDocumentation;

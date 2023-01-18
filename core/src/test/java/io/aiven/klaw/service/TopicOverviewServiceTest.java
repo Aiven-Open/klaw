@@ -17,6 +17,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -175,11 +176,11 @@ public class TopicOverviewServiceTest {
 
     when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
+    SchemaOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
 
-    assertThat(returnedValue.getPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().containsKey("status")).isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
   }
 
   @Test
@@ -192,14 +193,14 @@ public class TopicOverviewServiceTest {
     when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
-    TopicOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
+    SchemaOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
 
-    assertThat(returnedValue.getPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getPromotionDetails().get("status"))
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().containsKey("status")).isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("status"))
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getPromotionDetails().get("sourceEnv")).isEqualTo("1");
-    assertThat(returnedValue.getPromotionDetails().get("targetEnv")).isEqualTo("test-2");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("sourceEnv")).isEqualTo("1");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("targetEnv")).isEqualTo("test-2");
   }
 
   @Test
@@ -214,9 +215,9 @@ public class TopicOverviewServiceTest {
     when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
-    assertThat(returnedValue.getPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
+    assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
   }
 
   @Test
@@ -233,12 +234,12 @@ public class TopicOverviewServiceTest {
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
-    assertThat(returnedValue.getPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getPromotionDetails().get("status"))
+    assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
+    assertThat(returnedValue.getTopicPromotionDetails().get("status"))
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getPromotionDetails().get("sourceEnv")).isEqualTo("1");
-    assertThat(returnedValue.getPromotionDetails().get("targetEnv")).isEqualTo("test-2");
+    assertThat(returnedValue.getTopicPromotionDetails().get("sourceEnv")).isEqualTo("1");
+    assertThat(returnedValue.getTopicPromotionDetails().get("targetEnv")).isEqualTo("test-2");
   }
 
   @Test
@@ -251,7 +252,7 @@ public class TopicOverviewServiceTest {
     when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
-    assertThat(returnedValue.getPromotionDetails()).isNullOrEmpty();
+    assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isTopicExists()).isFalse();
   }
 
@@ -263,8 +264,8 @@ public class TopicOverviewServiceTest {
 
     when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "3");
-    assertThat(returnedValue.getPromotionDetails()).isNullOrEmpty();
+    SchemaOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "3");
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isSchemaExists()).isFalse();
   }
 

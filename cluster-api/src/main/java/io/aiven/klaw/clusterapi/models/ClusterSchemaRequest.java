@@ -22,4 +22,6 @@ public class ClusterSchemaRequest implements Serializable {
   private String fullSchema;
 
   private String clusterIdentification;
+
+  private boolean forceRegister;
 }

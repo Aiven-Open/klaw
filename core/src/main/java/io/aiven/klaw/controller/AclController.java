@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
@@ -109,7 +110,7 @@ public class AclController {
       value = "/getSchemaOfTopic",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<TopicOverview> getSchemaOfTopic(
+  public ResponseEntity<SchemaOverview> getSchemaOfTopic(
       @RequestParam(value = "topicnamesearch") String topicNameSearch,
       @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
     return new ResponseEntity<>(

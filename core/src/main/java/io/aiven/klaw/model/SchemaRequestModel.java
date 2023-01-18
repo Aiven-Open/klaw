@@ -43,6 +43,8 @@ public class SchemaRequestModel implements Serializable {
 
   private String requesttype;
 
+  private boolean forceRegister;
+
   @Pattern(message = "Invalid remarks", regexp = "^$|^[a-zA-Z 0-9_.-]{3,}$")
   private String remarks;
 

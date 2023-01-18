@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
@@ -106,6 +107,23 @@ public class SchemaRegstryControllerTest {
 
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
+  @Order(5)
+  public void promoteSchema() throws Exception {
+    SchemaPromotion schemaPromotion = utilMethods.getSchemaPromotion().get(0);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaPromotion);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    when(schemaRegstryControllerService.promoteSchema(any())).thenReturn(apiResponse);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/promote/schema")
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

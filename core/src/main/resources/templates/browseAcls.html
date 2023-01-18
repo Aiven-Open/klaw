@@ -513,7 +513,7 @@
 								</table>
 							</div>
 
-							<div ng-show="promotionDetails.status ==='success'">
+							<div ng-show="topicPromotionDetails.status ==='success'">
 								<table width="100%" class="table color-table success-table">
 									<tr>
 										<td width="25%">
@@ -543,17 +543,17 @@
 										</td>
 										<td width="5%"></td>
 										<td width="20%" align="right">
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'false'"
+												<button ng-show="topicPromotionDetails.status =='success' && firstPromote == 'false'"
 														type="button"
-														ng-click="onFirstPromote(promotionDetails.targetEnvId)"
+														ng-click="onFirstPromote(topicPromotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
-													Promote to {{promotionDetails.targetEnv}}
+													Promote to {{topicPromotionDetails.targetEnv}}
 												</button>
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'true'"
+												<button ng-show="topicPromotionDetails.status =='success' && firstPromote == 'true'"
 														type="button"
-														ng-click="onFinalPromote(promotionDetails.targetEnvId)"
+														ng-click="onFinalPromote(topicPromotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
-													Submit Promotion to {{promotionDetails.targetEnv}}
+													Submit Promotion to {{topicPromotionDetails.targetEnv}}
 												</button>
 										</td>
 									</tr>
@@ -878,6 +878,57 @@
 										<tr>
 											<td>
 												<textarea class="form-control" style="background-color:#70C6DA;color:black;" disabled rows="10">{{ schemacontent.content }}</textarea>
+											</td>
+										</tr>
+										<tr>
+											<td width="100%%">
+												<div ng-show="schemaPromotionDetails.status ==='success'">
+													<table width="100%" class="table color-table success-table">
+														<tr>
+															<td width="25%">
+
+															</td>
+															<td align="left" width="25%">
+																<div ng-show="firstSchemaPromote == 'true'" class="form-group has-success">
+																	<select class="form-control custom-select"
+																			required
+																			ng-model="schema.versionSelected"
+																			ng-options="schemaVersion for schemaVersion in allSchemaVersions">
+																		<option value="" selected="selected">
+																			Select Version to Promote</option>
+																	</select>
+																</div>
+															</td>
+															<td align="left" width="25%">
+																<div ng-show="firstSchemaPromote == 'true' && isForceRegisterAllowed == 'true'" class="checkbox checkbox-primary pt-0 mytooltip">
+																		<input id="checkbox-force" type="checkbox" ng-model="schema.forceRegister">
+																		<label for="checkbox-force"> Force Register Schema </label>
+																	<span class="tooltip-content5">
+																		<span class="tooltip-text3">
+																			<span class="tooltip-inner2">Force Register is for use when schema compatibility prevents schema promotion for a must have schema promotion.
+																			</span>
+																		</span>
+																	</span>
+																	</div>
+															</td>
+															<td width="5%"></td>
+															<td width="20%" align="right">
+																<button ng-show="schemaPromotionDetails.status =='success' && firstSchemaPromote == 'false'"
+																		type="button"
+																		ng-click="onFirstSchemaPromote(schemaDetails)"
+																		class="btn btn-rounded btn-block btn-outline-info">
+																	Promote to {{schemaPromotionDetails.targetEnv}}
+																</button>
+																<button ng-show="schemaPromotionDetails.status =='success' && firstSchemaPromote == 'true'"
+																		type="button"
+																		ng-click="onFinalSchemaPromote(schemaPromotionDetails.sourceEnv,schemaPromotionDetails.targetEnvId)"
+																		class="btn btn-rounded btn-block btn-outline-info">
+																	Submit Promotion to {{schemaPromotionDetails.targetEnv}}
+																</button>
+															</td>
+														</tr>
+													</table>
+												</div>
 											</td>
 										</tr>
 									</table>
