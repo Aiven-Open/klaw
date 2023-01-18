@@ -1,4 +1,7 @@
-import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
+import {
+  transformgetTopicAdvancedConfigOptionsResponse,
+  transformTopicApiResponse,
+} from "src/domain/topic/topic-transformer";
 import { Topic, TopicApiResponse } from "src/domain/topic/topic-types";
 import {
   baseTestObjectMockedTopic,
@@ -46,6 +49,41 @@ describe("topic-transformer.ts", () => {
       };
 
       expect(transformTopicApiResponse(apiResponse)).toStrictEqual(result);
+    });
+  });
+
+  describe("transformgetTopicAdvancedConfigOptionsResponse", () => {
+    it("transforms an config without known documenation", () => {
+      const apiResponse: KlawApiResponse<"topicAdvancedConfigGet"> = {
+        MIN_COMPACTION_LAG_MS: "min.compaction.lag.ms",
+      };
+      const result = [
+        {
+          key: "MIN_COMPACTION_LAG_MS",
+          name: "min.compaction.lag.ms",
+          documentation: {
+            link: "https://kafka.apache.org/documentation/#topicconfigs_min.compaction.lag.ms",
+            text: "Specify the minimum time a message will remain uncompacted in the log.",
+          },
+        },
+      ];
+      expect(
+        transformgetTopicAdvancedConfigOptionsResponse(apiResponse)
+      ).toStrictEqual(result);
+    });
+    it("transforms an config without known documenation", () => {
+      const apiResponse: KlawApiResponse<"topicAdvancedConfigGet"> = {
+        CONFIG_WITHOUT_DOCUMENTATION: "config.without.documentation",
+      };
+      const result = [
+        {
+          key: "CONFIG_WITHOUT_DOCUMENTATION",
+          name: "config.without.documentation",
+        },
+      ];
+      expect(
+        transformgetTopicAdvancedConfigOptionsResponse(apiResponse)
+      ).toStrictEqual(result);
     });
   });
 });

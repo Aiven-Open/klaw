@@ -23,12 +23,15 @@ const environmentField = z.object({
   topicNameSuffix: z.string().optional(),
 });
 
+const advancedConfigurationField = z.string().optional();
+
 const formSchema = z
   .object({
     environment: environmentField,
     topicpartitions: topicPartitionsField,
     replicationfactor: replicationFactorField,
     topicname: topicNameField,
+    advancedConfiguration: advancedConfigurationField,
     remarks: z.string(),
     description: z.string(),
   })

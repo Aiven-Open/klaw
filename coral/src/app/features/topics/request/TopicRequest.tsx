@@ -20,6 +20,7 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
 import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
+import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 
 const mockedData = [
   createMockEnvironmentDTO({
@@ -71,6 +72,7 @@ function TopicRequest() {
         topicname: "",
         remarks: "",
         description: "",
+        advancedConfiguration: "{\n}",
       }
     : undefined;
 
@@ -91,9 +93,9 @@ function TopicRequest() {
   });
 
   return (
-    <Box style={{ maxWidth: 600 }}>
+    <Box style={{ maxWidth: 1200 }}>
       <Form {...form} onSubmit={onSubmit} onError={onError}>
-        <Box width={"1/2"}>
+        <Box width={"full"}>
           {Array.isArray(environments) ? (
             <ComplexNativeSelect<Schema, Environment>
               name="environment"
@@ -107,38 +109,62 @@ function TopicRequest() {
             <NativeSelect.Skeleton></NativeSelect.Skeleton>
           )}
         </Box>
-        <Box paddingY={"l1"}>
-          <Divider />
+        <Box>
+          <Box paddingY={"l1"}>
+            <Divider />
+          </Box>
+          <TextInput<Schema>
+            name={"topicname"}
+            labelText="Topic name"
+            placeholder="e.g. my-topic"
+            required={true}
+          />
+          <Box component={Flexbox} gap={"l1"}>
+            <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <SelectOrNumberInput
+                name={"topicpartitions"}
+                label={"Topic partitions"}
+                max={selectedEnvironment?.maxPartitions}
+              />
+            </Box>
+            <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <SelectOrNumberInput
+                name={"replicationfactor"}
+                label={"Replication factor"}
+                max={selectedEnvironment?.maxReplicationFactor}
+              />
+            </Box>
+          </Box>
         </Box>
-        <TextInput<Schema>
-          name={"topicname"}
-          labelText="Topic name"
-          placeholder="e.g. my-topic"
-          required={true}
-        />
+        <Box>
+          <Box paddingY={"l1"}>
+            <Divider />
+          </Box>
+          <AdvancedConfiguration name={"advancedConfiguration"} />
+        </Box>
 
-        <Textarea<Schema> name="description" labelText="Description" rows={5} />
-        <Box component={Flexbox} gap={"l1"}>
-          <Box component={FlexboxItem} grow={1} width={"1/2"}>
-            <SelectOrNumberInput
-              name={"topicpartitions"}
-              label={"Topic partitions"}
-              max={selectedEnvironment?.maxPartitions}
-            />
+        <Box>
+          <Box paddingY={"l1"}>
+            <Divider />
           </Box>
-          <Box component={FlexboxItem} grow={1} width={"1/2"}>
-            <SelectOrNumberInput
-              name={"replicationfactor"}
-              label={"Replication factor"}
-              max={selectedEnvironment?.maxReplicationFactor}
-            />
+          <Box component={Flexbox} gap={"l1"}>
+            <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <Textarea<Schema>
+                name="description"
+                labelText="Description"
+                rows={5}
+              />
+            </Box>
+            <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              {" "}
+              <Textarea<Schema>
+                name="remarks"
+                labelText="Message for approval"
+                rows={5}
+              />
+            </Box>
           </Box>
         </Box>
-        <Textarea<Schema>
-          name="remarks"
-          labelText="Message for approval"
-          rows={5}
-        />
 
         <SubmitButton>Request topic</SubmitButton>
       </Form>

@@ -6,6 +6,10 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
 import { server } from "src/services/api-mocks/server";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
+import {
+  defaultgetTopicAdvancedConfigOptionsResponse,
+  mockgetTopicAdvancedConfigOptions,
+} from "src/domain/topic/topic-api.msw";
 
 describe("<TopicRequest />", () => {
   let user: ReturnType<typeof userEvent.setup>;
@@ -34,12 +38,13 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
+        },
+      });
+      customRender(<TopicRequest />, { queryClient: true });
     });
     afterAll(() => {
       cleanup();
@@ -125,6 +130,12 @@ describe("<TopicRequest />", () => {
             ],
           },
         });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
 
         customRender(
           <AquariumContext>
@@ -169,6 +180,12 @@ describe("<TopicRequest />", () => {
                 topicsuffix: "-test",
               }),
             ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
           },
         });
 
@@ -230,6 +247,12 @@ describe("<TopicRequest />", () => {
               defaultReplicationFactor: "4",
             }),
           ],
+        },
+      });
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
         },
       });
 
@@ -336,6 +359,12 @@ describe("<TopicRequest />", () => {
           ],
         },
       });
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
+        },
+      });
 
       customRender(
         <AquariumContext>
@@ -408,6 +437,59 @@ describe("<TopicRequest />", () => {
           );
         });
       });
+    });
+  });
+
+  describe("AdvancedConfiguration", () => {
+    beforeAll(async () => {
+      mockGetEnvironmentsForTeam({
+        mswInstance: server,
+        response: {
+          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
+        },
+      });
+
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicRequest />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+
+      await screen.findByLabelText("Environment");
+      await screen.findByRole("option", { name: "DEV" });
+    });
+    afterAll(() => {
+      cleanup();
+    });
+
+    it("renders a sub heading", () => {
+      screen.getByRole("heading", { name: "Advanced Topic Configuration" });
+    });
+
+    it("renders a link to official kafka documentation", () => {
+      const link = screen.getByRole("link", {
+        name: "Apache Kafka Documentation",
+      });
+      expect(link).toHaveAttribute(
+        "href",
+        "https://kafka.apache.org/documentation/#topicconfigs"
+      );
+    });
+
+    it("renders a field which accespts JSON values", async () => {
+      const mockedAdvancedConfig = screen.getByTestId("advancedConfiguration");
+      await user.type(mockedAdvancedConfig, '{{"another":"value"}');
+      expect(mockedAdvancedConfig).toHaveDisplayValue(
+        JSON.stringify({ another: "value" })
+      );
     });
   });
 });

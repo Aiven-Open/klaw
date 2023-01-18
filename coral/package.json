@@ -16,7 +16,7 @@
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
     "prepare": "cd .. && husky install coral/.husky",
-    "preview": "vite preview",
+    "preview": "vite build --mode remote-api && cp mockServiceWorker.js dist/mockServiceWorker.js && vite preview --mode remote-api",
     "reformat": "prettier --write src",
     "test": "jest",
     "test-dev": "jest --watch",
@@ -39,7 +39,9 @@
   "dependencies": {
     "@aivenio/aquarium": "^1.2.1",
     "@hookform/resolvers": "^2.9.10",
+    "@monaco-editor/react": "^4.4.6",
     "@tanstack/react-query": "^4.14.1",
+    "monaco-editor": "^0.34.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.38.0",
