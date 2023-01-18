@@ -241,7 +241,6 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = tmpTopicPartitions;
             serviceInput['replicationfactor'] = tmpTopicRepFactor;
-            serviceInput['teamname'] = $scope.teamname;
             serviceInput['appname'] = "App";//$scope.addTopic.app;
             serviceInput['remarks'] = $scope.addTopic.remarks;
             serviceInput['description'] = $scope.addTopic.description;

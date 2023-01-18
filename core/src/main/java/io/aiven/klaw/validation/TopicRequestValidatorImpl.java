@@ -35,6 +35,7 @@ public class TopicRequestValidatorImpl
   public boolean isValid(
       TopicRequestModel topicRequestModel, ConstraintValidatorContext constraintValidatorContext) {
 
+    String userName = topicControllerService.getUserName();
     // Verify if user has access to request for topics
     if (commonUtilsService.isNotAuthorizedUser(
         topicControllerService.getPrincipal(), this.permissionType)) {
@@ -52,7 +53,7 @@ public class TopicRequestValidatorImpl
 
     // tenant filtering
     if (!commonUtilsService
-        .getEnvsFromUserId(topicControllerService.getUserName())
+        .getEnvsFromUserId(userName)
         .contains(topicRequestModel.getEnvironment())) {
       updateConstraint(
           constraintValidatorContext,
@@ -73,7 +74,7 @@ public class TopicRequestValidatorImpl
     }
 
     // verify tenant config exists
-    int tenantId = commonUtilsService.getTenantId(topicControllerService.getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
     String syncCluster;
     try {
       syncCluster = topicControllerService.getSyncCluster(tenantId);
@@ -86,7 +87,8 @@ public class TopicRequestValidatorImpl
     }
 
     // Verify if topic requesting team exists
-    if (!commonUtilsService.verifyIfTeamExists(tenantId, topicRequestModel.getTeamname())) {
+    Integer teamId = commonUtilsService.getTeamId(userName);
+    if (null == teamId || teamId == 0) {
       updateConstraint(constraintValidatorContext, "Failure. Team doesn't exist.");
       return false;
     }
@@ -101,7 +103,7 @@ public class TopicRequestValidatorImpl
                 .get(0) // as there could be only one owner team for topic, with topic name being
                 // unique for tenant, getting the first element.
                 .getTeamId(),
-            commonUtilsService.getTeamId(topicControllerService.getUserName()))) {
+            commonUtilsService.getTeamId(userName))) {
       updateConstraint(
           constraintValidatorContext, "Failure. This topic is owned by a different team.");
       return false;

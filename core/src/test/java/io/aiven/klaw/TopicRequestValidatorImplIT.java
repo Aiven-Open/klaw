@@ -141,7 +141,7 @@ public class TopicRequestValidatorImplIT {
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
-    when(commonUtilsService.verifyIfTeamExists(anyInt(), anyString())).thenReturn(true);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
@@ -170,7 +170,6 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getSyncCluster(anyInt())).thenReturn("1");
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1,2");
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
-    when(commonUtilsService.verifyIfTeamExists(anyInt(), anyString())).thenReturn(true);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
@@ -204,7 +203,7 @@ public class TopicRequestValidatorImplIT {
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
     when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
-    when(commonUtilsService.verifyIfTeamExists(anyInt(), anyString())).thenReturn(true);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
@@ -236,7 +235,7 @@ public class TopicRequestValidatorImplIT {
         .thenReturn(utilMethods.getEnvLists().get(0));
     when(topicControllerService.getExistingTopicRequests(addTopicRequest, tenantId))
         .thenReturn(List.of(topicRequest));
-    when(commonUtilsService.verifyIfTeamExists(anyInt(), anyString())).thenReturn(true);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
@@ -263,7 +262,6 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
     when(topicControllerService.getExistingTopicRequests(any(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(commonUtilsService.verifyIfTeamExists(anyInt(), anyString())).thenReturn(true);
 
     Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);

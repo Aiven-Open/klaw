@@ -28,10 +28,6 @@ public class TopicRequestModel implements Serializable {
   @Min(value = 1, message = "TopicPartitions must be greater than zero")
   private Integer topicpartitions;
 
-  @Pattern(
-      message = "Invalid Team name. Pattern [a-zA-z 0-9] (Spaces allowed)",
-      regexp = "^[a-zA-z 0-9]*$")
-  @NotNull
   private String teamname;
 
   @Pattern(message = "Invalid remarks", regexp = "^$|^[a-zA-Z 0-9_.,-]{3,}$")
