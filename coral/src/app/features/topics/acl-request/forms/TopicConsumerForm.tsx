@@ -16,7 +16,8 @@ import TopicNameField from "src/app/features/topics/acl-request/fields/TopicName
 import { TopicConsumerFormSchema } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
 import { ClusterInfo, Environment } from "src/domain/environment";
 
-interface TopicConsumerFormProps {
+// eslint-disable-next-line import/exports-last
+export interface TopicConsumerFormProps {
   topicConsumerForm: UseFormReturn<TopicConsumerFormSchema>;
   topicNames: string[];
   topicTeam: string;
