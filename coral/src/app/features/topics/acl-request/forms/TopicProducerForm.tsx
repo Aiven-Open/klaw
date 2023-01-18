@@ -23,9 +23,9 @@ import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/T
 import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
 import { ClusterInfo, Environment } from "src/domain/environment";
 
-interface TopicProducerFormProps {
+// eslint-disable-next-line import/exports-last
+export interface TopicProducerFormProps {
   topicProducerForm: UseFormReturn<TopicProducerFormSchema>;
-  topicName: string;
   topicNames: string[];
   topicTeam: string;
   environments: Environment[];

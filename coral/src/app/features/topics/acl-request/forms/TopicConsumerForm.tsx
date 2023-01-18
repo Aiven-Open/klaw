@@ -18,7 +18,6 @@ import { ClusterInfo, Environment } from "src/domain/environment";
 
 interface TopicConsumerFormProps {
   topicConsumerForm: UseFormReturn<TopicConsumerFormSchema>;
-  topicName: string;
   topicNames: string[];
   topicTeam: string;
   environments: Environment[];

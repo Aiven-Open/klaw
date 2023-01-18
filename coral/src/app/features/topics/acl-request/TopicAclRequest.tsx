@@ -177,7 +177,6 @@ const TopicAclRequest = () => {
             <AclTypeField topicType={topicType} handleChange={setTopicType} />
           )}
           topicConsumerForm={topicConsumerForm}
-          topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
           environments={environments}
@@ -189,7 +188,6 @@ const TopicAclRequest = () => {
             <AclTypeField topicType={topicType} handleChange={setTopicType} />
           )}
           topicProducerForm={topicProducerForm}
-          topicName={topicName}
           topicNames={topicNames}
           topicTeam={topicTeam.team}
           environments={environments}
