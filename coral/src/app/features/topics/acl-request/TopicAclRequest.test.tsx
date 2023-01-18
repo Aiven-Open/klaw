@@ -1,5 +1,6 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor } from "@testing-library/react";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
@@ -23,6 +24,66 @@ describe("<TopicAclRequest />", () => {
 
   beforeAll(() => {
     server.listen();
+
+    mockGetEnvironments({
+      mswInstance: server,
+      response: {
+        data: [
+          createMockEnvironmentDTO({
+            name: "TST",
+            id: "1",
+            maxPartitions: "6",
+            maxReplicationFactor: "2",
+            defaultPartitions: "3",
+            defaultReplicationFactor: "2",
+          }),
+          createMockEnvironmentDTO({
+            name: "DEV",
+            id: "2",
+            maxPartitions: undefined,
+            maxReplicationFactor: undefined,
+            defaultPartitions: "2",
+            defaultReplicationFactor: "2",
+          }),
+          createMockEnvironmentDTO({
+            name: "PROD",
+            id: "3",
+            maxPartitions: "16",
+            maxReplicationFactor: "3",
+            defaultPartitions: "2",
+            defaultReplicationFactor: "2",
+          }),
+        ],
+      },
+    });
+    mockGetTopicNames({
+      mswInstance: server,
+      response: mockedResponseTopicNames,
+    });
+    mockGetTopicTeam({
+      mswInstance: server,
+      response: mockedResponseTopicTeamLiteral,
+      topicName: "aivtopic1",
+    });
+    mockGetClusterInfoFromEnv({
+      mswInstance: server,
+      response: mockedResponseGetClusterInfoFromEnv,
+    });
+    customRender(
+      <AquariumContext>
+        <Routes>
+          <Route
+            path="/topic/:topicName/acl/request"
+            element={<TopicAclRequest />}
+          />
+        </Routes>
+      </AquariumContext>,
+      {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/topic/aivtopic1/acl/request",
+      }
+    );
   });
 
   afterAll(() => {
@@ -35,76 +96,11 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("<TopicAclRequest>", () => {
-    beforeAll(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: {
-          data: [
-            createMockEnvironmentDTO({
-              name: "TST",
-              id: "1",
-              maxPartitions: "6",
-              maxReplicationFactor: "2",
-              defaultPartitions: "3",
-              defaultReplicationFactor: "2",
-            }),
-            createMockEnvironmentDTO({
-              name: "DEV",
-              id: "2",
-              maxPartitions: undefined,
-              maxReplicationFactor: undefined,
-              defaultPartitions: "2",
-              defaultReplicationFactor: "2",
-            }),
-            createMockEnvironmentDTO({
-              name: "PROD",
-              id: "3",
-              maxPartitions: "16",
-              maxReplicationFactor: "3",
-              defaultPartitions: "2",
-              defaultReplicationFactor: "2",
-            }),
-          ],
-        },
-      });
-      mockGetTopicNames({
-        mswInstance: server,
-        response: mockedResponseTopicNames,
-      });
-      mockGetTopicTeam({
-        mswInstance: server,
-        response: mockedResponseTopicTeamLiteral,
-        topicName: "aivtopic1",
-      });
-      mockGetClusterInfoFromEnv({
-        mswInstance: server,
-        response: mockedResponseGetClusterInfoFromEnv,
-      });
-      customRender(
-        <AquariumContext>
-          <Routes>
-            <Route
-              path="/topic/:topicName/acl/request"
-              element={<TopicAclRequest />}
-            />
-          </Routes>
-        </AquariumContext>,
-        {
-          queryClient: true,
-          memoryRouter: true,
-          customRoutePath: "/topic/aivtopic1/acl/request",
-        }
-      );
-    });
-
-    it("renders SkeletonForm when data is undefined", async () => {
+    beforeAll(async () => {
       const skeleton = screen.getByTestId("skeleton");
 
       expect(skeleton).toBeVisible();
-
-      await waitFor(() => {
-        expect(skeleton).not.toBeVisible();
-      });
+      await waitForElementToBeRemoved(skeleton);
     });
 
     it("renders TopicProducerForm by by default", async () => {
@@ -134,6 +130,35 @@ describe("<TopicAclRequest />", () => {
       expect(aclConsumerTypeInput).toBeChecked();
       expect(aclProducerTypeInput).not.toBeChecked();
       expect(consumerGroupInput).toBeVisible();
+    });
+
+    it("renders the correct AclIpPrincipleTypeField with Principal option checked when choosing an Aiven cluster environment", async () => {
+      const principalField = screen.getByRole("radio", {
+        name: "Principal",
+      });
+      const ipField = screen.getByRole("radio", {
+        name: "IP",
+      });
+      const environmentField = screen.getByRole("combobox", {
+        name: "Select environment *",
+      });
+      const option = screen.getByRole("option", { name: "TST" });
+
+      await userEvent.selectOptions(environmentField, option);
+
+      waitFor(() => {
+        expect(principalField).toBeEnabled();
+        expect(principalField).toBeChecked();
+        expect(ipField).toBeDisabled();
+        expect(ipField).not.toBeChecked();
+
+        const principalsField = screen.getByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+      });
     });
   });
 });
