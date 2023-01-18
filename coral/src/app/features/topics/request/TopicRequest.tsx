@@ -125,6 +125,7 @@ function TopicRequest() {
                 name={"topicpartitions"}
                 label={"Topic partitions"}
                 max={selectedEnvironment?.maxPartitions}
+                required={true}
               />
             </Box>
             <Box component={FlexboxItem} grow={1} width={"1/2"}>
@@ -132,6 +133,7 @@ function TopicRequest() {
                 name={"replicationfactor"}
                 label={"Replication factor"}
                 max={selectedEnvironment?.maxReplicationFactor}
+                required={true}
               />
             </Box>
           </Box>

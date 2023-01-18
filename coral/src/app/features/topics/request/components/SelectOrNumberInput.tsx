@@ -6,11 +6,12 @@ type Props = {
   label: string;
   name: "topicpartitions" | "replicationfactor";
   max?: number;
+  required: boolean;
 };
-const SelectOrNumberInput = ({ name, label, max }: Props) => {
+const SelectOrNumberInput = ({ name, label, max, required = false }: Props) => {
   if (isNumber(max)) {
     return (
-      <NativeSelect<Schema> name={name} labelText={label}>
+      <NativeSelect<Schema> name={name} labelText={label} required={required}>
         {[...Array(max).keys()]
           .map((i) => i + 1)
           .map((i) => (
@@ -22,7 +23,13 @@ const SelectOrNumberInput = ({ name, label, max }: Props) => {
     );
   } else {
     return (
-      <NumberInput<Schema> name={name} labelText={label} min={1} max={max} />
+      <NumberInput<Schema>
+        name={name}
+        labelText={label}
+        min={1}
+        max={max}
+        required={required}
+      />
     );
   }
 };

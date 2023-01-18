@@ -312,7 +312,7 @@ describe("<TopicRequest />", () => {
           await user.selectOptions(environmentSelect, "PROD");
 
           const replicationFactorSelect = screen.getByRole("combobox", {
-            name: "Replication factor",
+            name: "Replication factor *",
           });
           expect(replicationFactorSelect).toBeEnabled();
         });
@@ -324,7 +324,7 @@ describe("<TopicRequest />", () => {
           await user.selectOptions(environmentSelect, "DEV");
 
           const inputReplicationFactor = screen.getByRole("spinbutton", {
-            name: "Replication factor",
+            name: "Replication factor *",
           });
           expect(inputReplicationFactor).toBeEnabled();
         });
@@ -382,7 +382,7 @@ describe("<TopicRequest />", () => {
           name: "Environment",
         });
         const inputReplicationFactor = await screen.findByLabelText(
-          "Replication factor"
+          "Replication factor*"
         );
 
         expect(inputReplicationFactor).toHaveDisplayValue("");
@@ -401,7 +401,7 @@ describe("<TopicRequest />", () => {
         const inputReplicationFactorInput = await screen.findByRole(
           "spinbutton",
           {
-            name: "Replication factor",
+            name: "Replication factor *",
           }
         );
 
@@ -416,7 +416,7 @@ describe("<TopicRequest />", () => {
         const inputReplicationFactorSelect = await screen.findByRole(
           "combobox",
           {
-            name: "Replication factor",
+            name: "Replication factor *",
           }
         );
 
@@ -430,7 +430,7 @@ describe("<TopicRequest />", () => {
         await user.selectOptions(selectEnvironment, "PROD");
 
         const replicationFactorSelect = screen.getByRole("combobox", {
-          name: "Replication factor",
+          name: "Replication factor *",
         });
 
         await user.selectOptions(replicationFactorSelect, "4");
@@ -440,7 +440,7 @@ describe("<TopicRequest />", () => {
         expect(replicationFactorSelect).not.toBeInTheDocument();
 
         const replicationFactorInput = screen.getByRole("spinbutton", {
-          name: "Replication factor",
+          name: "Replication factor *",
         });
         expect(replicationFactorInput).toHaveDisplayValue("4");
       });
@@ -498,7 +498,7 @@ describe("<TopicRequest />", () => {
         await user.selectOptions(selectEnvironment, "PROD");
 
         const topicPartitionSelect = screen.getByRole("combobox", {
-          name: "Topic partitions",
+          name: "Topic partitions *",
         });
         expect(topicPartitionSelect).toBeEnabled();
       });
@@ -510,7 +510,7 @@ describe("<TopicRequest />", () => {
         await user.selectOptions(selectEnvironment, "DEV");
 
         const topicPartitionInput = screen.getByRole("spinbutton", {
-          name: "Topic partitions",
+          name: "Topic partitions *",
         });
         expect(topicPartitionInput).toBeEnabled();
       });
@@ -567,7 +567,7 @@ describe("<TopicRequest />", () => {
       await user.selectOptions(selectEnvironment, "WITH_DEFAULT_PARTITIONS");
 
       const topicPartitionsInput = screen.getByRole("spinbutton", {
-        name: "Topic partitions",
+        name: "Topic partitions *",
       });
       expect(topicPartitionsInput).toHaveDisplayValue("4");
     });
@@ -579,7 +579,7 @@ describe("<TopicRequest />", () => {
       await user.selectOptions(selectEnvironment, "DEV");
 
       const topicPartitionsInput = screen.getByRole("spinbutton", {
-        name: "Topic partitions",
+        name: "Topic partitions *",
       });
       expect(topicPartitionsInput).toHaveDisplayValue("2");
 
@@ -592,7 +592,7 @@ describe("<TopicRequest />", () => {
       expect(topicPartitionsInput).not.toBeInTheDocument();
 
       const topicPartitionsSelect = screen.getByRole("combobox", {
-        name: "Topic partitions",
+        name: "Topic partitions *",
       });
       expect(topicPartitionsSelect).toHaveDisplayValue("8");
     });
@@ -604,7 +604,7 @@ describe("<TopicRequest />", () => {
       await user.selectOptions(selectEnvironment, "PROD");
 
       const topicPartitionsSelect = screen.getByRole("combobox", {
-        name: "Topic partitions",
+        name: "Topic partitions *",
       });
 
       await user.selectOptions(topicPartitionsSelect, "16");
