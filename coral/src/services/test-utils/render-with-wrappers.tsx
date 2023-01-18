@@ -117,6 +117,9 @@ function customRender(
     return withQueryClient(ui, options);
   }
 
+  console.error(
+    "You have not passed any renderWith option, which returns the non-custom render."
+  );
   return render(ui, options);
 }
 export { customRender };
