@@ -153,6 +153,7 @@ function TopicRequest() {
                 name="description"
                 labelText="Description"
                 rows={5}
+                required={true}
               />
             </Box>
             <Box component={FlexboxItem} grow={1} width={"1/2"}>
