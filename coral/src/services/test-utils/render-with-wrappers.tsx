@@ -1,12 +1,12 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactElement } from "react";
 import { render, RenderOptions } from "@testing-library/react";
+import { ReactElement } from "react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
 function withQueryClient(ui: ReactElement, options?: RenderOptions) {
   const queryClient = getQueryClientForTests();
-  render(ui, {
+  return render(ui, {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     ),
@@ -23,7 +23,7 @@ function withMemoryRouter({
   customRoutePath?: string;
   options?: RenderOptions;
 }) {
-  render(ui, {
+  return render(ui, {
     wrapper: ({ children }) => (
       <MemoryRouter initialEntries={[customRoutePath || ""]}>
         {children}
@@ -43,7 +43,7 @@ function withMemoryRouterAndQueryClient({
   options?: RenderOptions;
 }) {
   const queryClient = getQueryClientForTests();
-  render(ui, {
+  return render(ui, {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
         <MemoryRouter initialEntries={[customRoutePath || ""]}>
@@ -65,7 +65,7 @@ function withBrowserRouterAndQueryClient({
   options?: RenderOptions;
 }) {
   const queryClient = getQueryClientForTests();
-  render(ui, {
+  return render(ui, {
     wrapper: ({ children }) => (
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>{children}</BrowserRouter>
@@ -74,43 +74,49 @@ function withBrowserRouterAndQueryClient({
     ...options,
   });
 }
+type ValidOptions =
+  | "queryClient"
+  | "memoryRouter"
+  | "browserRouter"
+  | "customRoutePath";
 
 type CustomRenderOption = {
-  queryClient?: boolean;
-  memoryRouter?: boolean;
-  browserRouter?: boolean;
-  customRoutePath?: string;
+  [K in ValidOptions]?: K extends
+    | "queryClient"
+    | "memoryRouter"
+    | "browserRouter"
+    ? boolean
+    : string;
 };
+
 function customRender(
   ui: ReactElement,
-  renderWith?: CustomRenderOption,
+  renderWith: CustomRenderOption,
   options?: RenderOptions
 ) {
-  if (!renderWith) {
-    return render(ui, options);
-  }
-  if (renderWith.queryClient && renderWith.memoryRouter) {
+  if (renderWith?.queryClient && renderWith?.memoryRouter) {
     return withMemoryRouterAndQueryClient({
       ui,
-      customRoutePath: renderWith.customRoutePath,
+      customRoutePath: renderWith?.customRoutePath,
       options,
     });
   }
 
-  if (renderWith.queryClient && renderWith.browserRouter) {
+  if (renderWith?.queryClient && renderWith?.browserRouter) {
     return withBrowserRouterAndQueryClient({ ui, options });
   }
 
-  if (renderWith.memoryRouter) {
+  if (renderWith?.memoryRouter) {
     return withMemoryRouter({
       ui,
-      customRoutePath: renderWith.customRoutePath,
+      customRoutePath: renderWith?.customRoutePath,
       options,
     });
   }
-  if (renderWith.queryClient) {
+  if (renderWith?.queryClient) {
     return withQueryClient(ui, options);
   }
-  console.error("Option don't match, please check.");
+
+  return render(ui, options);
 }
 export { customRender };
