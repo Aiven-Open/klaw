@@ -3,11 +3,8 @@ package io.aiven.klaw.config;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
-import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
-import io.aiven.klaw.auth.KwAuthenticationService;
-import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
+import io.aiven.klaw.auth.KwRequestFilter;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.service.ValidateCaptchaService;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -31,6 +28,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
@@ -39,14 +37,6 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfigNoSSO {
 
   @Autowired private ManageDatabase manageTopics;
-
-  @Autowired KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
-
-  @Autowired KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
-
-  @Autowired KwAuthenticationService kwAuthenticationService;
-
-  @Autowired ValidateCaptchaService validateCaptchaService;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -69,12 +59,11 @@ public class SecurityConfigNoSSO {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  @Value("${klaw.installation.type:onpremise}")
-  private String kwInstallationType;
-
   @Autowired LdapTemplate ldapTemplate;
 
   private AuthenticationManager authenticationManager;
+
+  @Autowired private KwRequestFilter kwRequestFilter;
 
   private void shutdownApp() {
     // ((ConfigurableApplicationContext) contextApp).close();
@@ -92,8 +81,6 @@ public class SecurityConfigNoSSO {
         .fullyAuthenticated()
         .and()
         .formLogin()
-        .successHandler(kwAuthenticationSuccessHandler)
-        .failureHandler(kwAuthenticationFailureHandler)
         .failureForwardUrl("/login?error")
         .failureUrl("/login?error")
         .loginPage("/login")
@@ -102,6 +89,8 @@ public class SecurityConfigNoSSO {
         .logout()
         .logoutSuccessUrl("/login");
 
+    //         Add a filter to validate the username/pwd with every request
+    http.addFilterBefore(kwRequestFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 

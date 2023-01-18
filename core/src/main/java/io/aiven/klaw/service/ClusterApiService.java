@@ -1,6 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.helpers.KwConstants.CLUSTER_CONN_URL_KEY;
+import static io.aiven.klaw.helpers.KwConstants.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -88,9 +88,6 @@ public class ClusterApiService {
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String URL_DELIMITER = "/";
 
-  private static final String URI_CREATE_TOPICS = "/topics/createTopics";
-  private static final String URI_UPDATE_TOPICS = "/topics/updateTopics";
-  private static final String URI_DELETE_TOPICS = "/topics/deleteTopics";
   @Autowired private ManageDatabase manageDatabase;
 
   @Value("${server.ssl.key-store:null}")
@@ -143,7 +140,7 @@ public class ClusterApiService {
         "getClusterApiStatus clusterApiUrl {} testConnection{}", clusterApiUrl, testConnection);
     getClusterApiProperties(tenantId);
     try {
-      String uriClusterApiStatus = "/topics/getApiStatus";
+      String uriClusterApiStatus = URI_CLUSTER_API;
       String uri;
       if (testConnection) {
         uri = clusterApiUrl + uriClusterApiStatus;
@@ -170,10 +167,9 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
 
     try {
-      String uriEnvStatus = "/topics/getStatus/";
       String uri =
           clusterConnUrl
-              + uriEnvStatus
+              + URI_KAFKA_SR_CONN_STATUS
               + bootstrapHost
               + URL_DELIMITER
               + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification, clusterType);
@@ -199,7 +195,7 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     List<Map<String, String>> offsetsMap;
     try {
-      String url = "/topics/getConsumerOffsets/";
+      String url = URI_GET_CONSUMER_OFFSETS;
       url =
           clusterConnUrl
               + url
@@ -235,7 +231,7 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     Map<String, String> eventsMap;
     try {
-      String url = "/topics/getTopicContents/";
+      String url = URI_GET_TOPIC_CONTENTS;
       url =
           clusterConnUrl
               + url
@@ -270,7 +266,7 @@ public class ClusterApiService {
 
     List<Map<String, String>> aclListOriginal;
     try {
-      String uriGetAcls = "/topics/getAcls/";
+      String uriGetAcls = URI_GET_ACLS;
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
@@ -328,10 +324,9 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     List<Map<String, String>> topicsList;
     try {
-      String uriGetTopics = "/topics/getTopics/";
       String uriGetTopicsFull =
           clusterConnUrl
-              + uriGetTopics
+              + URI_GET_TOPICS
               + bootstrapHost
               + URL_DELIMITER
               + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification);
@@ -373,14 +368,13 @@ public class ClusterApiService {
               .build();
 
       String uri;
-      String uriGetTopics = "/topics/";
 
       if (RequestOperationType.CREATE.value.equals(connectorType)) {
-        uri = clusterConnUrl + uriGetTopics + "postConnector";
+        uri = clusterConnUrl + URI_POST_CONNECTOR;
       } else if (RequestOperationType.UPDATE.value.equals(connectorType)) {
-        uri = clusterConnUrl + uriGetTopics + "updateConnector";
+        uri = clusterConnUrl + URI_UPDATE_CONNECTOR;
       } else {
-        uri = clusterConnUrl + uriGetTopics + "deleteConnector";
+        uri = clusterConnUrl + URI_DELETE_CONNECTOR;
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);
@@ -472,8 +466,6 @@ public class ClusterApiService {
     try {
       String env = aclReq.getEnvironment();
       String uri;
-      String uriCreateAcls = "/topics/createAcls";
-      String uriDeleteAcls = "/topics/deleteAcls";
 
       ClusterAclRequest clusterAclRequest;
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
@@ -533,11 +525,11 @@ public class ClusterApiService {
       }
 
       if (RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
-        uri = clusterConnUrl + uriCreateAcls;
+        uri = clusterConnUrl + URI_CREATE_ACLS;
         clusterAclRequest =
             clusterAclRequest.toBuilder().requestOperationType(RequestOperationType.CREATE).build();
       } else {
-        uri = clusterConnUrl + uriDeleteAcls;
+        uri = clusterConnUrl + URI_DELETE_ACLS;
         clusterAclRequest =
             clusterAclRequest.toBuilder().requestOperationType(RequestOperationType.DELETE).build();
       }
@@ -560,9 +552,7 @@ public class ClusterApiService {
       String projectName, String serviceName, String userName, int tenantId) throws KlawException {
     getClusterApiProperties(tenantId);
     try {
-      String uriGetServiceAccountDetails =
-          clusterConnUrl
-              + "/topics/serviceAccountDetails/project/projectName/service/serviceName/user/userName";
+      String uriGetServiceAccountDetails = clusterConnUrl + URI_AIVEN_SERVICE_ACCOUNT_DETAIL;
       uriGetServiceAccountDetails =
           uriGetServiceAccountDetails
               .replace("projectName", projectName)
@@ -589,8 +579,7 @@ public class ClusterApiService {
       throws KlawException {
     getClusterApiProperties(tenantId);
     try {
-      String uriGetServiceAccounts =
-          clusterConnUrl + "/topics/serviceAccounts/project/projectName/service/serviceName";
+      String uriGetServiceAccounts = clusterConnUrl + URI_AIVEN_SERVICE_ACCOUNTS;
       uriGetServiceAccounts =
           uriGetServiceAccounts
               .replace("projectName", projectName)
@@ -618,8 +607,7 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     ResponseEntity<ApiResponse> response;
     try {
-      String uriPostSchema = "/topics/postSchema";
-      String uri = clusterConnUrl + uriPostSchema;
+      String uri = clusterConnUrl + URI_POST_SCHEMA;
 
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
       KwClusters kwClusters =
@@ -659,10 +647,9 @@ public class ClusterApiService {
     TreeMap<Integer, Map<String, Object>> allVersionSchemas =
         new TreeMap<>(Collections.reverseOrder());
     try {
-      String uriGetSchema = "/topics/getSchema/";
       String uriGetTopicsFull =
           clusterConnUrl
-              + uriGetSchema
+              + URI_GET_SCHEMA
               + schemaRegistryHost
               + URL_DELIMITER
               + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification, topicName);
@@ -701,7 +688,7 @@ public class ClusterApiService {
       String uriGetTopics =
           String.join(
               URL_DELIMITER,
-              "/topics/getConnectorDetails",
+              URI_CONNECTOR_DETAILS,
               connectorName,
               kafkaConnectHost,
               protocol.getName(),
@@ -730,12 +717,7 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     try {
       String uriGetTopics =
-          "/topics/getAllConnectors/"
-              + kafkaConnectHost
-              + "/"
-              + protocol
-              + "/"
-              + clusterIdentification;
+          URI_GET_ALL_CONNECTORS + kafkaConnectHost + "/" + protocol + "/" + clusterIdentification;
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<ArrayList<String>> s =
@@ -758,12 +740,11 @@ public class ClusterApiService {
     log.info("retrieveMetrics {} {}", jmxUrl, objectName);
     getClusterApiProperties(101);
     try {
-      String uriGetTopics = "/metrics/getMetrics";
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
       params.add("jmxUrl", jmxUrl);
       params.add("objectName", objectName);
 
-      String uriGetTopicsFull = clusterConnUrl + uriGetTopics;
+      String uriGetTopicsFull = clusterConnUrl + URI_GET_METRICS;
       RestTemplate restTemplate = getRestTemplate();
 
       HttpHeaders headers = createHeaders(clusterApiUser);
