@@ -3,7 +3,6 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
@@ -105,7 +104,6 @@ public class AclController {
     return new ResponseEntity<>(
         topicOverviewService.getTopicOverview(topicNameSearch), HttpStatus.OK);
   }
-  
 
   // getConsumerOffsets from kafka cluster
   @RequestMapping(

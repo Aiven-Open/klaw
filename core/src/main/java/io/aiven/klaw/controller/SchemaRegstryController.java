@@ -5,8 +5,8 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
-import io.aiven.klaw.service.ResourceOverviewService;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
+import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class SchemaRegstryController {
 
   @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
 
-  @Autowired ResourceOverviewService resourceOverviewService;
+  @Autowired TopicOverviewService topicOverviewService;
 
   @RequestMapping(
       value = "/getSchemaRequests",
@@ -112,7 +112,6 @@ public class SchemaRegstryController {
       @RequestParam(value = "topicnamesearch") String topicNameSearch,
       @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
     return new ResponseEntity<>(
-        resourceOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch),
-        HttpStatus.OK);
+        topicOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
   }
 }

@@ -262,9 +262,7 @@ public class SchemaRegistryControllerServiceTest {
     schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
-    Topic topic = new Topic();
-    topic.setEnvironment("1");
-    topic.setTeamId(101);
+    Topic topic = createTopic();
 
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -288,9 +286,7 @@ public class SchemaRegistryControllerServiceTest {
     schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
-    Topic topic = new Topic();
-    topic.setEnvironment("1");
-    topic.setTeamId(101);
+    Topic topic = createTopic();
 
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -323,6 +319,9 @@ public class SchemaRegistryControllerServiceTest {
   @Test
   @Order(10)
   public void promoteSchemaCanNotFindSourceEnvironmentSchema() throws Exception {
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(createTopic()));
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(createTopic()));
+    when(commonUtilsService.getTeamId(any())).thenReturn(101);
     ApiResponse returnedValue =
         schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
     assertThat(returnedValue.getResult())
@@ -422,9 +421,7 @@ public class SchemaRegistryControllerServiceTest {
   }
 
   private void mockSchemaCreation() {
-    Topic topic = new Topic();
-    topic.setEnvironment("1");
-    topic.setTeamId(101);
+    Topic topic = createTopic();
 
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
@@ -434,6 +431,13 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+  }
+
+  private static Topic createTopic() {
+    Topic topic = new Topic();
+    topic.setEnvironment("1");
+    topic.setTeamId(101);
+    return topic;
   }
 
   private void mockGetEnvironment() {
