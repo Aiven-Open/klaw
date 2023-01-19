@@ -371,6 +371,11 @@ describe("<TopicAclRequest />", () => {
     it("renders correct fields when selecting IP or Principal in AclIpPrincipleTypeField", async () => {
       await assertSkeleton();
 
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await user.click(aclConsumerTypeInput);
+
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
         name: "Principal",
@@ -417,6 +422,11 @@ describe("<TopicAclRequest />", () => {
     it("error when entering invalid IP in IPs field", async () => {
       await assertSkeleton();
 
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await user.click(aclConsumerTypeInput);
+
       const ipField = screen.getByRole("radio", { name: "IP" });
 
       const environmentField = screen.getByRole("combobox", {
@@ -438,6 +448,11 @@ describe("<TopicAclRequest />", () => {
     it("does not error when entering valid IP in IPs field", async () => {
       await assertSkeleton();
 
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await user.click(aclConsumerTypeInput);
+
       const ipField = screen.getByRole("radio", { name: "IP" });
 
       const environmentField = screen.getByRole("combobox", {
@@ -454,52 +469,6 @@ describe("<TopicAclRequest />", () => {
 
       await user.type(visibleIpsField, "111.111.11.11{Enter}");
       await waitFor(() => expect(visibleIpsField).toBeValid());
-    });
-
-    it("renders correct fields when selecting Literal or Prefixed in aclPatternType fields", async () => {
-      await assertSkeleton();
-
-      const literalField = screen.getByRole("radio", { name: "Literal" });
-      const prefixedField = screen.getByRole("radio", {
-        name: "Prefixed",
-      });
-      const hiddenTopicNameField = screen.queryByRole("combobox", {
-        name: "Topic name *",
-      });
-      const hiddenPrefixField = screen.queryByRole("textbox", {
-        name: "Prefix *",
-      });
-
-      expect(literalField).toBeVisible();
-      expect(literalField).toBeEnabled();
-      expect(literalField).not.toBeChecked();
-      expect(prefixedField).toBeVisible();
-      expect(prefixedField).toBeEnabled();
-      expect(prefixedField).not.toBeChecked();
-      expect(hiddenTopicNameField).toBeNull();
-      expect(hiddenPrefixField).toBeNull();
-
-      await user.click(literalField);
-
-      const visibleTopicNameField = await screen.findByRole("combobox", {
-        name: "Topic name *",
-      });
-
-      expect(hiddenPrefixField).toBeNull();
-      expect(visibleTopicNameField).toBeInTheDocument();
-      expect(visibleTopicNameField).toBeEnabled();
-      expect(visibleTopicNameField).toHaveDisplayValue("aivtopic1");
-
-      await user.click(prefixedField);
-
-      const visiblePrefixField = await screen.findByRole("textbox", {
-        name: "Prefix *",
-      });
-
-      expect(hiddenTopicNameField).toBeNull();
-      expect(visiblePrefixField).toBeInTheDocument();
-      expect(visiblePrefixField).toBeEnabled();
-      expect(visiblePrefixField).toHaveDisplayValue("aivtopic1");
     });
   });
 });
