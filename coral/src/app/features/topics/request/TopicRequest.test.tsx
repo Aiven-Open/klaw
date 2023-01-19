@@ -640,8 +640,6 @@ describe("<TopicRequest />", () => {
     });
     afterAll(cleanup);
 
-    // await screen.findByLabelText("Environment");
-    // await screen.findByRole("option", { name: "DEV" });
     it("renders a sub heading", () => {
       screen.getByRole("heading", { name: "Advanced Topic Configuration" });
     });
