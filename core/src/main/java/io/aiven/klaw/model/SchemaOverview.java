@@ -6,7 +6,8 @@ import lombok.Data;
 
 @Data
 public class SchemaOverview extends Overview {
-  List<Integer> allSchemaVersions;
-  Map<String, String> schemaPromotionDetails;
+  Map<String, List<Integer>> allSchemaVersions;
+  Map<String, Integer> latestVersion;
+  Map<String, Map<String, String>> schemaPromotionDetails;
   List<Map<String, String>> schemaDetails;
 }

@@ -4071,8 +4071,18 @@
           "type" : "boolean"
         },
         "allSchemaVersions" : {
-          "type" : "array",
-          "items" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        },
+        "latestVersion" : {
+          "type" : "object",
+          "additionalProperties" : {
             "type" : "integer",
             "format" : "int32"
           }
@@ -4080,7 +4090,10 @@
         "schemaPromotionDetails" : {
           "type" : "object",
           "additionalProperties" : {
-            "type" : "string"
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
           }
         },
         "schemaDetails" : {

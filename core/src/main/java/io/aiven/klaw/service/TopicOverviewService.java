@@ -161,13 +161,19 @@ public class TopicOverviewService {
       int tenantId) {
     if (schemaOverview.isTopicExists() && retrieveSchemas) {
       List<Map<String, String>> schemaDetails = new ArrayList<>();
-      Map<String, String> schemaMap = new HashMap<>();
+      schemaOverview.setSchemaDetails(schemaDetails);
+      Map<String, List<Integer>> schemaVersions = new HashMap<>();
+      schemaOverview.setAllSchemaVersions(schemaVersions);
+      schemaOverview.setLatestVersion(new HashMap<>());
       List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
       Object dynamicObj;
       Map<String, Object> hashMapSchemaObj;
       String schemaOfObj;
+
       for (Env schemaEnv : schemaEnvs) {
         try {
+          log.debug("UpdateAvroSchema - Process env {}", schemaEnv);
+          Map<String, String> schemaMap = new HashMap<>();
           KwClusters kwClusters =
               manageDatabase
                   .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
@@ -184,9 +190,10 @@ public class TopicOverviewService {
           if (schemaObjects != null && !schemaObjects.isEmpty()) {
 
             Integer latestSchemaVersion = schemaObjects.firstKey();
+            schemaOverview.getLatestVersion().put(schemaEnv.getName(), latestSchemaVersion);
             Set<Integer> allVersions = schemaObjects.keySet();
             List<Integer> allVersionsList = new ArrayList<>(allVersions);
-            schemaOverview.setAllSchemaVersions(allVersionsList);
+            schemaOverview.getAllSchemaVersions().put(schemaEnv.getName(), allVersionsList);
             try {
               if (schemaVersionSearch != null
                   && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
@@ -241,7 +248,6 @@ public class TopicOverviewService {
 
             schemaDetails.add(schemaMap);
             schemaOverview.setSchemaExists(true);
-
             // Set Promotion Details
             processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv);
             log.info("Getting schema details for: " + topicNameSearch);
@@ -251,7 +257,10 @@ public class TopicOverviewService {
         }
       }
 
-      if (schemaOverview.isSchemaExists()) schemaOverview.setSchemaDetails(schemaDetails);
+      if (schemaOverview.isSchemaExists()) {
+        log.debug("SchemaDetails {}", schemaDetails);
+        schemaOverview.setSchemaDetails(schemaDetails);
+      }
     }
   }
 
@@ -264,7 +273,14 @@ public class TopicOverviewService {
         promotionDetails,
         Arrays.asList(schemaEnv.getId()),
         mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS"));
-    schemaOverview.setSchemaPromotionDetails(promotionDetails);
+    if (schemaOverview.getSchemaPromotionDetails() == null) {
+      Map<String, Map<String, String>> searchOverviewPromotionDetails = new HashMap<>();
+      schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
+    }
+    Map<String, Map<String, String>> existingPromoDetails =
+        schemaOverview.getSchemaPromotionDetails();
+    existingPromoDetails.put(schemaEnv.getName(), promotionDetails);
+    schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
   }
 
   private void updateTopicOverviewItems(

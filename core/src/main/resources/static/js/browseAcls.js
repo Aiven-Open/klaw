@@ -347,16 +347,32 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
     	}
 
-        $scope.onFirstSchemaPromote= function(envSelected){
+        $scope.onFirstSchemaPromote= function(schemaContent,allSchemaVersions){
                   $scope.firstSchemaPromote = 'true';
+                  $scope.firstSchemaEnvPromote = schemaContent.env;
                   $scope.schema = {};
                   $scope.schema.forceRegister = 'false';
+                  const schemaVersions = [];
+
+                // Add Latest to let the user know which schema version is the current latest schema version.
+                  allSchemaVersions[schemaContent.env].forEach(function(part, index) {
+                    schemaVersions[index] = this[index];
+                    if(this[index] == schemaContent.version) {
+                    schemaVersions[index] = schemaVersions[index] + " (latest)";
+                        }
+                  }, allSchemaVersions[schemaContent.env]);
+
+                  $scope.schemaVersions = schemaVersions;
+
                   //future will add check here if force promote is allowed based on setting in server config.
                   $scope.isForceRegisterAllowed = 'true';
                 }
 
         $scope.onFinalSchemaPromote = function(sourceEnvironment,targetEnvironment) {
 
+             if($scope.schema.versionSelected.includes(" (latest)")){
+             $scope.schema.versionSelected = $scope.schema.versionSelected.replace(' (latest)','')
+             }
                 // If the version is not a number it has not been correctly selected.
              if(isNaN($scope.schema.versionSelected)){
                 $scope.alertnote = "Please select the schema version.";
@@ -369,7 +385,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
              if(!$scope.isForceRegisterAllowed) {
              $scope.schema.forceRegister='false';
              }
-             if($scope.schema.forceRegister) {
+             if($scope.schema.forceRegister === 'true') {
              remarks += " Force Register Schema option overriding schema compatibility has been selected."
              }
 

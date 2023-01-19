@@ -182,8 +182,10 @@ public class TopicOverviewServiceTest {
     SchemaOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").containsKey("status"))
+        .isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("status"))
+        .isEqualTo("NO_PROMOTION");
   }
 
   @Test
@@ -199,11 +201,14 @@ public class TopicOverviewServiceTest {
     SchemaOverview returnedValue = topicOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("status"))
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").containsKey("status"))
+        .isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("status"))
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getSchemaPromotionDetails().get("sourceEnv")).isEqualTo("1");
-    assertThat(returnedValue.getSchemaPromotionDetails().get("targetEnv")).isEqualTo("test-2");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("sourceEnv"))
+        .isEqualTo("1");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("targetEnv"))
+        .isEqualTo("test-2");
   }
 
   @Test
