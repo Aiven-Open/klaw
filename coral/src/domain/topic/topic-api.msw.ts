@@ -63,6 +63,24 @@ function mockgetTopicAdvancedConfigOptions({
   );
 }
 
+function mockRequestTopic({
+  mswInstance,
+  response,
+}: {
+  mswInstance: MswInstance;
+  response: {
+    status?: number;
+    data: KlawApiResponse<"topicCreate"> | { message: string };
+  };
+}) {
+  const url = `${getHTTPBaseAPIUrl()}/createTopics`;
+  mswInstance.use(
+    rest.post(url, async (req, res, ctx) => {
+      return res(ctx.status(response.status ?? 200), ctx.json(response.data));
+    })
+  );
+}
+
 const defaultgetTopicAdvancedConfigOptionsResponse = {
   CLEANUP_POLICY: "cleanup.policy",
   COMPRESSION_TYPE: "compression.type",
@@ -139,6 +157,7 @@ const mockedResponseTransformed = transformTopicApiResponse(
 export {
   mockTopicGetRequest,
   mockgetTopicAdvancedConfigOptions,
+  mockRequestTopic,
   mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
   mockedResponseSinglePage,
