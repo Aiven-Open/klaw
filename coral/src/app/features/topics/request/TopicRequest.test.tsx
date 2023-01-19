@@ -1,4 +1,4 @@
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
@@ -10,6 +10,7 @@ import {
   defaultgetTopicAdvancedConfigOptionsResponse,
   mockgetTopicAdvancedConfigOptions,
 } from "src/domain/topic/topic-api.msw";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 describe("<TopicRequest />", () => {
   let user: ReturnType<typeof userEvent.setup>;
@@ -27,47 +28,49 @@ describe("<TopicRequest />", () => {
   });
 
   describe("Environment select", () => {
-    beforeAll(() => {
-      mockGetEnvironmentsForTeam({
-        mswInstance: server,
-        response: {
-          data: [
-            createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-            createMockEnvironmentDTO({ name: "TST", id: "2" }),
-            createMockEnvironmentDTO({ name: "PROD", id: "3" }),
-          ],
-        },
+    describe("renders all necessary elements by default", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+              createMockEnvironmentDTO({ name: "TST", id: "2" }),
+              createMockEnvironmentDTO({ name: "PROD", id: "3" }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+        customRender(<TopicRequest />, { queryClient: true });
       });
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
-      customRender(<TopicRequest />, { queryClient: true });
-    });
-    afterAll(() => {
-      cleanup();
-    });
-
-    it("input with label 'Environment' exists", async () => {
-      await screen.findByLabelText("Environment");
-    });
-
-    it("defaults to empty value", () => {
-      const prodSelectOption: HTMLOptionElement = screen.getByRole("option", {
-        name: "-- Select Environment --",
+      afterAll(() => {
+        cleanup();
       });
 
-      expect(prodSelectOption.selected).toBe(true);
-    });
-
-    describe("when field is clicked", () => {
-      beforeEach(async () => {
-        await user.click(screen.getByLabelText("Environment"));
+      it("shows a select element for 'Environment'", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
+        expect(select).toBeEnabled();
       });
 
-      it("shows environment names as options", () => {
+      it("shows an empty value with placeholder text", async () => {
+        const prodSelectOption: HTMLOptionElement = await screen.findByRole(
+          "option",
+          {
+            name: "-- Select Environment --",
+          }
+        );
+
+        expect(prodSelectOption.selected).toBe(true);
+      });
+
+      it("shows all environment names as options", () => {
         const options = screen.getAllByRole("option");
         expect(options.length).toBe(4);
         expect(options.map((o) => o.textContent)).toEqual([
@@ -77,32 +80,61 @@ describe("<TopicRequest />", () => {
           "PROD",
         ]);
       });
+    });
+
+    describe("when field is clicked", () => {
+      beforeEach(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+              createMockEnvironmentDTO({ name: "TST", id: "2" }),
+              createMockEnvironmentDTO({ name: "PROD", id: "3" }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+        customRender(<TopicRequest />, { queryClient: true });
+      });
+
+      afterEach(() => {
+        cleanup();
+      });
 
       describe("when 'PROD' option is clicked", () => {
-        beforeEach(async () => {
-          await user.selectOptions(
-            screen.getByLabelText("Environment"),
-            "PROD"
-          );
-        });
+        it("selects 'PROD' value when user choses the option", async () => {
+          const select = await screen.findByRole("combobox", {
+            name: "Environment",
+          });
+          expect(select).toHaveDisplayValue("-- Select Environment --");
 
-        it("'PROD' value is selected", async () => {
+          await user.selectOptions(select, "PROD");
+
           const prodSelectOption: HTMLOptionElement = screen.getByRole(
             "option",
             { name: "PROD" }
           );
           expect(prodSelectOption.selected).toBe(true);
+          expect(select).toHaveDisplayValue("PROD");
         });
 
-        it("disabled the placeholder value", () => {
-          const options = within(
-            screen.getByLabelText("Environment")
-          ).getAllByRole("option");
-          expect(
-            within(screen.getByLabelText("Environment")).getByRole("option", {
-              name: "-- Select Environment --",
-            })
-          ).toBeDisabled();
+        it("disabled the placeholder value", async () => {
+          const select = await screen.findByRole("combobox", {
+            name: "Environment",
+          });
+
+          const options = within(select).getAllByRole("option");
+          const placeholderOption = within(select).getByRole("option", {
+            name: "-- Select Environment --",
+          });
+
+          expect(placeholderOption).toBeDisabled();
           expect(options.length).toBe(4);
           expect(options.map((o) => o.textContent)).toEqual([
             "-- Select Environment --",
@@ -117,7 +149,7 @@ describe("<TopicRequest />", () => {
 
   describe("Topic name", () => {
     describe("when environment has topicprefix defined", () => {
-      beforeAll(async () => {
+      beforeAll(() => {
         mockGetEnvironmentsForTeam({
           mswInstance: server,
           response: {
@@ -144,32 +176,34 @@ describe("<TopicRequest />", () => {
           { queryClient: true }
         );
       });
+
       afterAll(() => {
         cleanup();
       });
 
       it("validates that topic name starts with environment topic prefix", async () => {
-        await screen.findByLabelText("Environment");
         const expectedErrorMsg = 'Topic name must start with "test-".';
-        await user.selectOptions(
-          screen.getByLabelText("Environment"),
-          "EnvWithTopicPrefix"
-        );
-
-        await user.type(screen.getByLabelText(/Topic name/), "foobar{tab}");
-        await screen.findByText(expectedErrorMsg);
-        await user.clear(screen.getByLabelText(/Topic name/));
-        await user.type(
-          screen.getByLabelText(/Topic name/),
-          "test-foobar{tab}"
-        );
-        await waitFor(() => {
-          expect(screen.queryByText(expectedErrorMsg)).not.toBeInTheDocument();
+        const select = await screen.findByRole("combobox", {
+          name: "Environment",
         });
+
+        await user.selectOptions(select, "EnvWithTopicPrefix");
+
+        const topicNameInput = screen.getByLabelText(/Topic name/);
+        await user.type(topicNameInput, "foobar{tab}");
+
+        const errorMessage = await screen.findByText(expectedErrorMsg);
+        expect(errorMessage).toBeVisible();
+
+        await user.clear(topicNameInput);
+        await user.type(topicNameInput, "test-foobar{tab}");
+
+        await waitForElementToBeRemoved(errorMessage);
       });
     });
+
     describe("when environment has topicsuffix defined", () => {
-      beforeAll(async () => {
+      beforeAll(() => {
         mockGetEnvironmentsForTeam({
           mswInstance: server,
           response: {
@@ -201,139 +235,220 @@ describe("<TopicRequest />", () => {
       });
 
       it("validates that topic name ends with environment topic suffix", async () => {
-        await screen.findByLabelText("Environment");
         const expectedErrorMsg = 'Topic name must end with "-test".';
-        await user.selectOptions(
-          screen.getByLabelText("Environment"),
-          "EnvWithTopicSuffix"
-        );
-
-        await user.type(screen.getByLabelText(/Topic name/), "foobar{tab}");
-        await screen.findByText('Topic name must end with "-test".');
-        await user.clear(screen.getByLabelText(/Topic name/));
-        await user.type(
-          screen.getByLabelText(/Topic name/),
-          "foobar-test{tab}"
-        );
-        await waitFor(() => {
-          expect(screen.queryByText(expectedErrorMsg)).not.toBeInTheDocument();
+        const select = await screen.findByRole("combobox", {
+          name: "Environment",
         });
+
+        await user.selectOptions(select, "EnvWithTopicSuffix");
+
+        const topicNameInput = screen.getByLabelText(/Topic name/);
+        await user.type(topicNameInput, "foobar{tab}");
+
+        const errorMessage = await screen.findByText(expectedErrorMsg);
+        expect(errorMessage).toBeVisible();
+
+        await user.clear(topicNameInput);
+        await user.type(topicNameInput, "foobar-test{tab}");
+
+        await waitForElementToBeRemoved(errorMessage);
       });
     });
   });
 
   describe("Replication factor", () => {
-    beforeAll(async () => {
-      mockGetEnvironmentsForTeam({
-        mswInstance: server,
-        response: {
-          data: [
-            createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-            createMockEnvironmentDTO({
-              name: "TST",
-              id: "2",
-              maxPartitions: "8",
-              maxReplicationFactor: "2",
-            }),
-            createMockEnvironmentDTO({
-              name: "PROD",
-              id: "3",
-              maxPartitions: "16",
-              maxReplicationFactor: "4",
-            }),
-            createMockEnvironmentDTO({
-              name: "WITH_DEFAULT_PARTITIONS",
-              id: "4",
-              defaultReplicationFactor: "4",
-            }),
-          ],
-        },
-      });
-      mockgetTopicAdvancedConfigOptions({
-        mswInstance: server,
-        response: {
-          data: defaultgetTopicAdvancedConfigOptionsResponse,
-        },
-      });
+    describe("renders all necessary elements on default", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+              createMockEnvironmentDTO({
+                name: "TST",
+                id: "2",
+                maxPartitions: "8",
+                maxReplicationFactor: "2",
+              }),
+              createMockEnvironmentDTO({
+                name: "PROD",
+                id: "3",
+                maxPartitions: "16",
+                maxReplicationFactor: "4",
+              }),
+              createMockEnvironmentDTO({
+                name: "WITH_DEFAULT_PARTITIONS",
+                id: "4",
+                defaultReplicationFactor: "4",
+              }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
 
-      customRender(
-        <AquariumContext>
-          <TopicRequest />
-        </AquariumContext>,
-        { queryClient: true }
-      );
-      // Wait environments to be loaded
-      await screen.findByLabelText("Environment");
-    });
-    afterAll(() => {
-      cleanup();
-    });
-
-    describe("input components", () => {
-      it('should render <select /> when "maxReplicationFactor" is defined', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "PROD");
-        screen.getByRole("combobox", { name: "Replication factor" });
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
       });
 
-      it('should render <input type="number" /> when "maxReplicationFactor" not defined', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
-        screen.getByRole("spinbutton", { name: "Replication factor" });
+      afterAll(() => {
+        cleanup();
+      });
+
+      describe("input components", () => {
+        it('should render <select /> when "maxReplicationFactor" is defined', async () => {
+          const environmentSelect = await screen.findByRole("combobox", {
+            name: "Environment",
+          });
+
+          await user.selectOptions(environmentSelect, "PROD");
+
+          const replicationFactorSelect = screen.getByRole("combobox", {
+            name: "Replication factor",
+          });
+          expect(replicationFactorSelect).toBeEnabled();
+        });
+
+        it('should render <input type="number" /> when "maxReplicationFactor" not defined', async () => {
+          const environmentSelect = await screen.findByRole("combobox", {
+            name: "Environment",
+          });
+          await user.selectOptions(environmentSelect, "DEV");
+
+          const inputReplicationFactor = screen.getByRole("spinbutton", {
+            name: "Replication factor",
+          });
+          expect(inputReplicationFactor).toBeEnabled();
+        });
       });
     });
 
     describe("when environment is changed", () => {
-      it('changes replication factor value to environment "defaultPartitions"', async () => {
-        await user.selectOptions(
-          screen.getByLabelText("Environment"),
-          "WITH_DEFAULT_PARTITIONS"
-        );
-        await waitFor(() => {
-          expect(
-            screen.getByLabelText("Replication factor")
-          ).toHaveDisplayValue("4");
+      beforeEach(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+              createMockEnvironmentDTO({
+                name: "TST",
+                id: "2",
+                maxPartitions: "8",
+                maxReplicationFactor: "2",
+              }),
+              createMockEnvironmentDTO({
+                name: "PROD",
+                id: "3",
+                maxPartitions: "16",
+                maxReplicationFactor: "4",
+              }),
+              createMockEnvironmentDTO({
+                name: "WITH_DEFAULT_PARTITIONS",
+                id: "4",
+                defaultReplicationFactor: "4",
+              }),
+            ],
+          },
         });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterEach(() => {
+        cleanup();
+      });
+
+      it('changes replication factor value to environment "defaultPartitions"', async () => {
+        const selectEnvironment = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
+        const inputReplicationFactor = await screen.findByLabelText(
+          "Replication factor"
+        );
+
+        expect(inputReplicationFactor).toHaveDisplayValue("");
+
+        await user.selectOptions(selectEnvironment, "WITH_DEFAULT_PARTITIONS");
+
+        expect(inputReplicationFactor).toHaveDisplayValue("4");
       });
 
       it('changes replication factor value to environment "maxPartitions" when exceeded it is and no default', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
-        await user.clear(screen.getByLabelText("Replication factor"));
-        await user.type(screen.getByLabelText("Replication factor"), "100");
-        expect(screen.getByLabelText("Replication factor")).toHaveDisplayValue(
-          "100"
+        const selectEnvironment = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
+        await user.selectOptions(selectEnvironment, "DEV");
+
+        const inputReplicationFactorInput = await screen.findByRole(
+          "spinbutton",
+          {
+            name: "Replication factor",
+          }
         );
 
-        await user.selectOptions(screen.getByLabelText("Environment"), "TST");
-        await waitFor(() => {
-          expect(
-            screen.getByLabelText("Replication factor")
-          ).toHaveDisplayValue("2");
-        });
+        await user.clear(inputReplicationFactorInput);
+        await user.type(inputReplicationFactorInput, "100");
+
+        expect(inputReplicationFactorInput).toHaveDisplayValue("100");
+
+        await user.selectOptions(selectEnvironment, "TST");
+        expect(inputReplicationFactorInput).not.toBeInTheDocument();
+
+        const inputReplicationFactorSelect = await screen.findByRole(
+          "combobox",
+          {
+            name: "Replication factor",
+          }
+        );
+
+        expect(inputReplicationFactorSelect).toHaveDisplayValue("2");
       });
 
       it('keeps topic replication factor value if not default and value does not exceeded "maxPartitions"', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "PROD");
-        await user.selectOptions(
-          screen.getByLabelText("Replication factor"),
-          "4"
-        );
-        await waitFor(() => {
-          expect(
-            screen.getByLabelText("Replication factor")
-          ).toHaveDisplayValue("4");
+        const selectEnvironment = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
+        await user.selectOptions(selectEnvironment, "PROD");
+
+        const replicationFactorSelect = screen.getByRole("combobox", {
+          name: "Replication factor",
         });
 
-        await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
-        await waitFor(() => {
-          expect(
-            screen.getByLabelText("Replication factor")
-          ).toHaveDisplayValue("4");
+        await user.selectOptions(replicationFactorSelect, "4");
+        expect(replicationFactorSelect).toHaveDisplayValue("4");
+
+        await user.selectOptions(selectEnvironment, "DEV");
+        expect(replicationFactorSelect).not.toBeInTheDocument();
+
+        const replicationFactorInput = screen.getByRole("spinbutton", {
+          name: "Replication factor",
         });
+        expect(replicationFactorInput).toHaveDisplayValue("4");
       });
     });
   });
 
   describe("Topic partitions", () => {
-    beforeAll(async () => {
+    beforeAll(() => {
       mockGetEnvironmentsForTeam({
         mswInstance: server,
         response: {
@@ -372,76 +487,136 @@ describe("<TopicRequest />", () => {
         </AquariumContext>,
         { queryClient: true }
       );
-      // Wait environments to be loaded
-      await screen.findByLabelText("Environment");
     });
-    afterAll(() => {
-      cleanup();
-    });
+    afterAll(cleanup);
 
     describe("input components", () => {
       it('should render <select /> when "maxPartitions" is defined', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "PROD");
-        screen.getByRole("combobox", { name: "Topic partitions" });
+        const selectEnvironment = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
+        await user.selectOptions(selectEnvironment, "PROD");
+
+        const topicPartitionSelect = screen.getByRole("combobox", {
+          name: "Topic partitions",
+        });
+        expect(topicPartitionSelect).toBeEnabled();
       });
 
       it('should render <input type="number" /> when "maxPartitions" is not defined', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
-        screen.getByRole("spinbutton", { name: "Topic partitions" });
-      });
-    });
-
-    describe("when environment is changed", () => {
-      it('changes topic partitions value to 4 when environment has "defaultPartitions"', async () => {
-        await user.selectOptions(
-          screen.getByLabelText("Environment"),
-          "WITH_DEFAULT_PARTITIONS"
-        );
-        expect(screen.getByLabelText("Topic partitions")).toHaveDisplayValue(
-          "4"
-        );
-      });
-
-      it('changes topic partitions value to environment "maxPartitions" when current value exceeds', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
-        await user.clear(screen.getByLabelText("Topic partitions"));
-        await user.type(screen.getByLabelText("Topic partitions"), "100");
-        await waitFor(() => {
-          expect(screen.getByLabelText("Topic partitions")).toHaveDisplayValue(
-            "100"
-          );
+        const selectEnvironment = await screen.findByRole("combobox", {
+          name: "Environment",
         });
+        await user.selectOptions(selectEnvironment, "DEV");
 
-        await user.selectOptions(screen.getByLabelText("Environment"), "TST");
-        await waitFor(() => {
-          expect(screen.getByLabelText("Topic partitions")).toHaveDisplayValue(
-            "8"
-          );
+        const topicPartitionInput = screen.getByRole("spinbutton", {
+          name: "Topic partitions",
         });
-      });
-
-      it('keeps topic partitions value if not default and value does not exceeded "maxPartitions"', async () => {
-        await user.selectOptions(screen.getByLabelText("Environment"), "PROD");
-        await user.selectOptions(
-          screen.getByLabelText("Topic partitions"),
-          "16"
-        );
-        expect(screen.getByLabelText("Topic partitions")).toHaveDisplayValue(
-          "16"
-        );
-
-        await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
-        await waitFor(() => {
-          expect(screen.getByLabelText("Topic partitions")).toHaveDisplayValue(
-            "16"
-          );
-        });
+        expect(topicPartitionInput).toBeEnabled();
       });
     });
   });
 
+  describe("when environment is changed", () => {
+    beforeEach(() => {
+      mockGetEnvironmentsForTeam({
+        mswInstance: server,
+        response: {
+          data: [
+            createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+            createMockEnvironmentDTO({
+              name: "TST",
+              id: "2",
+              maxPartitions: "8",
+              maxReplicationFactor: "2",
+            }),
+            createMockEnvironmentDTO({
+              name: "PROD",
+              id: "3",
+              maxPartitions: "16",
+              maxReplicationFactor: "4",
+            }),
+            createMockEnvironmentDTO({
+              name: "WITH_DEFAULT_PARTITIONS",
+              id: "4",
+              defaultPartitions: "4",
+            }),
+          ],
+        },
+      });
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicRequest />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+    });
+    afterEach(cleanup);
+
+    it('changes topic partitions value to 4 when environment has "defaultPartitions"', async () => {
+      const selectEnvironment = await screen.findByRole("combobox", {
+        name: "Environment",
+      });
+      await user.selectOptions(selectEnvironment, "WITH_DEFAULT_PARTITIONS");
+
+      const topicPartitionsInput = screen.getByRole("spinbutton", {
+        name: "Topic partitions",
+      });
+      expect(topicPartitionsInput).toHaveDisplayValue("4");
+    });
+
+    it('changes topic partitions value to environment "maxPartitions" when current value exceeds', async () => {
+      const selectEnvironment = await screen.findByRole("combobox", {
+        name: "Environment",
+      });
+      await user.selectOptions(selectEnvironment, "DEV");
+
+      const topicPartitionsInput = screen.getByRole("spinbutton", {
+        name: "Topic partitions",
+      });
+      expect(topicPartitionsInput).toHaveDisplayValue("2");
+
+      await user.clear(topicPartitionsInput);
+      await user.type(topicPartitionsInput, "100");
+
+      expect(topicPartitionsInput).toHaveDisplayValue("100");
+
+      await user.selectOptions(selectEnvironment, "TST");
+      expect(topicPartitionsInput).not.toBeInTheDocument();
+
+      const topicPartitionsSelect = screen.getByRole("combobox", {
+        name: "Topic partitions",
+      });
+      expect(topicPartitionsSelect).toHaveDisplayValue("8");
+    });
+
+    it('keeps topic partitions value if not default and value does not exceeded "maxPartitions"', async () => {
+      const selectEnvironment = await screen.findByRole("combobox", {
+        name: "Environment",
+      });
+      await user.selectOptions(selectEnvironment, "PROD");
+
+      const topicPartitionsSelect = screen.getByRole("combobox", {
+        name: "Topic partitions",
+      });
+
+      await user.selectOptions(topicPartitionsSelect, "16");
+      expect(topicPartitionsSelect).toHaveDisplayValue("16");
+
+      await user.selectOptions(selectEnvironment, "DEV");
+      expect(topicPartitionsSelect).toHaveDisplayValue("16");
+    });
+  });
+
   describe("AdvancedConfiguration", () => {
-    beforeAll(async () => {
+    beforeAll(() => {
       mockGetEnvironmentsForTeam({
         mswInstance: server,
         response: {
@@ -462,13 +637,8 @@ describe("<TopicRequest />", () => {
         </AquariumContext>,
         { queryClient: true }
       );
-
-      await screen.findByLabelText("Environment");
-      await screen.findByRole("option", { name: "DEV" });
     });
-    afterAll(() => {
-      cleanup();
-    });
+    afterAll(cleanup);
 
     it("renders a sub heading", () => {
       screen.getByRole("heading", { name: "Advanced Topic Configuration" });
@@ -484,9 +654,10 @@ describe("<TopicRequest />", () => {
       );
     });
 
-    it("renders a field which accespts JSON values", async () => {
+    it("renders a field which accepts JSON values", async () => {
       const mockedAdvancedConfig = screen.getByTestId("advancedConfiguration");
       await user.type(mockedAdvancedConfig, '{{"another":"value"}');
+
       expect(mockedAdvancedConfig).toHaveDisplayValue(
         JSON.stringify({ another: "value" })
       );
