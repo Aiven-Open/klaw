@@ -304,6 +304,7 @@ function _NativeSelect<T extends FieldValues>({
 }: BaseNativeSelectProps & FormInputProps<T> & FormRegisterProps<T>) {
   const { isSubmitting } = form.formState;
   const error = parseFieldErrorMessage(form.formState, name);
+
   return (
     <BaseNativeSelect
       {...props}
@@ -426,7 +427,7 @@ function parseFieldErrorMessage<T extends FieldValues>(
   name: keyof T
 ): undefined | string {
   if (name in errors) {
-    const fieldError = errors.name;
+    const fieldError = errors[name];
     if (fieldError !== undefined) {
       if (typeof fieldError.message === "string") {
         return fieldError.message;
