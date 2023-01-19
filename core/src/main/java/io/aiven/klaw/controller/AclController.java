@@ -105,17 +105,7 @@ public class AclController {
     return new ResponseEntity<>(
         topicOverviewService.getTopicOverview(topicNameSearch), HttpStatus.OK);
   }
-
-  @RequestMapping(
-      value = "/getSchemaOfTopic",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SchemaOverview> getSchemaOfTopic(
-      @RequestParam(value = "topicnamesearch") String topicNameSearch,
-      @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
-    return new ResponseEntity<>(
-        topicOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch), HttpStatus.OK);
-  }
+  
 
   // getConsumerOffsets from kafka cluster
   @RequestMapping(

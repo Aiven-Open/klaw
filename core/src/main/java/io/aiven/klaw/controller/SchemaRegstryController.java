@@ -2,8 +2,10 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
+import io.aiven.klaw.service.ResourceOverviewService;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -25,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class SchemaRegstryController {
 
   @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
+
+  @Autowired ResourceOverviewService resourceOverviewService;
 
   @RequestMapping(
       value = "/getSchemaRequests",
@@ -98,5 +102,17 @@ public class SchemaRegstryController {
       throws Exception {
 
     return ResponseEntity.ok(schemaRegstryControllerService.promoteSchema(promoteSchemaReq));
+  }
+
+  @RequestMapping(
+      value = "/getSchemaOfTopic",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<SchemaOverview> getSchemaOfTopic(
+      @RequestParam(value = "topicnamesearch") String topicNameSearch,
+      @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
+    return new ResponseEntity<>(
+        resourceOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch),
+        HttpStatus.OK);
   }
 }

@@ -287,6 +287,13 @@ public class SchemaRegstryControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     int teamId = commonUtilsService.getTeamId(userDetails);
+
+    if (!userAndTopicOwnerAreOnTheSameTeam(schemaPromotion.getTopicName(), userTeamId, tenantId)) {
+      return ApiResponse.builder()
+          .result("No topic selected Or Not authorized to register schema for this topic.")
+          .build();
+    }
+
     SchemaRequestModel schemaRequest =
         buildSchemaRequestFromPromotionRequest(schemaPromotion, teamId, tenantId);
 
@@ -298,9 +305,9 @@ public class SchemaRegstryControllerService {
           .result("Unable to find or access the source Schema Registry")
           .build();
     }
-    Env schemaEnv = optionalEnv.get();
+    Env schemaSourceEnv = optionalEnv.get();
     SortedMap<Integer, Map<String, Object>> schemaObjects =
-        getSchemasFromTopicName(schemaPromotion.getTopicName(), tenantId, schemaEnv);
+        getSchemasFromTopicName(schemaPromotion.getTopicName(), tenantId, schemaSourceEnv);
     log.info(
         "getSchemaVersion {}, schemaObjects keySet {}",
         schemaPromotion.getSchemaVersion(),
@@ -310,6 +317,17 @@ public class SchemaRegstryControllerService {
     // Pretty Print the Json String so that it can be seen clearly in the UI.
     schemaRequest.setSchemafull(prettyPrintUglyJsonString((String) schemaObject.get("schema")));
     return uploadSchema(schemaRequest);
+  }
+
+  private boolean userAndTopicOwnerAreOnTheSameTeam(
+      String topicName, Integer userTeamId, Integer tenantId) {
+    List<Topic> topicsSearchList =
+        manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+
+    // tenant filtering
+    Integer topicOwnerTeam =
+        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    return Objects.equals(userTeamId, topicOwnerTeam);
   }
 
   private SortedMap<Integer, Map<String, Object>> getSchemasFromTopicName(
@@ -344,7 +362,6 @@ public class SchemaRegstryControllerService {
     // setup schema Request
     schemaRequest.setAppname(schemaPromotion.getAppName());
     schemaRequest.setRemarks(schemaPromotion.getRemarks());
-    schemaRequest.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, teamId));
     schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
     schemaRequest.setSchemaversion(schemaPromotion.getSchemaVersion());
     schemaRequest.setTopicname(schemaPromotion.getTopicName());
@@ -370,14 +387,7 @@ public class SchemaRegstryControllerService {
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(schemaRequest.getTopicname(), tenantId);
-
-    // tenant filtering
-    Integer topicOwnerTeam =
-        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
-
-    if (!Objects.equals(userTeamId, topicOwnerTeam)) {
+    if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
       return ApiResponse.builder()
           .result("No topic selected Or Not authorized to register schema for this topic.")
           .build();

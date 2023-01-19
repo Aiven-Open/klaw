@@ -5,7 +5,7 @@ import java.util.Map;
 import lombok.Data;
 
 @Data
-public class TopicOverview extends Overview {
+public class TopicOverview extends ResourceOverviewAttributes {
   List<TopicInfo> topicInfoList;
   List<AclInfo> aclInfoList;
   List<AclInfo> prefixedAclInfoList;

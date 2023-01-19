@@ -414,7 +414,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                       });
                                 }
                                 else{
-                                        $scope.alert = "Topic Promotion Request : " + output.result;
+                                        $scope.alert = "Schema Promotion Request : " + output.result;
                                         $scope.showSubmitFailed('','');
                                     }
                             }).error(

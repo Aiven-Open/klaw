@@ -5,7 +5,7 @@ import java.util.Map;
 import lombok.Data;
 
 @Data
-public class SchemaOverview extends Overview {
+public class SchemaOverview extends ResourceOverviewAttributes {
   Map<String, List<Integer>> allSchemaVersions;
   Map<String, Integer> latestVersion;
   Map<String, Map<String, String>> schemaPromotionDetails;
