@@ -54,8 +54,10 @@ public class SchemaService {
     String schemaCompatibility = null;
     boolean schemaCompatibilityCompleted = false;
     try {
+      log.info("RegisterSchema on {} ", clusterSchemaRequest.getTopicName());
       //            set default compatibility
       if (clusterSchemaRequest.isForceRegister()) {
+        log.debug("RegisterSchema - Force Register Enabled");
         schemaCompatibility =
             getSchemaCompatibility(
                 clusterSchemaRequest.getEnv(),
@@ -65,6 +67,10 @@ public class SchemaService {
         // Error thrown preventing progress if Schema Compatibility not retrieved correctly.
         schemaCompatibilityCompleted =
             checkSchemaCompatibilitySuccessfullyRetrieved(schemaCompatibility);
+        log.debug(
+            "RegisterSchema - original Schema Compatibility {} for Topic {}",
+            schemaCompatibility,
+            clusterSchemaRequest.getTopicName());
         setSchemaCompatibility(
             clusterSchemaRequest.getEnv(),
             clusterSchemaRequest.getTopicName(),
@@ -110,6 +116,10 @@ public class SchemaService {
       // Ensure the Schema compatibility is returned to previous setting before the force update.
       // (Set isForce to false in all cases to revert it.
       if (clusterSchemaRequest.isForceRegister() && schemaCompatibilityCompleted) {
+        log.debug(
+            "RegisterSchema - Force Commit revert to original Schema Compatibility {} for Topic {}",
+            schemaCompatibility,
+            clusterSchemaRequest.getTopicName());
         setSchemaCompatibility(
             clusterSchemaRequest.getEnv(),
             clusterSchemaRequest.getTopicName(),
@@ -289,7 +299,7 @@ public class SchemaService {
 
   private boolean checkSchemaCompatibilitySuccessfullyRetrieved(String schemaCompatibility)
       throws Exception {
-    if (!schemaCompatibility.equals(SCHEMA_COMPATIBILITY_NOT_SET)) {
+    if (schemaCompatibility != null && !schemaCompatibility.equals(SCHEMA_COMPATIBILITY_NOT_SET)) {
       return true;
     } else {
       throw new Exception("Unable to retrieve the current Schema Compatibility setting.");
