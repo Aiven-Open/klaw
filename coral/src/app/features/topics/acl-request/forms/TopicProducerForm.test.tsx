@@ -1,5 +1,4 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
-import { cleanup, renderHook, screen, waitFor } from "@testing-library/react";
+import { cleanup, renderHook, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
@@ -68,7 +67,7 @@ const basePropsNotAivenCluster = {
   clusterInfo: { aivenCluster: "false" },
 } as TopicProducerFormProps;
 
-describe("<TopicAclRequest />", () => {
+describe("<TopicProducerForm />", () => {
   describe("renders correct fields in pristine form", () => {
     beforeAll(() => {
       const { result } = renderHook(() =>
@@ -82,12 +81,7 @@ describe("<TopicAclRequest />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...baseProps}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+        <TopicProducerForm {...baseProps} topicProducerForm={result.current} />,
         { queryClient: true }
       );
     });
@@ -163,15 +157,15 @@ describe("<TopicAclRequest />", () => {
     });
 
     it("does not render IpOrPrincipalField", () => {
-      const ipsField = screen.queryByRole("textbox", {
+      const hiddenIpsField = screen.queryByRole("textbox", {
         name: "IP addresses *",
       });
-      const principalsField = screen.queryByRole("textbox", {
+      const hiddenPrincipalsField = screen.queryByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
 
-      expect(ipsField).toBeNull();
-      expect(principalsField).toBeNull();
+      expect(hiddenIpsField).toBeNull();
+      expect(hiddenPrincipalsField).toBeNull();
     });
 
     it("renders RemarksField", () => {
@@ -208,12 +202,10 @@ describe("<TopicAclRequest />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...basePropsIsAivenCluster}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+        <TopicProducerForm
+          {...basePropsIsAivenCluster}
+          topicProducerForm={result.current}
+        />,
         { queryClient: true }
       );
     });
@@ -291,16 +283,16 @@ describe("<TopicAclRequest />", () => {
     });
 
     it("renders only principals field in IpOrPrincipalField", () => {
-      const ipsField = screen.queryByRole("textbox", {
+      const hiddenIpsField = screen.queryByRole("textbox", {
         name: "IP addresses *",
       });
-      const principalsField = screen.getByRole("textbox", {
+      const hiddenPrincipalsField = screen.getByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
 
-      expect(ipsField).toBeNull();
-      expect(principalsField).toBeVisible();
-      expect(principalsField).toBeEnabled();
+      expect(hiddenIpsField).toBeNull();
+      expect(hiddenPrincipalsField).toBeVisible();
+      expect(hiddenPrincipalsField).toBeEnabled();
     });
 
     it("renders RemarksField", () => {
@@ -336,12 +328,10 @@ describe("<TopicAclRequest />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...basePropsNotAivenCluster}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />,
         { queryClient: true }
       );
     });
@@ -420,15 +410,15 @@ describe("<TopicAclRequest />", () => {
     });
 
     it("renders only principals field in IpOrPrincipalField", () => {
-      const ipsField = screen.queryByRole("textbox", {
+      const hiddenIpsField = screen.queryByRole("textbox", {
         name: "IP addresses *",
       });
-      const principalsField = screen.queryByRole("textbox", {
+      const hiddenPrincipalsField = screen.queryByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
 
-      expect(ipsField).toBeNull();
-      expect(principalsField).toBeNull();
+      expect(hiddenIpsField).toBeNull();
+      expect(hiddenPrincipalsField).toBeNull();
     });
 
     it("renders RemarksField", () => {
@@ -456,7 +446,11 @@ describe("<TopicAclRequest />", () => {
       user = userEvent.setup();
     });
 
-    beforeAll(() => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("renders correct fields when selecting IP or Principal in AclIpPrincipleTypeField", async () => {
       const { result } = renderHook(() =>
         useForm<TopicProducerFormSchema>({
           schema: topicProducerFormSchema,
@@ -467,30 +461,23 @@ describe("<TopicAclRequest />", () => {
           },
         })
       );
-      customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...basePropsNotAivenCluster}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+
+      const { rerender } = customRender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />,
         { queryClient: true }
       );
-    });
 
-    afterAll(() => {
-      cleanup();
-    });
-
-    it("renders correct fields when selecting IP or Principal in AclIpPrincipleTypeField", async () => {
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
         name: "Principal",
       });
-      const ipsField = screen.queryByRole("textbox", {
+      const hiddenIpsField = screen.queryByRole("textbox", {
         name: "IP addresses *",
       });
-      const principalsField = screen.queryByRole("textbox", {
+      const hiddenPrincipalsField = screen.queryByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
 
@@ -500,41 +487,132 @@ describe("<TopicAclRequest />", () => {
       expect(principalField).toBeVisible();
       expect(principalField).toBeEnabled();
       expect(principalField).not.toBeChecked();
-      expect(ipsField).toBeNull();
-      expect(principalsField).toBeNull();
-
-      await user.click(ipField);
-      expect(ipField).toBeChecked();
-      waitFor(() => {
-        expect(ipsField).toBeInTheDocument();
-        expect(ipsField).toBeEnabled();
-      });
+      expect(hiddenIpsField).toBeNull();
+      expect(hiddenPrincipalsField).toBeNull();
 
       await user.click(principalField);
       expect(principalField).toBeChecked();
-      waitFor(() => {
-        expect(principalsField).toBeInTheDocument();
-        expect(principalsField).toBeEnabled();
+
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
+
+      const visiblePrincipalsField = await screen.findByRole("textbox", {
+        name: "SSL DN strings / Usernames *",
       });
+      expect(visiblePrincipalsField).toBeInTheDocument();
+      expect(visiblePrincipalsField).toBeEnabled();
+
+      await user.click(ipField);
+      expect(ipField).toBeChecked();
+
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
+
+      const visibleIpsField = await screen.findByRole("textbox", {
+        name: "IP addresses *",
+      });
+      expect(visibleIpsField).toBeInTheDocument();
+      expect(visibleIpsField).toBeEnabled();
     });
 
     it("error when entering invalid IP in IPs field", async () => {
+      const { result } = renderHook(() =>
+        useForm<TopicProducerFormSchema>({
+          schema: topicProducerFormSchema,
+          defaultValues: {
+            topicname: "aiventopic1",
+            environment: "2",
+            topictype: "Producer",
+          },
+        })
+      );
+      const { rerender } = customRender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />,
+        { queryClient: true }
+      );
+
       const ipField = screen.getByRole("radio", { name: "IP" });
 
       await user.click(ipField);
       expect(ipField).toBeChecked();
 
-      waitFor(async () => {
-        const ipsField = screen.getByRole("textbox", {
-          name: "IP addresses *",
-        });
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
 
-        await user.type(ipsField, "invalid");
-        expect(ipsField).toBeInvalid();
-
-        await user.type(ipsField, "111.111.11.11");
-        expect(ipsField).toBeValid();
+      const visibleIpsField = await screen.findByRole("textbox", {
+        name: "IP addresses *",
       });
+
+      await user.type(visibleIpsField, "invalid{Enter}");
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
+      expect(visibleIpsField).toBeInvalid();
+    });
+
+    it("does not error when entering valid IP", async () => {
+      const { result } = renderHook(() =>
+        useForm<TopicProducerFormSchema>({
+          schema: topicProducerFormSchema,
+          defaultValues: {
+            topicname: "aiventopic1",
+            environment: "2",
+            topictype: "Producer",
+          },
+        })
+      );
+      const { rerender } = customRender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />,
+        { queryClient: true }
+      );
+
+      const ipField = screen.getByRole("radio", { name: "IP" });
+
+      await user.click(ipField);
+      expect(ipField).toBeChecked();
+
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
+
+      const visibleIpsField = await screen.findByRole("textbox", {
+        name: "IP addresses *",
+      });
+
+      await user.clear(visibleIpsField);
+      await user.type(visibleIpsField, "111.111.11.11{Enter}");
+
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
+      expect(visibleIpsField).toBeValid();
     });
   });
 
@@ -545,7 +623,11 @@ describe("<TopicAclRequest />", () => {
       user = userEvent.setup();
     });
 
-    beforeAll(() => {
+    afterAll(() => {
+      cleanup();
+    });
+
+    it("renders correct fields when selecting Literal or Prefixed in aclPatternType fields", async () => {
       const { result } = renderHook(() =>
         useForm<TopicProducerFormSchema>({
           schema: topicProducerFormSchema,
@@ -556,31 +638,20 @@ describe("<TopicAclRequest />", () => {
           },
         })
       );
-      customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...baseProps}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+      const { rerender } = customRender(
+        <TopicProducerForm {...baseProps} topicProducerForm={result.current} />,
         { queryClient: true }
       );
-    });
 
-    afterAll(() => {
-      cleanup();
-    });
-
-    it("renders correct fields when selecting Literal or Prefixed in aclPatternType fields", async () => {
       const literalField = screen.getByRole("radio", { name: "Literal" });
       const prefixedField = screen.getByRole("radio", {
         name: "Prefixed",
       });
-      const topicNameField = screen.queryByRole("combobox", {
+      const hiddenTopicNameField = screen.queryByRole("combobox", {
         name: "Topic name *",
       });
-      const prefixField = screen.queryByRole("textbox", {
-        name: "Prefix",
+      const hiddenPrefixField = screen.queryByRole("textbox", {
+        name: "Prefix *",
       });
 
       expect(literalField).toBeVisible();
@@ -589,26 +660,40 @@ describe("<TopicAclRequest />", () => {
       expect(prefixedField).toBeVisible();
       expect(prefixedField).toBeEnabled();
       expect(prefixedField).not.toBeChecked();
-      expect(topicNameField).toBeNull();
-      expect(prefixField).toBeNull();
+      expect(hiddenTopicNameField).toBeNull();
+      expect(hiddenPrefixField).toBeNull();
 
       await user.click(literalField);
       expect(literalField).toBeChecked();
-      waitFor(() => {
-        expect(prefixField).toBeNull();
-        expect(topicNameField).toBeInTheDocument();
-        expect(topicNameField).toBeEnabled();
-        expect(topicNameField).toHaveDisplayValue("aivtopic1");
+
+      rerender(
+        <TopicProducerForm {...baseProps} topicProducerForm={result.current} />
+      );
+
+      const visibleTopicNameField = await screen.findByRole("combobox", {
+        name: "Topic name *",
       });
+
+      expect(hiddenPrefixField).toBeNull();
+      expect(visibleTopicNameField).toBeInTheDocument();
+      expect(visibleTopicNameField).toBeEnabled();
+      expect(visibleTopicNameField).toHaveDisplayValue("aiventopic1");
 
       await user.click(prefixedField);
       expect(prefixedField).toBeChecked();
-      waitFor(() => {
-        expect(topicNameField).toBeNull();
-        expect(prefixField).toBeInTheDocument();
-        expect(prefixField).toBeEnabled();
-        expect(prefixField).toHaveDisplayValue("aivtopic1");
+
+      rerender(
+        <TopicProducerForm {...baseProps} topicProducerForm={result.current} />
+      );
+
+      const visiblePrefixField = await screen.findByRole("textbox", {
+        name: "Prefix *",
       });
+
+      expect(hiddenTopicNameField).toBeNull();
+      expect(visiblePrefixField).toBeInTheDocument();
+      expect(visiblePrefixField).toBeEnabled();
+      expect(visiblePrefixField).toHaveDisplayValue("aiventopic1");
     });
   });
 
@@ -630,12 +715,10 @@ describe("<TopicAclRequest />", () => {
         })
       );
       customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...basePropsNotAivenCluster}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />,
         { queryClient: true }
       );
 
@@ -661,34 +744,50 @@ describe("<TopicAclRequest />", () => {
           },
         })
       );
-      customRender(
-        <AquariumContext>
-          <TopicProducerForm
-            {...basePropsNotAivenCluster}
-            topicProducerForm={result.current}
-          />
-        </AquariumContext>,
+
+      const { rerender } = customRender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />,
         { queryClient: true }
       );
 
       const submitButton = screen.getByRole("button", { name: "Submit" });
+      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
       const principalField = screen.getByRole("radio", {
         name: "Principal",
       });
 
       await userEvent.click(principalField);
 
-      waitFor(async () => {
-        const principalsField = screen.getByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        });
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
 
-        expect(submitButton).not.toBeEnabled();
-
-        await userEvent.type(principalsField, "Alice");
-
-        expect(submitButton).toBeEnabled();
+      const visiblePrincipalsField = await screen.findByRole("textbox", {
+        name: "SSL DN strings / Usernames *",
       });
+
+      await userEvent.type(visiblePrincipalsField, "Alice{Enter}");
+
+      await userEvent.tab();
+      expect(visiblePrincipalsField).toBeValid();
+
+      rerender(
+        <TopicProducerForm
+          {...basePropsNotAivenCluster}
+          topicProducerForm={result.current}
+        />
+      );
+
+      // await waitFor(() => {
+      screen.debug(screen.getByRole("button", { name: "Submit" }), 100000);
+      expect(submitButton).toBeEnabled();
+      // });
     });
   });
 });
