@@ -61,14 +61,16 @@ function mockGetClusterInfoFromEnv({
   );
 }
 
-const mockedResponseGetClusterInfoFromEnv: ClusterInfo = {
-  aivenCluster: "true",
-};
+const getMockedResponseGetClusterInfoFromEnv = (
+  isAivenCluster: boolean
+): ClusterInfo => ({
+  aivenCluster: isAivenCluster ? "true" : "false",
+});
 
 export {
   mockGetEnvironments,
   mockGetEnvironmentsForTeam,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
-  mockedResponseGetClusterInfoFromEnv,
+  getMockedResponseGetClusterInfoFromEnv,
 };

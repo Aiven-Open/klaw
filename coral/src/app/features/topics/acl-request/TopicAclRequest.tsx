@@ -21,7 +21,7 @@ import {
 } from "src/domain/environment";
 import { getClusterInfo } from "src/domain/environment/environment-api";
 import {
-  mockedResponseGetClusterInfoFromEnv,
+  getMockedResponseGetClusterInfoFromEnv,
   mockGetClusterInfoFromEnv,
 } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
@@ -86,7 +86,7 @@ const TopicAclRequest = () => {
       });
       mockGetClusterInfoFromEnv({
         mswInstance: window.msw,
-        response: mockedResponseGetClusterInfoFromEnv,
+        response: getMockedResponseGetClusterInfoFromEnv(true),
       });
     }
   }, []);
