@@ -471,7 +471,7 @@ export type components = {
        * Team name
        * @example Marketing
        */
-      teamname: string;
+      teamname?: string;
       /**
        * Remarks
        * @description Message for the approval
