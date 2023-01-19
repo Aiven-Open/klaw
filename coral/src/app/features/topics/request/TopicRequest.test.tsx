@@ -1,4 +1,4 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
@@ -9,18 +9,36 @@ import TopicRequest from "src/app/features/topics/request/TopicRequest";
 import {
   defaultgetTopicAdvancedConfigOptionsResponse,
   mockgetTopicAdvancedConfigOptions,
+  mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import api from "src/services/api";
+
+const NavigateMock = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  Navigate: (args: { to: string }) => {
+    NavigateMock(args);
+    return (
+      <div data-testid="mockedRedirectComponent">
+        This dummy component represents &lt;Navigate&gt;
+      </div>
+    );
+  },
+}));
 
 describe("<TopicRequest />", () => {
+  const originalConsoleError = console.error;
   let user: ReturnType<typeof userEvent.setup>;
 
   beforeAll(() => {
     server.listen();
+    console.error = jest.fn();
   });
 
   afterAll(() => {
     server.close();
+    console.error = originalConsoleError;
   });
 
   beforeEach(() => {
@@ -661,6 +679,137 @@ describe("<TopicRequest />", () => {
       expect(mockedAdvancedConfig).toHaveDisplayValue(
         JSON.stringify({ another: "value" })
       );
+    });
+  });
+
+  describe("form submission", () => {
+    beforeAll(async () => {
+      mockGetEnvironmentsForTeam({
+        mswInstance: server,
+        response: {
+          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
+        },
+      });
+
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicRequest />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+
+      // Wait all API calls to resolve, which are required for the render
+      await screen.findByLabelText("Environment");
+      await screen.findByRole("option", { name: "DEV" });
+    });
+
+    afterAll(() => {
+      cleanup();
+    });
+
+    beforeEach(async () => {
+      // Fill form with valid data
+      await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
+      await user.clear(screen.getByLabelText("Topic name*"));
+      await user.clear(screen.getByLabelText("Topic partitions*"));
+      await user.clear(screen.getByLabelText("Replication factor*"));
+      await user.clear(screen.getByLabelText("Description*"));
+
+      await user.type(
+        screen.getByLabelText("Topic name*"),
+        "this-is-topic-name{tab}"
+      );
+      await user.type(screen.getByLabelText("Topic partitions*"), "3{tab}");
+      await user.type(screen.getByLabelText("Replication factor*"), "3{tab}");
+      await user.type(screen.getByLabelText("Description*"), "test{tab}");
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe("when API returns an error", () => {
+      beforeEach(async () => {
+        mockRequestTopic({
+          mswInstance: server,
+          response: {
+            data: { message: "Topic with such name already exists!" },
+            status: 400,
+          },
+        });
+      });
+
+      it("renders an error message", async () => {
+        const spyPost = jest.spyOn(api, "post");
+
+        await user.click(screen.getByRole("button", { name: "Request topic" }));
+
+        await waitFor(() => {
+          const btn = screen.getByRole("button", { name: "Request topic" });
+          expect(btn).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(spyPost).toHaveBeenCalledWith("/createTopics", {
+          environment: "1",
+          topicname: "this-is-topic-name",
+          replicationfactor: "3",
+          topicpartitions: 3,
+          advancedTopicConfigEntries: [],
+          description: "test",
+          remarks: "",
+          topictype: "Create",
+        });
+
+        const alert = await screen.findByRole("alert");
+        expect(alert).toHaveTextContent("Topic with such name already exists!");
+      });
+    });
+    describe("when API request is successful", () => {
+      beforeEach(async () => {
+        mockRequestTopic({
+          mswInstance: server,
+          response: { data: { status: "200 OK" } },
+        });
+      });
+
+      it("redirects user to myTopicRequests", async () => {
+        const spyPost = jest.spyOn(api, "post");
+
+        await user.click(screen.getByRole("button", { name: "Request topic" }));
+
+        await waitFor(() => {
+          const btn = screen.getByRole("button", { name: "Request topic" });
+          expect(btn).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(spyPost).toHaveBeenCalledWith("/createTopics", {
+          environment: "1",
+          topicname: "this-is-topic-name",
+          replicationfactor: "3",
+          topicpartitions: 3,
+          advancedTopicConfigEntries: [],
+          description: "test",
+          remarks: "",
+          topictype: "Create",
+        });
+
+        await waitFor(() => {
+          screen.getByTestId("mockedRedirectComponent");
+          expect(NavigateMock).toHaveBeenCalledTimes(1);
+          expect(NavigateMock).toHaveBeenCalledWith({
+            to: "myTopicRequests?reqsType=created&topicCreated=true",
+          });
+        });
+      });
     });
   });
 });
