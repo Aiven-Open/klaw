@@ -504,7 +504,7 @@ describe("<TopicRequest />", () => {
       });
 
       it('should render <input type="number" /> when "maxPartitions" is not defined', async () => {
-        const selectEnvironment = await screen.getByRole("combobox", {
+        const selectEnvironment = await screen.findByRole("combobox", {
           name: "Environment",
         });
         await user.selectOptions(selectEnvironment, "DEV");
