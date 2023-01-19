@@ -15,6 +15,7 @@ import {
 } from "src/app/components/Form";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
+import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 describe("Form", () => {
   const onSubmit = jest.fn();
@@ -49,12 +50,14 @@ describe("Form", () => {
   };
 
   describe("<Form>", () => {
-    const schema = z.object({ name: z.string().min(3, "error") });
+    const schema = z.object({
+      formFieldsCustomName: z.string().min(3, "error"),
+    });
     type Schema = z.infer<typeof schema>;
 
     beforeEach(() => {
       results = renderForm(
-        <TextInput<Schema> name="name" labelText="TextInput" />,
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
         { schema, onSubmit, onError }
       );
     });
@@ -64,7 +67,7 @@ describe("Form", () => {
       await submit();
       await waitFor(() =>
         expect(onSubmit).toHaveBeenCalledWith(
-          { name: "abc" },
+          { formFieldsCustomName: "abc" },
           expect.anything()
         )
       );
@@ -75,18 +78,20 @@ describe("Form", () => {
       await submit();
       await waitFor(() => expect(onError).toHaveBeenCalled());
       expect(onError.mock.calls[0][0]).toMatchObject({
-        name: { message: "error" },
+        formFieldsCustomName: { message: "error" },
       });
     });
   });
 
   describe("<TextInput>", () => {
-    const schema = z.object({ name: z.string().min(3, "error") });
+    const schema = z.object({
+      formFieldsCustomName: z.string().min(3, "error"),
+    });
     type Schema = z.infer<typeof schema>;
 
     beforeEach(() => {
       results = renderForm(
-        <TextInput<Schema> name="name" labelText="TextInput" />,
+        <TextInput<Schema> name="formFieldsCustomName" labelText="TextInput" />,
         { schema, onSubmit, onError }
       );
     });
@@ -102,7 +107,7 @@ describe("Form", () => {
     it("should sync value to form state", async () => {
       await typeText("value{tab}");
       await submit();
-      assertSubmitted({ name: "value" });
+      assertSubmitted({ formFieldsCustomName: "value" });
     });
 
     it("should render errors after blur event and hide them after valid input", async () => {
@@ -116,7 +121,7 @@ describe("Form", () => {
 
   describe("<NumberInput>", () => {
     const schema = z.object({
-      name: z.preprocess(
+      number: z.preprocess(
         (value) => parseInt(z.string().parse(value), 10),
         z.number().max(100)
       ),
@@ -125,16 +130,14 @@ describe("Form", () => {
 
     beforeEach(() => {
       results = renderForm(
-        <NumberInput<Schema> name="name" labelText="NumberInput" />,
+        <NumberInput<Schema> name="number" labelText="NumberInput" />,
         { schema, onSubmit, onError }
       );
     });
 
     it('renders <input type="number"', () => {
-      const input = screen.getByLabelText("NumberInput");
-      expect(input).toBeVisible();
-      expect(input.getAttribute("type")).toBe("number");
-      screen.getByRole("spinbutton", { name: "NumberInput" });
+      const input = screen.getByRole("spinbutton", { name: "NumberInput" });
+      expect(input).toBeEnabled();
     });
 
     it("should sync value to form state", async () => {
@@ -143,28 +146,41 @@ describe("Form", () => {
         "20"
       );
       await submit();
-      assertSubmitted({ name: 20 });
+      assertSubmitted({ number: 20 });
     });
 
     it("should render errors after blur event and hide them after valid input", async () => {
-      const errorMsg = "Number must be less than or equal to 100";
-      await user.clear(screen.getByLabelText("NumberInput"));
-      await user.type(screen.getByLabelText("NumberInput"), "200{tab}");
-      await waitFor(() => expect(screen.queryByText(errorMsg)).toBeVisible());
+      const errorMsgEmpty = "Expected number, received nan";
+      const errorMsgValidation = "Number must be less than or equal to 100";
 
-      await user.clear(screen.getByLabelText("NumberInput"));
-      await user.type(screen.getByLabelText("NumberInput"), "20{tab}");
-      await waitFor(() => expect(screen.queryByText(errorMsg)).toBeNull());
+      const input = screen.getByRole("spinbutton", { name: "NumberInput" });
+
+      expect(input).toHaveValue(null);
+      await user.click(input);
+      await user.tab();
+
+      expect(await screen.findByText(errorMsgEmpty)).toBeVisible();
+
+      await user.type(input, "200{tab}");
+      expect(await screen.findByText(errorMsgValidation)).toBeVisible();
+
+      await user.clear(input);
+
+      await user.type(input, "20{tab}");
+      await waitForElementToBeRemoved(screen.getByText(errorMsgValidation));
+
+      expect(screen.queryByText(errorMsgEmpty)).not.toBeInTheDocument();
+      expect(screen.queryByText(errorMsgValidation)).not.toBeInTheDocument();
     });
   });
 
   describe("<Textarea>", () => {
-    const schema = z.object({ name: z.string().max(255) });
+    const schema = z.object({ formFieldsCustomName: z.string().max(255) });
     type Schema = z.infer<typeof schema>;
 
     beforeEach(() => {
       results = renderForm(
-        <Textarea<Schema> name="name" labelText="Textarea" />,
+        <Textarea<Schema> name="formFieldsCustomName" labelText="Textarea" />,
         { schema, onSubmit, onError }
       );
     });
@@ -176,7 +192,7 @@ describe("Form", () => {
     it("should sync value to form state", async () => {
       await typeText("value{tab}");
       await submit();
-      assertSubmitted({ name: "value" });
+      assertSubmitted({ formFieldsCustomName: "value" });
     });
 
     it("should render errors after blur event and hide them after valid input", async () => {
@@ -192,12 +208,17 @@ describe("Form", () => {
   });
 
   describe("<NativeSelect>", () => {
-    const schema = z.object({ name: z.enum(["helsinki", "berlin", "london"]) });
+    const schema = z.object({
+      formFieldsCustomName: z.enum(["helsinki", "berlin", "london"]),
+    });
     type Schema = z.infer<typeof schema>;
 
     beforeEach(() => {
       results = renderForm(
-        <NativeSelect<Schema> name="name" labelText="NativeSelect">
+        <NativeSelect<Schema>
+          name="formFieldsCustomName"
+          labelText="NativeSelect"
+        >
           <option value="helsinki">Helsinki</option>
           <option value="berlin">Berlin</option>
           <option value="london">London</option>
@@ -219,7 +240,7 @@ describe("Form", () => {
         "Helsinki"
       );
       await submit();
-      assertSubmitted({ name: "helsinki" });
+      assertSubmitted({ formFieldsCustomName: "helsinki" });
     });
 
     it("should sync value to form state when choosing another option", async () => {
@@ -228,7 +249,39 @@ describe("Form", () => {
         "Berlin"
       );
       await submit();
-      assertSubmitted({ name: "berlin" });
+      assertSubmitted({ formFieldsCustomName: "berlin" });
+    });
+
+    it("shows an error message if user does not select an option", async () => {
+      cleanup();
+      renderForm(
+        <NativeSelect<Schema>
+          name="formFieldsCustomName"
+          labelText="NativeSelect"
+          defaultValue={""}
+        >
+          <option value="" disabled={true}>
+            placeholder
+          </option>
+          <option value="helsinki">Helsinki</option>
+          <option value="berlin">Berlin</option>
+          <option value="london">London</option>
+        </NativeSelect>,
+        { schema, onSubmit, onError }
+      );
+
+      const select = screen.getByRole("combobox", { name: "NativeSelect" });
+      expect(select).toHaveValue("");
+
+      await userEvent.click(select);
+      await userEvent.keyboard("{Enter}");
+      await userEvent.tab();
+
+      const errorMessage = await screen.findByText(
+        "Invalid enum value. Expected 'helsinki' | 'berlin' | 'london', received ''"
+      );
+      expect(errorMessage).toBeVisible();
+      expect(true).toBeTruthy();
     });
   });
 
@@ -373,7 +426,7 @@ describe("Form", () => {
 
   describe("<ComplexNativeSelect>", () => {
     const schema = z.object({
-      name: z.object({
+      formFieldsCustomName: z.object({
         name: z.string(),
         id: z.string(),
         age: z.number(),
@@ -397,7 +450,7 @@ describe("Form", () => {
     beforeEach(() => {
       results = renderForm(
         <ComplexNativeSelect<Schema, TestOption>
-          name="name"
+          name="formFieldsCustomName"
           options={testOptions}
           labelText="ComplexNativeSelect"
           identifierValue={"id"}
@@ -434,7 +487,7 @@ describe("Form", () => {
       await submit();
 
       expect(onSubmit).toHaveBeenCalledWith(
-        { name: selectedOption },
+        { formFieldsCustomName: selectedOption },
         expect.anything()
       );
     });
@@ -470,7 +523,9 @@ describe("Form", () => {
 
   describe("<MultiInput>", () => {
     const schema = z.object({
-      cities: z.string().array(),
+      cities: z.string().array().nonempty({
+        message: "Can't be empty!",
+      }),
     });
     type Schema = z.infer<typeof schema>;
 
