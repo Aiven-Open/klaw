@@ -124,7 +124,9 @@ const TopicAclRequest = () => {
 
   const { data: environments } = useQuery<Environment[], Error>(
     ["topic-environments"],
-    getEnvironments
+    {
+      queryFn: getEnvironments,
+    }
   );
   const { data: topicTeam } = useQuery<TopicTeam, Error>(
     ["topic-team", topicName],
