@@ -5,7 +5,7 @@ import PreviewBanner from "src/app/components/PreviewBanner";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
 import Layout from "src/app/layout/Layout";
 
-const RequestTopic = () => {
+const AclRequest = () => {
   const { topicName = "" } = useParams();
 
   return (
@@ -23,4 +23,4 @@ const RequestTopic = () => {
   );
 };
 
-export default RequestTopic;
+export default AclRequest;
