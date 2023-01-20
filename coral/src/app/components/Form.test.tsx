@@ -426,11 +426,14 @@ describe("Form", () => {
 
   describe("<ComplexNativeSelect>", () => {
     const schema = z.object({
-      formFieldsCustomName: z.object({
-        name: z.string(),
-        id: z.string(),
-        age: z.number(),
-      }),
+      formFieldsCustomName: z.object(
+        {
+          name: z.string(),
+          id: z.string(),
+          age: z.number(),
+        },
+        { required_error: "This is required" }
+      ),
     });
 
     type Schema = z.infer<typeof schema>;
@@ -517,7 +520,22 @@ describe("Form", () => {
       await submit();
 
       expect(select).toBeInvalid();
-      expect(screen.getByText("Required")).toBeVisible();
+      expect(screen.getByText("This is required")).toBeVisible();
+    });
+
+    it("shows an error when user did not choose an option and leaves the field", async () => {
+      const select = screen.getByRole("combobox", {
+        name: "ComplexNativeSelect",
+      });
+      expect(select).toBeValid();
+
+      select.focus();
+      await user.keyboard("{ArrowDown}");
+      await user.keyboard("{ESC}");
+      await user.tab();
+
+      await waitFor(() => expect(select).toBeInvalid());
+      expect(screen.getByText("This is required")).toBeVisible();
     });
   });
 
@@ -545,6 +563,28 @@ describe("Form", () => {
     });
 
     it("should sync value to form state when typing into MultiInput", async () => {
+      const citiesInput = screen.getByRole<HTMLInputElement>("textbox");
+
+      await user.type(citiesInput, "Berlin");
+      expect(citiesInput.value).toBe("Berlin");
+      await userEvent.keyboard("{Enter}");
+
+      await user.type(citiesInput, "Helsinki");
+      expect(citiesInput.value).toBe("Helsinki");
+      await user.keyboard("{Enter}");
+
+      const berlinPill = screen.getByText("Berlin");
+      const helsinkiPill = screen.getByText("Helsinki");
+      expect(berlinPill).toBeVisible();
+      expect(helsinkiPill).toBeVisible();
+      expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+
+      await submit();
+      assertSubmitted({ cities: ["Berlin", "Helsinki"] });
+    });
+
+    it("shows an error if user does not fill out required field", async () => {
       const citiesInput = screen.getByRole<HTMLInputElement>("textbox");
 
       await user.type(citiesInput, "Berlin");
