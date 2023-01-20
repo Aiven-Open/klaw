@@ -370,7 +370,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
         $scope.onFinalSchemaPromote = function(sourceEnvironment,targetEnvironment) {
 
-             if($scope.schema.versionSelected.includes(" (latest)")){
+             if(isNaN($scope.schema.versionSelected) && $scope.schema.versionSelected.includes(" (latest)")){
              $scope.schema.versionSelected = $scope.schema.versionSelected.replace(' (latest)','')
              }
                 // If the version is not a number it has not been correctly selected.
@@ -385,7 +385,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
              if(!$scope.isForceRegisterAllowed) {
              $scope.schema.forceRegister='false';
              }
-             if($scope.schema.forceRegister === 'true') {
+
+             if($scope.schema.forceRegister === true) {
              remarks += " Force Register Schema option overriding schema compatibility has been selected."
              }
 

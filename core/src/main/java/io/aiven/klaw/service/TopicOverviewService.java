@@ -1,56 +1,32 @@
 package io.aiven.klaw.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.KafkaClustersType;
-import io.aiven.klaw.model.enums.KafkaFlavors;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class TopicOverviewService {
-
-  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
-      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
-  public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
-      new TypeReference<>() {};
-  @Autowired ManageDatabase manageDatabase;
-  @Autowired ClusterApiService clusterApiService;
-  @Autowired private CommonUtilsService commonUtilsService;
-  private final MailUtils mailService;
+public class TopicOverviewService extends BaseOverviewService {
 
   public TopicOverviewService(MailUtils mailService) {
-    this.mailService = mailService;
+    super(mailService);
   }
 
   public TopicOverview getTopicOverview(String topicNameSearch) {
@@ -141,216 +117,6 @@ public class TopicOverviewService {
     return topicOverview;
   }
 
-  public SchemaOverview getSchemaOfTopic(String topicNameSearch, String schemaVersionSearch) {
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
-    int tenantId = commonUtilsService.getTenantId(getUserName());
-    SchemaOverview schemaOverview = new SchemaOverview();
-    schemaOverview.setTopicExists(true);
-    boolean retrieveSchemas = true;
-    updateAvroSchema(
-        topicNameSearch, schemaVersionSearch, handleDb, retrieveSchemas, schemaOverview, tenantId);
-    return schemaOverview;
-  }
-
-  private void updateAvroSchema(
-      String topicNameSearch,
-      String schemaVersionSearch,
-      HandleDbRequests handleDb,
-      boolean retrieveSchemas,
-      SchemaOverview schemaOverview,
-      int tenantId) {
-    if (schemaOverview.isTopicExists() && retrieveSchemas) {
-      List<Map<String, String>> schemaDetails = new ArrayList<>();
-      schemaOverview.setSchemaDetails(schemaDetails);
-      Map<String, List<Integer>> schemaVersions = new HashMap<>();
-      schemaOverview.setAllSchemaVersions(schemaVersions);
-      schemaOverview.setLatestVersion(new HashMap<>());
-      List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
-      Object dynamicObj;
-      Map<String, Object> hashMapSchemaObj;
-      String schemaOfObj;
-
-      for (Env schemaEnv : schemaEnvs) {
-        try {
-          log.debug("UpdateAvroSchema - Process env {}", schemaEnv);
-          Map<String, String> schemaMap = new HashMap<>();
-          KwClusters kwClusters =
-              manageDatabase
-                  .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-                  .get(schemaEnv.getClusterId());
-
-          SortedMap<Integer, Map<String, Object>> schemaObjects =
-              clusterApiService.getAvroSchema(
-                  kwClusters.getBootstrapServers(),
-                  kwClusters.getProtocol(),
-                  kwClusters.getClusterName() + kwClusters.getClusterId(),
-                  topicNameSearch,
-                  tenantId);
-          // If the schemaObject is null ie does not exist do not try to manipulate it.
-          if (schemaObjects != null && !schemaObjects.isEmpty()) {
-
-            Integer latestSchemaVersion = schemaObjects.firstKey();
-            schemaOverview.getLatestVersion().put(schemaEnv.getName(), latestSchemaVersion);
-            Set<Integer> allVersions = schemaObjects.keySet();
-            List<Integer> allVersionsList = new ArrayList<>(allVersions);
-            schemaOverview.getAllSchemaVersions().put(schemaEnv.getName(), allVersionsList);
-            try {
-              if (schemaVersionSearch != null
-                  && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
-                schemaVersionSearch = "";
-              }
-            } catch (NumberFormatException ignored) {
-            }
-
-            // get latest version
-            if (schemaVersionSearch != null && schemaVersionSearch.equals("")) {
-              hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
-              schemaOfObj = (String) hashMapSchemaObj.get("schema");
-              schemaMap.put("isLatest", "true");
-              schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-              schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-              schemaMap.put("version", "" + latestSchemaVersion);
-
-              if (schemaObjects.size() > 1) {
-                schemaMap.put("showNext", "true");
-                schemaMap.put("showPrev", "false");
-                int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
-                schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
-              }
-            } else {
-              hashMapSchemaObj =
-                  schemaObjects.get(Integer.parseInt(Objects.requireNonNull(schemaVersionSearch)));
-              schemaOfObj = (String) hashMapSchemaObj.get("schema");
-              schemaMap.put("isLatest", "false");
-              schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-              schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-              schemaMap.put("version", "" + schemaVersionSearch);
-
-              if (schemaObjects.size() > 1) {
-                int indexOfVersion = allVersionsList.indexOf(Integer.parseInt(schemaVersionSearch));
-                if (indexOfVersion + 1 == allVersionsList.size()) {
-                  schemaMap.put("showNext", "false");
-                  schemaMap.put("showPrev", "true");
-                  schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
-                } else {
-                  schemaMap.put("showNext", "true");
-                  schemaMap.put("showPrev", "true");
-                  schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
-                  schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
-                }
-              }
-            }
-
-            schemaMap.put("env", schemaEnv.getName());
-            dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
-            schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-            schemaMap.put("content", schemaOfObj);
-
-            schemaDetails.add(schemaMap);
-            schemaOverview.setSchemaExists(true);
-            // Set Promotion Details
-            processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv);
-            log.info("Getting schema details for: " + topicNameSearch);
-          }
-        } catch (Exception e) {
-          log.error("Error ", e);
-        }
-      }
-
-      if (schemaOverview.isSchemaExists()) {
-        log.debug("SchemaDetails {}", schemaDetails);
-        schemaOverview.setSchemaDetails(schemaDetails);
-      }
-    }
-  }
-
-  private void processSchemaPromotionDetails(
-      SchemaOverview schemaOverview, int tenantId, Env schemaEnv) {
-    log.info("SchemaEnv Id {}", schemaEnv.getId());
-    Map<String, String> promotionDetails = new HashMap<>();
-    generatePromotionDetails(
-        tenantId,
-        promotionDetails,
-        Arrays.asList(schemaEnv.getId()),
-        mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS"));
-    if (schemaOverview.getSchemaPromotionDetails() == null) {
-      Map<String, Map<String, String>> searchOverviewPromotionDetails = new HashMap<>();
-      schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
-    }
-    Map<String, Map<String, String>> existingPromoDetails =
-        schemaOverview.getSchemaPromotionDetails();
-    existingPromoDetails.put(schemaEnv.getName(), promotionDetails);
-    schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
-  }
-
-  private void updateTopicOverviewItems(
-      String topicNameSearch,
-      int tenantId,
-      Integer loggedInUserTeam,
-      List<Topic> topics,
-      TopicOverview topicOverview,
-      List<TopicInfo> topicInfoList,
-      List<AclInfo> aclInfo,
-      Integer topicOwnerTeam) {
-    try {
-      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
-        topicOverview.setTopicPromotionDetails(
-            getTopicPromotionEnv(topicNameSearch, topics, tenantId));
-
-        if (topicInfoList.size() > 0) {
-          TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
-          lastItem.setTopicDeletable(
-              aclInfo.stream()
-                  .noneMatch(
-                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getCluster())));
-          lastItem.setShowDeleteTopic(true);
-        }
-      } else {
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", "not_authorized");
-        topicOverview.setTopicPromotionDetails(hashMap);
-      }
-    } catch (Exception e) {
-      Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", "not_authorized");
-      topicOverview.setTopicPromotionDetails(hashMap);
-    }
-  }
-
-  private List<AclInfo> getAclInfoList(
-      int tenantId,
-      TopicOverview topicOverview,
-      List<TopicInfo> topicInfoList,
-      List<AclInfo> aclInfo,
-      List<AclInfo> prefixedAclsInfo) {
-    aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
-    List<AclInfo> transactionalAcls =
-        aclInfo.stream()
-            .filter(aclRec -> aclRec.getTransactionalId() != null)
-            .collect(Collectors.toList());
-
-    for (AclInfo aclInfo1 : aclInfo) {
-      aclInfo1.setEnvironmentName(getEnvDetails(aclInfo1.getEnvironment(), tenantId).getName());
-    }
-
-    for (AclInfo aclInfo2 : prefixedAclsInfo) {
-      aclInfo2.setEnvironmentName(getEnvDetails(aclInfo2.getEnvironment(), tenantId).getName());
-    }
-
-    topicOverview.setAclInfoList(aclInfo);
-    if (prefixedAclsInfo.size() > 0) {
-      topicOverview.setPrefixedAclInfoList(prefixedAclsInfo);
-      topicOverview.setPrefixAclsExists(true);
-    }
-    if (transactionalAcls.size() > 0) {
-      topicOverview.setTransactionalAclInfoList(transactionalAcls);
-      topicOverview.setTxnAclsExists(true);
-    }
-
-    topicOverview.setTopicInfoList(topicInfoList);
-    return aclInfo;
-  }
-
   private void enrichTopicInfoList(
       String topicNameSearch,
       HandleDbRequests handleDb,
@@ -438,61 +204,38 @@ public class TopicOverviewService {
     topicOverview.setTopicHistoryList(topicHistoryList);
   }
 
-  private List<AclInfo> applyFiltersAclsForSOT(
-      Integer loggedInUserTeam, List<Acl> aclsFromSOT, int tenantId) {
+  private void updateTopicOverviewItems(
+      String topicNameSearch,
+      int tenantId,
+      Integer loggedInUserTeam,
+      List<Topic> topics,
+      TopicOverview topicOverview,
+      List<TopicInfo> topicInfoList,
+      List<AclInfo> aclInfo,
+      Integer topicOwnerTeam) {
+    try {
+      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
+        topicOverview.setTopicPromotionDetails(
+            getTopicPromotionEnv(topicNameSearch, topics, tenantId));
 
-    List<AclInfo> aclList = new ArrayList<>();
-    AclInfo mp;
-
-    for (Acl aclSotItem : aclsFromSOT) {
-      mp = new AclInfo();
-      mp.setEnvironment(aclSotItem.getEnvironment());
-      Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
-      mp.setEnvironmentName(envDetails.getName());
-      mp.setTopicname(aclSotItem.getTopicname());
-      mp.setAcl_ip(aclSotItem.getAclip());
-      mp.setAcl_ssl(aclSotItem.getAclssl());
-      mp.setTransactionalId(aclSotItem.getTransactionalId());
-      mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
-      mp.setConsumergroup(aclSotItem.getConsumergroup());
-      mp.setTopictype(aclSotItem.getTopictype());
-      mp.setAclPatternType(aclSotItem.getAclPatternType());
-      mp.setReq_no(aclSotItem.getReq_no() + "");
-      mp.setKafkaFlavorType(
-          KafkaFlavors.of(
-              manageDatabase
-                  .getClusters(KafkaClustersType.KAFKA, tenantId)
-                  .get(envDetails.getClusterId())
-                  .getKafkaFlavor()));
-      if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam))
-        mp.setShowDeleteAcl(true);
-
-      if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) aclList.add(mp);
-    }
-    return aclList;
-  }
-
-  private List<Acl> getAclsFromSOT(
-      String env, String topicNameSearch, boolean regex, int tenantId) {
-    List<Acl> aclsFromSOT;
-    if (!regex) {
-      aclsFromSOT =
-          manageDatabase.getHandleDbRequests().getSyncAcls(env, topicNameSearch, tenantId);
-    } else {
-      aclsFromSOT = manageDatabase.getHandleDbRequests().getSyncAcls(env, tenantId);
-      List<Acl> topicFilteredList = aclsFromSOT;
-      // Filter topics on topic name for search
-      if (topicNameSearch != null && topicNameSearch.length() > 0) {
-        final String topicSearchFilter = topicNameSearch;
-        topicFilteredList =
-            aclsFromSOT.stream()
-                .filter(acl -> acl.getTopicname().contains(topicSearchFilter))
-                .collect(Collectors.toList());
+        if (topicInfoList.size() > 0) {
+          TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
+          lastItem.setTopicDeletable(
+              aclInfo.stream()
+                  .noneMatch(
+                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getCluster())));
+          lastItem.setShowDeleteTopic(true);
+        }
+      } else {
+        Map<String, String> hashMap = new HashMap<>();
+        hashMap.put("status", "not_authorized");
+        topicOverview.setTopicPromotionDetails(hashMap);
       }
-      aclsFromSOT = topicFilteredList;
+    } catch (Exception e) {
+      Map<String, String> hashMap = new HashMap<>();
+      hashMap.put("status", "not_authorized");
+      topicOverview.setTopicPromotionDetails(hashMap);
     }
-
-    return aclsFromSOT;
   }
 
   private Map<String, String> getTopicPromotionEnv(
@@ -519,43 +262,5 @@ public class TopicOverviewService {
     }
 
     return hashMap;
-  }
-
-  private void generatePromotionDetails(
-      int tenantId, Map<String, String> hashMap, List<String> envList, String orderOfEnvs) {
-    if (envList != null && envList.size() > 0) {
-      // tenant filtering
-      envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-      String lastEnv = envList.get(envList.size() - 1);
-      List<String> orderedEnvs = Arrays.asList(orderOfEnvs.split(","));
-
-      if (orderedEnvs.indexOf(lastEnv) == orderedEnvs.size() - 1) {
-        hashMap.put("status", "NO_PROMOTION"); // PRD
-      } else {
-        hashMap.put("status", ApiResultStatus.SUCCESS.value);
-        hashMap.put("sourceEnv", lastEnv);
-        String targetEnv = orderedEnvs.get(orderedEnvs.indexOf(lastEnv) + 1);
-        hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
-        hashMap.put("targetEnvId", targetEnv);
-      }
-    }
-  }
-
-  private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
-  public Env getEnvDetails(String envId, int tenantId) {
-    Optional<Env> envFound =
-        envFound =
-            manageDatabase.getAllEnvList(tenantId).stream()
-                .filter(env -> Objects.equals(env.getId(), envId))
-                .findFirst();
-    return envFound.orElse(null);
   }
 }
