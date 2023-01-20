@@ -2,8 +2,12 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaOverview;
+import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
+import io.aiven.klaw.service.SchemaOverviewService;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
+import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class SchemaRegstryController {
 
   @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
+
+  @Autowired TopicOverviewService topicOverviewService;
+  @Autowired SchemaOverviewService schemaOverviewService;
 
   @RequestMapping(
       value = "/getSchemaRequests",
@@ -88,5 +95,26 @@ public class SchemaRegstryController {
       @Valid @RequestBody SchemaRequestModel addSchemaRequest) throws KlawException {
     return new ResponseEntity<>(
         schemaRegstryControllerService.uploadSchema(addSchemaRequest), HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/promote/schema",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> promoteSchema(@RequestBody SchemaPromotion promoteSchemaReq)
+      throws Exception {
+
+    return ResponseEntity.ok(schemaRegstryControllerService.promoteSchema(promoteSchemaReq));
+  }
+
+  @RequestMapping(
+      value = "/getSchemaOfTopic",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<SchemaOverview> getSchemaOfTopic(
+      @RequestParam(value = "topicnamesearch") String topicNameSearch,
+      @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
+    return new ResponseEntity<>(
+        schemaOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch),
+        HttpStatus.OK);
   }
 }

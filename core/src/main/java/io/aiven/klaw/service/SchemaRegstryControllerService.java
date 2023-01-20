@@ -3,16 +3,21 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.enums.TopicRequestTypes;
@@ -22,6 +27,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -29,7 +35,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SchemaRegstryControllerService {
-
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -270,6 +275,99 @@ public class SchemaRegstryControllerService {
     }
   }
 
+  public ApiResponse promoteSchema(SchemaPromotion schemaPromotion) throws Exception {
+    String userDetails = getUserName();
+
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
+
+    Integer userTeamId = commonUtilsService.getTeamId(userDetails);
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int teamId = commonUtilsService.getTeamId(userDetails);
+
+    if (!userAndTopicOwnerAreOnTheSameTeam(schemaPromotion.getTopicName(), userTeamId, tenantId)) {
+      return ApiResponse.builder()
+          .result("No topic selected Or Not authorized to register schema for this topic.")
+          .build();
+    }
+
+    SchemaRequestModel schemaRequest =
+        buildSchemaRequestFromPromotionRequest(schemaPromotion, teamId, tenantId);
+
+    Optional<Env> optionalEnv = getSchemaEnvFromId(schemaPromotion.getSourceEnvironment());
+
+    if (!optionalEnv.isPresent()) {
+      return ApiResponse.builder()
+          .status(HttpStatus.BAD_REQUEST)
+          .result("Unable to find or access the source Schema Registry")
+          .build();
+    }
+    Env schemaSourceEnv = optionalEnv.get();
+    SortedMap<Integer, Map<String, Object>> schemaObjects =
+        getSchemasFromTopicName(schemaPromotion.getTopicName(), tenantId, schemaSourceEnv);
+    log.info(
+        "getSchemaVersion {}, schemaObjects keySet {}",
+        schemaPromotion.getSchemaVersion(),
+        schemaObjects.keySet());
+    Map<String, Object> schemaObject =
+        schemaObjects.get(Integer.valueOf(schemaPromotion.getSchemaVersion()));
+    // Pretty Print the Json String so that it can be seen clearly in the UI.
+    schemaRequest.setSchemafull(prettyPrintUglyJsonString((String) schemaObject.get("schema")));
+    return uploadSchema(schemaRequest);
+  }
+
+  private boolean userAndTopicOwnerAreOnTheSameTeam(
+      String topicName, Integer userTeamId, Integer tenantId) {
+    List<Topic> topicsSearchList =
+        manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+
+    // tenant filtering
+    Integer topicOwnerTeam =
+        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
+    return Objects.equals(userTeamId, topicOwnerTeam);
+  }
+
+  private SortedMap<Integer, Map<String, Object>> getSchemasFromTopicName(
+      String topicName, int tenantId, Env schemaEnv) throws Exception {
+    KwClusters kwClusters =
+        manageDatabase
+            .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+            .get(schemaEnv.getClusterId());
+
+    SortedMap<Integer, Map<String, Object>> schemaObjects =
+        clusterApiService.getAvroSchema(
+            kwClusters.getBootstrapServers(),
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName() + kwClusters.getClusterId(),
+            topicName,
+            tenantId);
+
+    return schemaObjects;
+  }
+
+  private Optional<Env> getSchemaEnvFromId(String envId) {
+    return manageDatabase
+        .getSchemaRegEnvList(commonUtilsService.getTenantId(getUserName()))
+        .stream()
+        .filter(env -> env.getId().equals(envId))
+        .findFirst();
+  }
+
+  private SchemaRequestModel buildSchemaRequestFromPromotionRequest(
+      SchemaPromotion schemaPromotion, int teamId, int tenantId) {
+    SchemaRequestModel schemaRequest = new SchemaRequestModel();
+    // setup schema Request
+    schemaRequest.setAppname(schemaPromotion.getAppName());
+    schemaRequest.setRemarks(schemaPromotion.getRemarks());
+    schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
+    schemaRequest.setSchemaversion(schemaPromotion.getSchemaVersion());
+    schemaRequest.setTopicname(schemaPromotion.getTopicName());
+    schemaRequest.setForceRegister(schemaPromotion.isForceRegister());
+    return schemaRequest;
+  }
+
   public ApiResponse uploadSchema(SchemaRequestModel schemaRequest) throws KlawException {
     log.info("uploadSchema {}", schemaRequest);
     String userDetails = getUserName();
@@ -288,14 +386,7 @@ public class SchemaRegstryControllerService {
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(schemaRequest.getTopicname(), tenantId);
-
-    // tenant filtering
-    Integer topicOwnerTeam =
-        commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
-
-    if (!Objects.equals(userTeamId, topicOwnerTeam)) {
+    if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
       return ApiResponse.builder()
           .result("No topic selected Or Not authorized to register schema for this topic.")
           .build();
@@ -351,6 +442,17 @@ public class SchemaRegstryControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private String prettyPrintUglyJsonString(String json) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readTree(json));
+    } catch (JsonProcessingException e) {
+      log.error("Unable to pretty print json : ", e);
+    }
+    return json;
   }
 
   private String getUserName() {

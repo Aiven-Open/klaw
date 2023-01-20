@@ -15,6 +15,7 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.SyncAclUpdates;
@@ -398,6 +399,17 @@ public class UtilMethods {
     schemaRequest.setRemarks("pls approve");
     schemaList.add(schemaRequest);
     return schemaList;
+  }
+
+  public List<SchemaPromotion> getSchemaPromotion() {
+    SchemaPromotion promo = new SchemaPromotion();
+    promo.setRemarks("Promotion Schema Request");
+    promo.setAppName("App");
+    promo.setSchemaFull("Nonsense Schema");
+    promo.setSchemaVersion("1");
+    promo.setTopicName("topic-1");
+    promo.setForceRegister(false);
+    return List.of(promo);
   }
 
   public List<SchemaRequest> getSchemaRequestsDao() {

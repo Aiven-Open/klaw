@@ -39,6 +39,7 @@ public class SchemaService {
 
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
+  public static final String SCHEMA_COMPATIBILITY_NOT_SET = "NOT SET";
 
   @Value("${klaw.schemaregistry.compatibility.default:BACKWARD}")
   private String defaultSchemaCompatibility;
@@ -50,10 +51,34 @@ public class SchemaService {
   }
 
   public synchronized ApiResponse registerSchema(ClusterSchemaRequest clusterSchemaRequest) {
+    String schemaCompatibility = null;
+    boolean schemaCompatibilityCompleted = false;
     try {
-      log.info("Into register schema request {}", clusterSchemaRequest);
+      log.info("RegisterSchema on {} ", clusterSchemaRequest.getTopicName());
       //            set default compatibility
-      //            setSchemaCompatibility(environmentVal, topicName, false, protocol);
+      if (clusterSchemaRequest.isForceRegister()) {
+        log.debug("RegisterSchema - Force Register Enabled");
+        schemaCompatibility =
+            getSchemaCompatibility(
+                clusterSchemaRequest.getEnv(),
+                clusterSchemaRequest.getTopicName(),
+                clusterSchemaRequest.getProtocol(),
+                clusterSchemaRequest.getClusterIdentification());
+        // Error thrown preventing progress if Schema Compatibility not retrieved correctly.
+        schemaCompatibilityCompleted =
+            checkSchemaCompatibilitySuccessfullyRetrieved(schemaCompatibility);
+        log.debug(
+            "RegisterSchema - original Schema Compatibility {} for Topic {}",
+            schemaCompatibility,
+            clusterSchemaRequest.getTopicName());
+        setSchemaCompatibility(
+            clusterSchemaRequest.getEnv(),
+            clusterSchemaRequest.getTopicName(),
+            clusterSchemaRequest.isForceRegister(),
+            clusterSchemaRequest.getProtocol(),
+            clusterSchemaRequest.getClusterIdentification(),
+            null);
+      }
       String suffixUrl =
           clusterSchemaRequest.getEnv()
               + "/subjects/"
@@ -79,12 +104,30 @@ public class SchemaService {
       return ApiResponse.builder().result(updateTopicReqStatus).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      if (((HttpClientErrorException.Conflict) e).getStatusCode().value() == 409) {
+
+      if (e instanceof HttpClientErrorException
+          && ((HttpClientErrorException.Conflict) e).getStatusCode().value() == 409) {
         return ApiResponse.builder()
             .result("Schema being registered is incompatible with an earlier schema")
             .build();
       }
       return ApiResponse.builder().result("Failure in registering schema.").build();
+    } finally {
+      // Ensure the Schema compatibility is returned to previous setting before the force update.
+      // (Set isForce to false in all cases to revert it.
+      if (clusterSchemaRequest.isForceRegister() && schemaCompatibilityCompleted) {
+        log.debug(
+            "RegisterSchema - Force Commit revert to original Schema Compatibility {} for Topic {}",
+            schemaCompatibility,
+            clusterSchemaRequest.getTopicName());
+        setSchemaCompatibility(
+            clusterSchemaRequest.getEnv(),
+            clusterSchemaRequest.getTopicName(),
+            false,
+            clusterSchemaRequest.getProtocol(),
+            clusterSchemaRequest.getClusterIdentification(),
+            schemaCompatibility);
+      }
     }
   }
 
@@ -210,7 +253,7 @@ public class SchemaService {
       return responseList.getBody().get("compatibilityLevel");
     } catch (Exception e) {
       log.error("Error in getting schema compatibility ", e);
-      return "NOT SET";
+      return SCHEMA_COMPATIBILITY_NOT_SET;
     }
   }
 
@@ -219,7 +262,8 @@ public class SchemaService {
       String topicName,
       boolean isForce,
       KafkaSupportedProtocol protocol,
-      String clusterIdentification) {
+      String clusterIdentification,
+      String schemaCompatibilityMode) {
     try {
       log.info("Into setSchema compatibility {} {}", topicName, environmentVal);
       if (environmentVal == null) {
@@ -233,7 +277,12 @@ public class SchemaService {
       Map<String, String> params = new HashMap<>();
       if (isForce) {
         params.put("compatibility", "NONE");
-      } else params.put("compatibility", defaultSchemaCompatibility);
+      } else if (schemaCompatibilityMode != null && !schemaCompatibilityMode.isBlank()) {
+        // Allows us to specify the schema compatibility to the exact type we want.
+        params.put("compatibility", schemaCompatibilityMode);
+      } else {
+        params.put("compatibility", defaultSchemaCompatibility);
+      }
 
       HttpHeaders headers =
           clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
@@ -245,6 +294,15 @@ public class SchemaService {
     } catch (Exception e) {
       log.error("Error in setting schema compatibility ", e);
       return false;
+    }
+  }
+
+  private boolean checkSchemaCompatibilitySuccessfullyRetrieved(String schemaCompatibility)
+      throws Exception {
+    if (schemaCompatibility != null && !schemaCompatibility.equals(SCHEMA_COMPATIBILITY_NOT_SET)) {
+      return true;
+    } else {
+      throw new Exception("Unable to retrieve the current Schema Compatibility setting.");
     }
   }
 

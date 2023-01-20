@@ -347,6 +347,86 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
     	}
 
+        $scope.onFirstSchemaPromote= function(schemaContent,allSchemaVersions){
+                  $scope.firstSchemaPromote = 'true';
+                  $scope.firstSchemaEnvPromote = schemaContent.env;
+                  $scope.schema = {};
+                  $scope.schema.forceRegister = 'false';
+                  const schemaVersions = [];
+
+                // Add Latest to let the user know which schema version is the current latest schema version.
+                  allSchemaVersions[schemaContent.env].forEach(function(part, index) {
+                    schemaVersions[index] = this[index];
+                    if(this[index] == schemaContent.version) {
+                    schemaVersions[index] = schemaVersions[index] + " (latest)";
+                        }
+                  }, allSchemaVersions[schemaContent.env]);
+
+                  $scope.schemaVersions = schemaVersions;
+
+                  //future will add check here if force promote is allowed based on setting in server config.
+                  $scope.isForceRegisterAllowed = 'true';
+                }
+
+        $scope.onFinalSchemaPromote = function(sourceEnvironment,targetEnvironment) {
+
+             if(isNaN($scope.schema.versionSelected) && $scope.schema.versionSelected.includes(" (latest)")){
+             $scope.schema.versionSelected = $scope.schema.versionSelected.replace(' (latest)','')
+             }
+                // If the version is not a number it has not been correctly selected.
+             if(isNaN($scope.schema.versionSelected)){
+                $scope.alertnote = "Please select the schema version.";
+                $scope.alert = $scope.alertnote;
+                $scope.showAlertToast();
+                return;
+                }
+             var remarks = "Schema promotion.";
+            //Ensure if force Register is not allowed any value is set to false.
+             if(!$scope.isForceRegisterAllowed) {
+             $scope.schema.forceRegister='false';
+             }
+
+             if($scope.schema.forceRegister === true) {
+             remarks += " Force Register Schema option overriding schema compatibility has been selected."
+             }
+
+            var promoteSchemaReq = {};
+            promoteSchemaReq['targetEnvironment'] = targetEnvironment;
+            promoteSchemaReq['sourceEnvironment'] = sourceEnvironment;
+            promoteSchemaReq['topicName'] = $scope.topicSelectedParam;
+            promoteSchemaReq['schemaVersion'] = $scope.schema.versionSelected;
+            promoteSchemaReq['forceRegister'] = $scope.schema.forceRegister;
+            promoteSchemaReq['appName'] = "App";
+            promoteSchemaReq['remarks'] = remarks;
+
+            $http({
+                                method: "POST",
+                                url: "/promote/schema",
+                                headers : { 'Content-Type' : 'application/json' },
+                                data: promoteSchemaReq
+                            }).success(function(output) {
+                                if(output.result == 'success'){
+                                    swal({
+                                    	 title: "",
+                                    	 text: "Schema Promotion Request : " + output.result,
+                                    	 showConfirmButton: true
+                                     }).then(function(isConfirm){
+                                           $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/mySchemaRequests?reqsType=created";
+                                      });
+                                }
+                                else{
+                                        $scope.alert = "Schema Promotion Request : " + output.result;
+                                        $scope.showSubmitFailed('','');
+                                    }
+                            }).error(
+                                function(error)
+                                {
+                                    $scope.handleValidationErrors(error);
+                                }
+                            );
+
+        }
+
     	$scope.onFinalPromote = function(envSelected) {
 
                 var serviceInput = {};
@@ -433,6 +513,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             			}
             		);
     	}
+
+
 
     $scope.addDocsVar = false;
 
@@ -547,7 +629,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		$scope.topicSelectedParam = topicSelected;
 		$scope.ShowSpinnerStatusTopics = true;
         $scope.schemaDetails = null;
-
+        $scope.firstSchemaPromote = 'false';
 		$http({
 			method: "GET",
 			url: "getAcls",
@@ -561,7 +643,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		        $scope.resultBrowsePrefix = output.prefixedAclInfoList;
 		        $scope.resultBrowseTxnId = output.transactionalAclInfoList;
             	$scope.topicOverview = output.topicInfoList;
-            	$scope.promotionDetails = output.promotionDetails;
+            	$scope.topicPromotionDetails = output.topicPromotionDetails;
             	$scope.schemaDetails = output.schemaDetails;
 
             	$scope.schemaExists = output.schemaExists;
@@ -605,6 +687,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 if(output.schemaDetails != null){
                     $scope.schemaDetails = output.schemaDetails;
                     $scope.schemaExists = output.schemaExists;
+                    $scope.schemaPromotionDetails = output.schemaPromotionDetails;
+                    $scope.allSchemaVersions = output.allSchemaVersions;
                     $scope.displayedSchemaVersion = $scope.schemaDetails[0].version;
                 }
             }).error(

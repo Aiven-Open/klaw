@@ -2,7 +2,6 @@ package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -16,16 +15,13 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +45,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TopicOverviewServiceTest {
+public class SchemaOverviewServiceTest {
 
   public static final String TESTTOPIC = "testtopic";
   public static final String TEAM_1 = "Team-1";
@@ -67,21 +63,21 @@ public class TopicOverviewServiceTest {
   @Mock private Map<Integer, KwClusters> kwClustersHashMap;
   @Mock private KwClusters kwClusters;
 
-  private TopicOverviewService topicOverviewService;
+  private SchemaOverviewService schemaOverviewService;
 
   private ObjectMapper mapper = new ObjectMapper();
 
   @BeforeEach
   public void setUp() throws Exception {
     utilMethods = new UtilMethods();
-    this.topicOverviewService = new TopicOverviewService(mailService);
+    this.schemaOverviewService = new SchemaOverviewService(mailService);
 
     Env env = new Env();
     env.setName("DEV");
     env.setId("1");
-    ReflectionTestUtils.setField(topicOverviewService, "manageDatabase", manageDatabase);
-    ReflectionTestUtils.setField(topicOverviewService, "commonUtilsService", commonUtilsService);
-    ReflectionTestUtils.setField(topicOverviewService, "clusterApiService", clusterApiService);
+    ReflectionTestUtils.setField(schemaOverviewService, "manageDatabase", manageDatabase);
+    ReflectionTestUtils.setField(schemaOverviewService, "commonUtilsService", commonUtilsService);
+    ReflectionTestUtils.setField(schemaOverviewService, "clusterApiService", clusterApiService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     loginMock();
   }
@@ -96,130 +92,56 @@ public class TopicOverviewServiceTest {
 
   @Test
   @Order(1)
-  public void getAclsSyncFalse1() throws KlawException {
-    String env1 = "1";
+  public void givenASchemaWithOnlyOneSchemaEnv_ReturnNoPromotion() throws Exception {
     stubUserInfo();
 
-    when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
-    when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
-        .thenReturn(getAclsSOT(TESTTOPIC));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
-    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-        .thenReturn(kwClustersHashMap);
-    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 1);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
-    mockTenantConfig();
-    List<AclInfo> aclList = topicOverviewService.getTopicOverview(TESTTOPIC).getAclInfoList();
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
 
-    assertThat(aclList).hasSize(1);
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
 
-    assertThat(aclList.get(0).getTopicname()).isEqualTo(TESTTOPIC);
-    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
-    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").containsKey("status"))
+        .isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("status"))
+        .isEqualTo("NO_PROMOTION");
   }
 
   @Test
   @Order(2)
-  public void getAclsSyncFalse2() {
-    String topicNameSearch = "testnewtopic1";
-
+  public void getGivenASchemaWithManySchemaEnv_ReturnNextInPromotion() throws Exception {
     stubUserInfo();
-    when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-    when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
-        .thenReturn(getAclsSOT(topicNameSearch));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
-    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-        .thenReturn(kwClustersHashMap);
-    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    when(manageDatabase.getAllEnvList(anyInt()))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
-    mockTenantConfig();
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 15);
 
-    List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS")))
+        .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
-    assertThat(aclList).hasSize(1);
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
 
-    assertThat(aclList.get(0).getTopicname()).isEqualTo(topicNameSearch);
-    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
-    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").containsKey("status"))
+        .isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("status"))
+        .isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("sourceEnv"))
+        .isEqualTo("1");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("targetEnv"))
+        .isEqualTo("test-2");
   }
 
   @Test
   @Order(3)
-  public void givenATopicWithOnlyOneKafkaEnv_ReturnNoPromotion() throws Exception {
+  public void givenASchemaThatDoesntExist_ReturnNoPromotion() throws Exception {
     stubUserInfo();
-    stubKafkaPromotion(TESTTOPIC, 1);
-    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
-    when(handleDbRequests.getTopics(TESTTOPIC, 101))
-        .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
-    assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
-  }
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
 
-  @Test
-  @Order(4)
-  public void getGivenATopicWithManyKafkaEnv_ReturnNextInPromotion() throws Exception {
-    stubUserInfo();
-    stubKafkaPromotion(TESTTOPIC, 15);
-    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
-    when(handleDbRequests.getTopics(TESTTOPIC, 101))
-        .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS")))
-        .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
-        .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
-
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
-    assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getTopicPromotionDetails().get("status"))
-        .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getTopicPromotionDetails().get("sourceEnv")).isEqualTo("1");
-    assertThat(returnedValue.getTopicPromotionDetails().get("targetEnv")).isEqualTo("test-2");
-  }
-
-  @Test
-  @Order(5)
-  public void givenATopicThatDoesntExist_ReturnNoPromotion() throws Exception {
-    stubUserInfo();
-    stubKafkaPromotion(TESTTOPIC, 1);
-    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
-
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
-
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
-    assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
-    assertThat(returnedValue.isTopicExists()).isFalse();
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "3");
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNullOrEmpty();
+    assertThat(returnedValue.isSchemaExists()).isFalse();
   }
 
   private Topic createTopic(String topicName) {

@@ -921,3 +921,14 @@ databaseChangeLog:
                      - column:
                          name: jsonparams
                          type: CLOB
+    - changeSet:
+        id: 20-01-23 New Column to store if a schema is being forced overriden
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwschemarequests
+              columns:
+                - column:
+                    defaultValue: false
+                    name: forceregister
+                    type: BOOLEAN

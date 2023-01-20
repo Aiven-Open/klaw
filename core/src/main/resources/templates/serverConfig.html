@@ -486,7 +486,12 @@
       "tenantName": "{{ dashboardDetails.tenantName }}",
       "baseSyncEnvironment": "DEV",
       "orderOfTopicPromotionEnvsList": ["DEV", "TST"],
-      "requestTopicsEnvironmentsList": ["DEV", "TST"]
+      "requestTopicsEnvironmentsList": ["DEV", "TST"],
+      "baseSyncKafkaConnectCluster" : null,
+      "orderOfConnectorsPromotionEnvsList" : [],
+      "requestConnectorsEnvironmentsList" : [],
+      "orderOfSchemaPromotionEnvsList" : [ "DEV_SCH", "TST_SCH" ],
+      "requestSchemaEnvironmentsList" : [ "DEV_SCH", "TST_SCH" ]
     }
 }
 											</textarea>
