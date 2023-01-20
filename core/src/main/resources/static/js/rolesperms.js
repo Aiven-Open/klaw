@@ -376,27 +376,15 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
 					});
 			}
 
-			$scope.checkPendingApprovals = function() {
-
-				if($scope.dashboardDetails.pendingApprovalsRedirectionPage == '')
-					return;
-
-				var sPageURL = window.location.search.substring(1);
-				var sURLVariables = sPageURL.split('&');
-				var foundLoggedInVar  = "false";
-				for (var i = 0; i < sURLVariables.length; i++)
-				{
-					var sParameterName = sURLVariables[i].split('=');
-					if (sParameterName[0] == "loggedin")
-					{
-						foundLoggedInVar  = "true";
-						if(sParameterName[1] != "true")
-							return;
-					}
-				}
-				if(foundLoggedInVar == "true")
-					$scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
-			}
+        $scope.checkPendingApprovals = function() {
+            if($scope.dashboardDetails.pendingApprovalsRedirectionPage === '')
+                return;
+            
+            if(sessionStorage.getItem("pending_reqs_shown") === null){
+                $scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
+                sessionStorage.setItem("pending_reqs_shown", "true");
+            }
+        }
 
         $scope.logout = function() {
                     $http({

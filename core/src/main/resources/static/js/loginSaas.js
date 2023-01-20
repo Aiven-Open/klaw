@@ -31,7 +31,7 @@ app.controller("loginSaasCtrl", function($scope, $http, $location, $window) {
         }
 
         $scope.getBasicInfo = function() {
-
+            sessionStorage.removeItem("pending_reqs_shown");
             $http({
                        method: "GET",
                        url: "getBasicInfo",
@@ -48,6 +48,7 @@ app.controller("loginSaasCtrl", function($scope, $http, $location, $window) {
         }
 
 	    $scope.getTenantsInfo = function() {
+            sessionStorage.removeItem("pending_reqs_shown");
                 $http({
                     method: "GET",
                     url: "getTenantsInfo",
