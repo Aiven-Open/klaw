@@ -110,7 +110,7 @@ Coral uses the component library of Aiven's Aquarium design system:
 As a rule, please don't use css classes from the design system. All styles should be created by using the existing components and their properties.
 
 ### Custom styles
-When we need custom styles - which should not be the case very often - we use [css modules](https://github.com/css-modules/css-modules). This enables us to add scoped css rules. Class names should be written in camelCases. 
+When we need custom styles - which should not be the case very often - we use [css modules](https://github.com/css-modules/css-modules). This enables us to add scoped css rules. Class names should be written in camelCase. 
 
 #### 💁‍♀️ Special custom styles
 -  We use styles in [`accessibility.modules.css`](./src/app/accessibility.module.css) to add css rules in order to improve accessibility. Add these styles with caution, since they are globally available. 
