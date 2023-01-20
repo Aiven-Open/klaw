@@ -2,25 +2,23 @@ import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import BrowseTopics from "src/app/features/topics/browse/BrowseTopics";
-import { mockGetEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
+import { mockedTeamResponse } from "src/domain/team/team-api.msw";
 import {
-  mockedResponseMultiplePage,
-  mockedResponseSinglePage,
+  mockedResponseMultiplePageTransformed,
   mockedResponseTransformed,
-  mockTopicGetRequest,
 } from "src/domain/topic/topic-api.msw";
-import api from "src/services/api";
-import { server } from "src/services/api-mocks/server";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
+import { transformTeamNamesGetResponse } from "src/domain/team/team-transformer";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
-import {
-  createMockTopicApiResponse,
-  createMockTopic,
-} from "src/domain/topic/topic-test-helper";
+import { getTeams, Team } from "src/domain/team";
+import { getTopics } from "src/domain/topic";
+import { Environment, getEnvironments } from "src/domain/environment";
 
+// mocks out Icon to reduce clutter
 jest.mock("@aivenio/aquarium", () => {
   return {
     __esModule: true,
@@ -29,68 +27,45 @@ jest.mock("@aivenio/aquarium", () => {
   };
 });
 
-interface GetTopicsParams {
-  pageNo?: string;
-  env?: string;
-  teamName?: string;
-  topicnamesearch?: string;
-}
+jest.mock("src/domain/team/team-api.ts");
+jest.mock("src/domain/topic/topic-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
 
-interface GetUrlWithParams extends GetTopicsParams {
-  route: string;
-}
-
-const getUrlWithParams = ({
-  route,
-  pageNo = "1",
-  env = "ALL",
-  teamName,
-  topicnamesearch,
-}: GetUrlWithParams) => {
-  const params: Record<string, string> = { pageNo, env };
-
-  if (teamName !== undefined) {
-    params.teamName = teamName;
-  }
-
-  if (topicnamesearch !== undefined) {
-    params.topicnamesearch = topicnamesearch;
-  }
-
-  return `/${route}?${new URLSearchParams(params)}`;
-};
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
 
 const filterByEnvironmentLabel = "Filter by environment";
 const filterByTeamLabel = "Filter by team";
+
+// @TODO find better location / handling for mocks
+// depends on how we proceed
+const mockedGetTopicsResponseSinglePage: TopicApiResponse =
+  mockedResponseTransformed;
+const mockedGetTopicsResponseMultiplePages: TopicApiResponse =
+  mockedResponseMultiplePageTransformed;
+const mockGetEnvironmentResponse: Environment[] =
+  transformEnvironmentApiResponse(mockedEnvironmentResponse);
+const mockGetTeamsResponse: Team[] =
+  transformTeamNamesGetResponse(mockedTeamResponse);
+
 describe("BrowseTopics.tsx", () => {
   beforeAll(() => {
-    server.listen();
     mockIntersectionObserver();
   });
 
-  afterAll(() => {
-    server.close();
-  });
-
   describe("handles loading state", () => {
-    beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: { status: 200, data: mockedResponseSinglePage },
-      });
+    beforeAll(() => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedGetTopicsResponseSinglePage);
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
-    afterEach(() => {
-      server.resetHandlers();
+    afterAll(() => {
+      jest.clearAllMocks();
       cleanup();
     });
 
@@ -102,56 +77,52 @@ describe("BrowseTopics.tsx", () => {
   });
 
   describe("handles error responses", () => {
-    beforeEach(() => {
+    const originalConsoleError = console.error;
+
+    beforeAll(async () => {
       console.error = jest.fn();
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: { status: 400, data: { message: "Not relevant" } },
-      });
+
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockRejectedValue("This is an error message");
+
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
-    afterEach(() => {
-      jest.restoreAllMocks();
-      server.resetHandlers();
+    afterAll(() => {
+      console.error = originalConsoleError;
+      jest.clearAllMocks();
       cleanup();
     });
 
-    it("shows an error message to the user", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("shows an error message to the user", () => {
       const errorMessage = screen.getByText("Something went wrong 😔");
 
       expect(errorMessage).toBeVisible();
+    });
+
+    it("receives the right error", () => {
+      expect(true).toBeTruthy();
+      expect(console.error).toHaveBeenCalledTimes(1);
+      expect(console.error).toHaveBeenCalledWith("This is an error message");
     });
   });
 
   describe("handles an empty response", () => {
     beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: { status: 200, data: [] },
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue({
+        totalPages: 0,
+        currentPage: 0,
+        entries: [],
       });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
     });
 
     afterEach(() => {
-      server.resetHandlers();
+      jest.clearAllMocks();
       cleanup();
     });
 
@@ -164,38 +135,29 @@ describe("BrowseTopics.tsx", () => {
   });
 
   describe("handles successful response with one page", () => {
-    beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: { status: 200, data: mockedResponseSinglePage },
-      });
+    beforeAll(async () => {
+      mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTopics.mockResolvedValue(mockedGetTopicsResponseSinglePage);
+
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
-    afterEach(() => {
-      server.resetHandlers();
+    afterAll(() => {
+      jest.clearAllMocks();
       cleanup();
     });
 
     it("renders a select element to filter topics by Kafka environment", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-      const select = screen.getByRole("combobox", {
+      const select = await screen.findByRole("combobox", {
         name: filterByEnvironmentLabel,
       });
 
       expect(select).toBeEnabled();
     });
 
-    it("renders a select element to filter topics by team", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("renders a select element to filter topics by team", () => {
       const select = screen.getByRole("combobox", {
         name: filterByTeamLabel,
       });
@@ -204,8 +166,6 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("renders the topic table with information about the pages", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
       const table = screen.getByRole("table", {
         name: `Topics overview, page 1 of 1`,
       });
@@ -213,9 +173,7 @@ describe("BrowseTopics.tsx", () => {
       expect(table).toBeVisible();
     });
 
-    it("shows topic names row headers", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
+    it("shows topic names row headers", () => {
       const table = screen.getByRole("table", {
         name: "Topics overview, page 1 of 1",
       });
@@ -226,8 +184,7 @@ describe("BrowseTopics.tsx", () => {
       expect(rowHeader).toBeVisible();
     });
 
-    it("does not render the pagination", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("does not render the pagination", () => {
       const pagination = screen.queryByRole("navigation", {
         name: /Pagination/,
       });
@@ -237,29 +194,21 @@ describe("BrowseTopics.tsx", () => {
   });
 
   describe("handles successful response with 4 pages", () => {
-    beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: { data: mockedResponseMultiplePage },
-      });
+    beforeAll(async () => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedGetTopicsResponseMultiplePages);
+
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
-    afterEach(() => {
-      server.resetHandlers();
+    afterAll(() => {
+      jest.clearAllMocks();
       cleanup();
     });
 
-    it("renders the topic table with information about the pages", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("renders the topic table with information about the pages", () => {
       const table = screen.getByRole("table", {
         name: "Topics overview, page 2 of 4",
       });
@@ -267,8 +216,7 @@ describe("BrowseTopics.tsx", () => {
       expect(table).toBeVisible();
     });
 
-    it("shows a pagination", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("shows a pagination", () => {
       const pagination = screen.getByRole("navigation", {
         name: /Pagination/,
       });
@@ -276,8 +224,7 @@ describe("BrowseTopics.tsx", () => {
       expect(pagination).toBeVisible();
     });
 
-    it("shows page 2 as currently active page and the total page number", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("shows page 2 as currently active page and the total page number", () => {
       const pagination = screen.getByRole("navigation", { name: /Pagination/ });
 
       expect(pagination).toHaveAccessibleName(
@@ -287,115 +234,63 @@ describe("BrowseTopics.tsx", () => {
   });
 
   describe("handles user stepping through pagination", () => {
-    beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: {
-          data: createMockTopicApiResponse({
-            entries: 10,
-            currentPage: 1,
-            totalPages: 10,
-          }),
-        },
-      });
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedGetTopicsResponseMultiplePages);
+
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
     afterEach(() => {
-      server.resetHandlers();
       jest.clearAllMocks();
       cleanup();
     });
 
-    it("shows page 1 as currently active page and the total page number", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      const pagination = screen.getByRole("navigation", { name: /Pagination/ });
+    it("shows page 2 as currently active page and the total page number", () => {
+      const pagination = screen.getByRole("navigation", {
+        name: /Pagination/,
+      });
 
       expect(pagination).toHaveAccessibleName(
-        "Pagination navigation, you're on page 1 of 10"
+        "Pagination navigation, you're on page 2 of 4"
       );
     });
 
     it("fetches new data when user clicks on next page", async () => {
-      const spyGet = jest.spyOn(api, "get");
-      const url = getUrlWithParams({
-        route: "getTopics",
-        pageNo: "2",
-      });
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const pageTwoButton = screen.getByRole("button", {
-        name: "Go to next page, page 2",
+        name: "Go to next page, page 3",
       });
 
       await userEvent.click(pageTwoButton);
 
-      const pagination = await screen.findByRole("navigation", {
-        name: "Pagination navigation, you're on page 1 of 10",
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 3,
+        environment: "ALL",
+        searchTerm: undefined,
+        teamName: "f5ed03b4-c0da-4b18-a534-c7e9a13d1342",
       });
-
-      expect(spyGet).toHaveBeenCalledWith(url);
-      expect(pagination).toBeVisible();
     });
   });
 
   describe("handles user filtering topics by environment", () => {
-    beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTopics.mockResolvedValue(mockedResponseTransformed);
 
-      const topicsFilteredByTeam = [
-        [
-          createMockTopic({
-            topicName: "Topic 1",
-            topicId: 1,
-            environmentsList: ["DEV"],
-          }),
-          createMockTopic({
-            topicName: "Topic 1",
-            topicId: 2,
-            environmentsList: ["DEV"],
-          }),
-          createMockTopic({
-            topicName: "Topic 1",
-            topicId: 3,
-            environmentsList: ["DEV"],
-          }),
-        ],
-      ];
-      mockTopicGetRequest({
-        mswInstance: server,
-        responses: [
-          { data: mockedResponseSinglePage },
-          { data: topicsFilteredByTeam },
-        ],
-      });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
     afterEach(() => {
-      server.resetHandlers();
       jest.clearAllMocks();
       cleanup();
     });
 
     it("shows a select element for environments with `ALL` preselected", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-      const select = screen.getByRole("combobox", {
+      const select = await screen.findByRole("combobox", {
         name: filterByEnvironmentLabel,
       });
 
@@ -403,7 +298,6 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("shows an information that the list is updated after user selected an environment", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
         name: filterByEnvironmentLabel,
       });
@@ -412,14 +306,18 @@ describe("BrowseTopics.tsx", () => {
       });
       expect(select).toHaveValue("ALL");
 
-      await userEvent.selectOptions(select, option);
+      // I'm not happy with that, but it' s the only way I found
+      // to make sure there's a information about the list being
+      // updated rendered for the user. awaiting for the userEvent
+      // will end in a state where the new data has already
+      // arrived and is rendered, to the updating info will be gone
+      userEvent.selectOptions(select, option);
 
-      const updatingList = screen.getByText("Filtering list...");
+      const updatingList = await screen.findByText("Filtering list...");
       expect(updatingList).toBeVisible();
     });
 
     it("changes active selected option when user selects `DEV`", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
       const select = screen.getByRole("combobox", {
         name: filterByEnvironmentLabel,
       });
@@ -434,19 +332,6 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when user selects `DEV`", async () => {
-      const spyGet = jest.spyOn(api, "get");
-      const url = getUrlWithParams({
-        route: "getTopics",
-        env: "1",
-      });
-      const getAllTopics = () =>
-        within(
-          screen.getByRole("table", { name: /Topics overview/ })
-        ).getAllByRole("rowheader");
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      expect(getAllTopics()).toHaveLength(10);
-
       const select = screen.getByRole("combobox", {
         name: filterByEnvironmentLabel,
       });
@@ -455,56 +340,32 @@ describe("BrowseTopics.tsx", () => {
       });
 
       await userEvent.selectOptions(select, option);
-      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
-      expect(spyGet).toHaveBeenCalledWith(url);
-      expect(getAllTopics()).toHaveLength(3);
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 1,
+        environment: "1",
+        searchTerm: undefined,
+        teamName: "f5ed03b4-c0da-4b18-a534-c7e9a13d1342",
+      });
     });
   });
 
   describe("handles user filtering topics by team", () => {
-    beforeEach(() => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedResponseTransformed);
 
-      const responseWithTeamFilter = [
-        [
-          createMockTopic({
-            topicName: "Topic 1",
-            topicId: 1,
-            environmentsList: ["DEV"],
-          }),
-          createMockTopic({
-            topicName: "Topic 2",
-            topicId: 2,
-            environmentsList: ["DEV"],
-          }),
-        ],
-      ];
-      mockTopicGetRequest({
-        mswInstance: server,
-        responses: [
-          { data: mockedResponseSinglePage },
-          { data: responseWithTeamFilter },
-        ],
-      });
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
     afterEach(() => {
-      server.resetHandlers();
       jest.clearAllMocks();
       cleanup();
     });
 
-    it("shows a select element for team with `All teams` preselected", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+    it("shows a select element for team with `All teams` preselected", () => {
       const select = screen.getByRole("combobox", {
         name: filterByTeamLabel,
       });
@@ -513,7 +374,22 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("changes active selected option when user selects `TEST_TEAM_02`", async () => {
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
+
+      const option = await screen.findByRole("option", {
+        name: "TEST_TEAM_02",
+      });
+
+      expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue("TEST_TEAM_02");
+    });
+
+    it("shows an information that the list is updated after user selected a team", async () => {
       const select = screen.getByRole("combobox", {
         name: filterByTeamLabel,
       });
@@ -522,25 +398,18 @@ describe("BrowseTopics.tsx", () => {
       });
       expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
 
-      await userEvent.selectOptions(select, option);
+      // I'm not happy with that, but it' s the only way I found
+      // to make sure there's a information about the list being
+      // updated rendered for the user. awaiting for the userEvent
+      // will end in a state where the new data has already
+      // arrived and is rendered, to the updating info will be gone
+      userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue("TEST_TEAM_02");
+      const updatingList = await screen.findByText("Filtering list...");
+      expect(updatingList).toBeVisible();
     });
 
     it("fetches new data when user selects `TEST_TEAM_02`", async () => {
-      const spyGet = jest.spyOn(api, "get");
-      const url = getUrlWithParams({
-        route: "getTopics",
-        teamName: "TEST_TEAM_02",
-      });
-      const getAllTopics = () =>
-        within(
-          screen.getByRole("table", { name: /Topics overview/ })
-        ).getAllByRole("rowheader");
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      expect(getAllTopics()).toHaveLength(10);
-
       const select = screen.getByRole("combobox", {
         name: filterByTeamLabel,
       });
@@ -549,61 +418,51 @@ describe("BrowseTopics.tsx", () => {
       });
 
       await userEvent.selectOptions(select, option);
-      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
-      expect(spyGet).toHaveBeenCalledWith(url);
-      expect(getAllTopics()).toHaveLength(2);
+
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 1,
+        environment: "ALL",
+        searchTerm: undefined,
+        teamName: "TEST_TEAM_02",
+      });
     });
   });
 
   describe("handles user searching by topic name with search input", () => {
     const testSearchInput = "Searched for topic";
-    const getAllTopics = () =>
-      within(
-        screen.getByRole("table", { name: /Topics overview/ })
-      ).getAllByRole("rowheader");
-
-    beforeEach(() => {
-      mockTopicGetRequest({
-        mswInstance: server,
-        responses: [
-          { data: mockedResponseSinglePage },
-          {
-            data: [
-              [
-                {
-                  ...createMockTopic({
-                    topicName: "Topic 1",
-                    topicId: 1,
-                  }),
-                  teamname: "TEST_TEAM_02",
-                },
-                {
-                  ...createMockTopic({
-                    topicName: "Topic 2",
-                    topicId: 2,
-                  }),
-                  teamname: "TEST_TEAM_02",
-                },
-              ],
-            ],
-          },
-        ],
-      });
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedResponseTransformed);
       customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
+      await waitForElementToBeRemoved(screen.getByText("Loading..."));
     });
 
     afterEach(() => {
-      server.resetHandlers();
       jest.clearAllMocks();
       cleanup();
     });
 
-    it("fetches new data when user enters text in input and clicks the search button", async () => {
-      const spyGet = jest.spyOn(api, "get");
-      const url = getUrlWithParams({
-        route: "getTopics",
-        topicnamesearch: testSearchInput,
+    it("shows an information that the list is updated after user submits search", async () => {
+      const input = screen.getByRole("searchbox", {
+        name: "Search by topic name",
       });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit search",
+      });
+      await userEvent.type(input, testSearchInput);
+      // I'm not happy with that, but it' s the only way I found
+      // to make sure there's a information about the list being
+      // updated rendered for the user. awaiting for the userEvent
+      // will end in a state where the new data has already
+      // arrived and is rendered, to the updating info will be gone
+      userEvent.click(submitButton);
+
+      const updatingList = await screen.findByText("Filtering list...");
+      expect(updatingList).toBeVisible();
+    });
+
+    it("fetches new data when user enters text in input and clicks the search button", async () => {
       const input = screen.getByRole("searchbox", {
         name: "Search by topic name",
       });
@@ -611,9 +470,6 @@ describe("BrowseTopics.tsx", () => {
         name: "Submit search",
       });
 
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      expect(getAllTopics()).toHaveLength(10);
       expect(input).toHaveValue("");
       expect(submitButton).toBeEnabled();
 
@@ -622,25 +478,19 @@ describe("BrowseTopics.tsx", () => {
       expect(input).toHaveValue(testSearchInput);
 
       await userEvent.click(submitButton);
-      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
-      expect(spyGet).toHaveBeenCalledWith(url);
-      expect(getAllTopics()).toHaveLength(2);
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 1,
+        environment: "ALL",
+        searchTerm: "Searched for topic",
+        teamName: "f5ed03b4-c0da-4b18-a534-c7e9a13d1342",
+      });
     });
 
     it("fetches new data when when user enters text in input and presses 'Enter'", async () => {
-      const spyGet = jest.spyOn(api, "get");
-      const url = getUrlWithParams({
-        route: "getTopics",
-        topicnamesearch: testSearchInput,
-      });
       const input = screen.getByRole("searchbox", {
         name: "Search by topic name",
       });
-
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      expect(getAllTopics()).toHaveLength(10);
       expect(input).toHaveValue("");
 
       await userEvent.type(input, testSearchInput);
@@ -648,10 +498,13 @@ describe("BrowseTopics.tsx", () => {
       expect(input).toHaveValue(testSearchInput);
 
       await userEvent.keyboard("{Enter}");
-      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
-      expect(spyGet).toHaveBeenCalledWith(url);
-      expect(getAllTopics()).toHaveLength(2);
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 1,
+        environment: "ALL",
+        searchTerm: "Searched for topic",
+        teamName: "f5ed03b4-c0da-4b18-a534-c7e9a13d1342",
+      });
     });
 
     it("can navigate to search input and submit button with keyboard", async () => {
@@ -662,9 +515,6 @@ describe("BrowseTopics.tsx", () => {
         name: "Submit search",
       });
 
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      expect(getAllTopics()).toHaveLength(10);
       expect(input).toHaveValue("");
       expect(submitButton).toBeEnabled();
 
@@ -678,11 +528,6 @@ describe("BrowseTopics.tsx", () => {
     });
 
     it("fetches new data when user enters text in input and presses 'Enter' on focused submit button", async () => {
-      const spyGet = jest.spyOn(api, "get");
-      const url = getUrlWithParams({
-        route: "getTopics",
-        topicnamesearch: testSearchInput,
-      });
       const input = screen.getByRole("searchbox", {
         name: "Search by topic name",
       });
@@ -690,9 +535,6 @@ describe("BrowseTopics.tsx", () => {
         name: "Submit search",
       });
 
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
-
-      expect(getAllTopics()).toHaveLength(10);
       expect(input).toHaveValue("");
       expect(submitButton).toBeEnabled();
 
@@ -709,10 +551,13 @@ describe("BrowseTopics.tsx", () => {
       expect(submitButton).toHaveFocus();
 
       await userEvent.keyboard("{Enter}");
-      await waitForElementToBeRemoved(screen.getByText("Filtering list..."));
 
-      expect(spyGet).toHaveBeenCalledWith(url);
-      expect(getAllTopics()).toHaveLength(2);
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 1,
+        environment: "ALL",
+        searchTerm: "Searched for topic",
+        teamName: "f5ed03b4-c0da-4b18-a534-c7e9a13d1342",
+      });
     });
   });
 });

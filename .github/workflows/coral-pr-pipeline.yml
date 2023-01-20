@@ -99,4 +99,4 @@ jobs:
 
       - name: Run unittests
         working-directory: ./coral 
-        run: pnpm run test
+        run: pnpm run test-ci
