@@ -158,7 +158,6 @@ const mockedResponseTransformed = transformTopicApiResponse(
 interface MockGetTopicNamesRequestArgs {
   mswInstance: MswInstance;
   response: TopicNames;
-  isMyTeamTopics?: boolean;
 }
 
 function mockGetTopicNames({
@@ -168,7 +167,7 @@ function mockGetTopicNames({
   const base = getHTTPBaseAPIUrl();
 
   const handler = rest.get(`${base}/getTopicsOnly`, (_, res, ctx) => {
-    return res.once(ctx.status(200), ctx.json(response));
+    return res(ctx.status(200), ctx.json(response));
   });
 
   mswInstance.use(handler);
@@ -198,7 +197,7 @@ function mockGetTopicTeam({
   const base = getHTTPBaseAPIUrl();
 
   const handler = rest.get(`${base}/getTopicTeam`, (_, res, ctx) => {
-    return res.once(ctx.status(200), ctx.json(response));
+    return res(ctx.status(200), ctx.json(response));
   });
 
   mswInstance.use(handler);
