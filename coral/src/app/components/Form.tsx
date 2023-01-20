@@ -251,14 +251,35 @@ function _SubmitButton<T extends FieldValues>({
 //
 function _MultiInput<T extends FieldValues>({
   name,
+  helperText,
   formContext: form,
   ...props
 }: BaseMultiInputProps<T> & FormInputProps<T> & FormRegisterProps<T>) {
+  // Field level error (eg "Cannot be empty")
+  const error = parseFieldErrorMessage(form.formState, name);
+  // Single items level error (MultiInput returns an array of errors when single items fail validation)
+  const itemsErrors = parseFieldErrorsArray(form.formState, name);
+  const itemErrorsAccumulatedMessages = (itemsErrors || [])
+    .reduce(
+      (accumulatedErrorMessages: string[], currentItemError): string[] => {
+        if (
+          currentItemError.message === undefined ||
+          accumulatedErrorMessages.includes(currentItemError.message)
+        ) {
+          return accumulatedErrorMessages;
+        }
+        return [...accumulatedErrorMessages, currentItemError.message];
+      },
+      []
+    )
+    .join(", ");
+  const isValid = error === undefined && itemErrorsAccumulatedMessages === "";
+
   return (
     <_Controller
       name={name}
       control={form.control}
-      render={({ field: { value, name }, fieldState: { error } }) => {
+      render={({ field: { value, name } }) => {
         return (
           <BaseMultiInput
             {...props}
@@ -271,7 +292,22 @@ function _MultiInput<T extends FieldValues>({
                 shouldDirty: true,
               });
             }}
-            error={error?.message}
+            valid={isValid}
+            isItemValid={(_, index) => {
+              if (itemsErrors === undefined) {
+                return true;
+              }
+
+              const isCurrentItemValid = itemsErrors[index] === undefined;
+
+              return isCurrentItemValid;
+            }}
+            error={error}
+            helperText={
+              itemsErrors !== undefined
+                ? itemErrorsAccumulatedMessages
+                : helperText
+            }
           />
         );
       }}
@@ -304,6 +340,7 @@ function _NativeSelect<T extends FieldValues>({
 }: BaseNativeSelectProps & FormInputProps<T> & FormRegisterProps<T>) {
   const { isSubmitting } = form.formState;
   const error = parseFieldErrorMessage(form.formState, name);
+
   return (
     <BaseNativeSelect
       {...props}
@@ -421,12 +458,31 @@ export const SubmitButton = <T extends FieldValues>(
   return <SubmitButtonMemo formContext={ctx} {...props} />;
 };
 
+function parseFieldErrorsArray<T extends FieldValues>(
+  { errors }: FormState<T>,
+  name: keyof T
+): undefined | { index: number; message: string }[] {
+  if (name in errors) {
+    const fieldErrors = errors[name];
+
+    if (fieldErrors !== undefined && Array.isArray(fieldErrors)) {
+      return fieldErrors.map(
+        ({ index, message }): { index: number; message: string } => ({
+          index,
+          message,
+        })
+      );
+    }
+  }
+  return undefined;
+}
+
 function parseFieldErrorMessage<T extends FieldValues>(
   { errors }: FormState<T>,
   name: keyof T
 ): undefined | string {
   if (name in errors) {
-    const fieldError = errors.name;
+    const fieldError = errors[name];
     if (fieldError !== undefined) {
       if (typeof fieldError.message === "string") {
         return fieldError.message;
