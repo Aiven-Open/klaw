@@ -1,8 +1,8 @@
-.main-navigation-submenu-button {
+.mainNavigationSubmenuButton {
   margin-left: 7px;
 }
 /*temp class until we have a solution for that*/
-.main-navigation-submenu-button:hover,
-.main-navigation-submenu-button:focus-within {
+.mainNavigationSubmenuButton:hover,
+.mainNavigationSubmenuButton:focus-within {
   color: var(--main-navigation-hover);
 }
