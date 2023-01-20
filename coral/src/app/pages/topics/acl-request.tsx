@@ -12,7 +12,9 @@ const RequestTopic = () => {
     <AuthenticationRequiredBoundary>
       <Layout>
         <PreviewBanner
-          linkTarget={`/requestAcl?topicName=${topicName || topicName}`}
+          linkTarget={`/requestAcl${
+            topicName.length > 0 ? `?topicName=${topicName}` : ""
+          }`}
         />
         <PageHeader title={"ACL (Access Control) Request"} />
         <TopicAclRequest />
