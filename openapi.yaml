@@ -769,7 +769,6 @@ components:
           description,
           environment,
           replicationfactor,
-          teamname,
           topicname,
           topicpartitions,
         ]

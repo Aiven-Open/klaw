@@ -10,7 +10,7 @@ import {
   TopicApiResponse,
 } from "src/domain/topic/topic-types";
 import api from "src/services/api";
-import { KlawApiResponse } from "types/utils";
+import { KlawApiRequest, KlawApiResponse } from "types/utils";
 
 const getTopics = async ({
   currentPage = 1,
@@ -79,9 +79,19 @@ const getTopicAdvancedConfigOptions = (): Promise<
     .get<KlawApiResponse<"topicAdvancedConfigGet">>("/getAdvancedTopicConfigs")
     .then(transformgetTopicAdvancedConfigOptionsResponse);
 
+const requestTopic = (
+  payload: KlawApiRequest<"topicCreate">
+): Promise<unknown> => {
+  return api.post<
+    KlawApiResponse<"topicCreate">,
+    KlawApiRequest<"topicCreate">
+  >("/createTopics", payload);
+};
+
 export {
   getTopics,
   getTopicNames,
   getTopicTeam,
   getTopicAdvancedConfigOptions,
+  requestTopic,
 };

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FieldErrorsImpl, SubmitHandler } from "react-hook-form";
-import { Box, Divider, Flexbox, FlexboxItem } from "@aivenio/aquarium";
+import { Alert, Box, Divider, Flexbox, FlexboxItem } from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
@@ -21,6 +21,11 @@ import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-a
 import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
+import { requestTopic } from "src/domain/topic/topic-api";
+import { mockRequestTopic } from "src/domain/topic/topic-api.msw";
+import { Navigate } from "react-router-dom";
+import { parseErrorMsg } from "src/services/mutation-utils";
+import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
 
 const mockedData = [
   createMockEnvironmentDTO({
@@ -53,10 +58,25 @@ const mockedData = [
 
 function TopicRequest() {
   useEffect(() => {
+    // Remove these mock alltogether when we are happy with the functionality.
+    // With mocks it is easier to demonstrate the behaviour without requesting
+    // dummy topics.
     if (window.msw !== undefined) {
       mockGetEnvironmentsForTeam({
         mswInstance: window.msw,
         response: { data: mockedData },
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const creationOK = { data: { data: { status: "200 OK" } }, status: 200 };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const creationFailed = {
+        data: { message: "Topic with such name already exists!" },
+        status: 400,
+      };
+      mockRequestTopic({
+        mswInstance: window.msw,
+        response: creationOK,
       });
     }
   }, []);
@@ -81,19 +101,31 @@ function TopicRequest() {
     defaultValues,
   });
 
-  const { mutate } = useMutation(() => Promise.resolve());
-  const onSubmit: SubmitHandler<Schema> = (data) => {
-    console.log(data);
-    mutate();
-  };
+  const { mutate, isLoading, isSuccess, isError, error } =
+    useMutation(requestTopic);
+  const onSubmit: SubmitHandler<Schema> = (data) =>
+    mutate(createTopicRequestPayload(data));
 
   const [selectedEnvironment] = form.getValues(["environment"]);
   useExtendedFormValidationAndTriggers(form, {
     isInitialized: defaultValues !== undefined,
   });
 
+  if (isSuccess) {
+    const params = new URLSearchParams({
+      reqsType: "created",
+      topicCreated: "true",
+    });
+    return <Navigate to={`myTopicRequests?${params.toString()}`} />;
+  }
+
   return (
     <Box style={{ maxWidth: 1200 }}>
+      {isError && (
+        <Box marginBottom={"l1"} role="alert">
+          <Alert description={parseErrorMsg(error)} type="warning"></Alert>
+        </Box>
+      )}
       <Form {...form} onSubmit={onSubmit} onError={onError}>
         <Box width={"full"}>
           {Array.isArray(environments) ? (
@@ -125,6 +157,7 @@ function TopicRequest() {
                 name={"topicpartitions"}
                 label={"Topic partitions"}
                 max={selectedEnvironment?.maxPartitions}
+                required={true}
               />
             </Box>
             <Box component={FlexboxItem} grow={1} width={"1/2"}>
@@ -132,6 +165,7 @@ function TopicRequest() {
                 name={"replicationfactor"}
                 label={"Replication factor"}
                 max={selectedEnvironment?.maxReplicationFactor}
+                required={true}
               />
             </Box>
           </Box>
@@ -153,6 +187,7 @@ function TopicRequest() {
                 name="description"
                 labelText="Description"
                 rows={5}
+                required={true}
               />
             </Box>
             <Box component={FlexboxItem} grow={1} width={"1/2"}>
@@ -166,7 +201,7 @@ function TopicRequest() {
           </Box>
         </Box>
 
-        <SubmitButton>Request topic</SubmitButton>
+        <SubmitButton loading={isLoading}>Request topic</SubmitButton>
       </Form>
     </Box>
   );
