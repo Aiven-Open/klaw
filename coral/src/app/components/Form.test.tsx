@@ -541,9 +541,7 @@ describe("Form", () => {
 
   describe("<MultiInput>", () => {
     const schema = z.object({
-      cities: z.string().array().nonempty({
-        message: "Can't be empty!",
-      }),
+      cities: z.string().array().nonempty(),
     });
     type Schema = z.infer<typeof schema>;
 
@@ -584,26 +582,21 @@ describe("Form", () => {
       assertSubmitted({ cities: ["Berlin", "Helsinki"] });
     });
 
-    it("shows an error if user does not fill out required field", async () => {
+    it("shows an error if user does not fill out required field and wants to submit", async () => {
+      const errorMsgEmpty = "Required";
       const citiesInput = screen.getByRole<HTMLInputElement>("textbox");
 
-      await user.type(citiesInput, "Berlin");
-      expect(citiesInput.value).toBe("Berlin");
-      await userEvent.keyboard("{Enter}");
+      expect(screen.queryByText(errorMsgEmpty)).not.toBeInTheDocument();
+      expect(citiesInput).toBeValid();
 
-      await user.type(citiesInput, "Helsinki");
-      expect(citiesInput.value).toBe("Helsinki");
-      await user.keyboard("{Enter}");
-
-      const berlinPill = screen.getByText("Berlin");
-      const helsinkiPill = screen.getByText("Helsinki");
-      expect(berlinPill).toBeVisible();
-      expect(helsinkiPill).toBeVisible();
-      expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
-      expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+      await user.click(citiesInput);
+      await user.tab();
 
       await submit();
-      assertSubmitted({ cities: ["Berlin", "Helsinki"] });
+
+      await waitFor(() => expect(citiesInput).toBeInvalid());
+      expect(screen.getByText(errorMsgEmpty)).toBeVisible();
+      expect(onSubmit).not.toHaveBeenCalled();
     });
   });
 
