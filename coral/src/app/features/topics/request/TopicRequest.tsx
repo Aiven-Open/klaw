@@ -60,7 +60,7 @@ function TopicRequest() {
       reqsType: "created",
       topicCreated: "true",
     });
-    return <Navigate to={`myTopicRequests?${params.toString()}`} />;
+    return <Navigate to={`/myTopicRequests?${params.toString()}`} />;
   }
 
   return (

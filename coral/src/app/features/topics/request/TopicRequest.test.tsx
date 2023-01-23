@@ -806,7 +806,7 @@ describe("<TopicRequest />", () => {
           screen.getByTestId("mockedRedirectComponent");
           expect(NavigateMock).toHaveBeenCalledTimes(1);
           expect(NavigateMock).toHaveBeenCalledWith({
-            to: "myTopicRequests?reqsType=created&topicCreated=true",
+            to: "/myTopicRequests?reqsType=created&topicCreated=true",
           });
         });
       });
