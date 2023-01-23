@@ -73,14 +73,17 @@ public class SchemaService {
             "RegisterSchema - original Schema Compatibility {} for Topic {}",
             schemaCompatibility,
             clusterSchemaRequest.getTopicName());
-        setSchemaCompatibility(
-            clusterSchemaRequest.getEnv(),
-            clusterSchemaRequest.getTopicName(),
-            clusterSchemaRequest.isForceRegister(),
-            clusterSchemaRequest.getProtocol(),
-            clusterSchemaRequest.getClusterIdentification(),
-            null,
-            schemaCompatibility.getLeft().equals(SUBJECT));
+        // only reset if we have the previous schema to revert to.
+        if (schemaCompatibilityCompleted) {
+          setSchemaCompatibility(
+              clusterSchemaRequest.getEnv(),
+              clusterSchemaRequest.getTopicName(),
+              clusterSchemaRequest.isForceRegister(),
+              clusterSchemaRequest.getProtocol(),
+              clusterSchemaRequest.getClusterIdentification(),
+              null,
+              schemaCompatibility.getLeft().equals(SUBJECT));
+        }
       }
       String suffixUrl =
           clusterSchemaRequest.getEnv()
@@ -348,7 +351,7 @@ public class SchemaService {
       log.info("Current Schema Compatibility set to {}", schemaCompatibility);
       return true;
     } else {
-      throw new Exception("Unable to retrieve the current Schema Compatibility setting.");
+      return false;
     }
   }
 

@@ -391,6 +391,50 @@ class SchemaServiceRegisterSchemaTest {
         .isEqualTo("NONE");
   }
 
+  @Test
+  @Order(10)
+  public void givenSchemaWithForceRegisterEnabled_NotFoundAttempttoregisteranyway() {
+
+    ClusterSchemaRequest schemaReq =
+        ClusterSchemaRequest.builder()
+            .forceRegister(true)
+            .fullSchema(FULL_SCHEMA)
+            .clusterIdentification(CLUSTER_IDENTIFICATION)
+            .protocol(KafkaSupportedProtocol.SSL)
+            .env(ENV)
+            .topicName(TOPIC_NAME)
+            .build();
+    mockGetSchemaCompatibility();
+
+    when(clusterApiUtil.getRequestDetails(any(), any()))
+        .thenReturn(Pair.of(REGISTRY_URL, restTemplate));
+
+    when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
+        .thenReturn(createSchemaRegisterResponseEntity(HttpStatus.OK));
+    when(restTemplate.exchange(
+            eq(REGISTRY_URL),
+            any(HttpMethod.class),
+            any(HttpEntity.class),
+            eq(new ParameterizedTypeReference<Map<String, String>>() {}),
+            any(HashMap.class)))
+        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND))
+        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND));
+    schemaService.registerSchema(schemaReq);
+    // don't change schema compatibility.
+    verify(restTemplate, times(0)).put(any(), any(), eq(String.class));
+
+    verify(restTemplate, times(1))
+        .postForEntity(anyString(), any(HttpEntity.class), eq(String.class));
+    // 0 calls to get the current SchemaCompatibility as isForce==false
+    verify(restTemplate, times(2))
+        .exchange(
+            eq(REGISTRY_URL),
+            any(HttpMethod.class),
+            any(HttpEntity.class),
+            eq(new ParameterizedTypeReference<Map<String, String>>() {}),
+            any(HashMap.class));
+  }
+
   private ResponseEntity<Map<String, String>> createErrorCompatibilityResponseEntity(
       HttpStatus status) {
     return ResponseEntity.status(status).build();
