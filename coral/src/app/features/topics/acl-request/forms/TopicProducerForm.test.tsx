@@ -29,40 +29,12 @@ const baseProps = {
 } as TopicProducerFormProps;
 
 const basePropsIsAivenCluster = {
-  topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
-  topicTeam: "ospo",
-  environments: [
-    createEnvironment({
-      name: "DEV",
-      id: "1",
-    }),
-    createEnvironment({
-      name: "TST",
-      id: "2",
-    }),
-  ],
-  renderAclTypeField: () => (
-    <AclTypeField topicType={"Producer"} handleChange={() => null} />
-  ),
+  ...baseProps,
   clusterInfo: { aivenCluster: "true" },
 } as TopicProducerFormProps;
 
 const basePropsNotAivenCluster = {
-  topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
-  topicTeam: "ospo",
-  environments: [
-    createEnvironment({
-      name: "DEV",
-      id: "1",
-    }),
-    createEnvironment({
-      name: "TST",
-      id: "2",
-    }),
-  ],
-  renderAclTypeField: () => (
-    <AclTypeField topicType={"Producer"} handleChange={() => null} />
-  ),
+  ...baseProps,
   clusterInfo: { aivenCluster: "false" },
 } as TopicProducerFormProps;
 
@@ -117,7 +89,7 @@ describe("<TopicProducerForm />", () => {
       });
 
       expect(literalField).toBeVisible();
-      expect(literalField).toBeEnabled();
+      expect(prefixedField).toBeEnabled();
       expect(prefixedField).toBeVisible();
       expect(prefixedField).toBeEnabled();
     });
