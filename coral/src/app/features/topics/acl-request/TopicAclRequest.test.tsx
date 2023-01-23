@@ -71,7 +71,7 @@ const assertSkeleton = async () => {
   await waitForElementToBeRemoved(skeleton);
 };
 
-const selectEnvironment = async () => {
+const selectTestEnvironment = async () => {
   const environmentField = screen.getByRole("combobox", {
     name: "Select environment *",
   });
@@ -80,7 +80,7 @@ const selectEnvironment = async () => {
 };
 
 describe("<TopicAclRequest />", () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     server.listen();
   });
 
@@ -109,7 +109,7 @@ describe("<TopicAclRequest />", () => {
 
     afterEach(cleanup);
 
-    it("renders TopicProducerForm by by default", async () => {
+    it("renders TopicProducerForm by default", async () => {
       await assertSkeleton();
 
       const aclProducerTypeInput = screen.getByRole("radio", {
@@ -142,7 +142,7 @@ describe("<TopicAclRequest />", () => {
       expect(ipField).not.toBeEnabled();
       expect(ipField).not.toBeChecked();
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => {
         expect(principalField).toBeEnabled();
@@ -229,7 +229,7 @@ describe("<TopicAclRequest />", () => {
       expect(hiddenIpsField).toBeNull();
       expect(hiddenPrincipalsField).toBeNull();
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => expect(principalField).toBeEnabled());
 
@@ -269,7 +269,7 @@ describe("<TopicAclRequest />", () => {
 
       const ipField = screen.getByRole("radio", { name: "IP" });
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => expect(ipField).toBeEnabled());
 
@@ -296,7 +296,7 @@ describe("<TopicAclRequest />", () => {
 
       const ipField = screen.getByRole("radio", { name: "IP" });
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => expect(ipField).toBeEnabled());
 
@@ -415,7 +415,7 @@ describe("<TopicAclRequest />", () => {
       expect(hiddenIpsField).toBeNull();
       expect(hiddenPrincipalsField).toBeNull();
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => expect(principalField).toBeEnabled());
 
@@ -460,7 +460,7 @@ describe("<TopicAclRequest />", () => {
 
       const ipField = screen.getByRole("radio", { name: "IP" });
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => expect(ipField).toBeEnabled());
 
@@ -492,7 +492,7 @@ describe("<TopicAclRequest />", () => {
 
       const ipField = screen.getByRole("radio", { name: "IP" });
 
-      await selectEnvironment();
+      await selectTestEnvironment();
 
       await waitFor(() => expect(ipField).toBeEnabled());
 
