@@ -8,10 +8,19 @@ import {
   Textarea,
 } from "src/app/components/Form";
 import { FieldErrors } from "react-hook-form";
-import { MouseEvent } from "react";
+import { MouseEvent, useEffect } from "react";
 import { Box, Button } from "@aivenio/aquarium";
-import { Simulate } from "react-dom/test-utils";
-import submit = Simulate.submit;
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
+import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
+import { useQuery } from "@tanstack/react-query";
+import { schemaRegistryEnvironments } from "src/domain/environment/environment-queries";
+import { Environment } from "src/domain/environment";
+
+const mockedData = [
+  createMockEnvironmentDTO({ name: "DEV", id: "1" }),
+  createMockEnvironmentDTO({ name: "TST", id: "2" }),
+  createMockEnvironmentDTO({ name: "INFRA", id: "3" }),
+];
 
 type TopicSchemaRequestProps = {
   topicName: string;
@@ -27,7 +36,21 @@ const formSchema = z.object({
 type Schema = z.infer<typeof formSchema>;
 
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
+  useEffect(() => {
+    if (window.msw !== undefined) {
+      mockGetSchemaRegistryEnvironments({
+        mswInstance: window.msw,
+        response: { data: mockedData },
+      });
+    }
+  }, []);
+
   const { topicName } = props;
+
+  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
+    Environment[],
+    Error
+  >(schemaRegistryEnvironments());
 
   const form = useForm<Schema>({
     schema: formSchema,
@@ -37,7 +60,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   });
 
   function onSubmitForm(userInput: Schema) {
-    console.log(submit);
     console.log("onSubmit userInput", userInput);
   }
 
@@ -57,19 +79,30 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         onSubmit={onSubmitForm}
         onError={onErrorForm}
       >
-        <NativeSelect
-          name={"environment"}
-          labelText={"Select environment"}
-          defaultValue={"."}
-          required={true}
-        >
-          <option disabled value={"."}>
-            please select
-          </option>
-          <option value={"1"}>First env</option>
-          <option value={"2"}>Second env</option>
-          <option value={"3"}>Third env</option>
-        </NativeSelect>
+        {environmentsIsLoading && (
+          <div data-testid={"environments-select-loading"}>
+            <NativeSelect.Skeleton />
+          </div>
+        )}
+        {environments && (
+          <NativeSelect
+            name={"environment"}
+            labelText={"Select environment"}
+            defaultValue={"."}
+            required={true}
+          >
+            <option disabled value={"."}>
+              please select
+            </option>
+            {environments.map((env, index) => {
+              return (
+                <option key={`${env.name}${index}`} value={env.id}>
+                  {env.name}
+                </option>
+              );
+            })}
+          </NativeSelect>
+        )}
 
         <NativeSelect
           name={"topicName"}

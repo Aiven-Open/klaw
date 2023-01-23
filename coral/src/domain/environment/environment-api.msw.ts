@@ -38,6 +38,18 @@ function mockGetEnvironmentsForTeam({
   );
 }
 
+function mockGetSchemaRegistryEnvironments({
+  mswInstance,
+  response,
+}: MockApi<"schemaRegEnvsGet">) {
+  const url = `${getHTTPBaseAPIUrl()}/getSchemaRegEnvs`;
+  mswInstance.use(
+    rest.get(url, async (req, res, ctx) => {
+      return res(ctx.status(response.status ?? 200), ctx.json(response.data));
+    })
+  );
+}
+
 const mockedEnvironmentResponse = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
   createMockEnvironmentDTO({ name: "TST", id: "2" }),
@@ -70,6 +82,7 @@ const getMockedResponseGetClusterInfoFromEnv = (
 export {
   mockGetEnvironments,
   mockGetEnvironmentsForTeam,
+  mockGetSchemaRegistryEnvironments,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
   getMockedResponseGetClusterInfoFromEnv,
