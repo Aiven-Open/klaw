@@ -1,6 +1,7 @@
 import { Option } from "@aivenio/aquarium";
 import { NativeSelect } from "src/app/components/Form";
 import { Environment } from "src/domain/environment";
+import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 
 interface EnvironmentFieldProps {
   environments: Environment[];
@@ -9,7 +10,11 @@ interface EnvironmentFieldProps {
 const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
   return (
     <NativeSelect name="environment" labelText="Select environment" required>
-      <Option key={"Placeholder"} value="placeholder" disabled>
+      <Option
+        key={ENVIRONMENT_NOT_INITIALIZED}
+        value={ENVIRONMENT_NOT_INITIALIZED}
+        disabled
+      >
         -- Select Environment --
       </Option>
       {environments.map((env) => (

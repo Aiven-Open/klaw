@@ -25,6 +25,7 @@ import {
   mockGetClusterInfoFromEnv,
 } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
+import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { TopicNames, TopicTeam } from "src/domain/topic";
 import {
   mockedResponseTopicNames,
@@ -95,7 +96,7 @@ const TopicAclRequest = () => {
     schema: topicProducerFormSchema,
     defaultValues: {
       topicname: topicName,
-      environment: "placeholder",
+      environment: ENVIRONMENT_NOT_INITIALIZED,
       topictype: "Producer",
     },
   });
@@ -105,7 +106,7 @@ const TopicAclRequest = () => {
     defaultValues: {
       aclPatternType: "LITERAL",
       topicname: topicName,
-      environment: "placeholder",
+      environment: ENVIRONMENT_NOT_INITIALIZED,
       topictype: "Consumer",
     },
   });
@@ -150,7 +151,8 @@ const TopicAclRequest = () => {
 
       keepPreviousData: false,
       enabled:
-        selectedEnvironment !== "placeholder" && environments !== undefined,
+        selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
+        environments !== undefined,
       onSettled: (data) => {
         const isAivenCluster = data?.aivenCluster === "true";
         // Enable the only possible option when the environment chosen is Aiven Kafka flavor
