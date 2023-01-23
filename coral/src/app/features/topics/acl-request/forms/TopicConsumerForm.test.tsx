@@ -103,8 +103,8 @@ describe("<TopicConsumerForm />", () => {
       });
 
       expect(producerField).toBeVisible();
-      expect(producerField).toBeVisible();
-      expect(consumerField).toBeEnabled();
+      expect(producerField).toBeEnabled();
+      expect(consumerField).toBeVisible();
       expect(consumerField).toBeEnabled();
     });
 
