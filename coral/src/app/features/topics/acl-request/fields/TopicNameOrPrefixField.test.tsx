@@ -83,17 +83,4 @@ describe("TopicNameOrPrefixField", () => {
     expect(field).toBeEnabled();
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
-
-  it("renders empty Box when no aclPatternType is passed", () => {
-    const result = renderForm(
-      <TopicNameOrPrefixField topicNames={mockedTopicNames} />,
-      {
-        schema: producerSchema,
-        onSubmit,
-        onError,
-      }
-    );
-    const empty = result.getByTestId("empty");
-    expect(empty).toBeVisible();
-  });
 });

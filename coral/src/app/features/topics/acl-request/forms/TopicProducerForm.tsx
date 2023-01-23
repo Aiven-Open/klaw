@@ -1,4 +1,5 @@
 import {
+  Box,
   Divider,
   Grid,
   GridItem,
@@ -107,10 +108,14 @@ const TopicProducerForm = ({
           </RadioButtonGroup>
         </GridItem>
         <GridItem>
-          <TopicNameOrPrefixField
-            topicNames={topicNames}
-            aclPatternType={aclPatternType}
-          />
+          {aclPatternType === undefined ? (
+            <Box data-testid="empty" style={{ height: "87px" }} />
+          ) : (
+            <TopicNameOrPrefixField
+              topicNames={topicNames}
+              aclPatternType={aclPatternType}
+            />
+          )}
         </GridItem>
 
         <GridItem colSpan={"span-2"}>
@@ -126,7 +131,11 @@ const TopicProducerForm = ({
           <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
         </GridItem>
         <GridItem>
-          <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />
+          {aclIpPrincipleType === undefined ? (
+            <Box data-testid={"empty"} style={{ height: "87px" }} />
+          ) : (
+            <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />
+          )}
         </GridItem>
         <GridItem colSpan={"span-2"} minWidth={"full"}>
           <RemarksField />

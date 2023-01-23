@@ -1,8 +1,7 @@
-import { Box } from "@aivenio/aquarium";
 import { MultiInput } from "src/app/components/Form";
 import {
-  CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
+  CreateAclRequestTopicTypeProducer,
 } from "src/domain/acl";
 
 interface IpOrPrincipalFieldProps {
@@ -26,20 +25,15 @@ const IpOrPrincipalField = ({
     );
   }
 
-  if (aclIpPrincipleType === "PRINCIPAL") {
-    return (
-      <MultiInput
-        key="acl_ssl"
-        name="acl_ssl"
-        labelText="SSL DN strings / Usernames"
-        placeholder="CN=myhost, Alice"
-        required
-      />
-    );
-  }
-
-  // Return empty element matching the height of other inputs to prevent layout shift
-  return <Box data-testid={"empty"} style={{ height: "87px" }} />;
+  return (
+    <MultiInput
+      key="acl_ssl"
+      name="acl_ssl"
+      labelText="SSL DN strings / Usernames"
+      placeholder="CN=myhost, Alice"
+      required
+    />
+  );
 };
 
 export default IpOrPrincipalField;

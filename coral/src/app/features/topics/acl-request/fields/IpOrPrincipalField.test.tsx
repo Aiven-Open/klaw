@@ -45,14 +45,4 @@ describe("IpOrPrincipalField", () => {
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
   });
-
-  it("renders empty Box when no aclIpPrincipleType is passed", () => {
-    const result = renderForm(<IpOrPrincipalField />, {
-      schema,
-      onSubmit,
-      onError,
-    });
-    const empty = result.getByTestId("empty");
-    expect(empty).toBeVisible();
-  });
 });

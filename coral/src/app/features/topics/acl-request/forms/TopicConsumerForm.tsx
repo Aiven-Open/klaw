@@ -1,4 +1,10 @@
-import { Divider, Grid, GridItem, SecondaryButton } from "@aivenio/aquarium";
+import {
+  Box,
+  Divider,
+  Grid,
+  GridItem,
+  SecondaryButton,
+} from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { FieldErrorsImpl, UseFormReturn } from "react-hook-form";
@@ -95,7 +101,11 @@ const TopicConsumerForm = ({
           <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
         </GridItem>
         <GridItem>
-          <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />
+          {aclIpPrincipleType === undefined ? (
+            <Box data-testid={"empty"} style={{ height: "87px" }} />
+          ) : (
+            <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />
+          )}
         </GridItem>
 
         <GridItem colSpan={"span-2"} minWidth={"full"} paddingBottom={"l2"}>
