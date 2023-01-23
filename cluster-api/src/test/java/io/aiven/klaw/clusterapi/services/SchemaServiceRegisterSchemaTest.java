@@ -299,8 +299,8 @@ class SchemaServiceRegisterSchemaTest {
     schemaService.registerSchema(schemaReq);
     // change schema compatibility never called as exception occurs.
     verify(restTemplate, times(0)).put(any(), schemaCompatibility.capture(), eq(String.class));
-    // 1 call to get the current SchemaCompatibility
-    verify(restTemplate, times(1))
+    // 1 call to get the current SchemaCompatibility 1 call to get global
+    verify(restTemplate, times(2))
         .exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
@@ -347,6 +347,48 @@ class SchemaServiceRegisterSchemaTest {
             any(HttpEntity.class),
             eq(new ParameterizedTypeReference<Map<String, String>>() {}),
             any(HashMap.class));
+  }
+
+  @Test
+  @Order(9)
+  public void
+      givenSchemaWithForceRegisterEnabled_NotFoundFallBackToGlobalSchemaSettingReturnedAndResetSchemaCompatability() {
+
+    ClusterSchemaRequest schemaReq =
+        ClusterSchemaRequest.builder()
+            .forceRegister(true)
+            .fullSchema(FULL_SCHEMA)
+            .clusterIdentification(CLUSTER_IDENTIFICATION)
+            .protocol(KafkaSupportedProtocol.SSL)
+            .env(ENV)
+            .topicName(TOPIC_NAME)
+            .build();
+    mockGetSchemaCompatibility();
+
+    when(clusterApiUtil.getRequestDetails(any(), any()))
+        .thenReturn(Pair.of(REGISTRY_URL, restTemplate));
+
+    when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
+        .thenReturn(createSchemaRegisterResponseEntity(HttpStatus.OK));
+
+    String globalCompatibility = "BACKWARD";
+    when(restTemplate.exchange(
+            eq(REGISTRY_URL),
+            any(HttpMethod.class),
+            any(HttpEntity.class),
+            eq(new ParameterizedTypeReference<Map<String, String>>() {}),
+            any(HashMap.class)))
+        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND))
+        .thenReturn(createCompatibilityResponseEntity(globalCompatibility));
+
+    schemaService.registerSchema(schemaReq);
+    verify(restTemplate, times(2)).put(any(), schemaCompatibility.capture(), eq(String.class));
+
+    // resets it to previous compatability
+    assertThat(schemaCompatibility.getAllValues().get(1).getBody().get(COMPATIBILITY_NODE_KEY))
+        .isEqualTo(globalCompatibility);
+    assertThat(schemaCompatibility.getAllValues().get(0).getBody().get(COMPATIBILITY_NODE_KEY))
+        .isEqualTo("NONE");
   }
 
   private ResponseEntity<Map<String, String>> createErrorCompatibilityResponseEntity(
