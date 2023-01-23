@@ -12,6 +12,7 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite --mode remote-api",
+    "start": "pnpm dev",
     "dev-without-api": "vite",
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
