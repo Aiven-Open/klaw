@@ -20,9 +20,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
 
-@Component
+// @Component
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
 @Slf4j
 public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
@@ -49,6 +48,10 @@ public class KwRequestFilter extends UsernamePasswordAuthenticationFilter {
   @Autowired
   public void setAuthenticationManager(@Lazy AuthenticationManager authenticationManager) {
     super.setAuthenticationManager(authenticationManager);
+  }
+
+  public void setManageDatabase(ManageDatabase manageDatabase) {
+    this.manageDatabase = manageDatabase;
   }
 
   // this is the starting method for authentication.

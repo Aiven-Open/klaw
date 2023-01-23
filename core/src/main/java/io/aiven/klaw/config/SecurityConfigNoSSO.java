@@ -3,7 +3,8 @@ package io.aiven.klaw.config;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
-import io.aiven.klaw.auth.KwRequestFilter;
+import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
+import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import io.aiven.klaw.dao.UserInfo;
 import java.util.Collections;
 import java.util.Iterator;
@@ -28,7 +29,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @EnableWebSecurity
 @ConditionalOnProperty(name = "klaw.enable.sso", havingValue = "false")
@@ -36,6 +36,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfigNoSSO {
 
+  @Autowired KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+
+  @Autowired KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
   @Autowired private ManageDatabase manageTopics;
 
   @Value("${klaw.login.authentication.type}")
@@ -61,17 +64,12 @@ public class SecurityConfigNoSSO {
 
   @Autowired LdapTemplate ldapTemplate;
 
-  private AuthenticationManager authenticationManager;
-
-  @Autowired private KwRequestFilter kwRequestFilter;
-
   private void shutdownApp() {
     // ((ConfigurableApplicationContext) contextApp).close();
   }
 
   @Bean
-  public SecurityFilterChain securityFilterChain(
-      HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.csrf()
         .disable()
         .authorizeHttpRequests()
@@ -81,6 +79,8 @@ public class SecurityConfigNoSSO {
         .fullyAuthenticated()
         .and()
         .formLogin()
+        .successHandler(kwAuthenticationSuccessHandler)
+        .failureHandler(kwAuthenticationFailureHandler)
         .failureForwardUrl("/login?error")
         .failureUrl("/login?error")
         .loginPage("/login")
@@ -89,14 +89,13 @@ public class SecurityConfigNoSSO {
         .logout()
         .logoutSuccessUrl("/login");
 
-    //         Add a filter to validate the username/pwd with every request
-    http.addFilterBefore(kwRequestFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    AuthenticationManager authenticationManager;
     if (authenticationType != null && authenticationType.equals(ACTIVE_DIRECTORY.value)) {
       log.info("AD authentication configured.");
       log.info(
@@ -105,13 +104,13 @@ public class SecurityConfigNoSSO {
           adDomain,
           adRootDn,
           adFilter);
-      this.authenticationManager =
+      authenticationManager =
           new ProviderManager(
               Collections.singletonList(activeDirectoryLdapAuthenticationProvider()));
     } else {
-      this.authenticationManager = authenticationConfiguration.getAuthenticationManager();
+      authenticationManager = authenticationConfiguration.getAuthenticationManager();
     }
-    return this.authenticationManager;
+    return authenticationManager;
   }
 
   public AuthenticationProvider activeDirectoryLdapAuthenticationProvider() {
@@ -126,6 +125,7 @@ public class SecurityConfigNoSSO {
     return provider;
   }
 
+  @ConditionalOnProperty(name = "klaw.login.authentication.type", havingValue = "db")
   @Bean
   public InMemoryUserDetailsManager inMemoryUserDetailsManager() throws Exception {
     final Properties globalUsers = new Properties();

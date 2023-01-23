@@ -1,12 +1,9 @@
 package io.aiven.klaw;
 
-import static io.aiven.klaw.helpers.KwConstants.INFRATEAM;
-import static io.aiven.klaw.helpers.KwConstants.STAGINGTEAM;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.oauth2.core.oidc.endpoint.OidcParameterNames.ID_TOKEN;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.oidcLogin;
 
-import com.nimbusds.jose.shaded.gson.JsonArray;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,7 +31,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = UiapiApplication.class)
 // Config file with property klaw.login.authentication.type set to 'ad' and klaw.enable.sso set to
-// true. klaw.enable.authorization.ad=true means role and team are retrieved from AD token
+// true. klaw.enable.authorization.ad=true means role is retrieved from AD token
 @TestPropertySource(locations = "classpath:test-application-rdbms-ad-authorization.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -43,20 +40,16 @@ public class ActiveDirectoryAuthorizationIT {
 
   @Autowired private MockMvc mvc;
 
-  // Register a user with a no role and no team in AD authorities/attributes - deny signup with
+  // Register a user with a no role in AD authorities/attributes - deny signup with
   // error
   @Test
-  public void adRegisterUserWithNoRoleAndNoTeamSignupDeny() {
+  public void adRegisterUserWithNoRoleSignupDeny() {
     String errorCode = "AD101";
     try {
       MockHttpServletResponse response =
           mvc.perform(
                   MockMvcRequestBuilders.get("/")
-                      .with(
-                          oidcLogin()
-                              .oidcUser(
-                                  getOidcUser(
-                                      "NONE", "NONE"))) // oidc register with no role and team
+                      .with(oidcLogin().oidcUser(getOidcUser("NONE"))) // oidc register with no role
                       .contentType(MediaType.APPLICATION_JSON)
                       .accept(MediaType.APPLICATION_JSON))
               .andReturn()
@@ -67,36 +60,10 @@ public class ActiveDirectoryAuthorizationIT {
     }
   }
 
-  // Register a user with a valid role and no team in AD authorities/attributes - deny signup with
-  // error
-  @Test
-  public void adRegisterUserWithValidRoleAndNoTeamSignupDeny() {
-    String errorCode = "AD102";
-    try {
-      MockHttpServletResponse response =
-          mvc.perform(
-                  MockMvcRequestBuilders.get("/")
-                      .with(
-                          oidcLogin()
-                              .oidcUser(
-                                  getOidcUser(
-                                      "VALID",
-                                      "NONE"))) // oidc register with valid role and no team
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andReturn()
-              .getResponse();
-      assertThat(response.getRedirectedUrl()).contains("login?errorCode=" + errorCode); //
-      // dashboard details
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  // Register a user with valid multiple roles and no team in AD authorities/attributes - deny
+  // Register a user with valid multiple roles in AD authorities/attributes - deny
   // signup with error
   @Test
-  public void adRegisterUserWithMultipleRolesAndNoTeamSignupDeny() {
+  public void adRegisterUserWithMultipleRolesSignupDeny() {
     String errorCode = "AD103";
     try {
       MockHttpServletResponse response =
@@ -106,8 +73,8 @@ public class ActiveDirectoryAuthorizationIT {
                           oidcLogin()
                               .oidcUser(
                                   getOidcUser(
-                                      "MULTIPLE",
-                                      "NONE"))) // oidc register with multiple valid roles and no
+                                      "MULTIPLE"))) // oidc register with multiple valid roles and
+                      // no
                       // team
                       .contentType(MediaType.APPLICATION_JSON)
                       .accept(MediaType.APPLICATION_JSON))
@@ -119,11 +86,9 @@ public class ActiveDirectoryAuthorizationIT {
     }
   }
 
-  // Register a user with a valid role and multiple valid teams in AD authorities/attributes - deny
-  // signup with error
+  // Register a user with a valid role in AD authorities/attributes - accept signup
   @Test
-  public void adRegisterUserWithValidRoleAndValidTeamSignupDeny() {
-    String errorCode = "AD104";
+  public void adRegisterUserWithValidRoleSignupAccept() {
     try {
       MockHttpServletResponse response =
           mvc.perform(
@@ -132,32 +97,6 @@ public class ActiveDirectoryAuthorizationIT {
                           oidcLogin()
                               .oidcUser(
                                   getOidcUser(
-                                      "VALID",
-                                      "MULTIPLE"))) // oidc register with one valid role and
-                      // multiple valid team
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .accept(MediaType.APPLICATION_JSON))
-              .andReturn()
-              .getResponse();
-      assertThat(response.getRedirectedUrl()).contains("login?errorCode=" + errorCode);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  // Register a user with a valid role and no team in AD authorities/attributes - deny signup with
-  // error
-  @Test
-  public void adRegisterUserWithValidRoleAndValidTeamSignupAccept() {
-    try {
-      MockHttpServletResponse response =
-          mvc.perform(
-                  MockMvcRequestBuilders.get("/")
-                      .with(
-                          oidcLogin()
-                              .oidcUser(
-                                  getOidcUser(
-                                      "VALID",
                                       "VALID"))) // oidc register with one valid role and one valid
                       // team authorities
                       .contentType(MediaType.APPLICATION_JSON)
@@ -171,21 +110,12 @@ public class ActiveDirectoryAuthorizationIT {
     }
   }
 
-  private OidcUser getOidcUser(String authorityType, String teams) {
+  private OidcUser getOidcUser(String authorityType) {
     Map<String, Object> claims = new HashMap<>();
     claims.put("groups", "ROLE_USER");
     claims.put("sub", 123);
     claims.put("preferred_username", "newuser"); // new user who doesn't exist
-    if (teams.equals("VALID")) { // add one valid team
-      JsonArray jsonArray = new JsonArray();
-      jsonArray.add(INFRATEAM);
-      claims.put("teams", jsonArray);
-    } else if (teams.equals("MULTIPLE")) { // add multiple valid teams
-      JsonArray jsonArray = new JsonArray();
-      jsonArray.add(INFRATEAM);
-      jsonArray.add(STAGINGTEAM);
-      claims.put("teams", jsonArray);
-    }
+
     OidcIdToken idToken =
         new OidcIdToken(ID_TOKEN, Instant.now(), Instant.now().plusSeconds(60), claims);
     Collection<GrantedAuthority> authorities = getAuthorities(authorityType);
