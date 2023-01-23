@@ -1,4 +1,4 @@
-import { cleanup } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import TopicNameField from "src/app/features/topics/acl-request/fields/TopicNameField";
 import { topicname } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
 import { renderForm } from "src/services/test-utils/render-form";
@@ -14,37 +14,29 @@ describe("TopicNameField", () => {
   const onSubmit = jest.fn();
   const onError = jest.fn();
 
-  afterEach(() => {
+  beforeAll(() => {
+    renderForm(<TopicNameField topicNames={mockedTopicNames} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+  });
+
+  afterAll(() => {
     cleanup();
     onSubmit.mockClear();
     onError.mockClear();
   });
 
   it("renders NativeSelect component", () => {
-    const result = renderForm(
-      <TopicNameField topicNames={mockedTopicNames} />,
-      {
-        schema,
-        onSubmit,
-        onError,
-      }
-    );
-    const select = result.getByRole("combobox");
+    const select = screen.getByRole("combobox");
 
     expect(select).toBeVisible();
     expect(select).toBeEnabled();
   });
 
   it("renders NativeSelect with a placeholder option", () => {
-    const result = renderForm(
-      <TopicNameField topicNames={mockedTopicNames} />,
-      {
-        schema,
-        onSubmit,
-        onError,
-      }
-    );
-    const options = result.getAllByRole("option");
+    const options = screen.getAllByRole("option");
 
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
