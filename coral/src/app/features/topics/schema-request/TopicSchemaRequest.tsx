@@ -8,8 +8,8 @@ import {
   Textarea,
 } from "src/app/components/Form";
 import { FieldErrors } from "react-hook-form";
-import { MouseEvent, useEffect } from "react";
-import { Box, Button } from "@aivenio/aquarium";
+import { MouseEvent, useEffect, useState } from "react";
+import { Box, Button, Dialog } from "@aivenio/aquarium";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
 import { useQuery } from "@tanstack/react-query";
@@ -36,6 +36,8 @@ const formSchema = z.object({
 type Schema = z.infer<typeof formSchema>;
 
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+
   useEffect(() => {
     if (window.msw !== undefined) {
       mockGetSchemaRegistryEnvironments({
@@ -73,6 +75,22 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   return (
     <>
+      <Dialog
+        title={"this is a dialog"}
+        type={"confirmation"}
+        open={modalOpen}
+        primaryAction={{
+          text: "do something",
+          onClick: () => {
+            console.log("primary");
+          },
+        }}
+      >
+        this is a dialog 👋
+      </Dialog>
+      <Button onClick={() => setModalOpen(!modalOpen)}>
+        Click to toggle modal
+      </Button>
       <Form
         {...form}
         ariaLabel={"Request a new schema"}
