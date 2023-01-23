@@ -113,7 +113,7 @@ const TopicAclRequest = () => {
 
   const { data: topicNames } = useQuery<TopicNames, Error>(["topic-names"], {
     ...topicNamesQuery(),
-    onSettled: (data) => {
+    onSuccess: (data) => {
       if (data?.includes(topicName)) {
         return;
       }
@@ -153,7 +153,7 @@ const TopicAclRequest = () => {
       enabled:
         selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
         environments !== undefined,
-      onSettled: (data) => {
+      onSuccess: (data) => {
         const isAivenCluster = data?.aivenCluster === "true";
         // Enable the only possible option when the environment chosen is Aiven Kafka flavor
         if (isAivenCluster) {
