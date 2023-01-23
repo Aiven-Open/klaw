@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FieldErrorsImpl, SubmitHandler } from "react-hook-form";
 import { Alert, Box, Divider, Flexbox, FlexboxItem } from "@aivenio/aquarium";
@@ -16,70 +15,15 @@ import formSchema, {
 } from "src/app/features/topics/request/schemas/topic-request-form";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
 import type { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
-import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
 import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopic } from "src/domain/topic/topic-api";
-import { mockRequestTopic } from "src/domain/topic/topic-api.msw";
 import { Navigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
 
-const mockedData = [
-  createMockEnvironmentDTO({
-    name: "DEV",
-    id: "2",
-    maxPartitions: undefined,
-    maxReplicationFactor: undefined,
-    defaultPartitions: "2",
-    defaultReplicationFactor: "2",
-    topicprefix: "dev-",
-  }),
-  createMockEnvironmentDTO({
-    name: "TST",
-    id: "1",
-    maxPartitions: "6",
-    maxReplicationFactor: "2",
-    defaultPartitions: "3",
-    defaultReplicationFactor: "2",
-    topicsuffix: "_TEST",
-  }),
-  createMockEnvironmentDTO({
-    name: "PROD",
-    id: "3",
-    maxPartitions: "16",
-    maxReplicationFactor: "3",
-    defaultPartitions: undefined,
-    defaultReplicationFactor: undefined,
-  }),
-];
-
 function TopicRequest() {
-  useEffect(() => {
-    // Remove these mock alltogether when we are happy with the functionality.
-    // With mocks it is easier to demonstrate the behaviour without requesting
-    // dummy topics.
-    if (window.msw !== undefined) {
-      mockGetEnvironmentsForTeam({
-        mswInstance: window.msw,
-        response: { data: mockedData },
-      });
-
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const creationOK = { data: { data: { status: "200 OK" } }, status: 200 };
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const creationFailed = {
-        data: { message: "Topic with such name already exists!" },
-        status: 400,
-      };
-      mockRequestTopic({
-        mswInstance: window.msw,
-        response: creationOK,
-      });
-    }
-  }, []);
   const { data: environments } = useQuery<Environment[], Error>(
     ["environments-for-team"],
     getEnvironmentsForTeam
