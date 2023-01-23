@@ -8,7 +8,7 @@ const schema = z.object({
   remarks,
 });
 
-describe("Rema", () => {
+describe("RemarksField", () => {
   const onSubmit = jest.fn();
   const onError = jest.fn();
 
