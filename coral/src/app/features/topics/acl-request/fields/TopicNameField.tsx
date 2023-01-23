@@ -8,9 +8,7 @@ interface TopicNameFieldProps {
 const TopicNameField = ({ topicNames }: TopicNameFieldProps) => {
   return (
     <NativeSelect name="topicname" labelText="Topic name" required>
-      <Option key={"Placeholder"} disabled>
-        -- Select Topic --
-      </Option>
+      <Option disabled>-- Select Topic --</Option>
       {topicNames.map((name) => (
         <Option key={name} value={name}>
           {name}
