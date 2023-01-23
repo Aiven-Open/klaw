@@ -1,8 +1,5 @@
 package io.aiven.klaw.auth;
 
-import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
-
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -21,18 +18,13 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
   @Value("${server.servlet.context-path:}")
   private String contextPath;
 
-  @Value("${klaw.login.authentication.type}")
-  private String authenticationType;
-
   @Override
   public void onAuthenticationSuccess(
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-      throws IOException, ServletException {
+      throws IOException {
     log.info("User logged in : {}", ((UserDetails) authentication.getPrincipal()).getUsername());
     super.clearAuthenticationAttributes(request);
-    if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-      response.sendRedirect(contextPath.concat(getRedirectPage(request)));
-    } else response.sendRedirect(contextPath.concat(getRedirectPage(request)));
+    response.sendRedirect(contextPath.concat(getRedirectPage(request)));
   }
 
   private String getRedirectPage(HttpServletRequest request) {

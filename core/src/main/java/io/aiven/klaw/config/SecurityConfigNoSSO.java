@@ -65,7 +65,7 @@ public class SecurityConfigNoSSO {
   @Autowired LdapTemplate ldapTemplate;
 
   private void shutdownApp() {
-    // ((ConfigurableApplicationContext) contextApp).close();
+    // TODO
   }
 
   @Bean

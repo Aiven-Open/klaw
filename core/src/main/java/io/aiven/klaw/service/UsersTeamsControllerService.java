@@ -82,11 +82,6 @@ public class UsersTeamsControllerService {
   // pattern for simple username
   private static final Pattern defaultPattern = Pattern.compile("^[a-zA-Z0-9]{3,}$");
 
-  //  @Autowired(required = false)
-  //  public UsersTeamsControllerService(InMemoryUserDetailsManager inMemoryUserDetailsManager) {
-  //    this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
-  //  }
-
   public UserInfoModel getUserInfoDetails(String userId) {
     UserInfoModel userInfoModel = new UserInfoModel();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);

@@ -3571,10 +3571,10 @@
         "titleForReport" : {
           "type" : "string"
         },
-        "yaxisLabel" : {
+        "xaxisLabel" : {
           "type" : "string"
         },
-        "xaxisLabel" : {
+        "yaxisLabel" : {
           "type" : "string"
         }
       }
