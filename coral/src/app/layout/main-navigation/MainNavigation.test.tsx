@@ -1,6 +1,7 @@
-import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
-import { cleanup, screen, render, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
   tabThroughForward,
@@ -61,7 +62,7 @@ const navOrderFirstLevel = [
 describe("MainNavigation.tsx", () => {
   describe("renders the main navigation in default state", () => {
     beforeAll(() => {
-      render(<MainNavigation />);
+      customRender(<MainNavigation />, { memoryRouter: true });
     });
 
     afterAll(cleanup);
@@ -159,7 +160,7 @@ describe("MainNavigation.tsx", () => {
 
   describe("user can open submenus and see more links", () => {
     beforeEach(() => {
-      render(<MainNavigation />);
+      customRender(<MainNavigation />, { memoryRouter: true });
     });
 
     afterEach(cleanup);
@@ -247,7 +248,7 @@ describe("MainNavigation.tsx", () => {
   describe("enables user to navigate with keyboard only", () => {
     describe("user can navigate through first level navigation", () => {
       beforeEach(() => {
-        render(<MainNavigation />);
+        customRender(<MainNavigation />, { memoryRouter: true });
         const nav = screen.getByRole("navigation", { name: "Main navigation" });
         nav.focus();
       });
@@ -275,7 +276,7 @@ describe("MainNavigation.tsx", () => {
       beforeEach(() => {
         const lastElement =
           navOrderFirstLevel[navOrderFirstLevel.length - 1].name;
-        render(<MainNavigation />);
+        customRender(<MainNavigation />, { memoryRouter: true });
         const lastNavItem = screen.getByRole("link", {
           name: lastElement,
         });
