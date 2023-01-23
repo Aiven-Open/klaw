@@ -8,6 +8,7 @@ import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const baseProps = {
@@ -46,7 +47,7 @@ describe("<TopicProducerForm />", () => {
           schema: topicProducerFormSchema,
           defaultValues: {
             topicname: "aiventopic1",
-            environment: "placeholder",
+            environment: ENVIRONMENT_NOT_INITIALIZED,
             topictype: "Producer",
           },
         })

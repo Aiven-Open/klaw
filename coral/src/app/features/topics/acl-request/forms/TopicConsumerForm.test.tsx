@@ -10,6 +10,7 @@ import topicConsumerFormSchema, {
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 
 const baseProps = {
   topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
@@ -75,7 +76,7 @@ describe("<TopicConsumerForm />", () => {
           schema: topicConsumerFormSchema,
           defaultValues: {
             topicname: "aiventopic1",
-            environment: "placeholder",
+            environment: ENVIRONMENT_NOT_INITIALIZED,
             topictype: "Consumer",
           },
         })
