@@ -80,18 +80,25 @@ export const useForm = <T extends FieldValues = FieldValues>({
 type FormProps<T extends FieldValues = FieldValues> = UseFormReturn<T> & {
   onSubmit: SubmitHandler<T>;
   onError?: SubmitErrorHandler<T>;
+  ariaLabel?: string;
 };
 
 // eslint-disable-next-line import/exports-last,import/group-exports
 export const Form = <T extends FieldValues = FieldValues>({
   onSubmit,
   onError,
+  ariaLabel,
   children,
   ...form
 }: React.PropsWithChildren<FormProps<T>>): React.ReactElement<FormProps<T>> => {
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit, onError)}>{children}</form>
+      <form
+        aria-label={ariaLabel}
+        onSubmit={form.handleSubmit(onSubmit, onError)}
+      >
+        {children}
+      </form>
     </FormProvider>
   );
 };

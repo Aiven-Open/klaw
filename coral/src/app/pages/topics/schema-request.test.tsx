@@ -40,12 +40,20 @@ describe("SchemaRequest", () => {
       cleanup();
     });
 
-    it("shows a headline to request a schema for a specific topic", async () => {
-      const headline = await screen.findByRole("heading", {
+    it("shows a headline to request a schema for a specific topic", () => {
+      const headline = screen.getByRole("heading", {
         name: `Request new schema for topic "${topicName}"`,
       });
 
       expect(headline).toBeVisible();
+    });
+
+    it("shows a form to request a schema", () => {
+      const form = screen.getByRole("form", {
+        name: `Request a new schema`,
+      });
+
+      expect(form).toBeVisible();
     });
   });
 });
