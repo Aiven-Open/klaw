@@ -621,6 +621,7 @@ public class ClusterApiService {
               .topicName(topicName)
               .fullSchema(schemaRequest.getSchemafull())
               .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
+              .forceRegister(schemaRequest.isForceRegister())
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);

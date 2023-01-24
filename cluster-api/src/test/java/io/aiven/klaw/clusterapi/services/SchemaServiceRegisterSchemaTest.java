@@ -299,8 +299,8 @@ class SchemaServiceRegisterSchemaTest {
     schemaService.registerSchema(schemaReq);
     // change schema compatibility never called as exception occurs.
     verify(restTemplate, times(0)).put(any(), schemaCompatibility.capture(), eq(String.class));
-    // 1 call to get the current SchemaCompatibility 1 call to get global
-    verify(restTemplate, times(2))
+    // 1 call to get the current SchemaCompatibility
+    verify(restTemplate, times(1))
         .exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
@@ -352,7 +352,7 @@ class SchemaServiceRegisterSchemaTest {
   @Test
   @Order(9)
   public void
-      givenSchemaWithForceRegisterEnabled_NotFoundFallBackToGlobalSchemaSettingReturnedAndResetSchemaCompatability() {
+      givenSchemaWithForceRegisterEnabled_NotFoundFallBackToGlobalSchemaSettingReturnedNoResetSchemaCompatability() {
 
     ClusterSchemaRequest schemaReq =
         ClusterSchemaRequest.builder()
@@ -378,17 +378,10 @@ class SchemaServiceRegisterSchemaTest {
             any(HttpEntity.class),
             eq(new ParameterizedTypeReference<Map<String, String>>() {}),
             any(HashMap.class)))
-        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND))
-        .thenReturn(createCompatibilityResponseEntity(globalCompatibility));
+        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND));
 
     schemaService.registerSchema(schemaReq);
-    verify(restTemplate, times(2)).put(any(), schemaCompatibility.capture(), eq(String.class));
-
-    // resets it to previous compatability
-    assertThat(schemaCompatibility.getAllValues().get(1).getBody().get(COMPATIBILITY_NODE_KEY))
-        .isEqualTo(globalCompatibility);
-    assertThat(schemaCompatibility.getAllValues().get(0).getBody().get(COMPATIBILITY_NODE_KEY))
-        .isEqualTo("NONE");
+    verify(restTemplate, times(0)).put(any(), schemaCompatibility.capture(), eq(String.class));
   }
 
   @Test
@@ -426,7 +419,7 @@ class SchemaServiceRegisterSchemaTest {
     verify(restTemplate, times(1))
         .postForEntity(anyString(), any(HttpEntity.class), eq(String.class));
     // 0 calls to get the current SchemaCompatibility as isForce==false
-    verify(restTemplate, times(2))
+    verify(restTemplate, times(1))
         .exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
