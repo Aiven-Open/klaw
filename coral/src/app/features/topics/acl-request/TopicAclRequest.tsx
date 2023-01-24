@@ -129,6 +129,7 @@ const TopicAclRequest = () => {
       queryFn: getEnvironments,
     }
   );
+
   const { data: topicTeam } = useQuery<TopicTeam, Error>(
     ["topic-team", topicName],
     topicTeamQuery({ topicName })
@@ -138,8 +139,12 @@ const TopicAclRequest = () => {
     topicType === "Producer"
       ? topicProducerForm.watch("environment")
       : topicConsumerForm.watch("environment");
-  const selectedEnvironmentType =
-    environments?.find((env) => env.id === selectedEnvironment)?.type || "";
+  // We cast the type of selectedEnvironmentType to be Environment["type"]
+  // Because there should be no case where this returns undefined
+  // As an additional safety, this query is disabled when it *is* undefined
+  const selectedEnvironmentType = environments?.find(
+    (env) => env.id === selectedEnvironment
+  )?.type as Environment["type"];
   const { data: clusterInfo } = useQuery<ClusterInfo, Error>(
     ["cluster-info", selectedEnvironment],
     {
@@ -152,7 +157,8 @@ const TopicAclRequest = () => {
       keepPreviousData: false,
       enabled:
         selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
-        environments !== undefined,
+        environments !== undefined &&
+        selectedEnvironmentType !== undefined,
       onSuccess: (data) => {
         const isAivenCluster = data?.aivenCluster === "true";
         // Enable the only possible option when the environment chosen is Aiven Kafka flavor
