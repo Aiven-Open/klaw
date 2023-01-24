@@ -29,6 +29,7 @@ const topicname = z.string().min(1, { message: "Please enter a prefix." });
 const environment = z
   .string()
   .refine((value) => value !== "placeholder", "Please select an environment");
+const teamname = z.string();
 
 export {
   remarks,
@@ -38,4 +39,5 @@ export {
   aclPatternType,
   topicname,
   environment,
+  teamname,
 };

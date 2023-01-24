@@ -140,6 +140,14 @@ const TopicAclRequest = () => {
     queryKey: ["topicTeam", topicName, selectedPatternType],
     queryFn: () =>
       getTopicTeam({ topicName, patternType: selectedPatternType }),
+    onSuccess: (data) => {
+      if (data === undefined) {
+        throw new Error("Could not fetch team for current Topic");
+      }
+      return topicType === "Producer"
+        ? topicProducerForm.setValue("teamname", data.team)
+        : topicConsumerForm.setValue("teamname", data.team);
+    },
     keepPreviousData: true,
   });
   const selectedEnvironment =
@@ -194,7 +202,6 @@ const TopicAclRequest = () => {
           )}
           topicConsumerForm={topicConsumerForm}
           topicNames={topicNames}
-          topicTeam={topicTeam.team}
           environments={environments}
           clusterInfo={clusterInfo}
         />
@@ -205,7 +212,6 @@ const TopicAclRequest = () => {
           )}
           topicProducerForm={topicProducerForm}
           topicNames={topicNames}
-          topicTeam={topicTeam.team}
           environments={environments}
           clusterInfo={clusterInfo}
         />

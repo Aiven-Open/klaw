@@ -13,7 +13,6 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const baseProps = {
   topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
-  topicTeam: "ospo",
   environments: [
     createEnvironment({
       name: "DEV",

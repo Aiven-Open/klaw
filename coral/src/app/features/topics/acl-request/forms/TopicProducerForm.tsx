@@ -28,7 +28,6 @@ import { ClusterInfo, Environment } from "src/domain/environment";
 export interface TopicProducerFormProps {
   topicProducerForm: UseFormReturn<TopicProducerFormSchema>;
   topicNames: string[];
-  topicTeam: string;
   environments: Environment[];
   renderAclTypeField: () => JSX.Element;
   clusterInfo?: ClusterInfo;
@@ -37,7 +36,6 @@ export interface TopicProducerFormProps {
 const TopicProducerForm = ({
   topicProducerForm,
   topicNames,
-  topicTeam,
   environments,
   renderAclTypeField,
   clusterInfo,
@@ -73,7 +71,7 @@ const TopicProducerForm = ({
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
     data
   ) => {
-    console.log(data, topicTeam);
+    console.log(data);
     mutate();
   };
   const onErrorTopicProducer = (
