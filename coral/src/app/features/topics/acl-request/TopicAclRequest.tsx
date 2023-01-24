@@ -26,17 +26,18 @@ import {
 } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
-import { TopicNames, TopicTeam } from "src/domain/topic";
+import {
+  getTopicNames,
+  getTopicTeam,
+  TopicNames,
+  TopicTeam,
+} from "src/domain/topic";
 import {
   mockedResponseTopicNames,
   mockedResponseTopicTeamLiteral,
   mockGetTopicNames,
   mockGetTopicTeam,
 } from "src/domain/topic/topic-api.msw";
-import {
-  topicNamesQuery,
-  topicTeamQuery,
-} from "src/domain/topic/topic-queries";
 
 const mockedData = [
   createMockEnvironmentDTO({
@@ -112,7 +113,8 @@ const TopicAclRequest = () => {
   });
 
   const { data: topicNames } = useQuery<TopicNames, Error>(["topic-names"], {
-    ...topicNamesQuery(),
+    queryFn: () => getTopicNames({ onlyMyTeamTopics: false }),
+    keepPreviousData: true,
     onSuccess: (data) => {
       if (data?.includes(topicName)) {
         return;
@@ -130,11 +132,16 @@ const TopicAclRequest = () => {
     }
   );
 
-  const { data: topicTeam } = useQuery<TopicTeam, Error>(
-    ["topic-team", topicName],
-    topicTeamQuery({ topicName })
-  );
-
+  const selectedPatternType =
+    topicType === "Producer"
+      ? topicProducerForm.watch("aclPatternType")
+      : "LITERAL";
+  const { data: topicTeam } = useQuery<TopicTeam, Error>({
+    queryKey: ["topicTeam", topicName, selectedPatternType],
+    queryFn: () =>
+      getTopicTeam({ topicName, patternType: selectedPatternType }),
+    keepPreviousData: true,
+  });
   const selectedEnvironment =
     topicType === "Producer"
       ? topicProducerForm.watch("environment")
@@ -153,7 +160,6 @@ const TopicAclRequest = () => {
           envSelected: selectedEnvironment,
           envType: selectedEnvironmentType,
         }),
-
       keepPreviousData: false,
       enabled:
         selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
