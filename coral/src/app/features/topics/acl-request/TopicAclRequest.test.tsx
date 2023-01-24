@@ -152,7 +152,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       const principalsField = await screen.findByRole("textbox", {
-        name: "SSL DN strings / Usernames *",
+        name: "Service Accounts *",
       });
 
       await waitFor(() => {

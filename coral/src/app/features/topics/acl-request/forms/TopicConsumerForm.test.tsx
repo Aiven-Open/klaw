@@ -271,7 +271,7 @@ describe("<TopicConsumerForm />", () => {
     it("renders AclIpPrincipleTypeField with IP field disabled and Principal field enabled and checked", () => {
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
-        name: "Principal",
+        name: "Service Account",
       });
 
       expect(ipField).toBeVisible();
@@ -286,7 +286,7 @@ describe("<TopicConsumerForm />", () => {
         name: "IP addresses *",
       });
       const principalsField = screen.getByRole("textbox", {
-        name: "SSL DN strings / Usernames *",
+        name: "Service Accounts *",
       });
 
       expect(ipsField).toBeNull();

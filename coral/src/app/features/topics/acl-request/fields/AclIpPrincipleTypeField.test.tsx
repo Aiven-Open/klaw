@@ -45,21 +45,24 @@ describe("AclIpPrincipleTypeField", () => {
     radioButtons.forEach((radio) => expect(radio).not.toBeChecked());
   });
 
-  it("renders AclIpPrincipleTypeField with both options enabled", () => {
+  it("renders AclIpPrincipleTypeField with both options enabled (not Aiven cluster)", () => {
     const result = renderForm(
       <AclIpPrincipleTypeField clusterInfo={clusterInfoIsNotAiven} />,
       { schema, onSubmit, onError }
     );
-    const radioButtons = result.getAllByRole("radio");
-    radioButtons.forEach((radio) => expect(radio).toBeEnabled());
+    const principalRadioButtons = result.getByLabelText("Principal");
+    const ipRadioButtons = result.getByLabelText("IP");
+
+    expect(principalRadioButtons).toBeEnabled();
+    expect(ipRadioButtons).toBeEnabled();
   });
 
-  it("renders AclIpPrincipleTypeField with only Principal option enabled", () => {
+  it("renders AclIpPrincipleTypeField with only Principal option enabled (Aiven cluster)", () => {
     const result = renderForm(
       <AclIpPrincipleTypeField clusterInfo={clusterInfoIsAiven} />,
       { schema, onSubmit, onError }
     );
-    const principalRadioButtons = result.getByLabelText("Principal");
+    const principalRadioButtons = result.getByLabelText("Service Account");
     const ipRadioButtons = result.getByLabelText("IP");
 
     expect(principalRadioButtons).toBeEnabled();

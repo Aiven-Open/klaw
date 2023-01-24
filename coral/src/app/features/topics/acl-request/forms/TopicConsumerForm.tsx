@@ -101,10 +101,13 @@ const TopicConsumerForm = ({
           <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
         </GridItem>
         <GridItem>
-          {aclIpPrincipleType === undefined ? (
+          {aclIpPrincipleType === undefined || clusterInfo === undefined ? (
             <Box data-testid={"empty"} style={{ height: "87px" }} />
           ) : (
-            <IpOrPrincipalField aclIpPrincipleType={aclIpPrincipleType} />
+            <IpOrPrincipalField
+              aclIpPrincipleType={aclIpPrincipleType}
+              clusterInfo={clusterInfo}
+            />
           )}
         </GridItem>
 

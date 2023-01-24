@@ -3,16 +3,25 @@ import {
   CreateAclRequestTopicTypeConsumer,
   CreateAclRequestTopicTypeProducer,
 } from "src/domain/acl";
+import { ClusterInfo } from "src/domain/environment";
 
 interface IpOrPrincipalFieldProps {
   aclIpPrincipleType?:
     | CreateAclRequestTopicTypeProducer["aclIpPrincipleType"]
     | CreateAclRequestTopicTypeConsumer["aclIpPrincipleType"];
+  clusterInfo: ClusterInfo;
 }
 
 const IpOrPrincipalField = ({
   aclIpPrincipleType,
+  clusterInfo,
 }: IpOrPrincipalFieldProps) => {
+  const isAivenCluster = clusterInfo.aivenCluster === "true";
+  const sslLabelText = isAivenCluster
+    ? "Service Accounts"
+    : "SSL DN strings / Usernames";
+  const sslPlaceholder = isAivenCluster ? "Alice" : "CN=myhost, Alice";
+
   if (aclIpPrincipleType === "IP_ADDRESS") {
     return (
       <MultiInput
@@ -29,8 +38,8 @@ const IpOrPrincipalField = ({
     <MultiInput
       key="acl_ssl"
       name="acl_ssl"
-      labelText="SSL DN strings / Usernames"
-      placeholder="CN=myhost, Alice"
+      labelText={sslLabelText}
+      placeholder={sslPlaceholder}
       required
     />
   );
