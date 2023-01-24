@@ -59,7 +59,7 @@ describe("<TopicConsumerForm />", () => {
             topicConsumerForm={result.current}
           />
         </AquariumContext>,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
@@ -190,7 +190,7 @@ describe("<TopicConsumerForm />", () => {
             topicConsumerForm={result.current}
           />
         </AquariumContext>,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
@@ -304,7 +304,7 @@ describe("<TopicConsumerForm />", () => {
             topicConsumerForm={result.current}
           />
         </AquariumContext>,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 

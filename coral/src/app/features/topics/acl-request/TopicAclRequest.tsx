@@ -1,6 +1,6 @@
 import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
@@ -17,14 +17,8 @@ import {
   ClusterInfo,
   Environment,
   getEnvironments,
-  mockGetEnvironments,
 } from "src/domain/environment";
 import { getClusterInfo } from "src/domain/environment/environment-api";
-import {
-  getMockedResponseGetClusterInfoFromEnv,
-  mockGetClusterInfoFromEnv,
-} from "src/domain/environment/environment-api.msw";
-import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import {
   getTopicNames,
@@ -32,66 +26,11 @@ import {
   TopicNames,
   TopicTeam,
 } from "src/domain/topic";
-import {
-  mockedResponseTopicNames,
-  mockedResponseTopicTeamLiteral,
-  mockGetTopicNames,
-  mockGetTopicTeam,
-} from "src/domain/topic/topic-api.msw";
-
-const mockedData = [
-  createMockEnvironmentDTO({
-    name: "TST",
-    id: "1",
-    maxPartitions: "6",
-    maxReplicationFactor: "2",
-    defaultPartitions: "3",
-    defaultReplicationFactor: "2",
-  }),
-  createMockEnvironmentDTO({
-    name: "DEV",
-    id: "2",
-    maxPartitions: undefined,
-    maxReplicationFactor: undefined,
-    defaultPartitions: "2",
-    defaultReplicationFactor: "2",
-  }),
-  createMockEnvironmentDTO({
-    name: "PROD",
-    id: "3",
-    maxPartitions: "16",
-    maxReplicationFactor: "3",
-    defaultPartitions: "2",
-    defaultReplicationFactor: "2",
-  }),
-];
 
 const TopicAclRequest = () => {
   const { topicName = "" } = useParams();
   const navigate = useNavigate();
   const [topicType, setTopicType] = useState("Producer");
-
-  useEffect(() => {
-    if (window.msw !== undefined) {
-      mockGetEnvironments({
-        mswInstance: window.msw,
-        response: { data: mockedData },
-      });
-      mockGetTopicNames({
-        mswInstance: window.msw,
-        response: mockedResponseTopicNames,
-      });
-      mockGetTopicTeam({
-        mswInstance: window.msw,
-        response: mockedResponseTopicTeamLiteral,
-        topicName,
-      });
-      mockGetClusterInfoFromEnv({
-        mswInstance: window.msw,
-        response: getMockedResponseGetClusterInfoFromEnv(true),
-      });
-    }
-  }, []);
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
     schema: topicProducerFormSchema,
@@ -150,6 +89,7 @@ const TopicAclRequest = () => {
     },
     keepPreviousData: true,
   });
+
   const selectedEnvironment =
     topicType === "Producer"
       ? topicProducerForm.watch("environment")

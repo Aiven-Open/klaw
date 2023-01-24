@@ -3,6 +3,7 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
+import { mockCreateAclRequest } from "src/domain/acl/acl-api-msw";
 import {
   getMockedResponseGetClusterInfoFromEnv,
   mockGetClusterInfoFromEnv,
@@ -14,9 +15,17 @@ import {
   mockedResponseTopicTeamLiteral,
   mockGetTopicNames,
   mockGetTopicTeam,
+  mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
+import api from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+
+const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedNavigate,
+}));
 
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
   mockGetEnvironments({
@@ -177,8 +186,9 @@ describe("<TopicAclRequest />", () => {
       await userEvent.click(aclConsumerTypeInput);
 
       // Only rendered in Consumer form
-      const consumerGroupInput = screen.getByLabelText("Consumer group*");
-
+      const consumerGroupInput = screen.getByRole("textbox", {
+        name: "Consumer group *",
+      });
       expect(aclConsumerTypeInput).toBeChecked();
       expect(aclProducerTypeInput).not.toBeChecked();
       expect(consumerGroupInput).toBeVisible();
@@ -802,6 +812,298 @@ describe("<TopicAclRequest />", () => {
       await userEvent.tab();
 
       await waitFor(() => expect(consumerGroupInput).toBeValid());
+    });
+  });
+
+  describe("Form submission (TopicProducerForm)", () => {
+    beforeEach(async () => {
+      dataSetup({ isAivenCluster: true });
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/acl/request"
+            element={<TopicAclRequest />}
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: "/topic/aivtopic1/acl/request",
+        }
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    describe("when API returns an error", () => {
+      beforeEach(async () => {
+        mockCreateAclRequest({
+          mswInstance: server,
+          response: {
+            data: { message: "Error message example" },
+            status: 400,
+          },
+        });
+      });
+
+      it("renders an error message", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+        const submitButton = screen.getByRole("button", { name: "Submit" });
+
+        // Fill form with valid data
+        await userEvent.selectOptions(
+          screen.getByRole("combobox", {
+            name: "Select environment *",
+          }),
+          "DEV"
+        );
+        await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
+        const principalField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+        await userEvent.type(principalField, "Alice");
+        await userEvent.tab();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => {
+          expect(submitButton).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          remarks: "",
+          aclIpPrincipleType: "PRINCIPAL",
+          acl_ssl: ["Alice"],
+          aclPatternType: "LITERAL",
+          topicname: "aivtopic1",
+          environment: "2",
+          topictype: "Producer",
+          transactionalId: "",
+          teamname: "Ospo",
+        });
+
+        const alert = await screen.findByRole("alert");
+        expect(alert).toHaveTextContent("Error message example");
+      });
+    });
+
+    describe("when API request is successful", () => {
+      beforeEach(async () => {
+        mockRequestTopic({
+          mswInstance: server,
+          response: { data: { status: "200 OK" } },
+        });
+      });
+
+      it("redirects user to myTopicRequests", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+        const submitButton = screen.getByRole("button", { name: "Submit" });
+
+        // Fill form with valid data
+        await userEvent.selectOptions(
+          screen.getByRole("combobox", {
+            name: "Select environment *",
+          }),
+          "DEV"
+        );
+        await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
+        const principalField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+        await userEvent.type(principalField, "Alice");
+        await userEvent.tab();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => {
+          expect(submitButton).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          remarks: "",
+          aclIpPrincipleType: "PRINCIPAL",
+          acl_ssl: ["Alice"],
+          aclPatternType: "LITERAL",
+          topicname: "aivtopic1",
+          environment: "2",
+          topictype: "Producer",
+          transactionalId: "",
+          teamname: "Ospo",
+        });
+
+        await waitFor(() => {
+          expect(mockedNavigate).toHaveBeenCalledTimes(1);
+          expect(mockedNavigate).toHaveBeenCalledWith(-1);
+        });
+      });
+    });
+  });
+  describe("Form submission (TopicConsumerForm)", () => {
+    beforeEach(async () => {
+      dataSetup({ isAivenCluster: true });
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/acl/request"
+            element={<TopicAclRequest />}
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: "/topic/aivtopic1/acl/request",
+        }
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    describe("when API returns an error", () => {
+      beforeEach(async () => {
+        mockCreateAclRequest({
+          mswInstance: server,
+          response: {
+            data: { message: "Error message example" },
+            status: 400,
+          },
+        });
+      });
+
+      it("renders an error message", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+
+        const aclConsumerTypeInput = screen.getByRole("radio", {
+          name: "Consumer",
+        });
+        await userEvent.click(aclConsumerTypeInput);
+
+        const submitButton = screen.getByRole("button", {
+          name: "Submit",
+        });
+
+        // Fill form with valid data
+        await userEvent.selectOptions(
+          screen.getByRole("combobox", {
+            name: "Select environment *",
+          }),
+          "DEV"
+        );
+
+        const consumerGroupInput = screen.getByRole("textbox", {
+          name: "Consumer group *",
+        });
+        await userEvent.type(consumerGroupInput, "Group");
+
+        const principalField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+        await userEvent.type(principalField, "Alice");
+        await userEvent.tab();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => {
+          expect(submitButton).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          remarks: "",
+          aclIpPrincipleType: "PRINCIPAL",
+          acl_ssl: ["Alice"],
+          aclPatternType: "LITERAL",
+          topicname: "aivtopic1",
+          environment: "2",
+          topictype: "Consumer",
+          teamname: "Ospo",
+          consumergroup: "Group",
+        });
+
+        const alert = await screen.findByRole("alert");
+        expect(alert).toHaveTextContent("Error message example");
+      });
+    });
+
+    describe("when API request is successful", () => {
+      beforeEach(async () => {
+        mockRequestTopic({
+          mswInstance: server,
+          response: { data: { status: "200 OK" } },
+        });
+      });
+
+      it("redirects user to myTopicRequests", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+
+        const aclConsumerTypeInput = screen.getByRole("radio", {
+          name: "Consumer",
+        });
+        await userEvent.click(aclConsumerTypeInput);
+
+        const submitButton = screen.getByRole("button", {
+          name: "Submit",
+        });
+
+        // Fill form with valid data
+        await userEvent.selectOptions(
+          screen.getByRole("combobox", {
+            name: "Select environment *",
+          }),
+          "DEV"
+        );
+        const consumerGroupInput = screen.getByRole("textbox", {
+          name: "Consumer group *",
+        });
+        await userEvent.type(consumerGroupInput, "Group");
+
+        const principalField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+        await userEvent.type(principalField, "Alice");
+        await userEvent.tab();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => {
+          expect(submitButton).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        expect(spyPost).toHaveBeenCalledWith("/createAcl", {
+          remarks: "",
+          aclIpPrincipleType: "PRINCIPAL",
+          acl_ssl: ["Alice"],
+          aclPatternType: "LITERAL",
+          topicname: "aivtopic1",
+          environment: "2",
+          topictype: "Consumer",
+          teamname: "Ospo",
+          consumergroup: "Group",
+        });
+
+        await waitFor(() => {
+          expect(mockedNavigate).toHaveBeenCalledTimes(1);
+          expect(mockedNavigate).toHaveBeenCalledWith(-1);
+        });
+      });
     });
   });
 });

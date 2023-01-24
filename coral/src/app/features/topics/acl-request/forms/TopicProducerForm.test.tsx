@@ -53,7 +53,7 @@ describe("<TopicProducerForm />", () => {
       );
       customRender(
         <TopicProducerForm {...baseProps} topicProducerForm={result.current} />,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
@@ -177,7 +177,7 @@ describe("<TopicProducerForm />", () => {
           {...basePropsIsAivenCluster}
           topicProducerForm={result.current}
         />,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
@@ -303,7 +303,7 @@ describe("<TopicProducerForm />", () => {
           {...basePropsNotAivenCluster}
           topicProducerForm={result.current}
         />,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
