@@ -7,8 +7,6 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-import com.nimbusds.jose.shaded.gson.JsonArray;
-import com.nimbusds.jose.shaded.gson.JsonPrimitive;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
@@ -30,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,12 +48,6 @@ public class UiControllerLoginService {
 
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
-
-  @Value("${klaw.ad.roles.attribute:roles}")
-  private String rolesAttribute;
-
-  @Value("${klaw.ad.teams.attribute:teams}")
-  private String teamsAttribute;
 
   @Value("${klaw.ad.name.attribute:name}")
   private String nameAttribute;
@@ -147,48 +140,51 @@ public class UiControllerLoginService {
 
   public String checkAnonymousLogin(
       String uri,
-      OAuth2AuthenticationToken auth2AuthenticationToken,
+      AbstractAuthenticationToken abstractAuthenticationToken,
       HttpServletResponse response) {
-    DefaultOAuth2User defaultOAuth2User =
-        (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    String userName = null;
+    DefaultOAuth2User defaultOAuth2User = null;
+    String nameAttribute = "name";
+    Collection<? extends GrantedAuthority> authorities = null;
+
     // Extract attributes for user verification/registration
-    String userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
+    if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
+      defaultOAuth2User =
+          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
+      nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
+      authorities = defaultOAuth2User.getAuthorities();
+    } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
+      userName =
+          ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+              .getUsername();
+      nameAttribute = abstractAuthenticationToken.getName();
+      authorities = abstractAuthenticationToken.getAuthorities();
+    }
 
     // if user does not exist in db
     if (manageDatabase.getHandleDbRequests().getUsersInfo(userName) == null) {
       Pair<Boolean, String> roleValidationPair = Pair.of(null, null);
-      Pair<Boolean, String> teamValidationPair = Pair.of(null, null);
-      // If enableUserAuthorizationFromAD is true, retrieve roles and teams from AD token and match
+      // If enableUserAuthorizationFromAD is true, retrieve roles from AD token and match
       // with klaw metadata
       if (enableUserAuthorizationFromAD) {
         Set<String> klawRoles =
             manageDatabase.getRolesPermissionsPerTenant(DEFAULT_TENANT_ID).keySet();
-        Set<String> klawTeams = manageDatabase.getTeamNamesForTenant(DEFAULT_TENANT_ID);
 
         // extract role from AD token authorities
-        roleValidationPair =
-            getRoleFromTokenAuthorities(defaultOAuth2User, userName, klawRoles, response);
-        if (!roleValidationPair.getLeft()) {
-          sendResponse(response, roleValidationPair);
-          return oauthLoginPage;
-        }
-
-        // extract team from AD attribute configured at klaw.ad.teams.attribute
-        teamValidationPair =
-            extractClaimsFromAD(defaultOAuth2User, userName, teamsAttribute, klawTeams, response);
-        if (!teamValidationPair.getLeft()) {
-          sendResponse(response, teamValidationPair);
-          return oauthLoginPage;
+        if ("true".equals(ssoEnabled) && defaultOAuth2User != null) {
+          roleValidationPair =
+              getRoleFromTokenAuthorities(authorities, userName, klawRoles, response);
+          if (!roleValidationPair.getLeft()) {
+            sendResponse(response, roleValidationPair);
+            return oauthLoginPage;
+          }
         }
       }
-      return registerStagingUser(
-          userName,
-          defaultOAuth2User.getAttributes().get(nameAttribute),
-          roleValidationPair.getRight(),
-          teamValidationPair.getRight());
+      return registerStagingUser(userName, nameAttribute, roleValidationPair.getRight());
     }
 
-    if (auth2AuthenticationToken.isAuthenticated()) {
+    if (abstractAuthenticationToken.isAuthenticated()) {
       return uri;
     } else {
       return oauthLoginPage;
@@ -207,23 +203,25 @@ public class UiControllerLoginService {
   }
 
   private Pair<Boolean, String> getRoleFromTokenAuthorities(
-      DefaultOAuth2User defaultOAuth2User,
+      Collection<? extends GrantedAuthority> authorities,
       String userName,
       Set<String> klawRoles,
       HttpServletResponse response) {
     String roleFromClaim = null;
-    Collection<? extends GrantedAuthority> authorities = defaultOAuth2User.getAuthorities();
     int claimMatched = 0;
     for (GrantedAuthority authority : authorities) {
-      String authorityRole = authority.getAuthority().substring(5); // ex : ROLE_USER
-      if (klawRoles.stream().anyMatch(authorityRole::equalsIgnoreCase)) {
-        claimMatched++;
-        roleFromClaim = authorityRole;
+      String authorityStr = authority.getAuthority();
+      int indexOfRoleSeparator = authorityStr.indexOf("_");
+      if (indexOfRoleSeparator > 0) {
+        String authorityRole = authorityStr.substring(indexOfRoleSeparator + 1); // ex : ROLE_USER
+        if (klawRoles.stream().anyMatch(authorityRole::equalsIgnoreCase)) {
+          claimMatched++;
+          roleFromClaim = authorityRole;
+        }
       }
     }
 
-    Pair<Boolean, String> claimValidationPair =
-        validateClaims(claimMatched, userName, "roles", response);
+    Pair<Boolean, String> claimValidationPair = validateClaims(claimMatched, userName, "roles");
     if (claimValidationPair.getLeft()) { // valid claim
       return Pair.of(Boolean.TRUE, roleFromClaim);
     } else {
@@ -231,59 +229,22 @@ public class UiControllerLoginService {
     }
   }
 
-  private Pair<Boolean, String> extractClaimsFromAD(
-      DefaultOAuth2User defaultOAuth2User,
-      String userName,
-      String claimKey,
-      Set<String> klawRolesTeams,
-      HttpServletResponse response) {
-    String claimValue = null;
-    int claimMatched = 0;
-    try {
-      JsonArray jsonArray = (JsonArray) defaultOAuth2User.getAttributes().get(claimKey);
-      for (Object jsonObject : jsonArray) {
-        String jsonElement = ((JsonPrimitive) jsonObject).getAsString();
-        if (klawRolesTeams.stream().anyMatch(jsonElement::equalsIgnoreCase)) {
-          claimMatched++;
-          claimValue = jsonElement;
-        }
-      }
-    } catch (Exception e) {
-      log.error("Error in retrieving claims, ignore");
-    }
-    // Multiple roles/teams matched : Klaw roles/teams against AD roles/teams. throw exception -
-    // deny login
-    Pair<Boolean, String> claimValidationPair =
-        validateClaims(claimMatched, userName, "teams", response);
-    if (claimValidationPair.getLeft()) {
-      return Pair.of(Boolean.TRUE, claimValue);
-    } else {
-      return claimValidationPair;
-    }
-  }
-
-  // if no claims matched, or mulitple claims matched, deny registering/login to the user. claimType
+  // if no claims matched, or multiple claims matched, deny registering/login to the user. claimType
   // can be 'roles' or 'teams'.
   private Pair<Boolean, String> validateClaims(
-      int claimMatched, String userName, String claimType, HttpServletResponse response) {
+      int claimMatched, String userName, String claimType) {
     String errorCode = "";
     Boolean validClaim = Boolean.TRUE;
     if (claimMatched == 0) {
       if (claimType.equals("roles")) {
         errorCode = ACTIVE_DIRECTORY_ERR_CODE_101;
         log.error(AD_ERROR_101_NO_MATCHING_ROLE + "{}", userName);
-      } else {
-        errorCode = ACTIVE_DIRECTORY_ERR_CODE_102;
-        log.error(AD_ERROR_102_NO_MATCHING_TEAM + "{}", userName);
       }
       validClaim = Boolean.FALSE;
     } else if (claimMatched > 1) {
       if (claimType.equals("roles")) {
         errorCode = ACTIVE_DIRECTORY_ERR_CODE_103;
         log.error(AD_ERROR_103_MULTIPLE_MATCHING_ROLE + "{}", userName);
-      } else {
-        errorCode = ACTIVE_DIRECTORY_ERR_CODE_104;
-        log.error(AD_ERROR_104_MULTIPLE_MATCHING_TEAM + "{}", userName);
       }
       validClaim = Boolean.FALSE;
     }
@@ -318,19 +279,25 @@ public class UiControllerLoginService {
         return uri;
       } else {
         if (authentication instanceof OAuth2AuthenticationToken) {
-          return checkAnonymousLogin(uri, (OAuth2AuthenticationToken) authentication, response);
+          return checkAnonymousLogin(uri, authentication, response);
         } else {
           return oauthLoginPage;
         }
       }
     } else {
-      return getReturningPage(uri);
+      if (uri.contains("register") || uri.equals("registrationReview.html")) {
+        return uri;
+      } else {
+        if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
+          return checkAnonymousLogin(uri, authentication, response);
+        }
+        return getReturningPage(uri);
+      }
     }
   }
 
   // register user with staging status, and forward to signup
-  public String registerStagingUser(
-      String userName, Object fullName, String roleFromAD, String teamFromAD) {
+  public String registerStagingUser(String userName, Object fullName, String roleFromAD) {
     try {
       log.info("User found in SSO/AD and not in Klaw db :{}", userName);
       String existingRegistrationId =
@@ -348,8 +315,7 @@ public class UiControllerLoginService {
         RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
         registerUserInfoModel.setRegistrationId(randomId);
         registerUserInfoModel.setStatus(NewUserStatus.STAGING.value);
-        registerUserInfoModel.setTeam(
-            Objects.requireNonNullElse(teamFromAD, KwConstants.STAGINGTEAM));
+        registerUserInfoModel.setTeam(KwConstants.STAGINGTEAM);
         registerUserInfoModel.setRole(
             Objects.requireNonNullElse(roleFromAD, KwConstants.USER_ROLE));
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));

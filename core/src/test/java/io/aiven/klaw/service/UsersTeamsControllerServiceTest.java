@@ -50,7 +50,9 @@ public class UsersTeamsControllerServiceTest {
   @BeforeEach
   void setUp() {
     utilMethods = new UtilMethods();
-    usersTeamsControllerService = new UsersTeamsControllerService(inMemoryUserDetailsManager);
+    usersTeamsControllerService = new UsersTeamsControllerService();
+    ReflectionTestUtils.setField(
+        usersTeamsControllerService, "inMemoryUserDetailsManager", inMemoryUserDetailsManager);
     ReflectionTestUtils.setField(usersTeamsControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(usersTeamsControllerService, "mailService", mailService);
     ReflectionTestUtils.setField(

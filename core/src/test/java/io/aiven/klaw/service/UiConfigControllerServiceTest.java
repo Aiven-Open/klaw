@@ -74,12 +74,14 @@ public class UiConfigControllerServiceTest {
 
   @BeforeEach
   public void setUp() throws Exception {
-    usersTeamsControllerService = new UsersTeamsControllerService(inMemoryUserDetailsManager);
+    usersTeamsControllerService = new UsersTeamsControllerService();
     envsClustersTenantsControllerService = new EnvsClustersTenantsControllerService();
     envsClustersTenantsControllerService.setServices(clusterApiService, mailService);
 
     this.env = new EnvModel();
     env.setName("DEV");
+    ReflectionTestUtils.setField(
+        usersTeamsControllerService, "inMemoryUserDetailsManager", inMemoryUserDetailsManager);
     ReflectionTestUtils.setField(
         envsClustersTenantsControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(

@@ -34,11 +34,11 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
     classes = UiapiApplication.class)
 // Config file with property klaw.login.authentication.type set to 'ad' and klaw.enable.sso set to
 // true
-@TestPropertySource(locations = "classpath:test-application-rdbms-ad.properties")
+@TestPropertySource(locations = "classpath:test-application-rdbms-sso-ad.properties")
 @AutoConfigureMockMvc
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @DirtiesContext
-public class ActiveDirectoryAuthenticationIT {
+public class SsoActiveDirectoryAuthenticationIT {
 
   @Autowired private MockMvc mvc;
 

@@ -58,6 +58,9 @@ public class UsersTeamsControllerService {
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
+  @Value("${klaw.enable.sso:false}")
+  private boolean ssoEnabled;
+
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 
@@ -70,18 +73,14 @@ public class UsersTeamsControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  private final InMemoryUserDetailsManager inMemoryUserDetailsManager;
+  @Autowired(required = false)
+  private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
   // pattern for simple username/mailid
   private static final Pattern saasPattern = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
 
   // pattern for simple username
   private static final Pattern defaultPattern = Pattern.compile("^[a-zA-Z0-9]{3,}$");
-
-  @Autowired
-  public UsersTeamsControllerService(InMemoryUserDetailsManager inMemoryUserDetailsManager) {
-    this.inMemoryUserDetailsManager = inMemoryUserDetailsManager;
-  }
 
   public UserInfoModel getUserInfoDetails(String userId) {
     UserInfoModel userInfoModel = new UserInfoModel();
@@ -474,9 +473,7 @@ public class UsersTeamsControllerService {
                 .roles(newUser.getRole())
                 .build());
         newUser.setUserPassword(encodePwd(newUser.getUserPassword()));
-      } else
-        inMemoryUserDetailsManager.createUser(
-            User.withUsername(newUser.getUsername()).password("").roles(newUser.getRole()).build());
+      }
 
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
       UserInfo userInfo = new UserInfo();
@@ -502,7 +499,12 @@ public class UsersTeamsControllerService {
       }
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
-      inMemoryUserDetailsManager.deleteUser(newUser.getUsername());
+      try {
+        if (inMemoryUserDetailsManager != null)
+          inMemoryUserDetailsManager.deleteUser(newUser.getUsername());
+      } catch (Exception e1) {
+        log.error("Try deleting user");
+      }
       if (e.getMessage().contains("should not exist")) {
         return ApiResponse.builder().result("Failure. User already exists.").build();
       } else {
@@ -949,7 +951,7 @@ public class UsersTeamsControllerService {
   }
 
   private Pattern getPattern() {
-    if (SAAS.equals(kwInstallationType) || (ACTIVE_DIRECTORY.value.equals(authenticationType))) {
+    if (SAAS.equals(kwInstallationType) || ssoEnabled) {
       return saasPattern;
     } else {
       return defaultPattern;
