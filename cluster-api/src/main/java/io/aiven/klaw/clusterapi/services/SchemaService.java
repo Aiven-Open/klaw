@@ -40,8 +40,6 @@ public class SchemaService {
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
   public static final String SCHEMA_COMPATIBILITY_NOT_SET = "NOT SET";
-  public static final String SUBJECT = "Subject";
-  public static final String GLOBAL = "Global";
 
   @Value("${klaw.schemaregistry.compatibility.default:BACKWARD}")
   private String defaultSchemaCompatibility;
