@@ -214,7 +214,10 @@ describe("<TopicAclRequest />", () => {
       );
     });
 
-    afterEach(cleanup);
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
 
     it("renders correct fields when selecting IP or Principal in AclIpPrincipleTypeField", async () => {
       await assertSkeleton();
@@ -505,6 +508,37 @@ describe("<TopicAclRequest />", () => {
       expect(visiblePrefixField).toBeInTheDocument();
       expect(visiblePrefixField).toBeEnabled();
       expect(visiblePrefixField).toHaveDisplayValue("aivtopic1");
+    });
+
+    it("navigates back when clicking Cancel (TopicProducerForm)", async () => {
+      await assertSkeleton();
+
+      const cancelButton = screen.getByRole("button", { name: "Cancel" });
+
+      await userEvent.click(cancelButton);
+
+      await waitFor(() => {
+        expect(mockedNavigate).toHaveBeenCalledTimes(1);
+        expect(mockedNavigate).toHaveBeenCalledWith(-1);
+      });
+    });
+
+    it("navigates back when clicking Cancel (TopicConsumerForm)", async () => {
+      await assertSkeleton();
+
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await userEvent.click(aclConsumerTypeInput);
+
+      const cancelButton = screen.getByRole("button", { name: "Cancel" });
+
+      await userEvent.click(cancelButton);
+
+      await waitFor(() => {
+        expect(mockedNavigate).toHaveBeenCalledTimes(1);
+        expect(mockedNavigate).toHaveBeenCalledWith(-1);
+      });
     });
   });
 

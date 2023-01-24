@@ -124,7 +124,9 @@ const TopicConsumerForm = ({
             <SubmitButton loading={isLoading}>Submit</SubmitButton>
           </GridItem>
           <GridItem>
-            <SecondaryButton disabled={isLoading}>Cancel</SecondaryButton>
+            <SecondaryButton disabled={isLoading} onClick={() => navigate(-1)}>
+              Cancel
+            </SecondaryButton>
           </GridItem>
         </Grid>
       </Form>
