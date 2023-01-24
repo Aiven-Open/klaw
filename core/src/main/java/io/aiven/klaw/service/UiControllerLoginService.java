@@ -221,8 +221,7 @@ public class UiControllerLoginService {
       }
     }
 
-    Pair<Boolean, String> claimValidationPair =
-        validateClaims(claimMatched, userName, "roles", response);
+    Pair<Boolean, String> claimValidationPair = validateClaims(claimMatched, userName, "roles");
     if (claimValidationPair.getLeft()) { // valid claim
       return Pair.of(Boolean.TRUE, roleFromClaim);
     } else {
@@ -233,25 +232,19 @@ public class UiControllerLoginService {
   // if no claims matched, or multiple claims matched, deny registering/login to the user. claimType
   // can be 'roles' or 'teams'.
   private Pair<Boolean, String> validateClaims(
-      int claimMatched, String userName, String claimType, HttpServletResponse response) {
+      int claimMatched, String userName, String claimType) {
     String errorCode = "";
     Boolean validClaim = Boolean.TRUE;
     if (claimMatched == 0) {
       if (claimType.equals("roles")) {
         errorCode = ACTIVE_DIRECTORY_ERR_CODE_101;
         log.error(AD_ERROR_101_NO_MATCHING_ROLE + "{}", userName);
-      } else {
-        errorCode = ACTIVE_DIRECTORY_ERR_CODE_102;
-        log.error(AD_ERROR_102_NO_MATCHING_TEAM + "{}", userName);
       }
       validClaim = Boolean.FALSE;
     } else if (claimMatched > 1) {
       if (claimType.equals("roles")) {
         errorCode = ACTIVE_DIRECTORY_ERR_CODE_103;
         log.error(AD_ERROR_103_MULTIPLE_MATCHING_ROLE + "{}", userName);
-      } else {
-        errorCode = ACTIVE_DIRECTORY_ERR_CODE_104;
-        log.error(AD_ERROR_104_MULTIPLE_MATCHING_TEAM + "{}", userName);
       }
       validClaim = Boolean.FALSE;
     }
