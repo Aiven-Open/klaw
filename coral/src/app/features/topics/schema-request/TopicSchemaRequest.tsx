@@ -13,8 +13,10 @@ import { Box, Button, Dialog } from "@aivenio/aquarium";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
 import { useQuery } from "@tanstack/react-query";
-import { schemaRegistryEnvironments } from "src/domain/environment/environment-queries";
-import { Environment } from "src/domain/environment";
+import {
+  Environment,
+  getSchemaRegistryEnvironments,
+} from "src/domain/environment";
 
 const mockedData = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -52,7 +54,10 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { data: environments, isLoading: environmentsIsLoading } = useQuery<
     Environment[],
     Error
-  >(schemaRegistryEnvironments());
+  >({
+    queryKey: ["schemaRegistryEnvironments"],
+    queryFn: () => getSchemaRegistryEnvironments(),
+  });
 
   const form = useForm<Schema>({
     schema: formSchema,
@@ -74,81 +79,63 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   }
 
   return (
-    <>
-      <Dialog
-        title={"this is a dialog"}
-        type={"confirmation"}
-        open={modalOpen}
-        primaryAction={{
-          text: "do something",
-          onClick: () => {
-            console.log("primary");
-          },
-        }}
-      >
-        this is a dialog 👋
-      </Dialog>
-      <Button onClick={() => setModalOpen(!modalOpen)}>
-        Click to toggle modal
-      </Button>
-      <Form
-        {...form}
-        ariaLabel={"Request a new schema"}
-        onSubmit={onSubmitForm}
-        onError={onErrorForm}
-      >
-        {environmentsIsLoading && (
-          <div data-testid={"environments-select-loading"}>
-            <NativeSelect.Skeleton />
-          </div>
-        )}
-        {environments && (
-          <NativeSelect
-            name={"environment"}
-            labelText={"Select environment"}
-            defaultValue={"."}
-            required={true}
-          >
-            <option disabled value={"."}>
-              please select
-            </option>
-            {environments.map((env, index) => {
-              return (
-                <option key={`${env.name}${index}`} value={env.id}>
-                  {env.name}
-                </option>
-              );
-            })}
-          </NativeSelect>
-        )}
-
+    <Form
+      {...form}
+      ariaLabel={"Request a new schema"}
+      onSubmit={onSubmitForm}
+      onError={onErrorForm}
+    >
+      {environmentsIsLoading && (
+        <div data-testid={"environments-select-loading"}>
+          <NativeSelect.Skeleton />
+        </div>
+      )}
+      {environments && (
         <NativeSelect
-          name={"topicName"}
-          labelText={"Topic name"}
-          defaultValue={topicName}
-          readOnly={true}
-          aria-readonly={true}
-        >
-          <option value={topicName}>{topicName}</option>
-        </NativeSelect>
-
-        <FileInput
-          buttonText={"Upload AVRO Schema"}
-          labelText={"Upload AVRO Schema File"}
-          name={"schemafull"}
-          noFileText={"No file chosen"}
+          name={"environment"}
+          labelText={"Select environment"}
+          defaultValue={"."}
           required={true}
-        />
+        >
+          <option disabled value={"."}>
+            please select
+          </option>
+          {environments.map((env, index) => {
+            return (
+              <option key={`${env.name}${index}`} value={env.id}>
+                {env.name}
+              </option>
+            );
+          })}
+        </NativeSelect>
+      )}
 
-        <Textarea name={"remarks"} labelText={"Message for the approval"} />
-        <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-          <SubmitButton>Submit request</SubmitButton>
-          <Button type="button" kind={"secondary"} onClick={onCancel}>
-            Cancel
-          </Button>
-        </Box>
-      </Form>
-    </>
+      <NativeSelect
+        name={"topicName"}
+        labelText={"Topic name"}
+        defaultValue={topicName}
+        readOnly={true}
+        aria-readonly={true}
+      >
+        <option value={topicName}>{topicName}</option>
+      </NativeSelect>
+
+      <FileInput
+        buttonText={"Upload AVRO Schema"}
+        labelText={"Upload AVRO Schema File"}
+        name={"schemafull"}
+        noFileText={"No file chosen"}
+        required={true}
+      />
+
+      <Textarea name={"remarks"} labelText={"Message for the approval"} />
+      <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
+        <SubmitButton>Submit request</SubmitButton>
+        <Button type="button" kind={"secondary"} onClick={onCancel}>
+          Cancel
+        </Button>
+      </Box>
+    </Form>
   );
 }
 
