@@ -7,8 +7,13 @@ import list from "@aivenio/aquarium/dist/src/icons/list";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
+import useFeatureFlag, { FeatureFlag } from "src/app/hooks/useFeatureFlag";
+import { useLocation } from "react-router-dom";
 
 function MainNavigation() {
+  const topicAclRequestEnabled = useFeatureFlag(FeatureFlag.TOPIC_ACL_REQUEST);
+  const { pathname } = useLocation();
+
   return (
     <Box
       component={"nav"}
@@ -35,8 +40,20 @@ function MainNavigation() {
             <MainNavigationLink
               href={"/coral/topics"}
               linkText={"All Topics"}
-              active={true}
+              active={pathname === "/coral/topics"}
             />
+            {topicAclRequestEnabled ? (
+              <MainNavigationLink
+                // This link is only intended to be rendered in dev environment
+                // So the path does not have a coral/ prefix
+                // @TODO: delete when Topic overview / top nac Request dropdown are implemented
+                href={"/topic/aivtopic1/acl/request"}
+                linkText={"Subscribe"}
+                active={pathname.includes("/acl/request")}
+              />
+            ) : (
+              <></>
+            )}
 
             <MainNavigationLink
               href={`/execTopics`}

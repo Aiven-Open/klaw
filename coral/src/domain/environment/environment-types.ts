@@ -9,6 +9,7 @@ type Environment = {
   maxReplicationFactor: number | undefined;
   topicNamePrefix: string | undefined;
   topicNameSuffix: string | undefined;
+  type: KlawApiModel<"Environment">["type"];
 };
 type ClusterInfo = KlawApiModel<"environmentGetClusterInfoResponse">;
 

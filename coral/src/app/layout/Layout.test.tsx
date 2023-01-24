@@ -1,5 +1,6 @@
 import Layout from "src/app/layout/Layout";
-import { cleanup, screen, render, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 // mock out svgs to avoid clutter
 jest.mock("@aivenio/aquarium", () => {
@@ -13,7 +14,7 @@ jest.mock("@aivenio/aquarium", () => {
 describe("Layout.tsx", () => {
   const testChildren = <div data-testid={"test-children"}></div>;
   beforeAll(() => {
-    render(<Layout>{testChildren}</Layout>);
+    customRender(<Layout>{testChildren}</Layout>, { memoryRouter: true });
   });
 
   afterAll(cleanup);

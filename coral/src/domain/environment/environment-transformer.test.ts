@@ -23,6 +23,7 @@ describe("environment-transformer.ts", () => {
           maxReplicationFactor: undefined,
           topicNamePrefix: "dev-",
           topicNameSuffix: undefined,
+          type: "kafka",
         },
       ]);
     });

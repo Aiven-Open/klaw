@@ -23,6 +23,7 @@ function transformEnvironmentApiResponse(
       ),
       topicNamePrefix: environment.topicprefix ?? undefined,
       topicNameSuffix: environment.topicsuffix ?? undefined,
+      type: environment.type,
     };
     return rv;
   });

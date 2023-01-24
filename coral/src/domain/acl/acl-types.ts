@@ -18,7 +18,6 @@ type BaseCreateAclRequest = Pick<
   | "environment"
   | "teamname"
   | "aclIpPrincipleType"
-  | "consumergroup"
   | "acl_ssl"
   | "acl_ip"
 >;

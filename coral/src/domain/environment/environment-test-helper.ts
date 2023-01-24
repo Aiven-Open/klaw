@@ -38,6 +38,7 @@ const defaultEnvironment: Environment = {
   maxReplicationFactor: undefined,
   topicNamePrefix: undefined,
   topicNameSuffix: undefined,
+  type: "kafka",
 };
 
 function createEnvironment(environment: Partial<Environment>): Environment {

@@ -1,9 +1,10 @@
+import { cleanup, screen } from "@testing-library/react";
 import HomePage from "src/app/pages";
-import { render, cleanup, screen } from "@testing-library/react";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("HomePage", () => {
   beforeAll(() => {
-    render(<HomePage />);
+    customRender(<HomePage />, { memoryRouter: true });
   });
 
   afterAll(cleanup);

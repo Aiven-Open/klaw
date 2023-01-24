@@ -1,11 +1,12 @@
-import { render, screen } from "@testing-library/react/pure";
+import { screen } from "@testing-library/react/pure";
 import NotFound from "src/app/pages/not-found";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 describe("NotFound", () => {
   describe("renders a Not Found page with correct text", () => {
     beforeAll(() => {
-      render(<NotFound />);
+      customRender(<NotFound />, { memoryRouter: true });
     });
 
     it("renders a headline", async () => {
