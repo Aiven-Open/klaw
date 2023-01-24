@@ -936,7 +936,7 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
-      it("redirects user to myTopicRequests", async () => {
+      it("redirects user to previous page", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", { name: "Submit" });
@@ -1082,7 +1082,7 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
-      it("redirects user to myTopicRequests", async () => {
+      it("redirects user to previous page", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
 

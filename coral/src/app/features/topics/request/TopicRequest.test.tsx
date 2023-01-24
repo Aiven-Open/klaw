@@ -780,7 +780,7 @@ describe("<TopicRequest />", () => {
         });
       });
 
-      it("redirects user to myTopicRequests", async () => {
+      it("redirects user to previous page", async () => {
         const spyPost = jest.spyOn(api, "post");
 
         await user.click(screen.getByRole("button", { name: "Request topic" }));
