@@ -162,7 +162,7 @@ public class SchemaService {
               clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
           Map<String, String> params = new HashMap<>();
-          HttpEntity<Object> request = createSchmeaRegistryRequest(clusterIdentification);
+          HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
 
           ResponseEntity<Map<String, Object>> responseNew =
               reqDetails
@@ -202,7 +202,7 @@ public class SchemaService {
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       Map<String, String> params = new HashMap<>();
-      HttpEntity<Object> request = createSchmeaRegistryRequest(clusterIdentification);
+      HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
 
       ResponseEntity<List<Integer>> responseList =
           reqDetails
@@ -237,8 +237,8 @@ public class SchemaService {
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       ResponseEntity<Map<String, String>> responseList =
-          getSubjectSchemaCompatibility(
-              reqDetails, new HashMap<>(), createSchmeaRegistryRequest(clusterIdentification));
+          getSubjectSchemaCompatibilityRequest(
+              reqDetails, new HashMap<>(), createSchemaRegistryRequest(clusterIdentification));
       log.info("Schema compatibility " + responseList);
       return responseList.getBody().get("compatibilityLevel");
     } catch (Exception e) {
@@ -247,14 +247,14 @@ public class SchemaService {
     }
   }
 
-  private HttpEntity<Object> createSchmeaRegistryRequest(String clusterIdentification) {
+  private HttpEntity<Object> createSchemaRegistryRequest(String clusterIdentification) {
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
     HttpEntity<Object> request = new HttpEntity<>(headers);
     return request;
   }
 
-  private static ResponseEntity<Map<String, String>> getSubjectSchemaCompatibility(
+  private static ResponseEntity<Map<String, String>> getSubjectSchemaCompatibilityRequest(
       Pair<String, RestTemplate> reqDetails,
       Map<String, String> params,
       HttpEntity<Object> request) {
@@ -325,7 +325,7 @@ public class SchemaService {
     String suffixUrl = environmentVal + "/subjects";
     Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
-    HttpEntity<Object> request = createSchmeaRegistryRequest(clusterIdentification);
+    HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
 
     try {
       reqDetails
