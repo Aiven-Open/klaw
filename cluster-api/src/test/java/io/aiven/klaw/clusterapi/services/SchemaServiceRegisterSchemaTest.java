@@ -371,7 +371,6 @@ class SchemaServiceRegisterSchemaTest {
     when(restTemplate.postForEntity(anyString(), any(HttpEntity.class), eq(String.class)))
         .thenReturn(createSchemaRegisterResponseEntity(HttpStatus.OK));
 
-
     when(restTemplate.exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
