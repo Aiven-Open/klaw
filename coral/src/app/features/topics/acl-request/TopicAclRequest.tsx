@@ -51,18 +51,21 @@ const TopicAclRequest = () => {
     },
   });
 
-  const { data: topicNames } = useQuery<TopicNames, Error>(["topic-names"], {
-    queryFn: () => getTopicNames({ onlyMyTeamTopics: false }),
-    keepPreviousData: true,
-    onSuccess: (data) => {
-      if (data?.includes(topicName)) {
-        return;
-      }
-      // Navigate back to Topics when topicName does not exist in the topics list
-      navigate("/topics");
-    },
-    enabled: topicName !== "",
-  });
+  const { data: topicNames } = useQuery<TopicNames, Error>(
+    ["topic-names", topicType],
+    {
+      queryFn: () => getTopicNames({ onlyMyTeamTopics: false }),
+      keepPreviousData: true,
+      onSuccess: (data) => {
+        if (data?.includes(topicName)) {
+          return;
+        }
+        // Navigate back to Topics when topicName does not exist in the topics list
+        navigate("/topics");
+      },
+      enabled: topicName !== "",
+    }
+  );
 
   const { data: environments } = useQuery<Environment[], Error>(
     ["topic-environments"],
@@ -76,7 +79,7 @@ const TopicAclRequest = () => {
       ? topicProducerForm.watch("aclPatternType")
       : "LITERAL";
   const { data: topicTeam } = useQuery<TopicTeam, Error>({
-    queryKey: ["topicTeam", topicName, selectedPatternType],
+    queryKey: ["topicTeam", topicName, selectedPatternType, topicType],
     queryFn: () =>
       getTopicTeam({ topicName, patternType: selectedPatternType }),
     onSuccess: (data) => {
@@ -101,7 +104,7 @@ const TopicAclRequest = () => {
     (env) => env.id === selectedEnvironment
   )?.type as Environment["type"];
   const { data: clusterInfo } = useQuery<ClusterInfo, Error>(
-    ["cluster-info", selectedEnvironment],
+    ["cluster-info", selectedEnvironment, topicType],
     {
       queryFn: () =>
         getClusterInfo({
