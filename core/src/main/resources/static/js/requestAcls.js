@@ -184,6 +184,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                             $scope.selectedAclType="PRINCIPAL";
                             $scope.getAivenServiceAccounts(envName);
                         }
+                    $scope.getAllTopics(envName);
                     }).error(
                         function(error)
                         {
@@ -260,14 +261,15 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 }
             }
 
-            $scope.getAllTopics = function() {
-
+            $scope.getAllTopics = function(env) {
                     $scope.alltopics = null;
                             $http({
                                 method: "GET",
                                 url: "getTopicsOnly",
                                 headers : { 'Content-Type' : 'application/json' },
-                                params: {'isMyTeamTopics' : 'false' },
+                                params: {'isMyTeamTopics' : 'false',
+                                    'envSelected' : env
+                                },
                             }).success(function(output) {
                                 $scope.alltopics = output;
                             }).error(
@@ -512,7 +514,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         $scope.topicSelectedFromUrl = sParameterName[1]
                         $scope.addAcl.topicname = $scope.topicSelectedFromUrl;
 
-                        $scope.getAllTopics();
+                        $scope.getAllTopics("ALL");
                         $scope.getTopicTeam($scope.addAcl.topicname);
                     }
                 }

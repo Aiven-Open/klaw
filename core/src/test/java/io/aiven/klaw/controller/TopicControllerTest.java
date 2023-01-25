@@ -239,7 +239,7 @@ public class TopicControllerTest {
   @Order(10)
   public void getTopicsOnly() throws Exception {
     List<String> topicList = Arrays.asList("testtopic1", "testtopic2");
-    when(topicControllerService.getAllTopics(false)).thenReturn(topicList);
+    when(topicControllerService.getAllTopics(false, "ALL")).thenReturn(topicList);
 
     mvc.perform(
             MockMvcRequestBuilders.get("/getTopicsOnly")

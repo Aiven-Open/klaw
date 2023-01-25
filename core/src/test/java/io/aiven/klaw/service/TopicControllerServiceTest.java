@@ -682,7 +682,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
         .thenReturn(utilMethods.getTopics());
 
-    List<String> result = topicControllerService.getAllTopics(false);
+    List<String> result = topicControllerService.getAllTopics(false, "DEV");
     assertThat(result).hasSize(1);
     assertThat(result.get(0)).isEqualTo("testtopic");
   }
@@ -697,7 +697,7 @@ public class TopicControllerServiceTest {
         .thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
-    List<String> result = topicControllerService.getAllTopics(true);
+    List<String> result = topicControllerService.getAllTopics(true, "DEV");
     assertThat(result).hasSize(1);
     assertThat(result.get(0)).isEqualTo("testtopic");
   }
