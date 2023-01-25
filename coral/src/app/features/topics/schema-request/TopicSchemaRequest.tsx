@@ -5,11 +5,10 @@ import {
   SubmitButton,
   Textarea,
 } from "src/app/components/Form";
-import { FieldErrors } from "react-hook-form";
-import { MouseEvent, useEffect } from "react";
+import { useEffect } from "react";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Environment,
   getSchemaRegistryEnvironments,
@@ -20,6 +19,9 @@ import {
 } from "src/app/features/topics/schema-request/utils/zod-schema";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { Box, Button } from "@aivenio/aquarium";
+import { createSchemaRequest } from "src/domain/schema-request";
+import { mockCreateSchemaRequest } from "src/domain/schema-request/schema-request-api.msw";
+import { useNavigate } from "react-router-dom";
 
 const mockedData = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -43,23 +45,7 @@ type TopicSchemaRequestProps = {
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
 
-  useEffect(() => {
-    if (window.msw !== undefined) {
-      mockGetSchemaRegistryEnvironments({
-        mswInstance: window.msw,
-        response: { data: mockedData },
-      });
-    }
-  }, []);
-
-  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
-    Environment[],
-    Error
-  >({
-    queryKey: ["schemaRegistryEnvironments"],
-    queryFn: () => getSchemaRegistryEnvironments(),
-  });
-
+  const navigate = useNavigate();
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
     defaultValues: {
@@ -68,73 +54,101 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     },
   });
 
+  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
+    Environment[],
+    Error
+  >({
+    queryKey: ["schemaRegistryEnvironments"],
+    queryFn: () => getSchemaRegistryEnvironments(),
+  });
+  const schemaRequestMutation = useMutation(createSchemaRequest);
+
+  useEffect(() => {
+    if (window.msw !== undefined) {
+      mockGetSchemaRegistryEnvironments({
+        mswInstance: window.msw,
+        response: { data: mockedData },
+      });
+      mockCreateSchemaRequest({
+        mswInstance: window.msw,
+        response: { data: { status: "200 OK" } },
+      });
+    }
+  }, []);
+
+  if (schemaRequestMutation.isSuccess) {
+    const params = new URLSearchParams({
+      reqsType: "created",
+      schemaCreated: "true",
+    });
+    navigate(`/mySchemaRequests?${params.toString()}`);
+  }
+
   function onSubmitForm(userInput: TopicRequestFormSchema) {
-    console.log("onSubmit userInput", userInput);
+    schemaRequestMutation.mutate(userInput);
   }
 
-  function onErrorForm(arg: FieldErrors) {
-    console.log("onError", arg);
-  }
-
-  function onCancel(event: MouseEvent<HTMLButtonElement>) {
-    console.log("onCancel", event);
+  function onCancel() {
+    form.reset();
+    navigate(-1);
   }
 
   return (
-    <Form
-      {...form}
-      ariaLabel={"Request a new schema"}
-      onSubmit={onSubmitForm}
-      onError={onErrorForm}
-    >
-      {environmentsIsLoading && (
-        <div data-testid={"environments-select-loading"}>
-          <NativeSelect.Skeleton />
-        </div>
-      )}
-      {environments && (
-        <NativeSelect<TopicRequestFormSchema>
-          name={"environment"}
-          labelText={"Select environment"}
-          defaultValue={""}
-          required={true}
-        >
-          <option disabled value={""}>
-            please select
-          </option>
-          {environments.map((env, index) => {
-            return (
-              <option key={`${env.name}${index}`} value={env.id}>
-                {env.name}
-              </option>
-            );
-          })}
-        </NativeSelect>
-      )}
-
-      <NativeSelect<TopicRequestFormSchema>
-        name={"topicName"}
-        labelText={"Topic name"}
-        defaultValue={topicName}
-        readOnly={true}
-        aria-readonly={true}
+    <>
+      <Form
+        {...form}
+        ariaLabel={"Request a new schema"}
+        onSubmit={onSubmitForm}
       >
-        <option value={topicName}>{topicName}</option>
-      </NativeSelect>
+        {environmentsIsLoading && (
+          <div data-testid={"environments-select-loading"}>
+            <NativeSelect.Skeleton />
+          </div>
+        )}
+        {environments && (
+          <NativeSelect<TopicRequestFormSchema>
+            name={"environment"}
+            labelText={"Select environment"}
+            defaultValue={""}
+            required={true}
+          >
+            <option disabled value={""}>
+              please select
+            </option>
+            {environments.map((env, index) => {
+              return (
+                <option key={`${env.name}${index}`} value={env.id}>
+                  {env.name}
+                </option>
+              );
+            })}
+          </NativeSelect>
+        )}
 
-      <TopicSchema
-        name={"schemafull"}
-        required={!props.schemafullValueForTest}
-      />
+        <NativeSelect<TopicRequestFormSchema>
+          name={"topicName"}
+          labelText={"Topic name"}
+          defaultValue={topicName}
+          readOnly={true}
+          aria-readonly={true}
+        >
+          <option value={topicName}>{topicName}</option>
+        </NativeSelect>
 
-      <Textarea name={"remarks"} labelText={"Message for the approval"} />
-      <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-        <SubmitButton>Submit request</SubmitButton>
-        <Button type="button" kind={"secondary"} onClick={onCancel}>
-          Cancel
-        </Button>
-      </Box>
-    </Form>
+        <TopicSchema
+          name={"schemafull"}
+          required={!props.schemafullValueForTest}
+        />
+
+        <Textarea name={"remarks"} labelText={"Message for the approval"} />
+        <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
+          <SubmitButton>Submit request</SubmitButton>
+          <Button type="button" kind={"secondary"} onClick={onCancel}>
+            Cancel
+          </Button>
+        </Box>
+      </Form>
+    </>
   );
 }
 

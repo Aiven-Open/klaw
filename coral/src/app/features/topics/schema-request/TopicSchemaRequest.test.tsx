@@ -5,12 +5,30 @@ import {
 } from "@testing-library/react/pure";
 import { waitFor, within } from "@testing-library/react";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { server } from "src/services/api-mocks/server";
-import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import * as ReactQuery from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
+import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { createSchemaRequest } from "src/domain/schema-request";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+
+jest.mock("src/domain/schema-request/schema-request-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+
+const mockGetSchemaRegistryEnvironments =
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
+  >;
+const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
+  typeof createSchemaRequest
+>;
+
+const mockedUsedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedUsedNavigate,
+}));
 
 const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
 
@@ -21,9 +39,11 @@ const mockedEnvironments = [
   { name: "TST", id: "2" },
   { name: "INFRA", id: "3" },
 ];
-const mockedGetSchemaRegistryEnvironments = mockedEnvironments.map((entry) => {
-  return createMockEnvironmentDTO(entry);
-});
+const mockedGetSchemaRegistryEnvironments = transformEnvironmentApiResponse(
+  mockedEnvironments.map((entry) => {
+    return createMockEnvironmentDTO(entry);
+  })
+);
 
 const fileName = "my-awesome-schema.avsc";
 const testFile: File = new File(["{}"], fileName, {
@@ -37,12 +57,8 @@ describe("TopicSchemaRequest", () => {
     });
   };
 
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterAll(() => {
-    server.close();
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   describe("handles loading and update states", () => {
@@ -50,6 +66,8 @@ describe("TopicSchemaRequest", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
       useQuerySpy.mockReturnValue({ data: [], isLoading: true });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockCreateSchemaRequest.mockImplementation(jest.fn());
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
       });
@@ -78,10 +96,10 @@ describe("TopicSchemaRequest", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments({
-        mswInstance: server,
-        response: { data: mockedGetSchemaRegistryEnvironments },
-      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedGetSchemaRegistryEnvironments
+      );
+      mockCreateSchemaRequest.mockImplementation(jest.fn());
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
       });
@@ -198,10 +216,10 @@ describe("TopicSchemaRequest", () => {
 
   describe("shows errors when user does not fill out correctly", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments({
-        mswInstance: server,
-        response: { data: mockedGetSchemaRegistryEnvironments },
-      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedGetSchemaRegistryEnvironments
+      );
+      mockCreateSchemaRequest.mockImplementation(jest.fn());
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
       });
@@ -230,9 +248,17 @@ describe("TopicSchemaRequest", () => {
       expect(select).toBeInvalid();
     });
 
-    // @TODO this is currently not working, since fileUpload is
-    // triggered onChange. Needs update in Form, do later!
-    test.todo("shows error when user does not upload a file");
+    it("shows error when user does not upload a file", async () => {
+      const form = getForm();
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      fileInput.focus();
+      await userEvent.tab();
+
+      const fileRequiredError = screen.getAllByText("File is a required field");
+      expect(fileRequiredError).toHaveLength(2);
+    });
 
     it("does not enable button if user does not fill out all fields", async () => {
       const form = getForm();
@@ -254,16 +280,67 @@ describe("TopicSchemaRequest", () => {
     });
   });
 
-  describe("enables user to send a schema request", () => {
+  describe("enables user to cancel the form input", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments({
-        mswInstance: server,
-        response: { data: mockedGetSchemaRegistryEnvironments },
-      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedGetSchemaRegistryEnvironments
+      );
+      mockCreateSchemaRequest.mockResolvedValue({ status: "200 OK" });
+
       customRender(
         <TopicSchemaRequest
           topicName={testTopicName}
-          schemafullValueForTest={"testvalue"}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("redirects user to the previous page if the click 'Cancel'", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+    });
+  });
+
+  describe("enables user to send a schema request", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedGetSchemaRegistryEnvironments
+      );
+      mockCreateSchemaRequest.mockResolvedValue({ status: "200 OK" });
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
         />,
         {
           queryClient: true,
@@ -340,6 +417,65 @@ describe("TopicSchemaRequest", () => {
       await userEvent.upload(fileInput, testFile);
 
       expect(button).toBeEnabled();
+    });
+
+    it("submits on button click after user filled all required inputs", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      expect(mockCreateSchemaRequest).toHaveBeenCalledWith({
+        environment: "1",
+        remarks: "",
+        schemafull: "{}",
+        topicName: "my-awesome-topic",
+      });
+    });
+
+    it("redirects user to '/mySchemaRequests after schema request was successful", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      await waitFor(() =>
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(
+          "/mySchemaRequests?reqsType=created&schemaCreated=true"
+        )
+      );
     });
   });
 });
