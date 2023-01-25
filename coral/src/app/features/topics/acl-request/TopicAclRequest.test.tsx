@@ -890,17 +890,22 @@ describe("<TopicAclRequest />", () => {
         const submitButton = screen.getByRole("button", { name: "Submit" });
 
         // Fill form with valid data
-        await userEvent.selectOptions(
-          screen.getByRole("combobox", {
-            name: "Select environment *",
-          }),
-          "DEV"
-        );
+        await selectTestEnvironment();
         await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
-        const principalField = await screen.findByRole("textbox", {
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+
+        await waitFor(() => {
+          return screen.findByRole("textbox", {
+            name: "SSL DN strings / Usernames *",
+          });
+        });
+
+        const visiblePrincipalField = screen.getByRole("textbox", {
           name: "SSL DN strings / Usernames *",
         });
-        await userEvent.type(principalField, "Alice");
+        expect(visiblePrincipalField).toBeVisible();
+        expect(visiblePrincipalField).toBeEnabled();
+        await userEvent.type(visiblePrincipalField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -917,7 +922,7 @@ describe("<TopicAclRequest />", () => {
           acl_ssl: ["Alice"],
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
-          environment: "2",
+          environment: "1",
           topictype: "Producer",
           transactionalId: "",
           teamname: "Ospo",
@@ -942,17 +947,22 @@ describe("<TopicAclRequest />", () => {
         const submitButton = screen.getByRole("button", { name: "Submit" });
 
         // Fill form with valid data
-        await userEvent.selectOptions(
-          screen.getByRole("combobox", {
-            name: "Select environment *",
-          }),
-          "DEV"
-        );
+        await selectTestEnvironment();
         await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
-        const principalField = await screen.findByRole("textbox", {
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+
+        await waitFor(() => {
+          return screen.findByRole("textbox", {
+            name: "SSL DN strings / Usernames *",
+          });
+        });
+
+        const visiblePrincipalField = screen.getByRole("textbox", {
           name: "SSL DN strings / Usernames *",
         });
-        await userEvent.type(principalField, "Alice");
+        expect(visiblePrincipalField).toBeVisible();
+        expect(visiblePrincipalField).toBeEnabled();
+        await userEvent.type(visiblePrincipalField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -969,7 +979,7 @@ describe("<TopicAclRequest />", () => {
           acl_ssl: ["Alice"],
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
-          environment: "2",
+          environment: "1",
           topictype: "Producer",
           transactionalId: "",
           teamname: "Ospo",
@@ -1031,22 +1041,26 @@ describe("<TopicAclRequest />", () => {
         });
 
         // Fill form with valid data
-        await userEvent.selectOptions(
-          screen.getByRole("combobox", {
-            name: "Select environment *",
-          }),
-          "DEV"
-        );
+        await selectTestEnvironment();
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
 
         const consumerGroupInput = screen.getByRole("textbox", {
           name: "Consumer group *",
         });
         await userEvent.type(consumerGroupInput, "Group");
 
-        const principalField = await screen.findByRole("textbox", {
+        await waitFor(() => {
+          return screen.findByRole("textbox", {
+            name: "SSL DN strings / Usernames *",
+          });
+        });
+
+        const visiblePrincipalField = screen.getByRole("textbox", {
           name: "SSL DN strings / Usernames *",
         });
-        await userEvent.type(principalField, "Alice");
+        expect(visiblePrincipalField).toBeVisible();
+        expect(visiblePrincipalField).toBeEnabled();
+        await userEvent.type(visiblePrincipalField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -1063,7 +1077,7 @@ describe("<TopicAclRequest />", () => {
           acl_ssl: ["Alice"],
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
-          environment: "2",
+          environment: "1",
           topictype: "Consumer",
           teamname: "Ospo",
           consumergroup: "Group",
@@ -1096,21 +1110,27 @@ describe("<TopicAclRequest />", () => {
         });
 
         // Fill form with valid data
-        await userEvent.selectOptions(
-          screen.getByRole("combobox", {
-            name: "Select environment *",
-          }),
-          "DEV"
-        );
+        await selectTestEnvironment();
+
         const consumerGroupInput = screen.getByRole("textbox", {
           name: "Consumer group *",
         });
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+
         await userEvent.type(consumerGroupInput, "Group");
 
-        const principalField = await screen.findByRole("textbox", {
+        await waitFor(() => {
+          return screen.findByRole("textbox", {
+            name: "SSL DN strings / Usernames *",
+          });
+        });
+
+        const visiblePrincipalField = screen.getByRole("textbox", {
           name: "SSL DN strings / Usernames *",
         });
-        await userEvent.type(principalField, "Alice");
+        expect(visiblePrincipalField).toBeVisible();
+        expect(visiblePrincipalField).toBeEnabled();
+        await userEvent.type(visiblePrincipalField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -1127,7 +1147,7 @@ describe("<TopicAclRequest />", () => {
           acl_ssl: ["Alice"],
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
-          environment: "2",
+          environment: "1",
           topictype: "Consumer",
           teamname: "Ospo",
           consumergroup: "Group",
