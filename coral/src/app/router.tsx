@@ -25,7 +25,7 @@ const routes: Array<RouteObject> = [
     element: <AclRequest />,
   },
   {
-    path: "/topic/:topicName/request/schema",
+    path: "/topic/:topicName/request-schema",
     element: <SchemaRequest />,
   },
   {

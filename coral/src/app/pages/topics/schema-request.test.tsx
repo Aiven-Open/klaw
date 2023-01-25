@@ -39,10 +39,10 @@ describe("SchemaRequest", () => {
       const queryClient = getQueryClientForTests();
       render(
         <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={[`/topic/${topicName}/request/schema`]}>
+          <MemoryRouter initialEntries={[`/topic/${topicName}/request-schema`]}>
             <Routes>
               <Route
-                path={`/topic/:topicName/request/schema`}
+                path={`/topic/:topicName/request-schema`}
                 element={<SchemaRequest />}
               />
             </Routes>
