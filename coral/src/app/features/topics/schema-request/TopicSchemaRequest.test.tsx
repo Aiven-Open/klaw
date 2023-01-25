@@ -61,7 +61,7 @@ describe("TopicSchemaRequest", () => {
     jest.resetAllMocks();
   });
 
-  describe("handles loading and update states", () => {
+  describe("handles loading and update state", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
@@ -285,7 +285,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockResolvedValue({ status: "200 OK" });
+      mockCreateSchemaRequest.mockImplementation(jest.fn());
 
       customRender(
         <TopicSchemaRequest
@@ -327,6 +327,112 @@ describe("TopicSchemaRequest", () => {
       await userEvent.click(button);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+    });
+  });
+
+  describe("handles errors from the api", () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedGetSchemaRegistryEnvironments
+      );
+      mockCreateSchemaRequest.mockRejectedValue({
+        status: "400 BAD_REQUEST",
+        data: { message: "Error in request" },
+      });
+
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"{}"}
+        />,
+        {
+          queryClient: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+    });
+
+    it("shows an alert informing user about the error ", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      expect(mockCreateSchemaRequest).toHaveBeenCalled();
+
+      const alert = await screen.findByRole("alert");
+      const errorMessage = within(alert).getByText("Error in request");
+
+      expect(errorMessage).toBeVisible();
+      // it's not important that the console.error is called,
+      // but it makes sure that 1) the console.error does not
+      // show up in the test logs while 2) flagging an error
+      // in case a console.error with a different message
+      // gets called - which could be hinting to a problem
+      expect(console.error).toHaveBeenCalledWith({
+        status: "400 BAD_REQUEST",
+        data: { message: "Error in request" },
+      });
+    });
+
+    it("does not redirect the user if the request failed", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(button);
+
+      await waitFor(() =>
+        expect(screen.getByText("Error in request")).toBeVisible()
+      );
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+
+      expect(console.error).toHaveBeenCalledWith({
+        status: "400 BAD_REQUEST",
+        data: { message: "Error in request" },
+      });
     });
   });
 

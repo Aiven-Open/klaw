@@ -18,10 +18,11 @@ import {
   topicRequestFormSchema,
 } from "src/app/features/topics/schema-request/utils/zod-schema";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
-import { Box, Button } from "@aivenio/aquarium";
+import { Alert, Box, Button } from "@aivenio/aquarium";
 import { createSchemaRequest } from "src/domain/schema-request";
 import { mockCreateSchemaRequest } from "src/domain/schema-request/schema-request-api.msw";
 import { useNavigate } from "react-router-dom";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 const mockedData = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -94,17 +95,36 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   }
 
   return (
-    <>
+    <Box style={{ maxWidth: 1200 }}>
+      {schemaRequestMutation.isError && (
+        <Box marginBottom={"l1"} role="alert">
+          <Alert
+            description={parseErrorMsg(schemaRequestMutation.error)}
+            type="warning"
+          ></Alert>
+        </Box>
+      )}
       <Form
         {...form}
         ariaLabel={"Request a new schema"}
         onSubmit={onSubmitForm}
       >
+        <NativeSelect<TopicRequestFormSchema>
+          name={"topicName"}
+          labelText={"Topic name"}
+          defaultValue={topicName}
+          readOnly={true}
+          aria-readonly={true}
+        >
+          <option value={topicName}>{topicName}</option>
+        </NativeSelect>
+
         {environmentsIsLoading && (
           <div data-testid={"environments-select-loading"}>
             <NativeSelect.Skeleton />
           </div>
         )}
+
         {environments && (
           <NativeSelect<TopicRequestFormSchema>
             name={"environment"}
@@ -125,22 +145,13 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           </NativeSelect>
         )}
 
-        <NativeSelect<TopicRequestFormSchema>
-          name={"topicName"}
-          labelText={"Topic name"}
-          defaultValue={topicName}
-          readOnly={true}
-          aria-readonly={true}
-        >
-          <option value={topicName}>{topicName}</option>
-        </NativeSelect>
-
         <TopicSchema
           name={"schemafull"}
           required={!props.schemafullValueForTest}
         />
 
         <Textarea name={"remarks"} labelText={"Message for the approval"} />
+
         <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
           <SubmitButton>Submit request</SubmitButton>
           <Button type="button" kind={"secondary"} onClick={onCancel}>
@@ -148,7 +159,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           </Button>
         </Box>
       </Form>
-    </>
+    </Box>
   );
 }
 
