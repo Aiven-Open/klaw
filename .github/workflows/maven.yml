@@ -19,7 +19,7 @@ jobs:
   build:
     strategy:
       matrix:
-        java-version: [17]
+        java-version: [17, 19]
         runs-on: [ubuntu-latest]
     name: Jdk ${{ matrix.java-version }}, os ${{ matrix.runs-on }}
     runs-on: ${{ matrix.runs-on }}
