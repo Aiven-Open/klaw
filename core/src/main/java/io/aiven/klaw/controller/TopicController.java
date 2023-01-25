@@ -147,9 +147,11 @@ public class TopicController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<String>> getTopicsOnly(
-      @RequestParam(value = "isMyTeamTopics", defaultValue = "false") String isMyTeamTopics) {
+      @RequestParam(value = "isMyTeamTopics", defaultValue = "false") String isMyTeamTopics,
+      @RequestParam(value = "envSelected", defaultValue = "ALL") String envSelected) {
     return new ResponseEntity<>(
-        topicControllerService.getAllTopics(Boolean.parseBoolean(isMyTeamTopics)), HttpStatus.OK);
+        topicControllerService.getAllTopics(Boolean.parseBoolean(isMyTeamTopics), envSelected),
+        HttpStatus.OK);
   }
 
   @RequestMapping(

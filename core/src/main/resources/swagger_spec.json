@@ -2555,6 +2555,12 @@
           "required" : false,
           "type" : "string",
           "default" : "false"
+        }, {
+          "name" : "envSelected",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "ALL"
         } ],
         "responses" : {
           "200" : {

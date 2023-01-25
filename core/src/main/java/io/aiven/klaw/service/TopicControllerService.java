@@ -734,13 +734,13 @@ public class TopicControllerService {
     }
   }
 
-  public List<String> getAllTopics(boolean isMyTeamTopics) {
-    log.debug("getAllTopics {}", isMyTeamTopics);
+  public List<String> getAllTopics(boolean isMyTeamTopics, String envSelected) {
+    log.debug("getAllTopics {}, envSelected {}", isMyTeamTopics, envSelected);
     String userName = getUserName();
     List<Topic> topicsFromSOT =
         manageDatabase
             .getHandleDbRequests()
-            .getSyncTopics(null, null, commonUtilsService.getTenantId(getUserName()));
+            .getSyncTopics(envSelected, null, commonUtilsService.getTenantId(getUserName()));
 
     // tenant filtering
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
