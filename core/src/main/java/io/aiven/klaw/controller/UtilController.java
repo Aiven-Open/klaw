@@ -42,7 +42,7 @@ public class UtilController {
       value = "/getBasicInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getBasicInfo() {
+  public ResponseEntity<Map<String, Object>> getBasicInfo() {
     return new ResponseEntity<>(utilControllerService.getBasicInfo(), HttpStatus.OK);
   }
 

@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.KwMetadataUpdates;
+import io.aiven.klaw.model.SSODetails;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@ConfigurationProperties(prefix = "klaw.sso.server")
 public class UtilControllerService {
 
   @Autowired ManageDatabase manageDatabase;
@@ -69,11 +72,7 @@ public class UtilControllerService {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  @Value("${klaw.sso.server.loginurl.azure}")
-  private String ssoServerLoginUrlAzure;
-
-  @Value("${klaw.sso.server.loginurl.google}")
-  private String ssoServerLoginUrlGoogle;
+  private Map<String, SSODetails> loginurl;
 
   @Autowired private ConfigurableApplicationContext context;
 
@@ -598,12 +597,10 @@ public class UtilControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  public Map<String, String> getBasicInfo() {
-    Map<String, String> resultBasicInfo = new HashMap<>();
+  public Map<String, Object> getBasicInfo() {
+    Map<String, Object> resultBasicInfo = new HashMap<>();
     resultBasicInfo.put("contextPath", kwContextPath);
-
-    resultBasicInfo.put("ssoServerUrlAzure", ssoServerLoginUrlAzure);
-    resultBasicInfo.put("ssoServerUrlGoogle", ssoServerLoginUrlGoogle);
+    resultBasicInfo.put("ssoProviders", loginurl);
 
     // error codes of active directory authorization errors
     resultBasicInfo.put(ACTIVE_DIRECTORY_ERR_CODE_101, AD_ERROR_101_NO_MATCHING_ROLE);
@@ -644,5 +641,13 @@ public class UtilControllerService {
     } catch (InterruptedException | ExecutionException e) {
       log.error("Error from resetCache ", e);
     }
+  }
+
+  public Map<String, SSODetails> getLoginurl() {
+    return loginurl;
+  }
+
+  public void setLoginurl(Map<String, SSODetails> loginurl) {
+    this.loginurl = loginurl;
   }
 }
