@@ -6,12 +6,19 @@ import {
   topicname,
   environment,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
-import { validateAclPrincipleValue } from "src/app/features/topics/acl-request/schemas/validation";
+import {
+  hasOnlyValidCharacters,
+  validateAclPrincipleValue,
+} from "src/app/features/topics/acl-request/schemas/validation";
 import { z } from "zod";
 
 const consumergroup = z
   .string()
-  .min(1, { message: "Consumer group cannot be empty." });
+  .min(1, { message: "Consumer group cannot be empty." })
+  .max(150, { message: "Consumer group cannot be more than 150 characters." })
+  .regex(hasOnlyValidCharacters, {
+    message: "Only characters allowed: a-z, A-Z, 0-9, ., _,-.",
+  });
 const aclPatternType = z.literal("LITERAL");
 const topictype = z.literal("Consumer");
 
