@@ -874,6 +874,8 @@ export type operations = {
       query: {
         /** Set to true to only get the topic names for topics belonging to the team of the current user */
         isMyTeamTopics?: components["schemas"]["TopicsGetOnlyResponse"];
+        /** Pass an environment name to get only the names of the topics in that environment */
+        envSelected?: components["schemas"]["TopicsGetOnlyResponse"];
       };
     };
     responses: {
