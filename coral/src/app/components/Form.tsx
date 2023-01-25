@@ -563,6 +563,8 @@ export const ComplexNativeSelect = <
 // <FileUpload>
 // This not part of Aiven core implementation but an input
 // custom for Klaw use cases.
+// Important: adding onBlur validation currently
+// needs to happen on usage, not added here yet
 function _FileInput<T extends FieldValues>({
   name,
   formContext: form,
@@ -576,13 +578,13 @@ function _FileInput<T extends FieldValues>({
       control={form.control}
       render={({ field: { name }, fieldState: { error } }) => {
         const { isSubmitting } = form.formState;
-
         return (
           <BaseFileInput
             {...props}
             name={name}
             disabled={props.disabled || isSubmitting}
             valid={!error}
+            required={props.required}
             helperText={error?.message || ""}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any

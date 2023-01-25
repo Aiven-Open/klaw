@@ -3,13 +3,14 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react/pure";
-import { within } from "@testing-library/react";
+import { waitFor, within } from "@testing-library/react";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
 import { server } from "src/services/api-mocks/server";
 import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import * as ReactQuery from "@tanstack/react-query";
+import userEvent from "@testing-library/user-event";
 
 const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
 
@@ -24,7 +25,18 @@ const mockedGetSchemaRegistryEnvironments = mockedEnvironments.map((entry) => {
   return createMockEnvironmentDTO(entry);
 });
 
+const fileName = "my-awesome-schema.avsc";
+const testFile: File = new File(["{}"], fileName, {
+  type: "image/jpeg",
+});
+
 describe("TopicSchemaRequest", () => {
+  const getForm = () => {
+    return screen.getByRole("form", {
+      name: `Request a new schema`,
+    });
+  };
+
   beforeAll(() => {
     server.listen();
   });
@@ -34,12 +46,6 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("handles loading and update states", () => {
-    const getForm = () => {
-      return screen.getByRole("form", {
-        name: `Request a new schema`,
-      });
-    };
-
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
@@ -71,12 +77,6 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("renders all necessary elements", () => {
-    const getForm = () => {
-      return screen.getByRole("form", {
-        name: `Request a new schema`,
-      });
-    };
-
     beforeAll(async () => {
       mockGetSchemaRegistryEnvironments({
         mswInstance: server,
@@ -159,6 +159,11 @@ describe("TopicSchemaRequest", () => {
       expect(fileUpload).toBeRequired();
     });
 
+    it("shows field for schema preview", () => {
+      const previewPlaceholder = screen.getByText("Preview for your schema");
+      expect(previewPlaceholder).toBeVisible();
+    });
+
     it("shows an optional text input for remarks", () => {
       const form = getForm();
       // <input type="file" /> does not have a corresponding role
@@ -186,6 +191,153 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Cancel",
       });
+
+      expect(button).toBeEnabled();
+    });
+  });
+
+  describe("shows errors when user does not fill out correctly", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments({
+        mswInstance: server,
+        response: { data: mockedGetSchemaRegistryEnvironments },
+      });
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+      });
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("shows error when user does not fill out environment select", async () => {
+      const form = getForm();
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+
+      select.focus();
+      await userEvent.keyboard("{ArrowDown}");
+      await userEvent.keyboard("{ESC}");
+      await userEvent.tab();
+
+      const error = await screen.findByText("The environment is required.");
+      expect(error).toBeVisible();
+      expect(select).toBeInvalid();
+    });
+
+    // @TODO this is currently not working, since fileUpload is
+    // triggered onChange. Needs update in Form, do later!
+    test.todo("shows error when user does not upload a file");
+
+    it("does not enable button if user does not fill out all fields", async () => {
+      const form = getForm();
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+
+      expect(button).toBeDisabled();
+    });
+  });
+
+  describe("enables user to send a schema request", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments({
+        mswInstance: server,
+        response: { data: mockedGetSchemaRegistryEnvironments },
+      });
+      customRender(
+        <TopicSchemaRequest
+          topicName={testTopicName}
+          schemafullValueForTest={"testvalue"}
+        />,
+        {
+          queryClient: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("enables user to select an environment", async () => {
+      const form = getForm();
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[1].name,
+      });
+
+      expect(select).toHaveValue("");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue(mockedEnvironments[1].id);
+      expect(select).toHaveDisplayValue(mockedEnvironments[1].name);
+    });
+
+    it("enables user to upload a file", async () => {
+      const form = getForm();
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      expect(fileInput.files?.[0]).toBeUndefined();
+
+      await userEvent.upload(fileInput, testFile);
+
+      expect(fileInput.files?.[0]).toBe(testFile);
+    });
+
+    it("shows file content in a preview editor", async () => {
+      const form = getForm();
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      await userEvent.upload(fileInput, testFile);
+      const editor = screen.getByRole("textbox");
+
+      await waitFor(() => expect(editor).toHaveDisplayValue(""));
+    });
+
+    it("enables the submit button if user filled all required inputs", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Select environment/i,
+      });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
 
       expect(button).toBeEnabled();
     });

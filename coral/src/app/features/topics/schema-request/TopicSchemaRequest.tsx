@@ -1,15 +1,12 @@
-import z from "zod";
 import {
   useForm,
   Form,
   NativeSelect,
   SubmitButton,
-  FileInput,
   Textarea,
 } from "src/app/components/Form";
 import { FieldErrors } from "react-hook-form";
-import { MouseEvent, useEffect, useState } from "react";
-import { Box, Button, Dialog } from "@aivenio/aquarium";
+import { MouseEvent, useEffect } from "react";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
 import { useQuery } from "@tanstack/react-query";
@@ -17,6 +14,12 @@ import {
   Environment,
   getSchemaRegistryEnvironments,
 } from "src/domain/environment";
+import {
+  TopicRequestFormSchema,
+  topicRequestFormSchema,
+} from "src/app/features/topics/schema-request/utils/zod-schema";
+import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
+import { Box, Button } from "@aivenio/aquarium";
 
 const mockedData = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -26,19 +29,19 @@ const mockedData = [
 
 type TopicSchemaRequestProps = {
   topicName: string;
+  // ‼️this property is ONLY for testing purpose!
+  schemafullValueForTest?: string;
 };
 
-const formSchema = z.object({
-  environment: z.string().min(1, { message: "env is required" }),
-  topicName: z.string(),
-  schemafull: z.any().optional(),
-  remarks: z.string().optional(),
-});
-
-type Schema = z.infer<typeof formSchema>;
-
+// Note about prop "schemafullValueForTest": It's a bad practice to add/expose code/api
+// only for testing purpose. Since "TopicRequest" is using "MonacoEditor" (which is not available
+// with full functionality in tests), I couldn't find a way to get the 'schemafull' value to be available
+// in this test. I also couldn't find a way to manually set / validate the value in this component.
+// without a valid 'schemafull', I couldn't test behavior when submitting the form (submit is not enabled)
+// Since that is are important test cases, I opted for the bad practice rather in order to
+// be able to add this tests. I created na issue in github related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
-  const [modalOpen, setModalOpen] = useState(false);
+  const { topicName } = props;
 
   useEffect(() => {
     if (window.msw !== undefined) {
@@ -49,8 +52,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     }
   }, []);
 
-  const { topicName } = props;
-
   const { data: environments, isLoading: environmentsIsLoading } = useQuery<
     Environment[],
     Error
@@ -59,14 +60,15 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryFn: () => getSchemaRegistryEnvironments(),
   });
 
-  const form = useForm<Schema>({
-    schema: formSchema,
+  const form = useForm<TopicRequestFormSchema>({
+    schema: topicRequestFormSchema,
     defaultValues: {
       topicName: topicName,
+      schemafull: props.schemafullValueForTest || undefined,
     },
   });
 
-  function onSubmitForm(userInput: Schema) {
+  function onSubmitForm(userInput: TopicRequestFormSchema) {
     console.log("onSubmit userInput", userInput);
   }
 
@@ -91,13 +93,13 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         </div>
       )}
       {environments && (
-        <NativeSelect
+        <NativeSelect<TopicRequestFormSchema>
           name={"environment"}
           labelText={"Select environment"}
-          defaultValue={"."}
+          defaultValue={""}
           required={true}
         >
-          <option disabled value={"."}>
+          <option disabled value={""}>
             please select
           </option>
           {environments.map((env, index) => {
@@ -110,7 +112,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         </NativeSelect>
       )}
 
-      <NativeSelect
+      <NativeSelect<TopicRequestFormSchema>
         name={"topicName"}
         labelText={"Topic name"}
         defaultValue={topicName}
@@ -120,12 +122,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         <option value={topicName}>{topicName}</option>
       </NativeSelect>
 
-      <FileInput
-        buttonText={"Upload AVRO Schema"}
-        labelText={"Upload AVRO Schema File"}
+      <TopicSchema
         name={"schemafull"}
-        noFileText={"No file chosen"}
-        required={true}
+        required={!props.schemafullValueForTest}
       />
 
       <Textarea name={"remarks"} labelText={"Message for the approval"} />

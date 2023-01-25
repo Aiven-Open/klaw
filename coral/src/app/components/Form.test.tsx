@@ -601,9 +601,15 @@ describe("Form", () => {
   });
 
   describe("<FileInput>", () => {
-    const schema = z.object({
-      image: z.instanceof(File),
-    });
+    const schema = z.object(
+      {
+        image: z.instanceof(File),
+      },
+      {
+        required_error: "A file is required",
+        invalid_type_error: "This is not a valid file",
+      }
+    );
 
     type Schema = z.infer<typeof schema>;
 

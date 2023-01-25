@@ -45,7 +45,7 @@ function FileInput(props: FileInputProps) {
         data-testid="file-input-fake-label"
       >
         <Typography.Caption fontWeight={"500"}>
-          {labelText}
+          <span className={!valid ? "text-error-50" : ""}>{labelText}</span>
           {props.required && <span className={"text-error-50"}>*</span>}
         </Typography.Caption>
       </Box>
@@ -126,7 +126,7 @@ function FileInput(props: FileInputProps) {
               type={"file"}
               ref={inputRef}
               aria-required={props.required}
-              aria-invalid={`${!valid}`}
+              aria-invalid={!valid}
               className={`${classes.fileInput}`}
               {...(!valid && { "aria-describedby": errorMessageId })}
             />
