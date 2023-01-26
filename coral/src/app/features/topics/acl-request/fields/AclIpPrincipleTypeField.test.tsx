@@ -62,7 +62,7 @@ describe("AclIpPrincipleTypeField", () => {
       <AclIpPrincipleTypeField clusterInfo={clusterInfoIsAiven} />,
       { schema, onSubmit, onError }
     );
-    const principalRadioButtons = result.getByLabelText("Service Account");
+    const principalRadioButtons = result.getByLabelText("Service account");
     const ipRadioButtons = result.getByLabelText("IP");
 
     expect(principalRadioButtons).toBeEnabled();

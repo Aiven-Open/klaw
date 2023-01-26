@@ -110,7 +110,7 @@ describe("<TopicConsumerForm />", () => {
 
     it("renders EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select environment *",
+        name: "Select Environment *",
       });
 
       expect(environmentField).toBeVisible();
@@ -241,7 +241,7 @@ describe("<TopicConsumerForm />", () => {
 
     it("renders EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select environment *",
+        name: "Select Environment *",
       });
 
       expect(environmentField).toBeVisible();
@@ -271,7 +271,7 @@ describe("<TopicConsumerForm />", () => {
     it("renders AclIpPrincipleTypeField with IP field disabled and Principal field enabled and checked", () => {
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
-        name: "Service Account",
+        name: "Service account",
       });
 
       expect(ipField).toBeVisible();
@@ -286,7 +286,7 @@ describe("<TopicConsumerForm />", () => {
         name: "IP addresses *",
       });
       const principalsField = screen.getByRole("textbox", {
-        name: "Service Accounts *",
+        name: "Service accounts *",
       });
 
       expect(ipsField).toBeNull();
@@ -355,7 +355,7 @@ describe("<TopicConsumerForm />", () => {
 
     it("renders EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select environment *",
+        name: "Select Environment *",
       });
 
       expect(environmentField).toBeVisible();

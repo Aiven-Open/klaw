@@ -10,7 +10,7 @@ const AclIpPrincipleTypeField = ({
   clusterInfo,
 }: AclIpPrincipleTypeFieldProps) => {
   const isAivenCluster = clusterInfo?.aivenCluster === "true";
-  const principalLabelText = isAivenCluster ? "Service Account" : "Principal";
+  const principalLabelText = isAivenCluster ? "Service account" : "Principal";
 
   return (
     <RadioButtonGroup

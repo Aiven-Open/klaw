@@ -18,7 +18,7 @@ const IpOrPrincipalField = ({
 }: IpOrPrincipalFieldProps) => {
   const isAivenCluster = clusterInfo.aivenCluster === "true";
   const sslLabelText = isAivenCluster
-    ? "Service Accounts"
+    ? "Service accounts"
     : "SSL DN strings / Usernames";
   const sslPlaceholder = isAivenCluster ? "Alice" : "CN=myhost, Alice";
 

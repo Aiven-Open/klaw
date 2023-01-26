@@ -27,7 +27,7 @@ describe("IpOrPrincipalField", () => {
     onError.mockClear();
   });
 
-  it("renders a field for Service Accounts (Aiven cluster)", () => {
+  it("renders a field for Service accounts (Aiven cluster)", () => {
     const result = renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
@@ -39,7 +39,7 @@ describe("IpOrPrincipalField", () => {
         onError,
       }
     );
-    const multiInput = result.getByLabelText("Service Accounts*");
+    const multiInput = result.getByLabelText("Service accounts*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
   });

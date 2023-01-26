@@ -92,7 +92,7 @@ const TopicConsumerForm = ({
           <TextInput
             name="consumergroup"
             labelText="Consumer group"
-            placeholder="Add consumer group here"
+            placeholder="Add Consumer group here"
             required
           />
         </GridItem>

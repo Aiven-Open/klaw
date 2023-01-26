@@ -9,7 +9,7 @@ interface EnvironmentFieldProps {
 
 const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
   return (
-    <NativeSelect name="environment" labelText="Select environment" required>
+    <NativeSelect name="environment" labelText="Select Environment" required>
       <Option
         key={ENVIRONMENT_NOT_INITIALIZED}
         value={ENVIRONMENT_NOT_INITIALIZED}
