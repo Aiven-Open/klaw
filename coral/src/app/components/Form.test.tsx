@@ -625,12 +625,38 @@ describe("Form", () => {
       );
     });
 
-    it("renders a file upload input", () => {
+    it("renders an optional file upload input", () => {
       // input type=file does not have a role to look for
       const fileInput = screen.getByLabelText<HTMLInputElement>(
         "Please upload a file"
       );
 
+      expect(fileInput).not.toBeRequired();
+      expect(fileInput).toBeEnabled();
+      expect(fileInput.tagName).toBe("INPUT");
+    });
+
+    it("renders the file input as required dependent on prop", () => {
+      // component is not set to required for all the other
+      // test cases because we can't "upload" a valid file with
+      // content in test, so this block has it's own cleanup/render
+      cleanup();
+      renderForm(
+        <FileInput<Schema>
+          name={"image"}
+          labelText={"Please upload a file"}
+          buttonText={"Upload"}
+          noFileText={"No file chose"}
+          required={true}
+        />,
+        { schema, onSubmit, onError }
+      );
+      // input type=file does not have a role to look for
+      const fileInput = screen.getByLabelText<HTMLInputElement>(
+        "Please upload a file"
+      );
+
+      expect(fileInput).toBeRequired();
       expect(fileInput).toBeEnabled();
       expect(fileInput.tagName).toBe("INPUT");
     });

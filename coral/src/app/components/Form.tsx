@@ -584,7 +584,6 @@ function _FileInput<T extends FieldValues>({
             name={name}
             disabled={props.disabled || isSubmitting}
             valid={!error}
-            required={props.required}
             helperText={error?.message || ""}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
