@@ -74,6 +74,7 @@ module.exports = {
         "react",
         "@typescript-eslint",
         "no-relative-import-paths",
+        "lodash"
     ],
     "settings": {
         "react": {
@@ -96,6 +97,7 @@ module.exports = {
         "import/no-cycle": "error",
         "import/exports-last": "error",
         "import/no-anonymous-default-export": "error",
-        "import/group-exports": "error"
-    }
+        "import/group-exports": "error",
+        "lodash/import-scope": "error"
+}
 }
