@@ -1,12 +1,10 @@
 import { cleanup, screen } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
-import {
-  TopicSchema,
-  readFile,
-} from "src/app/features/topics/schema-request/components/TopicSchema";
+import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/utils/zod-schema";
+import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 
 jest.mock("src/app/features/topics/schema-request/utils/read-file");
 const mockReadFiles = readFile as jest.MockedFunction<typeof readFile>;

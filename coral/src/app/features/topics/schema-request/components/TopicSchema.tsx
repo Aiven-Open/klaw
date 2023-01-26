@@ -144,4 +144,4 @@ function TopicSchema(props: TopicSchemaProps) {
   );
 }
 
-export { TopicSchema, readFile };
+export { TopicSchema };
