@@ -4,7 +4,7 @@ import { BorderBox, Box, Typography } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
-import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/utils/zod-schema";
+import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/schemas/topic-schema-request-form";
 import { FileInput } from "src/app/components/FileInput";
 
 type TopicSchemaProps = {
