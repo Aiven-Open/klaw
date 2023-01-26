@@ -17,10 +17,12 @@ const aclIpPrincipleType = z.union([
 const acl_ip = z
   .array(z.string().regex(isIpRegex, { message: "Invalid IP address." }))
   .min(1, { message: "Enter at least one element." })
+  .max(15, { message: "Maximum 15 elements allowed." })
   .optional();
 const acl_ssl = z
   .array(z.string())
   .min(1, { message: "Enter at least one element." })
+  .max(5, { message: "Maximum 5 elements allowed." })
   .optional();
 const aclPatternType = z.union([z.literal("LITERAL"), z.literal("PREFIXED")]);
 const topicname = z.string().min(1, { message: "Please enter a prefix." });

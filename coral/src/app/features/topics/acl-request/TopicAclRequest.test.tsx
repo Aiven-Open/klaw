@@ -249,7 +249,7 @@ describe("<TopicAclRequest />", () => {
       expect(visiblePrincipalsField).toBeInTheDocument();
       expect(visiblePrincipalsField).toBeEnabled();
 
-      await userEvent.tripleClick(ipField);
+      await userEvent.click(ipField);
 
       await waitFor(() =>
         screen.findByRole("textbox", {
@@ -289,6 +289,9 @@ describe("<TopicAclRequest />", () => {
 
       await userEvent.type(visibleIpsField, "invalid{Enter}");
       await waitFor(() => expect(visibleIpsField).toBeInvalid());
+      await waitFor(() =>
+        expect(screen.getByText("Invalid IP address.")).toBeVisible()
+      );
     });
 
     it("does not error when entering valid IP in IPs field", async () => {
@@ -316,6 +319,136 @@ describe("<TopicAclRequest />", () => {
 
       await userEvent.type(visibleIpsField, "111.111.11.11{Enter}");
       expect(visibleIpsField).toBeValid();
+    });
+
+    it("errors when entering more than 15 IPs in IPs field", async () => {
+      await assertSkeleton();
+
+      const ipField = screen.getByRole("radio", { name: "IP" });
+
+      await selectTestEnvironment();
+
+      await waitFor(() => expect(ipField).toBeEnabled());
+
+      await userEvent.click(ipField);
+
+      await waitFor(() => expect(ipField).toBeChecked());
+
+      await waitFor(() =>
+        screen.findByRole("textbox", {
+          name: "IP addresses *",
+        })
+      );
+
+      const visibleIpsField = await screen.getByRole("textbox", {
+        name: "IP addresses *",
+      });
+
+      await userEvent.type(visibleIpsField, "111.111.11.11{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.12{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.13{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.14{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.15{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.16{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.17{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.18{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.19{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.20{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.21{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.22{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.23{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.24{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.25{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.26{Enter}");
+
+      await waitFor(() => expect(visibleIpsField).not.toBeValid());
+      await waitFor(() =>
+        expect(screen.getByText("Maximum 15 elements allowed.")).toBeVisible()
+      );
+    });
+
+    it("errors when entering more than 5 elements in Principal field", async () => {
+      await assertSkeleton();
+
+      const principalField = screen.getByRole("radio", { name: "Principal" });
+
+      await selectTestEnvironment();
+
+      await waitFor(() => expect(principalField).toBeEnabled());
+
+      await userEvent.click(principalField);
+
+      await waitFor(() => expect(principalField).toBeChecked());
+
+      await waitFor(() =>
+        screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        })
+      );
+
+      const visiblePrincipalsField = screen.getByRole("textbox", {
+        name: "SSL DN strings / Usernames *",
+      });
+      expect(visiblePrincipalsField).toBeInTheDocument();
+      expect(visiblePrincipalsField).toBeEnabled();
+
+      await userEvent.type(visiblePrincipalsField, "Alice1{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice2{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice3{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice4{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice5{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice6{Enter}");
+
+      await waitFor(() => expect(visiblePrincipalsField).not.toBeValid());
+      await waitFor(() =>
+        expect(screen.getByText("Maximum 5 elements allowed.")).toBeVisible()
+      );
+    });
+
+    it("errors when entering a wrong value in Transactional ID field", async () => {
+      await assertSkeleton();
+
+      const transactionalIdInput = screen.getByLabelText("Transactional ID");
+
+      await userEvent.type(transactionalIdInput, "Hello invalid");
+      await userEvent.tab();
+
+      await waitFor(() => expect(transactionalIdInput).not.toBeValid());
+      await waitFor(() =>
+        expect(
+          screen.getByText("Only characters allowed: a-z, A-Z, 0-9, ., _,-.")
+        ).toBeVisible()
+      );
+    });
+
+    it("errors when entering a too long value in Transactional ID field", async () => {
+      await assertSkeleton();
+
+      const transactionalIdInput = screen.getByLabelText("Transactional ID");
+      const tooLong = new Array(152).join("a");
+      console.log(tooLong);
+      await userEvent.type(transactionalIdInput, tooLong);
+      await userEvent.tab();
+
+      await waitFor(() => expect(transactionalIdInput).not.toBeValid());
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            "Transactional ID cannot be more than 150 characters."
+          )
+        ).toBeVisible()
+      );
+    });
+
+    it("does errors when entering a wrong value in Transactional ID field", async () => {
+      await assertSkeleton();
+
+      const transactionalIdInput = screen.getByLabelText("Transactional ID");
+
+      await userEvent.type(transactionalIdInput, "HelloValid");
+      await userEvent.tab();
+
+      await waitFor(() => expect(transactionalIdInput).toBeValid());
     });
 
     it("renders correct fields when selecting Literal or Prefixed in aclPatternType fields", async () => {
@@ -435,7 +568,7 @@ describe("<TopicAclRequest />", () => {
       expect(visiblePrincipalsField).toBeInTheDocument();
       expect(visiblePrincipalsField).toBeEnabled();
 
-      await userEvent.tripleClick(ipField);
+      await userEvent.click(ipField);
 
       await waitFor(() =>
         screen.findByRole("textbox", {
@@ -464,7 +597,7 @@ describe("<TopicAclRequest />", () => {
 
       await waitFor(() => expect(ipField).toBeEnabled());
 
-      await userEvent.tripleClick(ipField);
+      await userEvent.click(ipField);
 
       await waitFor(() => expect(ipField).toBeChecked());
 
@@ -512,6 +645,165 @@ describe("<TopicAclRequest />", () => {
 
       await userEvent.type(visibleIpsField, "111.111.11.11{Enter}");
       await waitFor(() => expect(visibleIpsField).toBeValid());
+    });
+
+    it("errors when entering more than 15 IPs in IPs field", async () => {
+      await assertSkeleton();
+
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await userEvent.click(aclConsumerTypeInput);
+
+      const ipField = screen.getByRole("radio", { name: "IP" });
+
+      await selectTestEnvironment();
+
+      await waitFor(() => expect(ipField).toBeEnabled());
+
+      await userEvent.click(ipField);
+
+      await waitFor(() => expect(ipField).toBeChecked());
+
+      await waitFor(() =>
+        screen.findByRole("textbox", {
+          name: "IP addresses *",
+        })
+      );
+
+      const visibleIpsField = await screen.getByRole("textbox", {
+        name: "IP addresses *",
+      });
+
+      await userEvent.type(visibleIpsField, "111.111.11.11{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.12{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.13{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.14{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.15{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.16{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.17{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.18{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.19{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.20{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.21{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.22{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.23{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.24{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.25{Enter}");
+      await userEvent.type(visibleIpsField, "111.111.11.26{Enter}");
+
+      await waitFor(() => expect(visibleIpsField).not.toBeValid());
+      await waitFor(() =>
+        expect(screen.getByText("Maximum 15 elements allowed.")).toBeVisible()
+      );
+    });
+
+    it("errors when entering more than 5 elements in Principal field", async () => {
+      await assertSkeleton();
+
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await userEvent.click(aclConsumerTypeInput);
+
+      const principalField = screen.getByRole("radio", { name: "Principal" });
+
+      await selectTestEnvironment();
+
+      await waitFor(() => expect(principalField).toBeEnabled());
+
+      await userEvent.click(principalField);
+
+      await waitFor(() => expect(principalField).toBeChecked());
+
+      await waitFor(() =>
+        screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        })
+      );
+
+      const visiblePrincipalsField = screen.getByRole("textbox", {
+        name: "SSL DN strings / Usernames *",
+      });
+      expect(visiblePrincipalsField).toBeInTheDocument();
+      expect(visiblePrincipalsField).toBeEnabled();
+
+      await userEvent.type(visiblePrincipalsField, "Alice1{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice2{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice3{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice4{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice5{Enter}");
+      await userEvent.type(visiblePrincipalsField, "Alice6{Enter}");
+
+      await waitFor(() => expect(visiblePrincipalsField).not.toBeValid());
+      await waitFor(() =>
+        expect(screen.getByText("Maximum 5 elements allowed.")).toBeVisible()
+      );
+    });
+
+    it("errors when entering a wrong value in Consumer Group field", async () => {
+      await assertSkeleton();
+
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await userEvent.click(aclConsumerTypeInput);
+
+      const consumerGroupInput = screen.getByRole("textbox", {
+        name: "Consumer group *",
+      });
+
+      await userEvent.type(consumerGroupInput, "Hello invalid");
+      await userEvent.tab();
+
+      await waitFor(() => expect(consumerGroupInput).not.toBeValid());
+      await waitFor(() =>
+        expect(
+          screen.getByText("Only characters allowed: a-z, A-Z, 0-9, ., _,-.")
+        ).toBeVisible()
+      );
+    });
+
+    it("errors when entering a too long value in Consumer group field", async () => {
+      await assertSkeleton();
+
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await userEvent.click(aclConsumerTypeInput);
+
+      const consumerGroupInput = screen.getByRole("textbox", {
+        name: "Consumer group *",
+      });
+      const tooLong = new Array(152).join("a");
+      console.log(tooLong);
+      await userEvent.type(consumerGroupInput, tooLong);
+      await userEvent.tab();
+
+      await waitFor(() => expect(consumerGroupInput).not.toBeValid());
+      await waitFor(() =>
+        expect(
+          screen.getByText("Consumer group cannot be more than 150 characters.")
+        ).toBeVisible()
+      );
+    });
+
+    it("does errors when entering a wrong value in Consumer group field", async () => {
+      await assertSkeleton();
+
+      const aclConsumerTypeInput = screen.getByRole("radio", {
+        name: "Consumer",
+      });
+      await userEvent.click(aclConsumerTypeInput);
+
+      const consumerGroupInput = screen.getByRole("textbox", {
+        name: "Consumer group *",
+      });
+
+      await userEvent.type(consumerGroupInput, "HelloValid");
+      await userEvent.tab();
+
+      await waitFor(() => expect(consumerGroupInput).toBeValid());
     });
   });
 });

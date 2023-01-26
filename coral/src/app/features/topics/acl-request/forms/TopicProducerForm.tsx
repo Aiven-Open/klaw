@@ -123,7 +123,6 @@ const TopicProducerForm = ({
             name="transactionalId"
             labelText="Transactional ID"
             placeholder="Necessary for exactly-once semantics on producer"
-            helperText="Necessary for exactly-once semantics on producer"
           />
         </GridItem>
 

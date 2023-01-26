@@ -19,9 +19,16 @@ const ipv6 = `
   .trim();
 
 const isIpRegex = new RegExp(`(?:^${ipv4}$)|(?:^${ipv6}$)`);
+// This matches:
+// - a-z, A-Z, 0-9, . (dot), _ (underscore), and - (dash)
+// OR
+// - empty string
+// The empty string clause is because this will be the default value of fields running this validation
+// And if it's not added, then validation will always fail when field is optional
+const hasOnlyValidCharacters = new RegExp(/^[a-zA-Z0-9._-]*$/);
 
 const validateAclPrincipleValue = (value: string[] | undefined) => {
   return value !== undefined && value.length >= 1;
 };
 
-export { isIpRegex, validateAclPrincipleValue };
+export { isIpRegex, hasOnlyValidCharacters, validateAclPrincipleValue };

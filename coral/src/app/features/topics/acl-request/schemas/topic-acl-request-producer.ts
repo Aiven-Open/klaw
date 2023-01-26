@@ -6,12 +6,21 @@ import {
   topicname,
   environment,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
-import { validateAclPrincipleValue } from "src/app/features/topics/acl-request/schemas/validation";
+import {
+  hasOnlyValidCharacters,
+  validateAclPrincipleValue,
+} from "src/app/features/topics/acl-request/schemas/validation";
 import { z } from "zod";
 
 const aclPatternType = z.union([z.literal("LITERAL"), z.literal("PREFIXED")]);
 const topictype = z.literal("Producer");
-const transactionalId = z.string().optional();
+const transactionalId = z
+  .string()
+  .regex(hasOnlyValidCharacters, {
+    message: "Only characters allowed: a-z, A-Z, 0-9, ., _,-.",
+  })
+  .max(150, { message: "Transactional ID cannot be more than 150 characters." })
+  .optional();
 
 const topicProducerFormSchema = z
   .object({
