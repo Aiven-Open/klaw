@@ -65,7 +65,7 @@ describe("TopicSchemaRequest", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: [], isLoading: true });
+      useQuerySpy.mockReturnValue({ data: undefined, isLoading: true });
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
