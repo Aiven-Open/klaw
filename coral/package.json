@@ -70,6 +70,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^3.5.2",
     "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-no-relative-import-paths": "^1.4.0",
     "eslint-plugin-react": "^7.31.10",
     "husky": "^8.0.1",

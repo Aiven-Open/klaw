@@ -1,5 +1,6 @@
 import { Icon, Box, Typography, Grid, GridItem } from "@aivenio/aquarium";
-import { omit, uniqueId } from "lodash";
+import omit from "lodash/omit";
+import uniqueId from "lodash/uniqueId";
 import { InputHTMLAttributes, useRef } from "react";
 import classes from "src/app/components/FileInput.module.css";
 import cloudUpload from "@aivenio/aquarium/dist/src/icons/cloudUpload";

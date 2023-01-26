@@ -426,7 +426,6 @@ describe("<TopicAclRequest />", () => {
 
       const transactionalIdInput = screen.getByLabelText("Transactional ID");
       const tooLong = new Array(152).join("a");
-      console.log(tooLong);
       await userEvent.type(transactionalIdInput, tooLong);
       await userEvent.tab();
 
@@ -776,7 +775,6 @@ describe("<TopicAclRequest />", () => {
         name: "Consumer group *",
       });
       const tooLong = new Array(152).join("a");
-      console.log(tooLong);
       await userEvent.type(consumerGroupInput, tooLong);
       await userEvent.tab();
 
