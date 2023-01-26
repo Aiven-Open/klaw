@@ -127,6 +127,25 @@ describe("TopicSchema", () => {
       expect(errors[0]).toBeVisible();
       expect(errors[1]).toHaveAttribute("aria-hidden");
     });
+
+    it("shows an error if user uploads an empty file", async () => {
+      mockReadFiles.mockResolvedValue("");
+      const fileEmptyError =
+        "Uploaded file is empty, please chose a different one.";
+
+      const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
+
+      expect(screen.queryByText(fileEmptyError)).not.toBeInTheDocument();
+
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.tab();
+
+      const errors = screen.getAllByText(fileEmptyError);
+      expect(errors).toHaveLength(2);
+
+      expect(errors[0]).toBeVisible();
+      expect(errors[1]).toHaveAttribute("aria-hidden");
+    });
   });
 
   describe("enables user to upload a schema file", () => {

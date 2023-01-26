@@ -6,7 +6,6 @@ import { editor } from "monaco-editor";
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/utils/zod-schema";
 import { FileInput } from "src/app/components/FileInput";
-import isString from "lodash/isString";
 
 type TopicSchemaProps = {
   name: keyof TopicRequestFormSchema;
@@ -21,7 +20,7 @@ function TopicSchema(props: TopicSchemaProps) {
   const [schema, setSchema] = useState<string | undefined>(undefined);
 
   useEffect(() => {
-    if (isString(schema)) {
+    if (schema) {
       setValue(name, schema, {
         shouldValidate: true,
         shouldTouch: true,
@@ -53,8 +52,17 @@ function TopicSchema(props: TopicSchemaProps) {
     const file = event.target?.files?.[0];
     if (file) {
       readFile(file).then((fileContent) => {
-        clearErrors();
-        setSchema(fileContent);
+        // @Todo add better error handling in case of
+        // empty file as an improvement
+        if (fileContent) {
+          clearErrors();
+          setSchema(fileContent);
+        } else {
+          setError(name, {
+            message: "Uploaded file is empty, please chose a different one.",
+          });
+          setSchema("");
+        }
       });
     } else {
       setError(name, { message: "File is a required field" });
