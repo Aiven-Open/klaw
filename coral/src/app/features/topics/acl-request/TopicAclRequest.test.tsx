@@ -892,16 +892,18 @@ describe("<TopicAclRequest />", () => {
         // Fill form with valid data
         await selectTestEnvironment();
         await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
-        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+        await userEvent.click(
+          screen.getByRole("radio", { name: "Service account" })
+        );
 
         await waitFor(() => {
           return screen.findByRole("textbox", {
-            name: "SSL DN strings / Usernames *",
+            name: "Service accounts *",
           });
         });
 
         const visiblePrincipalField = screen.getByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
+          name: "Service accounts *",
         });
         expect(visiblePrincipalField).toBeVisible();
         expect(visiblePrincipalField).toBeEnabled();
@@ -949,16 +951,18 @@ describe("<TopicAclRequest />", () => {
         // Fill form with valid data
         await selectTestEnvironment();
         await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
-        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+        await userEvent.click(
+          screen.getByRole("radio", { name: "Service account" })
+        );
 
         await waitFor(() => {
           return screen.findByRole("textbox", {
-            name: "SSL DN strings / Usernames *",
+            name: "Service accounts *",
           });
         });
 
         const visiblePrincipalField = screen.getByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
+          name: "Service accounts *",
         });
         expect(visiblePrincipalField).toBeVisible();
         expect(visiblePrincipalField).toBeEnabled();
@@ -1042,7 +1046,15 @@ describe("<TopicAclRequest />", () => {
 
         // Fill form with valid data
         await selectTestEnvironment();
-        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+
+        await waitFor(() =>
+          expect(
+            screen.getByRole("radio", { name: "Service account" })
+          ).toBeInTheDocument()
+        );
+        await userEvent.click(
+          screen.getByRole("radio", { name: "Service account" })
+        );
 
         const consumerGroupInput = screen.getByRole("textbox", {
           name: "Consumer group *",
@@ -1051,12 +1063,12 @@ describe("<TopicAclRequest />", () => {
 
         await waitFor(() => {
           return screen.findByRole("textbox", {
-            name: "SSL DN strings / Usernames *",
+            name: "Service accounts *",
           });
         });
 
         const visiblePrincipalField = screen.getByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
+          name: "Service accounts *",
         });
         expect(visiblePrincipalField).toBeVisible();
         expect(visiblePrincipalField).toBeEnabled();
@@ -1115,18 +1127,20 @@ describe("<TopicAclRequest />", () => {
         const consumerGroupInput = screen.getByRole("textbox", {
           name: "Consumer group *",
         });
-        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+
+        await waitFor(() =>
+          expect(
+            screen.getByRole("radio", { name: "Service account" })
+          ).toBeInTheDocument()
+        );
+        await userEvent.click(
+          screen.getByRole("radio", { name: "Service account" })
+        );
 
         await userEvent.type(consumerGroupInput, "Group");
 
-        await waitFor(() => {
-          return screen.findByRole("textbox", {
-            name: "SSL DN strings / Usernames *",
-          });
-        });
-
         const visiblePrincipalField = screen.getByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
+          name: "Service accounts *",
         });
         expect(visiblePrincipalField).toBeVisible();
         expect(visiblePrincipalField).toBeEnabled();
