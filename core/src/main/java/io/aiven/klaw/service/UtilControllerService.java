@@ -44,6 +44,7 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties(prefix = "spring.security.oauth2.client", ignoreInvalidFields = false)
 public class UtilControllerService {
 
+  public static final String IMAGE_URI = ".imageURI";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired MailUtils mailService;
@@ -625,7 +626,7 @@ public class UtilControllerService {
         .forEach(
             k -> {
               String providerName = k.substring(0, k.indexOf("."));
-              ssoProviders.put(providerName, registration.get(providerName + ".imageURI"));
+              ssoProviders.put(providerName, registration.get(providerName + IMAGE_URI));
             });
 
     return ssoProviders;
