@@ -76,7 +76,7 @@ describe("<TopicProducerForm />", () => {
 
     it("renders EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select environment *",
+        name: "Select Environment *",
       });
 
       expect(environmentField).toBeVisible();
@@ -200,7 +200,7 @@ describe("<TopicProducerForm />", () => {
 
     it("renders EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select environment *",
+        name: "Select Environment *",
       });
 
       expect(environmentField).toBeVisible();
@@ -244,7 +244,7 @@ describe("<TopicProducerForm />", () => {
     it("renders AclIpPrincipleTypeField with IP field disabled and Principal field enabled and checked", () => {
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
-        name: "Principal",
+        name: "Service account",
       });
 
       expect(ipField).toBeVisible();
@@ -259,7 +259,7 @@ describe("<TopicProducerForm />", () => {
         name: "IP addresses *",
       });
       const hiddenPrincipalsField = screen.getByRole("textbox", {
-        name: "SSL DN strings / Usernames *",
+        name: "Service accounts *",
       });
 
       expect(hiddenIpsField).toBeNull();
@@ -326,7 +326,7 @@ describe("<TopicProducerForm />", () => {
 
     it("renders EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select environment *",
+        name: "Select Environment *",
       });
 
       expect(environmentField).toBeVisible();

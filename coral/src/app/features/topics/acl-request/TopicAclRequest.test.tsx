@@ -73,7 +73,7 @@ const assertSkeleton = async () => {
 
 const selectTestEnvironment = async () => {
   const environmentField = screen.getByRole("combobox", {
-    name: "Select environment *",
+    name: "Select Environment *",
   });
   const option = screen.getByRole("option", { name: "TST" });
   await userEvent.selectOptions(environmentField, option);
@@ -152,7 +152,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       const principalsField = await screen.findByRole("textbox", {
-        name: "SSL DN strings / Usernames *",
+        name: "Service accounts *",
       });
 
       await waitFor(() => {

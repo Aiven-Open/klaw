@@ -10,10 +10,12 @@ const AclIpPrincipleTypeField = ({
   clusterInfo,
 }: AclIpPrincipleTypeFieldProps) => {
   const isAivenCluster = clusterInfo?.aivenCluster === "true";
+  const principalLabelText = isAivenCluster ? "Service account" : "Principal";
+
   return (
     <RadioButtonGroup
       name="aclIpPrincipleType"
-      labelText="IP or Principal based"
+      labelText={`IP or ${principalLabelText} based`}
       required
       // If clusterInfo is undefined, we have not yet fetched it (no environment selected)
       // So all the options are disabled
@@ -22,7 +24,7 @@ const AclIpPrincipleTypeField = ({
       <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
         IP
       </BaseRadioButton>
-      <BaseRadioButton value="PRINCIPAL">Principal</BaseRadioButton>
+      <BaseRadioButton value="PRINCIPAL">{principalLabelText}</BaseRadioButton>
     </RadioButtonGroup>
   );
 };
