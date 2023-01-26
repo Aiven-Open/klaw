@@ -24,6 +24,7 @@ specifiers:
   eslint-config-prettier: ^8.5.0
   eslint-import-resolver-typescript: ^3.5.2
   eslint-plugin-import: ^2.26.0
+  eslint-plugin-lodash: ^7.4.0
   eslint-plugin-no-relative-import-paths: ^1.4.0
   eslint-plugin-react: ^7.31.10
   husky: ^8.0.1
@@ -82,6 +83,7 @@ devDependencies:
   eslint-config-prettier: 8.5.0_eslint@8.25.0
   eslint-import-resolver-typescript: 3.5.2_fyln4uq2tv75svthy6prqvt6lm
   eslint-plugin-import: 2.26.0_5r7jgxw73ljm6f74emcsxw3vua
+  eslint-plugin-lodash: 7.4.0_eslint@8.25.0
   eslint-plugin-no-relative-import-paths: 1.5.0
   eslint-plugin-react: 7.31.10_eslint@8.25.0
   husky: 8.0.1
@@ -4136,6 +4138,16 @@ packages:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
       - supports-color
+    dev: true
+
+  /eslint-plugin-lodash/7.4.0_eslint@8.25.0:
+    resolution: {integrity: sha512-Tl83UwVXqe1OVeBRKUeWcfg6/pCW1GTRObbdnbEJgYwjxp5Q92MEWQaH9+dmzbRt6kvYU1Mp893E79nJiCSM8A==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      eslint: '>=2'
+    dependencies:
+      eslint: 8.25.0
+      lodash: 4.17.21
     dev: true
 
   /eslint-plugin-no-relative-import-paths/1.5.0:
