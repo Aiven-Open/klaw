@@ -125,7 +125,7 @@ describe("TopicSchema", () => {
       expect(errors).toHaveLength(2);
 
       expect(errors[0]).toBeVisible();
-      expect(errors[1]).toHaveAttribute("aria-hidden");
+      expect(errors[1].parentNode).toHaveAttribute("aria-hidden");
     });
 
     it("shows an error if user uploads an empty file", async () => {
@@ -144,7 +144,7 @@ describe("TopicSchema", () => {
       expect(errors).toHaveLength(2);
 
       expect(errors[0]).toBeVisible();
-      expect(errors[1]).toHaveAttribute("aria-hidden");
+      expect(errors[1].parentNode).toHaveAttribute("aria-hidden");
     });
   });
 

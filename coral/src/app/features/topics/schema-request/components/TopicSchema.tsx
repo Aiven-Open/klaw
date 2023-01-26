@@ -136,14 +136,10 @@ function TopicSchema(props: TopicSchemaProps) {
                 />
               )}
             </BorderBox>
-            <Box
-              component={"p"}
-              marginTop={"1"}
-              marginBottom={"3"}
-              className={"text-error-50 typography-caption-default"}
-              aria-hidden={"true"}
-            >
-              {error?.message ? `${error?.message}` : <>&nbsp;</>}
+            <Box marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
+              <Typography.Caption color={"error-50"}>
+                {error?.message ? `${error?.message}` : <>&nbsp;</>}
+              </Typography.Caption>
             </Box>
           </div>
         );
