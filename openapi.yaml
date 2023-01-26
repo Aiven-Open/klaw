@@ -127,7 +127,7 @@ paths:
         - name: envSelected
           in: query
           required: false
-          description: Pass an environment name to get only the names of the topics in that environment
+          description: Pass an environment ID to get only the names of the topics in that environment
           schema:
             $ref: "#/components/schemas/TopicsGetOnlyResponse"
       responses:
