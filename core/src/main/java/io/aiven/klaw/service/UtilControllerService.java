@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,8 +41,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@ConfigurationProperties(prefix = "spring.security.oauth2.client", ignoreInvalidFields = false)
 public class UtilControllerService {
 
+  public static final String IMAGE_URI = ".imageURI";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired MailUtils mailService;
@@ -69,11 +72,7 @@ public class UtilControllerService {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  @Value("${klaw.sso.server.loginurl.azure}")
-  private String ssoServerLoginUrlAzure;
-
-  @Value("${klaw.sso.server.loginurl.google}")
-  private String ssoServerLoginUrlGoogle;
+  private Map<String, String> registration;
 
   @Autowired private ConfigurableApplicationContext context;
 
@@ -598,12 +597,11 @@ public class UtilControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  public Map<String, String> getBasicInfo() {
-    Map<String, String> resultBasicInfo = new HashMap<>();
+  public Map<String, Object> getBasicInfo() {
+    Map<String, Object> resultBasicInfo = new HashMap<>();
     resultBasicInfo.put("contextPath", kwContextPath);
 
-    resultBasicInfo.put("ssoServerUrlAzure", ssoServerLoginUrlAzure);
-    resultBasicInfo.put("ssoServerUrlGoogle", ssoServerLoginUrlGoogle);
+    resultBasicInfo.put("ssoProviders", buildSSOProviderDetails());
 
     // error codes of active directory authorization errors
     resultBasicInfo.put(ACTIVE_DIRECTORY_ERR_CODE_101, AD_ERROR_101_NO_MATCHING_ROLE);
@@ -612,6 +610,26 @@ public class UtilControllerService {
     resultBasicInfo.put(ACTIVE_DIRECTORY_ERR_CODE_104, AD_ERROR_104_MULTIPLE_MATCHING_TEAM);
 
     return resultBasicInfo;
+  }
+
+  /**
+   * This method takes all configured provider information and creates a new totally seperate object
+   * which just has the provider name and imgurl. This prevents any security information leaking
+   * back to the user that could risk the security of Klaw.
+   *
+   * @return Sanitised Provider and an Image Url.
+   */
+  private Map<String, String> buildSSOProviderDetails() {
+    Map<String, String> ssoProviders = new HashMap<>();
+    registration
+        .keySet()
+        .forEach(
+            k -> {
+              String providerName = k.substring(0, k.indexOf("."));
+              ssoProviders.put(providerName, registration.get(providerName + IMAGE_URI));
+            });
+
+    return ssoProviders;
   }
 
   public void resetCache(String tenantName, String entityType, String operationType) {
@@ -644,5 +662,13 @@ public class UtilControllerService {
     } catch (InterruptedException | ExecutionException e) {
       log.error("Error from resetCache ", e);
     }
+  }
+
+  public Map<String, String> getRegistration() {
+    return registration;
+  }
+
+  public void setRegistration(Map<String, String> registration) {
+    this.registration = registration;
   }
 }
