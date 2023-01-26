@@ -108,12 +108,12 @@
     <section id="wrapper">
         <div class="login-register" id="grad1">
             <div class="login-box card">
-                <div class="card-body" ng-repeat="provider in dashboardDetails.ssoProviders">
+                <div class="card-body" ng-repeat="(name, provider) in dashboardDetails.ssoProviders">
                     <div class="form-group text-center mt-3">
                         <div class="col-xs-12">
                             <button class="btn btn-info btn-lg btn-block text-uppercase waves-effect waves-light" id="grad1">
-                                <a class="btn btn-block btn-social btn-google" href="{{ provider.url }}"
-                                   style="color:white;"><img width="17%" src="{{ provider.imageURI }}"/> {{ provider.ssoProvider }} Login</a>
+                                <a class="btn btn-block btn-social btn-google" href="/oauth2/authorization/{{ name }}"
+                                   style="color:white;"><img width="17%" src="{{ provider.imageURI }}"/> {{ name }} Login</a>
                             </button>
                         </div>
                     </div>

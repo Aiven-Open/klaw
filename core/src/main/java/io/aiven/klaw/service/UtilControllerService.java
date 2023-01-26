@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ConfigurationProperties(prefix = "klaw.sso.server")
+@ConfigurationProperties(prefix = "spring.security.oauth2.client")
 public class UtilControllerService {
 
   @Autowired ManageDatabase manageDatabase;
@@ -72,7 +72,7 @@ public class UtilControllerService {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  private Map<String, SSODetails> loginurl;
+  private Map<String, SSODetails> registration;
 
   @Autowired private ConfigurableApplicationContext context;
 
@@ -600,7 +600,7 @@ public class UtilControllerService {
   public Map<String, Object> getBasicInfo() {
     Map<String, Object> resultBasicInfo = new HashMap<>();
     resultBasicInfo.put("contextPath", kwContextPath);
-    resultBasicInfo.put("ssoProviders", loginurl);
+    resultBasicInfo.put("ssoProviders", registration);
 
     // error codes of active directory authorization errors
     resultBasicInfo.put(ACTIVE_DIRECTORY_ERR_CODE_101, AD_ERROR_101_NO_MATCHING_ROLE);
@@ -643,11 +643,11 @@ public class UtilControllerService {
     }
   }
 
-  public Map<String, SSODetails> getLoginurl() {
-    return loginurl;
+  public Map<String, SSODetails> getRegistration() {
+    return registration;
   }
 
-  public void setLoginurl(Map<String, SSODetails> loginurl) {
-    this.loginurl = loginurl;
+  public void setRegistration(Map<String, SSODetails> registration) {
+    this.registration = registration;
   }
 }
