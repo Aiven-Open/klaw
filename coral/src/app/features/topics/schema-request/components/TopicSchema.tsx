@@ -52,11 +52,7 @@ function TopicSchema(props: TopicSchemaProps) {
   function uploadFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target?.files?.[0];
     if (file) {
-      // eslint-disable-next-line no-inner-declarations
-      async function getFile() {
-        return await readFile(file);
-      }
-      getFile().then((fileContent) => {
+      readFile(file).then((fileContent) => {
         clearErrors();
         setSchema(fileContent);
       });
