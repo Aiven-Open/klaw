@@ -76,12 +76,11 @@ describe("TopicSchema", () => {
       expect(info).toBeVisible();
     });
 
-    it("renders the hidden editor for the preview", () => {
-      const editor = screen.getByRole("textbox", {
+    it("renders no editor as long as there is no schema", () => {
+      const editor = screen.queryByRole("textbox", {
         hidden: true,
       });
-      expect(editor).toBeInTheDocument();
-      expect(editor).not.toBeVisible();
+      expect(editor).not.toBeInTheDocument();
     });
   });
 
@@ -167,13 +166,9 @@ describe("TopicSchema", () => {
     });
 
     it("shows a readonly editor with file content as preview ", async () => {
-      const editor = screen.getByRole<HTMLTextAreaElement>("textbox", {
-        hidden: true,
-      });
-
-      expect(editor).toHaveDisplayValue("");
       const fileInput = screen.getByLabelText<HTMLInputElement>(labelUpload);
       await userEvent.upload(fileInput, testFile);
+      const editor = screen.getByRole<HTMLTextAreaElement>("textbox");
 
       expect(editor).toBeVisible();
       expect(editor).toHaveDisplayValue(testSchema);

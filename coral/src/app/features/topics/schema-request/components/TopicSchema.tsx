@@ -103,7 +103,7 @@ function TopicSchema(props: TopicSchemaProps) {
                   </Box>
                 </div>
               )}
-              <div style={{ display: `${!schema ? "none" : "block"}` }}>
+              {schema && (
                 <MonacoEditor
                   data-testid="topic-schema"
                   height="200px"
@@ -126,7 +126,7 @@ function TopicSchema(props: TopicSchemaProps) {
                     },
                   }}
                 />
-              </div>
+              )}
             </BorderBox>
             <Box
               component={"p"}
