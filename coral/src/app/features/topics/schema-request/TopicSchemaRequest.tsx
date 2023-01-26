@@ -135,9 +135,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             <option disabled value={""}>
               please select
             </option>
-            {environments.map((env, index) => {
+            {environments.map((env) => {
               return (
-                <option key={`${env.name}${index}`} value={env.id}>
+                <option key={env.id} value={env.id}>
                   {env.name}
                 </option>
               );
