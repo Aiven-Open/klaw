@@ -9,21 +9,6 @@ import { readFile } from "src/app/features/topics/schema-request/utils/read-file
 jest.mock("src/app/features/topics/schema-request/utils/read-file");
 const mockReadFiles = readFile as jest.MockedFunction<typeof readFile>;
 
-// Temp mock for the editor, based on this:
-// https://github.com/suren-atoyan/monaco-react/issues/88#issuecomment-887055307
-// github issue to investigate a reusable testing approach:
-// 🐙 https://github.com/aiven/klaw/issues/475
-jest.mock("@monaco-editor/react", () => {
-  return jest.fn((props) => {
-    return (
-      <textarea
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      ></textarea>
-    );
-  });
-});
-
 describe("TopicSchema", () => {
   const formElementName: keyof TopicRequestFormSchema = "schemafull";
   const formSchema = z.object({
