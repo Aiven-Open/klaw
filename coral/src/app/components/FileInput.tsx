@@ -58,13 +58,7 @@ function FileInput(props: FileInputProps) {
           gridTemplateColumns: "max-content auto",
         }}
       >
-        <GridItem
-          colStart={"1"}
-          colEnd={"1"}
-          rowStart={"1"}
-          rowEnd={"1"}
-          width={"fit"}
-        >
+        <GridItem colStart={"1"} colEnd={"1"} rowStart={"1"} rowEnd={"1"}>
           <Box
             aria-hidden={true}
             display={"flex"}
@@ -84,6 +78,7 @@ function FileInput(props: FileInputProps) {
               borderRadius={"2px"}
               paddingX={"l1"}
               paddingY={"3"}
+              minWidth={"full"}
               className={`${!valid && "border-error-50"}`}
             >
               <Icon icon={cloudUpload} />
