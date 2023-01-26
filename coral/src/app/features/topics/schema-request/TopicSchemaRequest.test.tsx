@@ -138,18 +138,19 @@ describe("TopicSchemaRequest", () => {
       expect(options).toHaveLength(mockedEnvironments.length + 1);
     });
 
-    mockedEnvironments.forEach((env) => {
-      it(`renders a option ${env.name} with the environments id set as value ${env.id}`, () => {
+    test.each(mockedEnvironments)(
+      `renders a option $name with the environments id set as value $id`,
+      ({ name, id }) => {
         const form = getForm();
         const select = within(form).getByRole("combobox", {
           name: /Select environment/i,
         });
-        const option = within(select).getByRole("option", { name: env.name });
+        const option = within(select).getByRole("option", { name: name });
 
         expect(option).toBeVisible();
-        expect(option).toHaveValue(env.id);
-      });
-    });
+        expect(option).toHaveValue(id);
+      }
+    );
 
     it("shows readonly select element for the topic name", () => {
       const form = getForm();
