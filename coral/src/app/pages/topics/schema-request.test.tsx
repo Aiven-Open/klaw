@@ -63,12 +63,22 @@ describe("SchemaRequest", () => {
       expect(headline).toBeVisible();
     });
 
-    it("shows a form to request a schema", () => {
+    it("shows a form for to request a schema", () => {
       const form = screen.getByRole("form", {
         name: `Request a new schema`,
       });
 
       expect(form).toBeVisible();
+    });
+
+    it("shows the form for this specific topic", () => {
+      const input = screen.getByRole("combobox", {
+        name: "Topic name",
+      });
+
+      expect(input).toBeVisible();
+      expect(input).toHaveValue(topicName);
+      expect(input).toHaveAttribute("aria-readonly", "true");
     });
   });
 });
