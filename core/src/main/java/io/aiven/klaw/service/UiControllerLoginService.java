@@ -321,7 +321,11 @@ public class UiControllerLoginService {
         registerUserInfoModel.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
         registerUserInfoModel.setUsername(userName);
         registerUserInfoModel.setPwd("");
-        if (fullName != null) registerUserInfoModel.setFullname((String) fullName);
+        if (fullName != null) {
+          String fullNameStr =
+              ((String) fullName).replaceAll(",", ""); // Look for other characters in names
+          registerUserInfoModel.setFullname(fullNameStr);
+        }
 
         RegisterUserInfo registerUserInfo = new RegisterUserInfo();
         copyProperties(registerUserInfoModel, registerUserInfo);

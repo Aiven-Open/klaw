@@ -1,7 +1,10 @@
 package io.aiven.klaw.config;
 
+import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
+import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -30,10 +33,15 @@ public class SecurityConfigSSO {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
+  @Autowired KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
+
+  @Autowired KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     log.info("SSO enabled");
-    ConfigUtils.applyHttpSecurityConfig(http, coralEnabled);
+    ConfigUtils.applyHttpSecurityConfig(
+        http, coralEnabled, kwAuthenticationSuccessHandler, kwAuthenticationFailureHandler);
     return http.build();
   }
 

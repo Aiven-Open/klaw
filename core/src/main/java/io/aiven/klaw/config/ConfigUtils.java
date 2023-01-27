@@ -1,5 +1,7 @@
 package io.aiven.klaw.config;
 
+import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
+import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -45,7 +47,11 @@ public class ConfigUtils {
     return staticResourcesHtmlArray;
   }
 
-  protected static void applyHttpSecurityConfig(HttpSecurity http, boolean coralEnabled)
+  protected static void applyHttpSecurityConfig(
+      HttpSecurity http,
+      boolean coralEnabled,
+      KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler,
+      KwAuthenticationFailureHandler kwAuthenticationFailureHandler)
       throws Exception {
     http.csrf()
         .disable()
@@ -56,6 +62,9 @@ public class ConfigUtils {
         .authenticated()
         .and()
         .oauth2Login()
+        .successHandler(kwAuthenticationSuccessHandler)
+        .failureHandler(kwAuthenticationFailureHandler)
+        .failureUrl("/login?error")
         .loginPage("/login")
         .permitAll()
         .and()
