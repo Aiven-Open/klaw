@@ -292,21 +292,24 @@ describe("TopicSchemaRequest", () => {
       cleanup();
     });
 
-    it("shows error when user does not fill out environment select", async () => {
-      const form = getForm();
-      const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
-      });
+    // The new placeholder behaviour is to select the first option when no placeholder is provided
+    // So this situation will never happen, as there always be a value selected in this context
+    // @TODO https://github.com/aiven/klaw/issues/495
+    // it("shows error when user does not fill out environment select", async () => {
+    //   const form = getForm();
+    //   const select = within(form).getByRole("combobox", {
+    //     name: /Select environment/i,
+    //   });
 
-      select.focus();
-      await userEvent.keyboard("{ArrowDown}");
-      await userEvent.keyboard("{ESC}");
-      await userEvent.tab();
+    //   select.focus();
+    //   await userEvent.keyboard("{ArrowDown}");
+    //   await userEvent.keyboard("{ESC}");
+    //   await userEvent.tab();
 
-      const error = await screen.findByText("The environment is required.");
-      expect(error).toBeVisible();
-      expect(select).toBeInvalid();
-    });
+    //   const error = await screen.findByText("The environment is required.");
+    //   expect(error).toBeVisible();
+    //   expect(select).toBeInvalid();
+    // });
 
     it("shows error when user does not upload a file", async () => {
       const form = getForm();
@@ -533,7 +536,10 @@ describe("TopicSchemaRequest", () => {
         name: mockedEnvironments[1].name,
       });
 
-      expect(select).toHaveValue("");
+      // The new placeholder behaviour is to select the first option when no placeholder is provided
+      // So this situation will never happen, as there always be a value selected in this context
+      // @TODO https://github.com/aiven/klaw/issues/495
+      expect(select).toHaveValue("1");
 
       await userEvent.selectOptions(select, option);
 
