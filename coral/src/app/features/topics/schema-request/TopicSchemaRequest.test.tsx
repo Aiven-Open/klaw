@@ -620,7 +620,7 @@ describe("TopicSchemaRequest", () => {
         environment: "1",
         remarks: "",
         schemafull: "{}",
-        topicName: "my-awesome-topic",
+        topicname: "my-awesome-topic",
       });
     });
 
