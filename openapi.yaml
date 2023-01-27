@@ -124,6 +124,12 @@ paths:
           description: Set to true to only get the topic names for topics belonging to the team of the current user
           schema:
             $ref: "#/components/schemas/TopicsGetOnlyResponse"
+        - name: envSelected
+          in: query
+          required: false
+          description: Pass an environment ID to get only the names of the topics in that environment
+          schema:
+            $ref: "#/components/schemas/TopicsGetOnlyResponse"
       responses:
         "200":
           description: OK

@@ -45,11 +45,18 @@ const getTopics = async ({
 
 type GetTopicNamesArgs = Partial<{
   onlyMyTeamTopics: boolean;
+  envSelected?: string;
 }>;
 
-const getTopicNames = async ({ onlyMyTeamTopics }: GetTopicNamesArgs = {}) => {
+const getTopicNames = async ({
+  onlyMyTeamTopics,
+  envSelected = "ALL",
+}: GetTopicNamesArgs = {}) => {
   const isMyTeamTopics = onlyMyTeamTopics ?? false;
-  const params = { isMyTeamTopics: isMyTeamTopics.toString() };
+  const params = {
+    isMyTeamTopics: isMyTeamTopics.toString(),
+    envSelected,
+  };
 
   return api.get<KlawApiResponse<"topicsGetOnly">>(
     `/getTopicsOnly?${new URLSearchParams(params)}`
