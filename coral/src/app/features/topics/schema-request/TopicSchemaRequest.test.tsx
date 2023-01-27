@@ -12,9 +12,11 @@ import userEvent from "@testing-library/user-event";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { createSchemaRequest } from "src/domain/schema-request";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { getTopicNames } from "src/domain/topic";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
+jest.mock("src/domain/topic/topic-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
   getSchemaRegistryEnvironments as jest.MockedFunction<
@@ -22,6 +24,9 @@ const mockGetSchemaRegistryEnvironments =
   >;
 const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
   typeof createSchemaRequest
+>;
+const mockGetTopicNames = getTopicNames as jest.MockedFunction<
+  typeof getTopicNames
 >;
 
 const mockedUsedNavigate = jest.fn();
@@ -61,6 +66,54 @@ describe("TopicSchemaRequest", () => {
     jest.resetAllMocks();
   });
 
+  describe("checks if topicName passed from url is part of topics user can request schemas for", () => {
+    beforeEach(() => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedGetSchemaRegistryEnvironments
+      );
+      mockCreateSchemaRequest.mockImplementation(jest.fn());
+    });
+
+    afterEach(() => {
+      cleanup();
+      useQuerySpy.mockRestore();
+    });
+
+    it("does not redirect user if topicName prop does is part of list of topicNames", async () => {
+      mockGetTopicNames.mockResolvedValue([
+        "topic-1",
+        "topic-2",
+        testTopicName,
+      ]);
+
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+      });
+
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      // only testing this would always return green - even waitFor will return always
+      // true, since the mock is not called directly, so waitFor will check, confirm
+      // it has not been called because it has not happened yet. Checking for the
+      // form makes implicitly sure that navigate was not called (otherwise no form)
+      // and this assertion is mostly for readability
+      expect(mockedUsedNavigate).not.toHaveBeenCalledWith("/topics");
+    });
+
+    it("redirects user if topicName prop does not exist in list of topicNames", async () => {
+      mockGetTopicNames.mockResolvedValue(["topic-1", "topic-2"]);
+
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+      });
+
+      await waitFor(() => {
+        expect(mockedUsedNavigate).toHaveBeenCalledWith("/topics");
+      });
+    });
+  });
+
   describe("handles loading and update state", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -68,6 +121,8 @@ describe("TopicSchemaRequest", () => {
       useQuerySpy.mockReturnValue({ data: undefined, isLoading: true });
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
       });
@@ -100,6 +155,8 @@ describe("TopicSchemaRequest", () => {
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
       });
@@ -221,6 +278,8 @@ describe("TopicSchemaRequest", () => {
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
       });
@@ -287,6 +346,7 @@ describe("TopicSchemaRequest", () => {
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(
         <TopicSchemaRequest
@@ -343,6 +403,7 @@ describe("TopicSchemaRequest", () => {
         status: "400 BAD_REQUEST",
         data: { message: "Error in request" },
       });
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(
         <TopicSchemaRequest
@@ -443,6 +504,7 @@ describe("TopicSchemaRequest", () => {
         mockedGetSchemaRegistryEnvironments
       );
       mockCreateSchemaRequest.mockResolvedValue({ status: "200 OK" });
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(
         <TopicSchemaRequest

@@ -23,6 +23,11 @@ import { createSchemaRequest } from "src/domain/schema-request";
 import { mockCreateSchemaRequest } from "src/domain/schema-request/schema-request-api.msw";
 import { useNavigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { getTopicNames, TopicNames } from "src/domain/topic";
+import {
+  mockedResponseTopicNames,
+  mockGetTopicNames,
+} from "src/domain/topic/topic-api.msw";
 
 const mockedData = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
@@ -55,6 +60,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     },
   });
 
+  useQuery<TopicNames, Error>(["topic-names"], {
+    queryFn: () => getTopicNames({ onlyMyTeamTopics: true }),
+    keepPreviousData: true,
+    onSuccess: (data) => {
+      if (data?.includes(topicName)) {
+        return;
+      }
+      // Navigate back to Topics when topicName does not exist in the topics list
+      navigate("/topics");
+    },
+  });
+
   const { data: environments, isLoading: environmentsIsLoading } = useQuery<
     Environment[],
     Error
@@ -73,6 +90,10 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       mockCreateSchemaRequest({
         mswInstance: window.msw,
         response: { data: { status: "200 OK" } },
+      });
+      mockGetTopicNames({
+        mswInstance: window.msw,
+        response: mockedResponseTopicNames,
       });
     }
   }, []);
