@@ -437,8 +437,8 @@ public class UsersTeamsControllerService {
 
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
-    Matcher m = getPattern().matcher(newUser.getUsername());
-    if (!m.matches()) {
+    boolean userNamePatternCheck = userNamePatternValidation(newUser.getUsername());
+    if (!userNamePatternCheck) {
       return ApiResponse.builder().result("Invalid username/mail id").build();
     }
 
@@ -481,7 +481,6 @@ public class UsersTeamsControllerService {
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
 
-      //            log.info("pwd : "+decodePwd(newUser.getUserPassword()));
       if (isExternal) {
         if ("".equals(newUser.getUserPassword())) {
           mailService.sendMail(
@@ -950,11 +949,9 @@ public class UsersTeamsControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  private Pattern getPattern() {
-    if (SAAS.equals(kwInstallationType) || ssoEnabled) {
-      return saasPattern;
-    } else {
-      return defaultPattern;
-    }
+  private boolean userNamePatternValidation(String userName) {
+    Matcher m1 = saasPattern.matcher(userName);
+    Matcher m2 = defaultPattern.matcher(userName);
+    return m1.matches() || m2.matches();
   }
 }
