@@ -34,13 +34,10 @@ function PreviewBanner({ linkTarget }: { linkTarget: string }) {
       marginBottom={"l1"}
       aria-label={"Preview disclaimer"}
     >
-      <Icon
-        aria-hidden={true}
-        color={"info-50"}
-        fontSize={20}
-        icon={infoSign}
-      />
-      <Typography variant={"body-small"}>
+      <Typography.SmallText>
+        <Icon icon={infoSign} color={"info-50"} style={{ marginTop: "5px" }} />
+      </Typography.SmallText>
+      <Typography.SmallText>
         You are viewing a preview of the redesigned user interface. You are one
         of our early reviewers, and your{" "}
         <Link
@@ -52,7 +49,7 @@ function PreviewBanner({ linkTarget }: { linkTarget: string }) {
         />{" "}
         will help us improve the product. You can always go back to the{" "}
         <Link text={"old interface"} target={linkTarget} isRemote={false} />.
-      </Typography>
+      </Typography.SmallText>
     </Box>
   );
 }
