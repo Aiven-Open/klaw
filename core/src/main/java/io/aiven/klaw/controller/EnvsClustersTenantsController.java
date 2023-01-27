@@ -164,12 +164,12 @@ public class EnvsClustersTenantsController {
   }
 
   @RequestMapping(
-      value = "/getRequestForSchemas",
+      value = "/getEnvsForSchemaRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<EnvModel>> getRequestForSchemas() {
     return new ResponseEntity<>(
-        envsClustersTenantsControllerService.getRequestSchemaEnvs(), HttpStatus.OK);
+        envsClustersTenantsControllerService.getEnvsForSchemaRequests(), HttpStatus.OK);
   }
 
   @RequestMapping(

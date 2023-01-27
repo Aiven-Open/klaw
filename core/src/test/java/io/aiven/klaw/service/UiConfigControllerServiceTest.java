@@ -142,7 +142,7 @@ public class UiConfigControllerServiceTest {
     when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
-    List<EnvModel> envsList = envsClustersTenantsControllerService.getRequestSchemaEnvs();
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
 
     assertThat(envsList).isEmpty();
   }
@@ -159,7 +159,7 @@ public class UiConfigControllerServiceTest {
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
-    List<EnvModel> envsList = envsClustersTenantsControllerService.getRequestSchemaEnvs();
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
 
     assertThat(envsList.get(0).getName()).isEqualTo("DEV");
     assertThat(envsList.size()).isEqualTo(1);
@@ -177,7 +177,7 @@ public class UiConfigControllerServiceTest {
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
-    List<EnvModel> envsList = envsClustersTenantsControllerService.getRequestSchemaEnvs();
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
 
     assertThat(envsList.get(0).getName()).isEqualTo("DEV");
     assertThat(envsList.size()).isEqualTo(1);
@@ -195,7 +195,7 @@ public class UiConfigControllerServiceTest {
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
-    List<EnvModel> envsList = envsClustersTenantsControllerService.getRequestSchemaEnvs();
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
 
     assertThat(envsList.get(0).getName()).isEqualTo("DEV");
     assertThat(envsList.get(1).getName()).isEqualTo("TST");
@@ -215,7 +215,7 @@ public class UiConfigControllerServiceTest {
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
-    List<EnvModel> envsList = envsClustersTenantsControllerService.getRequestSchemaEnvs();
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
 
     assertThat(envsList.get(0).getName()).isEqualTo("DEV");
     assertThat(envsList.get(1).getName()).isEqualTo("TST");

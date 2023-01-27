@@ -1695,6 +1695,23 @@
         }
       }
     },
+    "/getEnvsForSchemaRequests" : {
+      "get" : {
+        "operationId" : "getRequestForSchemas",
+        "produces" : [ "application/json" ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/EnvModel"
+              }
+            }
+          }
+        }
+      }
+    },
     "/getEnvsPaginated" : {
       "get" : {
         "operationId" : "getEnvsPaginated",
@@ -1895,23 +1912,6 @@
                     "type" : "boolean"
                   }
                 }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getRequestForSchemas" : {
-      "get" : {
-        "operationId" : "getRequestForSchemas",
-        "produces" : [ "application/json" ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/EnvModel"
               }
             }
           }
