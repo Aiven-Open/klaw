@@ -26,7 +26,7 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     response.sendRedirect(contextPath.concat(getRedirectPage(request)));
   }
 
-  private String getRedirectPage(HttpServletRequest request) {
+  public String getRedirectPage(HttpServletRequest request) {
     DefaultSavedRequest defaultSavedRequest =
         (DefaultSavedRequest) request.getSession().getAttribute("SPRING_SECURITY_SAVED_REQUEST");
     String indexPage = "index";
