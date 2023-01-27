@@ -50,6 +50,7 @@ function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
 
   const nativeSelectProps = omit(
     props,
+    "placeholder",
     "options",
     "identifierValue",
     "identifierName",

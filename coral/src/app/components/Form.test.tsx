@@ -258,9 +258,9 @@ describe("Form", () => {
         <NativeSelect<Schema>
           name="formFieldsCustomName"
           labelText="NativeSelect"
-          defaultValue={""}
+          defaultValue={"placeholdervalue"}
         >
-          <option value="" disabled={true}>
+          <option value="placeholdervalue" disabled={true}>
             placeholder
           </option>
           <option value="helsinki">Helsinki</option>
@@ -271,14 +271,14 @@ describe("Form", () => {
       );
 
       const select = screen.getByRole("combobox", { name: "NativeSelect" });
-      expect(select).toHaveValue("");
+      expect(select).toHaveValue("placeholdervalue");
 
       await userEvent.click(select);
       await userEvent.keyboard("{Enter}");
       await userEvent.tab();
 
       const errorMessage = await screen.findByText(
-        "Invalid enum value. Expected 'helsinki' | 'berlin' | 'london', received ''"
+        "Invalid enum value. Expected 'helsinki' | 'berlin' | 'london', received 'placeholdervalue'"
       );
       expect(errorMessage).toBeVisible();
       expect(true).toBeTruthy();

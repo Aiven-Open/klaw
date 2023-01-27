@@ -88,7 +88,7 @@ function TopicSchema(props: TopicSchemaProps) {
               onChange={uploadFile}
               valid={!error}
             />
-            <Typography.Caption fontWeight={"500"} htmlTag={"label"}>
+            <Typography.Caption htmlTag={"label"}>
               <span className={error?.message && "text-error-50"}>
                 Schema preview (read only)
               </span>
