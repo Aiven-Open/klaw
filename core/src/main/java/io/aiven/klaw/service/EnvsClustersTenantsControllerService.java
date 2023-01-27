@@ -555,6 +555,35 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
+  public List<EnvModel> getRequestSchemaEnvs() {
+    int tenantId = getUserDetails(getUserName()).getTenantId();
+    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS");
+    String requestSchemasEnvs = mailService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
+
+    String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
+    List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
+    List<EnvModel> envModelList =
+        getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
+    log.info("orderOfEnvs {}, RequestForSchemas {}, ", orderOfEnvs, reqSchemaEnvs);
+    envModelList =
+        envModelList.stream()
+            .filter(
+                env -> {
+                  boolean found = false;
+                  for (String reqSchemaEnv : reqSchemaEnvs) {
+                    if (Objects.equals(env.getId(), reqSchemaEnv)) {
+                      found = true;
+                      break;
+                    }
+                  }
+                  return found;
+                })
+            .collect(Collectors.toList());
+
+    envModelList.sort(Comparator.comparingInt(topicEnv -> orderOfEnvs.indexOf(topicEnv.getId())));
+    return envModelList;
+  }
+
   public List<EnvModel> getKafkaConnectEnvs() {
     String userName = getUserName();
     int tenantId = getUserDetails(userName).getTenantId();

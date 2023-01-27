@@ -72,7 +72,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
         $http({
             method: "GET",
-            url: "getSchemaRegEnvs",
+            url: "getRequestForSchemas",
             headers : { 'Content-Type' : 'application/json' }
         }).success(function(output) {
             $scope.allschemaenvs = output;

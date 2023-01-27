@@ -511,6 +511,30 @@ public class UtilMethods {
     return envList;
   }
 
+  public List<EnvModel> getDEVSchemaEnvList() {
+    List<EnvModel> envList = new ArrayList<>();
+    EnvModel env = new EnvModel();
+    env.setId("1");
+    env.setName("DEV");
+    env.setClusterType(KafkaClustersType.SCHEMA_REGISTRY);
+    env.setClusterId(101);
+    envList.add(env);
+
+    return envList;
+  }
+
+  public List<EnvModel> getTSTSchemaEnvList() {
+    List<EnvModel> envList = new ArrayList<>();
+    EnvModel env = new EnvModel();
+    env.setId("4");
+    env.setName("TST");
+    env.setClusterType(KafkaClustersType.SCHEMA_REGISTRY);
+    env.setClusterId(101);
+    envList.add(env);
+
+    return envList;
+  }
+
   public List<Map<String, String>> getSyncEnv() {
     List<Map<String, String>> envList = new ArrayList<>();
 

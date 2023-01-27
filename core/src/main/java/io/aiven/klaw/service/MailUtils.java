@@ -397,6 +397,10 @@ public class MailUtils {
           tenantModel
               .getOrderOfSchemaPromotionEnvsList()
               .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+        case "REQUEST_SCHEMA_OF_ENVS":
+          tenantModel
+              .getRequestSchemaEnvironmentsList()
+              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           break;
       }
 
