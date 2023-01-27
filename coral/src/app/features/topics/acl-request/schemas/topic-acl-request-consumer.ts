@@ -1,10 +1,11 @@
 import {
-  remarks,
   aclIpPrincipleType,
   acl_ip,
   acl_ssl,
-  topicname,
   environment,
+  remarks,
+  topicname,
+  teamname,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
 import {
   hasOnlyValidCharacters,
@@ -33,6 +34,7 @@ const topicConsumerFormSchema = z
     topicname,
     environment,
     topictype,
+    teamname,
   })
   // We check if the user has entered valid values for acl_ssl or acl_ip
   .refine(({ aclIpPrincipleType, acl_ssl, acl_ip }) => {

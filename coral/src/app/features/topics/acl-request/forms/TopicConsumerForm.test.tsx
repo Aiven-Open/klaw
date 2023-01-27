@@ -9,12 +9,11 @@ import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const baseProps = {
   topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
-  topicTeam: "ospo",
   environments: [
     createEnvironment({
       name: "DEV",
@@ -31,40 +30,12 @@ const baseProps = {
 } as TopicConsumerFormProps;
 
 const basePropsIsAivenCluster = {
-  topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
-  topicTeam: "ospo",
-  environments: [
-    createEnvironment({
-      name: "DEV",
-      id: "1",
-    }),
-    createEnvironment({
-      name: "TST",
-      id: "2",
-    }),
-  ],
-  renderAclTypeField: () => (
-    <AclTypeField topicType={"Producer"} handleChange={() => null} />
-  ),
+  ...baseProps,
   clusterInfo: { aivenCluster: "true" },
 } as TopicConsumerFormProps;
 
 const basePropsNotAivenCluster = {
-  topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
-  topicTeam: "ospo",
-  environments: [
-    createEnvironment({
-      name: "DEV",
-      id: "1",
-    }),
-    createEnvironment({
-      name: "TST",
-      id: "2",
-    }),
-  ],
-  renderAclTypeField: () => (
-    <AclTypeField topicType={"Producer"} handleChange={() => null} />
-  ),
+  ...baseProps,
   clusterInfo: { aivenCluster: "false" },
 } as TopicConsumerFormProps;
 
@@ -88,7 +59,7 @@ describe("<TopicConsumerForm />", () => {
             topicConsumerForm={result.current}
           />
         </AquariumContext>,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
@@ -219,7 +190,7 @@ describe("<TopicConsumerForm />", () => {
             topicConsumerForm={result.current}
           />
         </AquariumContext>,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
@@ -333,7 +304,7 @@ describe("<TopicConsumerForm />", () => {
             topicConsumerForm={result.current}
           />
         </AquariumContext>,
-        { queryClient: true }
+        { queryClient: true, memoryRouter: true }
       );
     });
 
