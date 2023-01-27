@@ -7,7 +7,9 @@ function parseNumberOrUndefined(value: string | null): number | undefined {
 }
 
 function transformEnvironmentApiResponse(
-  apiResponse: KlawApiResponse<"environmentsGet">
+  apiResponse:
+    | KlawApiResponse<"environmentsGet">
+    | KlawApiResponse<"schemaRegEnvsGet">
 ): Environment[] {
   return apiResponse.map((environment) => {
     const rv: Environment = {

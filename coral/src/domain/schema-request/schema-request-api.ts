@@ -1,12 +1,6 @@
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
 import api from "src/services/api";
 
-const getSchemaRegistryEnvironments = (): Promise<
-  KlawApiResponse<"schemaRegEnvsGet">
-> => {
-  return api.get<KlawApiResponse<"schemaRegEnvsGet">>("/getSchemaRegEnvs");
-};
-
 const createSchemaRequest = (
   params: KlawApiRequest<"schemaUpload">
 ): Promise<KlawApiResponse<"schemaUpload">> => {
@@ -23,4 +17,4 @@ const createSchemaRequest = (
   >("/uploadSchema", schemaUploadParams);
 };
 
-export { createSchemaRequest, getSchemaRegistryEnvironments };
+export { createSchemaRequest };
