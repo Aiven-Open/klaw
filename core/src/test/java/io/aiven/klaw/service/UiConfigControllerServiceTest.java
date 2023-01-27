@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
@@ -18,6 +20,7 @@ import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -130,6 +133,103 @@ public class UiConfigControllerServiceTest {
     assertThat(envsList).isEmpty();
   }
 
+  @Test
+  @Order(5)
+  public void getRequestSchemaEnvs_IsEmpty() {
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
+    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
+    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
+
+    assertThat(envsList).isEmpty();
+  }
+
+  @Test
+  @Order(6)
+  public void getRequestSchemaEnvs_ReturnDevEnv() {
+
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
+    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("DEV");
+    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
+        .thenReturn(getSchemaRegistryClusters());
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
+
+    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
+    assertThat(envsList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(7)
+  public void getRequestSchemaEnvs_GivenWrongSchemaEnvNameReturnDevEnvOnly() {
+    // sTT is a misspelt env one tht does not exist and so should not be returned.
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
+    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("DEV,sTT");
+    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
+        .thenReturn(getSchemaRegistryClusters());
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
+
+    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
+    assertThat(envsList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(8)
+  public void getRequestSchemaEnvs_GivenTwoSchemaEnvsReturnBoth() {
+    // DEV and TSTS are both spelt correctly and configured so both should be returned.
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
+    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("DEV,TST");
+    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
+        .thenReturn(getSchemaRegistryClusters());
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
+
+    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
+    assertThat(envsList.get(1).getName()).isEqualTo("TST");
+    assertThat(envsList.size()).isEqualTo(2);
+  }
+
+  @Test
+  @Order(9)
+  public void getRequestSchemaEnvs_GivenThreeSchemaEnvsReturnOnlyTheTwoConfigured() {
+    // only two kWclusters are configured DEV and TST so UAT should not return.
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST,UAT");
+    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
+        .thenReturn("DEV,TST,UAT");
+    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
+    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
+        .thenReturn(getSchemaRegistryClusters());
+    List<EnvModel> envsList = envsClustersTenantsControllerService.getEnvsForSchemaRequests();
+
+    assertThat(envsList.get(0).getName()).isEqualTo("DEV");
+    assertThat(envsList.get(1).getName()).isEqualTo("TST");
+    assertThat(envsList.size()).isEqualTo(2);
+  }
+
+  private Map<Integer, KwClusters> getSchemaRegistryClusters() {
+    Map<Integer, KwClusters> map = new HashMap<>();
+    UtilMethods util = new UtilMethods();
+    map.put(1, util.getKwClusters());
+    map.put(4, util.getKwClusters());
+    return map;
+  }
+
   private List<ActivityLog> getAcitivityList(int size) {
     List<ActivityLog> actList = new ArrayList<>();
 
@@ -194,10 +294,14 @@ public class UiConfigControllerServiceTest {
 
     Env env = new Env();
     env.setName("DEV");
+    env.setId("DEV");
+    env.setClusterId(1);
     listEnvs.add(env);
 
     env = new Env();
     env.setName("TST");
+    env.setId("TST");
+    env.setClusterId(4);
     listEnvs.add(env);
 
     return listEnvs;
@@ -233,6 +337,7 @@ public class UiConfigControllerServiceTest {
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
+    when(userInfo.getTenantId()).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("kwusera");
   }
 }

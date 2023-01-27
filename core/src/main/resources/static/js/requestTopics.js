@@ -314,7 +314,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
                 $http({
                     method: "GET",
-                    url: "getEnvsBaseClusterFilteredForTeam",
+                    url: "getEnvsBaseCluster",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allenvs = output;

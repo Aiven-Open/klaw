@@ -379,24 +379,34 @@ public class MailUtils {
           }
           break;
         case "REQUEST_TOPICS_OF_ENVS":
-          tenantModel
-              .getRequestTopicsEnvironmentsList()
-              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          List<String> requestTopics = tenantModel.getRequestTopicsEnvironmentsList();
+          if (requestTopics != null && !requestTopics.isEmpty()) {
+            requestTopics.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
           break;
         case "ORDER_OF_KAFKA_CONNECT_ENVS":
-          tenantModel
-              .getOrderOfConnectorsPromotionEnvsList()
-              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          List<String> orderOfConn = tenantModel.getOrderOfConnectorsPromotionEnvsList();
+          if (orderOfConn != null && !orderOfConn.isEmpty()) {
+            orderOfConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
           break;
         case "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS":
-          tenantModel
-              .getRequestConnectorsEnvironmentsList()
-              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          List<String> requestConn = tenantModel.getRequestConnectorsEnvironmentsList();
+          if (requestConn != null && !requestConn.isEmpty()) {
+            requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
           break;
         case "ORDER_OF_SCHEMA_ENVS":
-          tenantModel
-              .getOrderOfSchemaPromotionEnvsList()
-              .forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          List<String> orderOfSchema = tenantModel.getOrderOfSchemaPromotionEnvsList();
+          if (orderOfSchema != null && !orderOfSchema.isEmpty()) {
+            orderOfSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
+          break;
+        case "REQUEST_SCHEMA_OF_ENVS":
+          List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
+          if (requestSchema != null && !requestSchema.isEmpty()) {
+            requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
           break;
       }
 

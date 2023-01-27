@@ -164,6 +164,15 @@ public class EnvsClustersTenantsController {
   }
 
   @RequestMapping(
+      value = "/getEnvsForSchemaRequests",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvModel>> getRequestForSchemas() {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvsForSchemaRequests(), HttpStatus.OK);
+  }
+
+  @RequestMapping(
       value = "/getKafkaConnectEnvs",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})

@@ -329,28 +329,20 @@ public class EnvsClustersTenantsControllerService {
 
   public List<EnvModel> getEnvsForRequestTopicsCluster() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
-    String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
 
+    String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
+    if (requestTopicsEnvs == null) {
+      return new ArrayList<>();
+    }
+    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     String[] reqTopicsEnvs = requestTopicsEnvs.split(",");
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<EnvModel> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
 
-    envModelList =
-        envModelList.stream()
-            .filter(
-                env -> {
-                  boolean found = false;
-                  for (String reqTopicEnv : reqTopicsEnvs) {
-                    if (Objects.equals(env.getId(), reqTopicEnv)) {
-                      found = true;
-                      break;
-                    }
-                  }
-                  return found;
-                })
-            .collect(Collectors.toList());
-
+    envModelList = filterEnvironmentModelList(reqTopicsEnvs, envModelList);
+    if (orderOfEnvs == null) {
+      return envModelList;
+    }
     envModelList.sort(Comparator.comparingInt(topicEnv -> orderOfEnvs.indexOf(topicEnv.getId())));
     return envModelList;
   }
@@ -552,6 +544,45 @@ public class EnvsClustersTenantsControllerService {
           });
     }
 
+    return envModelList;
+  }
+
+  public List<EnvModel> getEnvsForSchemaRequests() {
+    int tenantId = getUserDetails(getUserName()).getTenantId();
+
+    String requestSchemasEnvs = mailService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
+    if (requestSchemasEnvs == null) {
+      return new ArrayList<>();
+    }
+    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS");
+    String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
+    List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
+    List<EnvModel> envModelList =
+        getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
+    log.debug("orderOfEnvs {}, RequestForSchemas {}, ", orderOfEnvs, reqSchemaEnvs);
+    envModelList = filterEnvironmentModelList(reqSchemaEnvs, envModelList);
+    if (orderOfEnvs == null) {
+      return envModelList;
+    }
+    envModelList.sort(Comparator.comparingInt(schemaEnv -> orderOfEnvs.indexOf(schemaEnv.getId())));
+    return envModelList;
+  }
+
+  private List<EnvModel> filterEnvironmentModelList(String[] reqEnvs, List<EnvModel> envModelList) {
+    envModelList =
+        envModelList.stream()
+            .filter(
+                env -> {
+                  boolean found = false;
+                  for (String reqEnv : reqEnvs) {
+                    if (Objects.equals(env.getId(), reqEnv)) {
+                      found = true;
+                      break;
+                    }
+                  }
+                  return found;
+                })
+            .collect(Collectors.toList());
     return envModelList;
   }
 
