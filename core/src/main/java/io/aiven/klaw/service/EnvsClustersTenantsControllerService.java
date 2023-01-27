@@ -568,8 +568,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  private List<EnvModel> filterEnvironmentModelList(
-      String[] reqEnvs, List<EnvModel> envModelList) {
+  private List<EnvModel> filterEnvironmentModelList(String[] reqEnvs, List<EnvModel> envModelList) {
     envModelList =
         envModelList.stream()
             .filter(
