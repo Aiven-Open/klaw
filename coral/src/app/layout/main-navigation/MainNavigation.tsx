@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 
 function MainNavigation() {
   const topicAclRequestEnabled = useFeatureFlag(FeatureFlag.TOPIC_ACL_REQUEST);
+  const approvalsEnabled = useFeatureFlag(FeatureFlag.APPROVALS);
   const { pathname } = useLocation();
 
   return (
@@ -55,10 +56,18 @@ function MainNavigation() {
               <></>
             )}
 
-            <MainNavigationLink
-              href={`/execTopics`}
-              linkText={"Approval Requests"}
-            />
+            {approvalsEnabled ? (
+              <MainNavigationLink
+                href={`/approvals/topics`}
+                linkText={"Approval Requests"}
+                useRouter={true}
+              />
+            ) : (
+              <MainNavigationLink
+                href={`/execTopics`}
+                linkText={"Approval Requests"}
+              />
+            )}
 
             <MainNavigationLink
               href={`/myTopicRequests`}

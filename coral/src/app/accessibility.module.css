@@ -97,3 +97,18 @@ a:focus-visible {
   /*represents grey-70 */
   color: #4a4b57 !important;
 }
+
+/* Accessibility improvement to <Tabs /> component */
+:root [role="tablist"] [role="tab"]:hover {
+  border-color: #e41a4a !important; /* primary-80*/
+}
+
+:root [role="tablist"] [role="tab"]:focus,
+:root [role="tablist"] [role="tab"]:focus-visible {
+  /* The default outline was overflowing to the container. */
+  outline-offset: -2px !important;
+}
+
+:root [role="tablist"] [role="tab"][aria-selected="true"] {
+  background-color: #f7f7fa !important; /* grey-0 */
+}

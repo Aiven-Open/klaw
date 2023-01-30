@@ -1,6 +1,7 @@
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import { cleanup, screen, render } from "@testing-library/react";
 import data from "@aivenio/aquarium/dist/src/icons/console";
+import { MemoryRouter } from "react-router-dom";
 
 // mock out svgs to avoid clutter
 jest.mock("@aivenio/aquarium", () => {
@@ -107,6 +108,24 @@ describe("MainNavigationLink.tsx", () => {
       const navLink = screen.getByRole("link", { name: "Topics" });
 
       expect(navLink.parentNode).toHaveClass("mainNavigationLinkActive");
+    });
+  });
+  describe("Link rendered with React Routers <Link>", () => {
+    it("renders correct link content", () => {
+      render(
+        <MemoryRouter initialEntries={["/users/mjackson"]}>
+          <MainNavigationLink
+            icon={mockIcon}
+            href={"/topics"}
+            linkText={"Topics"}
+            active={true}
+            useRouter={true}
+          />
+        </MemoryRouter>
+      );
+      const link = screen.getByRole("link", { name: "Topics" });
+      expect(link).toHaveAttribute("href", "/topics");
+      expect(link).toHaveAttribute("aria-current", "page");
     });
   });
 });
