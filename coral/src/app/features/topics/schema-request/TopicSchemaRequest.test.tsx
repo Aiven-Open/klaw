@@ -118,7 +118,7 @@ describe("TopicSchemaRequest", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: undefined, isLoading: true });
+      useQuerySpy.mockReturnValue({ data: [], isLoading: true });
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
@@ -244,7 +244,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
       // <input type="file" /> does not have a corresponding role
       const textArea = within(form).getByRole("textbox", {
-        name: "Message for the approval",
+        name: "Enter a message for approval",
       });
 
       expect(textArea).toBeEnabled();
@@ -319,7 +319,9 @@ describe("TopicSchemaRequest", () => {
       fileInput.focus();
       await userEvent.tab();
 
-      const fileRequiredError = screen.getAllByText("File is a required field");
+      const fileRequiredError = screen.getAllByText(
+        "File missing: Upload the AVRO schema file."
+      );
       expect(fileRequiredError).toHaveLength(2);
     });
 
