@@ -1,5 +1,6 @@
 import api, {
   AbsolutePathname,
+  GenericApiResponse,
   HTTPMethod,
   isClientError,
   isServerError,
@@ -16,10 +17,34 @@ function apiUrl(path: string) {
 type HTTPScenario = {
   functionName: string;
   ok: () => Promise<unknown>;
+  fakeOk: () => Promise<unknown>;
   htmlResponse: () => Promise<unknown>;
   unauthorized: () => Promise<unknown>;
   badRequest: () => Promise<unknown>;
   internalError: () => Promise<unknown>;
+};
+
+// Klaw currently does not return ERRORs from the API but always a 200
+// An error is always following this patter:
+// {
+//   status: null,
+//   timestamp: null,
+//   message: null,
+//   debugMessage: null,
+//   result: "Failure. <SOME MORE TEXT>",
+//   data: null,
+// };
+// to provide error messages for the user, we added a temp fix
+// see `checkForFailureHiddenAsSuccess` in api.ts
+// the HTTPScenario "fakeOk" is responsible for testing the fix
+// until it's removed
+const klawResponseResultWithHiddenError: GenericApiResponse = {
+  data: {},
+  timestamp: "",
+  debugMessage: "",
+  message: "",
+  result: "Failure. A request already exists for this topic.",
+  status: "200 OK",
 };
 
 describe("API client", () => {
@@ -32,6 +57,13 @@ describe("API client", () => {
     server.use(
       rest.all(apiUrl("/ok"), async (req, res, ctx) => {
         return res.once(ctx.status(200), ctx.json(mockResponseData));
+      }),
+
+      rest.all(apiUrl("/fakeOk"), async (req, res, ctx) => {
+        return res.once(
+          ctx.status(200),
+          ctx.json(klawResponseResultWithHiddenError)
+        );
       }),
       rest.all(apiUrl("/okButHTML"), async (req, res, ctx) => {
         return res.once(
@@ -67,6 +99,7 @@ describe("API client", () => {
     return {
       functionName: name,
       ok: () => func("/ok", data),
+      fakeOk: () => func("/fakeOk", data),
       htmlResponse: () => func("/okButHTML", data),
       unauthorized: () => func("/unauthorized", data),
       badRequest: () => func("/clientError", data),
@@ -81,6 +114,7 @@ describe("API client", () => {
     return {
       functionName: name,
       ok: () => func("/ok"),
+      fakeOk: () => func("/fakeOk"),
       htmlResponse: () => func("/okButHTML"),
       unauthorized: () => func("/unauthorized"),
       badRequest: () => func("/clientError"),
@@ -110,6 +144,7 @@ describe("API client", () => {
     ({
       functionName,
       ok,
+      fakeOk,
       badRequest,
       internalError,
       htmlResponse,
@@ -172,6 +207,20 @@ describe("API client", () => {
                 return false;
               }
             );
+            expect(isExpectedError).toBe(true);
+          });
+        });
+
+        describe("when response is an error hidden as success", () => {
+          it("should throw ClientError", async () => {
+            const isExpectedError = await fakeOk().catch((error: Error) => {
+              if (isClientError(error)) {
+                expect(error.status).toBe(400);
+                expect(error.statusText).toBe("Bad Request");
+                return true;
+              }
+              return false;
+            });
             expect(isExpectedError).toBe(true);
           });
         });

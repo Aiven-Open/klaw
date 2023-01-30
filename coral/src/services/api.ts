@@ -1,5 +1,9 @@
 import { getHTTPBaseAPIUrl } from "src/config";
 import isPlainObject from "lodash/isPlainObject";
+import { components } from "types/api";
+import { objectHasProperty } from "src/services/type-utils";
+
+type GenericApiResponse = components["schemas"]["GenericApiResponse"];
 
 enum HTTPMethod {
   GET = "GET",
@@ -179,6 +183,49 @@ const checkStatus = (response: Response): Promise<Response> => {
   return Promise.resolve(response);
 };
 
+function isGenericApiResponse(
+  response: unknown | unknown[]
+): response is GenericApiResponse {
+  return (
+    objectHasProperty(response, "timestamp") &&
+    objectHasProperty(response, "data") &&
+    objectHasProperty(response, "debugMessage") &&
+    objectHasProperty(response, "message") &&
+    objectHasProperty(response, "result") &&
+    objectHasProperty(response, "status")
+  );
+}
+
+// Klaw currently does not return ERRORs from the API but always a 200
+// An error is always following this patter:
+// {
+//   status: null,
+//   timestamp: null,
+//   message: null,
+//   debugMessage: null,
+//   result: "Failure. <SOME MORE TEXT>",
+//   data: null,
+// };
+// to provide error messages for the user, we added this
+// temp fix. It can be removed once the API is updated
+async function checkForFailureHiddenAsSuccess<TResponse extends SomeObject>(
+  response: TResponse
+): Promise<TResponse> {
+  if (isGenericApiResponse(response)) {
+    const res: GenericApiResponse = response;
+    if (res.result?.toLowerCase().startsWith("failure")) {
+      const httpError: HTTPError = {
+        data: { message: res.result },
+        status: 400,
+        statusText: "Bad Request",
+        headers: new Headers(),
+      };
+      return Promise.reject(httpError);
+    }
+  }
+  return Promise.resolve(response);
+}
+
 function parseResponseBody<T extends SomeObject>(
   response: Response
 ): Promise<T> {
@@ -217,6 +264,7 @@ function handleResponse<TResponse extends SomeObject>(
     .then(transformHTTPRedirectToRootTo204)
     .then(checkStatus)
     .then((response) => parseResponseBody<TResponse>(response))
+    .then(checkForFailureHiddenAsSuccess)
     .catch(handleHTTPError);
 }
 
@@ -275,5 +323,5 @@ export default {
   delete: delete_,
 };
 
-export type { AbsolutePathname, HTTPError };
+export type { AbsolutePathname, HTTPError, GenericApiResponse };
 export { HTTPMethod, isUnauthorizedError, isServerError, isClientError };
