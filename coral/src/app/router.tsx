@@ -21,7 +21,7 @@ const routes: Array<RouteObject> = [
     element: <RequestTopic />,
   },
   {
-    path: "/topic/:topicName/acl/request",
+    path: "/topic/:topicName/subscribe",
     element: <AclRequest />,
   },
   {

@@ -47,9 +47,9 @@ function MainNavigation() {
                 // This link is only intended to be rendered in dev environment
                 // So the path does not have a coral/ prefix
                 // @TODO: delete when Topic overview / top nac Request dropdown are implemented
-                href={"/topic/aivtopic1/acl/request"}
+                href={"/topic/aivtopic1/subscribe"}
                 linkText={"Subscribe"}
-                active={pathname.includes("/acl/request")}
+                active={pathname.includes("/subscribe")}
               />
             ) : (
               <></>
