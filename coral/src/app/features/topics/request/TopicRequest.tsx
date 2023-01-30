@@ -19,9 +19,9 @@ import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopic } from "src/domain/topic/topic-api";
-import { Navigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
+import CoralNavigate from "src/app/components/CoralNavigate";
 
 function TopicRequest() {
   const { data: environments } = useQuery<Environment[], Error>(
@@ -60,7 +60,12 @@ function TopicRequest() {
       reqsType: "created",
       topicCreated: "true",
     });
-    return <Navigate to={`/myTopicRequests?${params.toString()}`} />;
+    return (
+      <CoralNavigate
+        to={`/myTopicRequests?${params.toString()}`}
+        useLegacy={true}
+      />
+    );
   }
 
   return (
