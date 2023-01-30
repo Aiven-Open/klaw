@@ -1009,10 +1009,11 @@ describe("<TopicAclRequest />", () => {
           teamname: "Ospo",
         });
 
-        await waitFor(() => {
-          expect(mockedNavigate).toHaveBeenCalledTimes(1);
-          expect(mockedNavigate).toHaveBeenCalledWith(-1);
-        });
+        // @TODO use when Klaw migration is completed and redirect is handling with react-router
+        // await waitFor(() => {
+        //   expect(mockedNavigate).toHaveBeenCalledTimes(1);
+        //   expect(mockedNavigate).toHaveBeenCalledWith(-1);
+        // });
       });
     });
   });
@@ -1150,6 +1151,11 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() =>
           expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked()
         );
+        await waitFor(() =>
+          expect(
+            screen.getByRole("radio", { name: "Service account" })
+          ).toBeChecked()
+        );
 
         await waitFor(() => {
           return screen.findByRole("textbox", {
@@ -1185,10 +1191,11 @@ describe("<TopicAclRequest />", () => {
           consumergroup: "-na-",
         });
 
-        await waitFor(() => {
-          expect(mockedNavigate).toHaveBeenCalledTimes(1);
-          expect(mockedNavigate).toHaveBeenCalledWith(-1);
-        });
+        // @TODO use when Klaw migration is completed and redirect is handling with react-router
+        // await waitFor(() => {
+        //   expect(mockedNavigate).toHaveBeenCalledTimes(1);
+        //   expect(mockedNavigate).toHaveBeenCalledWith(-1);
+        // });
       });
     });
   });

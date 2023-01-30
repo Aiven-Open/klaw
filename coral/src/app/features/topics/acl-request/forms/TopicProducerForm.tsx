@@ -72,7 +72,7 @@ const TopicProducerForm = ({
     topicProducerForm.resetField("topicname");
   }, [aclPatternType]);
 
-  const { mutate, isLoading, isError, error } = useMutation({
+  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
     mutationFn: createAclRequest,
   });
 
@@ -80,12 +80,15 @@ const TopicProducerForm = ({
     formData
   ) => {
     mutate(formData);
-    navigate(-1);
   };
 
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || clusterInfo === undefined;
   const hideTopicNameOrPrefixField = aclPatternType === undefined;
+
+  if (isSuccess) {
+    window.location.href = `${window.origin}/myAclRequests?reqsType=created&aclCreated=true`;
+  }
 
   return (
     <>
