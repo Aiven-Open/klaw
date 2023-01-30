@@ -45,7 +45,7 @@ function FileInput(props: FileInputProps) {
         marginBottom={"2"}
         data-testid="file-input-fake-label"
       >
-        <Typography.Caption>
+        <Typography.Caption className={classes.fakeLabel}>
           <span className={!valid ? "text-error-50" : ""}>{labelText}</span>
           {props.required && <span className={"text-error-50"}>*</span>}
         </Typography.Caption>

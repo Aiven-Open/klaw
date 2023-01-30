@@ -1,6 +1,10 @@
 /*z-index and positions are needed to */
 /*get the right focus behavior for*/
 
+.fakeLabel {
+  font-weight: 600;
+}
+
 .fakeButton {
   position: relative;
   z-index: 2;
