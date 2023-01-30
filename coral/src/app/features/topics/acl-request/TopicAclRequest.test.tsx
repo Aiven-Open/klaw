@@ -185,13 +185,12 @@ describe("<TopicAclRequest />", () => {
 
       await userEvent.click(aclConsumerTypeInput);
 
-      // Only rendered in Consumer form
-      const consumerGroupInput = screen.getByRole("textbox", {
-        name: "Consumer group *",
-      });
+      // Only rendered in Producer form
+      const transactionalIdInput = screen.queryByLabelText("Transactional ID");
+
       expect(aclConsumerTypeInput).toBeChecked();
       expect(aclProducerTypeInput).not.toBeChecked();
-      expect(consumerGroupInput).toBeVisible();
+      expect(transactionalIdInput).toBeNull();
     });
   });
 
@@ -542,7 +541,7 @@ describe("<TopicAclRequest />", () => {
     });
   });
 
-  describe("User interaction (TopicConsumerForm)", () => {
+  describe("User interaction (TopicConsumerForm, NOT Aiven cluster)", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: false });
 
@@ -792,6 +791,13 @@ describe("<TopicAclRequest />", () => {
       });
       await userEvent.click(aclConsumerTypeInput);
 
+      await selectTestEnvironment();
+      await waitFor(() => {
+        return screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+      });
+
       const consumerGroupInput = screen.getByRole("textbox", {
         name: "Consumer group *",
       });
@@ -815,6 +821,13 @@ describe("<TopicAclRequest />", () => {
       });
       await userEvent.click(aclConsumerTypeInput);
 
+      await selectTestEnvironment();
+      await waitFor(() => {
+        return screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+      });
+
       const consumerGroupInput = screen.getByRole("textbox", {
         name: "Consumer group *",
       });
@@ -830,13 +843,20 @@ describe("<TopicAclRequest />", () => {
       );
     });
 
-    it("does errors when entering a wrong value in Consumer group field", async () => {
+    it("does not error when entering a correct value in Consumer group field", async () => {
       await assertSkeleton();
 
       const aclConsumerTypeInput = screen.getByRole("radio", {
         name: "Consumer",
       });
       await userEvent.click(aclConsumerTypeInput);
+
+      await selectTestEnvironment();
+      await waitFor(() => {
+        return screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+      });
 
       const consumerGroupInput = screen.getByRole("textbox", {
         name: "Consumer group *",
@@ -996,9 +1016,10 @@ describe("<TopicAclRequest />", () => {
       });
     });
   });
+
   describe("Form submission (TopicConsumerForm)", () => {
     beforeEach(async () => {
-      dataSetup({ isAivenCluster: true });
+      dataSetup({ isAivenCluster: false });
 
       customRender(
         <Routes>
@@ -1049,26 +1070,22 @@ describe("<TopicAclRequest />", () => {
 
         await waitFor(() =>
           expect(
-            screen.getByRole("radio", { name: "Service account" })
+            screen.getByRole("radio", { name: "Principal" })
           ).toBeInTheDocument()
         );
-        await userEvent.click(
-          screen.getByRole("radio", { name: "Service account" })
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+        await waitFor(() =>
+          expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked()
         );
-
-        const consumerGroupInput = screen.getByRole("textbox", {
-          name: "Consumer group *",
-        });
-        await userEvent.type(consumerGroupInput, "Group");
 
         await waitFor(() => {
           return screen.findByRole("textbox", {
-            name: "Service accounts *",
+            name: "SSL DN strings / Usernames *",
           });
         });
 
         const visiblePrincipalField = screen.getByRole("textbox", {
-          name: "Service accounts *",
+          name: "SSL DN strings / Usernames *",
         });
         expect(visiblePrincipalField).toBeVisible();
         expect(visiblePrincipalField).toBeEnabled();
@@ -1092,7 +1109,7 @@ describe("<TopicAclRequest />", () => {
           environment: "1",
           topictype: "Consumer",
           teamname: "Ospo",
-          consumergroup: "Group",
+          consumergroup: "-na-",
         });
 
         const alert = await screen.findByRole("alert");
@@ -1124,23 +1141,24 @@ describe("<TopicAclRequest />", () => {
         // Fill form with valid data
         await selectTestEnvironment();
 
-        const consumerGroupInput = screen.getByRole("textbox", {
-          name: "Consumer group *",
-        });
-
         await waitFor(() =>
           expect(
-            screen.getByRole("radio", { name: "Service account" })
+            screen.getByRole("radio", { name: "Principal" })
           ).toBeInTheDocument()
         );
-        await userEvent.click(
-          screen.getByRole("radio", { name: "Service account" })
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+        await waitFor(() =>
+          expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked()
         );
 
-        await userEvent.type(consumerGroupInput, "Group");
+        await waitFor(() => {
+          return screen.findByRole("textbox", {
+            name: "SSL DN strings / Usernames *",
+          });
+        });
 
         const visiblePrincipalField = screen.getByRole("textbox", {
-          name: "Service accounts *",
+          name: "SSL DN strings / Usernames *",
         });
         expect(visiblePrincipalField).toBeVisible();
         expect(visiblePrincipalField).toBeEnabled();
@@ -1164,7 +1182,7 @@ describe("<TopicAclRequest />", () => {
           environment: "1",
           topictype: "Consumer",
           teamname: "Ospo",
-          consumergroup: "Group",
+          consumergroup: "-na-",
         });
 
         await waitFor(() => {
