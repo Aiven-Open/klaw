@@ -111,7 +111,7 @@ const TopicAclRequest = () => {
           envSelected: selectedEnvironment,
           envType: selectedEnvironmentType,
         }),
-      keepPreviousData: false,
+      keepPreviousData: true,
       enabled:
         selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
         environments !== undefined &&
