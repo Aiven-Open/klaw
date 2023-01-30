@@ -1,20 +1,23 @@
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
 import api from "src/services/api";
+import {
+  SchemaRequest,
+  SchemaRequestPayload,
+} from "src/domain/schema-request/schema-request-types";
 
 const createSchemaRequest = (
-  params: KlawApiRequest<"schemaUpload">
+  params: SchemaRequest
 ): Promise<KlawApiResponse<"schemaUpload">> => {
-  const schemaUploadParams = {
+  const payload: SchemaRequestPayload = {
     ...params,
-    // schemaversion and appname
-    // should be hard coded at the moment
     schemaversion: "1.0",
     appname: "App",
   };
+
   return api.post<
     KlawApiResponse<"schemaUpload">,
     KlawApiRequest<"schemaUpload">
-  >("/uploadSchema", schemaUploadParams);
+  >(`/uploadSchema`, payload);
 };
 
 export { createSchemaRequest };

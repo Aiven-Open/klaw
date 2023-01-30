@@ -5,9 +5,6 @@ import {
   SubmitButton,
   Textarea,
 } from "src/app/components/Form";
-import { useEffect } from "react";
-import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { mockGetSchemaRegistryEnvironments } from "src/domain/environment/environment-api.msw";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Environment,
@@ -19,21 +16,10 @@ import {
 } from "src/app/features/topics/schema-request/schemas/topic-schema-request-form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { Alert, Box, Button } from "@aivenio/aquarium";
-import { createSchemaRequest } from "src/domain/schema-request";
-import { mockCreateSchemaRequest } from "src/domain/schema-request/schema-request-api.msw";
+import { createSchemaRequest, SchemaRequest } from "src/domain/schema-request";
 import { useNavigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { getTopicNames, TopicNames } from "src/domain/topic";
-import {
-  mockedResponseTopicNames,
-  mockGetTopicNames,
-} from "src/domain/topic/topic-api.msw";
-
-const mockedData = [
-  createMockEnvironmentDTO({ name: "DEV", id: "1" }),
-  createMockEnvironmentDTO({ name: "TST", id: "2" }),
-  createMockEnvironmentDTO({ name: "INFRA", id: "3" }),
-];
 
 type TopicSchemaRequestProps = {
   topicName: string;
@@ -55,7 +41,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
     defaultValues: {
-      topicName: topicName,
+      topicname: topicName,
       schemafull: props.schemafullValueForTest || undefined,
     },
   });
@@ -64,11 +50,10 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryFn: () => getTopicNames({ onlyMyTeamTopics: true }),
     keepPreviousData: true,
     onSuccess: (data) => {
-      if (data?.includes(topicName)) {
-        return;
+      const topicExists = data?.includes(topicName);
+      if (!topicExists) {
+        navigate("/topics");
       }
-      // Navigate back to Topics when topicName does not exist in the topics list
-      navigate("/topics");
     },
   });
 
@@ -79,24 +64,11 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryKey: ["schemaRegistryEnvironments"],
     queryFn: () => getSchemaRegistryEnvironments(),
   });
-  const schemaRequestMutation = useMutation(createSchemaRequest);
 
-  useEffect(() => {
-    if (window.msw !== undefined) {
-      mockGetSchemaRegistryEnvironments({
-        mswInstance: window.msw,
-        response: { data: mockedData },
-      });
-      mockCreateSchemaRequest({
-        mswInstance: window.msw,
-        response: { data: { status: "200 OK" } },
-      });
-      mockGetTopicNames({
-        mswInstance: window.msw,
-        response: mockedResponseTopicNames,
-      });
-    }
-  }, []);
+  const schemaRequestMutation = useMutation({
+    mutationFn: (schemaRequestParams: SchemaRequest) =>
+      createSchemaRequest(schemaRequestParams),
+  });
 
   if (schemaRequestMutation.isSuccess) {
     const params = new URLSearchParams({
@@ -131,7 +103,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         onSubmit={onSubmitForm}
       >
         <NativeSelect<TopicRequestFormSchema>
-          name={"topicName"}
+          name={"topicname"}
           labelText={"Topic name"}
           defaultValue={topicName}
           readOnly={true}
@@ -154,7 +126,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             required={true}
           >
             <option disabled value={""}>
-              please select
+              Please select
             </option>
             {environments.map((env) => {
               return (
