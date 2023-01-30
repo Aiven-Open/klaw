@@ -70,6 +70,11 @@ const TopicConsumerForm = ({
     navigate(-1);
   };
 
+  const hideConsumerGroupField =
+    clusterInfo === undefined || clusterInfo.aivenCluster === "true";
+  const hideIpOrPrincipalField =
+    aclIpPrincipleType === undefined || clusterInfo === undefined;
+
   return (
     <>
       {isError && (
@@ -92,19 +97,23 @@ const TopicConsumerForm = ({
             <TopicNameField topicNames={topicNames} />
           </GridItem>
           <GridItem>
-            <TextInput
-              name="consumergroup"
-              labelText="Consumer group"
-              placeholder="Add Consumer group here"
-              required
-            />
+            {hideConsumerGroupField ? (
+              <Box data-testid={"empty"} style={{ height: "87px" }} />
+            ) : (
+              <TextInput
+                name="consumergroup"
+                labelText="Consumer group"
+                placeholder="Add Consumer group here"
+                required
+              />
+            )}
           </GridItem>
 
           <GridItem>
             <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
           </GridItem>
           <GridItem>
-            {aclIpPrincipleType === undefined || clusterInfo === undefined ? (
+            {hideIpOrPrincipalField ? (
               <Box data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
               <IpOrPrincipalField

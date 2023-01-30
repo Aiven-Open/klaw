@@ -98,13 +98,12 @@ describe("<TopicConsumerForm />", () => {
       expect(topicNameField).toHaveDisplayValue("aiventopic1");
     });
 
-    it("renders consumergroup field", () => {
-      const consumergroupField = screen.getByRole("textbox", {
+    it("does not render consumergroup field", () => {
+      const consumergroupField = screen.queryByRole("textbox", {
         name: "Consumer group *",
       });
 
-      expect(consumergroupField).toBeVisible();
-      expect(consumergroupField).toBeEnabled();
+      expect(consumergroupField).toBeNull();
     });
 
     it("renders TopicNameField", () => {
@@ -115,15 +114,6 @@ describe("<TopicConsumerForm />", () => {
       expect(topicNameField).toBeVisible();
       expect(topicNameField).toBeEnabled();
       expect(topicNameField).toHaveDisplayValue("aiventopic1");
-    });
-
-    it("renders consumergroup field", () => {
-      const consumergroupField = screen.getByRole("textbox", {
-        name: "Consumer group *",
-      });
-
-      expect(consumergroupField).toBeVisible();
-      expect(consumergroupField).toBeEnabled();
     });
 
     it("renders AclIpPrincipleTypeField", () => {
@@ -230,13 +220,12 @@ describe("<TopicConsumerForm />", () => {
       expect(topicNameField).toHaveDisplayValue("aiventopic1");
     });
 
-    it("renders consumergroup field", () => {
-      const consumergroupField = screen.getByRole("textbox", {
+    it("does not render consumergroup field", () => {
+      const consumergroupField = screen.queryByRole("textbox", {
         name: "Consumer group *",
       });
 
-      expect(consumergroupField).toBeVisible();
-      expect(consumergroupField).toBeEnabled();
+      expect(consumergroupField).toBeNull();
     });
 
     it("renders AclIpPrincipleTypeField with IP field disabled and Principal field enabled and checked", () => {
