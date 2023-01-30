@@ -59,8 +59,10 @@ const TopicConsumerForm = ({
     topicConsumerForm.resetField("acl_ssl");
   }, [aclIpPrincipleType]);
 
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
+  const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
+    onSuccess: () =>
+      window.location.assign("/myAclRequests?reqsType=created&aclCreated=true"),
   });
 
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
@@ -73,10 +75,6 @@ const TopicConsumerForm = ({
     clusterInfo === undefined || clusterInfo.aivenCluster === "true";
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || clusterInfo === undefined;
-
-  if (isSuccess) {
-    window.location.href = `${window.origin}/myAclRequests?reqsType=created&aclCreated=true`;
-  }
 
   return (
     <>

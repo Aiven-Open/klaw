@@ -72,8 +72,10 @@ const TopicProducerForm = ({
     topicProducerForm.resetField("topicname");
   }, [aclPatternType]);
 
-  const { mutate, isLoading, isError, isSuccess, error } = useMutation({
+  const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
+    onSuccess: () =>
+      window.location.assign("/myAclRequests?reqsType=created&aclCreated=true"),
   });
 
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
@@ -85,10 +87,6 @@ const TopicProducerForm = ({
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || clusterInfo === undefined;
   const hideTopicNameOrPrefixField = aclPatternType === undefined;
-
-  if (isSuccess) {
-    window.location.href = `${window.origin}/myAclRequests?reqsType=created&aclCreated=true`;
-  }
 
   return (
     <>
