@@ -83,6 +83,10 @@ const TopicProducerForm = ({
     navigate(-1);
   };
 
+  const hideIpOrPrincipalField =
+    aclIpPrincipleType === undefined || clusterInfo === undefined;
+  const hideTopicNameOrPrefixField = aclPatternType === undefined;
+
   return (
     <>
       {isError && (
@@ -112,7 +116,7 @@ const TopicProducerForm = ({
             </RadioButtonGroup>
           </GridItem>
           <GridItem>
-            {aclPatternType === undefined ? (
+            {hideTopicNameOrPrefixField ? (
               <Box data-testid="empty" style={{ height: "87px" }} />
             ) : (
               <TopicNameOrPrefixField
@@ -134,7 +138,7 @@ const TopicProducerForm = ({
             <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
           </GridItem>
           <GridItem>
-            {aclIpPrincipleType === undefined || clusterInfo === undefined ? (
+            {hideIpOrPrincipalField ? (
               <Box data-testid={"empty"} style={{ height: "87px" }} />
             ) : (
               <IpOrPrincipalField
