@@ -20,7 +20,7 @@ const acl_ip = z
   .max(15, { message: "Maximum 15 elements allowed." })
   .optional();
 const acl_ssl = z
-  .array(z.string())
+  .array(z.string().min(3, { message: "Must be more than 2 characters." }))
   .min(1, { message: "Enter at least one element." })
   .max(5, { message: "Maximum 5 elements allowed." })
   .optional();
