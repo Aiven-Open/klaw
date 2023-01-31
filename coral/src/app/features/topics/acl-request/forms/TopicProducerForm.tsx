@@ -45,7 +45,8 @@ const TopicProducerForm = ({
   clusterInfo,
 }: TopicProducerFormProps) => {
   const navigate = useNavigate();
-  const { aclIpPrincipleType, aclPatternType } = topicProducerForm.getValues();
+  const { aclIpPrincipleType, aclPatternType, topicname } =
+    topicProducerForm.getValues();
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
   const { current: initialAclPatternType } = useRef(aclPatternType);
 
@@ -66,10 +67,13 @@ const TopicProducerForm = ({
   // Avoids conflict when entering a prefix that is not an existing topic name
   useEffect(() => {
     // Prevents resetting when switching from Producer to Consumer forms
-    if (aclPatternType === initialAclPatternType) {
+    if (
+      aclPatternType === initialAclPatternType ||
+      topicNames.includes(topicname)
+    ) {
       return;
     }
-    topicProducerForm.resetField("topicname");
+    return topicProducerForm.setValue("topicname", topicNames[0]);
   }, [aclPatternType]);
 
   const { mutate, isLoading, isError, error } = useMutation({
@@ -111,7 +115,7 @@ const TopicProducerForm = ({
             <RadioButtonGroup
               name="aclPatternType"
               labelText="Topic pattern type"
-              disabled={isAivenCluster}
+              disabled={topicNames.length === 0 || isAivenCluster}
               required
             >
               <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>

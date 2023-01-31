@@ -40,4 +40,18 @@ describe("TopicNameField", () => {
 
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
+
+  it("renders disabled NativeSelect when topicNames is empty array", () => {
+    cleanup();
+
+    renderForm(<TopicNameField topicNames={[]} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+
+    const select = screen.getByRole("combobox");
+
+    expect(select).toBeDisabled();
+  });
 });

@@ -464,6 +464,8 @@ describe("<TopicAclRequest />", () => {
     it("renders correct fields when selecting Literal or Prefixed in aclPatternType fields", async () => {
       await assertSkeleton();
 
+      await selectTestEnvironment();
+
       const literalField = screen.getByRole("radio", { name: "Literal" });
       const prefixedField = screen.getByRole("radio", {
         name: "Prefixed",
