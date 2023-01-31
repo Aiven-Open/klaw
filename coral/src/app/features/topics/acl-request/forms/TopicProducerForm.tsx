@@ -130,7 +130,7 @@ const TopicProducerForm = ({
           </GridItem>
 
           <GridItem colSpan={"span-2"}>
-            {isAivenCluster ? null : (
+            {!isAivenCluster && (
               <TextInput
                 name="transactionalId"
                 labelText="Transactional ID"
