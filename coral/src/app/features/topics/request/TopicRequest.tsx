@@ -19,7 +19,6 @@ import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopic } from "src/domain/topic/topic-api";
-import { Navigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
 
@@ -45,8 +44,12 @@ function TopicRequest() {
     defaultValues,
   });
 
-  const { mutate, isLoading, isSuccess, isError, error } =
-    useMutation(requestTopic);
+  const { mutate, isLoading, isError, error } = useMutation(requestTopic, {
+    onSuccess: () =>
+      window.location.assign(
+        "/myTopicRequests?reqsType=created&topicCreated=true"
+      ),
+  });
   const onSubmit: SubmitHandler<Schema> = (data) =>
     mutate(createTopicRequestPayload(data));
 
@@ -54,14 +57,6 @@ function TopicRequest() {
   useExtendedFormValidationAndTriggers(form, {
     isInitialized: defaultValues !== undefined,
   });
-
-  if (isSuccess) {
-    const params = new URLSearchParams({
-      reqsType: "created",
-      topicCreated: "true",
-    });
-    return <Navigate to={`/myTopicRequests?${params.toString()}`} />;
-  }
 
   return (
     <Box style={{ maxWidth: 1200 }}>
