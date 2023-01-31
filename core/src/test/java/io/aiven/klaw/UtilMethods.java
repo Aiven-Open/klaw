@@ -21,9 +21,11 @@ import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TeamModel;
+import io.aiven.klaw.model.TopicCreateRequestModel;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.TopicUpdateRequestModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
@@ -346,8 +348,8 @@ public class UtilMethods {
     return topicRequest;
   }
 
-  public TopicRequestModel getTopicRequestModel(int topicId) {
-    TopicRequestModel topicRequest = new TopicRequestModel();
+  public TopicCreateRequestModel getTopicCreateRequestModel(int topicId) {
+    TopicCreateRequestModel topicRequest = new TopicCreateRequestModel();
     topicRequest.setTopicid(topicId);
     topicRequest.setUsername("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
@@ -355,6 +357,19 @@ public class UtilMethods {
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
     topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setDescription("Test desc");
+    return topicRequest;
+  }
+
+  public TopicUpdateRequestModel getTopicUpdateRequestModel(int topicId) {
+    TopicUpdateRequestModel topicRequest = new TopicUpdateRequestModel();
+    topicRequest.setTopicid(topicId);
+    topicRequest.setUsername("kwusera");
+    topicRequest.setTopicname("testtopic" + topicId);
+    topicRequest.setTopicpartitions(2);
+    topicRequest.setReplicationfactor("1");
+    topicRequest.setEnvironment("1");
+    topicRequest.setTopictype(RequestOperationType.UPDATE.value);
     topicRequest.setDescription("Test desc");
     return topicRequest;
   }

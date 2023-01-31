@@ -1,6 +1,7 @@
 package io.aiven.klaw.error;
 
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,11 +20,20 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       "Unable to process the request. Please contact our Administrator !!";
 
   @ExceptionHandler({KlawException.class})
-  protected ResponseEntity<ApiResponse> handleExceptionInternal(
+  protected ResponseEntity<ApiResponse> handleKlawExceptionInternal(
       KlawException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder().message(ERROR_MSG).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler({KlawNotAuthorizedException.class})
+  protected ResponseEntity<ApiResponse> handleKlawNotAuthoirzedExceptionInternal(
+      KlawException ex, WebRequest request) {
+    log.error("Error ", ex);
+    return new ResponseEntity<>(
+        ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build(),
+        HttpStatus.UNAUTHORIZED);
   }
 
   @Override

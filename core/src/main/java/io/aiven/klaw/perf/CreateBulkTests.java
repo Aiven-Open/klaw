@@ -1,6 +1,7 @@
 package io.aiven.klaw.perf;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.service.TopicControllerService;
@@ -63,8 +64,8 @@ public class CreateBulkTests {
       topicRequest.setTeamname("Octopus");
 
       try {
-        topicControllerService.createTopicsRequest(topicRequest);
-      } catch (KlawException e) {
+        topicControllerService.createTopicsCreateRequest(topicRequest);
+      } catch (KlawException | KlawNotAuthorizedException e) {
         log.error("Exception:", e);
       }
     }

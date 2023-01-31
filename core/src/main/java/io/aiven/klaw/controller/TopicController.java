@@ -1,9 +1,12 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.TopicCreateRequestModel;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.TopicUpdateRequestModel;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.service.TopicControllerService;
 import jakarta.validation.Valid;
@@ -29,10 +32,19 @@ public class TopicController {
   @Autowired private TopicControllerService topicControllerService;
 
   @PostMapping(value = "/createTopics")
-  public ResponseEntity<ApiResponse> createTopicsRequest(
-      @Valid @RequestBody TopicRequestModel addTopicRequest) throws KlawException {
+  public ResponseEntity<ApiResponse> createTopicsCreateRequest(
+      @Valid @RequestBody TopicCreateRequestModel addTopicRequest)
+      throws KlawException, KlawNotAuthorizedException {
     return new ResponseEntity<>(
-        topicControllerService.createTopicsRequest(addTopicRequest), HttpStatus.OK);
+        topicControllerService.createTopicsCreateRequest(addTopicRequest), HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/updateTopics")
+  public ResponseEntity<ApiResponse> createTopicsUpdateRequest(
+      @Valid @RequestBody TopicUpdateRequestModel addTopicRequest)
+      throws KlawException, KlawNotAuthorizedException {
+    return new ResponseEntity<>(
+        topicControllerService.createTopicsUpdateRequest(addTopicRequest), HttpStatus.OK);
   }
 
   @PostMapping(
@@ -40,7 +52,7 @@ public class TopicController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopicDeleteRequest(
       @RequestParam("topicName") String topicName, @RequestParam("env") String envId)
-      throws KlawException {
+      throws KlawException, KlawNotAuthorizedException {
     return new ResponseEntity<>(
         topicControllerService.createTopicDeleteRequest(topicName, envId), HttpStatus.OK);
   }

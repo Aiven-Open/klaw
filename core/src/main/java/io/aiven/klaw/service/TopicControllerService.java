@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicConfigEntry;
@@ -75,8 +76,28 @@ public class TopicControllerService {
     this.mailService = mailService;
   }
 
-  public ApiResponse createTopicsRequest(TopicRequestModel topicRequestReq) throws KlawException {
-    log.info("createTopicsRequest {}", topicRequestReq);
+  public ApiResponse createTopicsCreateRequest(TopicRequestModel topicRequestReq)
+      throws KlawException, KlawNotAuthorizedException {
+    log.info("createTopicsCreateRequest {}", topicRequestReq);
+    checkIsAuthorized(PermissionType.REQUEST_CREATE_TOPICS);
+    return createTopicRequest(topicRequestReq);
+  }
+
+  private void checkIsAuthorized(PermissionType permission) throws KlawNotAuthorizedException {
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), permission)) {
+      throw new KlawNotAuthorizedException("Missing Permissions for this operation.");
+    }
+  }
+
+  public ApiResponse createTopicsUpdateRequest(TopicRequestModel topicRequestReq)
+      throws KlawException, KlawNotAuthorizedException {
+    log.info("createTopicsUpdateRequest {}", topicRequestReq);
+    // check if authorized user to delete topic request
+    checkIsAuthorized(PermissionType.REQUEST_EDIT_TOPICS);
+    return createTopicRequest(topicRequestReq);
+  }
+
+  private ApiResponse createTopicRequest(TopicRequestModel topicRequestReq) throws KlawException {
     String userName = getUserName();
 
     topicRequestReq.setRequestor(userName);
@@ -127,15 +148,13 @@ public class TopicControllerService {
   }
 
   // create a request to delete topic.
-  public ApiResponse createTopicDeleteRequest(String topicName, String envId) throws KlawException {
+  public ApiResponse createTopicDeleteRequest(String topicName, String envId)
+      throws KlawException, KlawNotAuthorizedException {
     log.info("createTopicDeleteRequest {} {}", topicName, envId);
     String userName = getUserName();
 
     // check if authorized user to delete topic request
-    if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.REQUEST_DELETE_TOPICS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
-    }
+    checkIsAuthorized(PermissionType.REQUEST_DELETE_TOPICS);
 
     int tenantId = commonUtilsService.getTenantId(userName);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();

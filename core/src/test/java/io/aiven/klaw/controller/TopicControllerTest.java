@@ -77,11 +77,11 @@ public class TopicControllerTest {
   @Test
   @Order(1)
   public void createTopics() throws Exception {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     ApiResponse apiResponse =
         ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
-    when(topicControllerService.createTopicsRequest(any())).thenReturn(apiResponse);
+    when(topicControllerService.createTopicsCreateRequest(any())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/createTopics")
@@ -272,5 +272,23 @@ public class TopicControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.*", hasSize(1)));
+  }
+
+  @Test
+  @Order(12)
+  public void updateTopic() throws Exception {
+    TopicRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
+    ApiResponse apiResponse =
+        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    when(topicControllerService.createTopicsUpdateRequest(any())).thenReturn(apiResponse);
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/updateTopics")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
   }
 }

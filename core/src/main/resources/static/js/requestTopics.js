@@ -266,12 +266,17 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                              closeOnConfirm: true,
                              closeOnCancel: true
                          }).then(function(isConfirm){
+                         if(serviceInput['remarks'] === undefined ){
+                               serviceInput['remarks'] = "Warning To decrease partitions of a topic the topic has to be deleted";
+                         } else {
+                               serviceInput['remarks'] += " Warning To decrease partitions of a topic the topic has to be deleted";
+                         }
                              if (isConfirm.dismiss !== "cancel") {
-                                 $scope.httpCreateTopicReq(serviceInput);
+                                 $scope.httpCreateUpdateTopicReq(serviceInput);
                              }
                          });
-                    }else {
-                        $scope.httpCreateTopicReq(serviceInput);
+                    } else {
+                        $scope.httpCreateUpdateTopicReq(serviceInput);
                     }
             }
 
@@ -305,6 +310,34 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     }
                 );
         }
+
+        $scope.httpCreateUpdateTopicReq = function(serviceInput){
+                    $http({
+                            method: "POST",
+                            url: "updateTopics",
+                            headers : { 'Content-Type' : 'application/json' },
+                            data: serviceInput
+                        }).success(function(output) {
+                            if(output.result === 'success'){
+                                swal({
+                                         title: "Awesome !",
+                                         text: "Topic Request : "+output.result,
+                                         showConfirmButton: true
+                                     }).then(function(isConfirm){
+                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&topicCreated=true";
+                                     });
+                            }
+                            else{
+                                    $scope.alert = "Topic Request : "+output.result;
+                                    $scope.showSubmitFailed('','');
+                                }
+                        }).error(
+                            function(error)
+                            {
+                                $scope.handleValidationErrors(error);
+                            }
+                        );
+                }
 
         $scope.cancelRequest = function() {
             $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";

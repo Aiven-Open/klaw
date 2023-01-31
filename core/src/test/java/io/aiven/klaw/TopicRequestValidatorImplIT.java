@@ -4,13 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.TopicCreateRequestModel;
+import io.aiven.klaw.model.TopicUpdateRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
@@ -68,9 +71,10 @@ public class TopicRequestValidatorImplIT {
   @Test
   @Order(1)
   public void isValidTestNotAuthorizedUser() {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
   }
@@ -78,11 +82,12 @@ public class TopicRequestValidatorImplIT {
   @Test
   @Order(2)
   public void isValidTestTenantFiltering() {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("2"));
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. Not authorized to request topic for this environment.");
@@ -91,13 +96,14 @@ public class TopicRequestValidatorImplIT {
   @Test
   @Order(3)
   public void isValidTestTopicName() {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
 
     addTopicRequest.setTopicname("");
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(2);
     assertThat(violations.toString())
         .contains("Failure. Please fill in a valid topic name.", "Invalid topic name");
@@ -115,7 +121,7 @@ public class TopicRequestValidatorImplIT {
   @Order(4)
   public void isValidTestVerifyTenantConfigExists() {
     Integer tenantId = 1;
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn(KWUSER);
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
@@ -123,7 +129,8 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getSyncCluster(anyInt()))
         .thenThrow(new RuntimeException("Sync cluster not configured"));
 
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. Tenant configuration in Server config is missing. Please configure.");
@@ -135,7 +142,7 @@ public class TopicRequestValidatorImplIT {
     Integer tenantId = 101;
     Topic topic = utilMethods.getTopic("testtopic");
 
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
@@ -143,7 +150,8 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getTopicFromName(anyString(), anyInt())).thenReturn(List.of(topic));
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains("Failure. This topic is owned by a different team.");
   }
@@ -158,7 +166,7 @@ public class TopicRequestValidatorImplIT {
     topic.setTeamId(teamId);
     Env env = utilMethods.getEnvLists().get(0);
 
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     addTopicRequest.setEnvironment("2");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
@@ -171,7 +179,8 @@ public class TopicRequestValidatorImplIT {
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1,2");
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
 
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. Please request for a topic first in " + env.getName() + " cluster.");
@@ -197,7 +206,7 @@ public class TopicRequestValidatorImplIT {
     String topicPrefixSuffix = "devkafka";
     env.setOtherParams("topic.prefix=" + topicPrefixSuffix);
 
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
@@ -205,7 +214,8 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Topic prefix does not match. " + addTopicRequest.getTopicname());
@@ -225,7 +235,7 @@ public class TopicRequestValidatorImplIT {
     Topic topic = utilMethods.getTopic("testtopic");
     topic.setTeamId(1001);
 
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1001);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
@@ -237,7 +247,8 @@ public class TopicRequestValidatorImplIT {
         .thenReturn(List.of(topicRequest));
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString()).contains("Failure. A topic request already exists.");
   }
@@ -251,7 +262,7 @@ public class TopicRequestValidatorImplIT {
     topic.setTeamId(teamId);
     topic.setEnvironment("1");
 
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(teamId);
+    TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(teamId);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(teamId);
@@ -263,10 +274,23 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getExistingTopicRequests(any(), anyInt()))
         .thenReturn(Collections.emptyList());
 
-    Set<ConstraintViolation<TopicRequestModel>> violations = validator.validate(addTopicRequest);
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(addTopicRequest);
     assertThat(violations).hasSize(1);
     assertThat(violations.toString())
         .contains("Failure. This topic already exists in the selected cluster.");
+  }
+
+  @Test
+  @Order(10)
+  public void isValidUpdateRequestTestNotAuthorizedUser() {
+    TopicUpdateRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))
+        .thenReturn(true);
+    Set<ConstraintViolation<TopicUpdateRequestModel>> violations =
+        validator.validate(addTopicRequest);
+    assertThat(violations).hasSize(1);
+    assertThat(violations.toString()).contains(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   private void loginMock() {

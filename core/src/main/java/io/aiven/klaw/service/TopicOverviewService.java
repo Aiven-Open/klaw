@@ -157,8 +157,7 @@ public class TopicOverviewService extends BaseOverviewService {
       }
 
       // show edit button only for restricted envs
-      if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)
-          && reqTopicsEnvsList.contains(topicInfo.getClusterId())) {
+      if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)) {
         topicInfo.setShowEditTopic(true);
       }
     }
