@@ -1,7 +1,9 @@
 import z from "zod";
 
 const topicRequestFormSchema = z.object({
-  environment: z.string().min(1, { message: "The environment is required." }),
+  environment: z
+    .string()
+    .min(1, { message: "Selection Error: Please select an environment" }),
   topicname: z.string(),
   schemafull: z.string(),
   remarks: z.string().optional(),

@@ -143,7 +143,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           required={!props.schemafullValueForTest}
         />
 
-        <Textarea name={"remarks"} labelText={"Message for the approval"} />
+        <Textarea name={"remarks"} labelText={"Enter a message for approval"} />
 
         <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
           <SubmitButton>Submit request</SubmitButton>

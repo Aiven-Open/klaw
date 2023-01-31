@@ -33,7 +33,7 @@ function TopicSchema(props: TopicSchemaProps) {
     if (!required) return;
     const file = event.target?.files?.[0];
     if (!file) {
-      setError(name, { message: "File is a required field" });
+      setError(name, { message: "File missing: Upload the AVRO schema file." });
     }
   }
 

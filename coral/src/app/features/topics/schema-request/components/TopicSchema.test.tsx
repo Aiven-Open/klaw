@@ -18,7 +18,7 @@ describe("TopicSchema", () => {
   const mockedOnSubmit = jest.fn();
   const mockedOnError = jest.fn();
   const labelUpload = "Upload AVRO schema file";
-  const emptyError = "File is a required field";
+  const emptyError = "File missing: Upload the AVRO schema file.";
 
   const testFile: File = new File(
     ["{ test: 'value'}"],

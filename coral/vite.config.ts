@@ -137,9 +137,6 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_TOPIC_ACL_REQUEST: ["development", "remote-api"]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_TOPIC_SCHEMA_REQUEST: ["development", "remote-api"]
-          .includes(mode)
-          .toString(),
         FEATURE_FLAG_APPROVALS: ["development", "remote-api"]
           .includes(mode)
           .toString(),
