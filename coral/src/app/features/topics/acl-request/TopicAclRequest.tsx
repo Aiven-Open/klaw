@@ -119,11 +119,16 @@ const TopicAclRequest = () => {
         selectedEnvironmentType !== undefined,
       onSuccess: (data) => {
         const isAivenCluster = data?.aivenCluster === "true";
-        // Enable the only possible option when the environment chosen is Aiven Kafka flavor
+        // Enable the only possible options when the environment chosen is Aiven Kafka flavor
         if (isAivenCluster) {
-          return topicType === "Producer"
-            ? topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL")
-            : topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+          if (topicType === "Producer") {
+            topicProducerForm.setValue("aclPatternType", "LITERAL");
+            topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+            topicProducerForm.resetField("transactionalId");
+          }
+          if (topicType === "Consumer") {
+            topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+          }
         }
       },
     }

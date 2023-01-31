@@ -228,7 +228,7 @@ describe("<TopicConsumerForm />", () => {
       expect(consumergroupField).toBeNull();
     });
 
-    it("renders AclIpPrincipleTypeField with IP field disabled and Principal field enabled and checked", () => {
+    it("renders AclIpPrincipleTypeField with fields disabled and Principal field checked", () => {
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
         name: "Service account",
@@ -237,7 +237,7 @@ describe("<TopicConsumerForm />", () => {
       expect(ipField).toBeVisible();
       expect(ipField).not.toBeEnabled();
       expect(principalField).toBeVisible();
-      expect(principalField).toBeEnabled();
+      expect(principalField).not.toBeEnabled();
       expect(principalField).toBeChecked();
     });
 

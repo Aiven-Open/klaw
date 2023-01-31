@@ -19,7 +19,7 @@ const AclIpPrincipleTypeField = ({
       required
       // If clusterInfo is undefined, we have not yet fetched it (no environment selected)
       // So all the options are disabled
-      disabled={clusterInfo === undefined}
+      disabled={isAivenCluster || clusterInfo === undefined}
     >
       <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
         IP

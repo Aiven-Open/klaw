@@ -207,16 +207,16 @@ describe("<TopicProducerForm />", () => {
       expect(environmentField).toHaveDisplayValue("DEV");
     });
 
-    it("renders aclPatternType field", () => {
+    it("renders aclPatternType field with Literal option disabled", () => {
       const literalField = screen.getByRole("radio", { name: "Literal" });
       const prefixedField = screen.getByRole("radio", {
         name: "Prefixed",
       });
 
       expect(literalField).toBeVisible();
-      expect(literalField).toBeEnabled();
+      expect(literalField).not.toBeEnabled();
       expect(prefixedField).toBeVisible();
-      expect(prefixedField).toBeEnabled();
+      expect(prefixedField).not.toBeEnabled();
     });
 
     it("does not render TopicNameOrPrefixField", () => {
@@ -231,16 +231,15 @@ describe("<TopicProducerForm />", () => {
       expect(prefixField).toBeNull();
     });
 
-    it("renders transactionalId field", () => {
+    it("does not render transactionalId field", () => {
       const transactionalIdField = screen.queryByRole("textbox", {
         name: "Transactional ID",
       });
 
-      expect(transactionalIdField).toBeVisible();
-      expect(transactionalIdField).toBeEnabled();
+      expect(transactionalIdField).toBeNull();
     });
 
-    it("renders AclIpPrincipleTypeField with IP field disabled and Principal field enabled and checked", () => {
+    it("renders AclIpPrincipleTypeField with fields disabled and Principal field checked", () => {
       const ipField = screen.getByRole("radio", { name: "IP" });
       const principalField = screen.getByRole("radio", {
         name: "Service account",
@@ -249,7 +248,7 @@ describe("<TopicProducerForm />", () => {
       expect(ipField).toBeVisible();
       expect(ipField).not.toBeEnabled();
       expect(principalField).toBeVisible();
-      expect(principalField).toBeEnabled();
+      expect(principalField).not.toBeEnabled();
       expect(principalField).toBeChecked();
     });
 

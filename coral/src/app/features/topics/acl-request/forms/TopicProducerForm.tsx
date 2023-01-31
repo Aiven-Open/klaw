@@ -87,6 +87,7 @@ const TopicProducerForm = ({
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || clusterInfo === undefined;
   const hideTopicNameOrPrefixField = aclPatternType === undefined;
+  const isAivenCluster = clusterInfo?.aivenCluster === "true";
 
   return (
     <>
@@ -110,6 +111,7 @@ const TopicProducerForm = ({
             <RadioButtonGroup
               name="aclPatternType"
               labelText="Topic pattern type"
+              disabled={isAivenCluster}
               required
             >
               <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>
@@ -128,11 +130,13 @@ const TopicProducerForm = ({
           </GridItem>
 
           <GridItem colSpan={"span-2"}>
-            <TextInput
-              name="transactionalId"
-              labelText="Transactional ID"
-              placeholder="Necessary for exactly-once semantics on producer"
-            />
+            {!isAivenCluster && (
+              <TextInput
+                name="transactionalId"
+                labelText="Transactional ID"
+                placeholder="Necessary for exactly-once semantics on producer"
+              />
+            )}
           </GridItem>
 
           <GridItem>

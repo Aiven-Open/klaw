@@ -153,7 +153,7 @@ describe("<TopicAclRequest />", () => {
       await selectTestEnvironment();
 
       await waitFor(() => {
-        expect(principalField).toBeEnabled();
+        expect(principalField).not.toBeEnabled();
         expect(principalField).toBeChecked();
         expect(ipField).toBeDisabled();
         expect(ipField).not.toBeChecked();
@@ -962,7 +962,6 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           topictype: "Producer",
-          transactionalId: "",
           teamname: "Ospo",
         });
 
@@ -1021,7 +1020,6 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           topictype: "Producer",
-          transactionalId: "",
           teamname: "Ospo",
         });
 
