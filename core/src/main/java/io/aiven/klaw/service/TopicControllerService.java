@@ -92,7 +92,7 @@ public class TopicControllerService {
   public ApiResponse createTopicsUpdateRequest(TopicRequestModel topicRequestReq)
       throws KlawException, KlawNotAuthorizedException {
     log.info("createTopicsUpdateRequest {}", topicRequestReq);
-    // check if authorized user to delete topic request
+    // check if authorized user to edit topic request
     checkIsAuthorized(PermissionType.REQUEST_EDIT_TOPICS);
     return createTopicRequest(topicRequestReq);
   }

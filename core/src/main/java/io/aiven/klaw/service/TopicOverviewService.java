@@ -156,7 +156,7 @@ public class TopicOverviewService extends BaseOverviewService {
         prefixedAclsInfo.addAll(tmpAclPrefixed);
       }
 
-      // show edit button only for restricted envs
+      // show edit button only forenv owned by your team
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)) {
         topicInfo.setShowEditTopic(true);
       }
