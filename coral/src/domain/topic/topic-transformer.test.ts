@@ -1,11 +1,13 @@
 import {
   transformgetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicRequestsResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import { Topic, TopicApiResponse } from "src/domain/topic/topic-types";
 import {
   baseTestObjectMockedTopic,
   createMockTopicApiResponse,
+  createMockTopicRequestApiResource,
 } from "src/domain/topic/topic-test-helper";
 import { KlawApiResponse } from "types/utils";
 
@@ -84,6 +86,22 @@ describe("topic-transformer.ts", () => {
       expect(
         transformgetTopicAdvancedConfigOptionsResponse(apiResponse)
       ).toStrictEqual(result);
+    });
+  });
+
+  describe("transformGetTopicRequestsResponse", () => {
+    it("transforms empty payload into empty array", () => {
+      const transformedResponse = transformGetTopicRequestsResponse([]);
+      expect(transformedResponse).toEqual([]);
+    });
+
+    it("transforms all response items into expected type", () => {
+      const transformedResponse = transformGetTopicRequestsResponse([
+        createMockTopicRequestApiResource({ topicname: "this-is-topic-name" }),
+      ]);
+      expect(transformedResponse).toHaveLength(1);
+      const topicRequest = transformedResponse[0];
+      expect(topicRequest).toEqual({ topicName: "this-is-topic-name" });
     });
   });
 });

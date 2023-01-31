@@ -1,5 +1,5 @@
-import { Topic } from "src/domain/topic/topic-types";
-import { KlawApiResponse } from "types/utils";
+import { Topic, TopicRequest } from "src/domain/topic/topic-types";
+import { KlawApiModel, KlawApiResponse } from "types/utils";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
@@ -112,8 +112,26 @@ function createMockTopicApiResponse({
   return response;
 }
 
+const defaultTopicRequest: TopicRequest = {
+  topicName: "test",
+};
+
+function createMockTopicRequest(request?: Partial<TopicRequest>): TopicRequest {
+  return { ...defaultTopicRequest, ...request };
+}
+
+const defaultTopicRequestApiResource = {};
+
+function createMockTopicRequestApiResource(
+  request?: Partial<KlawApiModel<"TopicRequest">>
+): KlawApiModel<"TopicRequest"> {
+  return { ...defaultTopicRequestApiResource, ...request };
+}
+
 export {
   createMockTopic,
   createMockTopicApiResponse,
   baseTestObjectMockedTopic,
+  createMockTopicRequest,
+  createMockTopicRequestApiResource,
 };

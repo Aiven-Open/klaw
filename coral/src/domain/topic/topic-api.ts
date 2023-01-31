@@ -1,13 +1,16 @@
+import type { operations } from "types/api";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
   transformgetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicRequestsResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
+  TopicRequest,
 } from "src/domain/topic/topic-types";
 import api from "src/services/api";
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
@@ -95,10 +98,35 @@ const requestTopic = (
   >("/createTopics", payload);
 };
 
+type GetTopicRequestsArgs = {
+  pageNumber?: number;
+  currentPage?: number;
+  requestType: operations["getCreatedTopicRequests"]["parameters"]["query"]["requestsType"];
+};
+
+const getTopicRequests = ({
+  requestType,
+  pageNumber = 1,
+  currentPage = 1,
+}: GetTopicRequestsArgs): Promise<TopicRequest[]> => {
+  const queryObject: operations["getCreatedTopicRequests"]["parameters"]["query"] =
+    {
+      pageNo: pageNumber.toString(),
+      currentPage: currentPage.toString(),
+      requestsType: requestType,
+    };
+  return api
+    .get<KlawApiResponse<"getCreatedTopicRequests">>(
+      `/getCreatedTopicRequests?${new URLSearchParams(queryObject).toString()}`
+    )
+    .then(transformGetTopicRequestsResponse);
+};
+
 export {
   getTopics,
   getTopicNames,
   getTopicTeam,
   getTopicAdvancedConfigOptions,
   requestTopic,
+  getTopicRequests,
 };
