@@ -358,6 +358,14 @@ public class ClusterApiUtils {
             env.getProperty(clusterIdentification.toLowerCase() + ".kafkassl.keystore.key"));
       }
       if (!Strings.isNullOrEmpty(
+          env.getProperty(
+              clusterIdentification.toLowerCase() + ".kafkassl.truststore.certificates"))) {
+        props.put(
+            SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG,
+            env.getProperty(
+                clusterIdentification.toLowerCase() + ".kafkassl.truststore.certificates"));
+      }
+      if (!Strings.isNullOrEmpty(
           env.getProperty(clusterIdentification.toLowerCase() + ".kafkassl.keystore.location"))) {
         props.put(
             SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG,
