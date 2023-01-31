@@ -323,6 +323,42 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericApiResponse"
+  /getCreatedTopicRequests:
+    get:
+      operationId: getCreatedTopicRequests
+      tags:
+        - Topic
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: requestsType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+              - created
+              - declined
+              - approved
+            default: created
+      responses:
+        "200":
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopicRequest"
 components:
   schemas:
     CommonError:
@@ -1126,3 +1162,137 @@ components:
           title: Current page number
           type: string
           example: "2"
+    TopicRequest:
+      type: object
+      properties:
+        topicname:
+          title: Topic name
+          description: Kafka Topic name
+          type: string
+          example: "topicName"
+        environment:
+          title: Environment
+          type: string
+          example: "1"
+          description: ID of environment
+        topicpartitions:
+          title: Topic partitions
+          type: integer
+          format: int32
+          minimum: 1
+        teamname:
+          title: Team name
+          description: Topic owner team name
+          type: string
+          example: application-X-developers
+        remarks:
+          title: Remarks
+          description: Message for the approval
+          type: string
+          pattern: ^$|^[a-zA-Z 0-9_.,-]{3,}$
+        description:
+          title: Description
+          description: Kafka topic description stored in Klaw metadata.
+          type: string
+          example: "Main PostgreSQL change data capture stream"
+        replicationfactor:
+          title: Replication factor
+          type: string
+          example: "1"
+        environmentName:
+          title: Environment name
+          type: string
+          example: DEV
+        topicid:
+          title: Topic identifier
+          description: This identifier is used in Klaw metadata store to ensure uniquenes.
+          type: integer
+          format: int32
+          example: 1010
+        advancedTopicConfigEntries:
+          title: Advanced topic configuration entries
+          type: array
+          items:
+            type: object
+            properties:
+              configKey:
+                type: string
+              configValue:
+                type: string
+        appname:
+          title: App name
+          type: string
+        topictype:
+          title: Topic type
+          type: string
+          enum:
+            - Create
+            - Update
+            - Delete
+            - Claim
+        requestor:
+          title: Requestor
+          type: string
+        requesttime:
+          title: Request time
+          type: string
+          format: date-time
+          example: 2018-11-13T20:20:39+00:00
+        requesttimestring:
+          title: Request time string
+          type: string
+        topicstatus:
+          $ref: "#/components/schemas/RequestStatus"
+        approver:
+          title: Approver
+          type: string
+          example: jon.snow@klaw-project.io
+        approvingtime:
+          title: Approving time
+          type: string
+          format: date-time
+          example: 2018-11-13T20:20:39+00:00
+        sequence:
+          title: Sequence
+          type: string
+          deprecated: true
+        username:
+          type: string
+          title: Username
+          description: Username
+          example: john.doe@klaw-project.io
+        totalNoPages:
+          title: Total number of pages
+          type: string
+          example: "1"
+        approvingTeamDetails:
+          title: Approving team details
+          type: string
+          example: "Team : Stark, Users : jonsnow,sansastark,aryastark,branstark"
+        otherParams:
+          title: Other parameters
+          description: Topic configuration parameters
+          type: string
+          example: default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
+        teamId:
+          title: Team identifier
+          type: integer
+          format: int32
+          example: 1010
+        allPageNos:
+          title: All page numbers
+          description: List of all page numbers
+          type: array
+          items:
+            type: string
+          example: ["1"]
+        possibleTeams:
+          title: Possible teams
+          type: array
+          items:
+            type: string
+            example: [CRM, Sales, Marketing]
+        currentPage:
+          title: Current page number
+          type: string
+          example: "1"
