@@ -962,7 +962,6 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           topictype: "Producer",
-          transactionalId: "",
           teamname: "Ospo",
         });
 
@@ -1021,7 +1020,6 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           topictype: "Producer",
-          transactionalId: "",
           teamname: "Ospo",
         });
 
