@@ -14,19 +14,6 @@ import {
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import api from "src/services/api";
 
-const NavigateMock = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  Navigate: (args: { to: string }) => {
-    NavigateMock(args);
-    return (
-      <div data-testid="mockedRedirectComponent">
-        This dummy component represents &lt;Navigate&gt;
-      </div>
-    );
-  },
-}));
-
 describe("<TopicRequest />", () => {
   const originalConsoleError = console.error;
   let user: ReturnType<typeof userEvent.setup>;
@@ -773,6 +760,22 @@ describe("<TopicRequest />", () => {
       });
     });
     describe("when API request is successful", () => {
+      const locationAssignSpy = jest.fn();
+      let originalLocation: Location;
+
+      beforeAll(() => {
+        originalLocation = window.location;
+        Object.defineProperty(global.window, "location", {
+          writable: true,
+          value: {
+            assign: locationAssignSpy,
+          },
+        });
+      });
+
+      afterAll(() => {
+        global.window.location = originalLocation;
+      });
       beforeEach(async () => {
         mockRequestTopic({
           mswInstance: server,
@@ -803,11 +806,10 @@ describe("<TopicRequest />", () => {
         });
 
         await waitFor(() => {
-          screen.getByTestId("mockedRedirectComponent");
-          expect(NavigateMock).toHaveBeenCalledTimes(1);
-          expect(NavigateMock).toHaveBeenCalledWith({
-            to: "/myTopicRequests?reqsType=created&topicCreated=true",
-          });
+          expect(locationAssignSpy).toHaveBeenCalledTimes(1);
+          expect(locationAssignSpy).toHaveBeenCalledWith(
+            "/myTopicRequests?reqsType=created&topicCreated=true"
+          );
         });
       });
     });
