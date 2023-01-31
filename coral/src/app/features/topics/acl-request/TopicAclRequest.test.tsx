@@ -153,7 +153,7 @@ describe("<TopicAclRequest />", () => {
       await selectTestEnvironment();
 
       await waitFor(() => {
-        expect(principalField).toBeEnabled();
+        expect(principalField).not.toBeEnabled();
         expect(principalField).toBeChecked();
         expect(ipField).toBeDisabled();
         expect(ipField).not.toBeChecked();
