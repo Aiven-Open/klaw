@@ -15,7 +15,6 @@ import {
   mockedResponseTopicTeamLiteral,
   mockGetTopicNames,
   mockGetTopicTeam,
-  mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
 import api from "src/services/api";
 import { server } from "src/services/api-mocks/server";
@@ -870,6 +869,23 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("Form submission (TopicProducerForm)", () => {
+    const locationAssignSpy = jest.fn();
+    let originalLocation: Location;
+
+    beforeAll(() => {
+      originalLocation = window.location;
+      Object.defineProperty(global.window, "location", {
+        writable: true,
+        value: {
+          assign: locationAssignSpy,
+        },
+      });
+    });
+
+    afterAll(() => {
+      global.window.location = originalLocation;
+    });
+
     beforeEach(async () => {
       dataSetup({ isAivenCluster: true });
 
@@ -957,13 +973,13 @@ describe("<TopicAclRequest />", () => {
 
     describe("when API request is successful", () => {
       beforeEach(async () => {
-        mockRequestTopic({
+        mockCreateAclRequest({
           mswInstance: server,
           response: { data: { status: "200 OK" } },
         });
       });
 
-      it("redirects user to previous page", async () => {
+      it("redirects user to /myAclRequests?reqsType=created&aclCreated=true", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", { name: "Submit" });
@@ -1009,15 +1025,34 @@ describe("<TopicAclRequest />", () => {
           teamname: "Ospo",
         });
 
+        // @TODO use when Klaw migration is completed and redirect is handling with react-router
         await waitFor(() => {
-          expect(mockedNavigate).toHaveBeenCalledTimes(1);
-          expect(mockedNavigate).toHaveBeenCalledWith(-1);
+          expect(locationAssignSpy).toHaveBeenLastCalledWith(
+            "/myAclRequests?reqsType=created&aclCreated=true"
+          );
         });
       });
     });
   });
 
   describe("Form submission (TopicConsumerForm)", () => {
+    const locationAssignSpy = jest.fn();
+    let originalLocation: Location;
+
+    beforeAll(() => {
+      originalLocation = window.location;
+      Object.defineProperty(global.window, "location", {
+        writable: true,
+        value: {
+          assign: locationAssignSpy,
+        },
+      });
+    });
+
+    afterAll(() => {
+      global.window.location = originalLocation;
+    });
+
     beforeEach(async () => {
       dataSetup({ isAivenCluster: false });
 
@@ -1119,7 +1154,7 @@ describe("<TopicAclRequest />", () => {
 
     describe("when API request is successful", () => {
       beforeEach(async () => {
-        mockRequestTopic({
+        mockCreateAclRequest({
           mswInstance: server,
           response: { data: { status: "200 OK" } },
         });
@@ -1185,9 +1220,11 @@ describe("<TopicAclRequest />", () => {
           consumergroup: "-na-",
         });
 
+        // @TODO use when Klaw migration is completed and redirect is handling with react-router
         await waitFor(() => {
-          expect(mockedNavigate).toHaveBeenCalledTimes(1);
-          expect(mockedNavigate).toHaveBeenCalledWith(-1);
+          expect(locationAssignSpy).toHaveBeenLastCalledWith(
+            "/myAclRequests?reqsType=created&aclCreated=true"
+          );
         });
       });
     });

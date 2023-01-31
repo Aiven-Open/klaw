@@ -74,13 +74,14 @@ const TopicProducerForm = ({
 
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
+    onSuccess: () =>
+      window.location.assign("/myAclRequests?reqsType=created&aclCreated=true"),
   });
 
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
     formData
   ) => {
     mutate(formData);
-    navigate(-1);
   };
 
   const hideIpOrPrincipalField =

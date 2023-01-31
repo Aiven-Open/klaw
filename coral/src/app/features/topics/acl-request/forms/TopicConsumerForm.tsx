@@ -61,13 +61,14 @@ const TopicConsumerForm = ({
 
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
+    onSuccess: () =>
+      window.location.assign("/myAclRequests?reqsType=created&aclCreated=true"),
   });
 
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
     formData
   ) => {
     mutate(formData);
-    navigate(-1);
   };
 
   const hideConsumerGroupField =
