@@ -45,6 +45,9 @@ export type paths = {
   "/uploadSchema": {
     post: operations["schemaUpload"];
   };
+  "/getCreatedTopicRequests": {
+    get: operations["getCreatedTopicRequests"];
+  };
 };
 
 export type components = {
@@ -822,6 +825,141 @@ export type components = {
        */
       currentPage?: string;
     };
+    TopicRequest: {
+      /**
+       * Topic name
+       * @description Kafka Topic name
+       * @example topicName
+       */
+      topicname?: string;
+      /**
+       * Environment
+       * @description ID of environment
+       * @example 1
+       */
+      environment?: string;
+      /**
+       * Topic partitions
+       * Format: int32
+       */
+      topicpartitions?: number;
+      /**
+       * Team name
+       * @description Topic owner team name
+       * @example application-X-developers
+       */
+      teamname?: string;
+      /**
+       * Remarks
+       * @description Message for the approval
+       */
+      remarks?: string;
+      /**
+       * Description
+       * @description Kafka topic description stored in Klaw metadata.
+       * @example Main PostgreSQL change data capture stream
+       */
+      description?: string;
+      /**
+       * Replication factor
+       * @example 1
+       */
+      replicationfactor?: string;
+      /**
+       * Environment name
+       * @example DEV
+       */
+      environmentName?: string;
+      /**
+       * Topic identifier
+       * Format: int32
+       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
+       * @example 1010
+       */
+      topicid?: number;
+      /** Advanced topic configuration entries */
+      advancedTopicConfigEntries?: {
+        configKey?: string;
+        configValue?: string;
+      }[];
+      /** App name */
+      appname?: string;
+      /**
+       * Topic type
+       * @enum {string}
+       */
+      topictype?: "Create" | "Update" | "Delete" | "Claim";
+      /** Requestor */
+      requestor?: string;
+      /**
+       * Request time
+       * Format: date-time
+       * @example 2018-11-13T20:20:39.000Z
+       */
+      requesttime?: string;
+      /** Request time string */
+      requesttimestring?: string;
+      topicstatus?: components["schemas"]["RequestStatus"];
+      /**
+       * Approver
+       * @example jon.snow@klaw-project.io
+       */
+      approver?: string;
+      /**
+       * Approving time
+       * Format: date-time
+       * @example 2018-11-13T20:20:39.000Z
+       */
+      approvingtime?: string;
+      /**
+       * Sequence
+       * @deprecated
+       */
+      sequence?: string;
+      /**
+       * Username
+       * @description Username
+       * @example john.doe@klaw-project.io
+       */
+      username?: string;
+      /**
+       * Total number of pages
+       * @example 1
+       */
+      totalNoPages?: string;
+      /**
+       * Approving team details
+       * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
+       */
+      approvingTeamDetails?: string;
+      /**
+       * Other parameters
+       * @description Topic configuration parameters
+       * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
+       */
+      otherParams?: string;
+      /**
+       * Team identifier
+       * Format: int32
+       * @example 1010
+       */
+      teamId?: number;
+      /**
+       * All page numbers
+       * @description List of all page numbers
+       * @example [
+       *   "1"
+       * ]
+       */
+      allPageNos?: string[];
+      /** Possible teams */
+      possibleTeams?: string[];
+      /**
+       * Current page number
+       * @example 1
+       */
+      currentPage?: string;
+    };
   };
 };
 
@@ -874,7 +1012,7 @@ export type operations = {
       query: {
         /** Set to true to only get the topic names for topics belonging to the team of the current user */
         isMyTeamTopics?: components["schemas"]["TopicsGetOnlyResponse"];
-        /** Pass an environment name to get only the names of the topics in that environment */
+        /** Pass an environment ID to get only the names of the topics in that environment */
         envSelected?: components["schemas"]["TopicsGetOnlyResponse"];
       };
     };
@@ -1018,6 +1156,23 @@ export type operations = {
       };
     };
   };
+  getCreatedTopicRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestsType?: "all" | "created" | "declined" | "approved";
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicRequest"][];
+        };
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -1036,4 +1191,5 @@ export enum ApiPaths {
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",
+  getCreatedTopicRequests = "/getCreatedTopicRequests",
 }
