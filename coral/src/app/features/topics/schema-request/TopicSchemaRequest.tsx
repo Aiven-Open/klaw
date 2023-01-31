@@ -16,7 +16,7 @@ import {
 } from "src/app/features/topics/schema-request/schemas/topic-schema-request-form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { Alert, Box, Button } from "@aivenio/aquarium";
-import { createSchemaRequest, SchemaRequest } from "src/domain/schema-request";
+import { createSchemaRequest } from "src/domain/schema-request";
 import { useNavigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { getTopicNames, TopicNames } from "src/domain/topic";
@@ -65,18 +65,12 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryFn: () => getSchemaRegistryEnvironments(),
   });
 
-  const schemaRequestMutation = useMutation({
-    mutationFn: (schemaRequestParams: SchemaRequest) =>
-      createSchemaRequest(schemaRequestParams),
+  const schemaRequestMutation = useMutation(createSchemaRequest, {
+    onSuccess: () =>
+      window.location.assign(
+        "/mySchemaRequests?reqsType=created&schemaCreated=true"
+      ),
   });
-
-  if (schemaRequestMutation.isSuccess) {
-    const params = new URLSearchParams({
-      reqsType: "created",
-      schemaCreated: "true",
-    });
-    navigate(`/mySchemaRequests?${params.toString()}`);
-  }
 
   function onSubmitForm(userInput: TopicRequestFormSchema) {
     schemaRequestMutation.mutate(userInput);

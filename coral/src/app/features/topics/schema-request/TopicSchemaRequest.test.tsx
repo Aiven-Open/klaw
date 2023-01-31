@@ -502,6 +502,23 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("enables user to send a schema request", () => {
+    const locationAssignSpy = jest.fn();
+    let originalLocation: Location;
+
+    beforeAll(() => {
+      originalLocation = window.location;
+      Object.defineProperty(global.window, "location", {
+        writable: true,
+        value: {
+          assign: locationAssignSpy,
+        },
+      });
+    });
+
+    afterAll(() => {
+      global.window.location = originalLocation;
+    });
+
     beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
@@ -646,11 +663,12 @@ describe("TopicSchemaRequest", () => {
       await userEvent.upload(fileInput, testFile);
       await userEvent.click(button);
 
-      await waitFor(() =>
-        expect(mockedUsedNavigate).toHaveBeenCalledWith(
+      await waitFor(() => {
+        expect(locationAssignSpy).toHaveBeenCalledTimes(1);
+        expect(locationAssignSpy).toHaveBeenCalledWith(
           "/mySchemaRequests?reqsType=created&schemaCreated=true"
-        )
-      );
+        );
+      });
     });
   });
 });
