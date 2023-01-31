@@ -7,6 +7,7 @@ import {
   isApprovalsTabEnum,
 } from "src/app/router_utils";
 import ApprovalResourceTabs from "src/app/features/approvals/ApprovalResourceTabs";
+import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 
 const ApprovalsPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,11 +17,13 @@ const ApprovalsPage = () => {
     return <Navigate to={`/approvals/topics`} replace={true} />;
   }
   return (
-    <Layout>
-      <Typography.Caption>Approve requests</Typography.Caption>
-      <PageHeader title={"Approve requests"} />
-      <ApprovalResourceTabs currentTab={currentTab} />
-    </Layout>
+    <AuthenticationRequiredBoundary>
+      <Layout>
+        <Typography.Caption>Approve requests</Typography.Caption>
+        <PageHeader title={"Approve requests"} />
+        <ApprovalResourceTabs currentTab={currentTab} />
+      </Layout>
+    </AuthenticationRequiredBoundary>
   );
 
   function findMatchingTab(
