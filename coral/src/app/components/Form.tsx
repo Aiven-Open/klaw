@@ -42,7 +42,6 @@ import {
   FileInputProps as BaseFileInputProps,
 } from "src/app/components/FileInput";
 import { ZodSchema } from "zod";
-import placeholder from "lodash/fp/placeholder";
 import omit from "lodash/omit";
 
 type FormInputProps<T extends FieldValues = FieldValues> = {
