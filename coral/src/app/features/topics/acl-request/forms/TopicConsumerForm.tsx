@@ -75,6 +75,14 @@ const TopicConsumerForm = ({
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || isAivenCluster === undefined;
 
+  useEffect(() => {
+    if (hideConsumerGroupField) {
+      topicConsumerForm.setValue("consumergroup", "-na-");
+    } else {
+      topicConsumerForm.setValue("consumergroup", "");
+    }
+  }, [hideConsumerGroupField]);
+
   return (
     <>
       {isError && (
