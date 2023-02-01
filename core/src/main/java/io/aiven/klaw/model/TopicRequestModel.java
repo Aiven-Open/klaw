@@ -1,7 +1,5 @@
 package io.aiven.klaw.model;
 
-import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.validation.TopicRequestValidator;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,7 +13,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@TopicRequestValidator(getPermissionType = PermissionType.REQUEST_CREATE_TOPICS)
 public class TopicRequestModel implements Serializable {
 
   @NotNull

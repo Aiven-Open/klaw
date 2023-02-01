@@ -2,6 +2,7 @@ package io.aiven.klaw.model.enums;
 
 public enum PermissionType {
   REQUEST_CREATE_TOPICS("To request for Topics"),
+  REQUEST_EDIT_TOPICS("To request for Editing Topics"),
   REQUEST_DELETE_TOPICS("To request for deletion of topics"),
   REQUEST_CREATE_SUBSCRIPTIONS("To request for Producer or Consumer subscriptions"),
   REQUEST_DELETE_SUBSCRIPTIONS("To request for deletion of subscriptions"),

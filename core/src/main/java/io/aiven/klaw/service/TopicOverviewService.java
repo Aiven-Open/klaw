@@ -156,9 +156,8 @@ public class TopicOverviewService extends BaseOverviewService {
         prefixedAclsInfo.addAll(tmpAclPrefixed);
       }
 
-      // show edit button only for restricted envs
-      if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)
-          && reqTopicsEnvsList.contains(topicInfo.getClusterId())) {
+      // show edit button only forenv owned by your team
+      if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)) {
         topicInfo.setShowEditTopic(true);
       }
     }

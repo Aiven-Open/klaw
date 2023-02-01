@@ -327,6 +327,8 @@ public class DefaultDataService {
     defaultUserPermissionsList.put(
         "REQUEST_DELETE_TOPICS", PermissionType.REQUEST_DELETE_TOPICS.getDescription());
     defaultUserPermissionsList.put(
+        "REQUEST_EDIT_TOPICS", PermissionType.REQUEST_EDIT_TOPICS.getDescription());
+    defaultUserPermissionsList.put(
         "REQUEST_DELETE_SUBSCRIPTIONS",
         PermissionType.REQUEST_DELETE_SUBSCRIPTIONS.getDescription());
     defaultUserPermissionsList.put(

@@ -315,13 +315,13 @@
     },
     "/createTopics" : {
       "post" : {
-        "operationId" : "createTopicsRequest",
+        "operationId" : "createTopicsCreateRequest",
         "parameters" : [ {
           "in" : "body",
           "name" : "body",
           "required" : false,
           "schema" : {
-            "$ref" : "#/definitions/TopicRequestModel"
+            "$ref" : "#/definitions/TopicCreateRequestModel"
           }
         } ],
         "responses" : {
@@ -3247,6 +3247,27 @@
         }
       }
     },
+    "/updateTopics" : {
+      "post" : {
+        "operationId" : "createTopicsUpdateRequest",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/TopicUpdateRequestModel"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
     "/updateUser" : {
       "post" : {
         "operationId" : "updateUser",
@@ -4525,6 +4546,106 @@
         }
       }
     },
+    "TopicCreateRequestModel" : {
+      "type" : "object",
+      "properties" : {
+        "topicname" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "topicpartitions" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "teamname" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "replicationfactor" : {
+          "type" : "string"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "topicid" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "advancedTopicConfigEntries" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TopicConfigEntry"
+          }
+        },
+        "appname" : {
+          "type" : "string"
+        },
+        "topictype" : {
+          "type" : "string"
+        },
+        "requestor" : {
+          "type" : "string"
+        },
+        "requesttime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requesttimestring" : {
+          "type" : "string"
+        },
+        "topicstatus" : {
+          "type" : "string"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "approvingtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "sequence" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "approvingTeamDetails" : {
+          "type" : "string"
+        },
+        "otherParams" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "possibleTeams" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "currentPage" : {
+          "type" : "string"
+        }
+      }
+    },
     "TopicHistory" : {
       "type" : "object",
       "properties" : {
@@ -4676,6 +4797,106 @@
       }
     },
     "TopicRequestModel" : {
+      "type" : "object",
+      "properties" : {
+        "topicname" : {
+          "type" : "string"
+        },
+        "environment" : {
+          "type" : "string"
+        },
+        "topicpartitions" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "teamname" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string"
+        },
+        "description" : {
+          "type" : "string"
+        },
+        "replicationfactor" : {
+          "type" : "string"
+        },
+        "environmentName" : {
+          "type" : "string"
+        },
+        "topicid" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "advancedTopicConfigEntries" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TopicConfigEntry"
+          }
+        },
+        "appname" : {
+          "type" : "string"
+        },
+        "topictype" : {
+          "type" : "string"
+        },
+        "requestor" : {
+          "type" : "string"
+        },
+        "requesttime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "requesttimestring" : {
+          "type" : "string"
+        },
+        "topicstatus" : {
+          "type" : "string"
+        },
+        "approver" : {
+          "type" : "string"
+        },
+        "approvingtime" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "sequence" : {
+          "type" : "string"
+        },
+        "username" : {
+          "type" : "string"
+        },
+        "totalNoPages" : {
+          "type" : "string"
+        },
+        "approvingTeamDetails" : {
+          "type" : "string"
+        },
+        "otherParams" : {
+          "type" : "string"
+        },
+        "teamId" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "allPageNos" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "possibleTeams" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        },
+        "currentPage" : {
+          "type" : "string"
+        }
+      }
+    },
+    "TopicUpdateRequestModel" : {
       "type" : "object",
       "properties" : {
         "topicname" : {

@@ -43,11 +43,23 @@ public class TopicRequestValidatorImpl
       return false;
     }
 
-    // Verify if topic request type is Create
-    if (!TopicRequestTypes.Create.name().equals(topicRequestModel.getTopictype())) {
-      updateConstraint(
-          constraintValidatorContext,
-          "Failure. Invalid Topic request type. Possible Value : Create");
+    if (permissionType.equals(PermissionType.REQUEST_CREATE_TOPICS)) {
+      // Verify if topic request type is Create
+      if (!TopicRequestTypes.Create.name().equals(topicRequestModel.getTopictype())) {
+        updateConstraint(
+            constraintValidatorContext,
+            "Failure. Invalid Topic request type. Possible Value : Create");
+        return false;
+      }
+    } else if (permissionType.equals(PermissionType.REQUEST_EDIT_TOPICS)) {
+      if (!TopicRequestTypes.Update.name().equals(topicRequestModel.getTopictype())) {
+        updateConstraint(
+            constraintValidatorContext,
+            "Failure. Invalid Topic request type. Possible Value : Update");
+        return false;
+      }
+    } else {
+      updateConstraint(constraintValidatorContext, "Failure. Invalid Permission Type for request.");
       return false;
     }
 

@@ -1,11 +1,12 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.model.enums.ApiResultStatus.NOT_AUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -16,6 +17,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
@@ -26,6 +28,7 @@ import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.enums.TopicRequestTypes;
@@ -112,7 +115,8 @@ public class TopicControllerServiceTest {
 
   @Test
   @Order(1)
-  public void createTopicsSuccessAdvancedTopicConfigs() throws KlawException {
+  public void createTopicsSuccessAdvancedTopicConfigs()
+      throws KlawException, KlawNotAuthorizedException {
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
@@ -128,13 +132,13 @@ public class TopicControllerServiceTest {
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse =
-        topicControllerService.createTopicsRequest(getTopicWithAdvancedConfigs());
+        topicControllerService.createTopicsCreateRequest(getTopicWithAdvancedConfigs());
     assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   @Order(2)
-  public void createTopicsSuccessDefaultValues() throws KlawException {
+  public void createTopicsSuccessDefaultValues() throws KlawException, KlawNotAuthorizedException {
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", ApiResultStatus.SUCCESS.value);
 
@@ -150,14 +154,15 @@ public class TopicControllerServiceTest {
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse =
-        topicControllerService.createTopicsRequest(getTopicWithDefaultConfigs());
+        topicControllerService.createTopicsCreateRequest(getTopicWithDefaultConfigs());
     assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // invalid partitions
   @Test
   @Order(3)
-  public void createTopicsFailureInvalidPartitions() throws KlawException {
+  public void createTopicsFailureInvalidPartitions()
+      throws KlawException, KlawNotAuthorizedException {
     Map<String, String> resultMap = new HashMap<>();
     resultMap.put("result", "failure");
 
@@ -172,13 +177,14 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic1());
+    ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
     assertThat(apiResponse.getResult()).contains("failure");
   }
 
   @Test
   @Order(4)
-  public void createTopicsFailureInvalidClusterTenantIds() throws KlawException {
+  public void createTopicsFailureInvalidClusterTenantIds()
+      throws KlawException, KlawNotAuthorizedException {
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -190,23 +196,22 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
     when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
-    ApiResponse apiResponse = topicControllerService.createTopicsRequest(getFailureTopic1());
+    ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
     assertThat(apiResponse.getResult()).isEqualTo(null);
   }
 
   @Test
   @Order(5)
-  public void createTopicDeleteRequestFailureNotAuthorized() {
+  public void createTopicDeleteRequestFailureNotAuthorized() throws KlawNotAuthorizedException {
     String topicName = "testtopic1";
     String envId = "1";
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
 
-    try {
-      ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
-      assertThat(apiResponse.getResult()).isEqualTo(NOT_AUTHORIZED.value);
-    } catch (KlawException e) {
-      throw new RuntimeException(e);
-    }
+    assertThrows(
+        KlawNotAuthorizedException.class,
+        () -> {
+          topicControllerService.createTopicDeleteRequest(topicName, envId);
+        });
   }
 
   @Test
@@ -223,6 +228,8 @@ public class TopicControllerServiceTest {
       assertThat(apiResponse.getResult())
           .isEqualTo("Failure. A delete topic request already exists.");
     } catch (KlawException e) {
+      throw new RuntimeException(e);
+    } catch (KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -247,6 +254,8 @@ public class TopicControllerServiceTest {
           .isEqualTo(
               "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
     } catch (KlawException e) {
+      throw new RuntimeException(e);
+    } catch (KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -275,6 +284,8 @@ public class TopicControllerServiceTest {
               "Failure. There are existing subscriptions for topic. Please get them deleted before.");
     } catch (KlawException e) {
       throw new RuntimeException(e);
+    } catch (KlawNotAuthorizedException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -298,6 +309,8 @@ public class TopicControllerServiceTest {
       assertThat(apiResponse.getResult())
           .isEqualTo("Failure. Topic not found on cluster: " + topicName);
     } catch (KlawException e) {
+      throw new RuntimeException(e);
+    } catch (KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -326,6 +339,8 @@ public class TopicControllerServiceTest {
       ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
       assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     } catch (KlawException e) {
+      throw new RuntimeException(e);
+    } catch (KlawNotAuthorizedException e) {
       throw new RuntimeException(e);
     }
   }
@@ -979,8 +994,110 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicRequests());
     List<TopicRequest> topicReqResponse =
-        topicControllerService.getExistingTopicRequests(utilMethods.getTopicRequestModel(101), 1);
+        topicControllerService.getExistingTopicRequests(
+            utilMethods.getTopicCreateRequestModel(101), 1);
     assertThat(topicReqResponse).hasSize(1);
+  }
+
+  @Test
+  @Order(44)
+  public void updateTopicsSuccessAdvancedTopicConfigs()
+      throws KlawException, KlawNotAuthorizedException {
+    Map<String, String> resultMap = new HashMap<>();
+    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+
+    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
+    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
+    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
+    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+
+    ApiResponse apiResponse =
+        topicControllerService.createTopicsUpdateRequest(getTopicWithAdvancedConfigs());
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(45)
+  public void updateTopicsSuccessDefaultValues() throws KlawException, KlawNotAuthorizedException {
+    Map<String, String> resultMap = new HashMap<>();
+    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+
+    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
+    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
+    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
+    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+
+    ApiResponse apiResponse =
+        topicControllerService.createTopicsUpdateRequest(getTopicWithDefaultConfigs());
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  // invalid partitions
+  @Test
+  @Order(46)
+  public void updateTopicsFailureInvalidPartitions()
+      throws KlawException, KlawNotAuthorizedException {
+    Map<String, String> resultMap = new HashMap<>();
+    resultMap.put("result", "failure");
+
+    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
+    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
+    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
+    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+
+    ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
+    assertThat(apiResponse.getResult()).contains("failure");
+  }
+
+  @Test
+  @Order(47)
+  public void updateTopicsFailureInvalidClusterTenantIds()
+      throws KlawException, KlawNotAuthorizedException {
+
+    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
+    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
+    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+
+    ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
+    assertThat(apiResponse.getResult()).isEqualTo(null);
+  }
+
+  @Test
+  @Order(48)
+  public void updateTopicsFailureNotAuthorized() {
+
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))
+        .thenReturn(true);
+    assertThrows(
+        KlawNotAuthorizedException.class,
+        () -> {
+          topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
+        });
   }
 
   private TopicRequestModel getTopicWithAdvancedConfigs() {

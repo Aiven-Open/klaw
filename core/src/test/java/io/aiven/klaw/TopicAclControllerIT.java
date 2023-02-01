@@ -233,7 +233,7 @@ public class TopicAclControllerIT {
   @Test
   @Order(5)
   public void createTopicRequest() throws Exception {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(topicId);
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     String response =
         mvc.perform(
@@ -323,7 +323,7 @@ public class TopicAclControllerIT {
   @Test
   public void declineTopicRequest() throws Exception {
     int topicIdLocal = 1002;
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(topicIdLocal);
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicIdLocal);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     String response =
         mvc.perform(
@@ -379,7 +379,7 @@ public class TopicAclControllerIT {
   @Test
   public void deleteTopicRequest() throws Exception {
 
-    TopicRequestModel addTopicRequest = utilMethods.getTopicRequestModel(1003);
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1003);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     String response =
         mvc.perform(
