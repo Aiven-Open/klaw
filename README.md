@@ -23,13 +23,15 @@ For the versions available, see the [tags on this repository](https://github.com
 ## Features:
 
 - Topics (approval): Create, Update, Delete, Promote
-  - React UI - New look and feel for Browse topics
+  - React UI - New look and feel for Browse topics, Create topic Request
   
 - Acls (approval):  Create,Delete
+  - React UI - Create Acl Request 
 - Connectors (approval): Create
   - Any connector can be created as long as the required plugin libraries are installed on the server.  
 - Avro Schemas (approval): Create
   - View all available versions of the subjects per topic
+  - React UI - Create Schema Request
 - Topic Overview :
   - Topic Config
   - Promote
