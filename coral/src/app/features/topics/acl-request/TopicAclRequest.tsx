@@ -41,7 +41,7 @@ const TopicAclRequest = () => {
     },
   });
 
-  const { isExtendedEnvironmentsLoading, extendedEnvironments } =
+  const { isLoadingExtendedEnvironments, extendedEnvironments } =
     useExtendedEnvironments();
 
   // Will trigger infinite rerender when selecting an environment if not memoized
@@ -104,7 +104,7 @@ const TopicAclRequest = () => {
     }
   }, [selectedEnvironment]);
 
-  if (isExtendedEnvironmentsLoading) {
+  if (isLoadingExtendedEnvironments) {
     return <SkeletonForm />;
   }
 

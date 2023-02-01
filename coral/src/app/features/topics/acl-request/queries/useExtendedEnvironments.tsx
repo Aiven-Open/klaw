@@ -91,12 +91,12 @@ const useExtendedEnvironments = () => {
   const clusterInfoData = useQueries({ queries: clusterInfoQueries });
   const clusterInfoIsLoading = clusterInfoData.some((data) => data.isLoading);
 
-  const isExtendedEnvironmentsLoading =
+  const isLoadingExtendedEnvironments =
     scopedTopicNamesIsLoading || environmentsIsLoading || clusterInfoIsLoading;
 
   let extendedEnvironments: ExtendedEnvironment[] = [];
 
-  if (!isExtendedEnvironmentsLoading) {
+  if (!isLoadingExtendedEnvironments) {
     const computedExtendedEnvironments: ExtendedEnvironment[] =
       environmentsWithClusterInfo.reduce(
         (
@@ -124,7 +124,7 @@ const useExtendedEnvironments = () => {
 
   return {
     extendedEnvironments,
-    isExtendedEnvironmentsLoading,
+    isLoadingExtendedEnvironments,
   };
 };
 
