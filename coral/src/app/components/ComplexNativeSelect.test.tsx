@@ -35,7 +35,6 @@ describe("ComplexNativeSelect.tsx", () => {
     identifierValue: "id" as keyof TestOption,
     identifierName: "name" as keyof TestOption,
     onBlur: onBlurMock,
-    placeholder,
     labelText,
     helperText,
   };
@@ -54,27 +53,18 @@ describe("ComplexNativeSelect.tsx", () => {
       expect(select).not.toBeRequired();
     });
 
-    it("shows a given placeholder text as displayed value", () => {
+    it("shows the value of the first option as displayed value", () => {
       const select = screen.getByRole("combobox", { name: labelText });
 
-      expect(select).toHaveDisplayValue(placeholder);
+      expect(select).toHaveDisplayValue(testOptions[0].name);
+      expect(select).toHaveValue(testOptions[0].id);
     });
 
-    it("renders a list of given options including a disabled placeholder options", () => {
+    it("renders a list of given options", () => {
       const select = screen.getByRole("combobox", { name: labelText });
       const options = within(select).getAllByRole("option");
 
-      expect(options).toHaveLength(testOptions.length + 1);
-    });
-
-    it("sets the option related to the placeholder as selected, but disabled", () => {
-      const select = screen.getByRole("combobox", { name: labelText });
-      const selectedOption = within(select).getByRole("option", {
-        name: placeholder,
-      });
-
-      expect(selectedOption).toHaveAttribute("selected");
-      expect(selectedOption).toBeDisabled();
+      expect(options).toHaveLength(testOptions.length);
     });
 
     testOptions.forEach((option) => {
@@ -84,7 +74,6 @@ describe("ComplexNativeSelect.tsx", () => {
           name: option.name,
         });
 
-        expect(currOption).not.toHaveAttribute("selected");
         expect(currOption).toHaveValue(option.id);
         expect(currOption).toBeEnabled();
       });
@@ -146,22 +135,15 @@ describe("ComplexNativeSelect.tsx", () => {
     });
   });
 
-  describe("renders a given option as the active one when set by prop", () => {
+  describe("renders a given option as the active one when value is set as defaultValue", () => {
     const selectedOption = testOptions[0];
-
-    const requiredProps = {
-      options: testOptions,
-      identifierValue: "id" as keyof TestOption,
-      identifierName: "name" as keyof TestOption,
-      onBlur: onBlurMock,
-      placeholder,
-      labelText,
-      helperText,
-    };
 
     beforeEach(() => {
       render(
-        <ComplexNativeSelect {...requiredProps} activeOption={selectedOption} />
+        <ComplexNativeSelect
+          {...requiredProps}
+          defaultValue={selectedOption.name}
+        />
       );
     });
 
@@ -191,9 +173,14 @@ describe("ComplexNativeSelect.tsx", () => {
     });
   });
 
-  describe("handles user choosing an option an optional select", () => {
+  describe("handles user choosing an option an optional select with placeholder", () => {
     beforeEach(() => {
-      render(<ComplexNativeSelect<TestOption> {...requiredProps} />);
+      render(
+        <ComplexNativeSelect<TestOption>
+          {...requiredProps}
+          placeholder={placeholder}
+        />
+      );
     });
 
     afterEach(() => {
@@ -212,12 +199,13 @@ describe("ComplexNativeSelect.tsx", () => {
       expect(onBlurMock).toHaveBeenCalledWith(testOptions[0]);
     });
 
-    it("does not set an value and call onBlur if user didn't select an option", async () => {
+    it("does not set an value onBlur if user didn't select an option", async () => {
       const select = screen.getByRole("combobox", { name: labelText });
+      select.focus();
       await userEvent.tab();
 
       expect(select).toHaveDisplayValue(placeholder);
-      expect(onBlurMock).not.toHaveBeenCalled();
+      expect(onBlurMock).toHaveBeenCalledWith(undefined);
     });
   });
 });

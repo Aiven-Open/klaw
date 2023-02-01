@@ -64,19 +64,17 @@ describe("<TopicRequest />", () => {
         expect(select).toBeEnabled();
       });
 
-      it("shows an empty value with placeholder text", async () => {
-        const prodSelectOption: HTMLOptionElement = await screen.findByRole(
-          "option",
-          {
-            name: "-- Select Environment --",
-          }
-        );
+      it("shows an placeholder text for the select", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
 
-        expect(prodSelectOption.selected).toBe(true);
+        expect(select).toHaveDisplayValue("-- Select Environment --");
       });
 
       it("shows all environment names as options", () => {
         const options = screen.getAllByRole("option");
+        // 3 environments + option for placeholder
         expect(options.length).toBe(4);
         expect(options.map((o) => o.textContent)).toEqual([
           "-- Select Environment --",
@@ -113,7 +111,7 @@ describe("<TopicRequest />", () => {
       });
 
       describe("when 'PROD' option is clicked", () => {
-        it("selects 'PROD' value when user choses the option", async () => {
+        it("selects 'PROD' value when user chooses the option", async () => {
           const select = await screen.findByRole("combobox", {
             name: "Environment",
           });
