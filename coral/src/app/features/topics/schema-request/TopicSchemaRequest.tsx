@@ -98,7 +98,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         <NativeSelect<TopicRequestFormSchema>
           name={"topicname"}
           labelText={"Topic name"}
-          defaultValue={topicName}
           readOnly={true}
           aria-readonly={true}
         >
@@ -115,12 +114,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           <NativeSelect<TopicRequestFormSchema>
             name={"environment"}
             labelText={"Select environment"}
-            defaultValue={""}
+            placeholder={"-- Please select --"}
             required={true}
           >
-            <option disabled value={""}>
-              Please select
-            </option>
             {environments.map((env) => {
               return (
                 <option key={env.id} value={env.id}>
