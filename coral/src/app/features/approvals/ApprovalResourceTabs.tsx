@@ -1,10 +1,12 @@
 import { Tabs } from "@aivenio/aquarium";
+import { useQuery } from "@tanstack/react-query";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
 import {
   ApprovalsTabEnum,
   APPROVALS_TAB_ID_INTO_PATH,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
+import { getNotificationCounts } from "src/domain/notification/notification-api";
 
 type Props = {
   currentTab: ApprovalsTabEnum;
@@ -13,10 +15,16 @@ type Props = {
 function ApprovalResourceTabs({ currentTab }: Props) {
   const navigate = useNavigate();
 
-  const numberOfPendingTopicApprovals = 99;
-  const numberOfPendingAclApprovals = 33;
-  const numberOfPendingSchemaApprovals = undefined;
-  const numberOfPendingConnectorApprovals = 0;
+  const { data: counts } = useQuery(
+    ["getNotificationCounts"],
+    getNotificationCounts
+  );
+
+  const numberOfPendingTopicApprovals = counts?.topicNotificationCount;
+  const numberOfPendingAclApprovals = counts?.aclNotificationCount;
+  const numberOfPendingSchemaApprovals = counts?.schemaNotificationCount;
+  const numberOfPendingConnectorApprovals = counts?.connectorNotificationCount;
+
   return (
     <Tabs
       value={currentTab}
@@ -75,10 +83,16 @@ function ApprovalResourceTabs({ currentTab }: Props) {
     title: string,
     pendingApprovals: number | undefined
   ): string {
-    if (typeof pendingApprovals === "number" && pendingApprovals > 0) {
-      return `${title}, ${pendingApprovals} approvals waiting`;
+    if (typeof pendingApprovals === "number") {
+      if (pendingApprovals === 0) {
+        return `${title}, no pending approvals`;
+      } else if (pendingApprovals === 1) {
+        return `${title}, ${pendingApprovals} approval waiting`;
+      } else {
+        return `${title}, ${pendingApprovals} approvals waiting`;
+      }
     }
-    return `${title}, no pending approvals`;
+    return title;
   }
 
   function getBadgeValue(
