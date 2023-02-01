@@ -1,7 +1,7 @@
 import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
@@ -13,23 +13,14 @@ import topicConsumerFormSchema, {
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
-import {
-  ClusterInfo,
-  Environment,
-  getEnvironments,
-} from "src/domain/environment";
+import { ClusterInfo, Environment } from "src/domain/environment";
 import { getClusterInfo } from "src/domain/environment/environment-api";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
-import {
-  getTopicNames,
-  getTopicTeam,
-  TopicNames,
-  TopicTeam,
-} from "src/domain/topic";
+import { getTopicTeam, TopicTeam } from "src/domain/topic";
+import useEnvironmentTopics from "src/app/features/topics/acl-request/queries/useEnvironmentTopics";
 
 const TopicAclRequest = () => {
   const { topicName = "" } = useParams();
-  const navigate = useNavigate();
   const [topicType, setTopicType] = useState("Producer");
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
@@ -52,34 +43,18 @@ const TopicAclRequest = () => {
     },
   });
 
-  const { data: topicNames } = useQuery<TopicNames, Error>(
-    ["topic-names", topicType],
-    {
-      queryFn: () => getTopicNames({ onlyMyTeamTopics: false }),
-      keepPreviousData: true,
-      onSuccess: (data) => {
-        if (data?.includes(topicName)) {
-          return;
-        }
-        // Navigate back to Topics when topicName does not exist in the topics list
-        navigate("/topics");
-      },
-      enabled: topicName !== "",
-    }
-  );
-
-  const { data: environments } = useQuery<Environment[], Error>(
-    ["topic-environments"],
-    {
-      queryFn: getEnvironments,
-    }
-  );
+  const {
+    scopedTopicNames,
+    scopedTopicNamesIsLoading,
+    environmentsIsLoading,
+    validEnvironments,
+  } = useEnvironmentTopics();
 
   const selectedPatternType =
     topicType === "Producer"
       ? topicProducerForm.watch("aclPatternType")
       : "LITERAL";
-  const { data: topicTeam } = useQuery<TopicTeam, Error>({
+  const { isLoading: topicTeamIsLoading } = useQuery<TopicTeam, Error>({
     queryKey: ["topicTeam", topicName, selectedPatternType, topicType],
     queryFn: () =>
       getTopicTeam({ topicName, patternType: selectedPatternType }),
@@ -101,7 +76,7 @@ const TopicAclRequest = () => {
   // We cast the type of selectedEnvironmentType to be Environment["type"]
   // Because there should be no case where this returns undefined
   // As an additional safety, this query is disabled when it *is* undefined
-  const selectedEnvironmentType = environments?.find(
+  const selectedEnvironmentType = validEnvironments.find(
     (env) => env.id === selectedEnvironment
   )?.type as Environment["type"];
   const { data: clusterInfo } = useQuery<ClusterInfo, Error>(
@@ -115,7 +90,7 @@ const TopicAclRequest = () => {
       keepPreviousData: true,
       enabled:
         selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
-        environments !== undefined &&
+        validEnvironments !== undefined &&
         selectedEnvironmentType !== undefined,
       onSuccess: (data) => {
         const isAivenCluster = data?.aivenCluster === "true";
@@ -135,12 +110,17 @@ const TopicAclRequest = () => {
   );
 
   if (
-    topicNames === undefined ||
-    environments === undefined ||
-    topicTeam === undefined
+    environmentsIsLoading ||
+    topicTeamIsLoading ||
+    scopedTopicNamesIsLoading
   ) {
     return <SkeletonForm />;
   }
+
+  const currentTopicNames =
+    scopedTopicNames.find(
+      (scoped) => scoped.environmentId === selectedEnvironment
+    )?.topicNames || [];
 
   return (
     <Box maxWidth={"4xl"}>
@@ -150,8 +130,8 @@ const TopicAclRequest = () => {
             <AclTypeField topicType={topicType} handleChange={setTopicType} />
           )}
           topicConsumerForm={topicConsumerForm}
-          topicNames={topicNames}
-          environments={environments}
+          topicNames={currentTopicNames}
+          environments={validEnvironments}
           clusterInfo={clusterInfo}
         />
       ) : (
@@ -160,8 +140,8 @@ const TopicAclRequest = () => {
             <AclTypeField topicType={topicType} handleChange={setTopicType} />
           )}
           topicProducerForm={topicProducerForm}
-          topicNames={topicNames}
-          environments={environments}
+          topicNames={currentTopicNames}
+          environments={validEnvironments}
           clusterInfo={clusterInfo}
         />
       )}
