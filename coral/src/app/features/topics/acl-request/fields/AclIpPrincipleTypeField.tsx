@@ -1,15 +1,13 @@
 import { RadioButton as BaseRadioButton } from "@aivenio/aquarium";
 import { RadioButtonGroup } from "src/app/components/Form";
-import { ClusterInfo } from "src/domain/environment";
 
 interface AclIpPrincipleTypeFieldProps {
-  clusterInfo?: ClusterInfo;
+  isAivenCluster?: boolean;
 }
 
 const AclIpPrincipleTypeField = ({
-  clusterInfo,
+  isAivenCluster,
 }: AclIpPrincipleTypeFieldProps) => {
-  const isAivenCluster = clusterInfo?.aivenCluster === "true";
   const principalLabelText = isAivenCluster ? "Service account" : "Principal";
 
   return (
@@ -17,9 +15,9 @@ const AclIpPrincipleTypeField = ({
       name="aclIpPrincipleType"
       labelText={`IP or ${principalLabelText} based`}
       required
-      // If clusterInfo is undefined, we have not yet fetched it (no environment selected)
+      // If isAivenCluster is undefined, we have not yet fetched it (no environment selected)
       // So all the options are disabled
-      disabled={isAivenCluster || clusterInfo === undefined}
+      disabled={isAivenCluster || isAivenCluster === undefined}
     >
       <BaseRadioButton value="IP_ADDRESS" disabled={isAivenCluster}>
         IP

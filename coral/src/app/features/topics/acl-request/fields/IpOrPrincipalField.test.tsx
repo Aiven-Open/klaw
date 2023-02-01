@@ -1,21 +1,12 @@
 import { cleanup } from "@testing-library/react";
 import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrPrincipalField";
 import { aclIpPrincipleType } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
-import { ClusterInfo } from "src/domain/environment";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 
 const schema = z.object({
   aclIpPrincipleType,
 });
-
-const isAivenClusterInfo: ClusterInfo = {
-  aivenCluster: "true",
-};
-
-const isNotAivenClusterInfo: ClusterInfo = {
-  aivenCluster: "false",
-};
 
 describe("IpOrPrincipalField", () => {
   const onSubmit = jest.fn();
@@ -31,7 +22,7 @@ describe("IpOrPrincipalField", () => {
     const result = renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
-        clusterInfo={isAivenClusterInfo}
+        isAivenCluster={true}
       />,
       {
         schema,
@@ -48,7 +39,7 @@ describe("IpOrPrincipalField", () => {
     const result = renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"PRINCIPAL"}
-        clusterInfo={isNotAivenClusterInfo}
+        isAivenCluster={false}
       />,
       {
         schema,
@@ -65,7 +56,7 @@ describe("IpOrPrincipalField", () => {
     const result = renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"IP_ADDRESS"}
-        clusterInfo={isAivenClusterInfo}
+        isAivenCluster={true}
       />,
       {
         schema,
@@ -82,7 +73,7 @@ describe("IpOrPrincipalField", () => {
     const result = renderForm(
       <IpOrPrincipalField
         aclIpPrincipleType={"IP_ADDRESS"}
-        clusterInfo={isNotAivenClusterInfo}
+        isAivenCluster={false}
       />,
       {
         schema,

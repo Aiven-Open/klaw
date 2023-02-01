@@ -1,16 +1,9 @@
 import { cleanup } from "@testing-library/react";
 import AclIpPrincipleTypeField from "src/app/features/topics/acl-request/fields/AclIpPrincipleTypeField";
 import { aclIpPrincipleType } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
-import { ClusterInfo } from "src/domain/environment";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 
-const clusterInfoIsAiven: ClusterInfo = {
-  aivenCluster: "true",
-};
-const clusterInfoIsNotAiven: ClusterInfo = {
-  aivenCluster: "false",
-};
 const clusterInfoNotFetched = undefined;
 
 const schema = z.object({
@@ -29,7 +22,7 @@ describe("AclIpPrincipleTypeField", () => {
 
   it("renders AclIpPrincipleTypeField with two options", () => {
     const result = renderForm(
-      <AclIpPrincipleTypeField clusterInfo={clusterInfoIsNotAiven} />,
+      <AclIpPrincipleTypeField isAivenCluster={false} />,
       { schema, onSubmit, onError }
     );
     const radioButtons = result.getAllByRole("radio");
@@ -38,7 +31,7 @@ describe("AclIpPrincipleTypeField", () => {
 
   it("should render AclIpPrincipleTypeField with no option checked by default", () => {
     const result = renderForm(
-      <AclIpPrincipleTypeField clusterInfo={clusterInfoIsNotAiven} />,
+      <AclIpPrincipleTypeField isAivenCluster={false} />,
       { schema, onSubmit, onError }
     );
     const radioButtons = result.getAllByRole("radio");
@@ -47,7 +40,7 @@ describe("AclIpPrincipleTypeField", () => {
 
   it("renders AclIpPrincipleTypeField with both options enabled (not Aiven cluster)", () => {
     const result = renderForm(
-      <AclIpPrincipleTypeField clusterInfo={clusterInfoIsNotAiven} />,
+      <AclIpPrincipleTypeField isAivenCluster={false} />,
       { schema, onSubmit, onError }
     );
     const principalRadioButtons = result.getByLabelText("Principal");
@@ -59,7 +52,7 @@ describe("AclIpPrincipleTypeField", () => {
 
   it("renders AclIpPrincipleTypeField with both options disabled (Aiven cluster)", () => {
     const result = renderForm(
-      <AclIpPrincipleTypeField clusterInfo={clusterInfoIsAiven} />,
+      <AclIpPrincipleTypeField isAivenCluster={true} />,
       { schema, onSubmit, onError }
     );
     const principalRadioButtons = result.getByLabelText("Service account");
@@ -71,7 +64,7 @@ describe("AclIpPrincipleTypeField", () => {
 
   it("renders AclIpPrincipleTypeField with both options disabled (clusterInfo not fetched)", () => {
     const result = renderForm(
-      <AclIpPrincipleTypeField clusterInfo={clusterInfoNotFetched} />,
+      <AclIpPrincipleTypeField isAivenCluster={clusterInfoNotFetched} />,
       { schema, onSubmit, onError }
     );
     const principalRadioButtons = result.getByLabelText("Principal");
