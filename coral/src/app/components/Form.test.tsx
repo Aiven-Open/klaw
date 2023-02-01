@@ -235,15 +235,7 @@ describe("Form", () => {
       screen.getByRole("combobox", { name: "NativeSelect" });
     });
 
-    it("should default to first available option", async () => {
-      expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
-        "Helsinki"
-      );
-      await submit();
-      assertSubmitted({ formFieldsCustomName: "helsinki" });
-    });
-
-    it("should sync value to form state when choosing another option", async () => {
+    it("should sync value to form state when choosing option", async () => {
       await user.selectOptions(screen.getByLabelText("NativeSelect"), "berlin");
       expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
         "Berlin"
@@ -258,11 +250,8 @@ describe("Form", () => {
         <NativeSelect<Schema>
           name="formFieldsCustomName"
           labelText="NativeSelect"
-          defaultValue={"placeholdervalue"}
+          placeholder={"placeholder value"}
         >
-          <option value="placeholdervalue" disabled={true}>
-            placeholder
-          </option>
           <option value="helsinki">Helsinki</option>
           <option value="berlin">Berlin</option>
           <option value="london">London</option>
@@ -271,17 +260,39 @@ describe("Form", () => {
       );
 
       const select = screen.getByRole("combobox", { name: "NativeSelect" });
-      expect(select).toHaveValue("placeholdervalue");
 
       await userEvent.click(select);
-      await userEvent.keyboard("{Enter}");
+      await userEvent.keyboard("{Escape}");
       await userEvent.tab();
 
       const errorMessage = await screen.findByText(
-        "Invalid enum value. Expected 'helsinki' | 'berlin' | 'london', received 'placeholdervalue'"
+        "Invalid enum value. Expected 'helsinki' | 'berlin' | 'london', received ''"
       );
       expect(errorMessage).toBeVisible();
-      expect(true).toBeTruthy();
+    });
+
+    it("defaults to the first option if no placeholder is set", async () => {
+      cleanup();
+      renderForm(
+        <NativeSelect<Schema>
+          name="formFieldsCustomName"
+          labelText="NativeSelect"
+        >
+          <option value="helsinki">Helsinki</option>
+          <option value="berlin">Berlin</option>
+          <option value="london">London</option>
+        </NativeSelect>,
+        { schema, onSubmit, onError }
+      );
+
+      const select = screen.getByRole("combobox", { name: "NativeSelect" });
+
+      await userEvent.click(select);
+      await userEvent.keyboard("{Escape}");
+      await userEvent.tab();
+
+      await submit();
+      assertSubmitted({ formFieldsCustomName: "helsinki" });
     });
   });
 
