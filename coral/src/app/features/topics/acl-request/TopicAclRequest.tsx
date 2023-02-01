@@ -1,5 +1,5 @@
 import { Box } from "@aivenio/aquarium";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
@@ -13,31 +13,15 @@ import topicConsumerFormSchema, {
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
-import {
-  ClusterInfo,
-  Environment,
-  getEnvironments,
-} from "src/domain/environment";
+import { ClusterInfo, Environment } from "src/domain/environment";
 import { getClusterInfo } from "src/domain/environment/environment-api";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
-import {
-  getTopicNames,
-  getTopicTeam,
-  TopicNames,
-  TopicTeam,
-} from "src/domain/topic";
-
-interface ScopedTopicNames {
-  environmentId: string;
-  topicNames: string[];
-}
+import { getTopicTeam, TopicTeam } from "src/domain/topic";
+import useEnvironmentTopics from "src/app/features/topics/acl-request/queries/useEnvironmentTopics";
 
 const TopicAclRequest = () => {
   const { topicName = "" } = useParams();
   const [topicType, setTopicType] = useState("Producer");
-  const [scopedTopicNames, setScopedTopicNames] = useState<ScopedTopicNames[]>(
-    []
-  );
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
     schema: topicProducerFormSchema,
@@ -59,35 +43,12 @@ const TopicAclRequest = () => {
     },
   });
 
-  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
-    Environment[],
-    Error
-  >(["topic-environments"], {
-    queryFn: getEnvironments,
-  });
-
-  const topicNamesQueries =
-    environments === undefined
-      ? []
-      : environments.map((env) => {
-          return {
-            queryKey: ["topicNames", env.id],
-            queryFn: () =>
-              getTopicNames({
-                onlyMyTeamTopics: false,
-                envSelected: env.id,
-              }),
-            onSuccess: (data: TopicNames) => {
-              setScopedTopicNames((prev) => [
-                ...prev,
-                { environmentId: env.id, topicNames: data },
-              ]);
-            },
-          };
-        });
-
-  const topicNamesData = useQueries({ queries: topicNamesQueries });
-  const topicNamesIsLoading = topicNamesData.some((data) => data.isLoading);
+  const {
+    scopedTopicNames,
+    scopedTopicNamesIsLoading,
+    environmentsIsLoading,
+    validEnvironments,
+  } = useEnvironmentTopics();
 
   const selectedPatternType =
     topicType === "Producer"
@@ -115,7 +76,7 @@ const TopicAclRequest = () => {
   // We cast the type of selectedEnvironmentType to be Environment["type"]
   // Because there should be no case where this returns undefined
   // As an additional safety, this query is disabled when it *is* undefined
-  const selectedEnvironmentType = environments?.find(
+  const selectedEnvironmentType = validEnvironments.find(
     (env) => env.id === selectedEnvironment
   )?.type as Environment["type"];
   const { data: clusterInfo } = useQuery<ClusterInfo, Error>(
@@ -129,7 +90,7 @@ const TopicAclRequest = () => {
       keepPreviousData: true,
       enabled:
         selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
-        environments !== undefined &&
+        validEnvironments !== undefined &&
         selectedEnvironmentType !== undefined,
       onSuccess: (data) => {
         const isAivenCluster = data?.aivenCluster === "true";
@@ -148,7 +109,11 @@ const TopicAclRequest = () => {
     }
   );
 
-  if (environmentsIsLoading || topicTeamIsLoading || topicNamesIsLoading) {
+  if (
+    environmentsIsLoading ||
+    topicTeamIsLoading ||
+    scopedTopicNamesIsLoading
+  ) {
     return <SkeletonForm />;
   }
 
@@ -156,14 +121,6 @@ const TopicAclRequest = () => {
     scopedTopicNames.find(
       (scoped) => scoped.environmentId === selectedEnvironment
     )?.topicNames || [];
-
-  const validEnvironments = (environments || []).filter((env) =>
-    new Set(
-      scopedTopicNames.map((scoped) =>
-        scoped.topicNames.length > 0 ? scoped.environmentId : undefined
-      )
-    ).has(env.id)
-  );
 
   return (
     <Box maxWidth={"4xl"}>
