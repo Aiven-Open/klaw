@@ -27,6 +27,7 @@ function TopicRequest() {
     ["environments-for-team"],
     getEnvironmentsForTeam
   );
+
   const defaultValues = Array.isArray(environments)
     ? {
         environment: undefined,

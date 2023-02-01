@@ -1,4 +1,10 @@
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  screen,
+  waitFor,
+  within,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
@@ -11,7 +17,6 @@ import {
   mockgetTopicAdvancedConfigOptions,
   mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import api from "src/services/api";
 
 describe("<TopicRequest />", () => {
@@ -423,7 +428,9 @@ describe("<TopicRequest />", () => {
           }
         );
 
-        expect(inputReplicationFactorSelect).toHaveDisplayValue("2");
+        await waitFor(() => {
+          expect(inputReplicationFactorSelect).toHaveDisplayValue("2");
+        });
       });
 
       it('keeps topic replication factor value if not default and value does not exceeded "maxPartitions"', async () => {
@@ -597,7 +604,10 @@ describe("<TopicRequest />", () => {
       const topicPartitionsSelect = screen.getByRole("combobox", {
         name: "Topic partitions *",
       });
-      expect(topicPartitionsSelect).toHaveDisplayValue("8");
+
+      await waitFor(() => {
+        expect(topicPartitionsSelect).toHaveDisplayValue("8");
+      });
     });
 
     it('keeps topic partitions value if not default and value does not exceeded "maxPartitions"', async () => {
