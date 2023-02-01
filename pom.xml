@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.aiven</groupId>
     <artifactId>klaw-project</artifactId>
-    <version>1.2.0</version>
+    <version>2.0.0</version>
     <packaging>pom</packaging>
     <name>Klaw Project</name>
     <description>Aiven Klaw - Selfservice, Governance for Kafka</description>
