@@ -16,8 +16,12 @@ interface ScopedTopicNames {
 interface EnvironmentWithClusterInfo extends Environment {
   isAivenCluster: boolean;
 }
+interface ExtendedEnvironment extends Environment {
+  isAivenCluster: boolean;
+  topicNames: string[];
+}
 
-const useEnvironmentTopics = () => {
+const useExtendedEnvironments = () => {
   const [scopedTopicNames, setScopedTopicNames] = useState<ScopedTopicNames[]>(
     []
   );
@@ -29,6 +33,9 @@ const useEnvironmentTopics = () => {
     Error
   >(["topic-environments"], {
     queryFn: getEnvironments,
+    // Only need to be fetched once on page load
+    // So we set staleTime to Infinity
+    staleTime: Infinity,
   });
 
   const topicNamesQueries =
@@ -48,6 +55,9 @@ const useEnvironmentTopics = () => {
                 { environmentId: env.id, topicNames: data },
               ]);
             },
+            // Only need to be fetched once on page load
+            // So we set staleTime to Infinity
+            staleTime: Infinity,
           };
         });
 
@@ -68,6 +78,9 @@ const useEnvironmentTopics = () => {
                 { ...env, isAivenCluster: data.aivenCluster === "true" },
               ]);
             },
+            // Only need to be fetched once on page load
+            // So we set staleTime to Infinity
+            staleTime: Infinity,
           };
         });
 
@@ -78,21 +91,41 @@ const useEnvironmentTopics = () => {
   const clusterInfoData = useQueries({ queries: clusterInfoQueries });
   const clusterInfoIsLoading = clusterInfoData.some((data) => data.isLoading);
 
-  const validEnvironments = environmentsWithClusterInfo.filter((env) =>
-    new Set(
-      scopedTopicNames.map((scoped) =>
-        scoped.topicNames.length > 0 ? scoped.environmentId : undefined
-      )
-    ).has(env.id)
-  );
+  const isExtendedEnvironmentsLoading =
+    scopedTopicNamesIsLoading || environmentsIsLoading || clusterInfoIsLoading;
+
+  let extendedEnvironments: ExtendedEnvironment[] = [];
+
+  if (!isExtendedEnvironmentsLoading) {
+    const computedExtendedEnvironments: ExtendedEnvironment[] =
+      environmentsWithClusterInfo.reduce(
+        (
+          extendedEnvironments: ExtendedEnvironment[],
+          currentEnvironment: EnvironmentWithClusterInfo
+        ) => {
+          const topicNames = scopedTopicNames.find(
+            ({ environmentId }) => environmentId === currentEnvironment.id
+          )?.topicNames;
+
+          if (topicNames === undefined || topicNames.length === 0) {
+            return extendedEnvironments;
+          }
+
+          return [
+            ...extendedEnvironments,
+            { ...currentEnvironment, topicNames },
+          ];
+        },
+        []
+      );
+
+    extendedEnvironments = computedExtendedEnvironments;
+  }
 
   return {
-    scopedTopicNames,
-    scopedTopicNamesIsLoading,
-    environmentsIsLoading,
-    validEnvironments,
-    clusterInfoIsLoading,
+    extendedEnvironments,
+    isExtendedEnvironmentsLoading,
   };
 };
 
-export default useEnvironmentTopics;
+export default useExtendedEnvironments;

@@ -1,13 +1,13 @@
 import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
 import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
-import useEnvironmentTopics from "src/app/features/topics/acl-request/queries/useEnvironmentTopics";
+import useExtendedEnvironments from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
@@ -41,13 +41,25 @@ const TopicAclRequest = () => {
     },
   });
 
-  const {
-    scopedTopicNames,
-    scopedTopicNamesIsLoading,
-    environmentsIsLoading,
-    validEnvironments,
-    clusterInfoIsLoading,
-  } = useEnvironmentTopics();
+  const { isExtendedEnvironmentsLoading, extendedEnvironments } =
+    useExtendedEnvironments();
+
+  // Will trigger infinite rerender when selecting an environment if not memoized
+  const selectedEnvironment = useMemo(
+    () =>
+      topicType === "Producer"
+        ? extendedEnvironments.find(
+            (env) => env.id === topicProducerForm.watch("environment")
+          )
+        : extendedEnvironments.find(
+            (env) => env.id === topicConsumerForm.watch("environment")
+          ),
+    [
+      topicType,
+      topicProducerForm.watch("environment"),
+      topicConsumerForm.watch("environment"),
+    ]
+  );
 
   const selectedPatternType =
     topicType === "Producer"
@@ -76,15 +88,6 @@ const TopicAclRequest = () => {
     keepPreviousData: true,
   });
 
-  const selectedEnvironment =
-    topicType === "Producer"
-      ? validEnvironments.find(
-          (env) => env.id === topicProducerForm.watch("environment")
-        )
-      : validEnvironments.find(
-          (env) => env.id === topicConsumerForm.watch("environment")
-        );
-
   useEffect(() => {
     if (
       selectedEnvironment !== undefined &&
@@ -101,18 +104,11 @@ const TopicAclRequest = () => {
     }
   }, [selectedEnvironment]);
 
-  if (
-    environmentsIsLoading ||
-    scopedTopicNamesIsLoading ||
-    clusterInfoIsLoading
-  ) {
+  if (isExtendedEnvironmentsLoading) {
     return <SkeletonForm />;
   }
 
-  const currentTopicNames =
-    scopedTopicNames.find(
-      (scoped) => scoped.environmentId === selectedEnvironment?.id
-    )?.topicNames || [];
+  const currentTopicNames = selectedEnvironment?.topicNames || [];
 
   return (
     <Box maxWidth={"4xl"}>
@@ -123,7 +119,7 @@ const TopicAclRequest = () => {
           )}
           topicConsumerForm={topicConsumerForm}
           topicNames={currentTopicNames}
-          environments={validEnvironments}
+          environments={extendedEnvironments}
           isAivenCluster={selectedEnvironment?.isAivenCluster}
         />
       ) : (
@@ -133,7 +129,7 @@ const TopicAclRequest = () => {
           )}
           topicProducerForm={topicProducerForm}
           topicNames={currentTopicNames}
-          environments={validEnvironments}
+          environments={extendedEnvironments}
           isAivenCluster={selectedEnvironment?.isAivenCluster}
         />
       )}
