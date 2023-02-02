@@ -33,7 +33,6 @@ const TopicAclRequest = () => {
     defaultValues: {
       aclPatternType: "LITERAL",
       topicname: topicName,
-      environment: "1",
       topictype: "Consumer",
       consumergroup: "",
     },
