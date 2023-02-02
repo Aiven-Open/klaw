@@ -16,6 +16,7 @@ interface ScopedTopicNames {
 interface EnvironmentWithClusterInfo extends Environment {
   isAivenCluster: boolean;
 }
+
 interface ExtendedEnvironment extends Environment {
   isAivenCluster: boolean;
   topicNames: string[];
@@ -28,7 +29,7 @@ const useExtendedEnvironments = () => {
   const [environmentsWithClusterInfo, setEnvironmentsWithClusterInfo] =
     useState<EnvironmentWithClusterInfo[]>([]);
 
-  const { data: environments, isLoading: environmentsIsLoading } = useQuery<
+  const { data: environments, isLoading: isLoadingEnvironments } = useQuery<
     Environment[],
     Error
   >(["topic-environments"], {
@@ -39,7 +40,7 @@ const useExtendedEnvironments = () => {
   });
 
   const topicNamesQueries =
-    environments === undefined || environmentsIsLoading
+    environments === undefined || isLoadingEnvironments
       ? []
       : environments.map((env) => {
           return {
@@ -62,7 +63,7 @@ const useExtendedEnvironments = () => {
         });
 
   const clusterInfoQueries =
-    environments === undefined || environmentsIsLoading
+    environments === undefined || isLoadingEnvironments
       ? []
       : environments.map((env) => {
           return {
@@ -85,14 +86,14 @@ const useExtendedEnvironments = () => {
         });
 
   const topicNamesData = useQueries({ queries: topicNamesQueries });
-  const scopedTopicNamesIsLoading = topicNamesData.some(
+  const isLoadingScopedTopicNames = topicNamesData.some(
     (data) => data.isLoading
   );
   const clusterInfoData = useQueries({ queries: clusterInfoQueries });
-  const clusterInfoIsLoading = clusterInfoData.some((data) => data.isLoading);
+  const isLoadingClusterInfo = clusterInfoData.some((data) => data.isLoading);
 
   const isLoadingExtendedEnvironments =
-    scopedTopicNamesIsLoading || environmentsIsLoading || clusterInfoIsLoading;
+    isLoadingScopedTopicNames || isLoadingEnvironments || isLoadingClusterInfo;
 
   let extendedEnvironments: ExtendedEnvironment[] = [];
 
