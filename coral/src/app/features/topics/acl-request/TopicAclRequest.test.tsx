@@ -152,21 +152,17 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => {
-        expect(principalField).not.toBeEnabled();
-        expect(principalField).toBeChecked();
-        expect(ipField).toBeDisabled();
-        expect(ipField).not.toBeChecked();
-      });
+      expect(principalField).not.toBeEnabled();
+      expect(principalField).toBeChecked();
+      expect(ipField).toBeDisabled();
+      expect(ipField).not.toBeChecked();
 
       const principalsField = await screen.findByRole("textbox", {
         name: "Service accounts *",
       });
 
-      await waitFor(() => {
-        expect(principalsField).toBeVisible();
-        expect(principalsField).toBeEnabled();
-      });
+      expect(principalsField).toBeVisible();
+      expect(principalsField).toBeEnabled();
     });
 
     it("renders the appropriate form when switching between Producer and Consumer ACL types", async () => {
@@ -242,35 +238,24 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(principalField).toBeEnabled());
+      expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
 
-      await waitFor(() => expect(principalField).toBeChecked());
+      expect(principalField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        })
-      );
-
-      const visiblePrincipalsField = screen.getByRole("textbox", {
+      const principalsField = await screen.findByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
-      expect(visiblePrincipalsField).toBeInTheDocument();
-      expect(visiblePrincipalsField).toBeEnabled();
+      expect(principalsField).toBeInTheDocument();
+      expect(principalsField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
+
       expect(visibleIpsField).toBeInTheDocument();
       expect(visibleIpsField).toBeEnabled();
     });
@@ -282,24 +267,18 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(ipField).toBeEnabled());
+      expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() => expect(ipField).toBeChecked());
+      expect(ipField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const ipsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
 
-      await userEvent.type(visibleIpsField, "invalid{Enter}");
-      await waitFor(() => expect(visibleIpsField).toBeInvalid());
+      await userEvent.type(ipsField, "invalid{Enter}");
+      await waitFor(() => expect(ipsField).toBeInvalid());
       await waitFor(() =>
         expect(screen.getByText("Invalid IP address.")).toBeVisible()
       );
@@ -312,19 +291,13 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(ipField).toBeEnabled());
+      expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() => expect(ipField).toBeChecked());
+      expect(ipField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
 
@@ -339,19 +312,13 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(ipField).toBeEnabled());
+      expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() => expect(ipField).toBeChecked());
+      expect(ipField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
 
@@ -385,19 +352,13 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(principalField).toBeEnabled());
+      expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
 
-      await waitFor(() => expect(principalField).toBeChecked());
+      expect(principalField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        })
-      );
-
-      const visiblePrincipalsField = screen.getByRole("textbox", {
+      const visiblePrincipalsField = await screen.findByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
       expect(visiblePrincipalsField).toBeInTheDocument();
@@ -498,6 +459,7 @@ describe("<TopicAclRequest />", () => {
       expect(visibleTopicNameField).toHaveDisplayValue("aivtopic1");
 
       await userEvent.click(prefixedField);
+
       expect(prefixedField).toBeChecked();
 
       const visiblePrefixField = await screen.findByRole("textbox", {
@@ -529,6 +491,7 @@ describe("<TopicAclRequest />", () => {
       const aclConsumerTypeInput = screen.getByRole("radio", {
         name: "Consumer",
       });
+
       await userEvent.click(aclConsumerTypeInput);
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
@@ -593,35 +556,25 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(principalField).toBeEnabled());
+      expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
 
-      await waitFor(() => expect(principalField).toBeChecked());
+      expect(principalField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        })
-      );
-
-      const visiblePrincipalsField = screen.getByRole("textbox", {
+      const visiblePrincipalsField = await screen.findByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
+
       expect(visiblePrincipalsField).toBeInTheDocument();
       expect(visiblePrincipalsField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
+
       expect(visibleIpsField).toBeInTheDocument();
       expect(visibleIpsField).toBeEnabled();
     });
@@ -638,19 +591,13 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(ipField).toBeEnabled());
+      expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() => expect(ipField).toBeChecked());
+      expect(ipField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
 
@@ -670,23 +617,18 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(ipField).toBeEnabled());
+      expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() => expect(ipField).toBeChecked());
+      expect(ipField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
 
       await userEvent.type(visibleIpsField, "111.111.11.11{Enter}");
+
       await waitFor(() => expect(visibleIpsField).toBeValid());
     });
 
@@ -702,19 +644,13 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(ipField).toBeEnabled());
+      expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
 
-      await waitFor(() => expect(ipField).toBeChecked());
+      expect(ipField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "IP addresses *",
-        })
-      );
-
-      const visibleIpsField = await screen.getByRole("textbox", {
+      const visibleIpsField = await screen.findByRole("textbox", {
         name: "IP addresses *",
       });
 
@@ -753,19 +689,13 @@ describe("<TopicAclRequest />", () => {
 
       await selectTestEnvironment();
 
-      await waitFor(() => expect(principalField).toBeEnabled());
+      expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
 
-      await waitFor(() => expect(principalField).toBeChecked());
+      expect(principalField).toBeChecked();
 
-      await waitFor(() =>
-        screen.findByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        })
-      );
-
-      const visiblePrincipalsField = screen.getByRole("textbox", {
+      const visiblePrincipalsField = await screen.findByRole("textbox", {
         name: "SSL DN strings / Usernames *",
       });
       expect(visiblePrincipalsField).toBeInTheDocument();
@@ -793,13 +723,8 @@ describe("<TopicAclRequest />", () => {
       await userEvent.click(aclConsumerTypeInput);
 
       await selectTestEnvironment();
-      await waitFor(() => {
-        return screen.findByRole("textbox", {
-          name: "Consumer group *",
-        });
-      });
 
-      const consumerGroupInput = screen.getByRole("textbox", {
+      const consumerGroupInput = await screen.findByRole("textbox", {
         name: "Consumer group *",
       });
 
@@ -823,13 +748,8 @@ describe("<TopicAclRequest />", () => {
       await userEvent.click(aclConsumerTypeInput);
 
       await selectTestEnvironment();
-      await waitFor(() => {
-        return screen.findByRole("textbox", {
-          name: "Consumer group *",
-        });
-      });
 
-      const consumerGroupInput = screen.getByRole("textbox", {
+      const consumerGroupInput = await screen.findByRole("textbox", {
         name: "Consumer group *",
       });
       const tooLong = new Array(152).join("a");
@@ -853,13 +773,8 @@ describe("<TopicAclRequest />", () => {
       await userEvent.click(aclConsumerTypeInput);
 
       await selectTestEnvironment();
-      await waitFor(() => {
-        return screen.findByRole("textbox", {
-          name: "Consumer group *",
-        });
-      });
 
-      const consumerGroupInput = screen.getByRole("textbox", {
+      const consumerGroupInput = await screen.findByRole("textbox", {
         name: "Consumer group *",
       });
 
@@ -934,18 +849,14 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        await waitFor(() => {
-          return screen.findByRole("textbox", {
-            name: "Service accounts *",
-          });
-        });
-
-        const visiblePrincipalField = screen.getByRole("textbox", {
+        const principalsField = await screen.findByRole("textbox", {
           name: "Service accounts *",
         });
-        expect(visiblePrincipalField).toBeVisible();
-        expect(visiblePrincipalField).toBeEnabled();
-        await userEvent.type(visiblePrincipalField, "Alice");
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await userEvent.type(principalsField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -992,18 +903,14 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        await waitFor(() => {
-          return screen.findByRole("textbox", {
-            name: "Service accounts *",
-          });
-        });
-
-        const visiblePrincipalField = screen.getByRole("textbox", {
+        const principalsField = await screen.findByRole("textbox", {
           name: "Service accounts *",
         });
-        expect(visiblePrincipalField).toBeVisible();
-        expect(visiblePrincipalField).toBeEnabled();
-        await userEvent.type(visiblePrincipalField, "Alice");
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await userEvent.type(principalsField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -1103,28 +1010,18 @@ describe("<TopicAclRequest />", () => {
         // Fill form with valid data
         await selectTestEnvironment();
 
-        await waitFor(() =>
-          expect(
-            screen.getByRole("radio", { name: "Principal" })
-          ).toBeInTheDocument()
-        );
         await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
-        await waitFor(() =>
-          expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked()
-        );
 
-        await waitFor(() => {
-          return screen.findByRole("textbox", {
-            name: "SSL DN strings / Usernames *",
-          });
-        });
+        expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked();
 
-        const visiblePrincipalField = screen.getByRole("textbox", {
+        const principalsField = await screen.findByRole("textbox", {
           name: "SSL DN strings / Usernames *",
         });
-        expect(visiblePrincipalField).toBeVisible();
-        expect(visiblePrincipalField).toBeEnabled();
-        await userEvent.type(visiblePrincipalField, "Alice");
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await userEvent.type(principalsField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
@@ -1176,28 +1073,21 @@ describe("<TopicAclRequest />", () => {
         // Fill form with valid data
         await selectTestEnvironment();
 
-        await waitFor(() =>
-          expect(
-            screen.getByRole("radio", { name: "Principal" })
-          ).toBeInTheDocument()
-        );
+        expect(
+          screen.getByRole("radio", { name: "Principal" })
+        ).toBeInTheDocument();
+
         await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
-        await waitFor(() =>
-          expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked()
-        );
+        expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked();
 
-        await waitFor(() => {
-          return screen.findByRole("textbox", {
-            name: "SSL DN strings / Usernames *",
-          });
-        });
-
-        const visiblePrincipalField = screen.getByRole("textbox", {
+        const principalsField = await screen.findByRole("textbox", {
           name: "SSL DN strings / Usernames *",
         });
-        expect(visiblePrincipalField).toBeVisible();
-        expect(visiblePrincipalField).toBeEnabled();
-        await userEvent.type(visiblePrincipalField, "Alice");
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await userEvent.type(principalsField, "Alice");
         await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());

@@ -3,20 +3,18 @@ import {
   CreateAclRequestTopicTypeConsumer,
   CreateAclRequestTopicTypeProducer,
 } from "src/domain/acl";
-import { ClusterInfo } from "src/domain/environment";
 
 interface IpOrPrincipalFieldProps {
   aclIpPrincipleType?:
     | CreateAclRequestTopicTypeProducer["aclIpPrincipleType"]
     | CreateAclRequestTopicTypeConsumer["aclIpPrincipleType"];
-  clusterInfo: ClusterInfo;
+  isAivenCluster: boolean;
 }
 
 const IpOrPrincipalField = ({
   aclIpPrincipleType,
-  clusterInfo,
+  isAivenCluster,
 }: IpOrPrincipalFieldProps) => {
-  const isAivenCluster = clusterInfo.aivenCluster === "true";
   const sslLabelText = isAivenCluster
     ? "Service accounts"
     : "SSL DN strings / Usernames";

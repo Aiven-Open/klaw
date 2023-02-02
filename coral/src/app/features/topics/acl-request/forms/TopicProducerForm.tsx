@@ -25,7 +25,7 @@ import RemarksField from "src/app/features/topics/acl-request/fields/RemarksFiel
 import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/TopicNameOrPrefixField";
 import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
 import { createAclRequest } from "src/domain/acl/acl-api";
-import { ClusterInfo, Environment } from "src/domain/environment";
+import { Environment } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 // eslint-disable-next-line import/exports-last
@@ -34,7 +34,7 @@ export interface TopicProducerFormProps {
   topicNames: string[];
   environments: Environment[];
   renderAclTypeField: () => JSX.Element;
-  clusterInfo?: ClusterInfo;
+  isAivenCluster?: boolean;
 }
 
 const TopicProducerForm = ({
@@ -42,7 +42,7 @@ const TopicProducerForm = ({
   topicNames,
   environments,
   renderAclTypeField,
-  clusterInfo,
+  isAivenCluster,
 }: TopicProducerFormProps) => {
   const navigate = useNavigate();
   const { aclIpPrincipleType, aclPatternType, topicname } =
@@ -89,9 +89,8 @@ const TopicProducerForm = ({
   };
 
   const hideIpOrPrincipalField =
-    aclIpPrincipleType === undefined || clusterInfo === undefined;
+    aclIpPrincipleType === undefined || isAivenCluster === undefined;
   const hideTopicNameOrPrefixField = aclPatternType === undefined;
-  const isAivenCluster = clusterInfo?.aivenCluster === "true";
 
   return (
     <>
@@ -144,7 +143,7 @@ const TopicProducerForm = ({
           </GridItem>
 
           <GridItem>
-            <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
+            <AclIpPrincipleTypeField isAivenCluster={isAivenCluster} />
           </GridItem>
           <GridItem>
             {hideIpOrPrincipalField ? (
@@ -152,7 +151,7 @@ const TopicProducerForm = ({
             ) : (
               <IpOrPrincipalField
                 aclIpPrincipleType={aclIpPrincipleType}
-                clusterInfo={clusterInfo}
+                isAivenCluster={isAivenCluster}
               />
             )}
           </GridItem>

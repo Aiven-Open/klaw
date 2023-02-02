@@ -23,7 +23,7 @@ import RemarksField from "src/app/features/topics/acl-request/fields/RemarksFiel
 import TopicNameField from "src/app/features/topics/acl-request/fields/TopicNameField";
 import { TopicConsumerFormSchema } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
 import { createAclRequest } from "src/domain/acl/acl-api";
-import { ClusterInfo, Environment } from "src/domain/environment";
+import { Environment } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 // eslint-disable-next-line import/exports-last
@@ -32,7 +32,7 @@ export interface TopicConsumerFormProps {
   topicNames: string[];
   environments: Environment[];
   renderAclTypeField: () => JSX.Element;
-  clusterInfo?: ClusterInfo;
+  isAivenCluster?: boolean;
 }
 
 const TopicConsumerForm = ({
@@ -40,7 +40,7 @@ const TopicConsumerForm = ({
   topicNames,
   environments,
   renderAclTypeField,
-  clusterInfo,
+  isAivenCluster,
 }: TopicConsumerFormProps) => {
   const navigate = useNavigate();
   const { aclIpPrincipleType } = topicConsumerForm.getValues();
@@ -71,10 +71,9 @@ const TopicConsumerForm = ({
     mutate(formData);
   };
 
-  const hideConsumerGroupField =
-    clusterInfo === undefined || clusterInfo.aivenCluster === "true";
+  const hideConsumerGroupField = isAivenCluster === undefined || isAivenCluster;
   const hideIpOrPrincipalField =
-    aclIpPrincipleType === undefined || clusterInfo === undefined;
+    aclIpPrincipleType === undefined || isAivenCluster === undefined;
 
   return (
     <>
@@ -111,7 +110,7 @@ const TopicConsumerForm = ({
           </GridItem>
 
           <GridItem>
-            <AclIpPrincipleTypeField clusterInfo={clusterInfo} />
+            <AclIpPrincipleTypeField isAivenCluster={isAivenCluster} />
           </GridItem>
           <GridItem>
             {hideIpOrPrincipalField ? (
@@ -119,7 +118,7 @@ const TopicConsumerForm = ({
             ) : (
               <IpOrPrincipalField
                 aclIpPrincipleType={aclIpPrincipleType}
-                clusterInfo={clusterInfo}
+                isAivenCluster={isAivenCluster}
               />
             )}
           </GridItem>

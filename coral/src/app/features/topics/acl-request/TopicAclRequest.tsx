@@ -1,23 +1,21 @@
 import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
 import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
+import useExtendedEnvironments from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
-import { ClusterInfo, Environment } from "src/domain/environment";
-import { getClusterInfo } from "src/domain/environment/environment-api";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { getTopicTeam, TopicTeam } from "src/domain/topic";
-import useEnvironmentTopics from "src/app/features/topics/acl-request/queries/useEnvironmentTopics";
 
 const TopicAclRequest = () => {
   const { topicName } = useParams();
@@ -43,12 +41,25 @@ const TopicAclRequest = () => {
     },
   });
 
-  const {
-    scopedTopicNames,
-    scopedTopicNamesIsLoading,
-    environmentsIsLoading,
-    validEnvironments,
-  } = useEnvironmentTopics();
+  const { isLoadingExtendedEnvironments, extendedEnvironments } =
+    useExtendedEnvironments();
+
+  // Will trigger infinite rerender when selecting an environment if not memoized
+  const selectedEnvironment = useMemo(
+    () =>
+      topicType === "Producer"
+        ? extendedEnvironments.find(
+            (env) => env.id === topicProducerForm.watch("environment")
+          )
+        : extendedEnvironments.find(
+            (env) => env.id === topicConsumerForm.watch("environment")
+          ),
+    [
+      topicType,
+      topicProducerForm.watch("environment"),
+      topicConsumerForm.watch("environment"),
+    ]
+  );
 
   const selectedPatternType =
     topicType === "Producer"
@@ -77,54 +88,29 @@ const TopicAclRequest = () => {
     keepPreviousData: true,
   });
 
-  const selectedEnvironment =
-    topicType === "Producer"
-      ? topicProducerForm.watch("environment")
-      : topicConsumerForm.watch("environment");
-  // We cast the type of selectedEnvironmentType to be Environment["type"]
-  // Because there should be no case where this returns undefined
-  // As an additional safety, this query is disabled when it *is* undefined
-  const selectedEnvironmentType = validEnvironments.find(
-    (env) => env.id === selectedEnvironment
-  )?.type as Environment["type"];
-  const { data: clusterInfo } = useQuery<ClusterInfo, Error>(
-    ["cluster-info", selectedEnvironment, topicType],
-    {
-      queryFn: () =>
-        getClusterInfo({
-          envSelected: selectedEnvironment,
-          envType: selectedEnvironmentType,
-        }),
-      keepPreviousData: true,
-      enabled:
-        selectedEnvironment !== ENVIRONMENT_NOT_INITIALIZED &&
-        validEnvironments !== undefined &&
-        selectedEnvironmentType !== undefined,
-      onSuccess: (data) => {
-        const isAivenCluster = data?.aivenCluster === "true";
-        // Enable the only possible options when the environment chosen is Aiven Kafka flavor
-        if (isAivenCluster) {
-          if (topicType === "Producer") {
-            topicProducerForm.setValue("aclPatternType", "LITERAL");
-            topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
-            topicProducerForm.resetField("transactionalId");
-          }
-          if (topicType === "Consumer") {
-            topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
-          }
-        }
-      },
+  // If the environment selected is an Aiven cluster, some fields can only have a certain value,
+  // so we need to set those values when a user selects an environment which is an Aiven cluster
+  useEffect(() => {
+    if (
+      selectedEnvironment !== undefined &&
+      selectedEnvironment.isAivenCluster
+    ) {
+      if (topicType === "Producer") {
+        topicProducerForm.setValue("aclPatternType", "LITERAL");
+        topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+        topicProducerForm.resetField("transactionalId");
+      }
+      if (topicType === "Consumer") {
+        topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+      }
     }
-  );
+  }, [selectedEnvironment]);
 
-  if (environmentsIsLoading || scopedTopicNamesIsLoading) {
+  if (isLoadingExtendedEnvironments) {
     return <SkeletonForm />;
   }
 
-  const currentTopicNames =
-    scopedTopicNames.find(
-      (scoped) => scoped.environmentId === selectedEnvironment
-    )?.topicNames || [];
+  const currentTopicNames = selectedEnvironment?.topicNames || [];
 
   return (
     <Box maxWidth={"4xl"}>
@@ -135,8 +121,8 @@ const TopicAclRequest = () => {
           )}
           topicConsumerForm={topicConsumerForm}
           topicNames={currentTopicNames}
-          environments={validEnvironments}
-          clusterInfo={clusterInfo}
+          environments={extendedEnvironments}
+          isAivenCluster={selectedEnvironment?.isAivenCluster}
         />
       ) : (
         <TopicProducerForm
@@ -145,8 +131,8 @@ const TopicAclRequest = () => {
           )}
           topicProducerForm={topicProducerForm}
           topicNames={currentTopicNames}
-          environments={validEnvironments}
-          clusterInfo={clusterInfo}
+          environments={extendedEnvironments}
+          isAivenCluster={selectedEnvironment?.isAivenCluster}
         />
       )}
     </Box>

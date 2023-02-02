@@ -30,12 +30,12 @@ const baseProps = {
 
 const basePropsIsAivenCluster = {
   ...baseProps,
-  clusterInfo: { aivenCluster: "true" },
+  isAivenCluster: true,
 } as TopicProducerFormProps;
 
 const basePropsNotAivenCluster = {
   ...baseProps,
-  clusterInfo: { aivenCluster: "false" },
+  isAivenCluster: false,
 } as TopicProducerFormProps;
 
 describe("<TopicProducerForm />", () => {
