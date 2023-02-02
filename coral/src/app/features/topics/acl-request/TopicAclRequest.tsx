@@ -88,6 +88,8 @@ const TopicAclRequest = () => {
     keepPreviousData: true,
   });
 
+  // If the environment selected is an Aiven cluster, some fields can only have a certain value,
+  // so we need to set those values when a user selects an environment which is an Aiven cluster
   useEffect(() => {
     if (
       selectedEnvironment !== undefined &&
