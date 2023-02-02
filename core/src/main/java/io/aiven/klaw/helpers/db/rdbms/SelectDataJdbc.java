@@ -131,8 +131,7 @@ public class SelectDataJdbc {
     List<AclRequests> aclListSub;
 
     aclListSub =
-        Lists.newArrayList(
-            findAclRequestsByExample(topic, environment, aclType, status, tenantId));
+        Lists.newArrayList(findAclRequestsByExample(topic, environment, aclType, status, tenantId));
 
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
@@ -171,7 +170,8 @@ public class SelectDataJdbc {
   }
 
   /**
-   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters will be utilised in the search.
+   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
+   * will be utilised in the search.
    *
    * @param topic The topic Name
    * @param environment the environment

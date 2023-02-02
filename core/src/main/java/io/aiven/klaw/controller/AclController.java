@@ -69,7 +69,7 @@ public class AclController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
-      @RequestParam(value = "topic", required = false ) String topic,
+      @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "environment", required = false) String environment,
       @RequestParam(value = "aclType", required = false) AclType aclType) {
     return new ResponseEntity<>(
