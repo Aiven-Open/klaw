@@ -20,7 +20,7 @@ import { getTopicTeam, TopicTeam } from "src/domain/topic";
 import useEnvironmentTopics from "src/app/features/topics/acl-request/queries/useEnvironmentTopics";
 
 const TopicAclRequest = () => {
-  const { topicName = "" } = useParams();
+  const { topicName } = useParams();
   const [topicType, setTopicType] = useState("Producer");
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
@@ -54,10 +54,17 @@ const TopicAclRequest = () => {
     topicType === "Producer"
       ? topicProducerForm.watch("aclPatternType")
       : "LITERAL";
-  const { isLoading: topicTeamIsLoading } = useQuery<TopicTeam, Error>({
-    queryKey: ["topicTeam", topicName, selectedPatternType, topicType],
+  const selectedTopicName =
+    topicType === "Producer"
+      ? topicProducerForm.watch("topicname")
+      : topicConsumerForm.watch("topicname");
+  useQuery<TopicTeam, Error>({
+    queryKey: ["topicTeam", selectedTopicName, selectedPatternType, topicType],
     queryFn: () =>
-      getTopicTeam({ topicName, patternType: selectedPatternType }),
+      getTopicTeam({
+        topicName: selectedTopicName,
+        patternType: selectedPatternType,
+      }),
     onSuccess: (data) => {
       if (data === undefined) {
         throw new Error("Could not fetch team for current Topic");
@@ -66,6 +73,7 @@ const TopicAclRequest = () => {
         ? topicProducerForm.setValue("teamname", data.team)
         : topicConsumerForm.setValue("teamname", data.team);
     },
+    enabled: selectedTopicName !== undefined,
     keepPreviousData: true,
   });
 
@@ -109,11 +117,7 @@ const TopicAclRequest = () => {
     }
   );
 
-  if (
-    environmentsIsLoading ||
-    topicTeamIsLoading ||
-    scopedTopicNamesIsLoading
-  ) {
+  if (environmentsIsLoading || scopedTopicNamesIsLoading) {
     return <SkeletonForm />;
   }
 
