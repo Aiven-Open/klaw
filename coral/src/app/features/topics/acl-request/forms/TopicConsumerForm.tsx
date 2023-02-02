@@ -71,9 +71,25 @@ const TopicConsumerForm = ({
     mutate(formData);
   };
 
+  // The consumer group field is irrelevant if the Environment is an Aiven cluster
+  // So we hide it when:
+  // - we don't know if the Environment is an Aiven cluster (user has not selected an environment yet)
+  // - the selected Environment is an Aiven cluster
   const hideConsumerGroupField = isAivenCluster === undefined || isAivenCluster;
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || isAivenCluster === undefined;
+
+  // Because the consumergroup field is *still* a required field in the form schema,
+  // we need to pass it a value even when the field is hidden.
+  // This value needs to be "-na-" so that the backend can process it correctly
+  useEffect(() => {
+    if (hideConsumerGroupField) {
+      topicConsumerForm.setValue("consumergroup", "-na-");
+    } else {
+      // Reset field to e empty value so that the "-na-" value does not persist between switching environments
+      topicConsumerForm.setValue("consumergroup", "");
+    }
+  }, [hideConsumerGroupField]);
 
   return (
     <>

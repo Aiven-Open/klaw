@@ -1024,6 +1024,13 @@ describe("<TopicAclRequest />", () => {
         await userEvent.type(principalsField, "Alice");
         await userEvent.tab();
 
+        const consumerGroupField = await screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+
+        await userEvent.type(consumerGroupField, "group");
+        userEvent.tab();
+
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
@@ -1041,7 +1048,7 @@ describe("<TopicAclRequest />", () => {
           environment: "1",
           topictype: "Consumer",
           teamname: "Ospo",
-          consumergroup: "-na-",
+          consumergroup: "group",
         });
 
         const alert = await screen.findByRole("alert");
@@ -1090,6 +1097,13 @@ describe("<TopicAclRequest />", () => {
         await userEvent.type(principalsField, "Alice");
         await userEvent.tab();
 
+        const consumerGroupField = await screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+
+        await userEvent.type(consumerGroupField, "group");
+        userEvent.tab();
+
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
@@ -1107,7 +1121,7 @@ describe("<TopicAclRequest />", () => {
           environment: "1",
           topictype: "Consumer",
           teamname: "Ospo",
-          consumergroup: "-na-",
+          consumergroup: "group",
         });
 
         // @TODO use when Klaw migration is completed and redirect is handling with react-router

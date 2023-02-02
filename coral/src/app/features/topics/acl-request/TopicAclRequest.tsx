@@ -37,7 +37,7 @@ const TopicAclRequest = () => {
       topicname: topicName,
       environment: ENVIRONMENT_NOT_INITIALIZED,
       topictype: "Consumer",
-      consumergroup: "-na-",
+      consumergroup: "",
     },
   });
 
