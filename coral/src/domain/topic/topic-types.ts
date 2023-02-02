@@ -21,10 +21,17 @@ type TopicAdvancedConfigurationOptions = {
   };
 };
 
+// The proper type for this will take shape once we know what data
+// we need in the upcoming features.
+type TopicRequest = {
+  topicName: KlawApiModel<"TopicRequest">["topicname"];
+};
+
 export type {
   Topic,
   TopicNames,
   TopicTeam,
   TopicApiResponse,
   TopicAdvancedConfigurationOptions,
+  TopicRequest,
 };

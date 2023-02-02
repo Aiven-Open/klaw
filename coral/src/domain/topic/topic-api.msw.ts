@@ -210,6 +210,23 @@ const mockedResponseTopicTeamPrefixed: KlawApiResponse<"topicGetTeam"> = {
   team: "prefixed-Ospo",
 };
 
+function mockGetTopicRequests({
+  mswInstance,
+  response,
+}: {
+  mswInstance: MswInstance;
+  response: {
+    status?: number;
+    data: KlawApiResponse<"getCreatedTopicRequests"> | { message: string };
+  };
+}) {
+  mswInstance.use(
+    rest.get(`${getHTTPBaseAPIUrl()}/getCreatedTopicRequests`, (_, res, ctx) =>
+      res(ctx.status(response.status ?? 200), ctx.json(response.data))
+    )
+  );
+}
+
 export {
   mockTopicGetRequest,
   mockgetTopicAdvancedConfigOptions,
@@ -226,4 +243,5 @@ export {
   mockGetTopicTeam,
   mockedResponseTopicTeamLiteral,
   mockedResponseTopicTeamPrefixed,
+  mockGetTopicRequests,
 };

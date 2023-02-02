@@ -1,6 +1,7 @@
 import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
+  TopicRequest,
 } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
 
@@ -148,7 +149,14 @@ function transformgetTopicAdvancedConfigOptionsResponse(
   });
 }
 
+function transformGetTopicRequestsResponse(
+  apiResponse: KlawApiResponse<"getCreatedTopicRequests">
+): TopicRequest[] {
+  return apiResponse.map((request) => ({ topicName: request.topicname }));
+}
+
 export {
   transformTopicApiResponse,
   transformgetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicRequestsResponse,
 };

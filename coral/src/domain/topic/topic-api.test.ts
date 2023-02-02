@@ -1,7 +1,11 @@
-import { requestTopic } from "src/domain/topic/topic-api";
+import { getTopicRequests, requestTopic } from "src/domain/topic/topic-api";
 import { server } from "src/services/api-mocks/server";
 import api from "src/services/api";
-import { mockRequestTopic } from "src/domain/topic/topic-api.msw";
+import {
+  mockGetTopicRequests,
+  mockRequestTopic,
+} from "src/domain/topic/topic-api.msw";
+import { createMockTopicRequestApiResource } from "src/domain/topic/topic-test-helper";
 
 describe("topic-api", () => {
   beforeAll(() => {
@@ -38,6 +42,25 @@ describe("topic-api", () => {
       requestTopic(payload);
       expect(postSpy).toHaveBeenCalledTimes(1);
       expect(postSpy).toHaveBeenCalledWith("/createTopics", payload);
+    });
+  });
+
+  describe("getTopicRequests", () => {
+    beforeEach(() => {
+      mockGetTopicRequests({
+        mswInstance: server,
+        response: {
+          data: [createMockTopicRequestApiResource()],
+        },
+      });
+    });
+    it("calls api.get with correct URL", async () => {
+      const getSpy = jest.spyOn(api, "get");
+      await getTopicRequests({ requestType: "created" });
+      expect(getSpy).toHaveBeenCalledTimes(1);
+      expect(getSpy).toHaveBeenCalledWith(
+        "/getCreatedTopicRequests?pageNo=1&currentPage=1&requestsType=created"
+      );
     });
   });
 });
