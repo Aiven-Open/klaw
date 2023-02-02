@@ -23,11 +23,23 @@ public class UglifyFiles {
   private void uglifyCssFiles(String osName, Runtime rt) {
     String styleCssFile = cssDir + "style.css";
     String styleBlueDarkCssFile = cssDir + "colors/blue-dark.css";
+    File style = new File(styleCssFile);
+    File bluedark = new File(styleBlueDarkCssFile);
 
-    String commandToExec = "uglifycss " + styleCssFile + " --output " + styleCssFile;
+    if (!style.exists()) {
+      style = new File("./core/" + styleCssFile);
+    }
+
+    if (!bluedark.exists()) {
+      bluedark = new File("./core/" + styleBlueDarkCssFile);
+    }
+
+    String commandToExec =
+        "uglifycss " + style.getAbsolutePath() + " --output " + style.getAbsolutePath();
     executeCommand(rt, commandToExec, osName);
 
-    commandToExec = "uglifycss " + styleBlueDarkCssFile + " --output " + styleBlueDarkCssFile;
+    commandToExec =
+        "uglifycss " + bluedark.getAbsolutePath() + " --output " + bluedark.getAbsolutePath();
     executeCommand(rt, commandToExec, osName);
   }
 
@@ -35,6 +47,10 @@ public class UglifyFiles {
 
     File f = new File(sourceDirJsFiles);
     File[] filesInDir = f.listFiles();
+    if (filesInDir == null) {
+      File file = new File("./core/" + sourceDirJsFiles);
+      filesInDir = file.listFiles();
+    }
     if (filesInDir != null) {
 
       for (File file : filesInDir) {
