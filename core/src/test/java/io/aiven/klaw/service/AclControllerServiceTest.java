@@ -308,7 +308,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedAclRequestsByStatus(
-            anyString(), anyString(), anyBoolean(), anyInt()))
+            anyString(), anyString(), anyBoolean(), any(), any(), any(), anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -316,7 +316,8 @@ public class AclControllerServiceTest {
         .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
-    List<AclRequestsModel> listReqs = aclControllerService.getCreatedAclRequests("", "", "");
+    List<AclRequestsModel> listReqs =
+        aclControllerService.getCreatedAclRequests("", "", "", null, null, null);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 
@@ -327,7 +328,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedAclRequestsByStatus(
-            anyString(), anyString(), anyBoolean(), anyInt()))
+            anyString(), anyString(), anyBoolean(), any(), any(), any(), anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -336,7 +337,8 @@ public class AclControllerServiceTest {
         .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
-    List<AclRequestsModel> listReqs = aclControllerService.getCreatedAclRequests("", "", "");
+    List<AclRequestsModel> listReqs =
+        aclControllerService.getCreatedAclRequests("", "", "", null, null, null);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 

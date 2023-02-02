@@ -18,6 +18,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.List;
 import java.util.Map;
@@ -119,8 +120,28 @@ public interface HandleDbRequests {
       boolean showRequestsOfAllTeams,
       int tenantId);
 
+  List<AclRequests> getAllAclRequestsFiltered(
+      boolean allReqs,
+      String requestor,
+      String role,
+      String status,
+      boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      int tenantId);
+
   List<AclRequests> getCreatedAclRequestsByStatus(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
+
+  List<AclRequests> getCreatedAclRequestsByStatus(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      int tenantId);
 
   List<SchemaRequest> getAllSchemaRequests(boolean allReqs, String requestor, int tenantId);
 

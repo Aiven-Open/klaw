@@ -1443,6 +1443,22 @@
           "required" : false,
           "type" : "string",
           "default" : "created"
+        }, {
+          "name" : "topic",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "environment",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "aclType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PRODUCER", "CONSUMER" ]
         } ],
         "responses" : {
           "200" : {

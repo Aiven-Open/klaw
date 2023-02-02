@@ -7,8 +7,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 
-public interface AclRequestsRepo extends CrudRepository<AclRequests, AclRequestID> {
+public interface AclRequestsRepo
+    extends CrudRepository<AclRequests, AclRequestID>, QueryByExampleExecutor<AclRequests> {
   Optional<AclRequests> findById(AclRequestID aclRequestID);
 
   List<AclRequests> findAllByAclstatusAndTenantId(String topicStatus, int tenantId);

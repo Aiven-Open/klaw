@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
@@ -58,9 +59,13 @@ public class AclController {
   public ResponseEntity<List<AclRequestsModel>> getCreatedAclRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
+      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "topic", required = false) String topic,
+      @RequestParam(value = "environment", required = false) String environment,
+      @RequestParam(value = "aclType", required = false) AclType aclType) {
     return new ResponseEntity<>(
-        aclControllerService.getCreatedAclRequests(pageNo, currentPage, requestsType),
+        aclControllerService.getCreatedAclRequests(
+            pageNo, currentPage, requestsType, topic, environment, aclType),
         HttpStatus.OK);
   }
 
