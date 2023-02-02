@@ -235,6 +235,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
               KwConstants.DEFAULT_TENANT_ID, true, kwInstallationType));
     }
 
+    log.info("Klaw Version : {}", kwVersion);
     // product details
     String productName = "Klaw";
     Optional<ProductDetails> productDetails = handleDbRequests.selectProductDetails(productName);

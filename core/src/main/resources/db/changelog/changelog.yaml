@@ -932,3 +932,11 @@ databaseChangeLog:
                     defaultValue: false
                     name: forceregister
                     type: BOOLEAN
+    - changeSet:
+        id: 2023-02-02 Adding primary key to databasechangelog table
+        author: muralibasani
+        changes:
+          - addPrimaryKey:
+              columnNames: id
+              constraintName: pk_db_changelog
+              tableName: databasechangelog
