@@ -31,6 +31,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ env.NODE_VERSION }}
+      - name: Install node.js uglify packages
+        run: npm install uglify-js -g && npm install uglifycss -g
       - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v3
         with:
