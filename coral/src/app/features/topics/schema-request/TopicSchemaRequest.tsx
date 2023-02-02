@@ -85,10 +85,9 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     <Box style={{ maxWidth: 1200 }}>
       {schemaRequestMutation.isError && (
         <Box marginBottom={"l1"} role="alert">
-          <Alert
-            description={parseErrorMsg(schemaRequestMutation.error)}
-            type="warning"
-          ></Alert>
+          <Alert type="warning">
+            {parseErrorMsg(schemaRequestMutation.error)}
+          </Alert>
         </Box>
       )}
       <Form

@@ -97,7 +97,7 @@ const TopicProducerForm = ({
     <>
       {isError && (
         <Box marginBottom={"l1"} role="alert">
-          <Alert description={parseErrorMsg(error)} type="warning" />
+          <Alert type="warning">{parseErrorMsg(error)}</Alert>
         </Box>
       )}
       <Form {...topicProducerForm} onSubmit={onSubmitTopicProducer}>

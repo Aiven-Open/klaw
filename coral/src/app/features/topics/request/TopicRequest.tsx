@@ -62,7 +62,7 @@ function TopicRequest() {
     <Box style={{ maxWidth: 1200 }}>
       {isError && (
         <Box marginBottom={"l1"} role="alert">
-          <Alert description={parseErrorMsg(error)} type="warning"></Alert>
+          <Alert type="warning">{parseErrorMsg(error)}</Alert>
         </Box>
       )}
       <Form {...form} onSubmit={onSubmit} onError={onError}>
