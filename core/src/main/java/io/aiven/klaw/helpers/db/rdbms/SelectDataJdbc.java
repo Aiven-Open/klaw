@@ -132,7 +132,7 @@ public class SelectDataJdbc {
 
     aclListSub =
         Lists.newArrayList(
-            findByTopicByClusterByAclTypeByTenantId(topic, environment, aclType, status, tenantId));
+            findAclRequestsByExample(topic, environment, aclType, status, tenantId));
 
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
@@ -170,7 +170,17 @@ public class SelectDataJdbc {
     return aclList;
   }
 
-  public Iterable<AclRequests> findByTopicByClusterByAclTypeByTenantId(
+  /**
+   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters will be utilised in the search.
+   *
+   * @param topic The topic Name
+   * @param environment the environment
+   * @param aclType Producer or consumer
+   * @param status created/declined/approved
+   * @param tenantId The tenantId
+   * @return
+   */
+  public Iterable<AclRequests> findAclRequestsByExample(
       String topic, String environment, AclType aclType, String status, int tenantId) {
 
     AclRequests request = new AclRequests();

@@ -49,6 +49,15 @@ public class AclController {
         aclControllerService.getAclRequests(pageNo, currentPage, requestsType), HttpStatus.OK);
   }
 
+  /**
+   * @param pageNo Which page would you like returned
+   * @param currentPage Which Page are you currently on
+   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param topic The name of the topic you would like returned
+   * @param environment The name of the environment you would like returned
+   * @param aclType The Type of acl Consumer/Producer
+   * @return An array of AclRequests that met the criteria of the inputted values.
+   */
   /*
      For executing acl requests
   */
@@ -60,7 +69,7 @@ public class AclController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
-      @RequestParam(value = "topic", required = false) String topic,
+      @RequestParam(value = "topic", required = false ) String topic,
       @RequestParam(value = "environment", required = false) String environment,
       @RequestParam(value = "aclType", required = false) AclType aclType) {
     return new ResponseEntity<>(
