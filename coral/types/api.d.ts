@@ -48,6 +48,9 @@ export type paths = {
   "/getCreatedTopicRequests": {
     get: operations["getCreatedTopicRequests"];
   };
+  "/getAuth": {
+    get: operations["getAuth"];
+  };
 };
 
 export type components = {
@@ -960,6 +963,39 @@ export type components = {
        */
       currentPage?: string;
     };
+    /** GetAuthResponse */
+    GetAuthResponse: {
+      /**
+       * Schema Notifications
+       * @description Number of schema requests waiting for approval
+       * @example 6
+       */
+      notificationsSchemas: string;
+      /**
+       * Connector Notifications
+       * @description Number of connector requests waiting for approval
+       * @example 2
+       */
+      notificationsConnectors: string;
+      /**
+       * ACL Notifications
+       * @description Number of ACL requests waiting for approval
+       * @example 4
+       */
+      notificationsAcls: string;
+      /**
+       * User Notifications
+       * @description Number of user requests waiting for approval
+       * @example 4
+       */
+      notificationsUsers: string;
+      /**
+       * Topic Notifications
+       * @description Number of topic requests waiting for approval
+       * @example 5
+       */
+      notifications: string;
+    };
   };
 };
 
@@ -1173,6 +1209,15 @@ export type operations = {
       };
     };
   };
+  getAuth: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["GetAuthResponse"];
+        };
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -1192,4 +1237,5 @@ export enum ApiPaths {
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",
   getCreatedTopicRequests = "/getCreatedTopicRequests",
+  getAuth = "/getAuth",
 }
