@@ -358,7 +358,12 @@ public class AclControllerService {
   }
 
   public List<AclRequestsModel> getCreatedAclRequests(
-      String pageNo, String currentPage, String requestsType) {
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      String topic,
+      String environment,
+      AclType aclType) {
     log.debug("getCreatedAclRequests {} {}", pageNo, requestsType);
     String userDetails = getCurrentUserName();
     List<AclRequests> createdAclReqs;
@@ -370,12 +375,14 @@ public class AclControllerService {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedAclRequestsByStatus(userDetails, requestsType, false, tenantId);
+              .getCreatedAclRequestsByStatus(
+                  userDetails, requestsType, false, topic, environment, aclType, tenantId);
     } else {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedAclRequestsByStatus(userDetails, requestsType, true, tenantId);
+              .getCreatedAclRequestsByStatus(
+                  userDetails, requestsType, true, topic, environment, aclType, tenantId);
     }
 
     // tenant filtering

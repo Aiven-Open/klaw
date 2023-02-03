@@ -39,6 +39,7 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -111,20 +112,32 @@ public class SelectDataJdbc {
       String status,
       boolean showRequestsOfAllTeams,
       int tenantId) {
+    return selectAclRequests(
+        allReqs, requestor, role, status, showRequestsOfAllTeams, null, null, null, tenantId);
+  }
+
+  public List<AclRequests> selectAclRequests(
+      boolean allReqs,
+      String requestor,
+      String role,
+      String status,
+      boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      int tenantId) {
     log.debug("selectAclRequests {}", requestor);
     List<AclRequests> aclList = new ArrayList<>();
     List<AclRequests> aclListSub;
-    if ("all".equals(status)) {
-      aclListSub = Lists.newArrayList(aclRequestsRepo.findAllByTenantId(tenantId));
-    } else {
-      aclListSub = aclRequestsRepo.findAllByAclstatusAndTenantId(status, tenantId);
-    }
+
+    aclListSub =
+        Lists.newArrayList(findAclRequestsByExample(topic, environment, aclType, status, tenantId));
 
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
     for (AclRequests row : aclListSub) {
       Integer teamName;
-      String aclType = row.getAclType();
+      String rowAclType = row.getAclType();
       if (allReqs) {
         if ("requestor_subscriptions".equals(role)) {
           teamName = row.getRequestingteam();
@@ -132,7 +145,7 @@ public class SelectDataJdbc {
           teamName = row.getTeamId();
         }
 
-        if (RequestOperationType.DELETE.value.equals(aclType)) {
+        if (RequestOperationType.DELETE.value.equals(rowAclType)) {
           teamName = row.getRequestingteam();
         }
       } else {
@@ -154,6 +167,43 @@ public class SelectDataJdbc {
     }
 
     return aclList;
+  }
+
+  /**
+   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
+   * will be utilised in the search.
+   *
+   * @param topic The topic Name
+   * @param environment the environment
+   * @param aclType Producer or consumer
+   * @param status created/declined/approved
+   * @param tenantId The tenantId
+   * @return
+   */
+  public Iterable<AclRequests> findAclRequestsByExample(
+      String topic, String environment, AclType aclType, String status, int tenantId) {
+
+    AclRequests request = new AclRequests();
+
+    request.setTenantId(tenantId);
+    if (aclType != null) {
+      request.setAclType(aclType.value);
+    }
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (topic != null && !topic.isEmpty()) {
+      request.setTopicname(topic);
+    }
+    if (status != null && !status.equalsIgnoreCase("all")) {
+      request.setAclstatus(status);
+    }
+    // check if debug is enabled so the logger doesnt waste resources converting object request to a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
+    return aclRequestsRepo.findAll(Example.of(request));
   }
 
   public List<SchemaRequest> selectSchemaRequests(boolean allReqs, String requestor, int tenantId) {

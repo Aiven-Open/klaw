@@ -120,7 +120,8 @@ public class AclControllerTest {
 
     List<AclRequestsModel> aclRequests = utilMethods.getAclRequestsList();
 
-    when(aclControllerService.getCreatedAclRequests("1", "", "created")).thenReturn(aclRequests);
+    when(aclControllerService.getCreatedAclRequests("1", "", "created", null, null, null))
+        .thenReturn(aclRequests);
 
     mvcAcls
         .perform(

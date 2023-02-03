@@ -19,6 +19,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.List;
@@ -240,9 +241,15 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   @Override
   public List<AclRequests> getCreatedAclRequestsByStatus(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      int tenantId) {
     return jdbcSelectHelper.selectAclRequests(
-        true, requestor, "", status, showRequestsOfAllTeams, tenantId);
+        true, requestor, "", status, showRequestsOfAllTeams, topic, environment, aclType, tenantId);
   }
 
   @Override
