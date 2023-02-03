@@ -9,7 +9,6 @@ import router from "src/app/router";
 import { isUnauthorizedError } from "src/services/api";
 import "/src/app/accessibility.module.css";
 import "/src/app/main.module.css";
-
 // https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
 import "/src/services/configure-monaco-editor";
 

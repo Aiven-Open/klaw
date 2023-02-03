@@ -24,6 +24,7 @@ const navLinks = [
     name: "Dashboard",
     linkTo: "/index",
   },
+  { name: "Approval Requests", linkTo: "/approvals" },
   { name: "Audit Log", linkTo: "/activityLog" },
   { name: "Settings", linkTo: "/serverConfig" },
 ];
@@ -39,7 +40,7 @@ const submenuItems = [
 const submenuItemTopics = [
   {
     name: "Topics",
-    links: ["All Topics", "Approval Requests", "My Team's Requests"],
+    links: ["All Topics", "My Team's Requests"],
   },
 ];
 
@@ -51,15 +52,22 @@ const navOrderFirstLevel = [
   { name: "Dashboard", isSubmenu: false },
   { name: "Topics", isSubmenu: true },
   { name: "All Topics", isSubmenu: false },
-  { name: "Approval Requests", isSubmenu: false },
   { name: "My Team's Requests", isSubmenu: false },
   { name: "Kafka Connectors", isSubmenu: true },
   { name: "Users and Teams", isSubmenu: true },
+  { name: "Approval Requests", isSubmenu: false },
   { name: "Audit Log", isSubmenu: false },
   { name: "Settings", isSubmenu: false },
 ];
 
 describe("MainNavigation.tsx", () => {
+  beforeAll(() => {
+    process.env.FEATURE_FLAG_APPROVALS = "true";
+  });
+  afterAll(() => {
+    process.env.FEATURE_FLAG_APPROVALS = "false";
+  });
+
   describe("renders the main navigation in default state", () => {
     beforeAll(() => {
       customRender(<MainNavigation />, { memoryRouter: true });
@@ -301,6 +309,27 @@ describe("MainNavigation.tsx", () => {
           expect(link).toHaveFocus();
         });
       });
+    });
+  });
+
+  describe("renders link dependent on feature flag FEATURE_FLAG_APPROVALS", () => {
+    beforeAll(() => {
+      process.env.FEATURE_FLAG_APPROVALS = "false";
+      customRender(<MainNavigation />, { memoryRouter: true });
+    });
+
+    afterAll(cleanup);
+
+    it("does show link to angular app when feature flag is false", () => {
+      const nav = screen.getByRole("navigation", {
+        name: "Main navigation",
+      });
+
+      const navLink = within(nav).getByRole("link", {
+        name: "Approval Requests",
+      });
+
+      expect(navLink).toHaveAttribute("href", "/execTopics");
     });
   });
 });

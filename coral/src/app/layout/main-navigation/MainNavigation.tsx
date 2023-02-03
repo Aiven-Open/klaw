@@ -5,13 +5,14 @@ import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
 import people from "@aivenio/aquarium/dist/src/icons/people";
 import list from "@aivenio/aquarium/dist/src/icons/list";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
+import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import useFeatureFlag, { FeatureFlag } from "src/app/hooks/useFeatureFlag";
 import { useLocation } from "react-router-dom";
+import { Routes } from "src/app/router_utils";
 
 function MainNavigation() {
-  const topicAclRequestEnabled = useFeatureFlag(FeatureFlag.TOPIC_ACL_REQUEST);
   const approvalsEnabled = useFeatureFlag(FeatureFlag.APPROVALS);
   const { pathname } = useLocation();
 
@@ -39,36 +40,14 @@ function MainNavigation() {
             text={"Topics"}
           >
             <MainNavigationLink
-              href={"/coral/topics"}
               linkText={"All Topics"}
-              active={pathname === "/coral/topics"}
+              href={Routes.TOPICS}
+              active={
+                pathname.startsWith(Routes.TOPICS) ||
+                pathname.startsWith("/topic")
+              }
+              useRouter={true}
             />
-            {topicAclRequestEnabled ? (
-              <MainNavigationLink
-                // This link is only intended to be rendered in dev environment
-                // So the path does not have a coral/ prefix
-                // @TODO: delete when Topic overview / top nac Request dropdown are implemented
-                href={"/topic/aivtopic1/subscribe"}
-                linkText={"Subscribe"}
-                active={pathname.includes("/subscribe")}
-              />
-            ) : (
-              <></>
-            )}
-
-            {approvalsEnabled ? (
-              <MainNavigationLink
-                href={`/approvals/topics`}
-                linkText={"Approval Requests"}
-                useRouter={true}
-              />
-            ) : (
-              <MainNavigationLink
-                href={`/execTopics`}
-                linkText={"Approval Requests"}
-              />
-            )}
-
             <MainNavigationLink
               href={`/myTopicRequests`}
               linkText={"My Team's Requests"}
@@ -99,6 +78,23 @@ function MainNavigation() {
               linkText={"User Requests"}
             />
           </MainNavigationSubmenuList>
+        </li>
+        <li>
+          {approvalsEnabled ? (
+            <MainNavigationLink
+              icon={tickCircle}
+              href={Routes.APPROVALS}
+              linkText={"Approval Requests"}
+              active={pathname.startsWith(Routes.APPROVALS)}
+              useRouter={true}
+            />
+          ) : (
+            <MainNavigationLink
+              icon={tickCircle}
+              href={`/execTopics`}
+              linkText={"Approval Requests"}
+            />
+          )}
         </li>
         <li>
           <MainNavigationLink
