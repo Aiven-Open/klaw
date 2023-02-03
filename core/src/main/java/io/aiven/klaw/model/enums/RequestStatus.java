@@ -4,7 +4,8 @@ public enum RequestStatus {
   CREATED("created"),
   DELETED("deleted"),
   DECLINED("declined"),
-  APPROVED("approved");
+  APPROVED("approved"),
+  ALL("all");
 
   public final String value;
 

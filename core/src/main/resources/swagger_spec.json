@@ -2799,6 +2799,33 @@
         }
       }
     },
+    "/requests/requestEntityType/{requestEntityType}/requestStatus/{requestStatus}" : {
+      "get" : {
+        "operationId" : "getRequestsCountOverview",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "requestEntityType",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+        }, {
+          "name" : "requestStatus",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/RequestsCountOverview"
+            }
+          }
+        }
+      }
+    },
     "/resetCache" : {
       "get" : {
         "operationId" : "resetCache",
@@ -4115,6 +4142,35 @@
         },
         "tenantName" : {
           "type" : "string"
+        }
+      }
+    },
+    "RequestsCount" : {
+      "type" : "object",
+      "properties" : {
+        "requestEntityType" : {
+          "type" : "string",
+          "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+        },
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "RequestsCountOverview" : {
+      "type" : "object",
+      "properties" : {
+        "requestsCountSet" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/RequestsCount"
+          }
         }
       }
     },
