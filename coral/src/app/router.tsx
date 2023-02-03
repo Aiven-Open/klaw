@@ -22,6 +22,10 @@ const routes: Array<RouteObject> = [
   //   path: "/login",
   // },
   {
+    path: "/request/acl",
+    element: <AclRequest />,
+  },
+  {
     path: "/topics",
     element: <Topics />,
   },
