@@ -12,7 +12,7 @@ const AclRequest = () => {
     <AuthenticationRequiredBoundary>
       <Layout>
         <PreviewBanner
-          linkTarget={`/requestAcl${
+          linkTarget={`/requestAcls${
             topicName !== undefined ? `?topicName=${topicName}` : ""
           }`}
         />
