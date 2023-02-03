@@ -2799,19 +2799,19 @@
         }
       }
     },
-    "/requests/requestEntityType/{requestEntityType}/requestStatus/{requestStatus}" : {
+    "/requests/statistics" : {
       "get" : {
-        "operationId" : "getRequestsCountOverview",
+        "operationId" : "getRequestStatistics",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "requestEntityType",
-          "in" : "path",
+          "in" : "query",
           "required" : true,
           "type" : "string",
           "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
         }, {
           "name" : "requestStatus",
-          "in" : "path",
+          "in" : "query",
           "required" : true,
           "type" : "string",
           "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
@@ -3658,10 +3658,10 @@
         "titleForReport" : {
           "type" : "string"
         },
-        "xaxisLabel" : {
+        "yaxisLabel" : {
           "type" : "string"
         },
-        "yaxisLabel" : {
+        "xaxisLabel" : {
           "type" : "string"
         }
       }

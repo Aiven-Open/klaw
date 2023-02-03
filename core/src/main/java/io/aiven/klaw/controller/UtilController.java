@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -93,12 +94,12 @@ public class UtilController {
             content = @Content(schema = @Schema(implementation = RequestsCountOverview.class)))
       })
   @RequestMapping(
-      value = "/requests/requestEntityType/{requestEntityType}/requestStatus/{requestStatus}",
+      value = "/requests/statistics",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<RequestsCountOverview> getRequestsCountOverview(
-      @PathVariable RequestEntityType requestEntityType,
-      @PathVariable RequestStatus requestStatus) {
+  public ResponseEntity<RequestsCountOverview> getRequestStatistics(
+      @RequestParam("requestEntityType") RequestEntityType requestEntityType,
+      @RequestParam("requestStatus") RequestStatus requestStatus) {
     return new ResponseEntity<>(
         utilControllerService.getRequestsCountOverview(requestEntityType, requestStatus),
         HttpStatus.OK);
