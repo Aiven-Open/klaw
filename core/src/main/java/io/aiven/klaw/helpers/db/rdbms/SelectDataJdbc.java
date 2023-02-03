@@ -198,7 +198,11 @@ public class SelectDataJdbc {
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setAclstatus(status);
     }
-    log.info("find By topic etc example {}", request);
+    // check if debug is enabled so the logger doesnt waste resources converting object request to a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
     return aclRequestsRepo.findAll(Example.of(request));
   }
 

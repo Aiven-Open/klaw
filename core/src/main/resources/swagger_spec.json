@@ -1449,7 +1449,7 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "environment",
+          "name" : "env",
           "in" : "query",
           "required" : false,
           "type" : "string"

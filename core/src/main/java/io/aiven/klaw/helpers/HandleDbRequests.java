@@ -120,20 +120,6 @@ public interface HandleDbRequests {
       boolean showRequestsOfAllTeams,
       int tenantId);
 
-  List<AclRequests> getAllAclRequestsFiltered(
-      boolean allReqs,
-      String requestor,
-      String role,
-      String status,
-      boolean showRequestsOfAllTeams,
-      String topic,
-      String environment,
-      AclType aclType,
-      int tenantId);
-
-  List<AclRequests> getCreatedAclRequestsByStatus(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
-
   List<AclRequests> getCreatedAclRequestsByStatus(
       String requestor,
       String status,

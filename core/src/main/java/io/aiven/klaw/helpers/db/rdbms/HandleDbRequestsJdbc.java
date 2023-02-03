@@ -240,36 +240,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<AclRequests> getAllAclRequestsFiltered(
-      boolean allReqs,
-      String requestor,
-      String role,
-      String status,
-      boolean showRequestsOfAllTeams,
-      String topic,
-      String environment,
-      AclType aclType,
-      int tenantId) {
-    return jdbcSelectHelper.selectAclRequests(
-        allReqs,
-        requestor,
-        role,
-        status,
-        showRequestsOfAllTeams,
-        topic,
-        environment,
-        aclType,
-        tenantId);
-  }
-
-  @Override
-  public List<AclRequests> getCreatedAclRequestsByStatus(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
-    return jdbcSelectHelper.selectAclRequests(
-        true, requestor, "", status, showRequestsOfAllTeams, tenantId);
-  }
-
-  @Override
   public List<AclRequests> getCreatedAclRequestsByStatus(
       String requestor,
       String status,

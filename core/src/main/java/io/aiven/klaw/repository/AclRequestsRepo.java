@@ -13,8 +13,6 @@ public interface AclRequestsRepo
     extends CrudRepository<AclRequests, AclRequestID>, QueryByExampleExecutor<AclRequests> {
   Optional<AclRequests> findById(AclRequestID aclRequestID);
 
-  List<AclRequests> findAllByAclstatusAndTenantId(String topicStatus, int tenantId);
-
   @Query(
       value =
           "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId and topicstatus='created'",
