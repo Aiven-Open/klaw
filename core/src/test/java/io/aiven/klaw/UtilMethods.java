@@ -321,6 +321,8 @@ public class UtilMethods {
     List<TopicRequest> allTopicReqs = new ArrayList<>();
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTeamId(3);
+    topicRequest.setTopicstatus("created");
+    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -356,6 +358,7 @@ public class UtilMethods {
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
+    topicRequest.setTopicstatus("created");
     topicRequest.setTopictype(RequestOperationType.CREATE.value);
     topicRequest.setDescription("Test desc");
     return topicRequest;

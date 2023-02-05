@@ -2804,17 +2804,11 @@
         "operationId" : "getRequestStatistics",
         "produces" : [ "application/json" ],
         "parameters" : [ {
-          "name" : "requestEntityType",
+          "name" : "requestMode",
           "in" : "query",
           "required" : true,
           "type" : "string",
-          "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
-        }, {
-          "name" : "requestStatus",
-          "in" : "query",
-          "required" : true,
-          "type" : "string",
-          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          "enum" : [ "TO_APPROVE", "MY_REQUESTS" ]
         } ],
         "responses" : {
           "200" : {
@@ -3658,10 +3652,10 @@
         "titleForReport" : {
           "type" : "string"
         },
-        "yaxisLabel" : {
+        "xaxisLabel" : {
           "type" : "string"
         },
-        "xaxisLabel" : {
+        "yaxisLabel" : {
           "type" : "string"
         }
       }
@@ -4145,32 +4139,64 @@
         }
       }
     },
-    "RequestsCount" : {
+    "RequestEntityStatusCount" : {
       "type" : "object",
       "properties" : {
         "requestEntityType" : {
           "type" : "string",
           "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
         },
+        "requestStatusCountSet" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/RequestStatusCount"
+          }
+        },
+        "requestsOperationTypeCountSet" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/RequestsOperationTypeCount"
+          }
+        }
+      }
+    },
+    "RequestStatusCount" : {
+      "type" : "object",
+      "properties" : {
         "requestStatus" : {
           "type" : "string",
           "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         },
         "count" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         }
       }
     },
     "RequestsCountOverview" : {
       "type" : "object",
       "properties" : {
-        "requestsCountSet" : {
+        "requestEntityStatusCount" : {
           "type" : "array",
           "uniqueItems" : true,
           "items" : {
-            "$ref" : "#/definitions/RequestsCount"
+            "$ref" : "#/definitions/RequestEntityStatusCount"
           }
+        }
+      }
+    },
+    "RequestsOperationTypeCount" : {
+      "type" : "object",
+      "properties" : {
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "CLAIM", "DELETE" ]
+        },
+        "count" : {
+          "type" : "integer",
+          "format" : "int64"
         }
       }
     },

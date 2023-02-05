@@ -21,6 +21,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public List<TopicRequest> getAllTopicRequests(String requestor, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsByStatus(
         false, requestor, RequestStatus.CREATED.value, false, tenantId);
+  }
+
+  @Override
+  public Map<String, Map<String, Long>> getTopicRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId) {
+    return jdbcSelectHelper.getTopicRequestsCounts(teamId, requestMode, tenantId);
   }
 
   public List<TopicRequest> getCreatedTopicRequests(

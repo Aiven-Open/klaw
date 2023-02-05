@@ -19,8 +19,8 @@ import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -423,7 +423,7 @@ public class SchemaRegstryControllerService {
     schemaRequest.setUsername(userDetails);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
-    schemaRequestDao.setRequesttype(TopicRequestTypes.Create.name());
+    schemaRequestDao.setRequesttype(RequestOperationType.CREATE.value);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     schemaRequestDao.setTenantId(tenantId);
     try {

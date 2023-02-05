@@ -28,8 +28,8 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -186,7 +186,7 @@ public class TopicControllerService {
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
-    topicRequestReq.setTopictype(TopicRequestTypes.Delete.name());
+    topicRequestReq.setTopictype(RequestOperationType.DELETE.value);
     topicRequestReq.setTenantId(tenantId);
 
     Optional<Topic> topicOb = Optional.empty();
@@ -266,7 +266,7 @@ public class TopicControllerService {
     topicRequestReq.setTenantId(tenantId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
-    topicRequestReq.setTopictype(TopicRequestTypes.Claim.name());
+    topicRequestReq.setTopictype(RequestOperationType.CLAIM.value);
     topicRequestReq.setDescription(topicOwnerTeamId + "");
     topicRequestReq.setRemarks("Topic Claim request for all available environments.");
 
@@ -482,7 +482,7 @@ public class TopicControllerService {
         // show approving info only before approvals
         if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
-              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
+              && RequestOperationType.CLAIM.value.equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -591,7 +591,7 @@ public class TopicControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
 
-    if (TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype())) {
+    if (RequestOperationType.CLAIM.value.equals(topicRequest.getTopictype())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
         allTopic.setTeamId(topicRequest.getTeamId()); // for claim reqs, team stored in description
@@ -683,7 +683,7 @@ public class TopicControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (TopicRequestTypes.Update.name().equals(topicRequest.getTopictype())) {
+      if (RequestOperationType.UPDATE.value.equals(topicRequest.getTopictype())) {
         List<Topic> existingTopicList =
             getTopicFromName(topicRequest.getTopicname(), topicRequest.getTenantId());
         existingTopicList.stream()

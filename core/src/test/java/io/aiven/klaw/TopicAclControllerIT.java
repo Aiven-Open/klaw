@@ -256,7 +256,7 @@ public class TopicAclControllerIT {
   public void queryTopicRequest() throws Exception {
     String res =
         mvc.perform(
-                MockMvcRequestBuilders.get("/getCreatedTopicRequests")
+                MockMvcRequestBuilders.get("/getTopicRequests")
                     .with(user(user1).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")

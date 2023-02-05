@@ -5,8 +5,8 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -382,71 +382,57 @@ public class SelectDataJdbc {
       boolean showRequestsOfAllTeams,
       int tenantId) {
     log.debug("selectTopicRequests {} {}", requestor, status);
-    List<TopicRequest> topicRequestList = new ArrayList<>();
 
-    List<TopicRequest> topicRequestListSub;
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
+    List<TopicRequest> topicRequests;
+
+    if (showRequestsOfAllTeams) {
+      topicRequests = topicRequestsRepo.findAllByTenantId(tenantId);
+    } else {
+      topicRequests = topicRequestsRepo.findAllByTeamIdAndTenantId(teamSelected, tenantId);
+    }
 
     if (allReqs) { // approvers
+
       List<TopicRequest> claimTopicReqs =
-          topicRequestsRepo.findAllByTopictypeAndTenantId(TopicRequestTypes.Claim.name(), tenantId);
+          topicRequestsRepo.findAllByTopictypeAndTenantId(
+              RequestOperationType.CLAIM.value, tenantId);
+      topicRequests =
+          topicRequests.stream()
+              .filter(
+                  topicRequest ->
+                      !RequestOperationType.CLAIM.value.equals(topicRequest.getTopictype()))
+              .collect(Collectors.toList());
+      claimTopicReqs =
+          claimTopicReqs.stream()
+              .filter(
+                  claimTopicReq ->
+                      Objects.equals(claimTopicReq.getDescription(), "" + teamSelected))
+              .collect(Collectors.toList());
 
-      if ("all".equals(status)) {
-        topicRequestListSub = topicRequestsRepo.findAllByTenantId(tenantId);
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
-                .collect(Collectors.toList());
+      topicRequests.addAll(claimTopicReqs);
 
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals("" + teamSelected, claimTopicReq.getDescription()))
-                .collect(Collectors.toList());
-      } else {
-        topicRequestListSub = topicRequestsRepo.findAllByTopicstatusAndTenantId(status, tenantId);
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
-                .collect(Collectors.toList());
-
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected)
-                            && Objects.equals(claimTopicReq.getTopicstatus(), status))
-                .collect(Collectors.toList());
-      }
-
-      topicRequestListSub.addAll(claimTopicReqs);
-    } else {
-      topicRequestListSub = Lists.newArrayList(topicRequestsRepo.findAllByTenantId(tenantId));
+      // remove users own requests to approve/show in the list
+      topicRequests =
+          topicRequests.stream()
+              .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
+              .collect(Collectors.toList());
     }
 
-    for (TopicRequest row : topicRequestListSub) {
-      Integer teamName = row.getTeamId();
-      try {
-        row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
-      } catch (Exception ignored) {
-      }
-
-      if (showRequestsOfAllTeams) {
-        topicRequestList.add(row); // no team filter
-      } else if (teamSelected != null
-          && (teamSelected.equals(teamName) || ("" + teamSelected).equals(row.getDescription()))) {
-        topicRequestList.add(row);
-      }
+    if (!"all".equals(status)) {
+      topicRequests =
+          topicRequests.stream()
+              .filter(topicRequest -> topicRequest.getTopicstatus().equals(status))
+              .collect(Collectors.toList());
     }
 
-    return topicRequestList;
+    topicRequests.forEach(
+        topicRequest ->
+            topicRequest.setRequesttimestring(
+                new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss")
+                    .format((topicRequest.getRequesttime()).getTime())));
+
+    return topicRequests;
   }
 
   public List<KafkaConnectorRequest> selectConnectorRequestsByStatus(
@@ -464,7 +450,7 @@ public class SelectDataJdbc {
     if (allReqs) { // approvers
       List<KafkaConnectorRequest> claimTopicReqs =
           kafkaConnectorRequestsRepo.findAllByConnectortypeAndTenantId(
-              TopicRequestTypes.Claim.name(), tenantId);
+              RequestOperationType.CLAIM.value, tenantId);
 
       if ("all".equals(status)) {
         topicRequestListSub =
@@ -473,7 +459,7 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !TopicRequestTypes.Claim.name().equals(topicRequest.getConnectortype()))
+                        !RequestOperationType.CLAIM.value.equals(topicRequest.getConnectortype()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
@@ -489,7 +475,7 @@ public class SelectDataJdbc {
             topicRequestListSub.stream()
                 .filter(
                     topicRequest ->
-                        !TopicRequestTypes.Claim.name().equals(topicRequest.getConnectortype()))
+                        !RequestOperationType.CLAIM.value.equals(topicRequest.getConnectortype()))
                 .collect(Collectors.toList());
 
         claimTopicReqs =
@@ -1168,5 +1154,52 @@ public class SelectDataJdbc {
 
   public int getAllTopicsCountInAllTenants() {
     return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
+  }
+
+  // teamId is requestedBy. For 'topics' all the requests are assigned to the same team, except
+  // claim requests
+  public Map<String, Map<String, Long>> getTopicRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId) {
+    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+
+    Map<String, Long> countsMap1 = new HashMap<>();
+    Map<String, Long> countsMap2 = new HashMap<>();
+
+    if (RequestMode.MY_REQUESTS == requestMode) {
+      List<Object[]> topicRequestsOperationTypObj =
+          topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
+      topicRequestsOperationTypObj.forEach(
+          topicReqObjs -> countsMap1.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      allCountsMap.put("OPERATION_TYPE_COUNTS", countsMap1);
+
+      List<Object[]> topicRequestsStatusObj =
+          topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
+      topicRequestsStatusObj.forEach(
+          topicReqObjs -> countsMap2.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      allCountsMap.put("STATUS_COUNTS", countsMap2);
+    } else if (RequestMode.TO_APPROVE == requestMode) {
+      List<Object[]> topicRequestsStatusObj =
+          topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
+      topicRequestsStatusObj.forEach(
+          topicReqObjs -> countsMap1.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      allCountsMap.put("OPERATION_TYPE_COUNTS", countsMap1);
+
+      long myTeamClaimReqs =
+          topicRequestsRepo.countByTeamIdAndTopictypeAndTenantId(
+              teamId, RequestOperationType.CLAIM.value, tenantId);
+      long assignedToClaimReqs =
+          topicRequestsRepo.countAllTopicRequestsByDescriptionAndType(
+              tenantId, "" + teamId, RequestOperationType.CLAIM.value);
+      List<Object[]> topicRequestsOperationTypObj =
+          topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
+      topicRequestsOperationTypObj.forEach(
+          topicReqObjs -> countsMap2.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      long claimOperationReqs =
+          countsMap2.get(RequestOperationType.CLAIM.value) - myTeamClaimReqs + assignedToClaimReqs;
+      countsMap2.put(RequestOperationType.CLAIM.value, claimOperationReqs);
+      allCountsMap.put("STATUS_COUNTS", countsMap2);
+    }
+
+    return allCountsMap;
   }
 }

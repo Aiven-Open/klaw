@@ -14,10 +14,8 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.KwMetadataUpdates;
-import io.aiven.klaw.model.RequestsCountOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -672,11 +670,5 @@ public class UtilControllerService {
 
   public void setRegistration(Map<String, String> registration) {
     this.registration = registration;
-  }
-
-  public RequestsCountOverview getRequestsCountOverview(
-      RequestEntityType requestEntityType, RequestStatus requestStatus) {
-    RequestsCountOverview requestsCountOverview = new RequestsCountOverview();
-    return requestsCountOverview;
   }
 }

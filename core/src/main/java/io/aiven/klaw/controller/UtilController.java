@@ -1,8 +1,8 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.RequestsCountOverview;
-import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class UtilController {
 
   @Autowired private UtilControllerService utilControllerService;
+
+  @Autowired private RequestStatisticsService requestStatisticsService;
 
   @RequestMapping(
       value = "/getDashboardStats",
@@ -79,16 +81,18 @@ public class UtilController {
   }
 
   /**
-   * @param requestEntityType topic, acl, schema, connector, user
-   * @param requestStatus requests in different status created/deleted/declined/approved/all
+   * // * @param requestEntityType topic, acl, schema, connector, user // * @param requestStatus
+   * requests in different status created/deleted/declined/approved/all // * @param
+   * requestOperationType requests with different operation types Create/Update/Claim/Delete
+   *
    * @return RequestsCountOverview A count of each request entity type, and request status, and
    *     overall count
    */
   /*
-     Get counts of all request entity types, and for their different status types
+     Get counts of all request entity types for different status,operation types
   */
   @Operation(
-      summary = "Get counts of all request entity types, and for their different status types",
+      summary = "Get counts of all request entity types for different status,operation types",
       responses = {
         @ApiResponse(
             content = @Content(schema = @Schema(implementation = RequestsCountOverview.class)))
@@ -98,10 +102,11 @@ public class UtilController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<RequestsCountOverview> getRequestStatistics(
-      @RequestParam("requestEntityType") RequestEntityType requestEntityType,
-      @RequestParam("requestStatus") RequestStatus requestStatus) {
+      //      @RequestParam("requestEntityType") RequestEntityType requestEntityType,
+      //      @RequestParam("requestStatus") RequestStatus requestStatus,
+      //      @RequestParam("requestOperationType") RequestOperationType requestOperationType,
+      @RequestParam("requestMode") RequestMode requestMode) {
     return new ResponseEntity<>(
-        utilControllerService.getRequestsCountOverview(requestEntityType, requestStatus),
-        HttpStatus.OK);
+        requestStatisticsService.getRequestsCountOverview(requestMode), HttpStatus.OK);
   }
 }

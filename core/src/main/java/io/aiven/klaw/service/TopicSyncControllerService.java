@@ -23,7 +23,6 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -343,7 +342,7 @@ public class TopicSyncControllerService {
         // show approving info only before approvals
         if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getTopicstatus())) {
           if (topicRequestModel.getTopictype() != null
-              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getTopictype())) {
+              && RequestOperationType.CLAIM.value.equals(topicRequestModel.getTopictype())) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
