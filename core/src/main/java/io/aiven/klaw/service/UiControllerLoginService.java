@@ -70,12 +70,8 @@ public class UiControllerLoginService {
   private static final String indexPage = "index.html";
   private static final String oauthLoginPage = "oauthLogin";
 
-  public String getReturningPage(String uri) {
+  public String getReturningPage(String uri, String userName) {
     try {
-      UserDetails userDetails =
-          (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      String userName = userDetails.getUsername();
-
       if (userName != null) {
         HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
         UserInfo userInfo = reqsHandle.getUsersInfo(userName);
@@ -141,8 +137,8 @@ public class UiControllerLoginService {
   public String checkAnonymousLogin(
       String uri,
       AbstractAuthenticationToken abstractAuthenticationToken,
-      HttpServletResponse response) {
-    String userName = null;
+      HttpServletResponse response,
+      String userName) {
     DefaultOAuth2User defaultOAuth2User = null;
     String nameAttribute = "name";
     Collection<? extends GrantedAuthority> authorities = null;
@@ -151,13 +147,9 @@ public class UiControllerLoginService {
     if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
       defaultOAuth2User =
           (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
       nameAttribute = (String) defaultOAuth2User.getAttributes().get(nameAttribute);
       authorities = defaultOAuth2User.getAuthorities();
     } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
-      userName =
-          ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-              .getUsername();
       nameAttribute = abstractAuthenticationToken.getName();
       authorities = abstractAuthenticationToken.getAuthorities();
     }
@@ -255,20 +247,24 @@ public class UiControllerLoginService {
       String uri,
       HttpServletRequest request,
       HttpServletResponse response,
-      AbstractAuthenticationToken authentication) {
-    if ("tenants.html".equals(uri)) {
-      UserDetails userDetails =
-          (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    String userName = null;
+    if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
+      DefaultOAuth2User defaultOAuth2User =
+          (DefaultOAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      userName = commonUtilsService.extractUserNameFromOAuthUser(defaultOAuth2User);
+    } else if (abstractAuthenticationToken instanceof UsernamePasswordAuthenticationToken) {
+      userName =
+          ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+              .getUsername();
+    }
 
+    if ("tenants.html".equals(uri)) {
       if (SUPERADMIN
               .name()
-              .equals(
-                  manageDatabase
-                      .getHandleDbRequests()
-                      .getUsersInfo(userDetails.getUsername())
-                      .getRole())
-          && commonUtilsService.getTenantId(userDetails.getUsername()) == DEFAULT_TENANT_ID) {
-        return getReturningPage(uri);
+              .equals(manageDatabase.getHandleDbRequests().getUsersInfo(userName).getRole())
+          && commonUtilsService.getTenantId(userName) == DEFAULT_TENANT_ID) {
+        return getReturningPage(uri, userName);
       } else {
         uri = "index";
       }
@@ -278,8 +274,8 @@ public class UiControllerLoginService {
       if (uri.contains("register") || uri.equals("registrationReview.html")) {
         return uri;
       } else {
-        if (authentication instanceof OAuth2AuthenticationToken) {
-          return checkAnonymousLogin(uri, authentication, response);
+        if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
+          return checkAnonymousLogin(uri, abstractAuthenticationToken, response, userName);
         } else {
           return oauthLoginPage;
         }
@@ -289,9 +285,9 @@ public class UiControllerLoginService {
         return uri;
       } else {
         if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-          return checkAnonymousLogin(uri, authentication, response);
+          return checkAnonymousLogin(uri, abstractAuthenticationToken, response, userName);
         }
-        return getReturningPage(uri);
+        return getReturningPage(uri, userName);
       }
     }
   }
