@@ -10,10 +10,10 @@ const TopicNameField = ({ topicNames }: TopicNameFieldProps) => {
     <NativeSelect
       name="topicname"
       labelText="Topic name"
+      placeholder={"-- Select Topic --"}
       disabled={topicNames.length === 0}
       required
     >
-      <Option disabled>-- Select Topic --</Option>
       {topicNames.map((name) => (
         <Option key={name} value={name}>
           {name}
