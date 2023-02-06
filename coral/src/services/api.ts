@@ -166,7 +166,7 @@ function withPayload<TBody extends SomeObject | URLSearchParams>(
 }
 
 function withoutPayload(
-  method: HTTPMethod.GET | HTTPMethod.DELETE
+  method: HTTPMethod.GET | HTTPMethod.DELETE | HTTPMethod.POST
 ): Partial<RequestInit> {
   return {
     method,
@@ -281,8 +281,8 @@ function withPayloadAndVerb<
   );
 }
 
-function withoutPayloadandWithVerb<TResponse extends SomeObject>(
-  method: HTTPMethod.GET | HTTPMethod.DELETE,
+function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
+  method: HTTPMethod.GET | HTTPMethod.DELETE | HTTPMethod.POST,
   pathname: AbsolutePathname
 ): Promise<TResponse> {
   return fetch(`${API_BASE_URL}${pathname}`, withoutPayload(method)).then(
@@ -291,15 +291,20 @@ function withoutPayloadandWithVerb<TResponse extends SomeObject>(
 }
 
 const get = <T extends SomeObject>(pathname: AbsolutePathname) =>
-  withoutPayloadandWithVerb<T>(HTTPMethod.GET, pathname);
+  withoutPayloadAndWithVerb<T>(HTTPMethod.GET, pathname);
 
 const post = <
   TResponse extends SomeObject,
-  TBody extends SomeObject | URLSearchParams
+  TBody extends SomeObject | URLSearchParams | never
 >(
   pathname: AbsolutePathname,
-  data: TBody
-): Promise<TResponse> => withPayloadAndVerb(HTTPMethod.POST, pathname, data);
+  data?: TBody
+): Promise<TResponse> => {
+  if (data === undefined) {
+    return withoutPayloadAndWithVerb(HTTPMethod.POST, pathname);
+  }
+  return withPayloadAndVerb(HTTPMethod.POST, pathname, data);
+};
 
 const put = <TBody extends SomeObject | URLSearchParams>(
   pathname: AbsolutePathname,
@@ -312,7 +317,7 @@ const patch = <TBody extends SomeObject | URLSearchParams>(
 ) => withPayloadAndVerb(HTTPMethod.PATCH, pathname, data);
 
 const delete_ = (pathname: AbsolutePathname) =>
-  withoutPayloadandWithVerb(HTTPMethod.DELETE, pathname);
+  withoutPayloadAndWithVerb(HTTPMethod.DELETE, pathname);
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
