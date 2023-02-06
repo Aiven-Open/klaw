@@ -17,7 +17,7 @@
     <licenses>
         <license>
             <name>Apache 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -59,7 +59,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
-        <spotless-maven-plugin.version>2.31.0</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>2.32.0</spotless-maven-plugin.version>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
     </properties>
 
