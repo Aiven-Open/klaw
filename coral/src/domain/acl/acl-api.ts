@@ -35,4 +35,17 @@ const approveAclRequest = (
   );
 };
 
-export { createAclRequest, getAclRequestsForApprover, approveAclRequest };
+const declineAclRequest = (
+  params: KlawApiRequestQueryParameters<"declineAclRequests">
+): Promise<KlawApiResponse<"declineAclRequests">> => {
+  return api.post<KlawApiResponse<"declineAclRequests">, never>(
+    `/execAclRequest?${new URLSearchParams(params)}`
+  );
+};
+
+export {
+  createAclRequest,
+  getAclRequestsForApprover,
+  approveAclRequest,
+  declineAclRequest,
+};
