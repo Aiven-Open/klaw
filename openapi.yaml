@@ -271,6 +271,60 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/environmentGetClusterInfoResponse"
+  /getCreatedAclRequests:
+    get:
+      operationId: getCreatedAclRequests
+      summary: "Get ACL requests with aclstatus: created"
+      tags:
+        - ACL
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: requestsType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["all", "created", "approved", "denied", "deleted"]
+          example: "created"
+          default: "created"
+        - name: topic
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "mytopic"
+        - name: env
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "1"
+        - name: aclType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["CONSUMER", "PRODUCER"]
+          example: "CONSUMER"
+          default: "CONSUMER"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/aclRequest"
   /createAcl:
     post:
       tags:
