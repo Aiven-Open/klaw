@@ -345,6 +345,32 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericApiResponse"
+  /execAclRequestDecline:
+    post:
+      tags:
+        - ACL
+      operationId: declineAclRequests
+      summary: Decline an ACL request
+      parameters:
+        - name: req_no
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "1008"
+        - name: reasonForDecline
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "I+don%27t+know+why+you+need+access"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericApiResponse"
   /createAcl:
     post:
       tags:
