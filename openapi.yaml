@@ -325,6 +325,26 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/aclRequest"
+  /execAclRequest:
+    post:
+      tags:
+        - ACL
+      operationId: approveAclRequests
+      summary: Approve an ACL request
+      parameters:
+        - name: req_no
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "1008"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenericApiResponse"
   /createAcl:
     post:
       tags:
