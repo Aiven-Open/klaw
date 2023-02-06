@@ -1,6 +1,7 @@
 import {
-  CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
+  CreateAclRequestTopicTypeProducer,
+  GetCreatedAclRequestParameters,
 } from "src/domain/acl/acl-types";
 import api from "src/services/api";
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
@@ -16,4 +17,10 @@ const createAclRequest = (
   >("/createAcl", aclParams);
 };
 
-export { createAclRequest };
+const getCreatedAclRequests = (params: GetCreatedAclRequestParameters) => {
+  return api.get<KlawApiResponse<"getCreatedAclRequests">>(
+    `/getCreatedAclRequests?${new URLSearchParams(params)}`
+  );
+};
+
+export { createAclRequest, getCreatedAclRequests };

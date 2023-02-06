@@ -6,5 +6,12 @@ type KlawApiModel<Schema extends keyof components["schemas"]> =
   components["schemas"][Schema];
 type KlawApiRequest<OperationId extends keyof operations> =
   operations[OperationId]["requestBody"]["content"]["application/json"];
+type KlawApiRequestQueryParameters<OperationId extends keyof operations> =
+  operations[OperationId]["parameters"]["query"];
 
-export type { KlawApiResponse, KlawApiModel, KlawApiRequest };
+export type {
+  KlawApiResponse,
+  KlawApiModel,
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+};
