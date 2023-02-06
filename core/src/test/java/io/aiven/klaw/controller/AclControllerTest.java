@@ -120,12 +120,12 @@ public class AclControllerTest {
 
     List<AclRequestsModel> aclRequests = utilMethods.getAclRequestsList();
 
-    when(aclControllerService.getCreatedAclRequests("1", "", "created", null, null, null))
+    when(aclControllerService.getAclRequestsForApprover("1", "", "created", null, null, null))
         .thenReturn(aclRequests);
 
     mvcAcls
         .perform(
-            MockMvcRequestBuilders.get("/getCreatedAclRequests")
+            MockMvcRequestBuilders.get("/getAclRequestsForApprover")
                 .param("pageNo", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

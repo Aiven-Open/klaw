@@ -63,7 +63,7 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "getCreatedTopicRequests",
+                url: "getTopicRequestsForApprover",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,

@@ -489,7 +489,7 @@ public class TopicAclControllerIT {
   public void getCreatedAclReqs() throws Exception {
     String res =
         mvc.perform(
-                get("/getCreatedAclRequests")
+                get("/getAclRequestsForApprover")
                     .with(user(user1).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
@@ -532,7 +532,7 @@ public class TopicAclControllerIT {
 
     String res =
         mvc.perform(
-                get("/getCreatedAclRequests")
+                get("/getAclRequestsForApprover")
                     .with(user(user1).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")

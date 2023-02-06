@@ -795,6 +795,56 @@
         }
       }
     },
+    "/getAclRequestsForApprover" : {
+      "get" : {
+        "operationId" : "getAclRequestsForApprover",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        }, {
+          "name" : "topic",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "aclType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PRODUCER", "CONSUMER" ]
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/AclRequestsModel"
+              }
+            }
+          }
+        }
+      }
+    },
     "/getAcls" : {
       "get" : {
         "operationId" : "getAcls",
@@ -1423,56 +1473,6 @@
         }
       }
     },
-    "/getCreatedAclRequests" : {
-      "get" : {
-        "operationId" : "getCreatedAclRequests",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "pageNo",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "currentPage",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "requestsType",
-          "in" : "query",
-          "required" : false,
-          "type" : "string",
-          "default" : "created"
-        }, {
-          "name" : "topic",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "aclType",
-          "in" : "query",
-          "required" : false,
-          "type" : "string",
-          "enum" : [ "PRODUCER", "CONSUMER" ]
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/AclRequestsModel"
-              }
-            }
-          }
-        }
-      }
-    },
     "/getCreatedConnectorRequests" : {
       "get" : {
         "operationId" : "getCreatedConnectorRequests",
@@ -1535,40 +1535,6 @@
               "type" : "array",
               "items" : {
                 "$ref" : "#/definitions/SchemaRequestModel"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getCreatedTopicRequests" : {
-      "get" : {
-        "operationId" : "getCreatedTopicRequests",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "pageNo",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "currentPage",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "requestsType",
-          "in" : "query",
-          "required" : false,
-          "type" : "string",
-          "default" : "created"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/TopicRequestModel"
               }
             }
           }
@@ -2460,6 +2426,40 @@
           "required" : false,
           "type" : "string",
           "default" : "all"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/TopicRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getTopicRequestsForApprover" : {
+      "get" : {
+        "operationId" : "getTopicRequestsForApprover",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
         } ],
         "responses" : {
           "200" : {
@@ -4178,7 +4178,7 @@
     "RequestsCountOverview" : {
       "type" : "object",
       "properties" : {
-        "requestEntityStatusCount" : {
+        "requestEntityStatistics" : {
           "type" : "array",
           "uniqueItems" : true,
           "items" : {

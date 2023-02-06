@@ -154,10 +154,11 @@ public class TopicControllerTest {
   @Order(5)
   public void getCreatedTopicRequests() throws Exception {
     List<TopicRequestModel> topicReqs = utilMethods.getTopicRequestsList();
-    when(topicControllerService.getCreatedTopicRequests("1", "", "created")).thenReturn(topicReqs);
+    when(topicControllerService.getTopicRequestsForApprover("1", "", "created"))
+        .thenReturn(topicReqs);
 
     mvc.perform(
-            MockMvcRequestBuilders.get("/getCreatedTopicRequests")
+            MockMvcRequestBuilders.get("/getTopicRequestsForApprover")
                 .param("pageNo", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

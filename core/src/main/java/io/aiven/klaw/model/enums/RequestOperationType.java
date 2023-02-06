@@ -19,7 +19,7 @@ public enum RequestOperationType {
   @Nullable
   public static RequestOperationType of(@Nullable String value) {
     for (RequestOperationType val : values()) {
-      if (val.name().equals(value)) {
+      if (val.value.equals(value)) {
         return val;
       }
     }

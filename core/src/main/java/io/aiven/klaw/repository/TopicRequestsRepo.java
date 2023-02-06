@@ -11,8 +11,6 @@ import org.springframework.data.repository.query.Param;
 public interface TopicRequestsRepo extends CrudRepository<TopicRequest, TopicRequestID> {
   Optional<TopicRequest> findById(TopicRequestID topicRequestId);
 
-  List<TopicRequest> findAllByTopicstatusAndTenantId(String topicStatus, int tenantId);
-
   List<TopicRequest> findAllByTenantId(int tenantId);
 
   List<TopicRequest> findAllByTeamIdAndTenantId(Integer requestedByTeamId, int tenantId);
@@ -21,8 +19,6 @@ public interface TopicRequestsRepo extends CrudRepository<TopicRequest, TopicReq
 
   List<TopicRequest> findAllByTopicstatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
-
-  Long countByTeamIdAndTopictypeAndTenantId(Integer teamId, String topicType, int tenantId);
 
   @Query(
       value =

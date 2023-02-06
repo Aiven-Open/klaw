@@ -419,7 +419,7 @@ public class TopicControllerService {
     return teamMap;
   }
 
-  public List<TopicRequestModel> getCreatedTopicRequests(
+  public List<TopicRequestModel> getTopicRequestsForApprover(
       String pageNo, String currentPage, String requestsType) {
     log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
     String userName = getUserName();

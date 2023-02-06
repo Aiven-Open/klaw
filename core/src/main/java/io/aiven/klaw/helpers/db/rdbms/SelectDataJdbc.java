@@ -7,6 +7,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -1171,23 +1172,17 @@ public class SelectDataJdbc {
       topicRequestsOperationTypObj.forEach(
           topicReqObjs ->
               operationTypeCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
 
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
       topicRequestsStatusObj.forEach(
           topicReqObjs -> statusCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      allCountsMap.put("STATUS_COUNTS", statusCountsMap);
     } else if (RequestMode.TO_APPROVE == requestMode) {
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
       topicRequestsStatusObj.forEach(
           topicReqObjs -> statusCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      allCountsMap.put("STATUS_COUNTS", statusCountsMap);
 
-      long myTeamClaimReqs =
-          topicRequestsRepo.countByTeamIdAndTopictypeAndTenantId(
-              teamId, RequestOperationType.CLAIM.value, tenantId);
       long assignedToClaimReqs =
           topicRequestsRepo.countAllTopicRequestsByDescriptionAndTopictype(
               tenantId, "" + teamId, RequestOperationType.CLAIM.value);
@@ -1196,13 +1191,21 @@ public class SelectDataJdbc {
       topicRequestsOperationTypObj.forEach(
           topicReqObjs ->
               operationTypeCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      long claimOperationReqs =
-          operationTypeCountsMap.get(RequestOperationType.CLAIM.value)
-              - myTeamClaimReqs
-              + assignedToClaimReqs;
-      statusCountsMap.put(RequestOperationType.CLAIM.value, claimOperationReqs);
-      allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
+
+      operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
     }
+
+    for (RequestStatus requestStatus : RequestStatus.values()) {
+      if (!statusCountsMap.containsKey(requestStatus.value))
+        statusCountsMap.put(requestStatus.value, 0L);
+    }
+    for (RequestOperationType requestOperationType : RequestOperationType.values()) {
+      if (!operationTypeCountsMap.containsKey(requestOperationType.value))
+        operationTypeCountsMap.put(requestOperationType.value, 0L);
+    }
+
+    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
+    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
 
     return allCountsMap;
   }

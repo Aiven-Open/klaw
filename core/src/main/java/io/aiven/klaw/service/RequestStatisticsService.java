@@ -53,7 +53,7 @@ public class RequestStatisticsService {
     for (String key : stCounts.keySet()) {
       RequestStatusCount requestStatusCount =
           RequestStatusCount.builder()
-              .requestStatus(RequestStatus.valueOf(key))
+              .requestStatus(RequestStatus.of(key))
               .count(stCounts.get(key))
               .build();
       requestStatusCountSet.add(requestStatusCount);
@@ -62,7 +62,7 @@ public class RequestStatisticsService {
     for (String key : opCounts.keySet()) {
       RequestsOperationTypeCount requestsOperationTypeCount =
           RequestsOperationTypeCount.builder()
-              .requestOperationType(RequestOperationType.valueOf(key))
+              .requestOperationType(RequestOperationType.of(key))
               .count(opCounts.get(key))
               .build();
       requestsOperationTypeCountsSet.add(requestsOperationTypeCount);

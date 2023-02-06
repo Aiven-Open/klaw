@@ -11,22 +11,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.AclRequestsModel;
-import io.aiven.klaw.model.EnvModel;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.SchemaPromotion;
-import io.aiven.klaw.model.SchemaRequestModel;
-import io.aiven.klaw.model.ServerConfigProperties;
-import io.aiven.klaw.model.SyncAclUpdates;
-import io.aiven.klaw.model.SyncTopicUpdates;
-import io.aiven.klaw.model.TeamModel;
-import io.aiven.klaw.model.TopicCreateRequestModel;
-import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicOverview;
-import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.TopicUpdateRequestModel;
-import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.*;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
@@ -34,7 +19,9 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -703,5 +690,91 @@ public class UtilMethods {
             PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name());
     rolesPermsMap.put("USER", permsList);
     return rolesPermsMap;
+  }
+
+  public RequestsCountOverview getRequestStatisticsOverview() {
+    RequestsCountOverview requestsCountOverview = new RequestsCountOverview();
+    Set<RequestEntityStatusCount> requestEntityStatusCountSet = new HashSet<>();
+
+    Map<String, Long> opCounts = new HashMap<>();
+    Map<String, Long> stCounts = new HashMap<>();
+
+    opCounts.put("CREATE", 2L);
+    opCounts.put("UPDATE", 3L);
+    stCounts.put("CREATED", 2L);
+    stCounts.put("APPROVED", 4L);
+
+    Set<RequestStatusCount> requestStatusCountSet = new HashSet<>();
+    Set<RequestsOperationTypeCount> requestsOperationTypeCountsSet = new HashSet<>();
+
+    for (String key : stCounts.keySet()) {
+      RequestStatusCount requestStatusCount =
+          RequestStatusCount.builder()
+              .requestStatus(RequestStatus.valueOf(key))
+              .count(stCounts.get(key))
+              .build();
+      requestStatusCountSet.add(requestStatusCount);
+    }
+
+    for (String key : opCounts.keySet()) {
+      RequestsOperationTypeCount requestsOperationTypeCount =
+          RequestsOperationTypeCount.builder()
+              .requestOperationType(RequestOperationType.valueOf(key))
+              .count(opCounts.get(key))
+              .build();
+      requestsOperationTypeCountsSet.add(requestsOperationTypeCount);
+    }
+
+    RequestEntityStatusCount requestEntityTopicStatusCount = new RequestEntityStatusCount();
+    requestEntityTopicStatusCount.setRequestEntityType(RequestEntityType.TOPIC);
+    requestEntityTopicStatusCount.setRequestStatusCountSet(requestStatusCountSet);
+    requestEntityTopicStatusCount.setRequestsOperationTypeCountSet(requestsOperationTypeCountsSet);
+    requestEntityStatusCountSet.add(requestEntityTopicStatusCount);
+
+    RequestEntityStatusCount requestEntityAclStatusCount = new RequestEntityStatusCount();
+    requestEntityAclStatusCount.setRequestEntityType(RequestEntityType.ACL);
+    requestEntityAclStatusCount.setRequestStatusCountSet(requestStatusCountSet);
+    requestEntityAclStatusCount.setRequestsOperationTypeCountSet(requestsOperationTypeCountsSet);
+    requestEntityStatusCountSet.add(requestEntityAclStatusCount);
+
+    RequestEntityStatusCount requestEntitySchemaStatusCount = new RequestEntityStatusCount();
+    requestEntitySchemaStatusCount.setRequestEntityType(RequestEntityType.SCHEMA);
+    requestEntitySchemaStatusCount.setRequestStatusCountSet(requestStatusCountSet);
+    requestEntitySchemaStatusCount.setRequestsOperationTypeCountSet(requestsOperationTypeCountsSet);
+    requestEntityStatusCountSet.add(requestEntitySchemaStatusCount);
+
+    RequestEntityStatusCount requestEntityConnectStatusCount = new RequestEntityStatusCount();
+    requestEntityConnectStatusCount.setRequestEntityType(RequestEntityType.CONNECTOR);
+    requestEntityConnectStatusCount.setRequestStatusCountSet(requestStatusCountSet);
+    requestEntityConnectStatusCount.setRequestsOperationTypeCountSet(
+        requestsOperationTypeCountsSet);
+    requestEntityStatusCountSet.add(requestEntityConnectStatusCount);
+
+    RequestEntityStatusCount requestEntityUsersStatusCount = new RequestEntityStatusCount();
+    requestEntityUsersStatusCount.setRequestEntityType(RequestEntityType.USER);
+    requestEntityUsersStatusCount.setRequestStatusCountSet(requestStatusCountSet);
+    requestEntityUsersStatusCount.setRequestsOperationTypeCountSet(requestsOperationTypeCountsSet);
+    requestEntityStatusCountSet.add(requestEntityUsersStatusCount);
+
+    requestsCountOverview.setRequestEntityStatistics(requestEntityStatusCountSet);
+
+    return requestsCountOverview;
+  }
+
+  public Map<String, Map<String, Long>> getRequestCounts() {
+    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+
+    Map<String, Long> operationTypeCountsMap = new HashMap<>();
+    Map<String, Long> statusCountsMap = new HashMap<>();
+
+    operationTypeCountsMap.put(RequestOperationType.CREATE.value, 4L);
+    operationTypeCountsMap.put(RequestOperationType.DELETE.value, 2L);
+    statusCountsMap.put(RequestStatus.CREATED.value, 5L);
+    statusCountsMap.put(RequestStatus.APPROVED.value, 3L);
+
+    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
+    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
+
+    return allCountsMap;
   }
 }
