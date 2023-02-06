@@ -81,10 +81,7 @@ public class UtilController {
   }
 
   /**
-   * // * @param requestEntityType topic, acl, schema, connector, user // * @param requestStatus
-   * requests in different status created/deleted/declined/approved/all // * @param
-   * requestOperationType requests with different operation types Create/Update/Claim/Delete
-   *
+   * @param requestMode TO_APPROVE / MY_REQUESTS
    * @return RequestsCountOverview A count of each request entity type, and request status, and
    *     overall count
    */
@@ -102,9 +99,6 @@ public class UtilController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<RequestsCountOverview> getRequestStatistics(
-      //      @RequestParam("requestEntityType") RequestEntityType requestEntityType,
-      //      @RequestParam("requestStatus") RequestStatus requestStatus,
-      //      @RequestParam("requestOperationType") RequestOperationType requestOperationType,
       @RequestParam("requestMode") RequestMode requestMode) {
     return new ResponseEntity<>(
         requestStatisticsService.getRequestsCountOverview(requestMode), HttpStatus.OK);

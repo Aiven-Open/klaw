@@ -1162,42 +1162,46 @@ public class SelectDataJdbc {
       int teamId, RequestMode requestMode, int tenantId) {
     Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
 
-    Map<String, Long> countsMap1 = new HashMap<>();
-    Map<String, Long> countsMap2 = new HashMap<>();
+    Map<String, Long> operationTypeCountsMap = new HashMap<>();
+    Map<String, Long> statusCountsMap = new HashMap<>();
 
     if (RequestMode.MY_REQUESTS == requestMode) {
       List<Object[]> topicRequestsOperationTypObj =
           topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
       topicRequestsOperationTypObj.forEach(
-          topicReqObjs -> countsMap1.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      allCountsMap.put("OPERATION_TYPE_COUNTS", countsMap1);
+          topicReqObjs ->
+              operationTypeCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
 
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
       topicRequestsStatusObj.forEach(
-          topicReqObjs -> countsMap2.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      allCountsMap.put("STATUS_COUNTS", countsMap2);
+          topicReqObjs -> statusCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      allCountsMap.put("STATUS_COUNTS", statusCountsMap);
     } else if (RequestMode.TO_APPROVE == requestMode) {
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
       topicRequestsStatusObj.forEach(
-          topicReqObjs -> countsMap1.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
-      allCountsMap.put("OPERATION_TYPE_COUNTS", countsMap1);
+          topicReqObjs -> statusCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      allCountsMap.put("STATUS_COUNTS", statusCountsMap);
 
       long myTeamClaimReqs =
           topicRequestsRepo.countByTeamIdAndTopictypeAndTenantId(
               teamId, RequestOperationType.CLAIM.value, tenantId);
       long assignedToClaimReqs =
-          topicRequestsRepo.countAllTopicRequestsByDescriptionAndType(
+          topicRequestsRepo.countAllTopicRequestsByDescriptionAndTopictype(
               tenantId, "" + teamId, RequestOperationType.CLAIM.value);
       List<Object[]> topicRequestsOperationTypObj =
           topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
       topicRequestsOperationTypObj.forEach(
-          topicReqObjs -> countsMap2.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+          topicReqObjs ->
+              operationTypeCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
       long claimOperationReqs =
-          countsMap2.get(RequestOperationType.CLAIM.value) - myTeamClaimReqs + assignedToClaimReqs;
-      countsMap2.put(RequestOperationType.CLAIM.value, claimOperationReqs);
-      allCountsMap.put("STATUS_COUNTS", countsMap2);
+          operationTypeCountsMap.get(RequestOperationType.CLAIM.value)
+              - myTeamClaimReqs
+              + assignedToClaimReqs;
+      statusCountsMap.put(RequestOperationType.CLAIM.value, claimOperationReqs);
+      allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
     }
 
     return allCountsMap;

@@ -26,16 +26,12 @@ public class RequestStatisticsService {
 
   @Autowired MailUtils mailService;
 
-  public RequestsCountOverview getRequestsCountOverview(
-      //      RequestEntityType requestEntityType,
-      //      RequestStatus requestStatus,
-      //      RequestOperationType requestOperationType,
-      RequestMode requestMode) {
+  public RequestsCountOverview getRequestsCountOverview(RequestMode requestMode) {
     RequestsCountOverview requestsCountOverview = new RequestsCountOverview();
     Set<RequestEntityStatusCount> requestEntityStatusCountSet = new HashSet<>();
     updateRequestsCountOverviewForTopics(requestEntityStatusCountSet, requestMode);
 
-    requestsCountOverview.setRequestEntityStatusCount(requestEntityStatusCountSet);
+    requestsCountOverview.setRequestEntityStatistics(requestEntityStatusCountSet);
     return requestsCountOverview;
   }
 

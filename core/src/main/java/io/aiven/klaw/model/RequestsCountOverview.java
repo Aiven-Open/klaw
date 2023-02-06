@@ -5,5 +5,5 @@ import lombok.Data;
 
 @Data
 public class RequestsCountOverview {
-  Set<RequestEntityStatusCount> requestEntityStatusCount;
+  Set<RequestEntityStatusCount> requestEntityStatistics;
 }

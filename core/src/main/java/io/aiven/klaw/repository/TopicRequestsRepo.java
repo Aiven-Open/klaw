@@ -64,7 +64,7 @@ public interface TopicRequestsRepo extends CrudRepository<TopicRequest, TopicReq
           "select count(*) from kwtopicrequests where tenantid = :tenantId"
               + " and description = :description and topictype = :topictype",
       nativeQuery = true)
-  long countAllTopicRequestsByDescriptionAndType(
+  long countAllTopicRequestsByDescriptionAndTopictype(
       @Param("tenantId") Integer tenantId,
       @Param("description") String description,
       @Param("topictype") String requestOperationType);
