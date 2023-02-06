@@ -29,7 +29,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={database}
-            href={`/index`}
+            to={`/index`}
             linkText={"Dashboard"}
           />
         </li>
@@ -41,15 +41,14 @@ function MainNavigation() {
           >
             <MainNavigationLink
               linkText={"All Topics"}
-              href={Routes.TOPICS}
+              to={Routes.TOPICS}
               active={
                 pathname.startsWith(Routes.TOPICS) ||
                 pathname.startsWith("/topic")
               }
-              useRouter={true}
             />
             <MainNavigationLink
-              href={`/myTopicRequests`}
+              to={`/myTopicRequests`}
               linkText={"My Team's Requests"}
             />
           </MainNavigationSubmenuList>
@@ -60,38 +59,34 @@ function MainNavigation() {
             text={"Kafka Connectors"}
           >
             <MainNavigationLink
-              href={`/kafkaConnectors`}
+              to={`/kafkaConnectors`}
               linkText={"All Connectors"}
             />
             <MainNavigationLink
-              href={`/execConnectors`}
+              to={`/execConnectors`}
               linkText={"Connector Requests"}
             />
           </MainNavigationSubmenuList>
         </li>
         <li>
           <MainNavigationSubmenuList icon={people} text={"Users and Teams"}>
-            <MainNavigationLink href={`/users`} linkText={"Users"} />
-            <MainNavigationLink href={`/teams`} linkText={"Teams"} />
-            <MainNavigationLink
-              href={`/execUsers`}
-              linkText={"User Requests"}
-            />
+            <MainNavigationLink to={`/users`} linkText={"Users"} />
+            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
+            <MainNavigationLink to={`/execUsers`} linkText={"User Requests"} />
           </MainNavigationSubmenuList>
         </li>
         <li>
           {approvalsEnabled ? (
             <MainNavigationLink
               icon={tickCircle}
-              href={Routes.APPROVALS}
+              to={Routes.APPROVALS}
               linkText={"Approval Requests"}
               active={pathname.startsWith(Routes.APPROVALS)}
-              useRouter={true}
             />
           ) : (
             <MainNavigationLink
               icon={tickCircle}
-              href={`/execTopics`}
+              to={`/execTopics`}
               linkText={"Approval Requests"}
             />
           )}
@@ -99,7 +94,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={list}
-            href={`/activityLog`}
+            to={`/activityLog`}
             linkText={"Audit Log"}
           />
         </li>
@@ -109,7 +104,7 @@ function MainNavigation() {
           </Box>
           <MainNavigationLink
             icon={cog}
-            href={`/serverConfig`}
+            to={`/serverConfig`}
             linkText={"Settings"}
           />
         </li>

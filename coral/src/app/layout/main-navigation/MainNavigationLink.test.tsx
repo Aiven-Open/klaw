@@ -1,7 +1,8 @@
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
-import { cleanup, screen, render } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import { MemoryRouter } from "react-router-dom";
+import { Routes } from "src/app/router_utils";
 
 // mock out svgs to avoid clutter
 jest.mock("@aivenio/aquarium", () => {
@@ -19,13 +20,13 @@ describe("MainNavigationLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
   const mockIcon = "fake-icon" as unknown as typeof data;
 
-  describe("renders a default link with required props", () => {
+  describe("renders a default link with required props with a string as `to`", () => {
     beforeAll(() => {
       render(
         <MainNavigationLink
           icon={mockIcon}
-          href={"/topics"}
-          linkText={"Topics"}
+          to={"/some-klaw-link"}
+          linkText={"Link back to Klaw"}
         />
       );
     });
@@ -33,14 +34,14 @@ describe("MainNavigationLink.tsx", () => {
     afterAll(cleanup);
 
     it(`renders a link with text dependent on a given property`, () => {
-      const navLink = screen.getByRole("link", { name: "Topics" });
+      const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
       expect(navLink).toBeVisible();
     });
 
     it(`renders a href for that link dependent on a given  property`, () => {
-      const navLink = screen.getByRole("link", { name: "Topics" });
-      expect(navLink).toHaveAttribute("href", "/topics");
+      const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
+      expect(navLink).toHaveAttribute("href", "/some-klaw-link");
     });
 
     it(`renders a given icon for that is hidden from assistive technology`, () => {
@@ -56,12 +57,12 @@ describe("MainNavigationLink.tsx", () => {
       render(
         <MainNavigationLink
           icon={mockIcon}
-          href={"/topics"}
-          linkText={"Topics"}
+          to={"/some-klaw-link"}
+          linkText={"Link back to Klaw"}
         />
       );
 
-      const navLink = screen.getByRole("link", { name: "Topics" });
+      const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
       expect(navLink).not.toHaveAttribute("aria-current", "page");
     });
@@ -70,12 +71,12 @@ describe("MainNavigationLink.tsx", () => {
       render(
         <MainNavigationLink
           icon={mockIcon}
-          href={"/topics"}
-          linkText={"Topics"}
+          to={"/some-klaw-link"}
+          linkText={"Link back to Klaw"}
         />
       );
 
-      const navLink = screen.getByRole("link", { name: "Topics" });
+      const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
       expect(navLink.parentNode).not.toHaveClass("mainNavigationLinkActive");
     });
@@ -84,13 +85,13 @@ describe("MainNavigationLink.tsx", () => {
       render(
         <MainNavigationLink
           icon={mockIcon}
-          href={"/topics"}
-          linkText={"Topics"}
+          to={"/some-klaw-link"}
+          linkText={"Link back to Klaw"}
           active={true}
         />
       );
 
-      const navLink = screen.getByRole("link", { name: "Topics" });
+      const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
       expect(navLink).toHaveAttribute("aria-current", "page");
     });
@@ -99,27 +100,28 @@ describe("MainNavigationLink.tsx", () => {
       render(
         <MainNavigationLink
           icon={mockIcon}
-          href={"/topics"}
-          linkText={"Topics"}
+          to={"/some-klaw-link"}
+          linkText={"Link back to Klaw"}
           active={true}
         />
       );
 
-      const navLink = screen.getByRole("link", { name: "Topics" });
+      const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
       expect(navLink.parentNode).toHaveClass("mainNavigationLinkActive");
     });
   });
-  describe("Link rendered with React Routers <Link>", () => {
+
+  describe("renders a react router <Link> when `to` belongs to `Routes`", () => {
+    afterAll(cleanup);
     it("renders correct link content", () => {
       render(
         <MemoryRouter initialEntries={["/users/mjackson"]}>
           <MainNavigationLink
             icon={mockIcon}
-            href={"/topics"}
+            to={Routes.TOPICS}
             linkText={"Topics"}
             active={true}
-            useRouter={true}
           />
         </MemoryRouter>
       );
