@@ -91,9 +91,16 @@ public class TopicController {
         topicControllerService.getTopicTeamOnly(topicName, patternType), HttpStatus.OK);
   }
 
-  /*
-     For executing topic requests
-  */
+  /**
+   * @param pageNo Which page would you like returned e.g. 1
+   * @param currentPage Which Page are you currently on e.g. 1
+   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param teamName The name of the team that that you wish to filter the results by, e.g.
+   *     'Octopus'
+   * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param search A wildcard search term that searches topicNames.
+   * @return A List of Topic Requests filtered by the provided parameters.
+   */
   @RequestMapping(
       value = "/getCreatedTopicRequests",
       method = RequestMethod.GET,
@@ -101,9 +108,13 @@ public class TopicController {
   public ResponseEntity<List<TopicRequestModel>> getCreatedTopicRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
+      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "teamName", required = false) String teamName,
+      @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
-        topicControllerService.getCreatedTopicRequests(pageNo, currentPage, requestsType),
+        topicControllerService.getCreatedTopicRequests(
+            pageNo, currentPage, requestsType, teamName, env, search),
         HttpStatus.OK);
   }
 

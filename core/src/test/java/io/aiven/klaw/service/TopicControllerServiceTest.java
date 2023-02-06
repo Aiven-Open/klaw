@@ -526,7 +526,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestModel> topicList =
-        topicControllerService.getCreatedTopicRequests("1", "", "all");
+        topicControllerService.getCreatedTopicRequests("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(2);
   }
@@ -551,7 +551,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestModel> topicList =
-        topicControllerService.getCreatedTopicRequests("1", "", "all");
+        topicControllerService.getCreatedTopicRequests("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);

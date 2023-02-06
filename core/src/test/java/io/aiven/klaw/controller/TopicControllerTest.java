@@ -154,7 +154,8 @@ public class TopicControllerTest {
   @Order(5)
   public void getCreatedTopicRequests() throws Exception {
     List<TopicRequestModel> topicReqs = utilMethods.getTopicRequestsList();
-    when(topicControllerService.getCreatedTopicRequests("1", "", "created")).thenReturn(topicReqs);
+    when(topicControllerService.getCreatedTopicRequests("1", "", "created", null, null, null))
+        .thenReturn(topicReqs);
 
     mvc.perform(
             MockMvcRequestBuilders.get("/getCreatedTopicRequests")

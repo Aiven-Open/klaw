@@ -1561,6 +1561,21 @@
           "required" : false,
           "type" : "string",
           "default" : "created"
+        }, {
+          "name" : "teamName",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {

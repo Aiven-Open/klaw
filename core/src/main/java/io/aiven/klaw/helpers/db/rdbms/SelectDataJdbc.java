@@ -380,57 +380,53 @@ public class SelectDataJdbc {
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
-      int tenantId) {
-    log.debug("selectTopicRequests {} {}", requestor, status);
+      int tenantId,
+      String teamName,
+      String env,
+      String wildcardSearch) {
+    log.debug(
+        "selectTopicRequests {} {} {} {} {}", requestor, status, teamName, env, wildcardSearch);
     List<TopicRequest> topicRequestList = new ArrayList<>();
 
     List<TopicRequest> topicRequestListSub;
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
     if (allReqs) { // approvers
+
       List<TopicRequest> claimTopicReqs =
-          topicRequestsRepo.findAllByTopictypeAndTenantId(TopicRequestTypes.Claim.name(), tenantId);
+          Lists.newArrayList(
+              findTopicRequestsByExample(
+                  TopicRequestTypes.Claim.name(),
+                  teamName,
+                  env,
+                  status,
+                  tenantId,
+                  String.valueOf(teamSelected)));
 
-      if ("all".equals(status)) {
-        topicRequestListSub = topicRequestsRepo.findAllByTenantId(tenantId);
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
-                .collect(Collectors.toList());
+      topicRequestListSub =
+          Lists.newArrayList(
+              findTopicRequestsByExample(null, teamName, env, status, tenantId, null));
 
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals("" + teamSelected, claimTopicReq.getDescription()))
-                .collect(Collectors.toList());
-      } else {
-        topicRequestListSub = topicRequestsRepo.findAllByTopicstatusAndTenantId(status, tenantId);
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
-                .collect(Collectors.toList());
-
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected)
-                            && Objects.equals(claimTopicReq.getTopicstatus(), status))
-                .collect(Collectors.toList());
-      }
+      // Only execute just before adding the separate claim list as this will make sure only the
+      // claim topics this team is able to approve will be returned.
+      topicRequestListSub =
+          topicRequestListSub.stream()
+              .filter(
+                  topicRequest ->
+                      !TopicRequestTypes.Claim.name().equals(topicRequest.getTopictype()))
+              .collect(Collectors.toList());
 
       topicRequestListSub.addAll(claimTopicReqs);
+
     } else {
-      topicRequestListSub = Lists.newArrayList(topicRequestsRepo.findAllByTenantId(tenantId));
+      topicRequestListSub =
+          Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
     }
 
+    boolean wildcardFilter = (allReqs && wildcardSearch != null && !wildcardSearch.isEmpty());
+
     for (TopicRequest row : topicRequestListSub) {
-      Integer teamName = row.getTeamId();
+      Integer teamId = row.getTeamId();
       try {
         row.setRequesttimestring(
             (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
@@ -439,14 +435,85 @@ public class SelectDataJdbc {
       }
 
       if (showRequestsOfAllTeams) {
-        topicRequestList.add(row); // no team filter
+        filterAndAddTopicRequest(
+            topicRequestList, row, wildcardSearch, wildcardFilter); // no team filter
       } else if (teamSelected != null
-          && (teamSelected.equals(teamName) || ("" + teamSelected).equals(row.getDescription()))) {
-        topicRequestList.add(row);
+          && (teamSelected.equals(teamId) || ("" + teamSelected).equals(row.getDescription()))) {
+        filterAndAddTopicRequest(topicRequestList, row, wildcardSearch, wildcardFilter);
       }
     }
 
     return topicRequestList;
+  }
+
+  private void filterAndAddTopicRequest(
+      List<TopicRequest> topicRequestList,
+      TopicRequest row,
+      String wildcardSearch,
+      boolean applyWildcardFilter) {
+    if (!applyWildcardFilter || row.getTopicname().contains(wildcardSearch)) {
+      topicRequestList.add(row);
+    }
+  }
+
+  /**
+   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
+   * will be utilised in the search.
+   *
+   * @param requestType The type of topic request Create/claim etc
+   * @param teamName The identifier of the team
+   * @param environment the environment
+   * @param status created/declined/approved
+   * @param tenantId The tenantId
+   * @return An Iterable of all TopicRequests that match the parameters that have been supplied
+   */
+  private Iterable<TopicRequest> findTopicRequestsByExample(
+      String requestType,
+      String teamName,
+      String environment,
+      String status,
+      int tenantId,
+      String description) {
+
+    TopicRequest request = new TopicRequest();
+    request.setTenantId(tenantId);
+
+    if (requestType != null) {
+      request.setTopictype(requestType);
+    }
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (teamName != null) {
+      List<Team> team = teamRepo.findAllByTenantIdAndTeamname(tenantId, teamName);
+      if (team.size() == 1) {
+        request.setTeamId(team.get(0).getTeamId());
+      } else {
+        log.warn(
+            "findTopicRequestsByExample({},{},{},{},()) returned {} number of teams, so the filtering parameter was not applied.",
+            requestType,
+            teamName,
+            environment,
+            status,
+            tenantId,
+            team.size());
+      }
+    }
+    if (description != null && !description.isEmpty()) {
+      request.setDescription(description);
+    }
+
+    if (status != null && !status.equalsIgnoreCase("all")) {
+      request.setTopicstatus(status);
+    }
+    // check if debug is enabled so the logger doesn't waste resources converting object request to
+    // a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
+
+    return topicRequestsRepo.findAll(Example.of(request));
   }
 
   public List<KafkaConnectorRequest> selectConnectorRequestsByStatus(
@@ -508,7 +575,7 @@ public class SelectDataJdbc {
     }
 
     for (KafkaConnectorRequest row : topicRequestListSub) {
-      Integer teamName = row.getTeamId();
+      Integer teamId = row.getTeamId();
       try {
         row.setRequesttimestring(
             (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
@@ -519,7 +586,7 @@ public class SelectDataJdbc {
       if (showRequestsOfAllTeams) {
         topicRequestList.add(row); // no team filter
       } else if (teamSelected != null
-          && (Objects.equals(teamSelected, teamName)
+          && (Objects.equals(teamSelected, teamId)
               || Objects.equals("" + teamSelected, row.getDescription()))) {
         topicRequestList.add(row);
       }

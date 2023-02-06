@@ -420,8 +420,21 @@ public class TopicControllerService {
   }
 
   public List<TopicRequestModel> getCreatedTopicRequests(
-      String pageNo, String currentPage, String requestsType) {
-    log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      String teamName,
+      String env,
+      String wildcardSearch) {
+    if(log.isDebugEnabled()) {
+      log.debug(
+              "getCreatedTopicRequests {} {} {} {} {}",
+              pageNo,
+              requestsType,
+              teamName,
+              env,
+              wildcardSearch);
+    }
     String userName = getUserName();
     List<TopicRequest> createdTopicReqList;
     int tenantId = commonUtilsService.getTenantId(userName);
