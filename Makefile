@@ -1,5 +1,9 @@
 version = 2.0.0
 
+init_klaw:
+	$(shell git config --local core.hooksPath .githooks/)
+	echo "✅ Custom git hook path set!"
+
 build_all: klaw_core cluster_api
 
 klaw_core:
