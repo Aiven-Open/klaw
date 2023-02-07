@@ -271,9 +271,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/environmentGetClusterInfoResponse"
-  /getCreatedAclRequests:
+  /getAclRequestsForApprover:
     get:
-      operationId: getCreatedAclRequests
+      operationId: getAclRequestsForApprover
       summary: "Get ACL requests with aclstatus: created"
       tags:
         - ACL

@@ -38,7 +38,7 @@ type CreateAclRequestTopicTypeConsumer = BaseCreateAclRequest & {
 };
 
 type GetCreatedAclRequestParameters =
-  KlawApiRequestQueryParameters<"getCreatedAclRequests">;
+  KlawApiRequestQueryParameters<"getAclRequestsForApprover">;
 
 type AclRequest = KlawApiModel<"aclRequest">;
 

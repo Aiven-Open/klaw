@@ -36,8 +36,8 @@ export type paths = {
   "/getClusterInfoFromEnv": {
     get: operations["clusterInfoFromEnvironmentGet"];
   };
-  "/getCreatedAclRequests": {
-    get: operations["getCreatedAclRequests"];
+  "/getAclRequestsForApprover": {
+    get: operations["getAclRequestsForApprover"];
   };
   "/createAcl": {
     post: operations["createAclRequest"];
@@ -1155,7 +1155,7 @@ export type operations = {
       };
     };
   };
-  getCreatedAclRequests: {
+  getAclRequestsForApprover: {
     parameters: {
       query: {
         pageNo: string;
@@ -1256,7 +1256,7 @@ export enum ApiPaths {
   environmentsGet = "/getEnvs",
   envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
   clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
-  getCreatedAclRequests = "/getCreatedAclRequests",
+  getAclRequestsForApprover = "/getAclRequestsForApprover",
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",

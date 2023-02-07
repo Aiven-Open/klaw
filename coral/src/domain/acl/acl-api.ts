@@ -17,10 +17,10 @@ const createAclRequest = (
   >("/createAcl", aclParams);
 };
 
-const getCreatedAclRequests = (params: GetCreatedAclRequestParameters) => {
-  return api.get<KlawApiResponse<"getCreatedAclRequests">>(
-    `/getCreatedAclRequests?${new URLSearchParams(params)}`
+const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
+  return api.get<KlawApiResponse<"getAclRequestsForApprover">>(
+    `/getAclRequestsForApprover?${new URLSearchParams(params)}`
   );
 };
 
-export { createAclRequest, getCreatedAclRequests };
+export { createAclRequest, getAclRequestsForApprover };
