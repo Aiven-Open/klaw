@@ -162,7 +162,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "getCreatedAclRequests",
+                url: "getAclRequestsForApprover",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,

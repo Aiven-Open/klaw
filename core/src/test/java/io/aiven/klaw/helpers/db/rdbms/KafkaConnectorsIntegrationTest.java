@@ -7,7 +7,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
@@ -38,11 +38,11 @@ public class KafkaConnectorsIntegrationTest {
   private UtilMethods utilMethods;
 
   public void loadData() {
-    generateData(10, 101, "firstconn", "dev", TopicRequestTypes.Claim, "created", 1);
-    generateData(10, 103, "firstconn", "dev", TopicRequestTypes.Create, "created", 11);
-    generateData(10, 101, "secondconn", "dev", TopicRequestTypes.Create, "created", 21);
-    generateData(10, 101, "secondconn", "test", TopicRequestTypes.Delete, "declined", 31);
-    generateData(1, 101, "secondconn", "test", TopicRequestTypes.Update, "created", 41);
+    generateData(10, 101, "firstconn", "dev", RequestOperationType.CLAIM, "created", 1);
+    generateData(10, 103, "firstconn", "dev", RequestOperationType.CREATE, "created", 11);
+    generateData(10, 101, "secondconn", "dev", RequestOperationType.CREATE, "created", 21);
+    generateData(10, 101, "secondconn", "test", RequestOperationType.DELETE, "declined", 31);
+    generateData(1, 101, "secondconn", "test", RequestOperationType.UPDATE, "created", 41);
     UserInfo user = new UserInfo();
     user.setTenantId(101);
     user.setTeamId(101);
@@ -227,7 +227,7 @@ public class KafkaConnectorsIntegrationTest {
       int tenantId,
       String topicName,
       String env,
-      TopicRequestTypes connectorType,
+      RequestOperationType connectorType,
       String status,
       int id) {
 

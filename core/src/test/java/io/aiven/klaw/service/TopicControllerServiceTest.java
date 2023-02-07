@@ -31,7 +31,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -414,7 +413,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     List<TopicRequest> topicRequests = getListTopicRequests();
-    topicRequests.get(0).setTopictype(TopicRequestTypes.Claim.name());
+    topicRequests.get(0).setTopictype(RequestOperationType.CLAIM.value);
     when(handleDbRequests.getAllTopicRequests(anyString(), anyInt())).thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
@@ -433,7 +432,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     List<TopicRequest> topicRequests = getListTopicRequests();
-    topicRequests.get(0).setTopictype(TopicRequestTypes.Claim.name());
+    topicRequests.get(0).setTopictype(RequestOperationType.CLAIM.value);
     when(handleDbRequests.getAllTopicRequests(anyString(), anyInt())).thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
@@ -526,7 +525,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestModel> topicList =
-        topicControllerService.getCreatedTopicRequests("1", "", "all", null, null, null);
+        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(2);
   }
@@ -551,7 +550,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestModel> topicList =
-        topicControllerService.getCreatedTopicRequests("1", "", "all", null, null, null);
+        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
@@ -597,7 +596,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    topicRequest.setTopictype(TopicRequestTypes.Claim.name());
+    topicRequest.setTopictype(RequestOperationType.CLAIM.value);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
@@ -627,7 +626,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    topicRequest.setTopictype(TopicRequestTypes.Update.name());
+    topicRequest.setTopictype(RequestOperationType.UPDATE.value);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
@@ -1106,7 +1105,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    topicRequest.setTopictype(TopicRequestTypes.Create.toString());
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
     List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
     TopicConfigEntry topicConfigEntry1 = new TopicConfigEntry("compression.type", "snappy");
     TopicConfigEntry topicConfigEntry2 = new TopicConfigEntry("flush.ms", "12345");
@@ -1122,7 +1121,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    topicRequest.setTopictype(TopicRequestTypes.Create.toString());
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
     return topicRequest;
   }
 
@@ -1142,7 +1141,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(-1);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    topicRequest.setTopictype(TopicRequestTypes.Create.toString());
+    topicRequest.setTopictype(RequestOperationType.CREATE.value);
     return topicRequest;
   }
 

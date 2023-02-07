@@ -13,6 +13,7 @@ export default {
     "<rootDir>/test-setup/setup-files-after-env.ts",
     "<rootDir>/test-setup/mock-monaco-editor.tsx",
   ],
+
   moduleNameMapper: {
     ".+\\.(png|jpg|ttf|woff|woff2|svg)$": "jest-transform-stub",
     "\\.css$": "identity-obj-proxy",

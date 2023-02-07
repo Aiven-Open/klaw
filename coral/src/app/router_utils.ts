@@ -1,5 +1,13 @@
 import isString from "lodash/isString";
 
+enum Routes {
+  TOPICS = "/topics",
+  TOPIC_REQUEST = "/topics/request",
+  TOPIC_ACL_REQUEST = "/topic/:topicName/subscribe",
+  TOPIC_SCHEMA_REQUEST = "/topic/:topicName/request-schema",
+  APPROVALS = "/approvals",
+}
+
 enum ApprovalsTabEnum {
   TOPICS = "APPROVALS_TAB_ENUM_topics",
   ACLS = "APPROVALS_TAB_ENUM_acls",
@@ -24,4 +32,9 @@ function isApprovalsTabEnum(value: unknown): value is ApprovalsTabEnum {
   return false;
 }
 
-export { ApprovalsTabEnum, APPROVALS_TAB_ID_INTO_PATH, isApprovalsTabEnum };
+export {
+  ApprovalsTabEnum,
+  Routes,
+  APPROVALS_TAB_ID_INTO_PATH,
+  isApprovalsTabEnum,
+};

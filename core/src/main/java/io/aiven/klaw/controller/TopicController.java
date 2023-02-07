@@ -102,10 +102,10 @@ public class TopicController {
    * @return A List of Topic Requests filtered by the provided parameters.
    */
   @RequestMapping(
-      value = "/getCreatedTopicRequests",
+      value = "/getTopicRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TopicRequestModel>> getCreatedTopicRequests(
+  public ResponseEntity<List<TopicRequestModel>> getTopicRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
@@ -113,7 +113,7 @@ public class TopicController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
-        topicControllerService.getCreatedTopicRequests(
+        topicControllerService.getTopicRequestsForApprover(
             pageNo, currentPage, requestsType, teamName, env, search),
         HttpStatus.OK);
   }

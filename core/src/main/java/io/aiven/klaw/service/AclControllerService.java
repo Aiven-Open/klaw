@@ -357,7 +357,7 @@ public class AclControllerService {
     return newList;
   }
 
-  public List<AclRequestsModel> getCreatedAclRequests(
+  public List<AclRequestsModel> getAclRequestsForApprover(
       String pageNo,
       String currentPage,
       String requestsType,

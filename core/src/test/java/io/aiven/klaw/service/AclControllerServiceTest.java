@@ -317,7 +317,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
     List<AclRequestsModel> listReqs =
-        aclControllerService.getCreatedAclRequests("", "", "", null, null, null);
+        aclControllerService.getAclRequestsForApprover("", "", "", null, null, null);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 
@@ -338,7 +338,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
     List<AclRequestsModel> listReqs =
-        aclControllerService.getCreatedAclRequests("", "", "", null, null, null);
+        aclControllerService.getAclRequestsForApprover("", "", "", null, null, null);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 

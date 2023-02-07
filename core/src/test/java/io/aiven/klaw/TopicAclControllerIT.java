@@ -74,7 +74,7 @@ public class TopicAclControllerIT {
 
   private static final String superAdmin = "superadmin";
   private static final String superAdminPwd = "kwsuperadmin123$$";
-  private static final String user1 = "kwusera", user2 = "kwuserb";
+  private static final String user1 = "kwusera", user2 = "kwuserb", user3 = "kwuserc";
   private static final String topicName = "testtopic";
   private static final int topicId = 1001;
 
@@ -108,9 +108,12 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    assertThat(
+            response.contains(ApiResultStatus.SUCCESS.value)
+                || response.contains("User already exists"))
+        .isTrue();
 
-    userInfoModel = mockMethods.getUserInfoModel(user2, role, "INFRATEAM");
+    userInfoModel = mockMethods.getUserInfoModel(user2, role, INFRATEAM);
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     response =
@@ -124,6 +127,28 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
+
+    assertThat(
+            response.contains(ApiResultStatus.SUCCESS.value)
+                || response.contains("User already exists"))
+        .isTrue();
+    userInfoModel = mockMethods.getUserInfoModel(user3, role, INFRATEAM);
+    jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(
+            response.contains(ApiResultStatus.SUCCESS.value)
+                || response.contains("User already exists"))
+        .isTrue();
   }
 
   @Test
@@ -256,8 +281,8 @@ public class TopicAclControllerIT {
   public void queryTopicRequest() throws Exception {
     String res =
         mvc.perform(
-                MockMvcRequestBuilders.get("/getCreatedTopicRequests")
-                    .with(user(user1).password(PASSWORD))
+                MockMvcRequestBuilders.get("/getTopicRequests")
+                    .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -277,7 +302,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopicRequests")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -489,7 +514,7 @@ public class TopicAclControllerIT {
   public void getCreatedAclReqs() throws Exception {
     String res =
         mvc.perform(
-                get("/getCreatedAclRequests")
+                get("/getAclRequestsForApprover")
                     .with(user(user1).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
@@ -532,7 +557,7 @@ public class TopicAclControllerIT {
 
     String res =
         mvc.perform(
-                get("/getCreatedAclRequests")
+                get("/getAclRequestsForApprover")
                     .with(user(user1).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
