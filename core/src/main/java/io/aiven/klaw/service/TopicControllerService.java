@@ -426,14 +426,14 @@ public class TopicControllerService {
       String teamName,
       String env,
       String wildcardSearch) {
-    if(log.isDebugEnabled()) {
+    if (log.isDebugEnabled()) {
       log.debug(
-              "getCreatedTopicRequests {} {} {} {} {}",
-              pageNo,
-              requestsType,
-              teamName,
-              env,
-              wildcardSearch);
+          "getCreatedTopicRequests {} {} {} {} {}",
+          pageNo,
+          requestsType,
+          teamName,
+          env,
+          wildcardSearch);
     }
     String userName = getUserName();
     List<TopicRequest> createdTopicReqList;

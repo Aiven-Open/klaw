@@ -5,17 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.common.collect.Lists;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -309,12 +305,12 @@ public class TopicRequestsIntegrationTest {
   public void getNonApproversRequestsFilteredByStatusByWildcard_willIgnoreOtherPassedParameters() {
 
     List<TopicRequest> tenant1 =
-            selectDataJdbc.selectTopicRequestsByStatus(
-                    false, "James", "deleted", true, 101, null, null, "One");
+        selectDataJdbc.selectTopicRequestsByStatus(
+            false, "James", "deleted", true, 101, null, null, "One");
 
     List<TopicRequest> tenant2 =
-            selectDataJdbc.selectTopicRequestsByStatus(
-                    false, "John", "created", true, 103, null, null, "two");
+        selectDataJdbc.selectTopicRequestsByStatus(
+            false, "John", "created", true, 103, null, null, "two");
 
     assertThat(tenant1.size()).isEqualTo(31);
 
@@ -326,13 +322,11 @@ public class TopicRequestsIntegrationTest {
   public void givenTeamNameWithMultipleResponses_doNotFilterByTeam() {
 
     List<TopicRequest> james =
-            selectDataJdbc.selectTopicRequestsByStatus(
-                    true, "James", "declined", true, 101, "trust", null, null);
+        selectDataJdbc.selectTopicRequestsByStatus(
+            true, "James", "declined", true, 101, "trust", null, null);
 
     assertThat(james.size()).isEqualTo(10);
   }
-
-
 
   private void generateData(
       int number,
