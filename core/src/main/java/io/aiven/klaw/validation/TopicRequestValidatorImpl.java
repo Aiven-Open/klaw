@@ -4,7 +4,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
@@ -45,14 +45,14 @@ public class TopicRequestValidatorImpl
 
     if (permissionType.equals(PermissionType.REQUEST_CREATE_TOPICS)) {
       // Verify if topic request type is Create
-      if (!TopicRequestTypes.Create.name().equals(topicRequestModel.getTopictype())) {
+      if (!RequestOperationType.CREATE.value.equals(topicRequestModel.getTopictype())) {
         updateConstraint(
             constraintValidatorContext,
             "Failure. Invalid Topic request type. Possible Value : Create");
         return false;
       }
     } else if (permissionType.equals(PermissionType.REQUEST_EDIT_TOPICS)) {
-      if (!TopicRequestTypes.Update.name().equals(topicRequestModel.getTopictype())) {
+      if (!RequestOperationType.UPDATE.value.equals(topicRequestModel.getTopictype())) {
         updateConstraint(
             constraintValidatorContext,
             "Failure. Invalid Topic request type. Possible Value : Update");
@@ -137,7 +137,7 @@ public class TopicRequestValidatorImpl
 
     // Check if topic exists on cluster
     // Ignore topic exists check if Update request
-    if (!TopicRequestTypes.Update.name().equals(topicRequestModel.getTopictype())) {
+    if (!RequestOperationType.UPDATE.value.equals(topicRequestModel.getTopictype())) {
       boolean topicExists = false;
       if (topics != null) {
         topicExists =

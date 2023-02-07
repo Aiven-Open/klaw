@@ -173,7 +173,7 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<TopicRequest> topicRequestsActual =
-        selectData.selectTopicRequestsByStatus(false, requestor, "", true, 1);
+        selectData.selectTopicRequestsByStatus(false, requestor, "created", true, 1);
     assertThat(topicRequestsActual).hasSize(1);
   }
 
