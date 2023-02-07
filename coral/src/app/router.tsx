@@ -31,7 +31,7 @@ const routes: Array<RouteObject> = [
     element: <RequestTopic />,
   },
   {
-    path: Routes.TOPIC_ALC_REQUEST,
+    path: Routes.TOPIC_ACL_REQUEST,
     element: <AclRequest />,
   },
   {
