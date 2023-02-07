@@ -24,7 +24,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-public class TopicRequestsIntegrationTest {
+public class TopicRequestIntegrationTest {
 
   @Autowired private TopicRequestsRepo repo;
   @Autowired private UserInfoRepo userInfoRepo;
