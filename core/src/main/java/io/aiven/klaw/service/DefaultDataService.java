@@ -375,6 +375,8 @@ public class DefaultDataService {
         "SYNC_BACK_TOPICS", PermissionType.SYNC_BACK_TOPICS.getDescription());
     defaultAdminPermissionsList.put(
         "SYNC_BACK_SUBSCRIPTIONS", PermissionType.SYNC_BACK_SUBSCRIPTIONS.getDescription());
+    defaultAdminPermissionsList.put(
+        "SYNC_CONNECTORS", PermissionType.SYNC_CONNECTORS.getDescription());
 
     defaultAdminPermissionsList.put(
         "UPDATE_PERMISSIONS", PermissionType.UPDATE_PERMISSIONS.getDescription());
@@ -385,6 +387,8 @@ public class DefaultDataService {
     defaultAdminPermissionsList.put(
         "APPROVE_ALL_REQUESTS_TEAMS", PermissionType.APPROVE_ALL_REQUESTS_TEAMS.getDescription());
     defaultAdminPermissionsList.put("VIEW_TOPICS", PermissionType.VIEW_TOPICS.getDescription());
+    defaultAdminPermissionsList.put(
+        "VIEW_CONNECTORS", PermissionType.VIEW_CONNECTORS.getDescription());
     defaultAdminPermissionsList.put(
         "UPDATE_DELETE_MY_TENANT", PermissionType.UPDATE_DELETE_MY_TENANT.getDescription());
 

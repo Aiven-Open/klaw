@@ -603,6 +603,18 @@ public class UtilMethods {
     return syncUpdatesList;
   }
 
+  public List<SyncConnectorUpdates> getSyncConnectorUpdates() {
+    List<SyncConnectorUpdates> syncUpdatesList = new ArrayList<>();
+    SyncConnectorUpdates syncConnectorUpdates = new SyncConnectorUpdates();
+    syncConnectorUpdates.setEnvSelected("1");
+    syncConnectorUpdates.setConnectorName("testconnector");
+    syncConnectorUpdates.setTeamSelected("Seahorses");
+    syncConnectorUpdates.setReq_no("fsadFDS");
+    syncUpdatesList.add(syncConnectorUpdates);
+
+    return syncUpdatesList;
+  }
+
   public List<SyncAclUpdates> getSyncAclsUpdates() {
     List<SyncAclUpdates> syncUpdatesList = new ArrayList<>();
     SyncAclUpdates syncAclUpdates = new SyncAclUpdates();
