@@ -4,7 +4,11 @@ import {
   GetCreatedAclRequestParameters,
 } from "src/domain/acl/acl-types";
 import api from "src/services/api";
-import { KlawApiRequest, KlawApiResponse } from "types/utils";
+import {
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+  KlawApiResponse,
+} from "types/utils";
 
 const createAclRequest = (
   aclParams:
@@ -23,4 +27,12 @@ const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
   );
 };
 
-export { createAclRequest, getAclRequestsForApprover };
+const approveAclRequest = (
+  params: KlawApiRequestQueryParameters<"approveAclRequests">
+): Promise<KlawApiResponse<"approveAclRequests">> => {
+  return api.post<KlawApiResponse<"approveAclRequests">, never>(
+    `/execAclRequest?${new URLSearchParams(params)}`
+  );
+};
+
+export { createAclRequest, getAclRequestsForApprover, approveAclRequest };
