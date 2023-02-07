@@ -23,7 +23,8 @@
     "test-dev": "jest --watch",
     "tsc": "tsc",
     "bundle-analyze": "BUNDLE_ANALYZE=1 vite build",
-    "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type"
+    "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type",
+    "pnpm:devPreinstall": "git config --local core.hooksPath .githooks/"
   },
   "lint-staged": {
     "**/*.ts?(x)": [
