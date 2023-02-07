@@ -4,18 +4,6 @@ import userEvent from "@testing-library/user-event";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
-// mock out svgs to avoid clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-
-    Icon: () => {
-      return <div data-testid={"ds-icon"}></div>;
-    },
-  };
-});
-
 const linkText = "Go to your profile page";
 
 describe("HeaderMenuLink.tsx", () => {

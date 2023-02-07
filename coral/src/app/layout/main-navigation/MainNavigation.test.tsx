@@ -7,18 +7,6 @@ import {
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
 
-// mock out svgs to avoid clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-
-    Icon: () => {
-      return <div data-testid={"ds-icon"}></div>;
-    },
-  };
-});
-
 const navLinks = [
   {
     name: "Dashboard",

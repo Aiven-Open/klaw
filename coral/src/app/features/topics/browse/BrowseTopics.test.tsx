@@ -18,15 +18,6 @@ import { getTeams, Team } from "src/domain/team";
 import { getTopics } from "src/domain/topic";
 import { Environment, getEnvironments } from "src/domain/environment";
 
-// mocks out Icon to reduce clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-    Icon: jest.fn(),
-  };
-});
-
 jest.mock("src/domain/team/team-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");

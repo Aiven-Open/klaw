@@ -3,18 +3,6 @@ import { cleanup, screen, render, within } from "@testing-library/react";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import userEvent from "@testing-library/user-event";
 
-// mock out svgs to avoid clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-
-    Icon: () => {
-      return <div data-testid={"ds-icon"}></div>;
-    },
-  };
-});
-
 const textButtonSubmenuClosed = "Topics submenu, closed. Click to open.";
 const textButtonSubmenuOpened = "Topics submenu, open. Click to close.";
 const textSubmenuList = "Topics submenu";

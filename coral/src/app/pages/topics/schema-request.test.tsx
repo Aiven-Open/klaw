@@ -7,15 +7,6 @@ import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { createSchemaRequest } from "src/domain/schema-request";
 
-// mock out svgs to avoid clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-    Icon: () => null,
-  };
-});
-
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
