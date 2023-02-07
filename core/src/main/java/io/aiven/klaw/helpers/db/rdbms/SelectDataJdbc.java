@@ -1169,28 +1169,22 @@ public class SelectDataJdbc {
     if (RequestMode.MY_REQUESTS == requestMode) {
       List<Object[]> topicRequestsOperationTypObj =
           topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
-      topicRequestsOperationTypObj.forEach(
-          topicReqObjs ->
-              operationTypeCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
 
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
-      topicRequestsStatusObj.forEach(
-          topicReqObjs -> statusCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      updateMap(statusCountsMap, topicRequestsStatusObj);
     } else if (RequestMode.TO_APPROVE == requestMode) {
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
-      topicRequestsStatusObj.forEach(
-          topicReqObjs -> statusCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      updateMap(statusCountsMap, topicRequestsStatusObj);
 
       long assignedToClaimReqs =
           topicRequestsRepo.countAllTopicRequestsByDescriptionAndTopictype(
               tenantId, "" + teamId, RequestOperationType.CLAIM.value);
       List<Object[]> topicRequestsOperationTypObj =
           topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
-      topicRequestsOperationTypObj.forEach(
-          topicReqObjs ->
-              operationTypeCountsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+      updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
 
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
     }
@@ -1208,5 +1202,10 @@ public class SelectDataJdbc {
     allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
 
     return allCountsMap;
+  }
+
+  private static void updateMap(Map<String, Long> countsMap, List<Object[]> topicRequestsObj) {
+    topicRequestsObj.forEach(
+        topicReqObjs -> countsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
   }
 }
