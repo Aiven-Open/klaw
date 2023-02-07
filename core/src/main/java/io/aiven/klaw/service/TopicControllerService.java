@@ -445,12 +445,14 @@ public class TopicControllerService {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedTopicRequests(userName, requestsType, false, tenantId);
+              .getCreatedTopicRequests(
+                  userName, requestsType, false, tenantId, teamName, env, wildcardSearch);
     } else {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedTopicRequests(userName, requestsType, true, tenantId);
+              .getCreatedTopicRequests(
+                  userName, requestsType, true, tenantId, teamName, env, wildcardSearch);
     }
 
     createdTopicReqList = getTopicRequestsFilteredForTenant(createdTopicReqList);

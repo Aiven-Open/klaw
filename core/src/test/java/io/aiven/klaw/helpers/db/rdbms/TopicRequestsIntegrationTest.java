@@ -119,8 +119,14 @@ public class TopicRequestsIntegrationTest {
     user2.setTeamId(103);
     user2.setRole("USER");
     user2.setUsername("John");
+    UserInfo user3 = new UserInfo();
+    user3.setTenantId(103);
+    user3.setTeamId(103);
+    user3.setRole("USER");
+    user3.setUsername("Jackie");
     entityManager.persistAndFlush(user);
     entityManager.persistAndFlush(user2);
+    entityManager.persistAndFlush(user3);
 
     Team t1 = new Team();
     t1.setTeamId(101);
@@ -464,6 +470,28 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }
     assertThat(john.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(16)
+  public void getAllRequestsDontReturnOwnRequestsAsAllReqsIsTrue() {
+
+    List<TopicRequest> jackie =
+        selectDataJdbc.selectTopicRequestsByStatus(
+            true, "Jackie", "all", true, 101, null, null, null);
+
+    assertThat(jackie.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(17)
+  public void getAllRequestsAndReturnOwnRequestsAsAllReqsIsTrue() {
+
+    List<TopicRequest> jackie =
+        selectDataJdbc.selectTopicRequestsByStatus(
+            false, "Jackie", "all", true, 101, null, null, null);
+
+    assertThat(jackie.size()).isEqualTo(31);
   }
 
   private void generateData(

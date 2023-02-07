@@ -558,7 +558,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 get("/getAclRequestsForApprover")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -578,7 +578,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 get("/getAclRequests")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -640,7 +640,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 get("/getAclRequests")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -677,7 +677,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 get("/getAclRequests")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -693,7 +693,7 @@ public class TopicAclControllerIT {
     String responseNew =
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteAclRequests")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .param("req_no", "" + hMap.get("req_no"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -717,7 +717,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 get("/getAcls")
-                    .with(user(user1).password(PASSWORD))
+                    .with(user(user3).password(PASSWORD))
                     .param("topicnamesearch", topicName + topicId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))

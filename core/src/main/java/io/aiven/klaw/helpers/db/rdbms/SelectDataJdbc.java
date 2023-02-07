@@ -133,7 +133,14 @@ public class SelectDataJdbc {
 
     aclListSub =
         Lists.newArrayList(findAclRequestsByExample(topic, environment, aclType, status, tenantId));
-
+    if (allReqs) {
+      // Only filter when returning to approvers view.
+      // in the acl request the username is mapped to the requestor column in the database.
+      aclListSub =
+          aclListSub.stream()
+              .filter(req -> !req.getUsername().equals(requestor))
+              .collect(Collectors.toList());
+    }
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
     for (AclRequests row : aclListSub) {
@@ -149,6 +156,7 @@ public class SelectDataJdbc {
         if (RequestOperationType.DELETE.value.equals(rowAclType)) {
           teamName = row.getRequestingteam();
         }
+
       } else {
         teamName = row.getRequestingteam();
       }
@@ -418,7 +426,12 @@ public class SelectDataJdbc {
               .collect(Collectors.toList());
 
       topicRequestListSub.addAll(claimTopicReqs);
-
+      // remove users own requests to approve/show in the list
+      // Placed here as it should only apply for approvers.
+      topicRequestListSub =
+          topicRequestListSub.stream()
+              .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
+              .collect(Collectors.toList());
     } else {
       topicRequestListSub =
           Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
@@ -444,12 +457,6 @@ public class SelectDataJdbc {
       }
     }
 
-    // remove users own requests to approve/show in the list
-    topicRequests =
-        topicRequests.stream()
-            .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
-            .collect(Collectors.toList());
-
     return topicRequests;
   }
 
@@ -464,7 +471,7 @@ public class SelectDataJdbc {
   }
 
   /**
-   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
+   * Query the TopicRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
    *
    * @param requestType The type of topic request Create/claim etc

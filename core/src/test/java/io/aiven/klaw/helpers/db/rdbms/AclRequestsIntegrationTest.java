@@ -49,8 +49,14 @@ public class AclRequestsIntegrationTest {
     user2.setTeamId(103);
     user2.setRole("USER");
     user2.setUsername("John");
+    UserInfo user3 = new UserInfo();
+    user3.setTenantId(101);
+    user3.setTeamId(101);
+    user3.setRole("USER");
+    user3.setUsername("Jackie");
     entityManager.persistAndFlush(user);
     entityManager.persistAndFlush(user2);
+    entityManager.persistAndFlush(user3);
   }
 
   @BeforeEach
@@ -193,6 +199,24 @@ public class AclRequestsIntegrationTest {
     assertThat(james.size()).isEqualTo(0);
   }
 
+  @Test
+  @Order(9)
+  public void getAllRequestsDontReturnOwnRequestsForApproval() {
+    List<AclRequests> jackie =
+        selectDataJdbc.selectAclRequests(
+            true, "Jackie", "USER", "ALL", true, null, null, null, 101);
+    assertThat(jackie.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(10)
+  public void getAllRequestsAndReturnOwnRequests() {
+    List<AclRequests> jackie =
+        selectDataJdbc.selectAclRequests(
+            false, "Jackie", "USER", "ALL", true, null, null, null, 101);
+    assertThat(jackie.size()).isEqualTo(31);
+  }
+
   private void generateData(
       int number,
       int tenantId,
@@ -210,6 +234,7 @@ public class AclRequestsIntegrationTest {
       acl.setReq_no(requestNumber++);
       acl.setTopicname(topicName);
       acl.setEnvironment(env);
+      acl.setUsername("Jackie");
       acl.setAclType(aclType.value);
       if (status != null) {
         acl.setAclstatus(status);
