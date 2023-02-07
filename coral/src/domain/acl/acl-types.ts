@@ -2,6 +2,7 @@ import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiModel,
+  Prettify,
 } from "types/utils";
 
 // Several types are dependent on topictype when it is "Consumer":
@@ -26,16 +27,22 @@ type BaseCreateAclRequest = Pick<
   | "acl_ip"
 >;
 
-type CreateAclRequestTopicTypeProducer = BaseCreateAclRequest & {
-  topictype: "Producer";
-};
+// type CreateAclRequestTopicTypeProducerIntersected = ;
 
-type CreateAclRequestTopicTypeConsumer = BaseCreateAclRequest & {
-  transactionalId?: string;
-  topictype: "Consumer";
-  aclPatternType: "LITERAL";
-  consumergroup: string;
-};
+type CreateAclRequestTopicTypeProducer = Prettify<
+  BaseCreateAclRequest & {
+    topictype: "Producer";
+  }
+>;
+
+type CreateAclRequestTopicTypeConsumer = Prettify<
+  BaseCreateAclRequest & {
+    transactionalId?: string;
+    topictype: "Consumer";
+    aclPatternType: "LITERAL";
+    consumergroup: string;
+  }
+>;
 
 type GetCreatedAclRequestParameters =
   KlawApiRequestQueryParameters<"getAclRequestsForApprover">;
