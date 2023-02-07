@@ -19,6 +19,7 @@ import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.SyncAclUpdates;
+import io.aiven.klaw.model.SyncConnectorUpdates;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.TopicCreateRequestModel;
@@ -609,6 +610,18 @@ public class UtilMethods {
     syncTopicUpdates.setTeamSelected("Seahorses");
     syncTopicUpdates.setReq_no("fsadFDS");
     syncUpdatesList.add(syncTopicUpdates);
+
+    return syncUpdatesList;
+  }
+
+  public List<SyncConnectorUpdates> getSyncConnectorUpdates() {
+    List<SyncConnectorUpdates> syncUpdatesList = new ArrayList<>();
+    SyncConnectorUpdates syncConnectorUpdates = new SyncConnectorUpdates();
+    syncConnectorUpdates.setEnvSelected("1");
+    syncConnectorUpdates.setConnectorName("testconnector");
+    syncConnectorUpdates.setTeamSelected("Seahorses");
+    syncConnectorUpdates.setReq_no("fsadFDS");
+    syncUpdatesList.add(syncConnectorUpdates);
 
     return syncUpdatesList;
   }

@@ -157,6 +157,7 @@ public class KafkaConnectSyncControllerService {
               manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
           t.setDescription("Connector description");
           t.setExistingConnector(false);
+          t.setTenantId(tenantId);
 
           kafkaConnectorList.add(t);
         } else {
@@ -169,6 +170,7 @@ public class KafkaConnectSyncControllerService {
               t.setConnectorConfig(connectorConfig);
               t.setEnvironment(existingTopic.getEnvironment());
               t.setExistingConnector(true);
+              t.setTenantId(tenantId);
               kafkaConnectorList.add(t);
               topicAdded = true;
             } else if (!Objects.equals(
@@ -181,6 +183,7 @@ public class KafkaConnectSyncControllerService {
               t.setConnectorConfig(connectorConfig);
               t.setEnvironment(existingTopic.getEnvironment());
               t.setExistingConnector(true);
+              t.setTenantId(tenantId);
               kafkaConnectorList.add(t);
               topicAdded = true;
             }
@@ -206,6 +209,7 @@ public class KafkaConnectSyncControllerService {
                 manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
             t.setDescription("Connector description");
             t.setExistingConnector(false);
+            t.setTenantId(tenantId);
 
             kafkaConnectorList.add(t);
           }
