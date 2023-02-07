@@ -18,8 +18,8 @@ public class EnvModel implements Serializable {
   private String id;
 
   @NotNull
-  @Size(min = 3, max = 7, message = "Please fill in a valid name")
-  @Pattern(message = "Invalid name", regexp = "^[a-zA-Z0-9_-]{3,}$")
+  @Size(min = 2, max = 10, message = "Please fill in a valid name")
+  @Pattern(message = "Invalid environment name !!", regexp = "^[a-zA-Z0-9_.-]{3,}$")
   private String name;
 
   @NotNull private String type;

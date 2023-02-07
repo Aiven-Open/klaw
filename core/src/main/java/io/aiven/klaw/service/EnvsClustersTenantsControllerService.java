@@ -632,17 +632,9 @@ public class EnvsClustersTenantsControllerService {
 
     newEnv.setTenantId(tenantId);
 
-    if (newEnv.getClusterId() == null) {
-      return ApiResponse.builder().result("Please select a cluster.").build();
-    }
-
-    if (newEnv.getName().length() > 3
-        && Objects.equals(newEnv.getType(), KafkaClustersType.KAFKA.value)) {
-      newEnv.setName(newEnv.getName().substring(0, 3));
-    }
-
     newEnv.setName(newEnv.getName().toUpperCase());
     String envIdAlreadyExistsInDeleteStatus = "";
+    List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
 
     if (newEnv.getId() == null || newEnv.getId().length() == 0) {
       List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
@@ -662,41 +654,45 @@ public class EnvsClustersTenantsControllerService {
       } else {
         newEnv.setId("1");
       }
-
-      // Same name per type (kafka, kafkaconnect) in tenant not posssible.
-      List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
-      boolean envNameAlreadyPresent =
+    } else {
+      // modify env
+      envActualList =
           envActualList.stream()
-              .anyMatch(
+              .filter(env -> !env.getId().equals(newEnv.getId()))
+              .collect(Collectors.toList());
+    }
+
+    // Same name per type (kafka, kafkaconnect) in tenant not posssible.
+    boolean envNameAlreadyPresent =
+        envActualList.stream()
+            .anyMatch(
+                en ->
+                    Objects.equals(en.getName().toLowerCase(), newEnv.getName().toLowerCase())
+                        && Objects.equals(en.getType(), newEnv.getType())
+                        && Objects.equals(en.getTenantId(), newEnv.getTenantId())
+                        && Objects.equals(en.getEnvExists(), "true"));
+    if (envNameAlreadyPresent) {
+      return ApiResponse.builder()
+          .result("Failure. Please choose a different name. This environment name already exists.")
+          .build();
+    } else if (envActualList.stream()
+        .anyMatch(
+            en ->
+                Objects.equals(en.getName(), newEnv.getName())
+                    && Objects.equals(en.getType(), newEnv.getType())
+                    && Objects.equals(en.getTenantId(), newEnv.getTenantId())
+                    && Objects.equals(en.getEnvExists(), "false"))) {
+      Optional<Env> envAlreadyExistsInDeleted =
+          envActualList.stream()
+              .filter(
                   en ->
-                      Objects.equals(en.getName().toLowerCase(), newEnv.getName().toLowerCase())
-                          && Objects.equals(en.getType(), newEnv.getType())
-                          && Objects.equals(en.getTenantId(), newEnv.getTenantId())
-                          && Objects.equals(en.getEnvExists(), "true")); // 504 change
-      if (envNameAlreadyPresent) {
-        return ApiResponse.builder()
-            .result(
-                "Failure. Please choose a different name. This environment name already exists.")
-            .build();
-      } else if (envActualList.stream()
-          .anyMatch(
-              en ->
-                  Objects.equals(en.getName(), newEnv.getName())
-                      && Objects.equals(en.getType(), newEnv.getType())
-                      && Objects.equals(en.getTenantId(), newEnv.getTenantId())
-                      && Objects.equals(en.getEnvExists(), "false"))) {
-        Optional<Env> envAlreadyExistsInDeleted =
-            envActualList.stream()
-                .filter(
-                    en ->
-                        en.getName().equals(newEnv.getName())
-                            && en.getType().equals(newEnv.getType())
-                            && en.getTenantId().equals(newEnv.getTenantId())
-                            && en.getEnvExists().equals("false"))
-                .findFirst();
-        if (envAlreadyExistsInDeleted.isPresent()) {
-          envIdAlreadyExistsInDeleteStatus = envAlreadyExistsInDeleted.get().getId();
-        }
+                      en.getName().equals(newEnv.getName())
+                          && en.getType().equals(newEnv.getType())
+                          && en.getTenantId().equals(newEnv.getTenantId())
+                          && en.getEnvExists().equals("false"))
+              .findFirst();
+      if (envAlreadyExistsInDeleted.isPresent()) {
+        envIdAlreadyExistsInDeleteStatus = envAlreadyExistsInDeleted.get().getId();
       }
     }
 

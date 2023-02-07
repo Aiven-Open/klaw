@@ -832,9 +832,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                if($scope.addNewEnv.envname.length > 3)
+                if($scope.addNewEnv.envname.length < 2 || $scope.addNewEnv.envname.length > 10)
                 {
-                    $scope.alertnote = "Environment name cannot be more than 3 characters.";
+                    $scope.alertnote = "Environment name cannot be less than 2 characters and more than 10 characters";
                     $scope.showAlertToast();
                     return;
                 }
@@ -906,9 +906,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                if($scope.addNewSchemaEnv.envname.length > 7)
+                if($scope.addNewSchemaEnv.envname.length > 10)
                 {
-                    $scope.alertnote = "Environment name cannot be more than 7 characters.";
+                    $scope.alertnote = "Environment name cannot be more than 10 characters.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -971,9 +971,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            if($scope.addNewKafkaConnectEnv.envname.length > 7)
+            if($scope.addNewKafkaConnectEnv.envname.length > 10)
             {
-                $scope.alertnote = "Environment name cannot be more than 7 characters.";
+                $scope.alertnote = "Environment name cannot be more than 10 characters.";
                 $scope.showAlertToast();
                 return;
             }
