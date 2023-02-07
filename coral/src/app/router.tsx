@@ -11,8 +11,9 @@ import { getRouterBasename } from "src/config";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
 import {
-  ApprovalsTabEnum,
   APPROVALS_TAB_ID_INTO_PATH,
+  ApprovalsTabEnum,
+  Routes,
 } from "src/app/router_utils";
 
 const routes: Array<RouteObject> = [
@@ -22,23 +23,23 @@ const routes: Array<RouteObject> = [
   //   path: "/login",
   // },
   {
-    path: "/topics",
+    path: Routes.TOPICS,
     element: <Topics />,
   },
   {
-    path: "/topics/request",
+    path: Routes.TOPIC_REQUEST,
     element: <RequestTopic />,
   },
   {
-    path: "/topic/:topicName/subscribe",
+    path: Routes.TOPIC_ACL_REQUEST,
     element: <AclRequest />,
   },
   {
-    path: "/topic/:topicName/request-schema",
+    path: Routes.TOPIC_SCHEMA_REQUEST,
     element: <SchemaRequest />,
   },
   {
-    path: "/approvals/",
+    path: Routes.APPROVALS,
     element: <ApprovalsPage />,
     children: [
       {

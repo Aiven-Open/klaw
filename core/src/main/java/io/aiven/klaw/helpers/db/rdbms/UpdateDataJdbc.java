@@ -23,7 +23,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
@@ -166,12 +165,11 @@ public class UpdateDataJdbc {
     topicObj.setHistory(topicRequest.getHistory());
     topics.add(topicObj);
 
-    final TopicRequestTypes topicRequestTypes = TopicRequestTypes.of(topicRequest.getTopictype());
-    if (topicRequestTypes == TopicRequestTypes.Create) {
+    if (topicRequest.getTopictype().equals(RequestOperationType.CREATE.value)) {
       insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
-    } else if (topicRequestTypes == TopicRequestTypes.Update) {
+    } else if (topicRequest.getTopictype().equals(RequestOperationType.UPDATE.value)) {
       updateTopicSOT(topics, topicRequest.getOtherParams());
-    } else if (topicRequestTypes == TopicRequestTypes.Delete) {
+    } else if (topicRequest.getTopictype().equals(RequestOperationType.DELETE.value)) {
       deleteDataJdbcHelper.deleteTopics(topicObj);
     }
 
@@ -197,13 +195,11 @@ public class UpdateDataJdbc {
     topicObj.setHistory(connectorRequest.getHistory());
     connectors.add(topicObj);
 
-    final TopicRequestTypes topicRequestTypes =
-        TopicRequestTypes.of(connectorRequest.getConnectortype());
-    if (topicRequestTypes == TopicRequestTypes.Create) {
+    if (connectorRequest.getConnectortype().equals(RequestOperationType.CREATE.value)) {
       insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
-    } else if (topicRequestTypes == TopicRequestTypes.Update) {
+    } else if (connectorRequest.getConnectortype().equals(RequestOperationType.UPDATE.value)) {
       updateConnectorSOT(connectors, connectorRequest.getOtherParams());
-    } else if (topicRequestTypes == TopicRequestTypes.Delete) {
+    } else if (connectorRequest.getConnectortype().equals(RequestOperationType.DELETE.value)) {
       deleteDataJdbcHelper.deleteConnectors(topicObj);
     }
 

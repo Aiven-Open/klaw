@@ -95,15 +95,15 @@ public class TopicController {
      For executing topic requests
   */
   @RequestMapping(
-      value = "/getCreatedTopicRequests",
+      value = "/getTopicRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TopicRequestModel>> getCreatedTopicRequests(
+  public ResponseEntity<List<TopicRequestModel>> getTopicRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
     return new ResponseEntity<>(
-        topicControllerService.getCreatedTopicRequests(pageNo, currentPage, requestsType),
+        topicControllerService.getTopicRequestsForApprover(pageNo, currentPage, requestsType),
         HttpStatus.OK);
   }
 

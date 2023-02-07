@@ -62,10 +62,10 @@ public class AclController {
      For executing acl requests
   */
   @RequestMapping(
-      value = "/getCreatedAclRequests",
+      value = "/getAclRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclRequestsModel>> getCreatedAclRequests(
+  public ResponseEntity<List<AclRequestsModel>> getAclRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
@@ -73,7 +73,7 @@ public class AclController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "aclType", required = false) AclType aclType) {
     return new ResponseEntity<>(
-        aclControllerService.getCreatedAclRequests(
+        aclControllerService.getAclRequestsForApprover(
             pageNo, currentPage, requestsType, topic, env, aclType),
         HttpStatus.OK);
   }

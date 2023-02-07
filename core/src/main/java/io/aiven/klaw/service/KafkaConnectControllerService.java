@@ -33,7 +33,6 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.enums.TopicRequestTypes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -203,7 +202,7 @@ public class KafkaConnectControllerService {
     }
 
     // Ignore connector exists check if Update request
-    if (!TopicRequestTypes.Update.name().equals(topicRequestReq.getConnectortype())) {
+    if (!RequestOperationType.UPDATE.value.equals(topicRequestReq.getConnectortype())) {
       boolean topicExists = false;
       if (!kafkaConnectorList.isEmpty()) {
         topicExists =
@@ -546,7 +545,7 @@ public class KafkaConnectControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-    if (TopicRequestTypes.Claim.name().equals(connectorRequest.getConnectortype())) {
+    if (RequestOperationType.CLAIM.value.equals(connectorRequest.getConnectortype())) {
       List<KwKafkaConnector> allTopics =
           getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
       for (KwKafkaConnector allTopic : allTopics) {
@@ -618,7 +617,7 @@ public class KafkaConnectControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (TopicRequestTypes.Update.name().equals(connectorRequest.getConnectortype())) {
+      if (RequestOperationType.UPDATE.value.equals(connectorRequest.getConnectortype())) {
         List<KwKafkaConnector> existingTopicList =
             getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
         existingTopicList.stream()
@@ -724,7 +723,7 @@ public class KafkaConnectControllerService {
     kafkaConnectorRequest.setTeamId(userTeamId);
     kafkaConnectorRequest.setEnvironment(envId);
     kafkaConnectorRequest.setConnectorName(connectorName);
-    kafkaConnectorRequest.setConnectortype(TopicRequestTypes.Delete.name());
+    kafkaConnectorRequest.setConnectortype(RequestOperationType.DELETE.value);
     kafkaConnectorRequest.setTenantId(tenantId);
 
     Optional<KwKafkaConnector> topicOb =
@@ -847,7 +846,7 @@ public class KafkaConnectControllerService {
     connectorRequest.setEnvironment(envId);
     connectorRequest.setConnectorName(connectorName);
     connectorRequest.setConnectorConfig(topics.get(0).getConnectorConfig());
-    connectorRequest.setConnectortype(TopicRequestTypes.Claim.name());
+    connectorRequest.setConnectortype(RequestOperationType.CLAIM.value);
     connectorRequest.setDescription("" + topicOwnerTeam);
     connectorRequest.setRemarks("Connector Claim request for all available environments.");
     connectorRequest.setTenantId(tenantId);
@@ -1176,7 +1175,7 @@ public class KafkaConnectControllerService {
         // show approving info only before approvals
         if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getConnectorStatus())) {
           if (topicRequestModel.getConnectortype() != null
-              && TopicRequestTypes.Claim.name().equals(topicRequestModel.getConnectortype())) {
+              && RequestOperationType.CLAIM.value.equals(topicRequestModel.getConnectortype())) {
             List<KwKafkaConnector> topics =
                 getConnectorsFromName(topicRequestModel.getConnectorName(), tenantId);
             topicRequestModel.setApprovingTeamDetails(

@@ -36,6 +36,9 @@ export type paths = {
   "/getClusterInfoFromEnv": {
     get: operations["clusterInfoFromEnvironmentGet"];
   };
+  "/getAclRequestsForApprover": {
+    get: operations["getAclRequestsForApprover"];
+  };
   "/createAcl": {
     post: operations["createAclRequest"];
   };
@@ -1152,6 +1155,26 @@ export type operations = {
       };
     };
   };
+  getAclRequestsForApprover: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestsType?: "all" | "created" | "approved" | "denied" | "deleted";
+        topic?: string;
+        env?: string;
+        aclType?: "CONSUMER" | "PRODUCER";
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["aclRequest"][];
+        };
+      };
+    };
+  };
   createAclRequest: {
     responses: {
       /** OK */
@@ -1233,6 +1256,7 @@ export enum ApiPaths {
   environmentsGet = "/getEnvs",
   envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
   clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
+  getAclRequestsForApprover = "/getAclRequestsForApprover",
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",

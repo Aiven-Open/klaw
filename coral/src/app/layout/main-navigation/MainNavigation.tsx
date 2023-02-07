@@ -5,13 +5,14 @@ import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
 import people from "@aivenio/aquarium/dist/src/icons/people";
 import list from "@aivenio/aquarium/dist/src/icons/list";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
+import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import useFeatureFlag, { FeatureFlag } from "src/app/hooks/useFeatureFlag";
 import { useLocation } from "react-router-dom";
+import { Routes } from "src/app/router_utils";
 
 function MainNavigation() {
-  const topicAclRequestEnabled = useFeatureFlag(FeatureFlag.TOPIC_ACL_REQUEST);
   const approvalsEnabled = useFeatureFlag(FeatureFlag.APPROVALS);
   const { pathname } = useLocation();
 
@@ -28,7 +29,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={database}
-            href={`/index`}
+            to={`/index`}
             linkText={"Dashboard"}
           />
         </li>
@@ -39,38 +40,15 @@ function MainNavigation() {
             text={"Topics"}
           >
             <MainNavigationLink
-              href={"/coral/topics"}
               linkText={"All Topics"}
-              active={pathname === "/coral/topics"}
+              to={Routes.TOPICS}
+              active={
+                pathname.startsWith(Routes.TOPICS) ||
+                pathname.startsWith("/topic")
+              }
             />
-            {topicAclRequestEnabled ? (
-              <MainNavigationLink
-                // This link is only intended to be rendered in dev environment
-                // So the path does not have a coral/ prefix
-                // @TODO: delete when Topic overview / top nac Request dropdown are implemented
-                href={"/topic/aivtopic1/subscribe"}
-                linkText={"Subscribe"}
-                active={pathname.includes("/subscribe")}
-              />
-            ) : (
-              <></>
-            )}
-
-            {approvalsEnabled ? (
-              <MainNavigationLink
-                href={`/approvals/topics`}
-                linkText={"Approval Requests"}
-                useRouter={true}
-              />
-            ) : (
-              <MainNavigationLink
-                href={`/execTopics`}
-                linkText={"Approval Requests"}
-              />
-            )}
-
             <MainNavigationLink
-              href={`/myTopicRequests`}
+              to={`/myTopicRequests`}
               linkText={"My Team's Requests"}
             />
           </MainNavigationSubmenuList>
@@ -81,29 +59,42 @@ function MainNavigation() {
             text={"Kafka Connectors"}
           >
             <MainNavigationLink
-              href={`/kafkaConnectors`}
+              to={`/kafkaConnectors`}
               linkText={"All Connectors"}
             />
             <MainNavigationLink
-              href={`/execConnectors`}
+              to={`/execConnectors`}
               linkText={"Connector Requests"}
             />
           </MainNavigationSubmenuList>
         </li>
         <li>
           <MainNavigationSubmenuList icon={people} text={"Users and Teams"}>
-            <MainNavigationLink href={`/users`} linkText={"Users"} />
-            <MainNavigationLink href={`/teams`} linkText={"Teams"} />
-            <MainNavigationLink
-              href={`/execUsers`}
-              linkText={"User Requests"}
-            />
+            <MainNavigationLink to={`/users`} linkText={"Users"} />
+            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
+            <MainNavigationLink to={`/execUsers`} linkText={"User Requests"} />
           </MainNavigationSubmenuList>
+        </li>
+        <li>
+          {approvalsEnabled ? (
+            <MainNavigationLink
+              icon={tickCircle}
+              to={Routes.APPROVALS}
+              linkText={"Approval Requests"}
+              active={pathname.startsWith(Routes.APPROVALS)}
+            />
+          ) : (
+            <MainNavigationLink
+              icon={tickCircle}
+              to={`/execTopics`}
+              linkText={"Approval Requests"}
+            />
+          )}
         </li>
         <li>
           <MainNavigationLink
             icon={list}
-            href={`/activityLog`}
+            to={`/activityLog`}
             linkText={"Audit Log"}
           />
         </li>
@@ -113,7 +104,7 @@ function MainNavigation() {
           </Box>
           <MainNavigationLink
             icon={cog}
-            href={`/serverConfig`}
+            to={`/serverConfig`}
             linkText={"Settings"}
           />
         </li>

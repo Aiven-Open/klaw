@@ -1,4 +1,8 @@
-import { KlawApiRequest } from "types/utils";
+import {
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+  KlawApiModel,
+} from "types/utils";
 
 // Several types are dependent on topictype when it is "Consumer":
 // - aclPatternType can only be "LITERAL"
@@ -33,7 +37,14 @@ type CreateAclRequestTopicTypeConsumer = BaseCreateAclRequest & {
   consumergroup: string;
 };
 
+type GetCreatedAclRequestParameters =
+  KlawApiRequestQueryParameters<"getAclRequestsForApprover">;
+
+type AclRequest = KlawApiModel<"aclRequest">;
+
 export type {
   CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
+  GetCreatedAclRequestParameters,
+  AclRequest,
 };

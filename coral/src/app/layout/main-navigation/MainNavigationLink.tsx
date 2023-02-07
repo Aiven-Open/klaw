@@ -1,7 +1,8 @@
 import { Box, Icon } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
-import { Link } from "react-router-dom";
 import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
+import { Routes } from "src/app/router_utils";
+import { Link } from "react-router-dom";
 
 function LinkContent({
   linkText,
@@ -23,13 +24,20 @@ function LinkContent({
 
 type MainNavigationLinkProps = {
   icon?: typeof data;
-  href: string;
-  useRouter?: boolean;
+  // only use a string if the link
+  // should go into the Klaw Angular app!
+  to: Routes | string;
   linkText: string;
   active?: boolean;
 };
 function MainNavigationLink(props: MainNavigationLinkProps) {
-  const { icon, href, linkText, active, useRouter = false } = props;
+  const { icon, to, linkText, active = false } = props;
+
+  function isRouterLink() {
+    const allRoutes: string[] = Object.values(Routes);
+    return allRoutes.includes(to);
+  }
+
   return (
     <Box
       className={
@@ -43,12 +51,12 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
       marginBottom={"3"}
       paddingBottom={"3"}
     >
-      {useRouter ? (
-        <Link to={href} aria-current={active && "page"}>
+      {isRouterLink() ? (
+        <Link to={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
         </Link>
       ) : (
-        <a href={href} aria-current={active && "page"}>
+        <a href={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
         </a>
       )}
