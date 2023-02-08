@@ -1,4 +1,10 @@
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  screen,
+  waitFor,
+  within,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
@@ -11,7 +17,6 @@ import {
   mockgetTopicAdvancedConfigOptions,
   mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import api from "src/services/api";
 
 describe("<TopicRequest />", () => {
@@ -64,19 +69,17 @@ describe("<TopicRequest />", () => {
         expect(select).toBeEnabled();
       });
 
-      it("shows an empty value with placeholder text", async () => {
-        const prodSelectOption: HTMLOptionElement = await screen.findByRole(
-          "option",
-          {
-            name: "-- Select Environment --",
-          }
-        );
+      it("shows an placeholder text for the select", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment",
+        });
 
-        expect(prodSelectOption.selected).toBe(true);
+        expect(select).toHaveDisplayValue("-- Select Environment --");
       });
 
       it("shows all environment names as options", () => {
         const options = screen.getAllByRole("option");
+        // 3 environments + option for placeholder
         expect(options.length).toBe(4);
         expect(options.map((o) => o.textContent)).toEqual([
           "-- Select Environment --",
@@ -113,7 +116,7 @@ describe("<TopicRequest />", () => {
       });
 
       describe("when 'PROD' option is clicked", () => {
-        it("selects 'PROD' value when user choses the option", async () => {
+        it("selects 'PROD' value when user chooses the option", async () => {
           const select = await screen.findByRole("combobox", {
             name: "Environment",
           });
@@ -425,7 +428,9 @@ describe("<TopicRequest />", () => {
           }
         );
 
-        expect(inputReplicationFactorSelect).toHaveDisplayValue("2");
+        await waitFor(() => {
+          expect(inputReplicationFactorSelect).toHaveDisplayValue("2");
+        });
       });
 
       it('keeps topic replication factor value if not default and value does not exceeded "maxPartitions"', async () => {
@@ -599,7 +604,10 @@ describe("<TopicRequest />", () => {
       const topicPartitionsSelect = screen.getByRole("combobox", {
         name: "Topic partitions *",
       });
-      expect(topicPartitionsSelect).toHaveDisplayValue("8");
+
+      await waitFor(() => {
+        expect(topicPartitionsSelect).toHaveDisplayValue("8");
+      });
     });
 
     it('keeps topic partitions value if not default and value does not exceeded "maxPartitions"', async () => {

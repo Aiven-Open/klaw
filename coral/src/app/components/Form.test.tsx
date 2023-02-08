@@ -208,80 +208,131 @@ describe("Form", () => {
   });
 
   describe("<NativeSelect>", () => {
-    const schema = z.object({
-      formFieldsCustomName: z.enum(["helsinki", "berlin", "london"]),
+    describe("handles a select without placeholder", () => {
+      const schema = z.object({
+        formFieldsCustomName: z.enum(["helsinki", "berlin", "london"]),
+      });
+      type Schema = z.infer<typeof schema>;
+
+      beforeEach(() => {
+        results = renderForm(
+          <NativeSelect<Schema>
+            name="formFieldsCustomName"
+            labelText="NativeSelect"
+          >
+            <option value="helsinki">Helsinki</option>
+            <option value="berlin">Berlin</option>
+            <option value="london">London</option>
+          </NativeSelect>,
+          { schema, onSubmit, onError }
+        );
+      });
+
+      it("should render label", () => {
+        expect(screen.getByLabelText("NativeSelect")).toBeVisible();
+      });
+
+      it("should render a combobox", () => {
+        screen.getByRole("combobox", { name: "NativeSelect" });
+      });
+
+      it("defaults to the first option as chosen one", async () => {
+        const select = screen.getByRole("combobox", { name: "NativeSelect" });
+
+        expect(select).toHaveDisplayValue("Helsinki");
+        await userEvent.click(select);
+        await userEvent.keyboard("{Escape}");
+        await userEvent.tab();
+
+        await submit();
+        assertSubmitted({ formFieldsCustomName: "helsinki" });
+      });
+
+      it("should sync value to form state when choosing option", async () => {
+        await user.selectOptions(
+          screen.getByLabelText("NativeSelect"),
+          "berlin"
+        );
+        expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
+          "Berlin"
+        );
+        await submit();
+        assertSubmitted({ formFieldsCustomName: "berlin" });
+      });
     });
-    type Schema = z.infer<typeof schema>;
 
-    beforeEach(() => {
-      results = renderForm(
-        <NativeSelect<Schema>
-          name="formFieldsCustomName"
-          labelText="NativeSelect"
-        >
-          <option value="helsinki">Helsinki</option>
-          <option value="berlin">Berlin</option>
-          <option value="london">London</option>
-        </NativeSelect>,
-        { schema, onSubmit, onError }
-      );
+    describe("handles a select with a placeholder where a certain value is required", () => {
+      const schema = z.object({
+        formFieldSelect: z.string().min(1, "Form field is required"),
+      });
+      type Schema = z.infer<typeof schema>;
+
+      beforeEach(() => {
+        renderForm(
+          <NativeSelect<Schema>
+            name="formFieldSelect"
+            labelText="NativeSelect"
+            placeholder={"placeholder text"}
+          >
+            <option value="spring">Spring</option>
+            <option value="summer">Summer</option>
+            <option value="autumn">Autumn</option>
+            <option value="winter">Winter</option>
+          </NativeSelect>,
+          { schema, onSubmit, onError }
+        );
+      });
+
+      it("shows a placeholder value", async () => {
+        const select = screen.getByRole("combobox", { name: "NativeSelect" });
+
+        expect(select).toHaveDisplayValue("placeholder text");
+      });
+
+      it("shows an error message if user does not select an option", async () => {
+        const select = screen.getByRole("combobox", { name: "NativeSelect" });
+
+        await userEvent.click(select);
+        await userEvent.keyboard("{Escape}");
+        await userEvent.tab();
+
+        const errorMessage = await screen.findByText("Form field is required");
+        expect(errorMessage).toBeVisible();
+      });
     });
 
-    it("should render label", () => {
-      expect(screen.getByLabelText("NativeSelect")).toBeVisible();
-    });
+    describe("handles an optional select with a placeholder", () => {
+      const schema = z.object({
+        formFieldSelect: z.string().optional(),
+      });
+      type Schema = z.infer<typeof schema>;
 
-    it("should render a combobox", () => {
-      screen.getByRole("combobox", { name: "NativeSelect" });
-    });
+      beforeEach(() => {
+        renderForm(
+          <NativeSelect<Schema>
+            name="formFieldSelect"
+            labelText="NativeSelect"
+            placeholder={"placeholder text"}
+          >
+            <option value="spring">Spring</option>
+            <option value="summer">Summer</option>
+            <option value="autumn">Autumn</option>
+            <option value="winter">Winter</option>
+          </NativeSelect>,
+          { schema, onSubmit, onError }
+        );
+      });
 
-    it("should default to first available option", async () => {
-      expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
-        "Helsinki"
-      );
-      await submit();
-      assertSubmitted({ formFieldsCustomName: "helsinki" });
-    });
+      it("should sync an empty value to form state when choosing option", async () => {
+        const select = screen.getByRole("combobox", { name: "NativeSelect" });
 
-    it("should sync value to form state when choosing another option", async () => {
-      await user.selectOptions(screen.getByLabelText("NativeSelect"), "berlin");
-      expect(screen.getByLabelText("NativeSelect")).toHaveDisplayValue(
-        "Berlin"
-      );
-      await submit();
-      assertSubmitted({ formFieldsCustomName: "berlin" });
-    });
+        await userEvent.click(select);
+        await userEvent.keyboard("{Escape}");
+        await userEvent.tab();
 
-    it("shows an error message if user does not select an option", async () => {
-      cleanup();
-      renderForm(
-        <NativeSelect<Schema>
-          name="formFieldsCustomName"
-          labelText="NativeSelect"
-          defaultValue={"placeholdervalue"}
-        >
-          <option value="placeholdervalue" disabled={true}>
-            placeholder
-          </option>
-          <option value="helsinki">Helsinki</option>
-          <option value="berlin">Berlin</option>
-          <option value="london">London</option>
-        </NativeSelect>,
-        { schema, onSubmit, onError }
-      );
-
-      const select = screen.getByRole("combobox", { name: "NativeSelect" });
-      expect(select).toHaveValue("placeholdervalue");
-
-      await userEvent.click(select);
-      await userEvent.keyboard("{Enter}");
-      await userEvent.tab();
-
-      const errorMessage = await screen.findByText(
-        "Invalid enum value. Expected 'helsinki' | 'berlin' | 'london', received 'placeholdervalue'"
-      );
-      expect(errorMessage).toBeVisible();
-      expect(true).toBeTruthy();
+        await submit();
+        assertSubmitted({ formFieldSelect: "" });
+      });
     });
   });
 

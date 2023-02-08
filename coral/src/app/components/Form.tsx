@@ -42,6 +42,7 @@ import {
   FileInputProps as BaseFileInputProps,
 } from "src/app/components/FileInput";
 import { ZodSchema } from "zod";
+import omit from "lodash/omit";
 
 type FormInputProps<T extends FieldValues = FieldValues> = {
   name: FieldPath<T>;
@@ -339,25 +340,48 @@ MultiInput.Skeleton = BaseMultiInput.Skeleton;
 function _NativeSelect<T extends FieldValues>({
   name,
   formContext: form,
-  onChange,
-  onBlur,
   disabled,
   ...props
 }: BaseNativeSelectProps & FormInputProps<T> & FormRegisterProps<T>) {
-  const { isSubmitting } = form.formState;
-  const error = parseFieldErrorMessage(form.formState, name);
-
   return (
-    <BaseNativeSelect
-      {...props}
-      {...form.register(name, {
-        disabled: disabled || isSubmitting,
-        onChange,
-        onBlur,
-      })}
+    <_Controller
       name={name}
-      valid={error === undefined}
-      error={error}
+      control={form.control}
+      render={({ field: { name }, fieldState: { error } }) => {
+        const { isSubmitting } = form.formState;
+        const value = form.getValues(name);
+
+        // makes sure NativeSelect in Form works without logging warning
+        // about use of value and defaultValue when:
+        // - it has placeholder AND defaultValue (which is not a usual case),
+        // - value is updated not through user input
+        const baseNativeProps = !value
+          ? props
+          : { ...omit(props, "placeholder"), value: value };
+        return (
+          <BaseNativeSelect
+            {...baseNativeProps}
+            name={name}
+            disabled={disabled || isSubmitting}
+            onBlur={(option) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, option.target.value as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            onChange={(option) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, option.target.value as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            valid={error === undefined}
+            helperText={error?.message}
+          />
+        );
+      }}
     />
   );
 }

@@ -14,7 +14,6 @@ import topicConsumerFormSchema, {
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
-import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { getTopicTeam, TopicTeam } from "src/domain/topic";
 
 const TopicAclRequest = () => {
@@ -25,7 +24,6 @@ const TopicAclRequest = () => {
     schema: topicProducerFormSchema,
     defaultValues: {
       topicname: topicName,
-      environment: ENVIRONMENT_NOT_INITIALIZED,
       topictype: "Producer",
     },
   });
@@ -35,7 +33,6 @@ const TopicAclRequest = () => {
     defaultValues: {
       aclPatternType: "LITERAL",
       topicname: topicName,
-      environment: ENVIRONMENT_NOT_INITIALIZED,
       topictype: "Consumer",
       consumergroup: "",
     },

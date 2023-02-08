@@ -1,4 +1,4 @@
-import { cleanup } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import EnvironmentField from "src/app/features/topics/acl-request/fields/EnvironmentField";
 import { environment } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
@@ -31,37 +31,32 @@ describe("EnvironmentField", () => {
   });
 
   it("renders NativeSelect component", () => {
-    const result = renderForm(
-      <EnvironmentField environments={mockedEnvironments} />,
-      {
-        schema,
-        onSubmit,
-        onError,
-        defaultValues: {
-          environment: undefined,
-        },
-      }
-    );
-    const select = result.getByRole("combobox");
+    renderForm(<EnvironmentField environments={mockedEnvironments} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+    const select = screen.getByRole("combobox", {
+      name: "Select Environment *",
+    });
 
     expect(select).toBeVisible();
     expect(select).toBeEnabled();
+    expect(select).toBeRequired();
   });
 
   it("renders NativeSelect with a placeholder option", () => {
-    const result = renderForm(
-      <EnvironmentField environments={mockedEnvironments} />,
-      {
-        schema,
-        onSubmit,
-        onError,
-        defaultValues: {
-          environment: undefined,
-        },
-      }
-    );
-    const options = result.getAllByRole("option");
+    renderForm(<EnvironmentField environments={mockedEnvironments} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+    const select = screen.getByRole("combobox", {
+      name: "Select Environment *",
+    });
+    const options = within(select).getAllByRole("option");
 
+    expect(select).toHaveDisplayValue("-- Select Environment --");
     expect(options).toHaveLength(mockedEnvironments.length + 1);
   });
 });
