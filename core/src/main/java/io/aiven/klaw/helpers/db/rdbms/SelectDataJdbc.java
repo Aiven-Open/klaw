@@ -437,12 +437,6 @@ public class SelectDataJdbc {
                   tenantId,
                   String.valueOf(teamSelected)));
 
-      // remove any claims created by your team.
-      claimTopicReqs =
-          claimTopicReqs.stream()
-              .filter(topicRequest -> teamSelected != topicRequest.getTeamId())
-              .collect(Collectors.toList());
-
       topicRequestListSub =
           Lists.newArrayList(findTopicRequestsByExample(null, teamId, env, status, tenantId, null));
 
