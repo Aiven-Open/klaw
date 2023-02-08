@@ -410,15 +410,16 @@ public class SelectDataJdbc {
       Integer teamId,
       String env,
       String wildcardSearch) {
-    log.info(
-        "selectTopicRequests {} {} {} {} {} {}",
-        showRequestsOfAllTeams,
-        requestor,
-        status,
-        teamId,
-        env,
-        wildcardSearch);
-
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "selectTopicRequests {} {} {} {} {} {}",
+          showRequestsOfAllTeams,
+          requestor,
+          status,
+          teamId,
+          env,
+          wildcardSearch);
+    }
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
     List<TopicRequest> topicRequests = new ArrayList<>();
     List<TopicRequest> topicRequestListSub;
@@ -435,7 +436,7 @@ public class SelectDataJdbc {
                   status,
                   tenantId,
                   String.valueOf(teamSelected)));
-      log.info("Claim Topic Requests {}", claimTopicReqs);
+
       // remove any claims created by your team.
       claimTopicReqs =
           claimTopicReqs.stream()
@@ -466,7 +467,7 @@ public class SelectDataJdbc {
         topicRequestListSub =
             Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
       } else {
-        log.info("Integer of team: {}", teamSelected);
+
         topicRequestListSub =
             Lists.newArrayList(
                 findTopicRequestsByExample(null, teamSelected, null, null, tenantId, null));
