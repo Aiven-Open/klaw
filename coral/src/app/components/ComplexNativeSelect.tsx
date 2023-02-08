@@ -1,14 +1,18 @@
 import { NativeSelect, NativeSelectProps } from "@aivenio/aquarium";
 import omit from "lodash/omit";
 import { ChangeEvent, useState } from "react";
+import { ResolveIntersectionTypes } from "types/utils";
 
-type ComplexNativeSelectProps<T> = NativeSelectProps & {
-  options: Array<T>;
-  identifierValue: keyof T;
-  identifierName: keyof T;
-  onBlur: (option: T | undefined) => void;
-  activeOption?: T;
-};
+type ComplexNativeSelectProps<T> = ResolveIntersectionTypes<
+  NativeSelectProps & {
+    options: Array<T>;
+    identifierValue: keyof T;
+    identifierName: keyof T;
+    onBlur: (option: T | undefined) => void;
+
+    activeOption?: T;
+  }
+>;
 
 function ComplexNativeSelect<T>(props: ComplexNativeSelectProps<T>) {
   const { options, onBlur, identifierValue, identifierName, activeOption } =

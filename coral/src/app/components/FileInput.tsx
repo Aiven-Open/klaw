@@ -4,18 +4,21 @@ import uniqueId from "lodash/uniqueId";
 import { InputHTMLAttributes, useRef } from "react";
 import classes from "src/app/components/FileInput.module.css";
 import cloudUpload from "@aivenio/aquarium/dist/src/icons/cloudUpload";
+import { ResolveIntersectionTypes } from "types/utils";
 
-type FileInputProps = InputHTMLAttributes<HTMLInputElement> & {
-  valid: boolean;
-  // labelText is where the important information for
-  // visual and AT users is transported!
-  labelText: string;
-  // buttonText is not conveyed to e.g. screen reader
-  // users, treat is as more decorative text
-  buttonText: string;
-  helperText: string;
-  noFileText: string;
-};
+type FileInputProps = ResolveIntersectionTypes<
+  InputHTMLAttributes<HTMLInputElement> & {
+    valid: boolean;
+    // labelText is where the important information for
+    // visual and AT users is transported!
+    labelText: string;
+    // buttonText is not conveyed to e.g. screen reader
+    // users, treat is as more decorative text
+    buttonText: string;
+    helperText: string;
+    noFileText: string;
+  }
+>;
 
 function FileInput(props: FileInputProps) {
   const { valid, labelText, buttonText, helperText, noFileText } = props;

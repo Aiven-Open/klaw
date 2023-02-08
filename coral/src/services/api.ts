@@ -2,6 +2,7 @@ import { getHTTPBaseAPIUrl } from "src/config";
 import isPlainObject from "lodash/isPlainObject";
 import { components } from "types/api";
 import { objectHasProperty } from "src/services/type-utils";
+import { ResolveIntersectionTypes } from "types/utils";
 
 type GenericApiResponse = components["schemas"]["GenericApiResponse"];
 
@@ -12,11 +13,14 @@ enum HTTPMethod {
   PATCH = "PATCH",
   DELETE = "DELETE",
 }
+
 type SomeObject =
   | Record<string, unknown>
   | Record<string, never>
   | Array<unknown>;
+
 type AbsolutePathname = `/${string}`;
+
 const CONTENT_TYPE_JSON = "application/json" as const;
 
 const API_BASE_URL = getHTTPBaseAPIUrl();
@@ -28,42 +32,59 @@ type HTTPError = {
   headers: Headers;
 };
 
-type UnauthorizedError = HTTPError & { status: 401 };
-type ClientError = HTTPError & {
-  status:
-    | 400
-    | 402
-    | 403
-    | 404
-    | 405
-    | 406
-    | 407
-    | 408
-    | 409
-    | 410
-    | 411
-    | 412
-    | 413
-    | 414
-    | 415
-    | 416
-    | 417
-    | 418
-    | 421
-    | 422
-    | 423
-    | 424
-    | 426
-    | 428
-    | 429
-    | 431
-    | 444
-    | 451
-    | 499;
-};
-type ServerError = HTTPError & {
-  status: 500 | 501 | 502 | 503 | 504 | 505 | 506 | 507 | 508 | 510 | 511 | 599;
-};
+type UnauthorizedError = ResolveIntersectionTypes<HTTPError & { status: 401 }>;
+type ClientError = ResolveIntersectionTypes<
+  HTTPError & {
+    status:
+      | 400
+      | 402
+      | 403
+      | 404
+      | 405
+      | 406
+      | 407
+      | 408
+      | 409
+      | 410
+      | 411
+      | 412
+      | 413
+      | 414
+      | 415
+      | 416
+      | 417
+      | 418
+      | 421
+      | 422
+      | 423
+      | 424
+      | 426
+      | 428
+      | 429
+      | 431
+      | 444
+      | 451
+      | 499;
+  }
+>;
+
+type ServerError = ResolveIntersectionTypes<
+  HTTPError & {
+    status:
+      | 500
+      | 501
+      | 502
+      | 503
+      | 504
+      | 505
+      | 506
+      | 507
+      | 508
+      | 510
+      | 511
+      | 599;
+  }
+>;
 
 function hasHTTPErrorProperties(
   value: Record<string, unknown>
