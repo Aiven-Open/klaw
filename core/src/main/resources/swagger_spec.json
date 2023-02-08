@@ -2461,10 +2461,11 @@
           "type" : "string",
           "default" : "created"
         }, {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
-          "type" : "string"
+          "type" : "integer",
+          "format" : "int32"
         }, {
           "name" : "env",
           "in" : "query",
