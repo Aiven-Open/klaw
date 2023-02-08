@@ -161,7 +161,7 @@ public class UiConfigControllerTest {
 
   @Test
   @Order(7)
-  public void addNewEnv() throws Exception {
+  public void addNewEnvName3Chars() throws Exception {
     EnvModel env = utilMethods.getEnvList().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
@@ -179,6 +179,76 @@ public class UiConfigControllerTest {
 
   @Test
   @Order(8)
+  public void addNewEnvName10charsAllowed() throws Exception {
+    EnvModel env = utilMethods.getEnvList().get(0);
+    env.setName("ABCDEFGHIJ"); // 10 chars allowed
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
+
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.post("/addNewEnv")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
+  @Order(9)
+  public void addNewEnvMoreThan10CharsFailure() throws Exception {
+    EnvModel env = utilMethods.getEnvList().get(0);
+    env.setName("ABCDEFGHIJKL"); // > 10 chars, not allowed
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.post("/addNewEnv")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @Order(10)
+  public void addNewEnvLessThan2CharsFailure() throws Exception {
+    EnvModel env = utilMethods.getEnvList().get(0);
+    env.setName("A"); // < 2 chars, not allowed
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.post("/addNewEnv")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @Order(11)
+  public void addNewEnvNoClusterIdFailure() throws Exception {
+    EnvModel env = utilMethods.getEnvList().get(0);
+    env.setClusterId(null);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
+    mvcEnvs
+        .perform(
+            MockMvcRequestBuilders.post("/addNewEnv")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @Order(12)
   public void deleteEnv() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.deleteEnvironment(anyString(), anyString()))
@@ -196,7 +266,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(9)
+  @Order(13)
   public void deleteTeam() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteTeam(any())).thenReturn(apiResponse);
@@ -212,7 +282,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(10)
+  @Order(14)
   public void deleteUser() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn(apiResponse);
@@ -228,7 +298,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(11)
+  @Order(15)
   public void addNewUser() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
@@ -246,7 +316,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(12)
+  @Order(16)
   public void addNewTeam() throws Exception {
     Team team = utilMethods.getTeams().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(team);
@@ -264,7 +334,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(13)
+  @Order(17)
   public void changePwd() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
@@ -280,7 +350,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(14)
+  @Order(18)
   public void showUsers() throws Exception {
     List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
     when(usersTeamsControllerService.showUsers(any(), any(), any())).thenReturn(userList);
@@ -297,7 +367,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(15)
+  @Order(19)
   public void getMyProfileInfo() throws Exception {
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     when(usersTeamsControllerService.getMyProfileInfo()).thenReturn(userInfo);
@@ -312,7 +382,7 @@ public class UiConfigControllerTest {
   }
 
   @Test
-  @Order(16)
+  @Order(20)
   public void showActivityLog() throws Exception {
     List<ActivityLog> activityLogs = utilMethods.getLogs();
     when(uiConfigControllerService.showActivityLog(anyString(), anyString(), anyString()))

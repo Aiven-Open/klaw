@@ -447,9 +447,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                if($scope.envDetails.name.length > 3)
+                if($scope.envDetails.name.length > 10)
                 {
-                    $scope.alertnote = "Environment name cannot be more than 3 characters.";
+                    $scope.alertnote = "Environment name cannot be more than 10 characters.";
                     $scope.showAlertToast();
                     return;
                 }
@@ -590,9 +590,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         return;
                     }
 
-                    if($scope.envDetails.name.length > 7)
+                    if($scope.envDetails.name.length > 10)
                     {
-                        $scope.alertnote = "Environment name cannot be more than 7 characters.";
+                        $scope.alertnote = "Environment name cannot be more than 10 characters.";
                         $scope.showAlertToast();
                         return;
                     }
@@ -649,9 +649,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            if($scope.envDetails.name.length > 7)
+            if($scope.envDetails.name.length > 10)
             {
-                $scope.alertnote = "Environment name cannot be more than 7 characters.";
+                $scope.alertnote = "Environment name cannot be more than 10 characters.";
                 $scope.showAlertToast();
                 return;
             }
