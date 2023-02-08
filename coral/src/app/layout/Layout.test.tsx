@@ -2,15 +2,6 @@ import Layout from "src/app/layout/Layout";
 import { cleanup, screen, within } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-// mock out svgs to avoid clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-    Icon: () => null,
-  };
-});
-
 describe("Layout.tsx", () => {
   const testChildren = <div data-testid={"test-children"}></div>;
   beforeAll(() => {

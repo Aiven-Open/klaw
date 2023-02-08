@@ -2,17 +2,6 @@ import { cleanup, render, within, screen } from "@testing-library/react";
 import { Pagination } from "src/app/components/Pagination";
 import userEvent from "@testing-library/user-event";
 
-const mockIconRender = jest.fn();
-// mocks out Icon component to avoid clutter
-// Icon is used purely decoratively
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-    Icon: () => mockIconRender(),
-  };
-});
-
 function getNavigationElement() {
   return screen.getByRole("navigation", { name: /Pagination/ });
 }
@@ -113,10 +102,8 @@ describe("Pagination.tsx", () => {
       });
 
       it("renders all icons", () => {
-        // makes sure that the right amount of icons has been used
-        // will break if icons are missing / not used
-        // does NOT check if the right icons are rendered
-        expect(mockIconRender).toHaveBeenCalledTimes(4);
+        const icons = screen.getAllByTestId("ds-icon");
+        expect(icons).toHaveLength(4);
       });
     });
 

@@ -2,17 +2,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { FileInput } from "src/app/components/FileInput";
 import userEvent from "@testing-library/user-event";
 
-const mockIconRender = jest.fn();
-// mocks out Icon component to avoid clutter
-// Icon is used purely decoratively
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-    Icon: () => mockIconRender(),
-  };
-});
-
 const testValid = true;
 const testLabelText = "Upload your favorite dog pic!";
 const testButtonText = "Upload picture";

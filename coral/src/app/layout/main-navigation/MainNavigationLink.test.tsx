@@ -4,18 +4,6 @@ import data from "@aivenio/aquarium/dist/src/icons/console";
 import { MemoryRouter } from "react-router-dom";
 import { Routes } from "src/app/router_utils";
 
-// mock out svgs to avoid clutter
-jest.mock("@aivenio/aquarium", () => {
-  return {
-    __esModule: true,
-    ...jest.requireActual("@aivenio/aquarium"),
-
-    Icon: () => {
-      return <div data-testid={"ds-icon"}></div>;
-    },
-  };
-});
-
 describe("MainNavigationLink.tsx", () => {
   // (icon is not needed for the test, Icon component mocked out)
   const mockIcon = "fake-icon" as unknown as typeof data;
