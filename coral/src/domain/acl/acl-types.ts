@@ -2,7 +2,7 @@ import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiModel,
-  Prettify,
+  ResolveIntersectionTypes,
 } from "types/utils";
 
 // Several types are dependent on topictype when it is "Consumer":
@@ -27,13 +27,13 @@ type BaseCreateAclRequest = Pick<
   | "acl_ip"
 >;
 
-type CreateAclRequestTopicTypeProducer = Prettify<
+type CreateAclRequestTopicTypeProducer = ResolveIntersectionTypes<
   BaseCreateAclRequest & {
     topictype: "Producer";
   }
 >;
 
-type CreateAclRequestTopicTypeConsumer = Prettify<
+type CreateAclRequestTopicTypeConsumer = ResolveIntersectionTypes<
   BaseCreateAclRequest & {
     transactionalId?: string;
     topictype: "Consumer";

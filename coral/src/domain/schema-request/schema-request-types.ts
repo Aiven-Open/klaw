@@ -1,6 +1,6 @@
-import { KlawApiModel, Prettify } from "types/utils";
+import { KlawApiModel, ResolveIntersectionTypes } from "types/utils";
 
-type SchemaRequest = Prettify<
+type SchemaRequest = ResolveIntersectionTypes<
   Required<
     Pick<
       KlawApiModel<"SchemaRequest">,
@@ -10,7 +10,7 @@ type SchemaRequest = Prettify<
     Pick<KlawApiModel<"SchemaRequest">, "remarks">
 >;
 
-type SchemaRequestPayload = Prettify<
+type SchemaRequestPayload = ResolveIntersectionTypes<
   SchemaRequest & {
     // schemaversion and appname
     // should be hard coded at the moment

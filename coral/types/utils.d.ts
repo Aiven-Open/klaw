@@ -1,8 +1,9 @@
 import type { operations, components } from "types/api.d";
 
-type KlawApiResponse<OperationId extends keyof operations> = Prettify<
-  operations[OperationId]["responses"][200]["content"]["application/json"]
->;
+type KlawApiResponse<OperationId extends keyof operations> =
+  ResolveIntersectionTypes<
+    operations[OperationId]["responses"][200]["content"]["application/json"]
+  >;
 type KlawApiModel<Schema extends keyof components["schemas"]> =
   components["schemas"][Schema];
 type KlawApiRequest<OperationId extends keyof operations> =
@@ -10,7 +11,7 @@ type KlawApiRequest<OperationId extends keyof operations> =
 type KlawApiRequestQueryParameters<OperationId extends keyof operations> =
   operations[OperationId]["parameters"]["query"];
 
-type Prettify<T> = {
+type ResolveIntersectionTypes<T> = {
   [K in keyof T]: T[K];
   // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
@@ -20,5 +21,5 @@ export type {
   KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
-  Prettify,
+  ResolveIntersectionTypes,
 };
