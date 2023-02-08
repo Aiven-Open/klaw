@@ -384,37 +384,66 @@ public class SelectDataJdbc {
         env, AclPatternType.PREFIXED.value, tenantId);
   }
 
-  public List<TopicRequest> selectTopicRequestsByStatus(
+  /**
+   * @param allReqs boolean should all requests be returned (true if requesting for an approvers
+   *     view)
+   * @param requestor The UserName of the person who is requesting the list of topics
+   * @param status Filter the response by the status of the requests e.g.
+   *     all,created,declined,deleted,approved
+   * @param showRequestsOfAllTeams boolean true if a superadmin with the permission to view
+   *     requests. otherwise false
+   * @param tenantId The identifier of the tenancy with which the requestor is from.
+   * @param teamId filter the results by the name of the team who created the request
+   * @param env filter the results by the environment identifier e.g. 1,2,3,4. Applied only when
+   *     allReqs is true
+   * @param wildcardSearch filter the results by a wildcard search of the topicnames. Applied only
+   *     when allReqs is true
+   * @return A list of TopicRequests that meet the filtered criteria. Applied only when allReqs is
+   *     true
+   */
+  public List<TopicRequest> getFilteredTopicRequests(
       boolean allReqs,
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
       int tenantId,
-      String teamName,
+      Integer teamId,
       String env,
       String wildcardSearch) {
-    log.debug(
-        "selectTopicRequests {} {} {} {} {}", requestor, status, teamName, env, wildcardSearch);
+    log.info(
+        "selectTopicRequests {} {} {} {} {} {}",
+        showRequestsOfAllTeams,
+        requestor,
+        status,
+        teamId,
+        env,
+        wildcardSearch);
 
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
     List<TopicRequest> topicRequests = new ArrayList<>();
     List<TopicRequest> topicRequestListSub;
 
     if (allReqs) { // approvers
-
+      // Team Name is null here as it is the team who created the requested
+      // Description includes the teamId as that is how Claim topics know who is the owning team.
       List<TopicRequest> claimTopicReqs =
           Lists.newArrayList(
               findTopicRequestsByExample(
-                  RequestOperationType.CLAIM.name(),
-                  teamName,
+                  RequestOperationType.CLAIM.value,
+                  null,
                   env,
                   status,
                   tenantId,
                   String.valueOf(teamSelected)));
+      log.info("Claim Topic Requests {}", claimTopicReqs);
+      // remove any claims created by your team.
+      claimTopicReqs =
+          claimTopicReqs.stream()
+              .filter(topicRequest -> teamSelected != topicRequest.getTeamId())
+              .collect(Collectors.toList());
 
       topicRequestListSub =
-          Lists.newArrayList(
-              findTopicRequestsByExample(null, teamName, env, status, tenantId, null));
+          Lists.newArrayList(findTopicRequestsByExample(null, teamId, env, status, tenantId, null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -422,7 +451,7 @@ public class SelectDataJdbc {
           topicRequestListSub.stream()
               .filter(
                   topicRequest ->
-                      !RequestOperationType.CLAIM.name().equals(topicRequest.getTopictype()))
+                      !RequestOperationType.CLAIM.value.equals(topicRequest.getTopictype()))
               .collect(Collectors.toList());
 
       topicRequestListSub.addAll(claimTopicReqs);
@@ -433,28 +462,28 @@ public class SelectDataJdbc {
               .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
               .collect(Collectors.toList());
     } else {
-      topicRequestListSub =
-          Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
+      if (showRequestsOfAllTeams) {
+        topicRequestListSub =
+            Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
+      } else {
+        log.info("Integer of team: {}", teamSelected);
+        topicRequestListSub =
+            Lists.newArrayList(
+                findTopicRequestsByExample(null, teamSelected, null, null, tenantId, null));
+      }
     }
 
     boolean wildcardFilter = (allReqs && wildcardSearch != null && !wildcardSearch.isEmpty());
 
     for (TopicRequest row : topicRequestListSub) {
-      Integer teamId = row.getTeamId();
+
       try {
         row.setRequesttimestring(
             (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
                 .format((row.getRequesttime()).getTime()));
       } catch (Exception ignored) {
       }
-
-      if (showRequestsOfAllTeams) {
-        filterAndAddTopicRequest(
-            topicRequests, row, wildcardSearch, wildcardFilter); // no team filter
-      } else if (teamSelected != null
-          && (teamSelected.equals(teamId) || ("" + teamSelected).equals(row.getDescription()))) {
-        filterAndAddTopicRequest(topicRequests, row, wildcardSearch, wildcardFilter);
-      }
+      filterAndAddTopicRequest(topicRequests, row, wildcardSearch, wildcardFilter);
     }
 
     return topicRequests;
@@ -475,7 +504,7 @@ public class SelectDataJdbc {
    * will be utilised in the search.
    *
    * @param requestType The type of topic request Create/claim etc
-   * @param teamName The identifier of the team
+   * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
    * @param tenantId The tenantId
@@ -483,7 +512,7 @@ public class SelectDataJdbc {
    */
   private Iterable<TopicRequest> findTopicRequestsByExample(
       String requestType,
-      String teamName,
+      Integer teamId,
       String environment,
       String status,
       int tenantId,
@@ -498,21 +527,10 @@ public class SelectDataJdbc {
     if (environment != null) {
       request.setEnvironment(environment);
     }
-    if (teamName != null) {
-      List<Team> team = teamRepo.findAllByTenantIdAndTeamname(tenantId, teamName);
-      if (team.size() == 1) {
-        request.setTeamId(team.get(0).getTeamId());
-      } else {
-        log.warn(
-            "findTopicRequestsByExample({},{},{},{},{}) returned {} number of teams, so the filtering parameter was not applied.",
-            requestType,
-            teamName,
-            environment,
-            status,
-            tenantId,
-            team.size());
-      }
+    if (teamId != null) {
+      request.setTeamId(teamId);
     }
+
     if (description != null && !description.isEmpty()) {
       request.setDescription(description);
     }

@@ -95,8 +95,8 @@ public class TopicController {
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
-   * @param teamName The name of the team that that you wish to filter the results by, e.g.
-   *     'Octopus'
+   * @param teamId The identifier of the team that created the request that you wish to filter the
+   *     results by, e.g. 1,2,3
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param search A wildcard search term that searches topicNames.
    * @return A List of Topic Requests filtered by the provided parameters.
@@ -109,12 +109,12 @@ public class TopicController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
-      @RequestParam(value = "teamName", required = false) String teamName,
+      @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequestsForApprover(
-            pageNo, currentPage, requestsType, teamName, env, search),
+            pageNo, currentPage, requestsType, teamId, env, search),
         HttpStatus.OK);
   }
 

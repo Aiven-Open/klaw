@@ -423,7 +423,7 @@ public class TopicControllerService {
       String pageNo,
       String currentPage,
       String requestsType,
-      String teamName,
+      Integer teamId,
       String env,
       String wildcardSearch) {
     if (log.isDebugEnabled()) {
@@ -431,7 +431,7 @@ public class TopicControllerService {
           "getCreatedTopicRequests {} {} {} {} {}",
           pageNo,
           requestsType,
-          teamName,
+          teamId,
           env,
           wildcardSearch);
     }
@@ -446,13 +446,13 @@ public class TopicControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getCreatedTopicRequests(
-                  userName, requestsType, false, tenantId, teamName, env, wildcardSearch);
+                  userName, requestsType, false, tenantId, teamId, env, wildcardSearch);
     } else {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedTopicRequests(
-                  userName, requestsType, true, tenantId, teamName, env, wildcardSearch);
+                  userName, requestsType, true, tenantId, teamId, env, wildcardSearch);
     }
 
     createdTopicReqList = getTopicRequestsFilteredForTenant(createdTopicReqList);
