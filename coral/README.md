@@ -69,6 +69,7 @@ You can also run `pnpm` in your console to get a list of all available scripts.
 - `test`: runs all tests one time
 - `tsc`: runs the TypeScript compiler
 
+ℹ️ We are using a custom hook path for enabling pre-commit hooks. This path is set in the local git config when running `pnpm install`. See script `pnpm:devPreinstall`.
 
 ## Tech stack
 
