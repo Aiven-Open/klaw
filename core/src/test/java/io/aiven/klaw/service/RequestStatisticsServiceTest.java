@@ -65,6 +65,8 @@ public class RequestStatisticsServiceTest {
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(handleDbRequests.getTopicRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
         .thenReturn(utilMethods.getRequestCounts());
+    when(handleDbRequests.getAclRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+        .thenReturn(utilMethods.getRequestCounts());
     RequestsCountOverview requestsCountOverview =
         requestStatisticsService.getRequestsCountOverview(RequestMode.MY_REQUESTS);
     Set<RequestEntityStatusCount> requestEntityStatistics =
@@ -72,10 +74,26 @@ public class RequestStatisticsServiceTest {
     List<RequestEntityStatusCount> requestEntityStatusCountArrayList =
         new ArrayList<>(requestEntityStatistics);
 
-    assertThat(requestEntityStatusCountArrayList.get(0).getRequestEntityType())
-        .isEqualTo(RequestEntityType.TOPIC);
+    assertThat(requestEntityStatusCountArrayList).hasSize(2);
+
+    boolean topicEntityFound = false, aclEntityFound = false;
+    for (RequestEntityStatusCount requestEntityStatusCount : requestEntityStatusCountArrayList) {
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.TOPIC) {
+        topicEntityFound = true;
+      }
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.ACL) {
+        aclEntityFound = true;
+      }
+    }
+
+    assertThat(topicEntityFound).isTrue();
     assertThat(requestEntityStatusCountArrayList.get(0).getRequestStatusCountSet()).hasSize(2);
     assertThat(requestEntityStatusCountArrayList.get(0).getRequestsOperationTypeCountSet())
+        .hasSize(2);
+
+    assertThat(aclEntityFound).isTrue();
+    assertThat(requestEntityStatusCountArrayList.get(1).getRequestStatusCountSet()).hasSize(2);
+    assertThat(requestEntityStatusCountArrayList.get(1).getRequestsOperationTypeCountSet())
         .hasSize(2);
   }
 

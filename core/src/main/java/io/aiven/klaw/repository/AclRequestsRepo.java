@@ -33,4 +33,40 @@ public interface AclRequestsRepo
   Integer getNextAclRequestId(@Param("tenantId") Integer tenantId);
 
   List<AclRequests> findAllByTenantId(int tenantId);
+
+  // requests raised by my team
+  @Query(
+      value =
+          "select acltype, count(*) from kwaclrequests where tenantid = :tenantId"
+              + " and requestingteam = :requestingTeamId group by acltype",
+      nativeQuery = true)
+  List<Object[]> findAllAclRequestsGroupByOperationTypeMyTeam(
+      @Param("requestingTeamId") Integer requestingTeamId, @Param("tenantId") Integer tenantId);
+
+  // requests raised by my team
+  @Query(
+      value =
+          "select topicstatus, count(*) from kwaclrequests where tenantid = :tenantId"
+              + " and requestingteam = :requestingTeamId group by topicstatus",
+      nativeQuery = true)
+  List<Object[]> findAllAclRequestsGroupByStatusMyTeam(
+      @Param("requestingTeamId") Integer requestingTeamId, @Param("tenantId") Integer tenantId);
+
+  // requests assigned to my team
+  @Query(
+      value =
+          "select acltype, count(*) from kwaclrequests where tenantid = :tenantId"
+              + " and teamid = :assignedToTeamId group by acltype",
+      nativeQuery = true)
+  List<Object[]> findAllAclRequestsGroupByOperationTypeAssignedToTeam(
+      @Param("assignedToTeamId") Integer assignedToTeamId, @Param("tenantId") Integer tenantId);
+
+  // requests assigned to my team
+  @Query(
+      value =
+          "select topicstatus, count(*) from kwaclrequests where tenantid = :tenantId"
+              + " and teamid = :assignedToTeamId group by topicstatus",
+      nativeQuery = true)
+  List<Object[]> findAllAclRequestsGroupByStatusAssignedToTeam(
+      @Param("assignedToTeamId") Integer assignedToTeamId, @Param("tenantId") Integer tenantId);
 }

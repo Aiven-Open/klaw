@@ -132,6 +132,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.getTopicRequestsCounts(teamId, requestMode, tenantId);
   }
 
+  @Override
+  public Map<String, Map<String, Long>> getAclRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId) {
+    return jdbcSelectHelper.getAclRequestsCounts(teamId, requestMode, tenantId);
+  }
+
   public List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsByStatus(

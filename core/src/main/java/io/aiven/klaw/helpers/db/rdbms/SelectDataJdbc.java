@@ -188,7 +188,7 @@ public class SelectDataJdbc {
 
     request.setTenantId(tenantId);
     if (aclType != null) {
-      request.setAclType(aclType.value);
+      request.setTopictype(aclType.value);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -1189,6 +1189,53 @@ public class SelectDataJdbc {
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
     }
 
+    // update with 0L if requests don't exist
+    updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
+
+    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
+    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
+
+    return allCountsMap;
+  }
+
+  // Acl requests can be submitted by any team. your team or other teams on topics.
+  // For requests raised by your team, 'requestingteam' is the column in aclrequests table
+  // For requests assigned to your team for approval, 'teamid' is the column in aclrequests table
+  public Map<String, Map<String, Long>> getAclRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId) {
+    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+    Map<String, Long> operationTypeCountsMap = new HashMap<>();
+    Map<String, Long> statusCountsMap = new HashMap<>();
+
+    if (RequestMode.MY_REQUESTS == requestMode) {
+      List<Object[]> aclRequestsOperationTypObj =
+          aclRequestsRepo.findAllAclRequestsGroupByOperationTypeMyTeam(teamId, tenantId);
+      updateMap(operationTypeCountsMap, aclRequestsOperationTypObj);
+
+      List<Object[]> aclRequestsStatusObj =
+          aclRequestsRepo.findAllAclRequestsGroupByStatusMyTeam(teamId, tenantId);
+      updateMap(statusCountsMap, aclRequestsStatusObj);
+    } else if (RequestMode.TO_APPROVE == requestMode) {
+      List<Object[]> aclRequestsOperationTypObj =
+          aclRequestsRepo.findAllAclRequestsGroupByOperationTypeAssignedToTeam(teamId, tenantId);
+      updateMap(operationTypeCountsMap, aclRequestsOperationTypObj);
+
+      List<Object[]> aclRequestsStatusObj =
+          aclRequestsRepo.findAllAclRequestsGroupByStatusAssignedToTeam(teamId, tenantId);
+      updateMap(statusCountsMap, aclRequestsStatusObj);
+    }
+
+    // update with 0L if requests don't exist
+    updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
+
+    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
+    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
+
+    return allCountsMap;
+  }
+
+  private static void updateCountsForNonExistingRequestTypes(
+      Map<String, Long> operationTypeCountsMap, Map<String, Long> statusCountsMap) {
     for (RequestStatus requestStatus : RequestStatus.values()) {
       if (!statusCountsMap.containsKey(requestStatus.value))
         statusCountsMap.put(requestStatus.value, 0L);
@@ -1197,15 +1244,9 @@ public class SelectDataJdbc {
       if (!operationTypeCountsMap.containsKey(requestOperationType.value))
         operationTypeCountsMap.put(requestOperationType.value, 0L);
     }
-
-    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
-    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
-
-    return allCountsMap;
   }
 
-  private static void updateMap(Map<String, Long> countsMap, List<Object[]> topicRequestsObj) {
-    topicRequestsObj.forEach(
-        topicReqObjs -> countsMap.put((String) topicReqObjs[0], (Long) topicReqObjs[1]));
+  private static void updateMap(Map<String, Long> countsMap, List<Object[]> requestObjList) {
+    requestObjList.forEach(reqObj -> countsMap.put((String) reqObj[0], (Long) reqObj[1]));
   }
 }
