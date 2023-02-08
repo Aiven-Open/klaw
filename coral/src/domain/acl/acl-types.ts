@@ -27,8 +27,6 @@ type BaseCreateAclRequest = Pick<
   | "acl_ip"
 >;
 
-// type CreateAclRequestTopicTypeProducerIntersected = ;
-
 type CreateAclRequestTopicTypeProducer = Prettify<
   BaseCreateAclRequest & {
     topictype: "Producer";
