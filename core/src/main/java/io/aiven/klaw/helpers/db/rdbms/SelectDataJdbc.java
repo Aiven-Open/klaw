@@ -274,7 +274,7 @@ public class SelectDataJdbc {
         schemaList.add(row);
       }
     }
-    log.info("schema List size on return {}, allReqs {}", schemaListSub.size(), allReqs);
+
     return schemaList;
   }
 
