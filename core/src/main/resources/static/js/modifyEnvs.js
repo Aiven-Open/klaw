@@ -489,14 +489,14 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                if($scope.envDetails.defaultPartitions > $scope.envDetails.maxPartitions){
+                if(parseInt($scope.envDetails.defaultPartitions) > parseInt($scope.envDetails.maxPartitions)){
                     $scope.alertnote = "Default partitions should be less than Maximum partitions";
                     $scope.showAlertToast();
                     return;
                 }
 
                 // Replication factor validation
-                if($scope.envDetails.defaultReplicationFactor.length<=0 || $scope.envDetails.defaultReplicationFactor<=0)
+                if(parseInt($scope.envDetails.defaultReplicationFactor.length) <= 0 || parseInt($scope.envDetails.defaultReplicationFactor) <= 0)
                 {
                     $scope.alertnote = "Default replication factor should not be empty and should be greater than 0";
                     $scope.showAlertToast();

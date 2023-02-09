@@ -479,6 +479,9 @@
 													<option value="" selected="selected">
 														Select Environment</option>
 												</select>
+
+												<input disabled ng-show="requestType == 'PromoteTopic'"  name="addTopic.envName"
+													   type="text" value="{{addTopic.envNameToDisplay}}" class="form-control">
 											</div>
 										</div>
 										<!--/span-->
@@ -486,7 +489,7 @@
 											<div class="form-group">
 												<label>Topic name</label>
 												<input ng-show="requestType == 'CreateTopic'" type="text" class="form-control" ng-model="addTopic.topicname" required>
-												<input ng-show="requestType == 'EditTopic'" disabled type="text" class="form-control" ng-model="addTopic.topicname" required>
+												<input ng-show="requestType == 'EditTopic' || requestType == 'PromoteTopic'" disabled type="text" class="form-control" ng-model="addTopic.topicname" required>
 												<small ng-show="topicPrefix != null && topicPrefix != ''" class="form-control-feedback">Ex: <b>{{topicPrefix}}</b>mortgagetopic  (With prefix)</small>
 												<small ng-show="topicSuffix != null && topicSuffix != ''" class="form-control-feedback">Ex: mortgagetopic<b>{{topicSuffix}}</b>  (With suffix)</small>
 												<small ng-show="(topicPrefix == null || topicPrefix == '') && (topicSuffix == null || topicSuffix == '')" class="form-control-feedback">Ex: mortgagetopic </small>
@@ -573,7 +576,7 @@
 
 											</div>
 										</div>
-										<div class="col-md-6">
+										<div class="col-md-6" ng-show="requestType == 'CreateTopic'">
 											<div class="form-group">
 												<label class="control-label">Topic Description</label>
 												<input class="form-control" maxlength="75" placeholder="This topic is for .."

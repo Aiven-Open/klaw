@@ -493,7 +493,7 @@
 										<td width="5%"></td>
 										<td align="right" width="10%">
 											<div class="p-2" style="width:5%">
-												<a href="requestTopics?topicname={{topicSelectedParam}}&env={{resultB.clusterId}}">
+												<a href="requestTopics?topicname={{topicSelectedParam}}&env={{resultB.clusterId}}&requestType=edit">
 													<button ng-show="resultB.showEditTopic == true"
 															type="button" class="btn btn-sm btn-outline-secondary btn-circle"><i class="fas fa-edit"></i>
 													</button>
@@ -543,18 +543,13 @@
 										</td>
 										<td width="5%"></td>
 										<td width="20%" align="right">
-												<button ng-show="topicPromotionDetails.status =='success' && firstPromote == 'false'"
-														type="button"
-														ng-click="onFirstPromote(topicPromotionDetails.targetEnvId)"
-														class="btn btn-rounded btn-block btn-outline-info">
-													Promote to {{topicPromotionDetails.targetEnv}}
-												</button>
-												<button ng-show="topicPromotionDetails.status =='success' && firstPromote == 'true'"
-														type="button"
-														ng-click="onFinalPromote(topicPromotionDetails.targetEnvId)"
-														class="btn btn-rounded btn-block btn-outline-info">
-													Submit Promotion to {{topicPromotionDetails.targetEnv}}
-												</button>
+												<a href="requestTopics?topicname={{topicSelectedParam}}&env={{topicPromotionDetails.targetEnvId}}&envName={{topicPromotionDetails.targetEnv}}&requestType=promote">
+													<button ng-show="topicPromotionDetails.status =='success' && firstPromote == 'false'"
+																type="button"
+																class="btn btn-rounded btn-block btn-outline-info">
+															Promote to {{topicPromotionDetails.targetEnv}}
+													</button>
+												</a>
 										</td>
 									</tr>
 								</table>

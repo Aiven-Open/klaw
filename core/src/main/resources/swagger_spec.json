@@ -3683,10 +3683,10 @@
         "titleForReport" : {
           "type" : "string"
         },
-        "yaxisLabel" : {
+        "xaxisLabel" : {
           "type" : "string"
         },
-        "xaxisLabel" : {
+        "yaxisLabel" : {
           "type" : "string"
         }
       }
@@ -4223,7 +4223,7 @@
       "properties" : {
         "requestOperationType" : {
           "type" : "string",
-          "enum" : [ "CREATE", "UPDATE", "CLAIM", "DELETE" ]
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
         },
         "count" : {
           "type" : "integer",

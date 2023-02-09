@@ -427,7 +427,8 @@ public class ClusterApiService {
               .build();
 
       String uri;
-      if (RequestOperationType.CREATE.value.equals(topicRequestType)) {
+      if (RequestOperationType.CREATE.value.equals(topicRequestType)
+          || RequestOperationType.PROMOTE.value.equals(topicRequestType)) {
         uri = clusterConnUrl + URI_CREATE_TOPICS;
         clusterTopicRequest =
             clusterTopicRequest.toBuilder()
