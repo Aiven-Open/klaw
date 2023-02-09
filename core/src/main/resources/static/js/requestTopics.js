@@ -74,20 +74,28 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
         $scope.requestButton = "Submit";
 
         $scope.loadEditTopicInfo = function(){
-            var envSelected, topicSelected;
+            var envSelected, topicSelected, reqType, envName;
 
             var sPageURL = window.location.search.substring(1);
             var sURLVariables = sPageURL.split('&');
             for (var i = 0; i < sURLVariables.length; i++)
             {
                 var sParameterName = sURLVariables[i].split('=');
-                if (sParameterName[0] == "topicname")
+                if (sParameterName[0] === "topicname")
                 {
                     topicSelected = sParameterName[1];
                 }
-                else if (sParameterName[0] == "env")
+                else if (sParameterName[0] === "requestType")
+                {
+                    reqType = sParameterName[1];
+                }
+                else if (sParameterName[0] === "env")
                 {
                     envSelected = sParameterName[1];
+                }
+                else if (sParameterName[0] === "envName")
+                {
+                    envName = sParameterName[1];
                 }
             }
 
@@ -98,39 +106,51 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             $scope.addTopic.envName = envSelected;
             $scope.getEnvTopicPartitions(envSelected);
 
-            $http({
-                    method: "GET",
-                    url: "getTopicDetailsPerEnv",
-                     headers : { 'Content-Type' : 'application/json' },
-                     params: {'envSelected' : envSelected,  'topicname' : topicSelected }
-                }).success(function(output) {
-                    if(output.topicExists){
-                        $scope.requestTitle = "Topic Edit Request";
-                        $scope.requestType = "EditTopic";
-                        $scope.requestButton = "Submit Update";
-                        $scope.topicIdForEdit = output.topicId;
+            if(reqType != null && reqType === 'edit'){
+                $scope.submitEditTopicRequest(envSelected, topicSelected);
+                $scope.addTopic.description = "Topic Update";
+            }else if(reqType != null && reqType === 'promote'){
+                $scope.requestType = 'PromoteTopic';
+                $scope.requestTitle = "Topic Promotion Request"
+                $scope.addTopic.envNameToDisplay = envName;
+                $scope.addTopic.description = "Topic Promotion";
+            }
+        }
 
-                        $scope.oldtopicpartitions = output.topicContents.noOfPartitions;
-                        $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
-                        if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
-                            $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
-                        $scope.addTopic.description = output.topicContents.description;
-                    }
-                    else{
-                        swal({
-                                 title: "",
-                                 text: "Topic Edit Request : " + output.error,
-                                 showConfirmButton: true
-                             }).then(function(isConfirm){
-                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/topicOverview?topicname=" + topicSelected;
-                              });
-                    }
-                }).error(
-                    function(error)
-                    {
-                        $scope.alert = error;
-                    }
-                );
+        $scope.submitEditTopicRequest = function(envSelected, topicSelected) {
+            $http({
+                method: "GET",
+                url: "getTopicDetailsPerEnv",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'envSelected' : envSelected,  'topicname' : topicSelected }
+            }).success(function(output) {
+                if(output.topicExists){
+                    $scope.requestTitle = "Topic Edit Request";
+                    $scope.requestType = "EditTopic";
+                    $scope.requestButton = "Submit Update";
+                    $scope.topicIdForEdit = output.topicId;
+
+                    $scope.oldtopicpartitions = output.topicContents.noOfPartitions;
+                    $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
+                    if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
+                        $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
+                    $scope.addTopic.description = output.topicContents.description;
+                }
+                else{
+                    swal({
+                        title: "",
+                        text: "Topic Edit Request : " + output.error,
+                        showConfirmButton: true
+                    }).then(function(isConfirm){
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/topicOverview?topicname=" + topicSelected;
+                    });
+                }
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
         }
 
         $scope.addTopic = function() {
@@ -247,7 +267,10 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['advancedTopicConfigEntries'] = advancedTopicConfigEntries;
             if($scope.requestType === 'CreateTopic'){
                 serviceInput['topictype'] = 'Create';
-
+                $scope.httpCreateTopicReq(serviceInput);
+            }
+           if($scope.requestType === 'PromoteTopic'){
+                serviceInput['topictype'] = 'Promote';
                 $scope.httpCreateTopicReq(serviceInput);
             }
             else{

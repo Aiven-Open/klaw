@@ -14,6 +14,7 @@ import io.aiven.klaw.model.TopicCreateRequestModel;
 import io.aiven.klaw.model.TopicUpdateRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
@@ -167,6 +168,7 @@ public class TopicRequestValidatorImplIT {
     Env env = utilMethods.getEnvLists().get(0);
 
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
+    addTopicRequest.setTopictype(RequestOperationType.PROMOTE.value);
     addTopicRequest.setEnvironment("2");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
