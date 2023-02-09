@@ -4,7 +4,6 @@ import {
   Flexbox,
   GhostButton,
   Icon,
-  Pagination,
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
@@ -12,6 +11,7 @@ import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Pagination } from "src/app/components/Pagination";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { getAclRequestsForApprover } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
@@ -314,11 +314,9 @@ function AclApprovals() {
         noWrap={false}
       />
       <Pagination
-        currentPage={data.currentPage}
+        activePage={data.currentPage}
         totalPages={data.totalPages}
-        hasNextPage={activePage < data.totalPages}
-        hasPreviousPage={data.currentPage !== 1}
-        onPageChange={handleChangePage}
+        setActivePage={handleChangePage}
       />
     </div>
   );
