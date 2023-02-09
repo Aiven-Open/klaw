@@ -105,6 +105,8 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   },
   {
     width: 30,
+    // Not having a headerName triggers React error:
+    // Warning: Encountered two children with the same key, ``.
     headerName: "",
     type: "custom",
     UNSAFE_render: () => {
@@ -117,15 +119,13 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   },
   {
     width: 30,
+    // Not having a headerName triggers React error:
+    // Warning: Encountered two children with the same key, ``.
     headerName: "",
     type: "custom",
     UNSAFE_render: () => {
       return (
-        <GhostButton
-          onClick={() => alert("Decline")}
-          title={"Decline"}
-          style={{ textAlign: "center" }}
-        >
+        <GhostButton onClick={() => alert("Decline")} title={"Decline"}>
           <Icon color="grey-70" icon={deleteIcon} />
         </GhostButton>
       );
@@ -139,13 +139,13 @@ function AclApprovals() {
 
   const [activePage, setActivePage] = useState(initialPage || 1);
 
-  const { data } = useQuery<AclRequestsForApprover, Error>({
+  const { data, isLoading } = useQuery<AclRequestsForApprover, Error>({
     queryKey: ["aclRequests", activePage],
     queryFn: () => getAclRequestsForApprover({ pageNo: String(activePage) }),
     keepPreviousData: true,
   });
 
-  if (data === undefined) {
+  if (data === undefined || isLoading) {
     return <SkeletonTable />;
   }
 
