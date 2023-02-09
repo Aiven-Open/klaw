@@ -7,8 +7,10 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 
-public interface SchemaRequestRepo extends CrudRepository<SchemaRequest, SchemaRequestID> {
+public interface SchemaRequestRepo
+    extends CrudRepository<SchemaRequest, SchemaRequestID>, QueryByExampleExecutor<SchemaRequest> {
   Optional<SchemaRequest> findById(SchemaRequestID schemaRequestId);
 
   List<SchemaRequest> findAllByTopicstatusAndTenantId(String topicStatus, int tenantId);

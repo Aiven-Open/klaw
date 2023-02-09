@@ -2,7 +2,9 @@ package io.aiven.klaw.controller;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -55,7 +57,8 @@ public class SchemaRegstryControllerTest {
   public void getSchemaRequests() throws Exception {
     List<SchemaRequestModel> schRequests = utilMethods.getSchemaRequests();
 
-    when(schemaRegstryControllerService.getSchemaRequests(anyString(), anyString(), anyString()))
+    when(schemaRegstryControllerService.getSchemaRequests(
+            anyString(), anyString(), anyString(), anyBoolean(), eq(null), eq(null), eq(null)))
         .thenReturn(schRequests);
 
     mvc.perform(

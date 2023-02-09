@@ -120,7 +120,8 @@ public class UtilControllerService {
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
       roleToSet = "requestor_subscriptions";
     }
-    List<SchemaRequest> allSchemaReqs = reqsHandle.getAllSchemaRequests(true, requestor, tenantId);
+    List<SchemaRequest> allSchemaReqs =
+        reqsHandle.getAllSchemaRequests(true, requestor, tenantId, null, null, null, null);
 
     List<AclRequests> allAclReqs;
     List<TopicRequest> allTopicReqs;

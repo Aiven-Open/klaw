@@ -208,22 +208,61 @@ public class SelectDataJdbc {
       request.setAclstatus(status);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
-    // string
+    // stringgetAllSchemaR
     if (log.isDebugEnabled()) {
       log.debug("find By topic etc example {}", request);
     }
     return aclRequestsRepo.findAll(Example.of(request));
   }
 
-  public List<SchemaRequest> selectSchemaRequests(boolean allReqs, String requestor, int tenantId) {
-    log.debug("selectSchemaRequests {}", requestor);
+  public List<SchemaRequest> selectFilteredSchemaRequests(
+      boolean allReqs,
+      String requestor,
+      int tenantId,
+      String topic,
+      String env,
+      String status,
+      String wildcardSearch) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "selectSchemaRequests allReqs {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}",
+          allReqs,
+          requestor,
+          tenantId,
+          topic,
+          env,
+          status,
+          wildcardSearch);
+    }
     List<SchemaRequest> schemaList = new ArrayList<>();
     List<SchemaRequest> schemaListSub;
 
     if (allReqs) {
-      schemaListSub = schemaRequestRepo.findAllByTopicstatusAndTenantId("created", tenantId);
+      schemaListSub =
+          Lists.newArrayList(
+              findSchemaRequestsByExample(
+                  topic, env, status != null ? status : "created", tenantId));
+
+      log.info("schema List size {}, allReqs {}", schemaListSub.size(), allReqs);
+      // Placed here as it should only apply for approvers.
+      schemaListSub =
+          schemaListSub.stream()
+              .filter(request -> !request.getUsername().equals(requestor))
+              .collect(Collectors.toList());
+      log.info(
+          "schema List size Remove requestor requests {}, allReqs {}",
+          schemaListSub.size(),
+          allReqs);
+      if (wildcardSearch != null && !wildcardSearch.isEmpty()) {
+        schemaListSub =
+            schemaListSub.stream()
+                .filter(request -> !request.getTopicname().contains(wildcardSearch))
+                .collect(Collectors.toList());
+        log.info("schema List size wildcardsearch {}, allReqs {}", schemaListSub.size(), allReqs);
+      }
+
     } else {
-      schemaListSub = Lists.newArrayList(schemaRequestRepo.findAllByTenantId(tenantId));
+      schemaListSub = Lists.newArrayList(findSchemaRequestsByExample(null, null, status, tenantId));
     }
 
     for (SchemaRequest row : schemaListSub) {
@@ -240,8 +279,32 @@ public class SelectDataJdbc {
         schemaList.add(row);
       }
     }
-
+    log.info("schema List size on return {}, allReqs {}", schemaListSub.size(), allReqs);
     return schemaList;
+  }
+
+  public Iterable<SchemaRequest> findSchemaRequestsByExample(
+      String topic, String environment, String status, int tenantId) {
+
+    SchemaRequest request = new SchemaRequest();
+
+    request.setTenantId(tenantId);
+
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (topic != null && !topic.isEmpty()) {
+      request.setTopicname(topic);
+    }
+    if (status != null && !status.equalsIgnoreCase("all")) {
+      request.setTopicstatus(status);
+    }
+    // check if debug is enabled so the logger doesnt waste resources converting object request to a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
+    return schemaRequestRepo.findAll(Example.of(request));
   }
 
   public SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId) {

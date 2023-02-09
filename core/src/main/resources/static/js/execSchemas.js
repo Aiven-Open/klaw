@@ -78,7 +78,7 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "getCreatedSchemaRequests",
+                url: "getSchemaRequestsForApprover",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,

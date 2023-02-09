@@ -32,6 +32,12 @@ public class SchemaRegstryController {
   @Autowired TopicOverviewService topicOverviewService;
   @Autowired SchemaOverviewService schemaOverviewService;
 
+  /**
+   * @param pageNo
+   * @param currentPage
+   * @param requestsType
+   * @return A list of
+   */
   @RequestMapping(
       value = "/getSchemaRequests",
       method = RequestMethod.GET,
@@ -41,20 +47,34 @@ public class SchemaRegstryController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestsType", defaultValue = "all") String requestsType) {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.getSchemaRequests(pageNo, currentPage, requestsType),
+        schemaRegstryControllerService.getSchemaRequests(
+            pageNo, currentPage, requestsType, false, null, null, null),
         HttpStatus.OK);
   }
 
+  /**
+   * @param pageNo Which page would you like returned e.g. 1
+   * @param currentPage Which Page are you currently on e.g. 1
+   * @param requestsType What type of requests are you looking for e.g. 'all' 'created' or 'deleted'
+   * @param topic The name of the topic you would like returned
+   * @param env The name of the environment you would like returned e.g. '1'
+   * @param search A wildcard seearch on the topic name allowing
+   * @return A list of filtered Schema Requests for approval
+   */
   @RequestMapping(
-      value = "/getCreatedSchemaRequests",
+      value = "/getSchemaRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<SchemaRequestModel>> getCreatedSchemaRequests(
+  public ResponseEntity<List<SchemaRequestModel>> getSchemaRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
+      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "topic", required = false) String topic,
+      @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.getSchemaRequests(pageNo, currentPage, requestsType),
+        schemaRegstryControllerService.getSchemaRequests(
+            pageNo, currentPage, requestsType, true, topic, env, search),
         HttpStatus.OK);
   }
 

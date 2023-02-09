@@ -109,7 +109,8 @@ public class SelectDataJdbcTest {
     when(userInfoRepo.findByUsernameIgnoreCase(requestor))
         .thenReturn(java.util.Optional.of(userInfo));
 
-    List<SchemaRequest> schemaRequestsActual = selectData.selectSchemaRequests(false, requestor, 1);
+    List<SchemaRequest> schemaRequestsActual =
+        selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null);
     assertThat(schemaRequestsActual).isEmpty();
   }
 
