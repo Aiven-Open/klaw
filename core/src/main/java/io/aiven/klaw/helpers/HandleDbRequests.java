@@ -75,6 +75,9 @@ public interface HandleDbRequests {
   Map<String, Map<String, Long>> getAclRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId);
 
+  Map<String, Map<String, Long>> getSchemaRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId);
+
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
 

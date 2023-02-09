@@ -52,6 +52,17 @@ public class RequestStatisticsService {
     updateRequestsCountOverview(
         aclsRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.ACL);
 
+    // get schema reqs count and update requestsCountOverview
+    Map<String, Map<String, Long>> schemasRequestCountsMap =
+        manageDatabase
+            .getHandleDbRequests()
+            .getSchemaRequestsCounts(
+                commonUtilsService.getTeamId(getUserName()),
+                requestMode,
+                commonUtilsService.getTenantId(getUserName()));
+    updateRequestsCountOverview(
+        schemasRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.SCHEMA);
+
     requestsCountOverview.setRequestEntityStatistics(requestEntityStatusCountSet);
     return requestsCountOverview;
   }

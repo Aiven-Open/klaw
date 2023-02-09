@@ -1234,6 +1234,34 @@ public class SelectDataJdbc {
     return allCountsMap;
   }
 
+  // teamId is requestedBy. For 'schemas' all the requests are assigned to the same team, except
+  // claim requests
+  public Map<String, Map<String, Long>> getSchemaRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId) {
+    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+
+    Map<String, Long> operationTypeCountsMap = new HashMap<>();
+    Map<String, Long> statusCountsMap = new HashMap<>();
+
+    if (RequestMode.MY_REQUESTS == requestMode || RequestMode.TO_APPROVE == requestMode) {
+      List<Object[]> schemaRequestsOperationTypObj =
+          schemaRequestRepo.findAllSchemaRequestsGroupByOperationType(teamId, tenantId);
+      updateMap(operationTypeCountsMap, schemaRequestsOperationTypObj);
+
+      List<Object[]> schemaRequestsStatusObj =
+          schemaRequestRepo.findAllSchemaRequestsGroupByStatus(teamId, tenantId);
+      updateMap(statusCountsMap, schemaRequestsStatusObj);
+    }
+
+    // update with 0L if requests don't exist
+    updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
+
+    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
+    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
+
+    return allCountsMap;
+  }
+
   private static void updateCountsForNonExistingRequestTypes(
       Map<String, Long> operationTypeCountsMap, Map<String, Long> statusCountsMap) {
     for (RequestStatus requestStatus : RequestStatus.values()) {
