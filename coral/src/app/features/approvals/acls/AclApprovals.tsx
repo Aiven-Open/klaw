@@ -25,7 +25,7 @@ interface AclRequestTableData {
   teamname: AclRequest["teamname"];
   topictype: AclRequest["topictype"];
   username: string;
-  requesttime: string;
+  requesttimestring: string;
 }
 
 const columns: Array<DataTableColumn<AclRequestTableData>> = [
@@ -92,25 +92,8 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   },
   {
     type: "text",
-    field: "requesttime",
+    field: "requesttimestring",
     headerName: "Date requested",
-    formatter: (value) => {
-      const date = new Date(value);
-
-      const dateTimeString = Intl.DateTimeFormat("en", {
-        dateStyle: "medium",
-        timeStyle: "medium",
-        hourCycle: "h24",
-      }).format(date);
-
-      const timezoneString = Intl.DateTimeFormat("en", {
-        timeZoneName: "short",
-      })
-        .format(date)
-        .split(",")[1];
-
-      return `${dateTimeString} ${timezoneString}`;
-    },
   },
   {
     width: 30,
@@ -285,7 +268,7 @@ function AclApprovals() {
       teamname,
       topictype,
       username,
-      requesttime,
+      requesttimestring,
     }) => ({
       id: Number(req_no),
       acl_ssl: acl_ssl ?? [],
@@ -295,7 +278,7 @@ function AclApprovals() {
       teamname,
       topictype,
       username: username ?? "-",
-      requesttime: requesttime ?? "-",
+      requesttimestring: requesttimestring ?? "-",
     })
   );
 
