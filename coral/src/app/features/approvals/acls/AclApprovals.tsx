@@ -244,7 +244,7 @@ function AclApprovals() {
 
   const [activePage, setActivePage] = useState(initialPage || 1);
 
-  const { data, isPreviousData } = useQuery<AclRequestsForApprover, Error>({
+  const { data } = useQuery<AclRequestsForApprover, Error>({
     queryKey: ["aclRequests", activePage],
     queryFn: () => getAclRequestsForApprover({ pageNo: String(activePage) }),
     keepPreviousData: true,
@@ -285,7 +285,7 @@ function AclApprovals() {
   };
 
   return (
-    <div style={{ opacity: isPreviousData ? "0.7" : "1" }}>
+    <>
       <DataTable
         ariaLabel={"Acl requests"}
         columns={columns}
@@ -297,7 +297,7 @@ function AclApprovals() {
         totalPages={data.totalPages}
         setActivePage={handleChangePage}
       />
-    </div>
+    </>
   );
 }
 
