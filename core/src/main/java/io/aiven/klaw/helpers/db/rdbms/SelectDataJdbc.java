@@ -1234,8 +1234,7 @@ public class SelectDataJdbc {
     return allCountsMap;
   }
 
-  // teamId is requestedBy. For 'schemas' all the requests are assigned to the same team, except
-  // claim requests
+  // teamId is requestedBy. For 'schemas' all the requests are assigned to the same team
   public Map<String, Map<String, Long>> getSchemaRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId) {
     Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
@@ -1251,6 +1250,33 @@ public class SelectDataJdbc {
       List<Object[]> schemaRequestsStatusObj =
           schemaRequestRepo.findAllSchemaRequestsGroupByStatus(teamId, tenantId);
       updateMap(statusCountsMap, schemaRequestsStatusObj);
+    }
+
+    // update with 0L if requests don't exist
+    updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
+
+    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
+    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
+
+    return allCountsMap;
+  }
+
+  // teamId is requestedBy. For 'connectors' all the requests are assigned to the same team
+  public Map<String, Map<String, Long>> getConnectorRequestsCounts(
+      int teamId, RequestMode requestMode, int tenantId) {
+    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+
+    Map<String, Long> operationTypeCountsMap = new HashMap<>();
+    Map<String, Long> statusCountsMap = new HashMap<>();
+
+    if (RequestMode.MY_REQUESTS == requestMode || RequestMode.TO_APPROVE == requestMode) {
+      List<Object[]> connectorRequestsOperationTypObj =
+          kafkaConnectorRequestsRepo.findAllConnectorRequestsGroupByOperationType(teamId, tenantId);
+      updateMap(operationTypeCountsMap, connectorRequestsOperationTypObj);
+
+      List<Object[]> connectorRequestsStatusObj =
+          kafkaConnectorRequestsRepo.findAllConnectorRequestsGroupByStatus(teamId, tenantId);
+      updateMap(statusCountsMap, connectorRequestsStatusObj);
     }
 
     // update with 0L if requests don't exist

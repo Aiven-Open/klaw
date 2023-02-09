@@ -68,7 +68,10 @@ public class RequestStatisticsServiceTest {
     when(handleDbRequests.getAclRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
         .thenReturn(utilMethods.getRequestCounts());
     when(handleDbRequests.getSchemaRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
-            .thenReturn(utilMethods.getRequestCounts());
+        .thenReturn(utilMethods.getRequestCounts());
+    when(handleDbRequests.getConnectorRequestsCounts(
+            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+        .thenReturn(utilMethods.getRequestCounts());
     RequestsCountOverview requestsCountOverview =
         requestStatisticsService.getRequestsCountOverview(RequestMode.MY_REQUESTS);
     Set<RequestEntityStatusCount> requestEntityStatistics =
@@ -76,9 +79,12 @@ public class RequestStatisticsServiceTest {
     List<RequestEntityStatusCount> requestEntityStatusCountArrayList =
         new ArrayList<>(requestEntityStatistics);
 
-    assertThat(requestEntityStatusCountArrayList).hasSize(3);
+    assertThat(requestEntityStatusCountArrayList).hasSize(4);
 
-    boolean topicEntityFound = false, aclEntityFound = false, schemaEntityFound = false;
+    boolean topicEntityFound = false,
+        aclEntityFound = false,
+        schemaEntityFound = false,
+        connectorEntityFound = false;
     for (RequestEntityStatusCount requestEntityStatusCount : requestEntityStatusCountArrayList) {
       if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.TOPIC) {
         topicEntityFound = true;
@@ -88,6 +94,9 @@ public class RequestStatisticsServiceTest {
       }
       if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.SCHEMA) {
         schemaEntityFound = true;
+      }
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.CONNECTOR) {
+        connectorEntityFound = true;
       }
     }
 
@@ -104,7 +113,12 @@ public class RequestStatisticsServiceTest {
     assertThat(schemaEntityFound).isTrue();
     assertThat(requestEntityStatusCountArrayList.get(2).getRequestStatusCountSet()).hasSize(2);
     assertThat(requestEntityStatusCountArrayList.get(2).getRequestsOperationTypeCountSet())
-            .hasSize(2);
+        .hasSize(2);
+
+    assertThat(connectorEntityFound).isTrue();
+    assertThat(requestEntityStatusCountArrayList.get(3).getRequestStatusCountSet()).hasSize(2);
+    assertThat(requestEntityStatusCountArrayList.get(3).getRequestsOperationTypeCountSet())
+        .hasSize(2);
   }
 
   private void loginMock() {

@@ -63,6 +63,17 @@ public class RequestStatisticsService {
     updateRequestsCountOverview(
         schemasRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.SCHEMA);
 
+    // get connector reqs count and update requestsCountOverview
+    Map<String, Map<String, Long>> connectorRequestCountsMap =
+        manageDatabase
+            .getHandleDbRequests()
+            .getConnectorRequestsCounts(
+                commonUtilsService.getTeamId(getUserName()),
+                requestMode,
+                commonUtilsService.getTenantId(getUserName()));
+    updateRequestsCountOverview(
+        connectorRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.CONNECTOR);
+
     requestsCountOverview.setRequestEntityStatistics(requestEntityStatusCountSet);
     return requestsCountOverview;
   }

@@ -40,4 +40,20 @@ public interface KwKafkaConnectorRequestsRepo
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
+
+  @Query(
+      value =
+          "select connectortype, count(*) from kwkafkaconnectorrequests where tenantid = :tenantId"
+              + " and teamid = :teamId group by connectortype",
+      nativeQuery = true)
+  List<Object[]> findAllConnectorRequestsGroupByOperationType(
+      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select connectorstatus, count(*) from kwkafkaconnectorrequests where tenantid = :tenantId"
+              + " and teamid = :teamId group by connectorstatus",
+      nativeQuery = true)
+  List<Object[]> findAllConnectorRequestsGroupByStatus(
+      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 }
