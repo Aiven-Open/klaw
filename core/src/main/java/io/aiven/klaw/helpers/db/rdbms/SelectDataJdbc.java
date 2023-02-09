@@ -243,22 +243,17 @@ public class SelectDataJdbc {
               findSchemaRequestsByExample(
                   topic, env, status != null ? status : "created", tenantId));
 
-      log.info("schema List size {}, allReqs {}", schemaListSub.size(), allReqs);
       // Placed here as it should only apply for approvers.
       schemaListSub =
           schemaListSub.stream()
               .filter(request -> !request.getUsername().equals(requestor))
               .collect(Collectors.toList());
-      log.info(
-          "schema List size Remove requestor requests {}, allReqs {}",
-          schemaListSub.size(),
-          allReqs);
+
       if (wildcardSearch != null && !wildcardSearch.isEmpty()) {
         schemaListSub =
             schemaListSub.stream()
-                .filter(request -> !request.getTopicname().contains(wildcardSearch))
+                .filter(request -> request.getTopicname().contains(wildcardSearch))
                 .collect(Collectors.toList());
-        log.info("schema List size wildcardsearch {}, allReqs {}", schemaListSub.size(), allReqs);
       }
 
     } else {
