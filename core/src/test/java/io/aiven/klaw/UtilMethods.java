@@ -310,6 +310,7 @@ public class UtilMethods {
     topicRequest.setTeamId(3);
     topicRequest.setTopicstatus("created");
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    topicRequest.setRequestor("Jackie");
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }

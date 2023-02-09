@@ -33,6 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -168,12 +169,13 @@ public class SelectDataJdbcTest {
 
     List<TopicRequest> schemaRequests = utilMethods.getTopicRequests();
 
-    when(topicRequestsRepo.findAllByTenantId(anyInt())).thenReturn(schemaRequests);
+    when(topicRequestsRepo.findAll(any(Example.class))).thenReturn(schemaRequests);
     when(userInfoRepo.findByUsernameIgnoreCase(requestor))
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<TopicRequest> topicRequestsActual =
-        selectData.selectTopicRequestsByStatus(false, requestor, "created", true, 1);
+        selectData.getFilteredTopicRequests(false, requestor, "created", true, 1, null, null, null);
+
     assertThat(topicRequestsActual).hasSize(1);
   }
 

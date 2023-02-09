@@ -420,8 +420,22 @@ public class TopicControllerService {
   }
 
   public List<TopicRequestModel> getTopicRequestsForApprover(
-      String pageNo, String currentPage, String requestsType) {
-    log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      Integer teamId,
+      String env,
+      String wildcardSearch) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "getCreatedTopicRequests {} {} {} {} {}",
+          pageNo,
+          requestsType,
+          teamId,
+          env,
+          wildcardSearch);
+    }
+
     String userName = getUserName();
     List<TopicRequest> createdTopicReqList;
     int tenantId = commonUtilsService.getTenantId(userName);
@@ -431,12 +445,14 @@ public class TopicControllerService {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedTopicRequests(userName, requestsType, false, tenantId);
+              .getCreatedTopicRequests(
+                  userName, requestsType, false, tenantId, teamId, env, wildcardSearch);
     } else {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedTopicRequests(userName, requestsType, true, tenantId);
+              .getCreatedTopicRequests(
+                  userName, requestsType, true, tenantId, teamId, env, wildcardSearch);
     }
 
     createdTopicReqList = getTopicRequestsFilteredForTenant(createdTopicReqList);

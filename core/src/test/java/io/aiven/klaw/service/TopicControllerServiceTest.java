@@ -517,7 +517,8 @@ public class TopicControllerServiceTest {
 
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.getCreatedTopicRequests(anyString(), anyString(), anyBoolean(), anyInt()))
+    when(handleDbRequests.getCreatedTopicRequests(
+            anyString(), anyString(), anyBoolean(), anyInt(), eq(null), eq(null), eq(null)))
         .thenReturn(listTopicReqs);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -525,7 +526,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestModel> topicList =
-        topicControllerService.getTopicRequestsForApprover("1", "", "all");
+        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(2);
   }
@@ -542,7 +543,8 @@ public class TopicControllerServiceTest {
 
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.getCreatedTopicRequests(anyString(), anyString(), anyBoolean(), anyInt()))
+    when(handleDbRequests.getCreatedTopicRequests(
+            anyString(), anyString(), anyBoolean(), anyInt(), eq(null), eq(null), eq(null)))
         .thenReturn(listTopicReqs);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -550,7 +552,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestModel> topicList =
-        topicControllerService.getTopicRequestsForApprover("1", "", "all");
+        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
@@ -1131,6 +1133,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTeamId(101);
+    topicRequest.setRequestor("Jackie");
     topicRequest.setTopicstatus("created");
     return topicRequest;
   }
