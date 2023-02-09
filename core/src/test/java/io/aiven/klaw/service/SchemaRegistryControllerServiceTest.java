@@ -117,7 +117,8 @@ public class SchemaRegistryControllerServiceTest {
   public void getSchemaRequests() {
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(handleDbRequests.getAllSchemaRequests(anyBoolean(), anyString(), anyInt()))
+    when(handleDbRequests.getAllSchemaRequests(
+            anyBoolean(), anyString(), anyInt(), eq(null), eq(null), eq("all"), eq(null)))
         .thenReturn(getSchemasReqs());
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
         .thenReturn(List.of(""));
@@ -130,7 +131,7 @@ public class SchemaRegistryControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
     List<SchemaRequestModel> listReqs =
-        schemaRegstryControllerService.getSchemaRequests("1", "", "all");
+        schemaRegstryControllerService.getSchemaRequests("1", "", "all", true, null, null, null);
     assertThat(listReqs).hasSize(2);
   }
 

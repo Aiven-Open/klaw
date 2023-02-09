@@ -290,13 +290,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<SchemaRequest> getAllSchemaRequests(boolean allReqs, String requestor, int tenantId) {
-    return jdbcSelectHelper.selectSchemaRequests(allReqs, requestor, tenantId);
-  }
-
-  @Override
-  public List<SchemaRequest> getCreatedSchemaRequests(String requestor, int tenantId) {
-    return jdbcSelectHelper.selectSchemaRequests(true, requestor, tenantId);
+  public List<SchemaRequest> getAllSchemaRequests(
+      boolean allReqs,
+      String requestor,
+      int tenantId,
+      String topic,
+      String env,
+      String status,
+      String search) {
+    return jdbcSelectHelper.selectFilteredSchemaRequests(
+        allReqs, requestor, tenantId, topic, env, status, search);
   }
 
   @Override

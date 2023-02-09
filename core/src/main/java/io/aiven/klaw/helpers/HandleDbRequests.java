@@ -142,9 +142,14 @@ public interface HandleDbRequests {
       AclType aclType,
       int tenantId);
 
-  List<SchemaRequest> getAllSchemaRequests(boolean allReqs, String requestor, int tenantId);
-
-  List<SchemaRequest> getCreatedSchemaRequests(String requestor, int tenantId);
+  List<SchemaRequest> getAllSchemaRequests(
+      boolean allReqs,
+      String requestor,
+      int tenantId,
+      String topic,
+      String env,
+      String status,
+      String search);
 
   SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId);
 

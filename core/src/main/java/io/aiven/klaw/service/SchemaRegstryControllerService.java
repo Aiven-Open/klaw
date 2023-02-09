@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +51,20 @@ public class SchemaRegstryControllerService {
   }
 
   public List<SchemaRequestModel> getSchemaRequests(
-      String pageNo, String currentPage, String requestsType) {
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      boolean isApproval,
+      String topic,
+      String env,
+      String search) {
     log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     List<SchemaRequest> schemaReqs =
-        manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userName, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .getAllSchemaRequests(isApproval, userName, tenantId, topic, env, requestsType, search);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -66,18 +73,6 @@ public class SchemaRegstryControllerService {
           schemaReqs.stream()
               .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
               .collect(Collectors.toList());
-    }
-
-    // request status filtering
-    if (!"all".equals(requestsType)
-        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
-      if (schemaReqs != null) {
-        schemaReqs =
-            schemaReqs.stream()
-                .filter(
-                    schemaRequest -> Objects.equals(schemaRequest.getTopicstatus(), requestsType))
-                .collect(Collectors.toList());
-      }
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userName);
@@ -393,7 +388,9 @@ public class SchemaRegstryControllerService {
     }
 
     List<SchemaRequest> schemaReqs =
-        manageDatabase.getHandleDbRequests().getAllSchemaRequests(false, userDetails, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .getAllSchemaRequests(false, userDetails, tenantId, null, null, null, null);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
