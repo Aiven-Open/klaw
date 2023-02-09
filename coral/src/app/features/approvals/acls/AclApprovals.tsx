@@ -21,6 +21,7 @@ interface AclRequestTableData {
   acl_ssl: string[];
   acl_ip: string[];
   topicname: AclRequest["topicname"];
+  prefixed: boolean;
   environmentName: string;
   teamname: AclRequest["teamname"];
   topictype: AclRequest["topictype"];
@@ -58,9 +59,16 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
     },
   },
   {
-    type: "text",
+    type: "custom",
     field: "topicname",
     headerName: "Topic",
+    UNSAFE_render({ topicname, prefixed }: AclRequestTableData) {
+      return (
+        <>
+          {prefixed && <code>(prefixed)</code>} {topicname}
+        </>
+      );
+    },
   },
   {
     type: "status",
@@ -125,119 +133,6 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   },
 ];
 
-// const placeholderData: AclRequestTableData[] = [
-//   {
-//     id: 0,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 1,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 2,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 3,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 4,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 5,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 6,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 7,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 8,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-//   {
-//     id: 9,
-//     acl_ssl: ["..."],
-//     acl_ip: ["..."],
-//     topicname: "...",
-//     environmentName: "...",
-//     teamname: "...",
-//     topictype: "Consumer",
-//     username: "...",
-//     requesttime: "2022-12-20T13:01:47.409+00:00",
-//   },
-// ];
-
 function AclApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get("page"));
@@ -260,6 +155,7 @@ function AclApprovals() {
       acl_ssl,
       acl_ip,
       topicname,
+      aclPatternType,
       environmentName,
       teamname,
       topictype,
@@ -270,6 +166,7 @@ function AclApprovals() {
       acl_ssl: acl_ssl ?? [],
       acl_ip: acl_ip ?? [],
       topicname: topicname,
+      prefixed: aclPatternType === "PREFIXED",
       environmentName: environmentName ?? "-",
       teamname,
       topictype,
