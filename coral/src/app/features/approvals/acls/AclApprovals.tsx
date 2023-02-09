@@ -97,33 +97,29 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   },
   {
     width: 30,
-    headerName: "Approve",
+    headerName: "",
     type: "custom",
     UNSAFE_render: () => {
       return (
-        <Flexbox justifyContent={"center"}>
-          <GhostButton onClick={() => alert("Approve")} title={"Approve"}>
-            <Icon color="grey-70" icon={tickCircle} />
-          </GhostButton>
-        </Flexbox>
+        <GhostButton onClick={() => alert("Approve")} title={"Approve"}>
+          <Icon color="grey-70" icon={tickCircle} />
+        </GhostButton>
       );
     },
   },
   {
     width: 30,
-    headerName: "Decline",
+    headerName: "",
     type: "custom",
     UNSAFE_render: () => {
       return (
-        <Flexbox justifyContent={"center"}>
-          <GhostButton
-            onClick={() => alert("Decline")}
-            title={"Decline"}
-            style={{ textAlign: "center" }}
-          >
-            <Icon color="grey-70" icon={deleteIcon} />
-          </GhostButton>
-        </Flexbox>
+        <GhostButton
+          onClick={() => alert("Decline")}
+          title={"Decline"}
+          style={{ textAlign: "center" }}
+        >
+          <Icon color="grey-70" icon={deleteIcon} />
+        </GhostButton>
       );
     },
   },
