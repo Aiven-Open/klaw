@@ -29,14 +29,8 @@ public class RequestStatisticsService {
   public RequestsCountOverview getRequestsCountOverview(RequestMode requestMode) {
     RequestsCountOverview requestsCountOverview = new RequestsCountOverview();
     Set<RequestEntityStatusCount> requestEntityStatusCountSet = new HashSet<>();
-    updateRequestsCountOverviewForTopics(requestEntityStatusCountSet, requestMode);
 
-    requestsCountOverview.setRequestEntityStatistics(requestEntityStatusCountSet);
-    return requestsCountOverview;
-  }
-
-  private void updateRequestsCountOverviewForTopics(
-      Set<RequestEntityStatusCount> requestEntityStatusCountSet, RequestMode requestMode) {
+    // get topics count and update requestsCountOverview
     Map<String, Map<String, Long>> topicRequestCountsMap =
         manageDatabase
             .getHandleDbRequests()
@@ -44,6 +38,50 @@ public class RequestStatisticsService {
                 commonUtilsService.getTeamId(getUserName()),
                 requestMode,
                 commonUtilsService.getTenantId(getUserName()));
+    updateRequestsCountOverview(
+        topicRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.TOPIC);
+
+    // get acls count and update requestsCountOverview
+    Map<String, Map<String, Long>> aclsRequestCountsMap =
+        manageDatabase
+            .getHandleDbRequests()
+            .getAclRequestsCounts(
+                commonUtilsService.getTeamId(getUserName()),
+                requestMode,
+                commonUtilsService.getTenantId(getUserName()));
+    updateRequestsCountOverview(
+        aclsRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.ACL);
+
+    // get schema reqs count and update requestsCountOverview
+    Map<String, Map<String, Long>> schemasRequestCountsMap =
+        manageDatabase
+            .getHandleDbRequests()
+            .getSchemaRequestsCounts(
+                commonUtilsService.getTeamId(getUserName()),
+                requestMode,
+                commonUtilsService.getTenantId(getUserName()));
+    updateRequestsCountOverview(
+        schemasRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.SCHEMA);
+
+    // get connector reqs count and update requestsCountOverview
+    Map<String, Map<String, Long>> connectorRequestCountsMap =
+        manageDatabase
+            .getHandleDbRequests()
+            .getConnectorRequestsCounts(
+                commonUtilsService.getTeamId(getUserName()),
+                requestMode,
+                commonUtilsService.getTenantId(getUserName()));
+    updateRequestsCountOverview(
+        connectorRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.CONNECTOR);
+
+    requestsCountOverview.setRequestEntityStatistics(requestEntityStatusCountSet);
+    return requestsCountOverview;
+  }
+
+  private void updateRequestsCountOverview(
+      Map<String, Map<String, Long>> topicRequestCountsMap,
+      Set<RequestEntityStatusCount> requestEntityStatusCountSet,
+      RequestEntityType requestEntityType) {
     Map<String, Long> opCounts = topicRequestCountsMap.get("OPERATION_TYPE_COUNTS");
     Map<String, Long> stCounts = topicRequestCountsMap.get("STATUS_COUNTS");
 
@@ -69,7 +107,7 @@ public class RequestStatisticsService {
     }
 
     RequestEntityStatusCount requestEntityTopicStatusCount = new RequestEntityStatusCount();
-    requestEntityTopicStatusCount.setRequestEntityType(RequestEntityType.TOPIC);
+    requestEntityTopicStatusCount.setRequestEntityType(requestEntityType);
     requestEntityTopicStatusCount.setRequestStatusCountSet(requestStatusCountSet);
     requestEntityTopicStatusCount.setRequestsOperationTypeCountSet(requestsOperationTypeCountsSet);
     requestEntityStatusCountSet.add(requestEntityTopicStatusCount);

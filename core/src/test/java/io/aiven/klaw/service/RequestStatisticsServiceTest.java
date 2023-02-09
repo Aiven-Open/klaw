@@ -65,6 +65,13 @@ public class RequestStatisticsServiceTest {
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(handleDbRequests.getTopicRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
         .thenReturn(utilMethods.getRequestCounts());
+    when(handleDbRequests.getAclRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+        .thenReturn(utilMethods.getRequestCounts());
+    when(handleDbRequests.getSchemaRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+        .thenReturn(utilMethods.getRequestCounts());
+    when(handleDbRequests.getConnectorRequestsCounts(
+            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+        .thenReturn(utilMethods.getRequestCounts());
     RequestsCountOverview requestsCountOverview =
         requestStatisticsService.getRequestsCountOverview(RequestMode.MY_REQUESTS);
     Set<RequestEntityStatusCount> requestEntityStatistics =
@@ -72,10 +79,45 @@ public class RequestStatisticsServiceTest {
     List<RequestEntityStatusCount> requestEntityStatusCountArrayList =
         new ArrayList<>(requestEntityStatistics);
 
-    assertThat(requestEntityStatusCountArrayList.get(0).getRequestEntityType())
-        .isEqualTo(RequestEntityType.TOPIC);
+    assertThat(requestEntityStatusCountArrayList).hasSize(4);
+
+    boolean topicEntityFound = false,
+        aclEntityFound = false,
+        schemaEntityFound = false,
+        connectorEntityFound = false;
+    for (RequestEntityStatusCount requestEntityStatusCount : requestEntityStatusCountArrayList) {
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.TOPIC) {
+        topicEntityFound = true;
+      }
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.ACL) {
+        aclEntityFound = true;
+      }
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.SCHEMA) {
+        schemaEntityFound = true;
+      }
+      if (requestEntityStatusCount.getRequestEntityType() == RequestEntityType.CONNECTOR) {
+        connectorEntityFound = true;
+      }
+    }
+
+    assertThat(topicEntityFound).isTrue();
     assertThat(requestEntityStatusCountArrayList.get(0).getRequestStatusCountSet()).hasSize(2);
     assertThat(requestEntityStatusCountArrayList.get(0).getRequestsOperationTypeCountSet())
+        .hasSize(2);
+
+    assertThat(aclEntityFound).isTrue();
+    assertThat(requestEntityStatusCountArrayList.get(1).getRequestStatusCountSet()).hasSize(2);
+    assertThat(requestEntityStatusCountArrayList.get(1).getRequestsOperationTypeCountSet())
+        .hasSize(2);
+
+    assertThat(schemaEntityFound).isTrue();
+    assertThat(requestEntityStatusCountArrayList.get(2).getRequestStatusCountSet()).hasSize(2);
+    assertThat(requestEntityStatusCountArrayList.get(2).getRequestsOperationTypeCountSet())
+        .hasSize(2);
+
+    assertThat(connectorEntityFound).isTrue();
+    assertThat(requestEntityStatusCountArrayList.get(3).getRequestStatusCountSet()).hasSize(2);
+    assertThat(requestEntityStatusCountArrayList.get(3).getRequestsOperationTypeCountSet())
         .hasSize(2);
   }
 

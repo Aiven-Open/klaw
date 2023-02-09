@@ -35,4 +35,20 @@ public interface SchemaRequestRepo
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   List<SchemaRequest> findAllByTenantId(int tenantId);
+
+  @Query(
+      value =
+          "select requesttype, count(*) from kwschemarequests where tenantid = :tenantId"
+              + " and teamid = :teamId group by requesttype",
+      nativeQuery = true)
+  List<Object[]> findAllSchemaRequestsGroupByOperationType(
+      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select topicstatus, count(*) from kwschemarequests where tenantid = :tenantId"
+              + " and teamid = :teamId group by topicstatus",
+      nativeQuery = true)
+  List<Object[]> findAllSchemaRequestsGroupByStatus(
+      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 }
