@@ -44,11 +44,12 @@ public class TopicRequestValidatorImpl
     }
 
     if (permissionType.equals(PermissionType.REQUEST_CREATE_TOPICS)) {
-      // Verify if topic request type is Create
-      if (!RequestOperationType.CREATE.value.equals(topicRequestModel.getTopictype())) {
+      // Verify if topic request type is Create/Promote
+      if (!RequestOperationType.CREATE.value.equals(topicRequestModel.getTopictype())
+          && !RequestOperationType.PROMOTE.value.equals(topicRequestModel.getTopictype())) {
         updateConstraint(
             constraintValidatorContext,
-            "Failure. Invalid Topic request type. Possible Value : Create");
+            "Failure. Invalid Topic request type. Possible Value : Create/Promote");
         return false;
       }
     } else if (permissionType.equals(PermissionType.REQUEST_EDIT_TOPICS)) {
@@ -64,9 +65,8 @@ public class TopicRequestValidatorImpl
     }
 
     // tenant filtering
-    if (!commonUtilsService
-        .getEnvsFromUserId(userName)
-        .contains(topicRequestModel.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userName).contains(topicRequestModel.getEnvironment())
+        && !RequestOperationType.PROMOTE.value.equals(topicRequestModel.getTopictype())) {
       updateConstraint(
           constraintValidatorContext,
           "Failure. Not authorized to request topic for this environment.");

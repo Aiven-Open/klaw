@@ -7,6 +7,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public enum RequestOperationType {
   CREATE("Create"),
   UPDATE("Update"),
+  PROMOTE("Promote"),
   CLAIM("Claim"),
   DELETE("Delete");
 
