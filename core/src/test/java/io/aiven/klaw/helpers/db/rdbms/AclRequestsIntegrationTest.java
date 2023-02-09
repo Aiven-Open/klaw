@@ -106,8 +106,14 @@ public class AclRequestsIntegrationTest {
     user2.setTeamId(103);
     user2.setRole("USER");
     user2.setUsername("John");
+    UserInfo user3 = new UserInfo();
+    user3.setTenantId(101);
+    user3.setTeamId(101);
+    user3.setRole("USER");
+    user3.setUsername("Jackie");
     entityManager.persistAndFlush(user);
     entityManager.persistAndFlush(user2);
+    entityManager.persistAndFlush(user3);
   }
 
   @BeforeEach
@@ -252,6 +258,24 @@ public class AclRequestsIntegrationTest {
 
   @Test
   @Order(9)
+  public void getAllRequestsDontReturnOwnRequestsForApproval() {
+    List<AclRequests> jackie =
+        selectDataJdbc.selectAclRequests(
+            true, "Jackie", "USER", "ALL", true, null, null, null, 101);
+    assertThat(jackie.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(10)
+  public void getAllRequestsAndReturnOwnRequests() {
+    List<AclRequests> jackie =
+        selectDataJdbc.selectAclRequests(
+            false, "Jackie", "USER", "ALL", true, null, null, null, 101);
+    assertThat(jackie.size()).isEqualTo(31);
+  }
+
+  @Test
+  @Order(11)
   public void getAclRequestsCountsForMyRequestsTeam1() {
     Map<String, Map<String, Long>> results =
         selectDataJdbc.getAclRequestsCounts(101, RequestMode.MY_REQUESTS, 101);
@@ -270,7 +294,7 @@ public class AclRequestsIntegrationTest {
   }
 
   @Test
-  @Order(10)
+  @Order(12)
   public void getAclRequestsCountsForApproveForTeam1() {
     Map<String, Map<String, Long>> results =
         selectDataJdbc.getAclRequestsCounts(101, RequestMode.TO_APPROVE, 101);
@@ -289,7 +313,7 @@ public class AclRequestsIntegrationTest {
 
   // note tenantId is 101 here
   @Test
-  @Order(11)
+  @Order(13)
   public void getAclRequestsCountsForApproveForTeam2() {
     Map<String, Map<String, Long>> results =
         selectDataJdbc.getAclRequestsCounts(103, RequestMode.TO_APPROVE, 101);
@@ -308,7 +332,7 @@ public class AclRequestsIntegrationTest {
 
   // note tenantId is 101
   @Test
-  @Order(12)
+  @Order(14)
   public void getAclRequestsCountsForMyRequestsForTeam2Tenant1() {
     Map<String, Map<String, Long>> results =
         selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_REQUESTS, 101);
@@ -327,7 +351,7 @@ public class AclRequestsIntegrationTest {
 
   // note tenantId is 103
   @Test
-  @Order(13)
+  @Order(15)
   public void getAclRequestsCountsForMyRequestsForTeam2Tenant2() {
     Map<String, Map<String, Long>> results =
         selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_REQUESTS, 103);
@@ -364,6 +388,8 @@ public class AclRequestsIntegrationTest {
       acl.setReq_no(requestNumber++);
       acl.setTopicname(topicName);
       acl.setEnvironment(env);
+      acl.setUsername("Jackie");
+      acl.setAclType(aclType.value);
       acl.setAclType(requestOperationType.value); // Create/Delete ..
       acl.setTopictype(aclType.value);
       if (status != null) {

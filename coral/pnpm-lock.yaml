@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@aivenio/aquarium': ^1.4.1
+  '@aivenio/aquarium': ^1.5.0
   '@hookform/resolvers': ^2.9.10
   '@monaco-editor/react': ^4.4.6
   '@tanstack/react-query': ^4.14.1
@@ -52,7 +52,7 @@ specifiers:
   zod: ^3.19.1
 
 dependencies:
-  '@aivenio/aquarium': 1.4.1_pvnihi4muhoy7kenlmiyxwzuqy
+  '@aivenio/aquarium': 1.5.0_pvnihi4muhoy7kenlmiyxwzuqy
   '@hookform/resolvers': 2.9.10_react-hook-form@7.38.0
   '@monaco-editor/react': 4.4.6_6vrjaj6ridxbohi43n7zt4gn7q
   '@tanstack/react-query': 4.14.1_biqbaboplfbrettd7655fr4n2y
@@ -110,8 +110,8 @@ packages:
     resolution: {integrity: sha512-+u76oB43nOHrF4DDWRLWDCtci7f3QJoEBigemIdIeTi1ODqjx6Tad9NCVnPRwewWlKkVab5PlK8DCtPTyX7S8g==}
     dev: true
 
-  /@aivenio/aquarium/1.4.1_pvnihi4muhoy7kenlmiyxwzuqy:
-    resolution: {integrity: sha512-MVJ8PTiGdb2eERA5KQpCQHjUaZx+qL/DcJsin8nNipx+MqBqM/Wq6B4yNKjy44lJAC/xJRt7hm2adIbB116TSQ==}
+  /@aivenio/aquarium/1.5.0_pvnihi4muhoy7kenlmiyxwzuqy:
+    resolution: {integrity: sha512-+95bZFGgLqhPUOF7nbZ1JsWFRvCRNB7kAATayYupmkB0BZGD8SJJP3Yn/81KwU2zcFneYpY1dd6m5FtzdKzSrw==}
     peerDependencies:
       lodash: 4.x
       react: 16.x || 17.x

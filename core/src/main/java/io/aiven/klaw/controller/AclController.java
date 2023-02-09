@@ -54,7 +54,7 @@ public class AclController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
    * @param topic The name of the topic you would like returned
-   * @param env The name of the environment you would like returned e.g. 'DEV'
+   * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param aclType The Type of acl Consumer/Producer
    * @return An array of AclRequests that met the criteria of the inputted values.
    */

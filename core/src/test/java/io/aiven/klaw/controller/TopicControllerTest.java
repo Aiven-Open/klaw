@@ -154,7 +154,7 @@ public class TopicControllerTest {
   @Order(5)
   public void getCreatedTopicRequests() throws Exception {
     List<TopicRequestModel> topicReqs = utilMethods.getTopicRequestsList();
-    when(topicControllerService.getTopicRequestsForApprover("1", "", "created"))
+    when(topicControllerService.getTopicRequestsForApprover("1", "", "created", null, null, null))
         .thenReturn(topicReqs);
 
     mvc.perform(
