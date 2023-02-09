@@ -33,10 +33,10 @@ public class SchemaRegstryController {
   @Autowired SchemaOverviewService schemaOverviewService;
 
   /**
-   * @param pageNo
-   * @param currentPage
-   * @param requestsType
-   * @return A list of
+   * @param pageNo Which page would you like returned e.g. 1
+   * @param currentPage Which Page are you currently on e.g. 1
+   * @param requestsType What type of requests are you looking for e.g. 'all' 'created' or 'deleted'
+   * @return A list of filtered Schema Requests for My (Teams) Requests page
    */
   @RequestMapping(
       value = "/getSchemaRequests",

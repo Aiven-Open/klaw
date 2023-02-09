@@ -208,7 +208,7 @@ public class SelectDataJdbc {
       request.setAclstatus(status);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
-    // stringgetAllSchemaR
+    // string
     if (log.isDebugEnabled()) {
       log.debug("find By topic etc example {}", request);
     }
@@ -236,12 +236,12 @@ public class SelectDataJdbc {
     }
     List<SchemaRequest> schemaList = new ArrayList<>();
     List<SchemaRequest> schemaListSub;
-
+    Integer teamSelected = selectUserInfo(requestor).getTeamId();
     if (allReqs) {
       schemaListSub =
           Lists.newArrayList(
               findSchemaRequestsByExample(
-                  topic, env, status != null ? status : "created", tenantId));
+                  topic, env, status != null ? status : "created", teamSelected, tenantId));
 
       // Placed here as it should only apply for approvers.
       schemaListSub =
@@ -257,12 +257,17 @@ public class SelectDataJdbc {
       }
 
     } else {
-      schemaListSub = Lists.newArrayList(findSchemaRequestsByExample(null, null, status, tenantId));
+      // Previously Status was being filtered by the calling method but it is more efficient to have
+      // the database do this.
+      // Similarily Team Selected now included in the database call as previously they were all
+      // being filtered out after the data was returned.
+      schemaListSub =
+          Lists.newArrayList(
+              findSchemaRequestsByExample(null, null, status, teamSelected, tenantId));
     }
 
     for (SchemaRequest row : schemaListSub) {
-      Integer teamId = row.getTeamId();
-      Integer teamSelected = selectUserInfo(requestor).getTeamId();
+
       try {
         row.setRequesttimestring(
             (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
@@ -270,16 +275,14 @@ public class SelectDataJdbc {
       } catch (Exception ignored) {
       }
 
-      if (teamSelected != null && teamSelected.equals(teamId)) {
-        schemaList.add(row);
-      }
+      schemaList.add(row);
     }
 
     return schemaList;
   }
 
   public Iterable<SchemaRequest> findSchemaRequestsByExample(
-      String topic, String environment, String status, int tenantId) {
+      String topic, String environment, String status, Integer teamId, int tenantId) {
 
     SchemaRequest request = new SchemaRequest();
 
@@ -293,6 +296,9 @@ public class SelectDataJdbc {
     }
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setTopicstatus(status);
+    }
+    if (teamId != null) {
+      request.setTeamId(teamId);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string
