@@ -1,3 +1,4 @@
+import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import {
   CreateAclRequestTopicTypeConsumer,
   CreateAclRequestTopicTypeProducer,
@@ -22,9 +23,11 @@ const createAclRequest = (
 };
 
 const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
-  return api.get<KlawApiResponse<"getAclRequestsForApprover">>(
-    `/getAclRequestsForApprover?${new URLSearchParams(params)}`
-  );
+  return api
+    .get<KlawApiResponse<"getAclRequestsForApprover">>(
+      `/getAclRequestsForApprover?${new URLSearchParams(params)}`
+    )
+    .then(transformAclRequestApiResponse);
 };
 
 const approveAclRequest = (
