@@ -8,8 +8,8 @@ import AclApprovals from "src/app/features/approvals/acls/AclApprovals";
 import { getAclRequestsForApprover } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { AclRequest } from "src/domain/acl/acl-types";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api.ts");
 
@@ -48,7 +48,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     aclResourceType: undefined,
     currentPage: "1",
     otherParams: undefined,
-    totalNoPages: "1",
+    totalNoPages: "2",
     allPageNos: ["1", ">", ">>"],
     approvingTeamDetails:
       "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,aindriul,",
@@ -80,7 +80,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     aclResourceType: undefined,
     currentPage: "1",
     otherParams: undefined,
-    totalNoPages: "1",
+    totalNoPages: "2",
     allPageNos: ["1", ">", ">>"],
     approvingTeamDetails:
       "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,aindriul,",
@@ -140,6 +140,7 @@ describe("AclApprovals", () => {
 
     afterAll(() => {
       cleanup();
+      jest.resetAllMocks();
     });
 
     it("shows one header row and two data rows", async () => {
@@ -164,22 +165,21 @@ describe("AclApprovals", () => {
 
       expect(
         cells.filter((cell) => {
-          return cell.textContent === "mbasanimaulbach";
+          return cell.textContent === "mbasani maulbach ";
         })
       ).toHaveLength(1);
       expect(
-        cells.filter((cell) => cell.textContent === "3.3.3.323.3.3.33")
+        cells.filter((cell) => cell.textContent === "3.3.3.32 3.3.3.33 ")
       ).toHaveLength(1);
     });
   });
 
-  describe("Pagination", () => {
+  describe("handles paginated data", () => {
     beforeAll(async () => {
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
+
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -190,18 +190,17 @@ describe("AclApprovals", () => {
 
     afterAll(() => {
       cleanup();
+      jest.resetAllMocks();
     });
 
     it("render a Pagination component", async () => {
       const pagination = screen.getByRole("navigation");
-
-      expect(pagination).toBeInTheDocument();
-      expect(pagination).toBeEnabled();
+      expect(pagination).toBeVisible();
     });
 
     it("render Pagination on page 1 on load", async () => {
       const pagination = screen.getByRole("navigation");
-      expect(pagination).toHaveTextContent("Page 1 of 1");
+      expect(pagination).toHaveTextContent("Page 1 of 2");
     });
   });
 });

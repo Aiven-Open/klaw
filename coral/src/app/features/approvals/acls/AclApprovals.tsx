@@ -39,7 +39,14 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
       return (
         <Flexbox wrap={"wrap"} gap={"2"}>
           {acl_ssl.map((ssl, index) => (
-            <StatusChip status="neutral" key={`${ssl}-${index}`} text={ssl} />
+            <StatusChip
+              status="neutral"
+              key={`${ssl}-${index}`}
+              // We need to add a space after text value
+              // Otherwise a list of values would be rendered as value1value2value3 for screen readers
+              // Instead of value1 value2 value3
+              text={`${ssl} `}
+            />
           ))}
         </Flexbox>
       );
@@ -53,7 +60,14 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
       return (
         <Flexbox wrap={"wrap"} gap={"2"}>
           {acl_ip.map((ip, index) => (
-            <StatusChip status="neutral" key={`${ip}-${index}`} text={ip} />
+            <StatusChip
+              status="neutral"
+              key={`${ip}-${index}`}
+              // We need to add a space after text value
+              // Otherwise a list of values would be rendered as value1value2value3 for screen readers
+              // Instead of value1 value2 value3
+              text={`${ip} `}
+            />
           ))}
         </Flexbox>
       );
@@ -172,8 +186,6 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
 function AclApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get("page"));
-
-  console.log("search", searchParams);
 
   const [activePage, setActivePage] = useState(initialPage || 1);
 
