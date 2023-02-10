@@ -905,6 +905,7 @@ public class TopicSyncControllerService {
             kwClusters.getBootstrapServers(),
             kwClusters.getProtocol(),
             kwClusters.getClusterName() + kwClusters.getClusterId(),
+            kwClusters.getKafkaFlavor(),
             tenantId);
 
     topicCounter = 0;

@@ -189,7 +189,7 @@ public class TopicSyncControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAllTopics(
-            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyInt()))
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterApiTopics("topic", 10));
     when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());

@@ -3453,7 +3453,7 @@
         },
         "kafkaFlavorType" : {
           "type" : "string",
-          "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "OTHERS" ]
+          "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "CONFLUENT_CLOUD", "OTHERS" ]
         }
       }
     },

@@ -22,6 +22,7 @@ import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
+import io.aiven.klaw.clusterapi.services.ConfluentCloudApiService;
 import io.aiven.klaw.clusterapi.services.MonitoringService;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
@@ -46,6 +47,8 @@ public class ClusterApiControllerTest {
   @MockBean private MonitoringService monitoringService;
   @MockBean private AivenApiService aivenApiService;
 
+  @MockBean private ConfluentCloudApiService confluentCloudApiService;
+
   private MockMvc mvc;
 
   private UtilMethods utilMethods;
@@ -60,7 +63,8 @@ public class ClusterApiControllerTest {
             apacheKafkaTopicService,
             schemaService,
             monitoringService,
-            aivenApiService);
+            aivenApiService,
+            confluentCloudApiService);
     mvc = MockMvcBuilders.standaloneSetup(clusterApiController).dispatchOptions(true).build();
   }
 
@@ -116,7 +120,9 @@ public class ClusterApiControllerTest {
             "getTopics",
             bootstrapServers,
             KafkaSupportedProtocol.PLAINTEXT.getValue(),
-            clusterName);
+            clusterName,
+            "topicsNativeType",
+            AclsNativeType.NATIVE.value);
     mvc.perform(get(urlTemplate))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

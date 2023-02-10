@@ -2,6 +2,7 @@ package io.aiven.klaw.model.cluster;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.AclsNativeType;
 import java.io.Serializable;
 import java.util.Map;
 import lombok.Builder;
@@ -22,4 +23,6 @@ public class ClusterTopicRequest implements Serializable {
   @JsonProperty private String topicName;
 
   @JsonProperty private Map<String, String> advancedTopicConfiguration;
+
+  @JsonProperty private AclsNativeType aclsNativeType;
 }

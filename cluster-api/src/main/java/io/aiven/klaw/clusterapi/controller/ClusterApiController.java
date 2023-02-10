@@ -12,6 +12,7 @@ import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
+import io.aiven.klaw.clusterapi.services.ConfluentCloudApiService;
 import io.aiven.klaw.clusterapi.services.MonitoringService;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
@@ -50,6 +51,8 @@ public class ClusterApiController {
 
   AivenApiService aivenApiService;
 
+  ConfluentCloudApiService confluentCloudApiService;
+
   @RequestMapping(
       value = "/getApiStatus",
       method = RequestMethod.GET,
@@ -81,16 +84,20 @@ public class ClusterApiController {
   }
 
   @RequestMapping(
-      value = "/getTopics/{bootstrapServers}/{protocol}/{clusterName}",
+      value =
+          "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Set<Map<String, String>>> getTopics(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
-      @PathVariable String clusterName)
+      @PathVariable String clusterName,
+      @PathVariable String aclsNativeType)
       throws Exception {
-    Set<Map<String, String>> topics =
-        apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
+    Set<Map<String, String>> topics;
+    if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
+      topics = confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
+    } else topics = apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
     return new ResponseEntity<>(topics, HttpStatus.OK);
   }
 
@@ -110,6 +117,8 @@ public class ClusterApiController {
     Set<Map<String, String>> acls;
     if (AclsNativeType.NATIVE.name().equals(aclsNativeType)) {
       acls = apacheKafkaAclService.loadAcls(bootstrapServers, protocol, clusterName);
+    } else if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
+      acls = confluentCloudApiService.listAcls(bootstrapServers, protocol, clusterName);
     } else {
       acls = aivenApiService.listAcls(projectName, serviceName);
     }
@@ -243,6 +252,13 @@ public class ClusterApiController {
         return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         resultMap = aivenApiService.createAcls(clusterAclRequest);
+        return new ResponseEntity<>(
+            ApiResponse.builder().result(resultMap.get("result")).data(resultMap).build(),
+            HttpStatus.OK);
+      } else if (AclsNativeType.CONFLUENT_CLOUD
+          .name()
+          .equals(clusterAclRequest.getAclNativeType())) {
+        resultMap = confluentCloudApiService.createAcls(clusterAclRequest);
         return new ResponseEntity<>(
             ApiResponse.builder().result(resultMap.get("result")).data(resultMap).build(),
             HttpStatus.OK);

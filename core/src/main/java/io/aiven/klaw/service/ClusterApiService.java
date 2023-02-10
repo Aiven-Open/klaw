@@ -287,6 +287,20 @@ public class ClusterApiService {
                     kwClusters.getClusterName() + kwClusters.getClusterId(),
                     kwClusters.getProjectName(),
                     kwClusters.getServiceName());
+      } // confluent cloud config
+      else if (KafkaFlavors.CONFLUENT_CLOUD.value.equals(kwClusters.getKafkaFlavor())) {
+        uri =
+            clusterConnUrl
+                + uriGetAcls
+                + bootstrapHost
+                + URL_DELIMITER
+                + String.join(
+                    URL_DELIMITER,
+                    AclsNativeType.CONFLUENT_CLOUD.name(),
+                    protocol.getName(),
+                    kwClusters.getClusterName() + kwClusters.getClusterId(),
+                    kwClusters.getProjectName(),
+                    kwClusters.getServiceName());
       } else {
         uri =
             clusterConnUrl
@@ -318,18 +332,28 @@ public class ClusterApiService {
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
+      String kafkaFlavors,
       int tenantId)
       throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
     List<Map<String, String>> topicsList;
+    String aclsNativeType = AclsNativeType.NATIVE.value;
+    if (AclsNativeType.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
+      aclsNativeType = kafkaFlavors;
+    }
     try {
       String uriGetTopicsFull =
           clusterConnUrl
               + URI_GET_TOPICS
               + bootstrapHost
               + URL_DELIMITER
-              + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification);
+              + String.join(
+                  URL_DELIMITER,
+                  protocol.getName(),
+                  clusterIdentification,
+                  "topicsNativeType",
+                  aclsNativeType);
 
       HttpEntity<String> entity = getHttpEntity();
       ResponseEntity<Set<Map<String, String>>> s =
@@ -506,6 +530,23 @@ public class ClusterApiService {
                 "Could not approve acl request. AclId - Aiven acl id not found.");
           }
         }
+      } else if (Objects.equals(KafkaFlavors.CONFLUENT_CLOUD.value, kwClusters.getKafkaFlavor())) {
+        String aclPatternType = aclReq.getAclPatternType();
+        clusterAclRequest =
+            ClusterAclRequest.builder()
+                .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
+                .env(kwClusters.getBootstrapServers())
+                .protocol(kwClusters.getProtocol())
+                .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
+                .topicName(aclReq.getTopicname())
+                .consumerGroup(aclReq.getConsumergroup())
+                .aclType(aclReq.getTopictype())
+                .aclIp(aclReq.getAcl_ip())
+                .aclSsl(aclReq.getAcl_ssl())
+                .transactionalId(aclReq.getTransactionalId())
+                .aclIpPrincipleType(aclReq.getAclIpPrincipleType().name())
+                .isPrefixAcl(AclPatternType.PREFIXED.value.equals(aclPatternType))
+                .build();
       } else {
         String aclPatternType = aclReq.getAclPatternType();
         clusterAclRequest =
