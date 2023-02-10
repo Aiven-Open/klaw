@@ -1,5 +1,6 @@
 import { KlawApiModel, ResolveIntersectionTypes } from "types/utils";
 
+<<<<<<< Updated upstream
 type SchemaRequest = ResolveIntersectionTypes<
   Required<
     Pick<
@@ -20,3 +21,25 @@ type SchemaRequestPayload = ResolveIntersectionTypes<
 >;
 
 export type { SchemaRequest, SchemaRequestPayload };
+=======
+type CreatedSchemaRequests = Required<
+  Pick<
+    KlawApiModel<"SchemaRequest">,
+    | "req_no"
+    | "topicname"
+    | "environmentName"
+    | "username"
+    | "requesttimestring"
+  >
+>;
+
+type SchemaRequestPayload = Required<
+  Pick<
+    KlawApiModel<"SchemaRequest">,
+    "environment" | "schemafull" | "topicname"
+  >
+> &
+  Pick<KlawApiModel<"SchemaRequest">, "remarks" | "schemaversion" | "appname">;
+
+export type { SchemaRequestPayload, CreatedSchemaRequests };
+>>>>>>> Stashed changes
