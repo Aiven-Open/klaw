@@ -6,7 +6,7 @@ import {
   APPROVALS_TAB_ID_INTO_PATH,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
-import ApprovalResourceTabs from "src/app/features/approvals/ApprovalResourceTabs";
+import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 
 const ApprovalsPage = () => {
