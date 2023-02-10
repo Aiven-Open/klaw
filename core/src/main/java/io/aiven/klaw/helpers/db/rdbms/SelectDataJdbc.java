@@ -607,12 +607,14 @@ public class SelectDataJdbc {
     return topicRequestsRepo.findAll(Example.of(request));
   }
 
-  public List<KafkaConnectorRequest> selectConnectorRequestsByStatus(
+  public List<KafkaConnectorRequest> getFilteredKafkaConnectorRequests(
       boolean allReqs,
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
-      int tenantId) {
+      int tenantId,
+      String env,
+      String search) {
     log.debug("selectConnectorRequestsByStatus {} {}", requestor, status);
     List<KafkaConnectorRequest> topicRequestList = new ArrayList<>();
 
@@ -620,49 +622,46 @@ public class SelectDataJdbc {
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
     if (allReqs) { // approvers
+
+      // Team Name is null here as it is the team who created the requested
+      // Description includes the teamId as that is how Claim topics know who is the owning team.
       List<KafkaConnectorRequest> claimTopicReqs =
-          kafkaConnectorRequestsRepo.findAllByConnectortypeAndTenantId(
-              RequestOperationType.CLAIM.value, tenantId);
+          Lists.newArrayList(
+              findKafkaConnectorRequestsByExample(
+                  RequestOperationType.CLAIM.value,
+                  null,
+                  env,
+                  status,
+                  tenantId,
+                  String.valueOf(teamSelected)));
 
-      if ("all".equals(status)) {
-        topicRequestListSub =
-            Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !RequestOperationType.CLAIM.value.equals(topicRequest.getConnectortype()))
-                .collect(Collectors.toList());
+      topicRequestListSub =
+          Lists.newArrayList(
+              findKafkaConnectorRequestsByExample(
+                  null, showRequestsOfAllTeams ? null : teamSelected, env, status, tenantId, null));
 
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected))
-                .collect(Collectors.toList());
-      } else {
-        topicRequestListSub =
-            kafkaConnectorRequestsRepo.findAllByConnectorStatusAndTenantId(status, tenantId);
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !RequestOperationType.CLAIM.value.equals(topicRequest.getConnectortype()))
-                .collect(Collectors.toList());
-
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected)
-                            && Objects.equals(claimTopicReq.getConnectorStatus(), status))
-                .collect(Collectors.toList());
-      }
+      // Only execute just before adding the separate claim list as this will make sure only the
+      // claim topics this team is able to approve will be returned.
+      topicRequestListSub =
+          topicRequestListSub.stream()
+              .filter(
+                  request -> !RequestOperationType.CLAIM.value.equals(request.getConnectortype()))
+              .collect(Collectors.toList());
 
       topicRequestListSub.addAll(claimTopicReqs);
-    } else {
+      // remove users own requests to approve/show in the list
+      // Placed here as it should only apply for approvers.
       topicRequestListSub =
-          Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
+          topicRequestListSub.stream()
+              .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
+              .collect(Collectors.toList());
+
+    } else {
+      // show my teams requests
+      topicRequestListSub =
+          Lists.newArrayList(
+              findKafkaConnectorRequestsByExample(
+                  null, showRequestsOfAllTeams ? null : teamSelected, null, null, tenantId, null));
     }
 
     for (KafkaConnectorRequest row : topicRequestListSub) {
@@ -674,16 +673,60 @@ public class SelectDataJdbc {
       } catch (Exception ignored) {
       }
 
-      if (showRequestsOfAllTeams) {
-        topicRequestList.add(row); // no team filter
-      } else if (teamSelected != null
-          && (Objects.equals(teamSelected, teamId)
-              || Objects.equals("" + teamSelected, row.getDescription()))) {
-        topicRequestList.add(row);
-      }
+      topicRequestList.add(row); // no team filter
     }
 
     return topicRequestList;
+  }
+
+  /**
+   * Query the KafkaConnectorRequestsRepo by supplying optional search parameters any given search
+   * parameters will be utilised in the search.
+   *
+   * @param requestType The type of topic request Create/claim etc
+   * @param teamId The identifier of the team
+   * @param environment the environment
+   * @param status created/declined/approved
+   * @param tenantId The tenantId
+   * @return An Iterable of all TopicRequests that match the parameters that have been supplied
+   */
+  private Iterable<KafkaConnectorRequest> findKafkaConnectorRequestsByExample(
+      String requestType,
+      Integer teamId,
+      String environment,
+      String status,
+      int tenantId,
+      String description) {
+
+    KafkaConnectorRequest request = new KafkaConnectorRequest();
+    request.setTenantId(tenantId);
+
+    if (requestType != null) {
+      request.setConnectortype(requestType);
+    }
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (teamId != null) {
+      request.setTeamId(teamId);
+    }
+
+    if (description != null && !description.isEmpty()) {
+      request.setDescription(description);
+    }
+
+    if (status != null && !status.equalsIgnoreCase("all")) {
+      request.setConnectorStatus(status);
+    }
+
+    // check if debug is enabled so the logger doesn't waste resources converting object request to
+    // a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
+
+    return kafkaConnectorRequestsRepo.findAll(Example.of(request));
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {

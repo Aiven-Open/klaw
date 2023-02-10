@@ -8,6 +8,7 @@ import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
@@ -38,11 +39,11 @@ public class KafkaConnectorsIntegrationTest {
   private UtilMethods utilMethods;
 
   public void loadData() {
-    generateData(10, 101, "firstconn", "dev", RequestOperationType.CLAIM, "created", 1);
-    generateData(10, 103, "firstconn", "dev", RequestOperationType.CREATE, "created", 11);
-    generateData(10, 101, "secondconn", "dev", RequestOperationType.CREATE, "created", 21);
-    generateData(10, 101, "secondconn", "test", RequestOperationType.DELETE, "declined", 31);
-    generateData(1, 101, "secondconn", "test", RequestOperationType.UPDATE, "created", 41);
+    generateData(10, 101, "firstconn", "dev", RequestOperationType.CLAIM, "created", 1, "103");
+    generateData(10, 103, "firstconn", "dev", RequestOperationType.CREATE, "created", 11, null);
+    generateData(10, 101, "secondconn", "dev", RequestOperationType.CREATE, "created", 21, null);
+    generateData(10, 101, "secondconn", "test", RequestOperationType.DELETE, "declined", 31, null);
+    generateData(1, 101, "secondconn", "test", RequestOperationType.UPDATE, "created", 41, null);
     UserInfo user = new UserInfo();
     user.setTenantId(101);
     user.setTeamId(101);
@@ -53,8 +54,21 @@ public class KafkaConnectorsIntegrationTest {
     user2.setTeamId(103);
     user2.setRole("USER");
     user2.setUsername("John");
+    UserInfo user3 = new UserInfo();
+    user3.setTenantId(103);
+    user3.setTeamId(103);
+    user3.setRole("USER");
+    user3.setUsername("Jackie");
+
+    UserInfo user4 = new UserInfo();
+    user4.setTenantId(104);
+    user4.setTeamId(104);
+    user4.setRole("USER");
+    user4.setUsername("Joan");
     entityManager.persistAndFlush(user);
     entityManager.persistAndFlush(user2);
+    entityManager.persistAndFlush(user3);
+    entityManager.persistAndFlush(user4);
 
     Team t1 = new Team();
     t1.setTeamId(101);
@@ -66,6 +80,55 @@ public class KafkaConnectorsIntegrationTest {
     t2.setTenantId(103);
     entityManager.persistAndFlush(t1);
     entityManager.persistAndFlush(t2);
+
+    //
+    generateData(
+        5,
+        104,
+        "thirdtopic",
+        "test",
+        RequestOperationType.CREATE,
+        RequestStatus.CREATED.value,
+        50,
+        null);
+    generateData(
+        1,
+        104,
+        "thirdtopic",
+        "test",
+        RequestOperationType.CLAIM,
+        RequestStatus.DECLINED.value,
+        55,
+        "103");
+
+    generateData(
+        2,
+        104,
+        "thirdtopic",
+        "test",
+        RequestOperationType.UPDATE,
+        RequestStatus.APPROVED.value,
+        57,
+        null);
+    generateData(
+        2,
+        104,
+        "thirdtopic",
+        "test",
+        RequestOperationType.DELETE,
+        RequestStatus.CREATED.value,
+        59,
+        null);
+
+    generateData(
+        6,
+        104,
+        "thirdtopic",
+        "test",
+        RequestOperationType.CREATE,
+        RequestStatus.DELETED.value,
+        61,
+        null);
   }
 
   @BeforeEach
@@ -86,7 +149,8 @@ public class KafkaConnectorsIntegrationTest {
         Lists.newArrayList(repo.findAllByTenantId(101));
 
     List<KafkaConnectorRequest> results =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "James", "all", true, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "all", true, 101, null, null);
 
     assertThat(KafkaConnectorRequestList.size()).isEqualTo(results.size());
 
@@ -98,9 +162,11 @@ public class KafkaConnectorsIntegrationTest {
   public void getallRequestsFilteredByTenantId() {
 
     List<KafkaConnectorRequest> james =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "James", "all", true, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "all", true, 101, null, null);
     List<KafkaConnectorRequest> john =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "James", "all", true, 103);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "all", true, 103, null, null);
 
     assertThat(james.size()).isEqualTo(31);
     for (KafkaConnectorRequest req : james) {
@@ -117,9 +183,11 @@ public class KafkaConnectorsIntegrationTest {
   public void getallRequestsFilteredByTenantByStatus() {
 
     List<KafkaConnectorRequest> james =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "James", "created", true, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "created", true, 101, null, null);
     List<KafkaConnectorRequest> john =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "John", "declined", true, 103);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "John", "declined", true, 103, null, null);
 
     assertThat(james.size()).isEqualTo(21);
     for (KafkaConnectorRequest req : james) {
@@ -135,11 +203,14 @@ public class KafkaConnectorsIntegrationTest {
       getallRequestsFilteredByAdditionalStatus_NotAllReqs_IgnoreStatus_ExpectTeamFiltering() {
 
     List<KafkaConnectorRequest> james =
-        selectDataJdbc.selectConnectorRequestsByStatus(false, "James", "deleted", false, 103);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "James", "deleted", false, 103, null, null);
     List<KafkaConnectorRequest> james2 =
-        selectDataJdbc.selectConnectorRequestsByStatus(false, "James", "declined", true, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "James", "declined", true, 101, null, null);
     List<KafkaConnectorRequest> john =
-        selectDataJdbc.selectConnectorRequestsByStatus(false, "John", "created", true, 103);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "John", "created", true, 103, null, null);
 
     assertThat(james.size()).isEqualTo(0);
 
@@ -159,10 +230,12 @@ public class KafkaConnectorsIntegrationTest {
   public void getallRequestsFilteredByTeanantId() {
 
     List<KafkaConnectorRequest> james =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "James", "all", false, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "all", false, 101, null, null);
 
     List<KafkaConnectorRequest> john =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "John", "all", false, 103);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "John", "all", false, 103, null, null);
 
     assertThat(james.size()).isEqualTo(31);
     for (KafkaConnectorRequest req : james) {
@@ -182,7 +255,8 @@ public class KafkaConnectorsIntegrationTest {
   public void getallRequestsFilteredByMisSpeltStatus_ReturnNothing() {
 
     List<KafkaConnectorRequest> james =
-        selectDataJdbc.selectConnectorRequestsByStatus(true, "James", "ALL", true, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "ALT", true, 101, null, null);
     assertThat(james.size()).isEqualTo(0);
   }
 
@@ -191,10 +265,12 @@ public class KafkaConnectorsIntegrationTest {
   public void getNonApproversRequestsFilteredByTenantId_willIgnoreOtherPassedParameters() {
 
     List<KafkaConnectorRequest> tenant1 =
-        selectDataJdbc.selectConnectorRequestsByStatus(false, "James", null, true, 101);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "James", null, true, 101, null, null);
 
     List<KafkaConnectorRequest> tenant2 =
-        selectDataJdbc.selectConnectorRequestsByStatus(false, "John", null, true, 103);
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "John", null, true, 103, null, null);
 
     assertThat(tenant1.size()).isEqualTo(31);
     for (KafkaConnectorRequest req : tenant1) {
@@ -222,6 +298,252 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(tenant2.getConnectorName()).isEqualTo("firstconn");
   }
 
+  @Test
+  @Order(9)
+  public void getAllRequestsAndFilterByApproversViewAndTestEnvReturnAll() {
+
+    List<KafkaConnectorRequest> jackie =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "all", true, 101, "test", null);
+
+    assertThat(jackie.size()).isEqualTo(11);
+
+    for (KafkaConnectorRequest req : jackie) {
+      assertThat(req.getEnvironment()).isEqualTo("test");
+      assertThat(req.getUsername()).isNotEqualTo("Jackie");
+    }
+  }
+
+  @Test
+  @Order(10)
+  public void getAllRequestsAndFilterByApproversViewAndTestEnvFilterAllJackiesRequestsReturnNone() {
+
+    List<KafkaConnectorRequest> jackie =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "Jackie", "all", true, 101, "test", null);
+
+    assertThat(jackie.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(11)
+  public void getNonApproversRequestsFilteredByStatusByWildcard_willIgnorePassedParameters() {
+
+    List<KafkaConnectorRequest> tenant1 =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "James", "deleted", true, 101, null, "One");
+
+    List<KafkaConnectorRequest> tenant2 =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "John", "created", true, 103, null, "two");
+
+    assertThat(tenant1.size()).isEqualTo(31);
+
+    assertThat(tenant2.size()).isEqualTo(10);
+  }
+
+  @Test
+  @Order(12)
+  public void givennonExistentTenantId_ReturnNothing() {
+
+    List<KafkaConnectorRequest> james =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "all", true, 99, null, null);
+
+    assertThat(james.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(13)
+  public void givenNewQueryMethodAssertThatOldAndNewQueriesReturnTheSameResultSet() {
+    // Old way of getting all requests
+    List<KafkaConnectorRequest> KafkaConnectorRequestList =
+        Lists.newArrayList(repo.findAllByTenantId(101));
+
+    List<KafkaConnectorRequest> results =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "James", null, true, 101, null, null);
+
+    assertThat(KafkaConnectorRequestList.size()).isEqualTo(results.size());
+
+    assertThat(results.containsAll(KafkaConnectorRequestList)).isTrue();
+  }
+
+  @Test
+  @Order(14)
+  public void getAllRequestsFilteredByTenantId() {
+
+    List<KafkaConnectorRequest> james =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", null, true, 101, null, null);
+    List<KafkaConnectorRequest> john =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(true, "John", null, true, 103, null, null);
+
+    assertThat(james.size()).isEqualTo(31);
+    for (KafkaConnectorRequest req : james) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+    assertThat(john.size()).isEqualTo(10);
+    for (KafkaConnectorRequest req : john) {
+      assertThat(req.getTenantId()).isEqualTo(103);
+    }
+  }
+
+  @Test
+  @Order(15)
+  public void getAllRequestsFilteredByEnvironmentByStatus() {
+
+    List<KafkaConnectorRequest> james =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", "created", true, 101, "dev", null);
+    List<KafkaConnectorRequest> john =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "John", "declined", true, 103, "test", null);
+
+    assertThat(james.size()).isEqualTo(20);
+    for (KafkaConnectorRequest req : james) {
+      assertThat(req.getConnectorStatus()).isEqualTo("created");
+      assertThat(req.getTenantId()).isEqualTo(101);
+      assertThat(req.getEnvironment()).isEqualTo("dev");
+    }
+    assertThat(john.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(16)
+  public void getAllRequestsDontReturnOwnRequestsAsAllReqsIsTrue() {
+
+    List<KafkaConnectorRequest> jackie =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "Jackie", "all", true, 101, null, null);
+
+    assertThat(jackie.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(17)
+  public void getAllRequestsAndReturnOwnRequestsAsAllReqsIsTrue() {
+
+    List<KafkaConnectorRequest> jackie =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "Jackie", "all", true, 101, null, null);
+
+    assertThat(jackie.size()).isEqualTo(31);
+  }
+
+  @Test
+  @Order(18)
+  public void getAllCreatedStatusRequestsFromTenant() {
+
+    List<KafkaConnectorRequest> joan =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "Joan", RequestStatus.CREATED.value, true, 104, null, null);
+
+    assertThat(joan.size()).isEqualTo(7);
+    for (KafkaConnectorRequest req : joan) {
+      assertThat(req.getConnectorStatus()).isEqualTo(RequestStatus.CREATED.value);
+      assertThat(req.getTenantId()).isEqualTo(104);
+      assertThat(req.getUsername()).isNotEqualTo("Joan");
+    }
+  }
+
+  @Test
+  @Order(19)
+  public void getAllDELETEDStatusRequestsFromTenant() {
+
+    List<KafkaConnectorRequest> joan =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "Joan", RequestStatus.DELETED.value, true, 104, null, null);
+
+    assertThat(joan.size()).isEqualTo(6);
+    for (KafkaConnectorRequest req : joan) {
+      assertThat(req.getConnectorStatus()).isEqualTo(RequestStatus.DELETED.value);
+      assertThat(req.getTenantId()).isEqualTo(104);
+      assertThat(req.getUsername()).isNotEqualTo("Joan");
+    }
+  }
+
+  @Test
+  @Order(20)
+  public void getAllClaimStatusRequestsForApprovalTeam1() {
+
+    List<KafkaConnectorRequest> resultSet =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", RequestStatus.ALL.value, true, 101, null, null);
+
+    assertThat(resultSet.size()).isEqualTo(31);
+    for (KafkaConnectorRequest req : resultSet) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+      assertThat(req.getUsername()).isNotEqualTo("James");
+      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+        assertThat(req.getTeamId()).isEqualTo(103);
+        assertThat(req.getDescription()).isEqualTo("101");
+      } else {
+        assertThat(req.getTeamId()).isEqualTo(101);
+      }
+    }
+  }
+
+  @Test
+  @Order(21)
+  public void getAllClaimStatusRequestsForMyRequestsViewCreatedByMyTeam() {
+
+    List<KafkaConnectorRequest> resultSet =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "James", RequestStatus.ALL.value, false, 101, null, null);
+
+    assertThat(resultSet.size()).isEqualTo(31);
+    for (KafkaConnectorRequest req : resultSet) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+      assertThat(req.getUsername()).isNotEqualTo("James");
+      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+        assertThat(req.getDescription()).isNotEqualTo("101");
+      }
+    }
+  }
+
+  @Test
+  @Order(22)
+  public void getAllClaimStatusRequestsForApprovalTeam2() {
+
+    List<KafkaConnectorRequest> resultSet =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "John", RequestStatus.ALL.value, true, 101, null, null);
+
+    assertThat(resultSet.size()).isEqualTo(31);
+    for (KafkaConnectorRequest req : resultSet) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+      assertThat(req.getUsername()).isNotEqualTo("James");
+      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+        assertThat(req.getTeamId()).isEqualTo(101);
+        assertThat(req.getDescription()).isEqualTo("103");
+      } else {
+        assertThat(req.getTeamId()).isEqualTo(101);
+      }
+    }
+  }
+
+  @Test
+  @Order(23)
+  public void getAllClaimStatusRequestsForMyRequestsViewCreatedByMyTeamTeam2() {
+
+    List<KafkaConnectorRequest> resultSet =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            false, "John", RequestStatus.ALL.value, false, 103, null, null);
+    assertThat(resultSet.size()).isEqualTo(10);
+
+    // MyTeamsRequests only
+    for (KafkaConnectorRequest req : resultSet) {
+      assertThat(req.getTenantId()).isEqualTo(103);
+      assertThat(req.getUsername()).isNotEqualTo("James");
+      assertThat(req.getTeamId()).isEqualTo(103);
+      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+        // only show my tems claim requests
+        assertThat(req.getDescription()).isNotEqualTo("103");
+      }
+    }
+  }
+
   private void generateData(
       int number,
       int tenantId,
@@ -229,14 +551,15 @@ public class KafkaConnectorsIntegrationTest {
       String env,
       RequestOperationType connectorType,
       String status,
-      int id) {
+      int id,
+      String claimOwner) {
 
     for (int i = 0; i < number; i++) {
       KafkaConnectorRequest kc = new KafkaConnectorRequest();
       kc.setConnectorId(id++);
       kc.setTenantId(tenantId);
       kc.setTeamId(tenantId);
-
+      kc.setRequestor("Jackie");
       kc.setConnectorName(topicName);
       kc.setEnvironment(env);
       kc.setConnectortype(connectorType.name());
@@ -244,8 +567,8 @@ public class KafkaConnectorsIntegrationTest {
         kc.setConnectorStatus(status);
       }
 
-      if (connectorType.name().equals("Claim")) {
-        kc.setDescription(String.valueOf(tenantId));
+      if (connectorType.value.equals("Claim")) {
+        kc.setDescription(claimOwner);
       }
 
       entityManager.persistAndFlush(kc);
