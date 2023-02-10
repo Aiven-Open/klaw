@@ -128,7 +128,7 @@ a:focus-visible {
 /* A11y enhancement Table as well as DataTable*/
 /* Workaround to get accessible color until DS ready */
 /* changes color to be accessible contrast */
-/* changes font size and weight to be distinguishable */
+/* changes font weight to be distinguishable */
 /* from table cells font */
 :root thead > tr > th {
   color: black !important;
