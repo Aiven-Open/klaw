@@ -1,27 +1,22 @@
-import {
-  Icon,
-  DataTable,
-  DataTableColumn,
-  GhostButton,
-} from "@aivenio/aquarium";
-import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
-import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
+import { SearchInput, NativeSelect } from "@aivenio/aquarium";
+import { Pagination } from "src/app/components/Pagination";
+import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
+import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 
 const responseMock = [
   {
     req_no: 1014,
-    topicname: "uptimetopic",
-    environment: "3",
-    environmentName: "DEV",
+    topicname: "testtopic-first",
+    environment: "1",
+    environmentName: "BRG",
     schemaversion: "1.0",
-    teamname: "Ospo",
-    teamId: 1003,
+    teamname: "NCC1701D",
+    teamId: 1701,
     appname: "App",
-    schemafull:
-      '{\n   "type" : "record",\n   "namespace" : "Tutorialspoint",\n   "name" : "Employee",\n   "fields" : [\n      { "name" : "Name" , "type" : "string" },\n      { "name" : "Age" , "type" : "int" }\n   ]\n}',
-    username: "samulisuortti",
-    requesttime: "2023-02-03T13:28:28.061+00:00",
-    requesttimestring: "03-Feb-2023 13:28:28",
+    schemafull: "",
+    username: "jlpicard",
+    requesttime: "1987-09-28T13:37:00.001+00:00",
+    requesttimestring: "28-Sep-1987 13:37:00",
     topicstatus: "created",
     requesttype: "Create",
     forceRegister: false,
@@ -29,25 +24,24 @@ const responseMock = [
     approver: null,
     approvingtime: null,
     approvingTeamDetails:
-      "Team : Ospo, Users : muralibasani,josepprat,mirjamaulbach,smustafa,amathieu,aindriul,",
+      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
     totalNoPages: "1",
     allPageNos: ["1"],
     currentPage: "1",
   },
   {
     req_no: 1013,
-    topicname: "testopic",
-    environment: "3",
-    environmentName: "INFRA",
+    topicname: "testtopic-second",
+    environment: "2",
+    environmentName: "SEC",
     schemaversion: "1.0",
-    teamname: "Ospo",
-    teamId: 1003,
+    teamname: "NCC1701D",
+    teamId: 1701,
     appname: "App",
-    schemafull:
-      '{\n   "type" : "record",\n   "namespace" : "Tutorialspoint",\n   "name" : "Employee",\n   "fields" : [\n      { "name" : "Name" , "type" : "string" },\n      { "name" : "Age" , "type" : "int" }\n   ]\n}',
-    username: "samulisuortti",
-    requesttime: "2023-02-03T13:28:28.061+00:00",
-    requesttimestring: "03-Feb-2023 13:28:28",
+    schemafull: "",
+    username: "bcrusher",
+    requesttime: "1994-23-05T13:37:00.001+00:00",
+    requesttimestring: "23-May-1994 13:37:00",
     topicstatus: "created",
     requesttype: "Create",
     forceRegister: false,
@@ -55,82 +49,57 @@ const responseMock = [
     approver: null,
     approvingtime: null,
     approvingTeamDetails:
-      "Team : Ospo, Users : muralibasani,josepprat,mirjamaulbach,smustafa,amathieu,aindriul,",
+      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
     totalNoPages: "1",
     allPageNos: ["1"],
     currentPage: "1",
   },
 ];
 
-interface SchemaRequestTableData {
-  id: number;
-  topicname: string;
-  environmentName: string;
-  username: string;
-  requesttimestring: string;
+function changePage() {
+  console.log("page changed");
 }
 
-const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
-  { type: "text", field: "topicname", headerName: "Topic" },
-  { type: "text", field: "environmentName", headerName: "Cluster" },
-  { type: "text", field: "username", headerName: "Requested by" },
-  {
-    type: "text",
-    field: "requesttimestring",
-    headerName: "Date Requested",
-  },
-  {
-    type: "custom",
-    headerName: "",
-    width: 30,
-    UNSAFE_render: (row) => {
-      return (
-        <GhostButton
-          onClick={() => alert("Approve")}
-          title={`Approve schema request for ${row.topicname}`}
-        >
-          <Icon color="grey-70" icon={tickCircle} />
-        </GhostButton>
-      );
-    },
-  },
-  {
-    type: "custom",
-    headerName: "",
-    width: 30,
-    UNSAFE_render: (row) => {
-      return (
-        <GhostButton
-          onClick={() => alert("Decline")}
-          title={`Decline schema request for ${row.topicname}`}
-        >
-          <Icon color="grey-70" icon={deleteIcon} />
-        </GhostButton>
-      );
-    },
-  },
-];
-
-const rows: SchemaRequestTableData[] = responseMock.map((request) => {
-  return {
-    id: request.req_no,
-    topicname: request.topicname,
-    environmentName: request.environmentName,
-    username: request.username,
-    requesttimestring: request.requesttimestring,
-  };
-});
-
 function SchemaApprovals() {
-  return (
-    <div className={"a11y-enhancement-data-table"}>
-      <DataTable
-        ariaLabel={"Schema requests"}
-        columns={columns}
-        rows={rows}
-        noWrap={false}
+  const filters = [
+    <NativeSelect labelText={"Filter by topics"} key={"filter-topic"}>
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+
+    <NativeSelect labelText={"Filter by cluster"} key={"filter-cluster"}>
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+
+    <NativeSelect labelText={"Filter by status"} key={"filter-status"}>
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+    <div key={"search"}>
+      <SearchInput
+        type={"search"}
+        aria-describedby={"search-field-description"}
+        role="search"
+        placeholder={"Search for..."}
       />
-    </div>
+      <div id={"search-field-description"} className={"visually-hidden"}>
+        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
+        to delete all your input.
+      </div>
+    </div>,
+  ];
+
+  const table = <SchemaApprovalsTable requests={responseMock} />;
+  const pagination = (
+    <Pagination activePage={1} totalPages={2} setActivePage={changePage} />
+  );
+
+  return (
+    <ApprovalsLayout filters={filters} table={table} pagination={pagination} />
   );
 }
 
