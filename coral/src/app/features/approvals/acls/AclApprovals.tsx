@@ -10,7 +10,6 @@ import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useQuery } from "@tanstack/react-query";
-import { type } from "@testing-library/user-event/dist/types/utility";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
@@ -81,7 +80,8 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
     UNSAFE_render({ topicname, prefixed }: AclRequestTableData) {
       return (
         <>
-          {prefixed && <code>(prefixed)</code>} {topicname}
+          {topicname}
+          {prefixed && <code>(prefixed)</code>}
         </>
       );
     },
