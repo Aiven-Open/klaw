@@ -1,5 +1,13 @@
 version = 2.0.0
 
+# Sets a custom hook path in the local git config.
+# Currently there's only a pre-commit hook related
+# to changes in `/coral/*`  and `openapi.yaml`
+# so it's not needed for pure backend changes.
+config_hook_path:
+	$(shell git config --local core.hooksPath .githooks/)
+	echo "✅ Custom git hook path set!"
+
 build_all: klaw_core cluster_api
 
 klaw_core:
