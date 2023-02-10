@@ -7,6 +7,7 @@ import {
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
+import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -104,6 +105,27 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
     headerName: "Date requested",
   },
   {
+    // Not having a headerName triggers React error:
+    // Warning: Encountered two children with the same key, ``.
+    headerName: "",
+    type: "custom",
+    UNSAFE_render: () => {
+      return (
+        <Flexbox justifyContent={"center"}>
+          <GhostButton
+            icon={infoSign}
+            onClick={() =>
+              alert("Details modal with approve and reject buttons")
+            }
+            title={"View request details"}
+          >
+            View details
+          </GhostButton>
+        </Flexbox>
+      );
+    },
+  },
+  {
     width: 30,
     // Not having a headerName triggers React error:
     // Warning: Encountered two children with the same key, ``.
@@ -111,8 +133,15 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
     type: "custom",
     UNSAFE_render: () => {
       return (
-        <GhostButton onClick={() => alert("Approve")} title={"Approve"}>
-          <Icon color="grey-70" icon={tickCircle} />
+        <GhostButton
+          onClick={() => alert("Approve request right away")}
+          title={"Approve request"}
+        >
+          <Icon
+            style={{ fontSize: "20px" }}
+            color="grey-70"
+            icon={tickCircle}
+          />
         </GhostButton>
       );
     },
@@ -125,8 +154,15 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
     type: "custom",
     UNSAFE_render: () => {
       return (
-        <GhostButton onClick={() => alert("Decline")} title={"Decline"}>
-          <Icon color="grey-70" icon={deleteIcon} />
+        <GhostButton
+          onClick={() => alert("Reject modal with form for reason")}
+          title={"Reject request"}
+        >
+          <Icon
+            style={{ fontSize: "20px" }}
+            color="grey-70"
+            icon={deleteIcon}
+          />
         </GhostButton>
       );
     },
@@ -136,6 +172,8 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
 function AclApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPage = Number(searchParams.get("page"));
+
+  console.log("search", searchParams);
 
   const [activePage, setActivePage] = useState(initialPage || 1);
 
