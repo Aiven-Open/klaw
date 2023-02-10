@@ -42,6 +42,9 @@ export type paths = {
   "/execAclRequest": {
     post: operations["approveAclRequests"];
   };
+  "/execAclRequestDecline": {
+    post: operations["declineAclRequests"];
+  };
   "/createAcl": {
     post: operations["createAclRequest"];
   };
@@ -1193,6 +1196,24 @@ export type operations = {
       };
     };
   };
+  declineAclRequests: {
+    parameters: {
+      query: {
+        /** reqNo of the ACL request */
+        req_no: string;
+        /** Stated reason for declining request (URL formatted string) */
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GenericApiResponse"];
+        };
+      };
+    };
+  };
   createAclRequest: {
     responses: {
       /** OK */
@@ -1276,6 +1297,7 @@ export enum ApiPaths {
   clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
   getAclRequestsForApprover = "/getAclRequestsForApprover",
   approveAclRequests = "/execAclRequest",
+  declineAclRequests = "/execAclRequestDecline",
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",
