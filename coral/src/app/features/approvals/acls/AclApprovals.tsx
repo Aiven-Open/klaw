@@ -10,6 +10,7 @@ import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useQuery } from "@tanstack/react-query";
+import { type } from "@testing-library/user-event/dist/types/utility";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
@@ -125,17 +126,14 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
     type: "custom",
     UNSAFE_render: () => {
       return (
-        <Flexbox justifyContent={"center"}>
-          <GhostButton
-            icon={infoSign}
-            onClick={() =>
-              alert("Details modal with approve and reject buttons")
-            }
-            title={"View request details"}
-          >
-            View details
-          </GhostButton>
-        </Flexbox>
+        <GhostButton
+          icon={infoSign}
+          onClick={() => alert("Details modal with approve and reject buttons")}
+          title={"View request details"}
+          dense
+        >
+          View details
+        </GhostButton>
       );
     },
   },
@@ -151,11 +149,7 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
           onClick={() => alert("Approve request right away")}
           title={"Approve request"}
         >
-          <Icon
-            style={{ fontSize: "20px" }}
-            color="grey-70"
-            icon={tickCircle}
-          />
+          <Icon color="grey-70" icon={tickCircle} />
         </GhostButton>
       );
     },
@@ -172,11 +166,7 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
           onClick={() => alert("Reject modal with form for reason")}
           title={"Reject request"}
         >
-          <Icon
-            style={{ fontSize: "20px" }}
-            color="grey-70"
-            icon={deleteIcon}
-          />
+          <Icon color="grey-70" icon={deleteIcon} />
         </GhostButton>
       );
     },
