@@ -1,12 +1,10 @@
-import { Box, DataTable } from "@aivenio/aquarium";
-import { Pagination } from "src/app/components/Pagination";
+import { Box } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 
 type ApprovalsLayoutProps = {
   filters: ReactElement[];
-  // @TODO add more specific typing when XApprovalTable's are implemented
-  table: ReactElement<typeof DataTable>;
-  pagination?: ReactElement<typeof Pagination>;
+  table: ReactElement;
+  pagination?: ReactElement;
 };
 
 function ApprovalsLayout(props: ApprovalsLayoutProps) {
