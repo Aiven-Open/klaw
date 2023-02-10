@@ -655,6 +655,12 @@ public class SelectDataJdbc {
           topicRequestListSub.stream()
               .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
               .collect(Collectors.toList());
+      if (search != null && !search.isEmpty()) {
+        topicRequestListSub =
+            topicRequestListSub.stream()
+                .filter(topicRequest -> topicRequest.getConnectorName().contains(search))
+                .collect(Collectors.toList());
+      }
 
     } else {
       // show my teams requests

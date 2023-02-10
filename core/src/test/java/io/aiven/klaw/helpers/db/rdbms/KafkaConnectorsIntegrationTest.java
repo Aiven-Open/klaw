@@ -544,6 +544,35 @@ public class KafkaConnectorsIntegrationTest {
     }
   }
 
+  @Test
+  @Order(24)
+  public void getAllCRequestsForApprovalFilteredByWildcardSearch() {
+
+    List<KafkaConnectorRequest> resultSet =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", RequestStatus.ALL.value, false, 101, null, "first");
+
+    assertThat(resultSet.size()).isEqualTo(10);
+
+    // MyTeamsRequests only
+    for (KafkaConnectorRequest req : resultSet) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+      assertThat(req.getUsername()).isNotEqualTo("James");
+      assertThat(req.getTeamId()).isEqualTo(101);
+      assertThat(req.getConnectorName()).isEqualTo("firstconn");
+    }
+  }
+
+  @Test
+  @Order(25)
+  public void getAllCRequestsForApprovalFilteredByWildcardSearchNoMatching() {
+
+    List<KafkaConnectorRequest> resultSet =
+        selectDataJdbc.getFilteredKafkaConnectorRequests(
+            true, "James", RequestStatus.ALL.value, false, 103, null, "lots");
+    assertThat(resultSet.size()).isEqualTo(0);
+  }
+
   private void generateData(
       int number,
       int tenantId,
