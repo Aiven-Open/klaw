@@ -1199,7 +1199,9 @@ export type operations = {
   declineAclRequests: {
     parameters: {
       query: {
+        /** reqNo of the ACL request */
         req_no: string;
+        /** Stated reason for declining request (URL formatted string) */
         reasonForDecline: string;
       };
     };

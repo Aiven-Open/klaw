@@ -355,12 +355,14 @@ paths:
         - name: req_no
           in: query
           required: true
+          description: "reqNo of the ACL request"
           schema:
             type: string
           example: "1008"
         - name: reasonForDecline
           in: query
           required: true
+          description: "Stated reason for declining request (URL formatted string)"
           schema:
             type: string
           example: "I+don%27t+know+why+you+need+access"
