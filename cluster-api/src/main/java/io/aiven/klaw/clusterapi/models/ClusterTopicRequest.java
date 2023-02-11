@@ -28,5 +28,5 @@ public class ClusterTopicRequest {
 
   @JsonProperty private Map<String, String> advancedTopicConfiguration;
 
-  @JsonProperty private AclsNativeType aclsNativeType;
+  @JsonProperty private AclsNativeType aclNativeType;
 }

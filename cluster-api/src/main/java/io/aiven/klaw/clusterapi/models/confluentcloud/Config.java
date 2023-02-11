@@ -3,6 +3,7 @@ package io.aiven.klaw.clusterapi.models.confluentcloud;
 import lombok.Data;
 
 @Data
-public class Configs {
-  public String related;
+public class Config {
+  public String name;
+  public String value;
 }

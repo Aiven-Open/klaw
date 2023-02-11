@@ -1,5 +1,8 @@
 package io.aiven.klaw.clusterapi.models.confluentcloud;
 
+import lombok.Data;
+
+@Data
 public class TopicObject {
   public String kind;
   public Metadata metadata;

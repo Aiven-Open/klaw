@@ -206,8 +206,14 @@ public class ClusterApiController {
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
       log.info("createTopics clusterTopicRequest {}", clusterTopicRequest);
-      return new ResponseEntity<>(
-          apacheKafkaTopicService.createTopic(clusterTopicRequest), HttpStatus.OK);
+      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclNativeType()) {
+        return new ResponseEntity<>(
+            confluentCloudApiService.createTopic(clusterTopicRequest), HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(
+            apacheKafkaTopicService.createTopic(clusterTopicRequest), HttpStatus.OK);
+      }
+
     } catch (Exception e) {
       return handleException(e);
     }
@@ -218,8 +224,13 @@ public class ClusterApiController {
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
       log.info("updateTopics clusterTopicRequest {}", clusterTopicRequest);
-      return new ResponseEntity<>(
-          apacheKafkaTopicService.updateTopic(clusterTopicRequest), HttpStatus.OK);
+      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclNativeType()) {
+        return new ResponseEntity<>(
+            confluentCloudApiService.updateTopic(clusterTopicRequest), HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(
+            apacheKafkaTopicService.updateTopic(clusterTopicRequest), HttpStatus.OK);
+      }
     } catch (Exception e) {
       return handleException(e);
     }
@@ -229,8 +240,13 @@ public class ClusterApiController {
   public ResponseEntity<ApiResponse> deleteTopics(
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
-      return new ResponseEntity<>(
-          apacheKafkaTopicService.deleteTopic(clusterTopicRequest), HttpStatus.OK);
+      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclNativeType()) {
+        return new ResponseEntity<>(
+            confluentCloudApiService.deleteTopic(clusterTopicRequest), HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(
+            apacheKafkaTopicService.deleteTopic(clusterTopicRequest), HttpStatus.OK);
+      }
     } catch (Exception e) {
       return handleException(e);
     }
@@ -291,6 +307,12 @@ public class ClusterApiController {
         return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         result = aivenApiService.deleteAcls(clusterAclRequest);
+
+        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+      } else if (AclsNativeType.CONFLUENT_CLOUD
+          .name()
+          .equals(clusterAclRequest.getAclNativeType())) {
+        result = confluentCloudApiService.deleteAcls(clusterAclRequest);
 
         return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
       }
