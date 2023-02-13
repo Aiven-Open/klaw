@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, RenderResult, screen } from "@testing-library/react";
 import { Modal } from "src/app/components/Modal";
 import userEvent from "@testing-library/user-event";
 
@@ -26,18 +26,6 @@ describe("Modal.tsx", () => {
       });
 
       afterAll(cleanup);
-
-      it("sets the app root to aria hidden true", () => {
-        const root = document.getElementById("root");
-
-        expect(root).toHaveAttribute("aria-hidden", "true");
-      });
-
-      it("sets the tabindex of app root to -1 so users can only access modal", () => {
-        const root = document.getElementById("root");
-
-        expect(root).toHaveAttribute("tabindex", "-1");
-      });
 
       it("shows a dialog", () => {
         const dialog = screen.getByRole("dialog");
@@ -112,6 +100,47 @@ describe("Modal.tsx", () => {
 
         await userEvent.keyboard("{Enter}");
         expect(mockPrimary.onClick).toHaveBeenCalled();
+      });
+    });
+
+    describe("traps user input inside the modal", () => {
+      let component: RenderResult;
+
+      beforeEach(() => {
+        component = render(
+          <>
+            <div id={"root"}></div>
+            <Modal title={testTitle} primaryAction={mockPrimary}>
+              {mockChildren}
+            </Modal>
+          </>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it("sets the aria hidden value on app root", () => {
+        const root = document.getElementById("root");
+        expect(root).toHaveAttribute("aria-hidden", "true");
+
+        component.unmount();
+        expect(root).not.toHaveAttribute("aria-hidden");
+      });
+
+      it("sets the tabindex of app root", () => {
+        const root = document.getElementById("root");
+        expect(root).toHaveAttribute("tabindex", "-1");
+
+        component.unmount();
+        expect(root).not.toHaveAttribute("tabindex");
+      });
+
+      it("sets the attribute inert for app root", () => {
+        const root = document.getElementById("root");
+        expect(root).toHaveAttribute("inert", "true");
+
+        component.unmount();
+        expect(root).not.toHaveAttribute("inert");
       });
     });
   });
