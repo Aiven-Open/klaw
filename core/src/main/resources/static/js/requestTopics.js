@@ -269,7 +269,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 serviceInput['topictype'] = 'Create';
                 $scope.httpCreateTopicReq(serviceInput);
             }
-           if($scope.requestType === 'PromoteTopic'){
+           else if($scope.requestType === 'PromoteTopic'){
                 serviceInput['topictype'] = 'Promote';
                 $scope.httpCreateTopicReq(serviceInput);
             }
