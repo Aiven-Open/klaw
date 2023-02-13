@@ -1,4 +1,4 @@
-import { Box, DataTableColumn, GhostButton, Icon } from "@aivenio/aquarium";
+import { DataTableColumn, GhostButton } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
