@@ -143,18 +143,20 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String deleteAclRequest(int aclId, int tenantId) {
+  public String deleteAclRequest(int aclId, String userName, int tenantId) {
     log.debug("deleteAclRequest {}", aclId);
     AclRequestID aclRequestID = new AclRequestID();
     aclRequestID.setReq_no(aclId);
     aclRequestID.setTenantId(tenantId);
     Optional<AclRequests> optAclRequests = aclRequestsRepo.findById(aclRequestID);
-    if (optAclRequests.isPresent()) {
+    if (optAclRequests.isPresent() && optAclRequests.get().getUsername().equals(userName)) {
       optAclRequests.get().setAclstatus("deleted");
       aclRequestsRepo.save(optAclRequests.get());
+      return ApiResultStatus.SUCCESS.value;
     }
 
-    return ApiResultStatus.SUCCESS.value;
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
   public String deleteEnvironment(String envId, int tenantId) {

@@ -131,7 +131,16 @@ public class UtilControllerService {
         getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.CREATED.value, false, tenantId);
+              true,
+              requestor,
+              roleToSet,
+              RequestStatus.CREATED.value,
+              false,
+              null,
+              null,
+              null,
+              false,
+              tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
               requestor, RequestStatus.CREATED.value, false, tenantId);
@@ -141,7 +150,16 @@ public class UtilControllerService {
     } else {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.CREATED.value, true, tenantId);
+              true,
+              requestor,
+              roleToSet,
+              RequestStatus.CREATED.value,
+              true,
+              null,
+              null,
+              null,
+              false,
+              tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
               requestor, RequestStatus.CREATED.value, true, tenantId);
