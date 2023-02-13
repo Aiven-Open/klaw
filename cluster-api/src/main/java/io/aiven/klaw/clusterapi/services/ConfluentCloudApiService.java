@@ -13,7 +13,6 @@ import io.aiven.klaw.clusterapi.models.confluentcloud.TopicObject;
 import io.aiven.klaw.clusterapi.models.enums.AclIPPrincipleType;
 import io.aiven.klaw.clusterapi.models.enums.AclPatternType;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
-import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
@@ -28,7 +27,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.kafka.common.acl.AclOperation;
+import org.apache.kafka.common.acl.AclPermissionType;
+import org.apache.kafka.common.resource.ResourceType;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -39,54 +40,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+/*
+Confluent cloud API Reference
+https://docs.confluent.io/cloud/current/api.html#tag/Topic-(v3)
+https://docs.confluent.io/cloud/current/api.html#tag/ACL-(v3)
+ */
 @Service
 @Slf4j
-public class ConfluentCloudApiService { // implements InitializingBean {
+public class ConfluentCloudApiService {
 
   public static final String HTTPS_PREFIX = "https://";
-  @Autowired private Environment env;
-  @Autowired ClusterApiUtils clusterApiUtils;
+  public static final String TOPIC_API_URI_KEY = ".klaw.clusters.counfluentcloud.topics.api";
+  public static final String ACLS_API_URI_KEY = ".klaw.clusters.counfluentcloud.acls.api";
+  private final Environment env;
+  final ClusterApiUtils clusterApiUtils;
 
-  public void getAclsTopics() throws Exception {
-
-    String env = "confluent.cloud:443";
-    String clusterId = "cc1";
-    Map<String, String> configs = new HashMap<>();
-    configs.put("cleanup.policy", "delete");
-    configs.put("compression.type", "gzip");
-    ClusterTopicRequest clusterTopicRequest =
-        ClusterTopicRequest.builder()
-            .aclNativeType(AclsNativeType.CONFLUENT_CLOUD)
-            .protocol(KafkaSupportedProtocol.SSL)
-            .replicationFactor(Short.parseShort("3"))
-            .partitions(1)
-            .env(env)
-            .topicName("testtopic2")
-            .clusterName(clusterId)
-            .advancedTopicConfiguration(configs)
-            .build();
-    ClusterAclRequest clusterAclRequest =
-        ClusterAclRequest.builder()
-            .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
-            .env("confluenthost:443")
-            .protocol(KafkaSupportedProtocol.SSL)
-            .clusterName("cc1")
-            .topicName("testtopic")
-            .consumerGroup(null)
-            .aclType(AclType.PRODUCER.value)
-            .aclIp("11.34.12.34")
-            .aclSsl("")
-            .transactionalId("")
-            .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
-            .isPrefixAcl(false)
-            .requestOperationType(RequestOperationType.CREATE)
-            .build();
-
-    //    createTopic(clusterTopicRequest);
-    //    listTopics(env, KafkaSupportedProtocol.SSL, "cc1");
-    //    deleteTopic(clusterTopicRequest);
-    //    createAcls(clusterAclRequest);
-    //    listAcls("confluenthost:443", KafkaSupportedProtocol.SSL, "cc1");
+  public ConfluentCloudApiService(Environment env, ClusterApiUtils clusterApiUtils) {
+    this.env = env;
+    this.clusterApiUtils = clusterApiUtils;
   }
 
   public Set<Map<String, String>> listTopics(
@@ -96,20 +67,8 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     log.info("loadTopics {} {} {}", restApiHost, protocol, clusterIdentification);
 
     String listTopicsUri =
-        env.getProperty(
-            clusterIdentification.toLowerCase() + ".klaw.clusters.counfluentcloud.listtopics.api");
-
-    if (null == listTopicsUri) {
-      log.error("Exception: {}", "listTopics api/uri for confluent cloud is not configured");
-      throw new Exception("List topics api/uri for confluent cloud is not configured");
-    }
-
-    if (!Strings.isNullOrEmpty(listTopicsUri)) {
-      listTopicsUri = restApiHost + listTopicsUri;
-      if (KafkaSupportedProtocol.SSL == protocol) {
-        listTopicsUri = HTTPS_PREFIX + listTopicsUri;
-      }
-    }
+        getResourceUri(
+            clusterIdentification, restApiHost, "createTopic", ResourceType.TOPIC.name());
 
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.KAFKA);
@@ -135,21 +94,7 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     RestTemplate restTemplate = getRestTemplate();
     log.info("listAcls {} {} {}", restApiHost, protocol, clusterIdentification);
 
-    String listAclsUri =
-        env.getProperty(
-            clusterIdentification.toLowerCase() + ".klaw.clusters.counfluentcloud.listacls.api");
-
-    if (null == listAclsUri) {
-      log.error("Exception: {}", "listAcls api/uri for confluent cloud is not configured");
-      throw new Exception("ListAcls api/uri for confluent cloud is not configured");
-    }
-
-    if (!Strings.isNullOrEmpty(listAclsUri)) {
-      listAclsUri = restApiHost + listAclsUri;
-      if (KafkaSupportedProtocol.SSL == protocol) {
-        listAclsUri = HTTPS_PREFIX + listAclsUri;
-      }
-    }
+    String listAclsUri = getResourceUri(clusterIdentification, restApiHost, "listAclsUri", "ACLS");
 
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.KAFKA);
@@ -174,62 +119,72 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     Map<String, String> resultMap = new HashMap<>();
     RestTemplate restTemplate = getRestTemplate();
     String createAclsUri =
-        env.getProperty(
-            clusterAclRequest.getClusterName().toLowerCase()
-                + ".klaw.clusters.counfluentcloud.listacls.api");
+        getResourceUri(
+            clusterAclRequest.getClusterName(), clusterAclRequest.getEnv(), "createAcls", "ACLS");
 
-    if (null == createAclsUri) {
-      log.error("Exception: {}", "createAcls api/uri for confluent cloud is not configured");
-      throw new Exception("CreateAcls api/uri for confluent cloud is not configured");
-    }
-
-    if (!Strings.isNullOrEmpty(createAclsUri)) {
-      createAclsUri = clusterAclRequest.getEnv() + createAclsUri;
-      if (KafkaSupportedProtocol.SSL == clusterAclRequest.getProtocol()) {
-        createAclsUri = HTTPS_PREFIX + createAclsUri;
-      }
-    }
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterAclRequest.getClusterName(), KafkaClustersType.KAFKA);
 
-    Map<String, String> aclMap = new HashMap<>();
     if (AclType.PRODUCER.value.equals(clusterAclRequest.getAclType())) {
-      aclMap.put("operation", "WRITE");
-      aclMap.put("resource_type", "TOPIC");
-      aclMap.put("resource_name", clusterAclRequest.getTopicName());
-
-      updateAclMap(clusterAclRequest, aclMap);
-      HttpEntity<Map<String, String>> request = new HttpEntity<>(aclMap, headers);
-
-      createAclsPostEntity(restTemplate, createAclsUri, request);
+      // Write on Topic
+      applyOperation(
+          clusterAclRequest,
+          restTemplate,
+          createAclsUri,
+          headers,
+          AclOperation.WRITE.name(),
+          ResourceType.TOPIC.name(),
+          clusterAclRequest.getTopicName());
+      // Describe on Topic
+      applyOperation(
+          clusterAclRequest,
+          restTemplate,
+          createAclsUri,
+          headers,
+          AclOperation.DESCRIBE.name(),
+          ResourceType.TOPIC.name(),
+          clusterAclRequest.getTopicName());
+      // Txn id access
+      if (clusterAclRequest.getTransactionalId() != null
+          && clusterAclRequest.getTransactionalId().length() > 0) {
+        applyOperation(
+            clusterAclRequest,
+            restTemplate,
+            createAclsUri,
+            headers,
+            AclOperation.WRITE.name(),
+            ResourceType.TRANSACTIONAL_ID.name(),
+            clusterAclRequest.getTransactionalId());
+      }
     } else {
-      aclMap.put("resource_type", "GROUP");
-      aclMap.put("operation", "READ");
-      aclMap.put("resource_name", clusterAclRequest.getConsumerGroup());
-
-      updateAclMap(clusterAclRequest, aclMap);
-      HttpEntity<Map<String, String>> request = new HttpEntity<>(aclMap, headers);
-      createAclsPostEntity(restTemplate, createAclsUri, request);
-
-      aclMap = new HashMap<>();
-      aclMap.put("operation", "READ");
-      aclMap.put("resource_type", "TOPIC");
-      aclMap.put("resource_name", clusterAclRequest.getTopicName());
-      updateAclMap(clusterAclRequest, aclMap);
-      request = new HttpEntity<>(aclMap, headers);
-      createAclsPostEntity(restTemplate, createAclsUri, request);
+      // Read on Group, Describe on Group, Read on Topic
+      applyOperation(
+          clusterAclRequest,
+          restTemplate,
+          createAclsUri,
+          headers,
+          AclOperation.READ.name(),
+          ResourceType.GROUP.name(),
+          clusterAclRequest.getConsumerGroup());
+      applyOperation(
+          clusterAclRequest,
+          restTemplate,
+          createAclsUri,
+          headers,
+          AclOperation.DESCRIBE.name(),
+          ResourceType.GROUP.name(),
+          clusterAclRequest.getConsumerGroup());
+      applyOperation(
+          clusterAclRequest,
+          restTemplate,
+          createAclsUri,
+          headers,
+          AclOperation.READ.name(),
+          ResourceType.TOPIC.name(),
+          clusterAclRequest.getTopicName());
     }
-
+    resultMap.put("result", ApiResultStatus.SUCCESS.value);
     return resultMap;
-  }
-
-  private static void createAclsPostEntity(
-      RestTemplate restTemplate, String createAclsUri, HttpEntity<Map<String, String>> request) {
-    try {
-      restTemplate.postForEntity(createAclsUri, request, String.class);
-    } catch (Exception e) {
-      log.error("Exception ");
-    }
   }
 
   public String deleteAcls(ClusterAclRequest clusterAclRequest) throws Exception {
@@ -237,118 +192,64 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     log.info("deleteAcls {}", clusterAclRequest);
 
     String deleteAclsUri =
-        env.getProperty(
-            clusterAclRequest.getClusterName().toLowerCase()
-                + ".klaw.clusters.counfluentcloud.listacls.api");
-
-    if (Strings.isNullOrEmpty(deleteAclsUri)) {
-      log.error("Exception: {}", "deleteAcls api/uri for confluent cloud is not configured");
-      throw new Exception("Delete acls api/uri for confluent cloud is not configured");
-    }
+        getResourceUri(
+            clusterAclRequest.getClusterName(), clusterAclRequest.getEnv(), "deleteAcls", "ACLS");
 
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterAclRequest.getClusterName(), KafkaClustersType.KAFKA);
     HttpEntity<String> request = new HttpEntity<>(headers);
 
     if (clusterAclRequest.getAclType().equals(AclType.PRODUCER.value)) {
+      // delete WRITE on Topic acls
       deleteAclsUri =
-          clusterAclRequest.getEnv()
-              + deleteAclsUri
+          deleteAclsUri
               + "?"
-              + String.join(
-                  "&",
-                  "resource_type=" + clusterAclRequest.getAclType(),
-                  "resource_name",
-                  "resource_name",
-                  "pattern_type",
-                  "pattern_type",
-                  "principal",
-                  "principal",
-                  "host",
-                  "host",
-                  "operation",
-                  "operation",
-                  "permission",
-                  "permission");
-      if (KafkaSupportedProtocol.SSL == clusterAclRequest.getProtocol()) {
-        deleteAclsUri = HTTPS_PREFIX + deleteAclsUri;
-      }
+              + getQueryParams(
+                  clusterAclRequest,
+                  ResourceType.TOPIC.name(),
+                  clusterAclRequest.getTopicName(),
+                  AclOperation.WRITE.name());
+      deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
 
+      // delete DESCRIBE on Topic acls
+      deleteAclsUri =
+          deleteAclsUri.replaceAll(
+              "operation=" + AclOperation.WRITE.name(),
+              "operation=" + AclOperation.DESCRIBE.name());
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
     } else {
-      // consumer group read access
+      // delete consumer group read acls
       deleteAclsUri =
-          clusterAclRequest.getEnv()
-              + deleteAclsUri
+          deleteAclsUri
               + "?"
-              + String.join(
-                  "&",
-                  "resource_type=" + clusterAclRequest.getAclType(),
-                  "resource_name",
-                  "resource_name",
-                  "pattern_type",
-                  "pattern_type",
-                  "principal",
-                  "principal",
-                  "host",
-                  "host",
-                  "operation",
-                  "operation",
-                  "permission",
-                  "permission");
-      if (KafkaSupportedProtocol.SSL == clusterAclRequest.getProtocol()) {
-        deleteAclsUri = HTTPS_PREFIX + deleteAclsUri;
-      }
+              + getQueryParams(
+                  clusterAclRequest,
+                  ResourceType.GROUP.name(),
+                  clusterAclRequest.getConsumerGroup(),
+                  AclOperation.READ.name());
 
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
 
-      // read topic access
+      // delete consumer group DESCRIBE acls
       deleteAclsUri =
-          clusterAclRequest.getEnv()
-              + deleteAclsUri
+          deleteAclsUri.replaceAll(
+              "operation=" + AclOperation.READ.name(), "operation=" + AclOperation.DESCRIBE.name());
+      deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
+
+      // delete read topic acls
+      deleteAclsUri =
+          getResourceUri(
+              clusterAclRequest.getClusterName(), clusterAclRequest.getEnv(), "deleteAcls", "ACLS");
+      deleteAclsUri =
+          deleteAclsUri
               + "?"
-              + String.join(
-                  "&",
-                  "resource_type=" + clusterAclRequest.getAclType(),
-                  "resource_name",
-                  "resource_name",
-                  "pattern_type",
-                  "pattern_type",
-                  "principal",
-                  "principal",
-                  "host",
-                  "host",
-                  "operation",
-                  "operation",
-                  "permission",
-                  "permission");
-      if (KafkaSupportedProtocol.SSL == clusterAclRequest.getProtocol()) {
-        deleteAclsUri = HTTPS_PREFIX + deleteAclsUri;
-      }
+              + getQueryParams(
+                  clusterAclRequest,
+                  ResourceType.TOPIC.name(),
+                  clusterAclRequest.getTopicName(),
+                  AclOperation.READ.name());
 
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
-    }
-
-    return ApiResultStatus.SUCCESS.value;
-  }
-
-  private String deleteAclsRestCall(
-      RestTemplate restTemplate,
-      String deleteAclsUri,
-      ClusterAclRequest clusterAclRequest,
-      HttpEntity<String> request) {
-    try {
-      restTemplate.exchange(deleteAclsUri, HttpMethod.DELETE, request, String.class);
-    } catch (Exception e) {
-      log.error("Unable to delete topic {}, {}", clusterAclRequest.getTopicName(), e.getMessage());
-      if (e.getMessage().contains("This server does not host this topic")) {
-        log.warn(
-            "Topic: {} do not exist in {}",
-            clusterAclRequest.getTopicName(),
-            clusterAclRequest.getEnv());
-        return e.getMessage();
-      }
-      throw e;
     }
 
     return ApiResultStatus.SUCCESS.value;
@@ -363,24 +264,13 @@ public class ConfluentCloudApiService { // implements InitializingBean {
         clusterTopicRequest.getClusterName());
 
     String createTopicsUri =
-        env.getProperty(
-            clusterTopicRequest.getClusterName().toLowerCase()
-                + ".klaw.clusters.counfluentcloud.listtopics.api");
-
-    if (null == createTopicsUri) {
-      log.error("Exception: {}", "createTopics api/uri for confluent cloud is not configured");
-      throw new Exception("Create topics api/uri for confluent cloud is not configured");
-    }
-
-    if (!Strings.isNullOrEmpty(createTopicsUri)) {
-      createTopicsUri = clusterTopicRequest.getEnv() + createTopicsUri;
-      if (KafkaSupportedProtocol.SSL == clusterTopicRequest.getProtocol()) {
-        createTopicsUri = HTTPS_PREFIX + createTopicsUri;
-      }
-    }
+        getResourceUri(
+            clusterTopicRequest.getClusterName(),
+            clusterTopicRequest.getEnv(),
+            "createTopic",
+            ResourceType.TOPIC.name());
 
     TopicCreateRequest topicCreateReq = getTopicCreateObj(clusterTopicRequest);
-
     HttpHeaders headers =
         clusterApiUtils.createHeaders(
             clusterTopicRequest.getClusterName(), KafkaClustersType.KAFKA);
@@ -406,29 +296,15 @@ public class ConfluentCloudApiService { // implements InitializingBean {
 
   public ApiResponse deleteTopic(ClusterTopicRequest clusterTopicRequest) throws Exception {
     RestTemplate restTemplate = getRestTemplate();
-    log.info(
-        "createTopic {} {} {}",
-        clusterTopicRequest.getEnv(),
-        clusterTopicRequest.getProtocol(),
-        clusterTopicRequest.getClusterName());
+    log.info("createTopic {}", clusterTopicRequest);
 
     String deleteTopicsUri =
-        env.getProperty(
-            clusterTopicRequest.getClusterName().toLowerCase()
-                + ".klaw.clusters.counfluentcloud.listtopics.api");
-
-    if (null == deleteTopicsUri) {
-      log.error("Exception: {}", "deleteTopics api/uri for confluent cloud is not configured");
-      throw new Exception("Delete topics api/uri for confluent cloud is not configured");
-    }
-
-    if (!Strings.isNullOrEmpty(deleteTopicsUri)) {
-      deleteTopicsUri =
-          clusterTopicRequest.getEnv() + deleteTopicsUri + "/" + clusterTopicRequest.getTopicName();
-      if (KafkaSupportedProtocol.SSL == clusterTopicRequest.getProtocol()) {
-        deleteTopicsUri = HTTPS_PREFIX + deleteTopicsUri;
-      }
-    }
+        getResourceUri(
+            clusterTopicRequest.getClusterName(),
+            clusterTopicRequest.getEnv(),
+            "deleteTopic",
+            ResourceType.TOPIC.name());
+    deleteTopicsUri = deleteTopicsUri + "/" + clusterTopicRequest.getTopicName();
 
     HttpHeaders headers =
         clusterApiUtils.createHeaders(
@@ -451,6 +327,108 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     }
 
     return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+  }
+
+  // Confluent cloud doesn't provide api to update partitions/config of a topic. so either delete
+  // the topic and recreate. Or this functionality is not provided by klaw.
+  public ApiResponse updateTopic(ClusterTopicRequest clusterTopicRequest) throws Exception {
+    //    deleteTopic(clusterTopicRequest);
+    //    createTopic(clusterTopicRequest);
+    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+  }
+
+  private static String getQueryParams(
+      ClusterAclRequest clusterAclRequest,
+      String resourceType,
+      String resourceName,
+      String operation) {
+    return String.join(
+        "&",
+        "resource_type=" + resourceType,
+        "resource_name=" + resourceName,
+        "pattern_type="
+            + (clusterAclRequest.isPrefixAcl() ? AclPatternType.PREFIXED : AclPatternType.LITERAL),
+        "principal="
+            + (clusterAclRequest.getAclIpPrincipleType().equals(AclIPPrincipleType.PRINCIPAL.name())
+                ? "User:" + clusterAclRequest.getAclSsl()
+                : "User:*"),
+        "host="
+            + (clusterAclRequest
+                    .getAclIpPrincipleType()
+                    .equals(AclIPPrincipleType.IP_ADDRESS.name())
+                ? clusterAclRequest.getAclIp()
+                : "*"),
+        "operation=" + operation,
+        "permission=" + AclPermissionType.ALLOW.name());
+  }
+
+  private String getResourceUri(
+      String clusterIdentification, String host, String requestMethod, String requestType)
+      throws Exception {
+    String relevantUri;
+    if (ResourceType.TOPIC.name().equals(requestType)) {
+      relevantUri = env.getProperty(clusterIdentification.toLowerCase() + TOPIC_API_URI_KEY);
+    } else {
+      relevantUri = env.getProperty(clusterIdentification.toLowerCase() + ACLS_API_URI_KEY);
+    }
+
+    if (Strings.isNullOrEmpty(relevantUri)) {
+      log.error("Exception: {}", requestMethod + " api/uri for confluent cloud is not configured");
+      throw new Exception(requestMethod + " api/uri for confluent cloud is not configured");
+    }
+    relevantUri = HTTPS_PREFIX + host + relevantUri;
+
+    return relevantUri;
+  }
+
+  private String deleteAclsRestCall(
+      RestTemplate restTemplate,
+      String deleteAclsUri,
+      ClusterAclRequest clusterAclRequest,
+      HttpEntity<String> request) {
+    try {
+      restTemplate.exchange(deleteAclsUri, HttpMethod.DELETE, request, String.class);
+    } catch (Exception e) {
+      log.error("Unable to delete topic {}, {}", clusterAclRequest.getTopicName(), e.getMessage());
+      if (e.getMessage().contains("This server does not host this topic")) {
+        log.warn("Acl: {} does not exist", clusterAclRequest);
+        return e.getMessage();
+      }
+      throw e;
+    }
+
+    return ApiResultStatus.SUCCESS.value;
+  }
+
+  private void applyOperation(
+      ClusterAclRequest clusterAclRequest,
+      RestTemplate restTemplate,
+      String createAclsUri,
+      HttpHeaders headers,
+      String operation,
+      String resourceType,
+      String resourceName) {
+    Map<String, String> aclMap;
+    aclMap = new HashMap<>();
+    aclMap.put("operation", operation);
+    aclMap.put("resource_type", resourceType);
+    aclMap.put("resource_name", resourceName);
+
+    updateAclMap(clusterAclRequest, aclMap);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(aclMap, headers);
+
+    // WRITE operation
+    createAclsPostEntity(restTemplate, createAclsUri, request);
+  }
+
+  private void createAclsPostEntity(
+      RestTemplate restTemplate, String createAclsUri, HttpEntity<Map<String, String>> request) {
+    try {
+      restTemplate.postForEntity(createAclsUri, request, String.class);
+    } catch (Exception e) {
+      log.error("Exception in creating acls : ", e);
+      throw e;
+    }
   }
 
   private TopicCreateRequest getTopicCreateObj(ClusterTopicRequest clusterTopicRequest) {
@@ -481,7 +459,7 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     }
 
     if (AclIPPrincipleType.PRINCIPAL.name().equals(clusterAclRequest.getAclIpPrincipleType())) {
-      aclMap.put("principal", clusterAclRequest.getAclSsl());
+      aclMap.put("principal", "User:" + clusterAclRequest.getAclSsl());
       aclMap.put("host", "*");
     } else {
       aclMap.put("principal", "User:*");
@@ -489,7 +467,7 @@ public class ConfluentCloudApiService { // implements InitializingBean {
     }
 
     if (clusterAclRequest.getRequestOperationType().equals(RequestOperationType.CREATE)) {
-      aclMap.put("permission", "ALLOW");
+      aclMap.put("permission", AclPermissionType.ALLOW.name());
     }
     return aclMap;
   }
@@ -533,14 +511,4 @@ public class ConfluentCloudApiService { // implements InitializingBean {
   private RestTemplate getRestTemplate() {
     return clusterApiUtils.getRequestDetails("", KafkaSupportedProtocol.SSL).getRight();
   }
-
-  public ApiResponse updateTopic(ClusterTopicRequest clusterTopicRequest) {
-    // TODO
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
-  }
-
-  //  @Override
-  //  public void afterPropertiesSet() throws Exception {
-  //    getAclsTopics();
-  //  }
 }
