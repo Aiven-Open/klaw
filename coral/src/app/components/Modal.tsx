@@ -32,6 +32,7 @@ function Modal(props: ModalProps) {
   function removeFocus(appRoot: HTMLElement, modal: HTMLElement) {
     appRoot.removeAttribute("aria-hidden");
     appRoot.removeAttribute("tabindex");
+    appRoot.removeAttribute("inert");
     modal.removeAttribute("tabindex");
   }
 
