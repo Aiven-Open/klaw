@@ -1,7 +1,6 @@
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { columns } from "src/app/features/approvals/schemas/components/schema-request-table";
 
 const mockedRequests = [
   {
@@ -57,6 +56,16 @@ const mockedRequests = [
 ];
 
 describe("SchemaApprovalsTable", () => {
+  const columnsFieldMap = [
+    { columnHeader: "Topic", relatedField: "topicname" },
+    { columnHeader: "Cluster", relatedField: "environmentName" },
+    { columnHeader: "Requested by", relatedField: "username" },
+    { columnHeader: "Date requested", relatedField: "requesttimestring" },
+    { columnHeader: "Details", relatedField: null },
+    { columnHeader: "Approve", relatedField: null },
+    { columnHeader: "Decline", relatedField: null },
+  ];
+
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       mockIntersectionObserver();
@@ -74,7 +83,7 @@ describe("SchemaApprovalsTable", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const header = within(table).getAllByRole("columnheader");
 
-      expect(header).toHaveLength(columns.length);
+      expect(header).toHaveLength(columnsFieldMap.length);
     });
 
     it("shows a row for each given requests plus header row", () => {
@@ -149,47 +158,43 @@ describe("SchemaApprovalsTable", () => {
 
     afterAll(cleanup);
 
-    columns.forEach((col) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      const colRequestFieldReference: string = col.field;
-      const columnHeader = col.headerName;
+    it(`renders the right amount of cells`, () => {
+      const table = screen.getByRole("table", {
+        name: "Schema requests",
+      });
+      const cells = within(table).getAllByRole("cell");
 
-      it(`shows a column header for ${columnHeader}`, () => {
+      expect(cells).toHaveLength(
+        columnsFieldMap.length * mockedRequests.length
+      );
+    });
+
+    columnsFieldMap.forEach((column) => {
+      it(`shows a column header for ${column.columnHeader}`, () => {
         const table = screen.getByRole("table", {
           name: "Schema requests",
         });
         const header = within(table).getByRole("columnheader", {
-          name: columnHeader,
+          name: column.columnHeader,
         });
 
         expect(header).toBeVisible();
       });
 
-      it(`renders the right amount of cells`, () => {
-        const table = screen.getByRole("table", {
-          name: "Schema requests",
-        });
-        const cells = within(table).getAllByRole("cell");
-
-        expect(cells).toHaveLength(mockedRequests.length * columns.length);
-      });
-
-      if (colRequestFieldReference) {
+      if (column.relatedField) {
         mockedRequests.forEach((request) => {
-          it(`shows field ${colRequestFieldReference} for request number ${request.req_no}`, () => {
+          it(`shows field ${column.relatedField} for request number ${request.req_no}`, () => {
             const table = screen.getByRole("table", {
               name: "Schema requests",
             });
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            const content = `${request[colRequestFieldReference]}`;
-            const isFormattedTime =
-              colRequestFieldReference === "requesttimestring";
+            const content = `${request[column.relatedField]}`;
+            const isFormattedTime = column.columnHeader === "Date requested";
 
             const text = `${content}${isFormattedTime ? " UTC" : ""}`;
-            const cell = within(table).getByText(text);
+            const cell = within(table).getByRole("cell", { name: text });
 
             expect(cell).toBeVisible();
           });
