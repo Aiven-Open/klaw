@@ -346,8 +346,8 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     List<Map<String, String>> topicsList;
     String aclsNativeType = AclsNativeType.NATIVE.value;
-    if (AclsNativeType.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
-      aclsNativeType = kafkaFlavors;
+    if (KafkaFlavors.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
+      aclsNativeType = AclsNativeType.CONFLUENT_CLOUD.value;
     }
     try {
       String uriGetTopicsFull =
