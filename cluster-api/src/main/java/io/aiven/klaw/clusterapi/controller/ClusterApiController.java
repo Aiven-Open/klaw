@@ -70,16 +70,19 @@ public class ClusterApiController {
   //    }
 
   @RequestMapping(
-      value = "/getStatus/{bootstrapServers}/{protocol}/{clusterName}/{clusterType}",
+      value =
+          "/getStatus/{bootstrapServers}/{protocol}/{clusterName}/{clusterType}/kafkaFlavor/{kafkaFlavor}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ClusterStatus> getStatus(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
-      @PathVariable String clusterType) {
+      @PathVariable String clusterType,
+      @PathVariable String kafkaFlavor) {
     return new ResponseEntity<>(
-        utilComponentsService.getStatus(bootstrapServers, protocol, clusterName, clusterType),
+        utilComponentsService.getStatus(
+            bootstrapServers, protocol, clusterName, clusterType, kafkaFlavor),
         HttpStatus.OK);
   }
 
@@ -206,7 +209,7 @@ public class ClusterApiController {
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
       log.info("createTopics clusterTopicRequest {}", clusterTopicRequest);
-      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclNativeType()) {
+      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclsNativeType()) {
         return new ResponseEntity<>(
             confluentCloudApiService.createTopic(clusterTopicRequest), HttpStatus.OK);
       } else {
@@ -224,7 +227,7 @@ public class ClusterApiController {
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
       log.info("updateTopics clusterTopicRequest {}", clusterTopicRequest);
-      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclNativeType()) {
+      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclsNativeType()) {
         return new ResponseEntity<>(
             confluentCloudApiService.updateTopic(clusterTopicRequest), HttpStatus.OK);
       } else {
@@ -240,7 +243,7 @@ public class ClusterApiController {
   public ResponseEntity<ApiResponse> deleteTopics(
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
-      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclNativeType()) {
+      if (AclsNativeType.CONFLUENT_CLOUD == clusterTopicRequest.getAclsNativeType()) {
         return new ResponseEntity<>(
             confluentCloudApiService.deleteTopic(clusterTopicRequest), HttpStatus.OK);
       } else {

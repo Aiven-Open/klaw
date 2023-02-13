@@ -162,6 +162,7 @@ public class ClusterApiService {
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
       String clusterType,
+      String kafkaFlavor,
       int tenantId) {
     log.debug("getKafkaClusterStatus {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
@@ -172,7 +173,13 @@ public class ClusterApiService {
               + URI_KAFKA_SR_CONN_STATUS
               + bootstrapHost
               + URL_DELIMITER
-              + String.join(URL_DELIMITER, protocol.getName(), clusterIdentification, clusterType);
+              + String.join(
+                  URL_DELIMITER,
+                  protocol.getName(),
+                  clusterIdentification,
+                  clusterType,
+                  "kafkaFlavor",
+                  kafkaFlavor);
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
@@ -448,6 +455,10 @@ public class ClusterApiService {
               .protocol(kwClusters.getProtocol())
               .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
               .topicName(topicName)
+              .aclsNativeType(
+                  (Objects.equals(kwClusters.getKafkaFlavor(), KafkaFlavors.CONFLUENT_CLOUD.value))
+                      ? AclsNativeType.CONFLUENT_CLOUD
+                      : AclsNativeType.NATIVE)
               .build();
 
       String uri;

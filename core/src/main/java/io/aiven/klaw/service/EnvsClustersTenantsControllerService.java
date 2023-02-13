@@ -1208,6 +1208,7 @@ public class EnvsClustersTenantsControllerService {
               kwClusters.getProtocol(),
               kwClusters.getClusterName() + kwClusters.getClusterId(),
               env.getType(),
+              kwClusters.getKafkaFlavor(),
               tenantId);
     } catch (Exception e) {
       status = "OFFLINE";

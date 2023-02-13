@@ -90,7 +90,8 @@ public class ClusterApiControllerIT {
   @Test
   @Order(1)
   public void getKafkaServerStatus() throws Exception {
-    String url = "/topics/getStatus/" + bootStrapServers + "/PLAINTEXT/DEV1/kafka";
+    String url =
+        "/topics/getStatus/" + bootStrapServers + "/PLAINTEXT/DEV1/kafka/kafkaFlavor/Apache Kafka";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
@@ -111,7 +112,8 @@ public class ClusterApiControllerIT {
   @Test
   @Order(2)
   public void getKafkaServerStatusSSL() throws Exception {
-    String url = "/topics/getStatus/" + bootStrapServersSsl + "/SSL/DEV2/kafka";
+    String url =
+        "/topics/getStatus/" + bootStrapServersSsl + "/SSL/DEV2/kafka/kafkaFlavor/Apache Kafka";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)

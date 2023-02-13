@@ -83,7 +83,11 @@ public class ClusterApiControllerTest {
     String bootstrapServers = "localhost:9092";
 
     when(utilComponentsService.getStatus(
-            bootstrapServers, KafkaSupportedProtocol.PLAINTEXT, clusterName, clusterType))
+            bootstrapServers,
+            KafkaSupportedProtocol.PLAINTEXT,
+            clusterName,
+            clusterType,
+            "Apache Kafka"))
         .thenReturn(ClusterStatus.ONLINE);
 
     String urlTemplate =
@@ -94,7 +98,9 @@ public class ClusterApiControllerTest {
             bootstrapServers,
             KafkaSupportedProtocol.PLAINTEXT.getValue(),
             clusterName,
-            clusterType);
+            clusterType,
+            "kafkaFlavor",
+            "Apache Kafka");
     mvc.perform(
             MockMvcRequestBuilders.get(urlTemplate)
                 .contentType(MediaType.APPLICATION_JSON)
