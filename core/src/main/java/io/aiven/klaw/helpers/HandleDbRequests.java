@@ -136,6 +136,10 @@ public interface HandleDbRequests {
       String role,
       String status,
       boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      boolean isMyRequest,
       int tenantId);
 
   List<AclRequests> getCreatedAclRequestsByStatus(

@@ -112,27 +112,19 @@ public class SelectDataJdbc {
       String role,
       String status,
       boolean showRequestsOfAllTeams,
-      int tenantId) {
-    return selectAclRequests(
-        allReqs, requestor, role, status, showRequestsOfAllTeams, null, null, null, tenantId);
-  }
-
-  public List<AclRequests> selectAclRequests(
-      boolean allReqs,
-      String requestor,
-      String role,
-      String status,
-      boolean showRequestsOfAllTeams,
       String topic,
       String environment,
       AclType aclType,
+      boolean isMyRequest,
       int tenantId) {
     log.debug("selectAclRequests {}", requestor);
     List<AclRequests> aclList = new ArrayList<>();
     List<AclRequests> aclListSub;
 
     aclListSub =
-        Lists.newArrayList(findAclRequestsByExample(topic, environment, aclType, status, tenantId));
+        Lists.newArrayList(
+            findAclRequestsByExample(
+                topic, environment, aclType, status, isMyRequest ? requestor : null, tenantId));
     if (allReqs) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
@@ -186,11 +178,17 @@ public class SelectDataJdbc {
    * @param environment the environment
    * @param aclType Producer or consumer
    * @param status created/declined/approved
+   * @param requestor the name of the user who created the request in klaw
    * @param tenantId The tenantId
    * @return
    */
   public Iterable<AclRequests> findAclRequestsByExample(
-      String topic, String environment, AclType aclType, String status, int tenantId) {
+      String topic,
+      String environment,
+      AclType aclType,
+      String status,
+      String requestor,
+      int tenantId) {
 
     AclRequests request = new AclRequests();
 
@@ -206,6 +204,10 @@ public class SelectDataJdbc {
     }
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setAclstatus(status);
+    }
+
+    if (requestor != null && !requestor.isEmpty()) {
+      request.setUsername(requestor);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -281,7 +282,16 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllAclRequests(
-            anyBoolean(), anyString(), anyString(), anyString(), anyBoolean(), anyInt()))
+            anyBoolean(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(false),
+            anyInt()))
         .thenReturn(getAclRequests("testtopic", 15));
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
         .thenReturn(Collections.singletonList("USER"));
@@ -290,12 +300,13 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
-    List<AclRequestsModel> aclReqs = aclControllerService.getAclRequests("1", "", "all");
+    List<AclRequestsModel> aclReqs =
+        aclControllerService.getAclRequests("1", "", "all", null, null, null, false);
     assertThat(aclReqs.size()).isEqualTo(10);
     assertThat(aclReqs.get(0).getAcl_ip().size()).isEqualTo(3);
     assertThat(aclReqs.get(0).getTeamname()).isEqualTo(teamName);
 
-    aclReqs = aclControllerService.getAclRequests("2", "", "all");
+    aclReqs = aclControllerService.getAclRequests("2", "", "all", null, null, null, false);
     assertThat(aclReqs.size()).isEqualTo(5);
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(0).getUsername());
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(1).getUsername());

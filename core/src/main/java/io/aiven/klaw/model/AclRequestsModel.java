@@ -87,4 +87,8 @@ public class AclRequestsModel implements Serializable {
   private List<String> allPageNos;
 
   private String approvingTeamDetails;
+
+  boolean isEditable;
+
+  boolean isDeletable;
 }
