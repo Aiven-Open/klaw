@@ -697,8 +697,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteAclRequest(int req_no, int tenantId) {
-    return jdbcDeleteHelper.deleteAclRequest(req_no, tenantId);
+  public String deleteAclRequest(int req_no, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteAclRequest(req_no, userName, tenantId);
   }
 
   @Override

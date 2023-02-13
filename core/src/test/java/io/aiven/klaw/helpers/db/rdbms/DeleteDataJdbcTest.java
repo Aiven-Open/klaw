@@ -4,10 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.AclRequestID;
+import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.*;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +66,11 @@ public class DeleteDataJdbcTest {
 
   @Test
   public void deleteAclRequest() {
-    String result = deleteDataJdbc.deleteAclRequest(1001, 1);
+    AclRequests req = new AclRequests();
+    req.setUsername("uiuser1");
+    req.setReq_no(1001);
+    when(aclRequestsRepo.findById(new AclRequestID(1001, 1))).thenReturn(Optional.of(req));
+    String result = deleteDataJdbc.deleteAclRequest(1001, "uiuser1", 1);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 

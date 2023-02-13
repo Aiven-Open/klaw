@@ -308,7 +308,7 @@ public interface HandleDbRequests {
 
   String deleteConnector(int connectorId, int tenantId);
 
-  String deleteAclRequest(int req_no, int tenantId);
+  String deleteAclRequest(int req_no, String userName, int tenantId);
 
   String deleteAclSubscriptionRequest(int req_no, int tenantId);
 

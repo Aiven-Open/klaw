@@ -357,8 +357,9 @@ public class AclControllerServiceTest {
   @Order(13)
   public void deleteAclRequests() throws KlawException {
     String req_no = "1001";
+    when(mailService.getCurrentUserName()).thenReturn("testuser");
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(handleDbRequests.deleteAclRequest(Integer.parseInt(req_no), 1))
+    when(handleDbRequests.deleteAclRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
     assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -374,10 +375,20 @@ public class AclControllerServiceTest {
   }
 
   @Test
+  @Order(14)
+  public void deleteAclRequestsNotRequestOwner() throws KlawException {
+    String req_no = "1001";
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
+    ApiResponse result = aclControllerService.deleteAclRequests(req_no);
+    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+  }
+
+  @Test
   @Order(15)
   public void deleteAclRequestsFailure() {
     String req_no = "1001";
-    when(handleDbRequests.deleteAclRequest(anyInt(), anyInt()))
+    when(mailService.getCurrentUserName()).thenReturn("testuser");
+    when(handleDbRequests.deleteAclRequest(anyInt(), anyString(), anyInt()))
         .thenThrow(new RuntimeException("failure in deleting request"));
     KlawException thrown =
         Assertions.assertThrows(

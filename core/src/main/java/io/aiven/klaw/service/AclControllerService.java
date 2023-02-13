@@ -435,12 +435,13 @@ public class AclControllerService {
           getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
         return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
       }
+      String userName = getCurrentUserName();
       log.info("deleteAclRequests {}", req_no);
       String result =
           manageDatabase
               .getHandleDbRequests()
               .deleteAclRequest(
-                  Integer.parseInt(req_no), commonUtilsService.getTenantId(getCurrentUserName()));
+                  Integer.parseInt(req_no), userName, commonUtilsService.getTenantId(userName));
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception ", e);
