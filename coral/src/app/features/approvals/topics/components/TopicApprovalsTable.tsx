@@ -29,7 +29,7 @@ const columns: Array<DataTableColumn<TopicRequestTableData>> = [
   {
     type: "text",
     field: "requesttimestring",
-    headerName: "Date Requested",
+    headerName: "Date requested",
     formatter: (value) => {
       return `${value} UTC`;
     },

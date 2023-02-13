@@ -4,35 +4,31 @@ import { Pagination } from "src/app/components/Pagination";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TopicRequestTypes, TopicRequestStatus } from "src/domain/topic";
 
-const mockRequests = [
+const mockedRequests = [
   {
     topicname: "test-topic-1",
     environment: "1",
     topicpartitions: 4,
-    teamname: "Ospo",
+    teamname: "NCC1701D",
     remarks: "asap",
     description: "This topic is for test",
     replicationfactor: "2",
-    environmentName: "DEV",
-    topicid: 1034,
+    environmentName: "BRG",
+    topicid: 1000,
     advancedTopicConfigEntries: [
-      {
-        configKey: "compression.type",
-        configValue: "snappy",
-      },
       {
         configKey: "cleanup.policy",
         configValue: "delete",
       },
     ],
     topictype: "Create" as TopicRequestTypes,
-    requestor: "samulisuortti",
-    requesttime: "2023-02-03T13:27:17.252+00:00",
-    requesttimestring: "03-Feb-2023 13:27:17",
+    requestor: "jlpicard",
+    requesttime: "1987-09-28T13:37:00.001+00:00",
+    requesttimestring: "28-Sep-1987 13:37:00",
     topicstatus: "created" as TopicRequestStatus,
     totalNoPages: "1",
     approvingTeamDetails:
-      "Team : Ospo, Users : muralibasani,josepprat,mirjamaulbach,smustafa,amathieu,aindriul,",
+      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
     teamId: 1003,
     allPageNos: ["1"],
     currentPage: "1",
@@ -41,31 +37,27 @@ const mockRequests = [
     topicname: "test-topic-2",
     environment: "1",
     topicpartitions: 4,
-    teamname: "Ospo",
+    teamname: "MIRRORUNIVERSE",
     remarks: "asap",
     description: "This topic is for test",
     replicationfactor: "2",
-    environmentName: "DEV",
-    topicid: 1034,
+    environmentName: "SBY",
+    topicid: 1001,
     advancedTopicConfigEntries: [
       {
         configKey: "compression.type",
         configValue: "snappy",
       },
-      {
-        configKey: "cleanup.policy",
-        configValue: "delete",
-      },
     ],
 
-    topictype: "Create" as TopicRequestTypes,
-    requestor: "samulisuortti",
-    requesttime: "2023-02-03T13:27:17.252+00:00",
-    requesttimestring: "03-Feb-2023 13:27:17",
-    topicstatus: "created" as TopicRequestStatus,
+    topictype: "Update" as TopicRequestTypes,
+    requestor: "bcrusher",
+    requesttime: "1994-23-05T13:37:00.001+00:00",
+    requesttimestring: "23-May-1994 13:37:00",
+    topicstatus: "approved" as TopicRequestStatus,
     totalNoPages: "1",
     approvingTeamDetails:
-      "Team : Ospo, Users : muralibasani,josepprat,mirjamaulbach,smustafa,amathieu,aindriul,",
+      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
     teamId: 1003,
     allPageNos: ["1"],
     currentPage: "1",
@@ -112,7 +104,7 @@ function TopicApprovals() {
     </div>,
   ];
 
-  const table = <TopicApprovalsTable requests={mockRequests} />;
+  const table = <TopicApprovalsTable requests={mockedRequests} />;
   const pagination = (
     <Pagination activePage={1} totalPages={2} setActivePage={changePage} />
   );
