@@ -137,7 +137,7 @@ public class UtilControllerService {
               requestor, RequestStatus.CREATED.value, false, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.CREATED.value, false, tenantId);
+              requestor, RequestStatus.CREATED.value, false, tenantId, null, null);
     } else {
       allAclReqs =
           reqsHandle.getAllAclRequests(
@@ -147,7 +147,7 @@ public class UtilControllerService {
               requestor, RequestStatus.CREATED.value, true, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.CREATED.value, true, tenantId);
+              requestor, RequestStatus.CREATED.value, true, tenantId, null, null);
     }
 
     try {

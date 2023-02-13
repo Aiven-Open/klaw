@@ -169,14 +169,19 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
-    return jdbcSelectHelper.selectConnectorRequestsByStatus(
-        false, requestor, RequestStatus.CREATED.value, false, tenantId);
+    return jdbcSelectHelper.getFilteredKafkaConnectorRequests(
+        false, requestor, RequestStatus.CREATED.value, false, tenantId, null, null);
   }
 
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
-    return jdbcSelectHelper.selectConnectorRequestsByStatus(
-        true, requestor, status, showRequestsOfAllTeams, tenantId);
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      String env,
+      String search) {
+    return jdbcSelectHelper.getFilteredKafkaConnectorRequests(
+        true, requestor, status, showRequestsOfAllTeams, tenantId, env, search);
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {

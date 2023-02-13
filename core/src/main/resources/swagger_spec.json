@@ -1391,6 +1391,50 @@
         }
       }
     },
+    "/getConnectorRequestsForApproval" : {
+      "get" : {
+        "operationId" : "getCreatedConnectorRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KafkaConnectorRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
     "/getConnectors" : {
       "get" : {
         "operationId" : "getTopics",
@@ -1467,40 +1511,6 @@
                 "additionalProperties" : {
                   "type" : "string"
                 }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getCreatedConnectorRequests" : {
-      "get" : {
-        "operationId" : "getCreatedConnectorRequests",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "pageNo",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "currentPage",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "requestsType",
-          "in" : "query",
-          "required" : false,
-          "type" : "string",
-          "default" : "created"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/KafkaConnectorRequestModel"
               }
             }
           }

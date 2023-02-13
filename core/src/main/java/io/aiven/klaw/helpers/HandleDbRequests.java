@@ -87,7 +87,12 @@ public interface HandleDbRequests {
   List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId);
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      String env,
+      String search);
 
   TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId);
 
