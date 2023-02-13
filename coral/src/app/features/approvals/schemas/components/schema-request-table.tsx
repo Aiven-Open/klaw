@@ -34,23 +34,11 @@ const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
     width: 30,
     UNSAFE_render: (row) => {
       return (
-        <GhostButton
-          onClick={() => alert("Approve")}
-          title={`View schema request `}
-          dense
-        >
-          <Box
-            component={"span"}
-            display={"flex"}
-            alignItems={"center"}
-            colGap={"2"}
-          >
-            <Icon icon={infoSign} />
-            <span aria-hidden={"true"}>View details</span>
-            <span className={"visually-hidden"}>
-              View schema request for {row.topicname}
-            </span>
-          </Box>
+        <GhostButton onClick={() => alert("Approve")} icon={infoSign} dense>
+          <span aria-hidden={"true"}>View details</span>
+          <span className={"visually-hidden"}>
+            View schema request for {row.topicname}
+          </span>
         </GhostButton>
       );
     },
@@ -68,10 +56,10 @@ const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
       return (
         <GhostButton
           onClick={() => alert("Approve")}
-          title={`Approve schema request for ${row.topicname}`}
-        >
-          <Icon color="grey-70" icon={tickCircle} />
-        </GhostButton>
+          aria-label={`Approve schema request for ${row.topicname}`}
+          icon={tickCircle}
+          dense
+        />
       );
     },
   },
@@ -88,10 +76,10 @@ const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
       return (
         <GhostButton
           onClick={() => alert("Decline")}
-          title={`Decline schema request for ${row.topicname}`}
-        >
-          <Icon color="grey-70" icon={deleteIcon} />
-        </GhostButton>
+          aria-label={`Decline schema request for ${row.topicname}`}
+          icon={deleteIcon}
+          dense
+        />
       );
     },
   },
