@@ -77,4 +77,8 @@ public class TopicRequestModel implements Serializable {
   private List<String> possibleTeams;
 
   private String currentPage;
+
+  private boolean isDeletable;
+
+  private boolean isEditable;
 }

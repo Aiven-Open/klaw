@@ -95,7 +95,7 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String deleteTopicRequest(int topicId, int tenantId) {
+  public String deleteTopicRequest(int topicId, String userName, int tenantId) {
     log.debug("deleteTopicRequest {}", topicId);
 
     TopicRequestID topicRequestID = new TopicRequestID();
@@ -103,11 +103,15 @@ public class DeleteDataJdbc {
     topicRequestID.setTopicid(topicId);
 
     Optional<TopicRequest> topicReq = topicRequestsRepo.findById(topicRequestID);
-    if (topicReq.isPresent()) {
+    // UserName is transient and is not set in the database but the requestor is. Both are set to
+    // the userName when the request is created.
+    if (topicReq.isPresent() && topicReq.get().getRequestor().equals(userName)) {
       topicReq.get().setTopicstatus("deleted");
       topicRequestsRepo.save(topicReq.get());
+      return ApiResultStatus.SUCCESS.value;
     }
-    return ApiResultStatus.SUCCESS.value;
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
   public String deleteTopic(int topicId, int tenantId) {

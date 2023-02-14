@@ -219,7 +219,7 @@ public class AclControllerService {
     return getAclRequestsModels(aclReqs, tenantId, userName);
   }
 
-  private AclRequestsModel isRequestorPermissions(AclRequestsModel req, String userName) {
+  private AclRequestsModel setRequestorPermissions(AclRequestsModel req, String userName) {
     if (userName != null && userName.equals(req.getUsername())) {
       req.setDeletable(true);
       req.setEditable(true);
@@ -266,7 +266,7 @@ public class AclControllerService {
                   tenantId));
         }
 
-        aclRequestsModels.add(isRequestorPermissions(aclRequestsModel, userName));
+        aclRequestsModels.add(setRequestorPermissions(aclRequestsModel, userName));
       }
     return aclRequestsModels;
   }
