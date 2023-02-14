@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -10,7 +11,10 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.SchemaRequestID;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,9 +59,26 @@ public class DeleteDataJdbcTest {
   }
 
   @Test
+  public void deleteTopicRequest_Failure() {
+    String result = deleteDataJdbc.deleteTopicRequest(1001, "uiuser1", 1);
+    assertThat(result).contains(ApiResultStatus.FAILURE.value);
+  }
+
+  @Test
   public void deleteTopicRequest() {
-    String result = deleteDataJdbc.deleteTopicRequest(1001, 1);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    TopicRequestID id = new TopicRequestID(1010, 1);
+    when(topicRequestsRepo.findById(eq(id)))
+        .thenReturn(createTopicRequest("uiuser1", RequestStatus.CREATED));
+    String result = deleteDataJdbc.deleteTopicRequest(1010, "uiuser1", 1);
+    assertThat(result).contains(ApiResultStatus.SUCCESS.value);
+  }
+
+  private Optional<TopicRequest> createTopicRequest(String userName, RequestStatus status) {
+    TopicRequest req = new TopicRequest();
+    req.setUsername(userName);
+    req.setRequestor(userName);
+    req.setTopicstatus(status.value);
+    return Optional.of(req);
   }
 
   @Test

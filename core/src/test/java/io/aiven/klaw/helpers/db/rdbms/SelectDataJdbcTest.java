@@ -176,7 +176,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<TopicRequest> topicRequestsActual =
-        selectData.getFilteredTopicRequests(false, requestor, "created", true, 1, null, null, null);
+        selectData.getFilteredTopicRequests(
+            false, requestor, "created", true, 1, null, null, null, false);
 
     assertThat(topicRequestsActual).hasSize(1);
   }

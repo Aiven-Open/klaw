@@ -1,4 +1,5 @@
-import type { KlawApiModel } from "types/utils";
+import type { KlawApiModel, ResolveIntersectionTypes } from "types/utils";
+import { components } from "types/api";
 
 type Paginated<T> = {
   totalPages: number;
@@ -8,9 +9,11 @@ type Paginated<T> = {
 
 type TopicApiResponse = Paginated<Topic[]>;
 
-type Topic = KlawApiModel<"TopicInfo">;
-type TopicNames = KlawApiModel<"TopicsGetOnlyResponse">;
-type TopicTeam = KlawApiModel<"TopicGetTeamResponse">;
+type Topic = ResolveIntersectionTypes<KlawApiModel<"TopicInfo">>;
+type TopicNames = ResolveIntersectionTypes<
+  KlawApiModel<"TopicsGetOnlyResponse">
+>;
+type TopicTeam = ResolveIntersectionTypes<KlawApiModel<"TopicGetTeamResponse">>;
 
 type TopicAdvancedConfigurationOptions = {
   key: string;
@@ -20,6 +23,26 @@ type TopicAdvancedConfigurationOptions = {
     text: string;
   };
 };
+
+// @TODO add more refined typing when implementation needs are more clear
+type TopicRequestTypes = components["schemas"]["TopicRequestTypes"];
+type TopicRequestStatus = components["schemas"]["RequestStatus"];
+
+type TopicRequestNew = ResolveIntersectionTypes<
+  Required<
+    Pick<
+      KlawApiModel<"TopicRequest">,
+      | "topicid"
+      | "topicname"
+      | "environmentName"
+      | "topictype"
+      | "teamname"
+      | "requestor"
+      | "requesttimestring"
+    >
+  > &
+    KlawApiModel<"TopicRequest">
+>;
 
 // The proper type for this will take shape once we know what data
 // we need in the upcoming features.
@@ -34,4 +57,7 @@ export type {
   TopicApiResponse,
   TopicAdvancedConfigurationOptions,
   TopicRequest,
+  TopicRequestNew,
+  TopicRequestTypes,
+  TopicRequestStatus,
 };

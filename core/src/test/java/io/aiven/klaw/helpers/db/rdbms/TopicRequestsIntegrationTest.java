@@ -317,13 +317,13 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "deleted", true, 101, null, null, null);
+            true, "James", "deleted", true, 101, null, null, null, false);
     List<TopicRequest> james2 =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "declined", true, 101, null, null, null);
+            true, "James", "declined", true, 101, null, null, null, false);
     List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", "created", true, 103, null, null, null);
+            true, "John", "created", true, 103, null, null, null, false);
 
     assertThat(james.size()).isEqualTo(2);
 
@@ -346,15 +346,15 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "ALL", true, 101, null, null, "first");
+            true, "James", "ALL", true, 101, null, null, "first", false);
 
     List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", "ALL", true, 101, null, null, "second");
+            true, "John", "ALL", true, 101, null, null, "second", false);
 
     List<TopicRequest> all =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "ALL", true, 101, null, null, "topic");
+            true, "James", "ALL", true, 101, null, null, "topic", false);
 
     assertThat(james.size()).isEqualTo(22);
     for (TopicRequest req : james) {
@@ -372,7 +372,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "ALL", true, 101, null, "test", "second");
+            true, "James", "ALL", true, 101, null, "test", "second", false);
 
     assertThat(james.size()).isEqualTo(10);
     for (TopicRequest req : james) {
@@ -387,11 +387,11 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "ALL", true, 101, Integer.valueOf(101), null, null);
+            true, "James", "ALL", true, 101, Integer.valueOf(101), null, null, false);
 
     List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", "ALL", true, 103, Integer.valueOf(103), null, null);
+            true, "John", "ALL", true, 103, Integer.valueOf(103), null, null, false);
 
     assertThat(james.size()).isEqualTo(32);
     for (TopicRequest req : james) {
@@ -416,7 +416,7 @@ public class TopicRequestsIntegrationTest {
     // topic name is case sensitive.
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "ALL", true, 101, null, "tsst", null);
+            true, "James", "ALL", true, 101, null, "tsst", null, false);
     assertThat(james.size()).isEqualTo(0);
   }
 
@@ -425,10 +425,12 @@ public class TopicRequestsIntegrationTest {
   public void getNonApproversRequestsFilteredByTenantId_willIgnoreOtherPassedParameters() {
 
     List<TopicRequest> tenant1 =
-        selectDataJdbc.getFilteredTopicRequests(false, "James", null, true, 101, null, null, null);
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "James", null, true, 101, null, null, null, false);
 
     List<TopicRequest> tenant2 =
-        selectDataJdbc.getFilteredTopicRequests(false, "John", null, true, 103, null, null, null);
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "John", null, true, 103, null, null, null, false);
 
     assertThat(tenant1.size()).isEqualTo(39);
     for (TopicRequest req : tenant1) {
@@ -443,17 +445,16 @@ public class TopicRequestsIntegrationTest {
 
   @Test
   @Order(10)
-  public void
-      getNonApproversRequestsFilteredByEnvironmentByStatus_willIgnoreOtherPassedParameters() {
+  public void getNonApproversRequestsFilteredByEnvironmentByStatus() {
 
     List<TopicRequest> tenant1 =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "James", "created", true, 101, null, "dev", null);
+            false, "James", "created", true, 101, null, "dev", null, false);
     List<TopicRequest> tenant2 =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "John", "declined", true, 103, null, "test", null);
+            false, "John", "approved", true, 103, null, "test", null, false);
 
-    assertThat(tenant1.size()).isEqualTo(39);
+    assertThat(tenant1.size()).isEqualTo(17);
     for (TopicRequest req : tenant1) {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
@@ -466,17 +467,17 @@ public class TopicRequestsIntegrationTest {
 
   @Test
   @Order(11)
-  public void getNonApproversRequestsFilteredByStatusByWildcard_willIgnoreOtherPassedParameters() {
+  public void getNonApproversRequestsFilteredByStatusByWildcard_willIgnoreWildcardParameter() {
 
     List<TopicRequest> tenant1 =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "James", "deleted", true, 101, null, null, "One");
+            false, "James", "deleted", true, 101, null, null, "One", false);
 
     List<TopicRequest> tenant2 =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "John", "created", true, 103, null, null, "two");
+            false, "John", "approved", true, 103, null, null, "two", false);
 
-    assertThat(tenant1.size()).isEqualTo(39);
+    assertThat(tenant1.size()).isEqualTo(2);
 
     assertThat(tenant2.size()).isEqualTo(1);
   }
@@ -487,7 +488,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "declined", true, 101, Integer.valueOf(99), null, null);
+            true, "James", "declined", true, 101, Integer.valueOf(99), null, null, false);
 
     assertThat(james.size()).isEqualTo(0);
   }
@@ -499,7 +500,8 @@ public class TopicRequestsIntegrationTest {
     List<TopicRequest> topicRequestList = Lists.newArrayList(repo.findAllByTenantId(101));
 
     List<TopicRequest> results =
-        selectDataJdbc.getFilteredTopicRequests(false, "James", null, true, 101, null, null, null);
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "James", null, true, 101, null, null, null, false);
 
     assertThat(topicRequestList.size()).isEqualTo(results.size());
 
@@ -511,9 +513,11 @@ public class TopicRequestsIntegrationTest {
   public void getAllRequestsFilteredByTenantId() {
 
     List<TopicRequest> james =
-        selectDataJdbc.getFilteredTopicRequests(true, "James", null, true, 101, null, null, null);
+        selectDataJdbc.getFilteredTopicRequests(
+            true, "James", null, true, 101, null, null, null, false);
     List<TopicRequest> john =
-        selectDataJdbc.getFilteredTopicRequests(true, "John", null, true, 103, null, null, null);
+        selectDataJdbc.getFilteredTopicRequests(
+            true, "John", null, true, 103, null, null, null, false);
 
     assertThat(james.size()).isEqualTo(32);
     for (TopicRequest req : james) {
@@ -531,10 +535,10 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "created", true, 101, null, "dev", null);
+            true, "James", "created", true, 101, null, "dev", null, false);
     List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", "declined", true, 103, null, "test", null);
+            true, "John", "declined", true, 103, null, "test", null, false);
 
     assertThat(james.size()).isEqualTo(17);
     for (TopicRequest req : james) {
@@ -550,7 +554,8 @@ public class TopicRequestsIntegrationTest {
   public void getAllRequestsDontReturnOwnRequestsAsAllReqsIsTrue() {
 
     List<TopicRequest> jackie =
-        selectDataJdbc.getFilteredTopicRequests(true, "Jackie", "all", true, 101, null, null, null);
+        selectDataJdbc.getFilteredTopicRequests(
+            true, "Jackie", "all", true, 101, null, null, null, false);
 
     assertThat(jackie.size()).isEqualTo(0);
   }
@@ -561,7 +566,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> jackie =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "Jackie", "all", true, 101, null, null, null);
+            false, "Jackie", "all", true, 101, null, null, null, false);
 
     assertThat(jackie.size()).isEqualTo(39);
   }
@@ -572,7 +577,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> joan =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "Joan", RequestStatus.CREATED.value, true, 104, null, null, null);
+            true, "Joan", RequestStatus.CREATED.value, true, 104, null, null, null, false);
 
     assertThat(joan.size()).isEqualTo(7);
     for (TopicRequest req : joan) {
@@ -588,7 +593,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> joan =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "Joan", RequestStatus.DELETED.value, true, 104, null, null, null);
+            true, "Joan", RequestStatus.DELETED.value, true, 104, null, null, null, false);
 
     assertThat(joan.size()).isEqualTo(6);
     for (TopicRequest req : joan) {
@@ -604,7 +609,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> resultSet =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", RequestStatus.ALL.value, true, 101, null, null, null);
+            true, "James", RequestStatus.ALL.value, true, 101, null, null, null, false);
 
     assertThat(resultSet.size()).isEqualTo(32);
     for (TopicRequest req : resultSet) {
@@ -625,7 +630,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> resultSet =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "James", RequestStatus.ALL.value, false, 101, null, null, null);
+            false, "James", RequestStatus.ALL.value, false, 101, null, null, null, false);
 
     assertThat(resultSet.size()).isEqualTo(35);
     for (TopicRequest req : resultSet) {
@@ -643,7 +648,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> resultSet =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", RequestStatus.ALL.value, true, 101, null, null, null);
+            true, "John", RequestStatus.ALL.value, true, 101, null, null, null, false);
 
     assertThat(resultSet.size()).isEqualTo(35);
     for (TopicRequest req : resultSet) {
@@ -664,7 +669,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> resultSet =
         selectDataJdbc.getFilteredTopicRequests(
-            false, "John", RequestStatus.ALL.value, false, 101, null, null, null);
+            false, "John", RequestStatus.ALL.value, false, 101, null, null, null, false);
 
     assertThat(resultSet.size()).isEqualTo(4);
     // MyTeamsRequests only
@@ -675,6 +680,81 @@ public class TopicRequestsIntegrationTest {
       if (req.getTopictype().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getDescription()).isNotEqualTo("103");
       }
+    }
+  }
+
+  @Test
+  @Order(24)
+  public void getAllRequestsAndReturnOwnRequestsOnly() {
+
+    List<TopicRequest> jackie =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "Jackie", "all", true, 101, null, null, null, true);
+
+    assertThat(jackie.size()).isEqualTo(39);
+    for (TopicRequest req : jackie) {
+      assertThat(req.getRequestor().equals("Jackie"));
+    }
+  }
+
+  @Test
+  @Order(25)
+  public void getAllRequestsAndReturnOwnRequestsOnlyFromDevEnv() {
+
+    List<TopicRequest> jackie =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "Jackie", "all", true, 101, null, "dev", null, true);
+
+    assertThat(jackie.size()).isEqualTo(29);
+    for (TopicRequest req : jackie) {
+      assertThat(req.getRequestor().equals("Jackie"));
+      assertThat(req.getEnvironment().equals("dev"));
+    }
+  }
+
+  @Test
+  @Order(26)
+  public void getAllRequestsAndReturnOwnRequestsOnlyCreatedStatusFromDevEnv() {
+
+    List<TopicRequest> jackie =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "Jackie", "created", true, 101, null, "dev", null, true);
+
+    assertThat(jackie.size()).isEqualTo(17);
+    for (TopicRequest req : jackie) {
+      assertThat(req.getRequestor().equals("Jackie"));
+      assertThat(req.getEnvironment().equals("dev"));
+      assertThat(req.getTopicstatus().equals("created"));
+    }
+  }
+
+  @Test
+  @Order(27)
+  public void getRequestsAndReturnOwnRequestsOnlyCreatedStatusFromDevEnv() {
+
+    List<TopicRequest> jackie =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "Jackie", "created", false, 101, null, "dev", null, true);
+
+    assertThat(jackie.size()).isEqualTo(4);
+    for (TopicRequest req : jackie) {
+      assertThat(req.getRequestor().equals("Jackie"));
+      assertThat(req.getEnvironment().equals("dev"));
+      assertThat(req.getTopicstatus().equals("created"));
+    }
+  }
+
+  @Test
+  @Order(28)
+  public void getRequestsRequestorsOnlyNoneReturned() {
+
+    List<TopicRequest> john =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "John", "created", false, 101, null, "dev", null, true);
+
+    assertThat(john.size()).isEqualTo(0);
+    for (TopicRequest req : john) {
+      assertThat(req.getDescription().equals("John"));
     }
   }
 

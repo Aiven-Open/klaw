@@ -67,7 +67,8 @@ public interface HandleDbRequests {
 
   RegisterUserInfo getRegistrationDetails(String registrationId, String status);
 
-  List<TopicRequest> getAllTopicRequests(String requestor, int tenantId);
+  List<TopicRequest> getAllTopicRequests(
+      String requestor, String status, String env, boolean isMyRequest, int tenantId);
 
   Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId);
@@ -303,7 +304,7 @@ public interface HandleDbRequests {
   /*--------------------Delete */
   String deleteConnectorRequest(int topicId, int tenantId);
 
-  String deleteTopicRequest(int topicId, int tenantId);
+  String deleteTopicRequest(int topicId, String userName, int tenantId);
 
   String deleteTopic(int topicId, int tenantId);
 

@@ -47,7 +47,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -300,13 +299,14 @@ public class TopicControllerService {
   }
 
   public List<TopicRequestModel> getTopicRequests(
-      String pageNo, String currentPage, String requestsType) {
+      String pageNo, String currentPage, String requestsType, String env, boolean isMyRequest) {
     log.debug("getTopicRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
     List<TopicRequest> topicReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllTopicRequests(userName, commonUtilsService.getTenantId(userName));
+            .getAllTopicRequests(
+                userName, requestsType, env, isMyRequest, commonUtilsService.getTenantId(userName));
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -316,16 +316,17 @@ public class TopicControllerService {
             .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
             .collect(Collectors.toList());
 
-    if (!"all".equals(requestsType)
-        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
-      topicReqs =
-          topicReqs.stream()
-              .filter(topicRequest -> Objects.equals(topicRequest.getTopicstatus(), requestsType))
-              .collect(Collectors.toList());
-    }
-
     topicReqs = getTopicRequestsPaged(topicReqs, pageNo, currentPage);
     return getTopicRequestModels(topicReqs, true);
+  }
+
+  private TopicRequestModel setRequestorPermissions(TopicRequestModel req, String userName) {
+    if (userName != null && userName.equals(req.getUsername())) {
+      req.setDeletable(true);
+      req.setEditable(true);
+    }
+
+    return req;
   }
 
   private List<TopicRequest> getTopicRequestsPaged(
@@ -519,7 +520,7 @@ public class TopicControllerService {
         }
       }
 
-      topicRequestModelList.add(topicRequestModel);
+      topicRequestModelList.add(setRequestorPermissions(topicRequestModel, userName));
     }
     return topicRequestModelList;
   }
@@ -568,12 +569,15 @@ public class TopicControllerService {
         getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
+    String userName = getUserName();
     try {
       String deleteTopicReqStatus =
           manageDatabase
               .getHandleDbRequests()
               .deleteTopicRequest(
-                  Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
+                  Integer.parseInt(topicId),
+                  userName,
+                  commonUtilsService.getTenantId(getUserName()));
 
       return ApiResponse.builder().result(deleteTopicReqStatus).build();
     } catch (Exception e) {

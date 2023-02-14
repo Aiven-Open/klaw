@@ -491,7 +491,8 @@ public class SelectDataJdbc {
       int tenantId,
       Integer teamId,
       String env,
-      String wildcardSearch) {
+      String wildcardSearch,
+      boolean isMyRequest) {
     if (log.isDebugEnabled()) {
       log.debug(
           "selectTopicRequests {} {} {} {} {} {}",
@@ -517,10 +518,13 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  String.valueOf(teamSelected)));
+                  String.valueOf(teamSelected),
+                  isMyRequest ? requestor : null));
 
       topicRequestListSub =
-          Lists.newArrayList(findTopicRequestsByExample(null, teamId, env, status, tenantId, null));
+          Lists.newArrayList(
+              findTopicRequestsByExample(
+                  null, teamId, env, status, tenantId, null, isMyRequest ? requestor : null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -541,12 +545,21 @@ public class SelectDataJdbc {
     } else {
       if (showRequestsOfAllTeams) {
         topicRequestListSub =
-            Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
+            Lists.newArrayList(
+                findTopicRequestsByExample(
+                    null, null, env, status, tenantId, null, isMyRequest ? requestor : null));
       } else {
 
         topicRequestListSub =
             Lists.newArrayList(
-                findTopicRequestsByExample(null, teamSelected, null, null, tenantId, null));
+                findTopicRequestsByExample(
+                    null,
+                    teamSelected,
+                    env,
+                    status,
+                    tenantId,
+                    null,
+                    isMyRequest ? requestor : null));
       }
     }
 
@@ -593,7 +606,8 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String description) {
+      String description,
+      String userName) {
 
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
@@ -614,6 +628,10 @@ public class SelectDataJdbc {
 
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setTopicstatus(status);
+    }
+    // userName is transient and so not available in the database to be queried.
+    if (userName != null && !userName.isEmpty()) {
+      request.setRequestor(userName);
     }
     // check if debug is enabled so the logger doesn't waste resources converting object request to
     // a
