@@ -93,7 +93,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<AclRequests> aclRequestsActual =
-        selectData.selectAclRequests(false, requestor, "", "all", false, 1);
+        selectData.selectAclRequests(
+            false, requestor, "", "all", false, null, null, null, false, 1);
     assertThat(aclRequestsActual).isEmpty();
   }
 

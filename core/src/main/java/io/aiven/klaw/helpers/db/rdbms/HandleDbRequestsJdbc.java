@@ -285,9 +285,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String role,
       String status,
       boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      boolean isMyRequest,
       int tenantId) {
     return jdbcSelectHelper.selectAclRequests(
-        allReqs, requestor, role, status, showRequestsOfAllTeams, tenantId);
+        allReqs,
+        requestor,
+        role,
+        status,
+        showRequestsOfAllTeams,
+        topic,
+        environment,
+        aclType,
+        isMyRequest,
+        tenantId);
   }
 
   @Override
@@ -300,7 +313,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       AclType aclType,
       int tenantId) {
     return jdbcSelectHelper.selectAclRequests(
-        true, requestor, "", status, showRequestsOfAllTeams, topic, environment, aclType, tenantId);
+        true,
+        requestor,
+        "",
+        status,
+        showRequestsOfAllTeams,
+        topic,
+        environment,
+        aclType,
+        false,
+        tenantId);
   }
 
   @Override
@@ -684,8 +706,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteAclRequest(int req_no, int tenantId) {
-    return jdbcDeleteHelper.deleteAclRequest(req_no, tenantId);
+  public String deleteAclRequest(int req_no, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteAclRequest(req_no, userName, tenantId);
   }
 
   @Override
