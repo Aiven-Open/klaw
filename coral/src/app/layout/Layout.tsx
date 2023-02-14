@@ -15,6 +15,7 @@ function Layout({ children }: { children: ReactNode }) {
         style={{
           gridTemplateColumns: "240px 1fr",
           gridTemplateRows: "auto 1fr",
+          isolation: "isolate",
         }}
       >
         <GridItem
