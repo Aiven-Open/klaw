@@ -320,7 +320,7 @@ public class TopicControllerService {
     return getTopicRequestModels(topicReqs, true);
   }
 
-  private TopicRequestModel isRequestorPermissions(TopicRequestModel req, String userName) {
+  private TopicRequestModel setRequestorPermissions(TopicRequestModel req, String userName) {
     if (userName != null && userName.equals(req.getUsername())) {
       req.setDeletable(true);
       req.setEditable(true);
@@ -520,7 +520,7 @@ public class TopicControllerService {
         }
       }
 
-      topicRequestModelList.add(isRequestorPermissions(topicRequestModel, userName));
+      topicRequestModelList.add(setRequestorPermissions(topicRequestModel, userName));
     }
     return topicRequestModelList;
   }
