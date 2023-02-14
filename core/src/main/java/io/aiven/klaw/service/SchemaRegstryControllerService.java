@@ -128,7 +128,9 @@ public class SchemaRegstryControllerService {
 
   private SchemaRequestModel setRequestorPermissions(SchemaRequestModel req, String userName) {
 
-    if (userName != null && userName.equals(req.getUsername())) {
+    if (RequestStatus.CREATED.value.equals(req.getTopicstatus())
+        && userName != null
+        && userName.equals(req.getUsername())) {
       req.setDeletable(true);
       req.setEditable(true);
     }
