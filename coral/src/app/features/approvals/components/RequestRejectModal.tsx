@@ -37,6 +37,7 @@ const RequestRejectModal = ({
         onChange={(e) => setRejectionMessage(e.target.value)}
         helperText={!isValid ? "Rejection message is too long." : undefined}
         valid={isValid}
+        disabled={isLoading}
         required
       />
     </Modal>
