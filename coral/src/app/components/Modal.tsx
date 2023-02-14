@@ -7,7 +7,10 @@ import classes from "src/app/components/Modal.module.css";
 type ModalAction = {
   text: string;
   onClick: () => void;
+  isLoading?: boolean;
+  disabled?: boolean;
 };
+
 type ModalProps = {
   title: string;
   subtitle?: string;
@@ -15,21 +18,11 @@ type ModalProps = {
   primaryAction: ModalAction;
   secondaryAction?: ModalAction;
   children: ReactElement;
-  disabled?: boolean;
-  isLoading?: boolean;
 };
 
 function Modal(props: ModalProps) {
-  const {
-    close,
-    primaryAction,
-    secondaryAction,
-    children,
-    title,
-    subtitle,
-    disabled = false,
-    isLoading = false,
-  } = props;
+  const { close, primaryAction, secondaryAction, children, title, subtitle } =
+    props;
 
   function setFocus(appRoot: HTMLElement, modal: HTMLElement) {
     appRoot.setAttribute("aria-hidden", "true");
@@ -171,7 +164,8 @@ function Modal(props: ModalProps) {
                   data-focusable
                   // Secondary action is highly unlikely to be an async process
                   // So we disable it when isLoading, and don't show loading state for it
-                  disabled={isLoading}
+                  disabled={secondaryAction.disabled}
+                  loading={secondaryAction.isLoading}
                 >
                   {secondaryAction.text}
                 </Button>
@@ -180,8 +174,8 @@ function Modal(props: ModalProps) {
                 kind={"primary"}
                 onClick={primaryAction.onClick}
                 data-focusable
-                disabled={disabled}
-                loading={isLoading}
+                disabled={primaryAction.disabled}
+                loading={primaryAction.isLoading}
               >
                 {primaryAction.text}
               </Button>

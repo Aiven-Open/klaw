@@ -25,10 +25,14 @@ const RequestRejectModal = ({
       primaryAction={{
         text: "Reject request",
         onClick: () => onSubmit(rejectionMessage),
+        disabled: !isValid || rejectionMessage.length === 0,
+        isLoading: isLoading,
       }}
-      secondaryAction={{ text: "Cancel", onClick: onCancel }}
-      disabled={rejectionMessage === "" || !isValid}
-      isLoading={isLoading}
+      secondaryAction={{
+        text: "Cancel",
+        onClick: onCancel,
+        disabled: isLoading,
+      }}
     >
       <Textarea
         labelText="Submit a reason to decline the request"

@@ -251,21 +251,21 @@ describe("Modal.tsx", () => {
       });
     });
 
-    describe("handles isLoading state", () => {
+    describe("handles Modal actions isLoading state", () => {
       const mockClose = jest.fn();
       const mockSecondary = {
         text: "this is the secondary action",
         onClick: jest.fn(),
+        isLoading: true,
       };
 
       beforeEach(() => {
         render(
           <Modal
             title={testTitle}
-            primaryAction={mockPrimary}
+            primaryAction={{ ...mockPrimary, isLoading: true }}
             secondaryAction={mockSecondary}
             close={mockClose}
-            isLoading
           >
             {mockChildren}
           </Modal>
@@ -287,21 +287,21 @@ describe("Modal.tsx", () => {
       });
     });
 
-    describe("handles disabled state", () => {
+    describe("handles Modal actions disabled state", () => {
       const mockClose = jest.fn();
       const mockSecondary = {
         text: "this is the secondary action",
         onClick: jest.fn(),
+        disabled: true,
       };
 
       beforeEach(() => {
         render(
           <Modal
             title={testTitle}
-            primaryAction={mockPrimary}
+            primaryAction={{ ...mockPrimary, disabled: true }}
             secondaryAction={mockSecondary}
             close={mockClose}
-            disabled
           >
             {mockChildren}
           </Modal>
@@ -310,7 +310,7 @@ describe("Modal.tsx", () => {
 
       afterEach(cleanup);
 
-      it("disables primary action button", () => {
+      it("disables primary and secondary action button", () => {
         const buttonPrimary = screen.getByRole("button", {
           name: mockPrimary.text,
         });
@@ -319,7 +319,7 @@ describe("Modal.tsx", () => {
         });
 
         expect(buttonPrimary).toBeDisabled();
-        expect(buttonSecondary).toBeEnabled();
+        expect(buttonSecondary).toBeDisabled();
       });
     });
   });

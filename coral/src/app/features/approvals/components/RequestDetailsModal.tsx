@@ -20,9 +20,12 @@ const RequestDetailsModal = ({
     <Modal
       title={"Request details"}
       close={onClose}
-      primaryAction={{ text: "Approve", onClick: onApprove }}
-      secondaryAction={{ text: "Reject", onClick: onReject }}
-      isLoading={isLoading}
+      primaryAction={{ text: "Approve", onClick: onApprove, isLoading }}
+      secondaryAction={{
+        text: "Reject",
+        onClick: onReject,
+        disabled: isLoading,
+      }}
     >
       {children}
     </Modal>
