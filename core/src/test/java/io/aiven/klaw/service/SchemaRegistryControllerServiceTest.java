@@ -141,7 +141,7 @@ public class SchemaRegistryControllerServiceTest {
     int schemaReqId = 1001;
 
     stubUserInfo();
-    when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt()))
+    when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse resultResp = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -153,7 +153,7 @@ public class SchemaRegistryControllerServiceTest {
     int schemaReqId = 1001;
 
     stubUserInfo();
-    when(handleDbRequests.deleteSchemaRequest(anyInt(), anyInt()))
+    when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenThrow(new RuntimeException("Error from Schema upload"));
     try {
       schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);

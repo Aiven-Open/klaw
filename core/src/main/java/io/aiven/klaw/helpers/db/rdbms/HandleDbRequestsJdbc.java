@@ -732,8 +732,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteSchemaRequest(int schemaId, int tenantId) {
-    return jdbcDeleteHelper.deleteSchemaRequest(schemaId, tenantId);
+  public String deleteSchemaRequest(int schemaId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteSchemaRequest(schemaId, userName, tenantId);
   }
 
   @Override

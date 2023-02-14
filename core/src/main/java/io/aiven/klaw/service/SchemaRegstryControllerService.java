@@ -103,7 +103,7 @@ public class SchemaRegstryControllerService {
                   approverRoles,
                   schemaRequestModel.getUsername()));
         }
-        schemaRequestModels.add(schemaRequestModel);
+        schemaRequestModels.add(setRequestorPermissions(schemaRequestModel, userName));
       }
     }
 
@@ -122,6 +122,16 @@ public class SchemaRegstryControllerService {
     }
 
     return String.valueOf(approvingInfo);
+  }
+
+  private SchemaRequestModel setRequestorPermissions(SchemaRequestModel req, String userName) {
+
+    if (userName != null && userName.equals(req.getUsername())) {
+      req.setDeletable(true);
+      req.setEditable(true);
+    }
+
+    return req;
   }
 
   private List<SchemaRequestModel> getSchemaRequestsPaged(
@@ -168,13 +178,15 @@ public class SchemaRegstryControllerService {
         getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
-
+    String userName = getUserName();
     try {
       String result =
           manageDatabase
               .getHandleDbRequests()
               .deleteSchemaRequest(
-                  Integer.parseInt(avroSchemaId), commonUtilsService.getTenantId(getUserName()));
+                  Integer.parseInt(avroSchemaId),
+                  userName,
+                  commonUtilsService.getTenantId(getUserName()));
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception:", e);

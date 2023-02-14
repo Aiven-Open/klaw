@@ -8,6 +8,8 @@ import io.aiven.klaw.dao.AclRequestID;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.SchemaRequestID;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.*;
 import java.util.Optional;
@@ -60,7 +62,11 @@ public class DeleteDataJdbcTest {
 
   @Test
   public void deleteSchemaRequest() {
-    String result = deleteDataJdbc.deleteSchemaRequest(1001, 1);
+    SchemaRequest req = new SchemaRequest();
+    req.setUsername("uiuser1");
+    req.setReq_no(1001);
+    when(schemaRequestRepo.findById(new SchemaRequestID(1001, 1))).thenReturn(Optional.of(req));
+    String result = deleteDataJdbc.deleteSchemaRequest(1001, "uiuser1", 1);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
