@@ -8,7 +8,7 @@ const baseProps = {
   onCancel: jest.fn(),
 };
 
-describe.only("RequestRejectModal.test", () => {
+describe("RequestRejectModal.test", () => {
   afterEach(cleanup);
 
   it("renders a Modal with correct elements on first load (isLoading false)", () => {
