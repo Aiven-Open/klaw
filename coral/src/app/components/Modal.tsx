@@ -171,7 +171,7 @@ function Modal(props: ModalProps) {
                   data-focusable
                   // Secondary action is highly unlikely to be an async process
                   // So we disable it when isLoading, and don't show loading state for it
-                  disabled={disabled || isLoading}
+                  disabled={isLoading}
                 >
                   {secondaryAction.text}
                 </Button>
