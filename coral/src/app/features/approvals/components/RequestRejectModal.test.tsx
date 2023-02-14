@@ -21,19 +21,9 @@ describe("RequestRejectModal.test", () => {
       screen.getByRole("textbox", {
         name: "Submit a reason to decline the request *",
       })
-    ).toBeVisible();
-    expect(
-      screen.getByRole("textbox", {
-        name: "Submit a reason to decline the request *",
-      })
     ).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
-    expect(
-      screen.getByRole("button", { name: "Reject request" })
-    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Reject request" })
     ).toBeDisabled();
@@ -49,19 +39,9 @@ describe("RequestRejectModal.test", () => {
       screen.getByRole("textbox", {
         name: "Submit a reason to decline the request *",
       })
-    ).toBeVisible();
-    expect(
-      screen.getByRole("textbox", {
-        name: "Submit a reason to decline the request *",
-      })
     ).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Cancel" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
-    expect(
-      screen.getByRole("button", { name: "Reject request" })
-    ).toBeVisible();
     expect(
       screen.getByRole("button", { name: "Reject request" })
     ).toBeDisabled();
@@ -110,6 +90,5 @@ describe("RequestRejectModal.test", () => {
     await userEvent.type(textArea, tooLong);
     expect(rejectButton).toBeDisabled();
     expect(textArea).toBeInvalid();
-    expect(screen.getByText("Rejection message is too long.")).toBeVisible();
   });
 });

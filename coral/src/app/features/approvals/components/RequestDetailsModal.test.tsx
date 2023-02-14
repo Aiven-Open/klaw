@@ -22,11 +22,8 @@ describe("RequestDetailsModal.test", () => {
       screen.getByRole("heading", { name: "Request details" })
     ).toBeVisible();
     expect(screen.getByText("content")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Reject" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Reject" })).toBeEnabled();
   });
 
@@ -41,11 +38,8 @@ describe("RequestDetailsModal.test", () => {
       screen.getByRole("heading", { name: "Request details" })
     ).toBeVisible();
     expect(screen.getByText("content")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Approve" })).toBeVisible();
+    expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
     expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Reject" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Reject" })).toBeDisabled();
   });
 
