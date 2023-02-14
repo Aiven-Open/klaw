@@ -105,7 +105,12 @@ public class SchemaRequestsIntegrationTest {
     user2.setUsername("John");
     entityManager.persistAndFlush(user);
     entityManager.persistAndFlush(user2);
-
+    UserInfo user3 = new UserInfo();
+    user3.setTenantId(101);
+    user3.setTeamId(101);
+    user3.setRole("USER");
+    user3.setUsername("Jackie");
+    entityManager.persistAndFlush(user3);
     Team t1 = new Team();
     t1.setTeamId(101);
     t1.setTenantId(101);
@@ -208,7 +213,8 @@ public class SchemaRequestsIntegrationTest {
   public void givenAllReqsTrueNoFilterOptionsOnlyReturnCreatedByOthersOnMyTeam() {
 
     List<SchemaRequest> results =
-        selectDataJdbc.selectFilteredSchemaRequests(true, "James", 101, null, null, null, null);
+        selectDataJdbc.selectFilteredSchemaRequests(
+            true, "James", 101, null, null, null, null, false);
 
     for (SchemaRequest req : results) {
       assertThat(req.getTopicstatus()).isEqualTo(RequestStatus.CREATED.value);
@@ -222,7 +228,8 @@ public class SchemaRequestsIntegrationTest {
   public void givenAllReqsFalseNoFilterOptionsOnlyReturnCreatedByOthersOnMyTeam() {
 
     List<SchemaRequest> results =
-        selectDataJdbc.selectFilteredSchemaRequests(false, "James", 101, null, null, null, null);
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "James", 101, null, null, null, null, false);
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -243,7 +250,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            true, "James", 101, null, null, RequestStatus.DECLINED.value, null);
+            true, "James", 101, null, null, RequestStatus.DECLINED.value, null, false);
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -259,7 +266,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            true, "James", 101, null, null, RequestStatus.APPROVED.value, null);
+            true, "James", 101, null, null, RequestStatus.APPROVED.value, null, false);
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -275,7 +282,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            false, "James", 101, null, null, RequestStatus.DECLINED.value, null);
+            false, "James", 101, null, null, RequestStatus.DECLINED.value, null, false);
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -291,7 +298,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            false, "James", 101, null, null, RequestStatus.APPROVED.value, null);
+            false, "James", 101, null, null, RequestStatus.APPROVED.value, null, false);
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -308,7 +315,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            true, "James", 101, null, null, RequestStatus.ALL.value, "topic1");
+            true, "James", 101, null, null, RequestStatus.ALL.value, "topic1", false);
 
     for (SchemaRequest req : results) {
       // firsttopic1 is the noly one that should match.
@@ -325,7 +332,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            true, "James", 101, null, null, RequestStatus.ALL.value, "topic");
+            true, "James", 101, null, null, RequestStatus.ALL.value, "topic", false);
 
     for (SchemaRequest req : results) {
       // firstopic5 was created by james so should not be returned.
@@ -341,7 +348,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            false, "James", 101, null, null, RequestStatus.ALL.value, "topic1");
+            false, "James", 101, null, null, RequestStatus.ALL.value, "topic1", false);
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -362,7 +369,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            false, "James", 101, null, null, RequestStatus.ALL.value, "topic2");
+            false, "James", 101, null, null, RequestStatus.ALL.value, "topic2", false);
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -383,7 +390,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            true, "James", 101, null, "dev", RequestStatus.ALL.value, null);
+            true, "James", 101, null, "dev", RequestStatus.ALL.value, null, false);
 
     for (SchemaRequest req : results) {
       // firstopic5 was created by james so should not be returned.
@@ -399,7 +406,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            false, "James", 101, null, "dev", RequestStatus.ALL.value, null);
+            false, "James", 101, null, "dev", RequestStatus.ALL.value, null, false);
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
       // All Statuses allowed
@@ -415,12 +422,12 @@ public class SchemaRequestsIntegrationTest {
   }
 
   @Test
-  @Order(10)
+  @Order(16)
   public void givenAllReqsTrueStatusFilterOptionsOnlyReturnMatchingSpecificTopicByOthersOnMyTeam() {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
-            true, "James", 101, "firsttopic10", null, RequestStatus.ALL.value, null);
+            true, "James", 101, "firsttopic10", null, RequestStatus.ALL.value, null, false);
 
     for (SchemaRequest req : results) {
       // firsttopic1 is the noly one that should match.
@@ -428,6 +435,88 @@ public class SchemaRequestsIntegrationTest {
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
+  }
+
+  @Test
+  @Order(17)
+  public void givenReqsReturnMyRequestsOnlyForTSingleTopic() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "John", 101, "firsttopic5", null, RequestStatus.ALL.value, null, true);
+    assertThat(results.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(18)
+  public void givenReqsReturnMyRequestsOnly() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "Jackie", 101, null, null, RequestStatus.ALL.value, null, true);
+    assertThat(results.size()).isEqualTo(17);
+    for (SchemaRequest req : results) {
+      assertThat(req.getUsername()).isEqualTo("Jackie");
+      assertThat(req.getTeamId()).isEqualTo(101);
+    }
+  }
+
+  @Test
+  @Order(19)
+  public void givenReqsReturnMyRequestsOnlyFromDevEnv() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "Jackie", 101, null, "dev", RequestStatus.ALL.value, null, true);
+    assertThat(results.size()).isEqualTo(17);
+    for (SchemaRequest req : results) {
+      assertThat(req.getUsername()).isEqualTo("Jackie");
+      assertThat(req.getTeamId()).isEqualTo(101);
+    }
+  }
+
+  @Test
+  @Order(20)
+  public void givenReqsReturnMyRequestsOnlyFromTestEnv() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "Jackie", 101, null, "test", RequestStatus.ALL.value, null, true);
+    assertThat(results.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(21)
+  public void givenReqsReturnAllRequestsOnlyFromDevEnv() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "John", 101, null, "dev", RequestStatus.ALL.value, null, false);
+    assertThat(results.size()).isEqualTo(4);
+    for (SchemaRequest req : results) {
+      assertThat(req.getUsername()).isNotEqualTo("John");
+      assertThat(req.getTeamId()).isEqualTo(103);
+    }
+  }
+
+  @Test
+  @Order(22)
+  public void givenReqsReturnAllRequests() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "John", 101, null, null, RequestStatus.ALL.value, null, false);
+    assertThat(results.size()).isEqualTo(4);
+  }
+
+  @Test
+  @Order(23)
+  public void givenReqsReturnAllRequestsForTeam101() {
+
+    List<SchemaRequest> results =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            false, "James", 101, null, null, RequestStatus.ALL.value, null, false);
+    assertThat(results.size()).isEqualTo(17);
   }
 
   private void generateData(

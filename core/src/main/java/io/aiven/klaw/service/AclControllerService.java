@@ -220,7 +220,9 @@ public class AclControllerService {
   }
 
   private AclRequestsModel setRequestorPermissions(AclRequestsModel req, String userName) {
-    if (userName != null && userName.equals(req.getUsername())) {
+    if (RequestStatus.CREATED.value.equals(req.getAclstatus())
+        && userName != null
+        && userName.equals(req.getUsername())) {
       req.setDeletable(true);
       req.setEditable(true);
     }

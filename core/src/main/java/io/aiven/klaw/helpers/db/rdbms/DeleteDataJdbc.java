@@ -136,15 +136,18 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String deleteSchemaRequest(int avroSchemaId, int tenantId) {
+  public String deleteSchemaRequest(int avroSchemaId, String userName, int tenantId) {
     log.debug("deleteSchemaRequest {}", avroSchemaId);
     SchemaRequestID schemaRequestID = new SchemaRequestID(avroSchemaId, tenantId);
     Optional<SchemaRequest> schemaReq = schemaRequestRepo.findById(schemaRequestID);
-    if (schemaReq.isPresent()) {
+    if (schemaReq.isPresent() && schemaReq.get().getUsername().equals(userName)) {
       schemaReq.get().setTopicstatus("deleted");
       schemaRequestRepo.save(schemaReq.get());
+      return ApiResultStatus.SUCCESS.value;
     }
-    return ApiResultStatus.SUCCESS.value;
+
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
   public String deleteAclRequest(int aclId, String userName, int tenantId) {

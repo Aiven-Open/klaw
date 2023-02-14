@@ -333,9 +333,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String topic,
       String env,
       String status,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredSchemaRequests(
-        allReqs, requestor, tenantId, topic, env, status, search);
+        allReqs, requestor, tenantId, topic, env, status, search, isMyRequest);
   }
 
   @Override
@@ -741,8 +742,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteSchemaRequest(int schemaId, int tenantId) {
-    return jdbcDeleteHelper.deleteSchemaRequest(schemaId, tenantId);
+  public String deleteSchemaRequest(int schemaId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteSchemaRequest(schemaId, userName, tenantId);
   }
 
   @Override

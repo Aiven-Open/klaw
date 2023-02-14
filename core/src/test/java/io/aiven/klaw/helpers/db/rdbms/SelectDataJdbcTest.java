@@ -111,7 +111,7 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<SchemaRequest> schemaRequestsActual =
-        selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null);
+        selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null, false);
     assertThat(schemaRequestsActual).isEmpty();
   }
 

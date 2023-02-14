@@ -224,17 +224,19 @@ public class SelectDataJdbc {
       String topic,
       String env,
       String status,
-      String wildcardSearch) {
+      String wildcardSearch,
+      boolean isMyRequest) {
     if (log.isDebugEnabled()) {
       log.debug(
-          "selectSchemaRequests allReqs {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}",
+          "selectSchemaRequests allReqs {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, isMyRequest: {}",
           allReqs,
           requestor,
           tenantId,
           topic,
           env,
           status,
-          wildcardSearch);
+          wildcardSearch,
+          isMyRequest);
     }
     List<SchemaRequest> schemaList = new ArrayList<>();
     List<SchemaRequest> schemaListSub;
@@ -243,7 +245,12 @@ public class SelectDataJdbc {
       schemaListSub =
           Lists.newArrayList(
               findSchemaRequestsByExample(
-                  topic, env, status != null ? status : "created", teamSelected, tenantId));
+                  topic,
+                  env,
+                  status != null ? status : "created",
+                  teamSelected,
+                  tenantId,
+                  isMyRequest ? requestor : null));
 
       // Placed here as it should only apply for approvers.
       schemaListSub =
@@ -265,7 +272,8 @@ public class SelectDataJdbc {
       // being filtered out after the data was returned.
       schemaListSub =
           Lists.newArrayList(
-              findSchemaRequestsByExample(null, null, status, teamSelected, tenantId));
+              findSchemaRequestsByExample(
+                  topic, env, status, teamSelected, tenantId, isMyRequest ? requestor : null));
     }
 
     for (SchemaRequest row : schemaListSub) {
@@ -284,7 +292,12 @@ public class SelectDataJdbc {
   }
 
   public Iterable<SchemaRequest> findSchemaRequestsByExample(
-      String topic, String environment, String status, Integer teamId, int tenantId) {
+      String topic,
+      String environment,
+      String status,
+      Integer teamId,
+      int tenantId,
+      String userName) {
 
     SchemaRequest request = new SchemaRequest();
 
@@ -301,6 +314,9 @@ public class SelectDataJdbc {
     }
     if (teamId != null) {
       request.setTeamId(teamId);
+    }
+    if (userName != null && !userName.isEmpty()) {
+      request.setUsername(userName);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string

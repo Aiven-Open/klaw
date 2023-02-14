@@ -159,7 +159,8 @@ public interface HandleDbRequests {
       String topic,
       String env,
       String status,
-      String search);
+      String search,
+      boolean isMyRequest);
 
   SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId);
 
@@ -323,7 +324,7 @@ public interface HandleDbRequests {
 
   String deleteTeamRequest(Integer teamId, int tenantId);
 
-  String deleteSchemaRequest(int schemaId, int tenantId);
+  String deleteSchemaRequest(int schemaId, String userName, int tenantId);
 
   String deleteAllUsers(int tenantId);
 

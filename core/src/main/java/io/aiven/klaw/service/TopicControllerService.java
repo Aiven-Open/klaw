@@ -321,7 +321,14 @@ public class TopicControllerService {
   }
 
   private TopicRequestModel setRequestorPermissions(TopicRequestModel req, String userName) {
-    if (userName != null && userName.equals(req.getUsername())) {
+    log.info(
+        " My Topic Status {} and userName {} and userName {}",
+        req.getTopicstatus(),
+        userName,
+        req.getRequestor());
+    if (RequestStatus.CREATED.value.equals(req.getTopicstatus())
+        && userName != null
+        && userName.equals(req.getRequestor())) {
       req.setDeletable(true);
       req.setEditable(true);
     }

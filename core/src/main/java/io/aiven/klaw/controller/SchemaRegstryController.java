@@ -45,10 +45,14 @@ public class SchemaRegstryController {
   public ResponseEntity<List<SchemaRequestModel>> getSchemaRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType) {
+      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType,
+      @RequestParam(value = "topic", required = false) String topic,
+      @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
+          boolean isMyRequest) {
     return new ResponseEntity<>(
         schemaRegstryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestsType, false, null, null, null),
+            pageNo, currentPage, requestsType, false, topic, env, null, isMyRequest),
         HttpStatus.OK);
   }
 
@@ -74,7 +78,7 @@ public class SchemaRegstryController {
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         schemaRegstryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestsType, true, topic, env, search),
+            pageNo, currentPage, requestsType, true, topic, env, search, false),
         HttpStatus.OK);
   }
 
