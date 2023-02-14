@@ -15,11 +15,21 @@ type ModalProps = {
   primaryAction: ModalAction;
   secondaryAction?: ModalAction;
   children: ReactElement;
+  disabled?: boolean;
+  isLoading?: boolean;
 };
 
 function Modal(props: ModalProps) {
-  const { close, primaryAction, secondaryAction, children, title, subtitle } =
-    props;
+  const {
+    close,
+    primaryAction,
+    secondaryAction,
+    children,
+    title,
+    subtitle,
+    disabled = false,
+    isLoading,
+  } = props;
 
   function setFocus(appRoot: HTMLElement, modal: HTMLElement) {
     appRoot.setAttribute("aria-hidden", "true");
@@ -159,6 +169,8 @@ function Modal(props: ModalProps) {
                   kind={"secondary"}
                   onClick={secondaryAction.onClick}
                   data-focusable
+                  disabled={disabled}
+                  loading={isLoading}
                 >
                   {secondaryAction.text}
                 </Button>
@@ -167,6 +179,8 @@ function Modal(props: ModalProps) {
                 kind={"primary"}
                 onClick={primaryAction.onClick}
                 data-focusable
+                disabled={disabled}
+                loading={isLoading}
               >
                 {primaryAction.text}
               </Button>
