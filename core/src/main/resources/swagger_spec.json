@@ -2451,6 +2451,17 @@
           "required" : false,
           "type" : "string",
           "default" : "all"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "200" : {
@@ -4782,6 +4793,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -5032,6 +5049,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -5132,6 +5155,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },

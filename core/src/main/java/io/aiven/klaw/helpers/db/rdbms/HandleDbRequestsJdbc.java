@@ -121,9 +121,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   /*--------------------Select */
 
-  public List<TopicRequest> getAllTopicRequests(String requestor, int tenantId) {
+  public List<TopicRequest> getAllTopicRequests(
+      String requestor, String status, String env, boolean isMyRequest, int tenantId) {
     return jdbcSelectHelper.getFilteredTopicRequests(
-        false, requestor, RequestStatus.CREATED.value, false, tenantId, null, null, null);
+        false, requestor, status, false, tenantId, null, env, null, isMyRequest);
   }
 
   @Override
@@ -165,7 +166,15 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String env,
       String wildcardSearch) {
     return jdbcSelectHelper.getFilteredTopicRequests(
-        true, requestor, status, showRequestsOfAllTeams, tenantId, teamId, env, wildcardSearch);
+        true,
+        requestor,
+        status,
+        showRequestsOfAllTeams,
+        tenantId,
+        teamId,
+        env,
+        wildcardSearch,
+        false);
   }
 
   public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
@@ -660,8 +669,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteTopicRequest(int topicId, int tenantId) {
-    return jdbcDeleteHelper.deleteTopicRequest(topicId, tenantId);
+  public String deleteTopicRequest(int topicId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteTopicRequest(topicId, userName, tenantId);
   }
 
   @Override
