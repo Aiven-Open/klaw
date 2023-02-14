@@ -611,9 +611,9 @@ public class SelectDataJdbc {
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setTopicstatus(status);
     }
-
+    // userName is transient and so not available in the database to be queried.
     if (userName != null && !userName.isEmpty()) {
-      request.setUsername(userName);
+      request.setRequestor(userName);
     }
     // check if debug is enabled so the logger doesn't waste resources converting object request to
     // a

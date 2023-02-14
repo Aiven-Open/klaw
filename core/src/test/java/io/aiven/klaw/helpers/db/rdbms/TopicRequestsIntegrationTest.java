@@ -748,12 +748,12 @@ public class TopicRequestsIntegrationTest {
   @Order(28)
   public void getRequestsRequestorsOnlyNoneReturned() {
 
-    List<TopicRequest> jackie =
+    List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
             false, "John", "created", false, 101, null, "dev", null, true);
 
-    assertThat(jackie.size()).isEqualTo(4);
-    for (TopicRequest req : jackie) {
+    assertThat(john.size()).isEqualTo(0);
+    for (TopicRequest req : john) {
       assertThat(req.getDescription().equals("John"));
     }
   }
