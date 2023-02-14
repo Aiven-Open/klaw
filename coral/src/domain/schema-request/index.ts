@@ -1,5 +1,5 @@
-import { SchemaRequest } from "src/domain/schema-request/schema-request-types";
 import { createSchemaRequest } from "src/domain/schema-request/schema-request-api";
+import { CreatedSchemaRequests } from "src/domain/schema-request/schema-request-types";
 
-export type { SchemaRequest };
+export type { CreatedSchemaRequests };
 export { createSchemaRequest };
