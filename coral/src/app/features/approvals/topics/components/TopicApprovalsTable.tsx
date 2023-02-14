@@ -1,10 +1,4 @@
-import {
-  Box,
-  DataTable,
-  DataTableColumn,
-  GhostButton,
-  Icon,
-} from "@aivenio/aquarium";
+import { DataTable, DataTableColumn, GhostButton } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
@@ -45,23 +39,11 @@ const columns: Array<DataTableColumn<TopicRequestTableData>> = [
     width: 30,
     UNSAFE_render: (row) => {
       return (
-        <GhostButton
-          onClick={() => alert("Approve")}
-          title={`View topic request `}
-          dense
-        >
-          <Box
-            component={"span"}
-            display={"flex"}
-            alignItems={"center"}
-            colGap={"2"}
-          >
-            <Icon icon={infoSign} />
-            <span aria-hidden={"true"}>View details</span>
-            <span className={"visually-hidden"}>
-              View topic request for {row.topicname}
-            </span>
-          </Box>
+        <GhostButton onClick={() => alert("Approve")} icon={infoSign} dense>
+          <span aria-hidden={"true"}>View details</span>
+          <span className={"visually-hidden"}>
+            View topic request for {row.topicname}
+          </span>
         </GhostButton>
       );
     },
@@ -79,10 +61,9 @@ const columns: Array<DataTableColumn<TopicRequestTableData>> = [
       return (
         <GhostButton
           onClick={() => alert("Approve")}
-          title={`Approve topic request for ${row.topicname}`}
-        >
-          <Icon color="grey-70" icon={tickCircle} />
-        </GhostButton>
+          aria-label={`Approve topic request for ${row.topicname}`}
+          icon={tickCircle}
+        />
       );
     },
   },
@@ -99,10 +80,9 @@ const columns: Array<DataTableColumn<TopicRequestTableData>> = [
       return (
         <GhostButton
           onClick={() => alert("Decline")}
-          title={`Decline topic request for ${row.topicname}`}
-        >
-          <Icon color="grey-70" icon={deleteIcon} />
-        </GhostButton>
+          aria-label={`Decline topic request for ${row.topicname}`}
+          icon={deleteIcon}
+        />
       );
     },
   },
