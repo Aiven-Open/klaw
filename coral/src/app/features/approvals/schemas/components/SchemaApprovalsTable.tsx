@@ -59,7 +59,6 @@ const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
           onClick={() => alert("Approve")}
           aria-label={`Approve schema request for ${row.topicname}`}
           icon={tickCircle}
-          dense
         />
       );
     },
@@ -79,7 +78,6 @@ const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
           onClick={() => alert("Decline")}
           aria-label={`Decline schema request for ${row.topicname}`}
           icon={deleteIcon}
-          dense
         />
       );
     },
