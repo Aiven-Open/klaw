@@ -1,6 +1,6 @@
 import { cleanup, render, RenderResult, screen } from "@testing-library/react";
-import { Modal } from "src/app/components/Modal";
 import userEvent from "@testing-library/user-event";
+import { Modal } from "src/app/components/Modal";
 
 describe("Modal.tsx", () => {
   const testTitle = "Modal title";
@@ -248,6 +248,78 @@ describe("Modal.tsx", () => {
         await userEvent.keyboard("{Escape}");
 
         expect(mockClose).toHaveBeenCalled();
+      });
+    });
+
+    describe("handles isLoading state", () => {
+      const mockClose = jest.fn();
+      const mockSecondary = {
+        text: "this is the secondary action",
+        onClick: jest.fn(),
+      };
+
+      beforeEach(() => {
+        render(
+          <Modal
+            title={testTitle}
+            primaryAction={mockPrimary}
+            secondaryAction={mockSecondary}
+            close={mockClose}
+            isLoading
+          >
+            {mockChildren}
+          </Modal>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it("disables primary and secondary action button", () => {
+        const buttonPrimary = screen.getByRole("button", {
+          name: mockPrimary.text,
+        });
+        const buttonSecondary = screen.getByRole("button", {
+          name: mockSecondary.text,
+        });
+
+        expect(buttonPrimary).toBeDisabled();
+        expect(buttonSecondary).toBeDisabled();
+      });
+    });
+
+    describe("handles disabled state", () => {
+      const mockClose = jest.fn();
+      const mockSecondary = {
+        text: "this is the secondary action",
+        onClick: jest.fn(),
+      };
+
+      beforeEach(() => {
+        render(
+          <Modal
+            title={testTitle}
+            primaryAction={mockPrimary}
+            secondaryAction={mockSecondary}
+            close={mockClose}
+            disabled
+          >
+            {mockChildren}
+          </Modal>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it("disables primary action button", () => {
+        const buttonPrimary = screen.getByRole("button", {
+          name: mockPrimary.text,
+        });
+        const buttonSecondary = screen.getByRole("button", {
+          name: mockSecondary.text,
+        });
+
+        expect(buttonPrimary).toBeDisabled();
+        expect(buttonSecondary).toBeEnabled();
       });
     });
   });
