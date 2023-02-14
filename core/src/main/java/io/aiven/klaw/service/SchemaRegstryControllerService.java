@@ -57,14 +57,16 @@ public class SchemaRegstryControllerService {
       boolean isApproval,
       String topic,
       String env,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllSchemaRequests(isApproval, userName, tenantId, topic, env, requestsType, search);
+            .getAllSchemaRequests(
+                isApproval, userName, tenantId, topic, env, requestsType, search, isMyRequest);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -402,7 +404,7 @@ public class SchemaRegstryControllerService {
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllSchemaRequests(false, userDetails, tenantId, null, null, null, null);
+            .getAllSchemaRequests(false, userDetails, tenantId, null, null, null, null, false);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());

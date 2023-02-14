@@ -158,7 +158,8 @@ public interface HandleDbRequests {
       String topic,
       String env,
       String status,
-      String search);
+      String search,
+      boolean isMyRequest);
 
   SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId);
 

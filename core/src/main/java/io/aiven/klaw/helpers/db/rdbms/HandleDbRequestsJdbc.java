@@ -324,9 +324,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String topic,
       String env,
       String status,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredSchemaRequests(
-        allReqs, requestor, tenantId, topic, env, status, search);
+        allReqs, requestor, tenantId, topic, env, status, search, isMyRequest);
   }
 
   @Override

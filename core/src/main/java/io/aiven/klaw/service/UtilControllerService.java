@@ -121,7 +121,7 @@ public class UtilControllerService {
       roleToSet = "requestor_subscriptions";
     }
     List<SchemaRequest> allSchemaReqs =
-        reqsHandle.getAllSchemaRequests(true, requestor, tenantId, null, null, null, null);
+        reqsHandle.getAllSchemaRequests(true, requestor, tenantId, null, null, null, null, false);
 
     List<AclRequests> allAclReqs;
     List<TopicRequest> allTopicReqs;
