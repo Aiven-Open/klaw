@@ -162,8 +162,6 @@ function Modal(props: ModalProps) {
                   kind={"secondary"}
                   onClick={secondaryAction.onClick}
                   data-focusable
-                  // Secondary action is highly unlikely to be an async process
-                  // So we disable it when isLoading, and don't show loading state for it
                   disabled={secondaryAction.disabled}
                   loading={secondaryAction.isLoading}
                 >
