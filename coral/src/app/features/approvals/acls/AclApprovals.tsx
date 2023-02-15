@@ -4,6 +4,8 @@ import {
   Flexbox,
   GhostButton,
   Icon,
+  NativeSelect,
+  SearchInput,
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
@@ -13,6 +15,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
+import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { getAclRequestsForApprover } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
@@ -89,7 +92,7 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   {
     type: "status",
     field: "environmentName",
-    headerName: "Cluster",
+    headerName: "Environment",
     status: ({ environmentName }) => ({
       status: "neutral",
       text: environmentName,
@@ -221,20 +224,63 @@ function AclApprovals() {
     setSearchParams(searchParams);
   };
 
+  const filters = [
+    <NativeSelect labelText={"Filter by Topic"} key={"filter-topic"}>
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+    <NativeSelect
+      labelText={"Filter by Environment"}
+      key={"filter-environment"}
+    >
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+    <NativeSelect labelText={"Filter by status"} key={"filter-status"}>
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+    <NativeSelect labelText={"Filter by ACL type"} key={"filter-acl-type"}>
+      <option> one </option>
+      <option> two </option>
+      <option> three </option>
+    </NativeSelect>,
+    <div key={"search"}>
+      <SearchInput
+        type={"search"}
+        aria-describedby={"search-field-description"}
+        role="search"
+        placeholder={"Search for..."}
+      />
+      <div id={"search-field-description"} className={"visually-hidden"}>
+        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
+        to delete all your input.
+      </div>
+    </div>,
+  ];
+
   return (
-    <>
-      <DataTable
-        ariaLabel={"Acl requests"}
-        columns={columns}
-        rows={tableData}
-        noWrap={false}
-      />
-      <Pagination
-        activePage={data.currentPage}
-        totalPages={data.totalPages}
-        setActivePage={handleChangePage}
-      />
-    </>
+    <ApprovalsLayout
+      filters={filters}
+      table={
+        <DataTable
+          ariaLabel={"Acl requests"}
+          columns={columns}
+          rows={tableData}
+          noWrap={false}
+        />
+      }
+      pagination={
+        <Pagination
+          activePage={data.currentPage}
+          totalPages={data.totalPages}
+          setActivePage={handleChangePage}
+        />
+      }
+    />
   );
 }
 
