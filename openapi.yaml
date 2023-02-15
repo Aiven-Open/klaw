@@ -1114,6 +1114,9 @@ components:
           type: integer
           format: int32
           example: 1
+        requestingTeamName:
+          type: string
+          example: "Ospo"
         appname:
           type: string
           example: "App"
