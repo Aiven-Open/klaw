@@ -52,7 +52,7 @@ public class RequestController {
     int failure = 0, success = 0;
     HttpStatus status;
     for (ApiResponse resp : obj) {
-      if (obj.contains(ApiResultStatus.SUCCESS.value)) {
+      if (resp.getResult().contains(ApiResultStatus.SUCCESS.value)) {
         success++;
       } else {
         failure++;

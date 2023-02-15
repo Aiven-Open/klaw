@@ -13,9 +13,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RequestService {
 
-  @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
+  @Autowired private SchemaRegstryControllerService schemaRegstryControllerService;
 
-  @Autowired KafkaConnectControllerService kafkaConnectControllerService;
+  @Autowired private KafkaConnectControllerService kafkaConnectControllerService;
 
   @Autowired private TopicControllerService topicControllerService;
 
