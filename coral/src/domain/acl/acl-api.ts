@@ -42,7 +42,7 @@ const declineAclRequest = (
   params: KlawApiRequestQueryParameters<"declineAclRequests">
 ): Promise<KlawApiResponse<"declineAclRequests">> => {
   return api.post<KlawApiResponse<"declineAclRequests">, never>(
-    `/execAclRequest?${new URLSearchParams(params)}`
+    `/execAclRequestDecline?${new URLSearchParams(params)}`
   );
 };
 
