@@ -7,5 +7,5 @@ import lombok.Data;
 public class ListAclsResponse {
   public String kind;
   public Metadata metadata;
-  public ArrayList<ConfluentCloudAclObject> data;
+  public ArrayList<AclObject> data;
 }

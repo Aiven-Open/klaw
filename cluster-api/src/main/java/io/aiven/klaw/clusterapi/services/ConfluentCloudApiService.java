@@ -4,8 +4,8 @@ import com.google.common.base.Strings;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.Config;
-import io.aiven.klaw.clusterapi.models.confluentcloud.ConfluentCloudAclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.TopicCreateRequest;
@@ -337,7 +337,7 @@ public class ConfluentCloudApiService {
     return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
   }
 
-  private static String getQueryParams(
+  public String getQueryParams(
       ClusterAclRequest clusterAclRequest,
       String resourceType,
       String resourceName,
@@ -450,7 +450,7 @@ public class ConfluentCloudApiService {
     return topicObject;
   }
 
-  private static Map<String, String> updateAclMap(
+  public Map<String, String> updateAclMap(
       ClusterAclRequest clusterAclRequest, Map<String, String> aclMap) {
     if (clusterAclRequest.isPrefixAcl()) {
       aclMap.put("pattern_type", AclPatternType.PREFIXED.value);
@@ -491,17 +491,15 @@ public class ConfluentCloudApiService {
       ResponseEntity<ListAclsResponse> responseEntity) {
     ListAclsResponse aclsList = Objects.requireNonNull(responseEntity.getBody());
     List<Map<String, String>> aclsListUpdated = new ArrayList<>();
-    for (ConfluentCloudAclObject confluentCloudAclObject : aclsList.data) {
+    for (AclObject aclObject : aclsList.data) {
       Map<String, String> aclsMapUpdated = new HashMap<>();
+      aclsMapUpdated.put("operation", aclObject.operation.toUpperCase()); // DESCRIBE/READ/ALL..
+      aclsMapUpdated.put("resourceType", aclObject.resource_type); // TOPIC/GROUP/CLUSTER..
       aclsMapUpdated.put(
-          "operation", confluentCloudAclObject.operation.toUpperCase()); // DESCRIBE/READ/ALL..
-      aclsMapUpdated.put(
-          "resourceType", confluentCloudAclObject.resource_type); // TOPIC/GROUP/CLUSTER..
-      aclsMapUpdated.put(
-          "resourceName", confluentCloudAclObject.resource_name); // topic-name, consumergroupname..
-      aclsMapUpdated.put("principle", confluentCloudAclObject.principal); // User:*/username/ssldn..
-      aclsMapUpdated.put("host", confluentCloudAclObject.host); // ipaddress/*..
-      aclsMapUpdated.put("permissionType", confluentCloudAclObject.permission); // ALLOW/DENY..
+          "resourceName", aclObject.resource_name); // topic-name, consumergroupname..
+      aclsMapUpdated.put("principle", aclObject.principal); // User:*/username/ssldn..
+      aclsMapUpdated.put("host", aclObject.host); // ipaddress/*..
+      aclsMapUpdated.put("permissionType", aclObject.permission); // ALLOW/DENY..
 
       aclsListUpdated.add(aclsMapUpdated);
     }

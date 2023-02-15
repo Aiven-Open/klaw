@@ -3,7 +3,7 @@ package io.aiven.klaw.clusterapi.models.confluentcloud;
 import lombok.Data;
 
 @Data
-public class ConfluentCloudAclObject {
+public class AclObject {
   public String kind;
   public Metadata metadata;
   public String cluster_id;

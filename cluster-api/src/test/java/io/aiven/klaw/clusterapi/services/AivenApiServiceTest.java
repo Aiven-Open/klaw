@@ -153,13 +153,13 @@ public class AivenApiServiceTest {
     Map<String, String> userNameMap = new HashMap<>();
     userNameMap.put("username", "testuser");
     serviceAccountResponse.put("user", userNameMap);
-    ResponseEntity responseEntityServiceAccount =
+    ResponseEntity<Map<String, Map<String, String>>> responseEntityServiceAccount =
         new ResponseEntity<>(serviceAccountResponse, HttpStatus.OK);
     when(restTemplate.exchange(
             eq(getServiceAccountUri),
             eq(HttpMethod.GET),
             any(),
-            (ParameterizedTypeReference<Object>) any()))
+            (ParameterizedTypeReference<Map<String, Map<String, String>>>) any()))
         .thenReturn(responseEntityServiceAccount);
 
     Map<String, String> response = aivenApiService.createAcls(clusterAclRequest);

@@ -5,7 +5,12 @@ import io.aiven.klaw.clusterapi.models.AivenAclStruct;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
+import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
+import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
+import io.aiven.klaw.clusterapi.models.confluentcloud.TopicObject;
 import io.aiven.klaw.clusterapi.models.enums.AclIPPrincipleType;
+import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
@@ -131,6 +136,55 @@ public class UtilMethods {
         .aclSsl(null)
         .requestOperationType(RequestOperationType.CREATE)
         .aclNativeType(AclsNativeType.NATIVE.name())
+        .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
+        .build();
+  }
+
+  public ClusterAclRequest getConfluentCloudProducerAclRequest() {
+    return ClusterAclRequest.builder()
+        .env("localhost")
+        .topicName("testtopic")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .consumerGroup("congroup1")
+        .clusterName("clusterName")
+        .aclType(AclType.PRODUCER.value)
+        .aclIp("11.12.33.122")
+        .aclSsl(null)
+        .requestOperationType(RequestOperationType.CREATE)
+        .aclNativeType(AclsNativeType.NATIVE.name())
+        .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
+        .build();
+  }
+
+  public ClusterAclRequest getConfluentCloudProducerPrefixedAclRequest() {
+    return ClusterAclRequest.builder()
+        .env("localhost")
+        .topicName("testtopic")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .consumerGroup("congroup1")
+        .clusterName("clusterName")
+        .aclType(AclType.PRODUCER.value)
+        .aclIp("11.12.33.122")
+        .aclSsl(null)
+        .requestOperationType(RequestOperationType.CREATE)
+        .aclNativeType(AclsNativeType.NATIVE.name())
+        .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
+        .isPrefixAcl(true)
+        .build();
+  }
+
+  public ClusterAclRequest getConfluentCloudConsumerAclRequest() {
+    return ClusterAclRequest.builder()
+        .env("localhost")
+        .topicName("testtopic")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .consumerGroup("congroup1")
+        .clusterName("clusterName")
+        .aclType(AclType.CONSUMER.value)
+        .aclIp(null)
+        .aclSsl("CN=host")
+        .requestOperationType(RequestOperationType.CREATE)
+        .aclNativeType(AclsNativeType.NATIVE.name())
         .aclIpPrincipleType(AclIPPrincipleType.PRINCIPAL.name())
         .build();
   }
@@ -164,5 +218,54 @@ public class UtilMethods {
     aivenAclResponse.setMessage("success");
 
     return aivenAclResponse;
+  }
+
+  public ListTopicsResponse getConfluentCloudListTopicsResponse() {
+    ListTopicsResponse listTopicsResponse = new ListTopicsResponse();
+    TopicObject topicObject1 = new TopicObject();
+    topicObject1.setTopic_name("testtopic1");
+    topicObject1.setPartitions_count(2);
+    topicObject1.setReplication_factor(2);
+
+    TopicObject topicObject2 = new TopicObject();
+    topicObject2.setTopic_name("testtopic2");
+    topicObject2.setPartitions_count(4);
+    topicObject2.setReplication_factor(3);
+
+    ArrayList<TopicObject> topicObjectArrayList = new ArrayList<>();
+    topicObjectArrayList.add(topicObject1);
+    topicObjectArrayList.add(topicObject2);
+
+    listTopicsResponse.setData(topicObjectArrayList);
+    return listTopicsResponse;
+  }
+
+  public ListAclsResponse getConfluentCloudListAclsResponse() {
+    ListAclsResponse listAclsResponse = new ListAclsResponse();
+    AclObject aclObject1 = new AclObject();
+    aclObject1.setPermission("ALLOW");
+    aclObject1.setHost("12.12.43.123");
+    aclObject1.setOperation("WRITE");
+    aclObject1.setPrincipal("User:*");
+    aclObject1.setPattern_type("LITERAL");
+    aclObject1.setResource_type("TOPIC");
+    aclObject1.setResource_name("testtopic");
+
+    AclObject aclObject2 = new AclObject();
+    aclObject2.setPermission("ALLOW");
+    aclObject2.setHost("12.12.43.123");
+    aclObject2.setOperation("DESCRIBE");
+    aclObject2.setPrincipal("User:*");
+    aclObject2.setPattern_type("LITERAL");
+    aclObject2.setResource_type("TOPIC");
+    aclObject2.setResource_name("testtopic");
+
+    ArrayList<AclObject> aclObjectArrayList = new ArrayList<>();
+    aclObjectArrayList.add(aclObject1);
+    aclObjectArrayList.add(aclObject2);
+
+    listAclsResponse.setData(aclObjectArrayList);
+
+    return listAclsResponse;
   }
 }
