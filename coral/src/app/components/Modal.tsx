@@ -1,13 +1,16 @@
-import { createPortal } from "react-dom";
-import { ReactElement, useEffect } from "react";
 import { Box, Button, IconButton, Typography } from "@aivenio/aquarium";
 import cross from "@aivenio/aquarium/icons/cross";
+import { ReactElement, useEffect } from "react";
+import { createPortal } from "react-dom";
 import classes from "src/app/components/Modal.module.css";
 
 type ModalAction = {
   text: string;
   onClick: () => void;
+  loading?: boolean;
+  disabled?: boolean;
 };
+
 type ModalProps = {
   title: string;
   subtitle?: string;
@@ -144,6 +147,7 @@ function Modal(props: ModalProps) {
                   icon={cross}
                   onClick={close}
                   data-focusable
+                  disabled={secondaryAction?.loading || primaryAction.loading}
                 />
               )}
             </Box>
@@ -159,6 +163,8 @@ function Modal(props: ModalProps) {
                   kind={"secondary"}
                   onClick={secondaryAction.onClick}
                   data-focusable
+                  disabled={secondaryAction.disabled}
+                  loading={secondaryAction.loading}
                 >
                   {secondaryAction.text}
                 </Button>
@@ -167,6 +173,8 @@ function Modal(props: ModalProps) {
                 kind={"primary"}
                 onClick={primaryAction.onClick}
                 data-focusable
+                disabled={primaryAction.disabled}
+                loading={primaryAction.loading}
               >
                 {primaryAction.text}
               </Button>
