@@ -6,9 +6,9 @@ interface DetailsModalContentProps {
 }
 
 const Label = ({ children }: { children: React.ReactNode }) => (
-  <label className="inline-block mb-2 typography-small-strong text-grey-60">
+  <dt className="inline-block mb-2 typography-small-strong text-grey-60">
     {children}
-  </label>
+  </dt>
 );
 
 const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
@@ -33,48 +33,39 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
   const principals = acl_ssl || [];
 
   return (
-    <Grid cols={"2"} rows={"6"} rowGap={"6"}>
-      <GridItem>
-        <Flexbox direction={"column"} width={"min"}>
-          <Label>ACL type</Label>
-          <div>
-            <StatusChip
-              status={topictype === "Producer" ? "info" : "success"}
-              text={topictype}
-            />
-          </div>
-        </Flexbox>
-      </GridItem>
-      <GridItem>
-        <Flexbox direction={"column"}>
-          <Label>Requesting team</Label>
-          {requestingTeamName}
-        </Flexbox>
-      </GridItem>
-      <GridItem>
-        <Flexbox direction={"column"} width={"min"}>
-          <Label>Environment</Label>
-          <div>
-            <StatusChip status={"neutral"} text={environmentName} />
-          </div>
-        </Flexbox>
-      </GridItem>
-      <GridItem>
-        <Flexbox direction={"column"}>
-          <Label>Topic</Label>
-          {topicname}
-        </Flexbox>
-      </GridItem>
+    <Grid htmlTag={"dl"} cols={"2"} rows={"6"} rowGap={"6"}>
+      <Flexbox direction={"column"} width={"min"}>
+        <Label>ACL type</Label>
+        <dd>
+          <StatusChip
+            status={topictype === "Producer" ? "info" : "success"}
+            text={topictype}
+          />
+        </dd>
+      </Flexbox>
+      <Flexbox direction={"column"}>
+        <Label>Requesting team</Label>
+        <dd>{requestingTeamName}</dd>
+      </Flexbox>
+      <Flexbox direction={"column"} width={"min"}>
+        <Label>Environment</Label>
+        <dd>
+          <StatusChip status={"neutral"} text={environmentName} />
+        </dd>
+      </Flexbox>
+
+      <Flexbox direction={"column"}>
+        <Label>Topic</Label>
+        <dd>{topicname}</dd>
+      </Flexbox>
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Principals/Usernames</Label>
           <Flexbox direction={"row"} gap={"2"}>
             {principals.map((principal) => (
-              <StatusChip
-                key={principal}
-                status={"neutral"}
-                text={`${principal} `}
-              />
+              <dd key={principal}>
+                <StatusChip status={"neutral"} text={`${principal} `} />
+              </dd>
             ))}
           </Flexbox>
         </Flexbox>
@@ -85,7 +76,9 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
             <Label>IP addresses</Label>
             <Flexbox direction={"row"} gap={"2"}>
               {ips.map((ip) => (
-                <StatusChip key={ip} status={"neutral"} text={`${ip} `} />
+                <dd key={ip}>
+                  <StatusChip status={"neutral"} text={`${ip} `} />
+                </dd>
               ))}
             </Flexbox>
           </Flexbox>
@@ -94,27 +87,25 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Consumer group</Label>
-          {topictype === "Consumer" ? consumergroup : <i>Not applicable</i>}
+          <dd>
+            {topictype === "Consumer" ? consumergroup : <i>Not applicable</i>}
+          </dd>
         </Flexbox>
       </GridItem>
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Message for the approver</Label>
-          {remarks || <i>No message</i>}
+          <dd>{remarks || <i>No message</i>}</dd>
         </Flexbox>
       </GridItem>
-      <GridItem>
-        <Flexbox direction={"column"}>
-          <Label> Request by</Label>
-          {username}
-        </Flexbox>
-      </GridItem>
-      <GridItem>
-        <Flexbox direction={"column"}>
-          <Label> Requested on</Label>
-          {requesttimestring} UTC
-        </Flexbox>
-      </GridItem>
+      <Flexbox direction={"column"}>
+        <Label> Request by</Label>
+        <dd>{username}</dd>
+      </Flexbox>
+      <Flexbox direction={"column"}>
+        <Label> Requested on</Label>
+        <dd>{requesttimestring} UTC</dd>
+      </Flexbox>
     </Grid>
   );
 };
