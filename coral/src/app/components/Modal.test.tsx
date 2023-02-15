@@ -322,5 +322,36 @@ describe("Modal.tsx", () => {
         expect(buttonSecondary).toBeDisabled();
       });
     });
+
+    describe("renders a dialog based on props", () => {
+      const dialogTitle = (
+        <div>
+          <h1>This is a title</h1>
+        </div>
+      );
+      beforeAll(() => {
+        render(
+          <Modal
+            title={testTitle}
+            primaryAction={mockPrimary}
+            isDialog={true}
+            dialogTitle={dialogTitle}
+          >
+            {mockChildren}
+          </Modal>
+        );
+      });
+
+      it("does not show the headline given by the title prop", () => {
+        const titlePropHeadline = screen.queryByText(testTitle);
+        expect(titlePropHeadline).not.toBeInTheDocument();
+      });
+
+      it("shows the element passed as dialogTitle as title", () => {
+        const title = screen.getByRole("heading", { name: "This is a title" });
+
+        expect(title).toBeVisible();
+      });
+    });
   });
 });
