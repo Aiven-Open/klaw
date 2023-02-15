@@ -147,6 +147,7 @@ function Modal(props: ModalProps) {
                   icon={cross}
                   onClick={close}
                   data-focusable
+                  disabled={secondaryAction?.loading || primaryAction.loading}
                 />
               )}
             </Box>
