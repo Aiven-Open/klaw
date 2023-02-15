@@ -256,14 +256,14 @@ describe("Modal.tsx", () => {
       const mockSecondary = {
         text: "this is the secondary action",
         onClick: jest.fn(),
-        isLoading: true,
+        loading: true,
       };
 
       beforeEach(() => {
         render(
           <Modal
             title={testTitle}
-            primaryAction={{ ...mockPrimary, isLoading: true }}
+            primaryAction={{ ...mockPrimary, loading: true }}
             secondaryAction={mockSecondary}
             close={mockClose}
           >

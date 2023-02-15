@@ -26,7 +26,7 @@ const RequestRejectModal = ({
         text: "Reject request",
         onClick: () => onSubmit(rejectionMessage),
         disabled: !isValid || rejectionMessage.length === 0,
-        isLoading: isLoading,
+        loading: isLoading,
       }}
       secondaryAction={{
         text: "Cancel",
