@@ -58,7 +58,7 @@ const mockedRequests = [
 describe("SchemaApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
-    { columnHeader: "Cluster", relatedField: "environmentName" },
+    { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Requested by", relatedField: "username" },
     { columnHeader: "Date requested", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },

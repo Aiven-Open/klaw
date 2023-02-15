@@ -14,7 +14,7 @@ interface SchemaRequestTableData {
 
 const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
   { type: "text", field: "topicname", headerName: "Topic" },
-  { type: "text", field: "environmentName", headerName: "Cluster" },
+  { type: "text", field: "environmentName", headerName: "Environment" },
   { type: "text", field: "username", headerName: "Requested by" },
   {
     type: "text",

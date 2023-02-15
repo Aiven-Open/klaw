@@ -16,7 +16,7 @@ interface TopicRequestTableData {
 
 const columns: Array<DataTableColumn<TopicRequestTableData>> = [
   { type: "text", field: "topicname", headerName: "Topic" },
-  { type: "text", field: "environmentName", headerName: "Cluster" },
+  { type: "text", field: "environmentName", headerName: "Environment" },
   { type: "text", field: "topictype", headerName: "Type" },
   { type: "text", field: "teamname", headerName: "Claim by team" },
   { type: "text", field: "requestor", headerName: "Requested by" },
