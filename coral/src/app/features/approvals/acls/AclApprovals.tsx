@@ -3,8 +3,6 @@ import {
   DataTableColumn,
   Flexbox,
   GhostButton,
-  Grid,
-  GridItem,
   Icon,
   NativeSelect,
   SearchInput,
@@ -18,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
+import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
@@ -313,120 +312,6 @@ function AclApprovals() {
     </div>,
   ];
 
-  const renderRequestDetails = (request?: AclRequest) => {
-    if (request === undefined) {
-      return <div>Request not found.</div>;
-    }
-
-    const {
-      topictype,
-      environmentName = "Environment not found",
-      topicname,
-      acl_ssl,
-      acl_ip,
-      consumergroup = "Consumer group not found",
-      remarks,
-      requesttimestring = "Request time not found",
-      username = "User not found",
-      requestingTeamName = "Team name not found",
-    } = request;
-
-    const ips = acl_ip || [];
-    const principals = acl_ssl || [];
-
-    const Label = ({ children }: { children: React.ReactNode }) => (
-      <label className="inline-block mb-2 typography-small-strong text-grey-60">
-        {children}
-      </label>
-    );
-
-    return (
-      <Grid cols={"2"} rows={"6"} rowGap={"6"}>
-        <GridItem>
-          <Flexbox direction={"column"} width={"min"}>
-            <Label>ACL type</Label>
-            <div>
-              <StatusChip
-                status={topictype === "Producer" ? "info" : "success"}
-                text={topictype}
-              />
-            </div>
-          </Flexbox>
-        </GridItem>
-        <GridItem>
-          <Flexbox direction={"column"}>
-            <Label>Requesting team</Label>
-            {requestingTeamName}
-          </Flexbox>
-        </GridItem>
-        <GridItem>
-          <Flexbox direction={"column"} width={"min"}>
-            <Label>Environment</Label>
-            <div>
-              <StatusChip status={"neutral"} text={environmentName} />
-            </div>
-          </Flexbox>
-        </GridItem>
-        <GridItem>
-          <Flexbox direction={"column"}>
-            <Label>Topic</Label>
-            {topicname}
-          </Flexbox>
-        </GridItem>
-        <GridItem colSpan={"span-2"}>
-          <Flexbox direction={"column"}>
-            <Label>Principals/Usernames</Label>
-            <Flexbox direction={"row"} gap={"2"}>
-              {principals.map((principal) => (
-                <StatusChip
-                  key={principal}
-                  status={"neutral"}
-                  text={`${principal} `}
-                />
-              ))}
-            </Flexbox>
-          </Flexbox>
-        </GridItem>
-        {ips.length > 0 && (
-          <GridItem colSpan={"span-2"}>
-            <Flexbox direction={"column"}>
-              <Label>IP addresses</Label>
-              <Flexbox direction={"row"} gap={"2"}>
-                {ips.map((ip) => (
-                  <StatusChip key={ip} status={"neutral"} text={`${ip} `} />
-                ))}
-              </Flexbox>
-            </Flexbox>
-          </GridItem>
-        )}
-        <GridItem colSpan={"span-2"}>
-          <Flexbox direction={"column"}>
-            <Label>Consumer group</Label>
-            {topictype === "Consumer" ? consumergroup : <i>Not applicable</i>}
-          </Flexbox>
-        </GridItem>
-        <GridItem colSpan={"span-2"}>
-          <Flexbox direction={"column"}>
-            <Label>Message for the approver</Label>
-            {remarks || <i>No message</i>}
-          </Flexbox>
-        </GridItem>
-        <GridItem>
-          <Flexbox direction={"column"}>
-            <Label> Request by</Label>
-            {username}
-          </Flexbox>
-        </GridItem>
-        <GridItem>
-          <Flexbox direction={"column"}>
-            <Label> Requested on</Label>
-            {requesttimestring} UTC
-          </Flexbox>
-        </GridItem>
-      </Grid>
-    );
-  };
-
   return (
     <>
       {detailsModal.isOpen && (
@@ -441,11 +326,13 @@ function AclApprovals() {
           }}
           isLoading={approveIsLoading}
         >
-          {renderRequestDetails(
-            data.entries.find(
-              (request) => request.req_no === Number(detailsModal.reqNo)
-            )
-          )}
+          {
+            <DetailsModalContent
+              aclRequest={data.entries.find(
+                (request) => request.req_no === Number(detailsModal.reqNo)
+              )}
+            />
+          }
         </RequestDetailsModal>
       )}
       {rejectModal.isOpen && (
