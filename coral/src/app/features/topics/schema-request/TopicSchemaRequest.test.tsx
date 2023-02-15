@@ -178,7 +178,7 @@ describe("TopicSchemaRequest", () => {
     it("shows a required select element to choose an environment", () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
 
       expect(select).toBeEnabled();
@@ -188,7 +188,7 @@ describe("TopicSchemaRequest", () => {
     it("renders all options for environment based on api data", () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const options = within(select).getAllByRole("option");
 
@@ -200,7 +200,7 @@ describe("TopicSchemaRequest", () => {
       ({ name, id }) => {
         const form = getForm();
         const select = within(form).getByRole("combobox", {
-          name: /Select environment/i,
+          name: /Environment/i,
         });
         const option = within(select).getByRole("option", { name: name });
 
@@ -295,7 +295,7 @@ describe("TopicSchemaRequest", () => {
     it("shows error when user does not fill out environment select", async () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
 
       select.focus();
@@ -327,7 +327,7 @@ describe("TopicSchemaRequest", () => {
     it("does not enable button if user does not fill out all fields", async () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,
@@ -374,7 +374,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,
@@ -432,7 +432,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,
@@ -471,7 +471,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,
@@ -548,7 +548,7 @@ describe("TopicSchemaRequest", () => {
     it("enables user to select an environment", async () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[1].name,
@@ -589,7 +589,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,
@@ -613,7 +613,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,
@@ -643,7 +643,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
-        name: /Select environment/i,
+        name: /Environment/i,
       });
       const option = within(select).getByRole("option", {
         name: mockedEnvironments[0].name,

@@ -12,7 +12,7 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 
-const filterLabel = "Filter by environment";
+const filterLabel = "Filter by Environment";
 describe("SelectEnvironment.tsx", () => {
   beforeAll(() => {
     server.listen();

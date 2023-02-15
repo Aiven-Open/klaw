@@ -68,7 +68,10 @@ function SchemaApprovals() {
       <option> three </option>
     </NativeSelect>,
 
-    <NativeSelect labelText={"Filter by cluster"} key={"filter-cluster"}>
+    <NativeSelect
+      labelText={"Filter by Environment"}
+      key={"filter-environment"}
+    >
       <option> one </option>
       <option> two </option>
       <option> three </option>

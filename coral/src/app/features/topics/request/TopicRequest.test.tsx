@@ -74,7 +74,7 @@ describe("<TopicRequest />", () => {
           name: "Environment",
         });
 
-        expect(select).toHaveDisplayValue("-- Select Environment --");
+        expect(select).toHaveDisplayValue("-- Please select --");
       });
 
       it("shows all environment names as options", () => {
@@ -82,7 +82,7 @@ describe("<TopicRequest />", () => {
         // 3 environments + option for placeholder
         expect(options.length).toBe(4);
         expect(options.map((o) => o.textContent)).toEqual([
-          "-- Select Environment --",
+          "-- Please select --",
           "DEV",
           "TST",
           "PROD",
@@ -120,7 +120,7 @@ describe("<TopicRequest />", () => {
           const select = await screen.findByRole("combobox", {
             name: "Environment",
           });
-          expect(select).toHaveDisplayValue("-- Select Environment --");
+          expect(select).toHaveDisplayValue("-- Please select --");
 
           await user.selectOptions(select, "PROD");
 
@@ -139,13 +139,13 @@ describe("<TopicRequest />", () => {
 
           const options = within(select).getAllByRole("option");
           const placeholderOption = within(select).getByRole("option", {
-            name: "-- Select Environment --",
+            name: "-- Please select --",
           });
 
           expect(placeholderOption).toBeDisabled();
           expect(options.length).toBe(4);
           expect(options.map((o) => o.textContent)).toEqual([
-            "-- Select Environment --",
+            "-- Please select --",
             "DEV",
             "TST",
             "PROD",

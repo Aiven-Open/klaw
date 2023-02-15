@@ -77,7 +77,7 @@ function TopicApprovals() {
     </NativeSelect>,
 
     <NativeSelect
-      labelText={"Filter by environment"}
+      labelText={"Filter by Environment"}
       key={"filter-environments"}
     >
       <option> one </option>

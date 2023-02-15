@@ -37,7 +37,7 @@ describe("EnvironmentField", () => {
       onError,
     });
     const select = screen.getByRole("combobox", {
-      name: "Select Environment *",
+      name: "Environment *",
     });
 
     expect(select).toBeVisible();
@@ -52,11 +52,11 @@ describe("EnvironmentField", () => {
       onError,
     });
     const select = screen.getByRole("combobox", {
-      name: "Select Environment *",
+      name: "Environment *",
     });
     const options = within(select).getAllByRole("option");
 
-    expect(select).toHaveDisplayValue("-- Select Environment --");
+    expect(select).toHaveDisplayValue("-- Please select --");
     expect(options).toHaveLength(mockedEnvironments.length + 1);
   });
 });

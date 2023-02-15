@@ -10,8 +10,8 @@ const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
   return (
     <NativeSelect
       name="environment"
-      labelText="Select Environment"
-      placeholder={"-- Select Environment --"}
+      labelText="Environment"
+      placeholder={"-- Please select --"}
       required
     >
       {environments.map((env) => (

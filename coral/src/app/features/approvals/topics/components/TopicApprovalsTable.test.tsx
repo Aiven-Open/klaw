@@ -66,7 +66,7 @@ const mockedRequests = [
 describe("TopicApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
-    { columnHeader: "Cluster", relatedField: "environmentName" },
+    { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Type", relatedField: "topictype" },
     { columnHeader: "Claim by team", relatedField: "teamname" },
     { columnHeader: "Requested by", relatedField: "requestor" },
