@@ -75,7 +75,7 @@ describe("<TopicProducerForm />", () => {
 
     it("renders EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select Environment *",
+        name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
@@ -199,7 +199,7 @@ describe("<TopicProducerForm />", () => {
 
     it("renders EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select Environment *",
+        name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
@@ -324,7 +324,7 @@ describe("<TopicProducerForm />", () => {
 
     it("renders EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Select Environment *",
+        name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();

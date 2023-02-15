@@ -72,7 +72,7 @@ function TopicRequest() {
             <ComplexNativeSelect<Schema, Environment>
               name="environment"
               labelText={"Environment"}
-              placeholder={"-- Select Environment --"}
+              placeholder={"-- Please select --"}
               options={environments}
               identifierValue={"id"}
               identifierName={"name"}

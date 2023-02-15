@@ -113,7 +113,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         {environments && (
           <NativeSelect<TopicRequestFormSchema>
             name={"environment"}
-            labelText={"Select environment"}
+            labelText={"Environment"}
             placeholder={"-- Please select --"}
             required={true}
           >

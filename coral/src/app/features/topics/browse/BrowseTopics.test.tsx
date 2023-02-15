@@ -28,7 +28,7 @@ const mockGetEnvironments = getEnvironments as jest.MockedFunction<
   typeof getEnvironments
 >;
 
-const filterByEnvironmentLabel = "Filter by environment";
+const filterByEnvironmentLabel = "Filter by Environment";
 const filterByTeamLabel = "Filter by team";
 
 // @TODO find better location / handling for mocks

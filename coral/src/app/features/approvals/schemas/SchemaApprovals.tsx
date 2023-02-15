@@ -69,7 +69,7 @@ function SchemaApprovals() {
     </NativeSelect>,
 
     <NativeSelect
-      labelText={"Filter by environment"}
+      labelText={"Filter by Environment"}
       key={"filter-environment"}
     >
       <option> one </option>
