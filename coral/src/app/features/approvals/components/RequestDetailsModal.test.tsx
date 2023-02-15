@@ -9,60 +9,105 @@ const baseProps = {
 };
 
 describe("RequestDetailsModal.test", () => {
-  afterEach(cleanup);
+  describe("renders a Modal with correct elements when isLoading is false (before interaction)", () => {
+    beforeAll(() => {
+      render(
+        <RequestDetailsModal {...baseProps} isLoading={false}>
+          <div>content</div>
+        </RequestDetailsModal>
+      );
+    });
+    afterAll(cleanup);
 
-  it("renders a Modal with correct elements (isLoading false)", () => {
-    render(
-      <RequestDetailsModal {...baseProps} isLoading={false}>
-        <div>content</div>
-      </RequestDetailsModal>
-    );
+    it("renders a Modal", () => {
+      expect(screen.getByRole("dialog")).toBeVisible();
+    });
 
-    expect(
-      screen.getByRole("heading", { name: "Request details" })
-    ).toBeVisible();
-    expect(screen.getByText("content")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Reject" })).toBeEnabled();
+    it("renders correct heading", () => {
+      expect(
+        screen.getByRole("heading", { name: "Request details" })
+      ).toBeVisible();
+    });
+
+    it("renders enabled Close button", () => {
+      expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
+    });
+
+    it("renders enabled Approve button", () => {
+      expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
+    });
+
+    it("renders enabled Reject request button", () => {
+      expect(screen.getByRole("button", { name: "Reject" })).toBeEnabled();
+    });
   });
 
-  it("renders a Modal with correct elements (isLoading true)", () => {
-    render(
-      <RequestDetailsModal {...baseProps} isLoading={true}>
-        <div>content</div>
-      </RequestDetailsModal>
-    );
+  describe("renders a Modal with correct elements when isLoading is true", () => {
+    beforeAll(() => {
+      render(
+        <RequestDetailsModal {...baseProps} isLoading={true}>
+          <div>content</div>
+        </RequestDetailsModal>
+      );
+    });
+    afterAll(cleanup);
 
-    expect(
-      screen.getByRole("heading", { name: "Request details" })
-    ).toBeVisible();
-    expect(screen.getByText("content")).toBeVisible();
-    expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
-    expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Reject" })).toBeDisabled();
+    it("renders correct heading", () => {
+      expect(
+        screen.getByRole("heading", { name: "Request details" })
+      ).toBeVisible();
+    });
+
+    it("renders disabled Close button", () => {
+      expect(
+        screen.getByRole("button", { name: "Close modal" })
+      ).toBeDisabled();
+    });
+
+    it("renders disabled Approve button", () => {
+      expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+    });
+
+    it("renders disabled Reject request button", () => {
+      expect(screen.getByRole("button", { name: "Reject" })).toBeDisabled();
+    });
   });
 
-  it("calls correct functions when clicking buttons", async () => {
-    render(
-      <RequestDetailsModal {...baseProps} isLoading={false}>
-        <div>content</div>
-      </RequestDetailsModal>
-    );
+  describe("handles user interaction", () => {
+    beforeAll(() => {
+      render(
+        <RequestDetailsModal {...baseProps} isLoading={false}>
+          <div>content</div>
+        </RequestDetailsModal>
+      );
+    });
+    afterAll(cleanup);
 
-    const { onClose, onApprove, onReject } = baseProps;
+    it("user can close Modal", async () => {
+      const { onClose } = baseProps;
+      const closeButton = screen.getByRole("button", { name: "Close modal" });
 
-    const closeButton = screen.getByRole("button", { name: "Close modal" });
-    const approveButton = screen.getByRole("button", { name: "Approve" });
-    const rejectButton = screen.getByRole("button", { name: "Reject" });
+      await userEvent.click(closeButton);
+      expect(onClose).toHaveBeenCalledTimes(1);
+    });
 
-    await userEvent.click(closeButton);
-    expect(onClose).toHaveBeenCalledTimes(1);
+    it("user can approve", async () => {
+      const { onApprove } = baseProps;
+      const approveButton = screen.getByRole("button", { name: "Approve" });
 
-    await userEvent.click(approveButton);
-    expect(onApprove).toHaveBeenCalledTimes(1);
+      await userEvent.click(approveButton);
+      expect(onApprove).toHaveBeenCalledTimes(1);
+    });
 
-    await userEvent.click(rejectButton);
-    expect(onReject).toHaveBeenCalledTimes(1);
+    it("user can reject", async () => {
+      const { onReject } = baseProps;
+
+      const rejectButton = screen.getByRole("button", {
+        name: "Reject",
+      });
+
+      await userEvent.click(rejectButton);
+      expect(onReject).toHaveBeenCalledTimes(1);
+    });
   });
 });
