@@ -5,10 +5,10 @@ import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.helpers.ValidationHelper;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.RequestVerdict;
-import io.aiven.klaw.service.AclControllerService;
-import io.aiven.klaw.service.KafkaConnectControllerService;
-import io.aiven.klaw.service.SchemaRegstryControllerService;
-import io.aiven.klaw.service.TopicControllerService;
+import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.service.RequestService;
+import jakarta.validation.Valid;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,78 +24,49 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/request")
 public class RequestController {
 
-  @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
-
-  @Autowired KafkaConnectControllerService kafkaConnectControllerService;
-
-  @Autowired private TopicControllerService topicControllerService;
-
-  @Autowired private AclControllerService aclControllerService;
+  @Autowired private RequestService service;
 
   @RequestMapping(
       value = "/approve",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> approveRequest(@RequestBody RequestVerdict verdict)
-      throws KlawException {
-    log.info("My Verdict{}", verdict);
-    switch (verdict.getResourceType()) {
-      case KAFKA:
-        return wrapInResponseEntity(
-            topicControllerService.approveTopicRequests(verdict.getReqId()), HttpStatus.OK);
-      case ACL:
-        return wrapInResponseEntity(
-            aclControllerService.approveAclRequests(verdict.getReqId()), HttpStatus.OK);
-      case SCHEMA:
-        return wrapInResponseEntity(
-            schemaRegstryControllerService.execSchemaRequests(verdict.getReqId()), HttpStatus.OK);
-      case CONNECTOR:
-        return wrapInResponseEntity(
-            kafkaConnectControllerService.approveConnectorRequests(verdict.getReqId()),
-            HttpStatus.OK);
-      default:
-        return wrapInResponseEntity(
-            ApiResponse.builder().result("Unable to determine target resource.").build(),
-            HttpStatus.BAD_REQUEST);
-    }
+  public ResponseEntity<List<ApiResponse>> approveRequest(
+      @Valid @RequestBody RequestVerdict verdict) throws KlawException {
+
+    return wrapInResponseEntity(service.processApprovalRequests(verdict));
   }
 
   @RequestMapping(
       value = "/decline",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> declineRequest(@RequestBody RequestVerdict verdict)
-      throws KlawException, KlawRestException {
+  public ResponseEntity<List<ApiResponse>> declineRequest(
+      @Valid @RequestBody RequestVerdict verdict) throws KlawException, KlawRestException {
     log.info("My bad Verdict{}", verdict);
     ValidationHelper.validateNotEmptyOrBlank(
         verdict.getReason(), "A reason must be provided for why a request was declined.");
-    switch (verdict.getResourceType()) {
-      case KAFKA:
-        return wrapInResponseEntity(
-            topicControllerService.declineTopicRequests(verdict.getReqId(), verdict.getReason()),
-            HttpStatus.OK);
-      case ACL:
-        return wrapInResponseEntity(
-            aclControllerService.declineAclRequests(verdict.getReqId(), verdict.getReason()),
-            HttpStatus.OK);
-      case SCHEMA:
-        return wrapInResponseEntity(
-            schemaRegstryControllerService.execSchemaRequestsDecline(
-                verdict.getReqId(), verdict.getReason()),
-            HttpStatus.OK);
-      case CONNECTOR:
-        return wrapInResponseEntity(
-            kafkaConnectControllerService.declineConnectorRequests(
-                verdict.getReqId(), verdict.getReason()),
-            HttpStatus.OK);
-      default:
-        return wrapInResponseEntity(
-            ApiResponse.builder().result("Unable to determine target resource.").build(),
-            HttpStatus.BAD_REQUEST);
-    }
+    return wrapInResponseEntity(service.processDeclineRequests(verdict));
   }
 
-  private ResponseEntity<ApiResponse> wrapInResponseEntity(ApiResponse obj, HttpStatus status) {
+  private ResponseEntity<List<ApiResponse>> wrapInResponseEntity(List<ApiResponse> obj) {
+    int failure = 0, success = 0;
+    HttpStatus status;
+    for (ApiResponse resp : obj) {
+      if (obj.contains(ApiResultStatus.SUCCESS.value)) {
+        success++;
+      } else {
+        failure++;
+      }
+    }
+    if (failure == 0 && success > 0) {
+      status = HttpStatus.OK;
+    } else if (failure > 0 && success == 0) {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+    } else if (failure > 0 && success > 0) {
+      status = HttpStatus.MULTI_STATUS;
+    } else {
+      status = HttpStatus.BAD_REQUEST;
+    }
     return ResponseEntity.status(status).body(obj);
   }
 }

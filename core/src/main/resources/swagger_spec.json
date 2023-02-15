@@ -2905,7 +2905,10 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/ApiResponse"
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ApiResponse"
+              }
             }
           }
         }
@@ -2927,7 +2930,10 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/ApiResponse"
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ApiResponse"
+              }
             }
           }
         }
@@ -4321,12 +4327,15 @@
         "reason" : {
           "type" : "string"
         },
-        "resourceType" : {
+        "requestEntityType" : {
           "type" : "string",
-          "enum" : [ "KAFKA", "ACL", "SCHEMA", "CONNECTOR", "UNKNOWN" ]
+          "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
         },
-        "reqId" : {
-          "type" : "string"
+        "reqIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       }
     },
