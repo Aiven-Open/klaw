@@ -295,7 +295,6 @@ paths:
             type: string
             enum: ["all", "created", "approved", "denied", "deleted"]
           example: "created"
-          default: "created"
         - name: topic
           in: query
           required: false
@@ -461,6 +460,55 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TopicRequest"
+  /getTopicRequestsForApprover:
+    get:
+      operationId: getTopicRequestsForApprover
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          example: "2"
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          example: "2"
+          schema:
+            type: string
+        - name: requestsType
+          in: query
+          schema:
+            type: string
+            enum:
+              - all
+              - created
+              - declined
+              - approved
+            default: created
+        - name: teamId
+          in: query
+          schema:
+            type: integer
+            format: int32
+            example: 1001
+        - name: env
+          in: query
+          schema:
+            type: string
+          example: "1"
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopicRequestModel"
   /getAuth:
     get:
       operationId: getAuth
