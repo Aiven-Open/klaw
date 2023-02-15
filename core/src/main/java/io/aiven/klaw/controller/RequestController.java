@@ -42,18 +42,17 @@ public class RequestController {
     switch (verdict.getResourceType()) {
       case KAFKA:
         return wrapInResponseEntity(
-            topicControllerService.approveTopicRequests(verdict.getReqId()), HttpStatus.ACCEPTED);
+            topicControllerService.approveTopicRequests(verdict.getReqId()), HttpStatus.OK);
       case ACL:
         return wrapInResponseEntity(
-            aclControllerService.approveAclRequests(verdict.getReqId()), HttpStatus.ACCEPTED);
+            aclControllerService.approveAclRequests(verdict.getReqId()), HttpStatus.OK);
       case SCHEMA:
         return wrapInResponseEntity(
-            schemaRegstryControllerService.execSchemaRequests(verdict.getReqId()),
-            HttpStatus.ACCEPTED);
+            schemaRegstryControllerService.execSchemaRequests(verdict.getReqId()), HttpStatus.OK);
       case CONNECTOR:
         return wrapInResponseEntity(
             kafkaConnectControllerService.approveConnectorRequests(verdict.getReqId()),
-            HttpStatus.ACCEPTED);
+            HttpStatus.OK);
       default:
         return wrapInResponseEntity(
             ApiResponse.builder().result("Unable to determine target resource.").build(),
@@ -74,21 +73,21 @@ public class RequestController {
       case KAFKA:
         return wrapInResponseEntity(
             topicControllerService.declineTopicRequests(verdict.getReqId(), verdict.getReason()),
-            HttpStatus.ACCEPTED);
+            HttpStatus.OK);
       case ACL:
         return wrapInResponseEntity(
             aclControllerService.declineAclRequests(verdict.getReqId(), verdict.getReason()),
-            HttpStatus.ACCEPTED);
+            HttpStatus.OK);
       case SCHEMA:
         return wrapInResponseEntity(
             schemaRegstryControllerService.execSchemaRequestsDecline(
                 verdict.getReqId(), verdict.getReason()),
-            HttpStatus.ACCEPTED);
+            HttpStatus.OK);
       case CONNECTOR:
         return wrapInResponseEntity(
             kafkaConnectControllerService.declineConnectorRequests(
                 verdict.getReqId(), verdict.getReason()),
-            HttpStatus.ACCEPTED);
+            HttpStatus.OK);
       default:
         return wrapInResponseEntity(
             ApiResponse.builder().result("Unable to determine target resource.").build(),
