@@ -89,7 +89,7 @@ const columns: Array<DataTableColumn<AclRequestTableData>> = [
   {
     type: "status",
     field: "environmentName",
-    headerName: "Cluster",
+    headerName: "Environment",
     status: ({ environmentName }) => ({
       status: "neutral",
       text: environmentName,
