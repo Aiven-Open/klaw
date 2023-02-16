@@ -928,7 +928,9 @@ describe("<TopicAclRequest />", () => {
     });
 
     describe("when API returns an error", () => {
+      const originalConsoleError = console.error;
       beforeEach(async () => {
+        console.error = jest.fn();
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -936,6 +938,10 @@ describe("<TopicAclRequest />", () => {
             status: 400,
           },
         });
+      });
+
+      afterEach(() => {
+        console.error = originalConsoleError;
       });
 
       it("renders an error message", async () => {
@@ -983,6 +989,20 @@ describe("<TopicAclRequest />", () => {
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
+
+        // it's not important that the console.error is called,
+        // but it makes sure that 1) the console.error does not
+        // show up in the test logs while 2) flagging an error
+        // in case a console.error with a different message
+        // gets called - which could be hinting to a problem
+        expect(console.error).toHaveBeenCalledWith({
+          data: { message: "Error message example" },
+          status: 400,
+          statusText: "Bad Request",
+          headers: {
+            map: { "x-powered-by": "msw", "content-type": "application/json" },
+          },
+        });
       });
     });
 
@@ -1190,7 +1210,9 @@ describe("<TopicAclRequest />", () => {
     });
 
     describe("when API returns an error", () => {
+      const originalConsoleError = console.error;
       beforeEach(async () => {
+        console.error = jest.fn();
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -1198,6 +1220,10 @@ describe("<TopicAclRequest />", () => {
             status: 400,
           },
         });
+      });
+
+      afterEach(() => {
+        console.error = originalConsoleError;
       });
 
       it("renders an error message", async () => {
@@ -1259,6 +1285,20 @@ describe("<TopicAclRequest />", () => {
 
         const alert = await screen.findByRole("alert");
         expect(alert).toHaveTextContent("Error message example");
+
+        // it's not important that the console.error is called,
+        // but it makes sure that 1) the console.error does not
+        // show up in the test logs while 2) flagging an error
+        // in case a console.error with a different message
+        // gets called - which could be hinting to a problem
+        expect(console.error).toHaveBeenCalledWith({
+          data: { message: "Error message example" },
+          status: 400,
+          statusText: "Bad Request",
+          headers: {
+            map: { "x-powered-by": "msw", "content-type": "application/json" },
+          },
+        });
       });
     });
 
