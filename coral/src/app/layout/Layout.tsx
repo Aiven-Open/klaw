@@ -13,7 +13,7 @@ function Layout({ children }: { children: ReactNode }) {
         colGap={"l1"}
         minHeight={"screen"}
         style={{
-          gridTemplateColumns: "240px 1fr",
+          gridTemplateColumns: "245px 1fr",
           gridTemplateRows: "auto 1fr",
         }}
       >
