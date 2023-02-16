@@ -63,7 +63,7 @@ describe("TopicSchemaRequest", () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   describe("checks if topicName passed from url is part of topics user can request schemas for", () => {
@@ -370,26 +370,87 @@ describe("TopicSchemaRequest", () => {
       cleanup();
     });
 
-    it("redirects user to the previous page if the click 'Cancel'", async () => {
+    it("redirects user to the previous page if they click 'Cancel' on empty form", async () => {
       const form = getForm();
-
-      const select = within(form).getByRole("combobox", {
-        name: /Environment/i,
-      });
-      const option = within(select).getByRole("option", {
-        name: mockedEnvironments[0].name,
-      });
-      const fileInput =
-        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
 
       const button = within(form).getByRole("button", {
         name: "Cancel",
       });
 
-      await userEvent.selectOptions(select, option);
-      await userEvent.tab();
-      await userEvent.upload(fileInput, testFile);
       await userEvent.click(button);
+
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+    });
+
+    it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+      const form = getForm();
+
+      const remarkInput = screen.getByRole("textbox", {
+        name: "Enter a message for approval",
+      });
+      await userEvent.type(remarkInput, "Important information");
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+      const dialog = screen.getByRole("dialog");
+
+      expect(dialog).toBeVisible();
+      expect(dialog).toHaveTextContent("Cancel schema request");
+      expect(dialog).toHaveTextContent(
+        "Do you want to cancel this request? The data added will be lost."
+      );
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+    });
+
+    it("brings the user back to the form when they do not cancel", async () => {
+      const form = getForm();
+
+      const remarkInput = screen.getByRole("textbox", {
+        name: "Enter a message for approval",
+      });
+      await userEvent.type(remarkInput, "Important information");
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+      const dialog = screen.getByRole("dialog");
+
+      const returnButton = screen.getByRole("button", {
+        name: "Continue with request",
+      });
+
+      await userEvent.click(returnButton);
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+
+      expect(dialog).not.toBeInTheDocument();
+    });
+
+    it("redirects user to previous page if they cancel the request", async () => {
+      const form = getForm();
+
+      const remarkInput = screen.getByRole("textbox", {
+        name: "Enter a message for approval",
+      });
+      await userEvent.type(remarkInput, "Important information");
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+
+      const returnButton = screen.getByRole("button", {
+        name: "Cancel request",
+      });
+
+      await userEvent.click(returnButton);
 
       expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });

@@ -20,6 +20,8 @@ import { createSchemaRequest } from "src/domain/schema-request";
 import { useNavigate } from "react-router-dom";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { getTopicNames, TopicNames } from "src/domain/topic";
+import { Dialog } from "src/app/components/Dialog";
+import { useState } from "react";
 
 type TopicSchemaRequestProps = {
   topicName: string;
@@ -36,6 +38,8 @@ type TopicSchemaRequestProps = {
 // be able to add this tests. I created na issue in github related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
+
+  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
   const navigate = useNavigate();
   const form = useForm<TopicRequestFormSchema>({
@@ -76,72 +80,101 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     schemaRequestMutation.mutate(userInput);
   }
 
-  function onCancel() {
+  function cancelRequest() {
     form.reset();
     navigate(-1);
   }
 
   return (
-    <Box style={{ maxWidth: 1200 }}>
-      {schemaRequestMutation.isError && (
-        <Box marginBottom={"l1"} role="alert">
-          <Alert type="warning">
-            {parseErrorMsg(schemaRequestMutation.error)}
-          </Alert>
-        </Box>
-      )}
-      <Form
-        {...form}
-        ariaLabel={"Request a new schema"}
-        onSubmit={onSubmitForm}
-      >
-        <NativeSelect<TopicRequestFormSchema>
-          name={"topicname"}
-          labelText={"Topic name"}
-          readOnly={true}
-          aria-readonly={true}
+    <>
+      <Box style={{ maxWidth: 1200 }}>
+        {schemaRequestMutation.isError && (
+          <Box marginBottom={"l1"} role="alert">
+            <Alert type="warning">
+              {parseErrorMsg(schemaRequestMutation.error)}
+            </Alert>
+          </Box>
+        )}
+        <Form
+          {...form}
+          ariaLabel={"Request a new schema"}
+          onSubmit={onSubmitForm}
         >
-          <option value={topicName}>{topicName}</option>
-        </NativeSelect>
-
-        {environmentsIsLoading && (
-          <div data-testid={"environments-select-loading"}>
-            <NativeSelect.Skeleton />
-          </div>
-        )}
-
-        {environments && (
           <NativeSelect<TopicRequestFormSchema>
-            name={"environment"}
-            labelText={"Environment"}
-            placeholder={"-- Please select --"}
-            required={true}
+            name={"topicname"}
+            labelText={"Topic name"}
+            readOnly={true}
+            aria-readonly={true}
           >
-            {environments.map((env) => {
-              return (
-                <option key={env.id} value={env.id}>
-                  {env.name}
-                </option>
-              );
-            })}
+            <option value={topicName}>{topicName}</option>
           </NativeSelect>
-        )}
 
-        <TopicSchema
-          name={"schemafull"}
-          required={!props.schemafullValueForTest}
-        />
+          {environmentsIsLoading && (
+            <div data-testid={"environments-select-loading"}>
+              <NativeSelect.Skeleton />
+            </div>
+          )}
 
-        <Textarea name={"remarks"} labelText={"Enter a message for approval"} />
+          {environments && (
+            <NativeSelect<TopicRequestFormSchema>
+              name={"environment"}
+              labelText={"Environment"}
+              placeholder={"-- Please select --"}
+              required={true}
+            >
+              {environments.map((env) => {
+                return (
+                  <option key={env.id} value={env.id}>
+                    {env.name}
+                  </option>
+                );
+              })}
+            </NativeSelect>
+          )}
 
-        <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-          <SubmitButton>Submit request</SubmitButton>
-          <Button type="button" kind={"secondary"} onClick={onCancel}>
-            Cancel
-          </Button>
-        </Box>
-      </Form>
-    </Box>
+          <TopicSchema
+            name={"schemafull"}
+            required={!props.schemafullValueForTest}
+          />
+
+          <Textarea
+            name={"remarks"}
+            labelText={"Enter a message for approval"}
+          />
+
+          <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
+            <SubmitButton>Submit request</SubmitButton>
+            <Button
+              type="button"
+              kind={"secondary"}
+              onClick={
+                form.formState.isDirty
+                  ? () => setCancelDialogVisible(true)
+                  : () => cancelRequest()
+              }
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Form>
+      </Box>
+      {cancelDialogVisible && (
+        <Dialog
+          title={"Cancel schema request"}
+          primaryAction={{
+            text: "Cancel request",
+            onClick: () => cancelRequest(),
+          }}
+          secondaryAction={{
+            text: "Continue with request",
+            onClick: () => setCancelDialogVisible(false),
+          }}
+          type={"warning"}
+        >
+          <>Do you want to cancel this request? The data added will be lost.</>
+        </Dialog>
+      )}
+    </>
   );
 }
 
