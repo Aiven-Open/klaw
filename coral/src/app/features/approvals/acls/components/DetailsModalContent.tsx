@@ -47,17 +47,18 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
         <Label>Requesting team</Label>
         <dd>{requestingTeamName}</dd>
       </Flexbox>
+
       <Flexbox direction={"column"} width={"min"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
       </Flexbox>
-
       <Flexbox direction={"column"}>
         <Label>Topic</Label>
         <dd>{topicname}</dd>
       </Flexbox>
+
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Principals/Usernames</Label>
@@ -70,6 +71,7 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
           </Flexbox>
         </Flexbox>
       </GridItem>
+
       {ips.length > 0 && (
         <GridItem colSpan={"span-2"}>
           <Flexbox direction={"column"}>
@@ -84,6 +86,7 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
           </Flexbox>
         </GridItem>
       )}
+
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Consumer group</Label>
@@ -92,18 +95,20 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
           </dd>
         </Flexbox>
       </GridItem>
+
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Message for the approver</Label>
           <dd>{remarks || <i>No message</i>}</dd>
         </Flexbox>
       </GridItem>
+
       <Flexbox direction={"column"}>
-        <Label> Request by</Label>
+        <Label>Requested by</Label>
         <dd>{username}</dd>
       </Flexbox>
       <Flexbox direction={"column"}>
-        <Label> Requested on</Label>
+        <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
       </Flexbox>
     </Grid>
