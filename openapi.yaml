@@ -477,6 +477,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GetAuthResponse"
+  /request/approve:
+    post:
+      operationId: approveRequest
+      requestBody:
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/RequestVerdict"
+        required: false
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiResponse"
+      x-codegen-request-body-name: body
+  /request/decline:
+    post:
+      operationId: declineRequest
+      requestBody:
+        content:
+          "*/*":
+            schema:
+              $ref: "#/components/schemas/RequestVerdict"
+        required: false
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiResponse"
+      x-codegen-request-body-name: body
 components:
   schemas:
     CommonError:
@@ -1443,3 +1481,20 @@ components:
           type: string
           example: "5"
           description: Number of topic requests waiting for approval
+    RequestVerdict:
+      type: object
+      properties:
+        reason:
+          type: string
+        requestEntityType:
+          type: string
+          enum:
+            - TOPIC
+            - ACL
+            - SCHEMA
+            - CONNECTOR
+            - USER
+        reqIds:
+          type: array
+          items:
+            type: string
