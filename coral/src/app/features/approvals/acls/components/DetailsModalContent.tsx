@@ -29,8 +29,8 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
     requestingTeamName = "Team name not found",
   } = aclRequest;
 
-  const ips = acl_ip || [];
-  const principals = acl_ssl || [];
+  const ips = acl_ip ?? [];
+  const principals = acl_ssl ?? [];
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rows={"6"} rowGap={"6"}>

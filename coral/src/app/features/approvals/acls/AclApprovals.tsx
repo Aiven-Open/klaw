@@ -340,13 +340,11 @@ function AclApprovals() {
           }}
           isLoading={approveIsLoading}
         >
-          {
-            <DetailsModalContent
-              aclRequest={data.entries.find(
-                (request) => request.req_no === Number(detailsModal.reqNo)
-              )}
-            />
-          }
+          <DetailsModalContent
+            aclRequest={data.entries.find(
+              (request) => request.req_no === Number(detailsModal.reqNo)
+            )}
+          />
         </RequestDetailsModal>
       )}
       {rejectModal.isOpen && (
