@@ -477,14 +477,9 @@ paths:
             type: string
         - name: requestsType
           in: query
+          description: Naming is a mistake (will change), this relates to the status of a request
           schema:
-            type: string
-            enum:
-              - all
-              - created
-              - declined
-              - approved
-            default: created
+            $ref: "#/components/schemas/RequestStatus"
         - name: teamId
           in: query
           schema:
@@ -615,6 +610,26 @@ components:
           type: string
         data:
           type: object
+    RequestType:
+      title: Type of request related to topic
+      type: string
+      enum:
+        - Create
+        - Update
+        - Delete
+        - Claim
+        - Promote
+      example: Update
+    RequestStatus:
+      type: string
+      title: Status of a request
+      enum:
+        - created
+        - deleted
+        - declined
+        - approved
+        - all
+      example: created
     UserAuthenticationRequest:
       type: object
       required:
@@ -648,15 +663,6 @@ components:
           example: JWT
           type: string
           enum: [JWT]
-    TopicRequestTypes:
-      title: Type of request related to topic
-      type: string
-      enum:
-        - Create
-        - Update
-        - Delete
-        - Claim
-      example: Update
     TopicsGetResponse:
       type: array
       items:
@@ -953,15 +959,6 @@ components:
           type: string
           enum: ["true", "false"]
       example: { "aivenCluster": "false" }
-    RequestStatus:
-      type: string
-      title: Status of a request
-      enum:
-        - created
-        - deleted
-        - declined
-        - approved
-      example: created
     topicCreateRequest:
       title: TopicCreateRequest
       type: object
@@ -1181,9 +1178,7 @@ components:
           pattern: dd-MMM-yyyy HH:mm:ss
           example: "10-11-2020 10:45:30"
         aclstatus:
-          type: string
-          enum: ["created", "approved", "denied", "deleted"]
-          example: "created"
+          $ref: "#/components/schemas/RequestStatus"
         approver:
           type: string
         approvingtime:
@@ -1287,7 +1282,7 @@ components:
         topicstatus:
           $ref: "#/components/schemas/RequestStatus"
         requesttype:
-          $ref: "#/components/schemas/TopicRequestTypes"
+          $ref: "#/components/schemas/RequestType"
         remarks:
           title: Remarks
           description: SchemaRequest specific comment
@@ -1382,13 +1377,7 @@ components:
           title: App name
           type: string
         topictype:
-          title: Topic type
-          type: string
-          enum:
-            - Create
-            - Update
-            - Delete
-            - Claim
+          $ref: "#/components/schemas/RequestType"
         requestor:
           title: Requestor
           type: string
