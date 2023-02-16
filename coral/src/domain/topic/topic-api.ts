@@ -3,7 +3,7 @@ import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
-  transformgetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsForApproverResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
@@ -92,7 +92,7 @@ const getTopicAdvancedConfigOptions = (): Promise<
 > =>
   api
     .get<KlawApiResponse<"topicAdvancedConfigGet">>("/getAdvancedTopicConfigs")
-    .then(transformgetTopicAdvancedConfigOptionsResponse);
+    .then(transformGetTopicAdvancedConfigOptionsResponse);
 
 const requestTopic = (
   payload: KlawApiRequest<"topicCreate">

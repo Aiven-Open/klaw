@@ -134,7 +134,7 @@ const ADVANCED_TOPIC_CONFIG_DOCUMENTATION: Record<
   },
 };
 
-function transformgetTopicAdvancedConfigOptionsResponse(
+function transformGetTopicAdvancedConfigOptionsResponse(
   apiResponse: KlawApiResponse<"topicAdvancedConfigGet">
 ): TopicAdvancedConfigurationOptions[] {
   return Object.entries(apiResponse).map(([key, name]) => {
@@ -169,6 +169,6 @@ function transformGetTopicRequestsForApproverResponse(
 
 export {
   transformTopicApiResponse,
-  transformgetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsForApproverResponse,
 };

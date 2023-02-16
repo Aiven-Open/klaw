@@ -1,5 +1,5 @@
 import {
-  transformgetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsForApproverResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
@@ -59,8 +59,8 @@ describe("topic-transformer.ts", () => {
     });
   });
 
-  describe("transformgetTopicAdvancedConfigOptionsResponse", () => {
-    it("transforms an config without known documenation", () => {
+  describe("transformGetTopicAdvancedConfigOptionsResponse", () => {
+    it("transforms an config without known documentation", () => {
       const apiResponse: KlawApiResponse<"topicAdvancedConfigGet"> = {
         MIN_COMPACTION_LAG_MS: "min.compaction.lag.ms",
       };
@@ -75,10 +75,10 @@ describe("topic-transformer.ts", () => {
         },
       ];
       expect(
-        transformgetTopicAdvancedConfigOptionsResponse(apiResponse)
+        transformGetTopicAdvancedConfigOptionsResponse(apiResponse)
       ).toStrictEqual(result);
     });
-    it("transforms an config without known documenation", () => {
+    it("transforms an config without known documentation", () => {
       const apiResponse: KlawApiResponse<"topicAdvancedConfigGet"> = {
         CONFIG_WITHOUT_DOCUMENTATION: "config.without.documentation",
       };
@@ -89,7 +89,7 @@ describe("topic-transformer.ts", () => {
         },
       ];
       expect(
-        transformgetTopicAdvancedConfigOptionsResponse(apiResponse)
+        transformGetTopicAdvancedConfigOptionsResponse(apiResponse)
       ).toStrictEqual(result);
     });
   });
