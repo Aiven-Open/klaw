@@ -60,6 +60,12 @@ export type paths = {
   "/getAuth": {
     get: operations["getAuth"];
   };
+  "/request/approve": {
+    post: operations["approveRequest"];
+  };
+  "/request/decline": {
+    post: operations["declineRequest"];
+  };
 };
 
 export type components = {
@@ -999,6 +1005,12 @@ export type components = {
        */
       notifications: string;
     };
+    RequestVerdict: {
+      reason?: string;
+      /** @enum {string} */
+      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      reqIds: string[];
+    };
   };
 };
 
@@ -1278,6 +1290,36 @@ export type operations = {
       };
     };
   };
+  approveRequest: {
+    responses: {
+      /** successful operation */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"][];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["RequestVerdict"];
+      };
+    };
+  };
+  declineRequest: {
+    responses: {
+      /** successful operation */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"][];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "*/*": components["schemas"]["RequestVerdict"];
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -1301,4 +1343,6 @@ export enum ApiPaths {
   schemaUpload = "/uploadSchema",
   getTopicRequestsForApprover = "/getTopicRequestsForApprover",
   getAuth = "/getAuth",
+  approveRequest = "/request/approve",
+  declineRequest = "/request/decline",
 }
