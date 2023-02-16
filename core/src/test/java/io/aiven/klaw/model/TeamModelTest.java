@@ -115,6 +115,11 @@ public class TeamModelTest {
 
     model.setContactperson("Mr Jünemann");
     violations = validator.validate(model);
+    assertThat(violations.isEmpty()).isTrue(); // 'ä', 'ö', 'Ä', 'ß'
+
+    // explicitly just testing the special chars mentioned in raised Issue
+    model.setContactperson("äöÄß");
+    violations = validator.validate(model);
     assertThat(violations.isEmpty()).isTrue();
   }
 
