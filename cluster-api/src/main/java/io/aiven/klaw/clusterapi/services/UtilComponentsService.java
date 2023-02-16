@@ -21,6 +21,8 @@ public class UtilComponentsService {
 
   KafkaConnectService kafkaConnectService;
 
+  ConfluentCloudApiService confluentCloudApiService;
+
   public UtilComponentsService() {}
 
   public UtilComponentsService(Environment env, ClusterApiUtils clusterApiUtils) {
@@ -33,11 +35,13 @@ public class UtilComponentsService {
       Environment env,
       ClusterApiUtils clusterApiUtils,
       SchemaService schemaService,
-      KafkaConnectService kafkaConnectService) {
+      KafkaConnectService kafkaConnectService,
+      ConfluentCloudApiService confluentCloudApiService) {
     this.env = env;
     this.clusterApiUtils = clusterApiUtils;
     this.schemaService = schemaService;
     this.kafkaConnectService = kafkaConnectService;
+    this.confluentCloudApiService = confluentCloudApiService;
   }
 
   //    public String reloadTruststore(String protocol, String clusterName){
@@ -49,11 +53,12 @@ public class UtilComponentsService {
       String environment,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
-      String clusterType) {
+      String clusterType,
+      String kafkaFlavor) {
     log.info("getStatus {} {}", environment, protocol);
     switch (clusterType) {
       case "kafka":
-        return getStatusKafka(environment, protocol, clusterIdentification);
+        return getStatusKafka(environment, protocol, clusterIdentification, kafkaFlavor);
       case "schemaregistry":
         return schemaService.getSchemaRegistryStatus(environment, protocol, clusterIdentification);
       case "kafkaconnect":
@@ -65,13 +70,19 @@ public class UtilComponentsService {
   }
 
   private ClusterStatus getStatusKafka(
-      String environment, KafkaSupportedProtocol protocol, String clusterName) {
+      String environment, KafkaSupportedProtocol protocol, String clusterName, String kafkaFlavor) {
     try {
-      AdminClient client = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
-      if (client != null) {
-        return ClusterStatus.ONLINE;
-      } else return ClusterStatus.OFFLINE;
+      if (kafkaFlavor != null && kafkaFlavor.equals("Confluent Cloud")) {
+        if (confluentCloudApiService.listTopics(environment, protocol, clusterName).size() >= 0)
+          return ClusterStatus.ONLINE;
+      } else {
+        AdminClient client = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
+        if (client != null) {
+          return ClusterStatus.ONLINE;
+        }
+      }
 
+      return ClusterStatus.OFFLINE;
     } catch (Exception e) {
       log.error("Exception:", e);
       return ClusterStatus.OFFLINE;

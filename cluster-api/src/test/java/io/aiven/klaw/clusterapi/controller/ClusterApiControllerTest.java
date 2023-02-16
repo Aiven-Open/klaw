@@ -22,10 +22,13 @@ import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
+import io.aiven.klaw.clusterapi.services.ConfluentCloudApiService;
 import io.aiven.klaw.clusterapi.services.MonitoringService;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,6 +49,8 @@ public class ClusterApiControllerTest {
   @MockBean private MonitoringService monitoringService;
   @MockBean private AivenApiService aivenApiService;
 
+  @MockBean private ConfluentCloudApiService confluentCloudApiService;
+
   private MockMvc mvc;
 
   private UtilMethods utilMethods;
@@ -60,7 +65,8 @@ public class ClusterApiControllerTest {
             apacheKafkaTopicService,
             schemaService,
             monitoringService,
-            aivenApiService);
+            aivenApiService,
+            confluentCloudApiService);
     mvc = MockMvcBuilders.standaloneSetup(clusterApiController).dispatchOptions(true).build();
   }
 
@@ -79,7 +85,11 @@ public class ClusterApiControllerTest {
     String bootstrapServers = "localhost:9092";
 
     when(utilComponentsService.getStatus(
-            bootstrapServers, KafkaSupportedProtocol.PLAINTEXT, clusterName, clusterType))
+            bootstrapServers,
+            KafkaSupportedProtocol.PLAINTEXT,
+            clusterName,
+            clusterType,
+            "Apache Kafka"))
         .thenReturn(ClusterStatus.ONLINE);
 
     String urlTemplate =
@@ -90,7 +100,9 @@ public class ClusterApiControllerTest {
             bootstrapServers,
             KafkaSupportedProtocol.PLAINTEXT.getValue(),
             clusterName,
-            clusterType);
+            clusterType,
+            "kafkaFlavor",
+            "Apache Kafka");
     mvc.perform(
             MockMvcRequestBuilders.get(urlTemplate)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +128,9 @@ public class ClusterApiControllerTest {
             "getTopics",
             bootstrapServers,
             KafkaSupportedProtocol.PLAINTEXT.getValue(),
-            clusterName);
+            clusterName,
+            "topicsNativeType",
+            AclsNativeType.NATIVE.value);
     mvc.perform(get(urlTemplate))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -171,12 +185,50 @@ public class ClusterApiControllerTest {
   }
 
   @Test
+  public void createTopicsConfluentCloud() throws Exception {
+    ClusterTopicRequest topicReq = utilMethods.getConfluentCloudTopicRequest();
+    String jsonReq = new ObjectMapper().writer().writeValueAsString(topicReq);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+
+    when(confluentCloudApiService.createTopic(any(ClusterTopicRequest.class)))
+        .thenReturn(apiResponse);
+
+    mvc.perform(
+            post("/topics/createTopics")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
   public void createAclsProducer() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAclRequest(AclType.PRODUCER.value);
     String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterAclRequest);
 
     when(apacheKafkaAclService.updateProducerAcl(any(ClusterAclRequest.class)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    mvc.perform(
+            post("/topics/createAcls")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
+  public void createAclsProducerConfluentCloud() throws Exception {
+    ClusterAclRequest clusterAclRequest = utilMethods.getConfluentCloudProducerAclRequest();
+    String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterAclRequest);
+    Map<String, String> aclResponse = new HashMap<>();
+    aclResponse.put("result", ApiResultStatus.SUCCESS.value);
+
+    when(confluentCloudApiService.createAcls(any(ClusterAclRequest.class))).thenReturn(aclResponse);
 
     mvc.perform(
             post("/topics/createAcls")

@@ -91,6 +91,7 @@ public class EnvControllerService {
             kwClusters.getProtocol(),
             kwClusters.getClusterName() + kwClusters.getClusterId(),
             env.getType(),
+            kwClusters.getKafkaFlavor(),
             tenantId);
 
     env.setEnvStatus(status);

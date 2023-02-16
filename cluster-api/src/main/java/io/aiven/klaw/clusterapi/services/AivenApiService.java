@@ -43,22 +43,22 @@ public class AivenApiService {
   @Value("${klaw.clusters.accesstoken:accesstoken}")
   private String clusterAccessToken;
 
-  @Value("${klaw.clusters.listacls.api:api}")
+  @Value("${klaw.clusters.aiven.listacls.api:api}")
   private String listAclsApiEndpoint;
 
-  @Value("${klaw.clusters.addacls.api:api}")
+  @Value("${klaw.clusters.aiven.addacls.api:api}")
   private String addAclsApiEndpoint;
 
-  @Value("${klaw.clusters.deleteacls.api:api}")
+  @Value("${klaw.clusters.aiven.deleteacls.api:api}")
   private String deleteAclsApiEndpoint;
 
-  @Value("${klaw.clusters.addserviceaccount.api:api}")
+  @Value("${klaw.clusters.aiven.addserviceaccount.api:api}")
   private String addServiceAccountApiEndpoint;
 
-  @Value("${klaw.clusters.getserviceaccount.api:api}")
+  @Value("${klaw.clusters.aiven.getserviceaccount.api:api}")
   private String getServiceAccountApiEndpoint;
 
-  @Value("${klaw.clusters.servicedetails.api:api}")
+  @Value("${klaw.clusters.aiven.servicedetails.api:api}")
   private String serviceDetailsApiEndpoint;
 
   public Map<String, String> createAcls(ClusterAclRequest clusterAclRequest) {
@@ -260,7 +260,6 @@ public class AivenApiService {
       throws Exception {
     RestTemplate restTemplate = getRestTemplate();
     log.info("listAcls {} {}", projectName, serviceName);
-    Set<Map<String, String>> acls = new HashSet<>();
 
     String uri =
         listAclsApiEndpoint.replace(PROJECT_NAME, projectName).replace(SERVICE_NAME, serviceName);

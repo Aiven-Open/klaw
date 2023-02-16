@@ -40,6 +40,8 @@ public class ClusterApiUtils {
       ".klaw.kafkaconnect.credentials";
 
   public static final String KAFKA_SR_CREDENTIALS_PROPERTY_SFX = ".klaw.schemaregistry.credentials";
+  public static final String KAFKA_CONFLUENT_CLOUD_CREDENTIALS_PROPERTY_SFX =
+      ".klaw.confluentcloud.credentials";
   private static MessageDigest messageDigest;
 
   static {
@@ -463,6 +465,12 @@ public class ClusterApiUtils {
       credentials =
           env.getProperty(
               clusterIdentification.toLowerCase().concat(KAFKA_CONNECT_CREDENTIALS_PROPERTY_SFX));
+    } else if (KafkaClustersType.KAFKA.equals(kafkaClustersType)) {
+      credentials =
+          env.getProperty(
+              clusterIdentification
+                  .toLowerCase()
+                  .concat(KAFKA_CONFLUENT_CLOUD_CREDENTIALS_PROPERTY_SFX));
     }
 
     HttpHeaders httpHeaders = new HttpHeaders();

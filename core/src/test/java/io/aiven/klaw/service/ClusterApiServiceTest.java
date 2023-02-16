@@ -95,7 +95,8 @@ public class ClusterApiServiceTest {
     assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
 
     result =
-        clusterApiService.getKafkaClusterStatus("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
+        clusterApiService.getKafkaClusterStatus(
+            "", KafkaSupportedProtocol.PLAINTEXT, "", "", "", 1);
     assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
   }
 
@@ -111,7 +112,8 @@ public class ClusterApiServiceTest {
     assertThat(result).isEqualTo("OFFLINE");
 
     result =
-        clusterApiService.getKafkaClusterStatus("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
+        clusterApiService.getKafkaClusterStatus(
+            "", KafkaSupportedProtocol.PLAINTEXT, "", "", "", 1);
     assertThat(result).isEqualTo("NOT_KNOWN");
   }
 
@@ -165,7 +167,7 @@ public class ClusterApiServiceTest {
         .thenReturn(response);
 
     List<Map<String, String>> result =
-        clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", 1);
+        clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
     assertThat(result).isEqualTo(new ArrayList<>(topicsList));
   }
 
@@ -178,7 +180,7 @@ public class ClusterApiServiceTest {
         .thenThrow(new RuntimeException("error"));
 
     assertThatThrownBy(
-            () -> clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", 1))
+            () -> clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1))
         .isInstanceOf(KlawException.class);
   }
 

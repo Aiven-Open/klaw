@@ -23,6 +23,7 @@
         <apache.commons.lang.version>3.12.0</apache.commons.lang.version>
         <guava.version>31.1-jre</guava.version>
         <kafka.client.version>3.4.0</kafka.client.version>
+        <mockserver.version>5.15.0</mockserver.version>
         <spring-kafka-test.version>3.0.2</spring-kafka-test.version>
     </properties>
 
@@ -42,6 +43,11 @@
             <artifactId>spring-kafka-test</artifactId>
             <version>${spring-kafka-test.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-spring-test-listener</artifactId>
+            <version>${mockserver.version}</version>
         </dependency>
     </dependencies>
 

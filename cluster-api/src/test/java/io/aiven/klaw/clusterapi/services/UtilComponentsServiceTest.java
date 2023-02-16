@@ -96,10 +96,13 @@ public class UtilComponentsServiceTest {
 
   private ApacheKafkaTopicService apacheKafkaTopicService;
 
+  private ConfluentCloudApiService confluentCloudApiService;
+
   private SchemaService schemaService;
 
   @BeforeEach
   public void setUp() {
+    confluentCloudApiService = new ConfluentCloudApiService(env, clusterApiUtils);
     utilComponentsService = new UtilComponentsService(env, clusterApiUtils);
     apacheKafkaAclService = new ApacheKafkaAclService(clusterApiUtils);
     apacheKafkaTopicService = new ApacheKafkaTopicService(clusterApiUtils);
@@ -113,7 +116,8 @@ public class UtilComponentsServiceTest {
     when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     ClusterStatus result =
-        utilComponentsService.getStatus("localhost", KafkaSupportedProtocol.PLAINTEXT, "", "kafka");
+        utilComponentsService.getStatus(
+            "localhost", KafkaSupportedProtocol.PLAINTEXT, "", "kafka", "Apache Kafka");
     assertThat(result).isSameAs(ClusterStatus.ONLINE);
   }
 
@@ -121,7 +125,8 @@ public class UtilComponentsServiceTest {
   public void getStatusOffline1() {
 
     ClusterStatus result =
-        utilComponentsService.getStatus("localhost", KafkaSupportedProtocol.PLAINTEXT, "", "");
+        utilComponentsService.getStatus(
+            "localhost", KafkaSupportedProtocol.PLAINTEXT, "", "", "Apache Kafka");
     assertThat(result).isSameAs(ClusterStatus.OFFLINE);
   }
 
@@ -129,7 +134,8 @@ public class UtilComponentsServiceTest {
   public void getStatusOffline2() {
 
     ClusterStatus result =
-        utilComponentsService.getStatus("localhost", KafkaSupportedProtocol.PLAINTEXT, "", "");
+        utilComponentsService.getStatus(
+            "localhost", KafkaSupportedProtocol.PLAINTEXT, "", "", "Apache Kafka");
     assertThat(result).isSameAs(ClusterStatus.OFFLINE);
   }
 

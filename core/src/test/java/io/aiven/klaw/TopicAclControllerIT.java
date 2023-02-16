@@ -440,7 +440,7 @@ public class TopicAclControllerIT {
   @Test
   public void getTopicsFromCluster() throws Exception {
     when(clusterApiService.getAllTopics(
-            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString(), anyInt()))
+            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterApiTopics(topicName, 10));
 
     String res =
@@ -467,7 +467,7 @@ public class TopicAclControllerIT {
   @Test
   public void getOnlyTopicNames() throws Exception {
     when(clusterApiService.getAllTopics(
-            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString(), anyInt()))
+            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getClusterApiTopics(topicName, 10));
 
     String res =
