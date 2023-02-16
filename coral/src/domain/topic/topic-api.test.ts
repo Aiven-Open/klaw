@@ -1,4 +1,7 @@
-import { getTopicRequests, requestTopic } from "src/domain/topic/topic-api";
+import {
+  getTopicRequestsForApprover,
+  requestTopic,
+} from "src/domain/topic/topic-api";
 import { server } from "src/services/api-mocks/server";
 import api from "src/services/api";
 import {
@@ -56,10 +59,10 @@ describe("topic-api", () => {
     });
     it("calls api.get with correct URL", async () => {
       const getSpy = jest.spyOn(api, "get");
-      await getTopicRequests({ requestType: "created" });
+      await getTopicRequestsForApprover({ requestStatus: "created" });
       expect(getSpy).toHaveBeenCalledTimes(1);
       expect(getSpy).toHaveBeenCalledWith(
-        "/getCreatedTopicRequests?pageNo=1&currentPage=1&requestsType=created"
+        "/getTopicRequestsForApprover?pageNo=1&currentPage=1&requestsType=created"
       );
     });
   });

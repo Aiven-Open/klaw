@@ -2,7 +2,7 @@ import { DataTable, DataTableColumn, GhostButton } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import infoSign from "@aivenio/aquarium/dist/src/icons/infoSign";
-import { TopicRequestNew } from "src/domain/topic/topic-types";
+import { TopicRequest } from "src/domain/topic/topic-types";
 
 interface TopicRequestTableData {
   id: number; // unclear
@@ -89,13 +89,13 @@ const columns: Array<DataTableColumn<TopicRequestTableData>> = [
 ];
 
 type TopicApprovalsTableProp = {
-  requests: TopicRequestNew[];
+  requests: TopicRequest[];
 };
 function TopicApprovalsTable(props: TopicApprovalsTableProp) {
   const { requests } = props;
 
   const rows: TopicRequestTableData[] = requests.map(
-    (request: TopicRequestNew) => {
+    (request: TopicRequest) => {
       return {
         id: request.topicid,
         topicname: request.topicname,
