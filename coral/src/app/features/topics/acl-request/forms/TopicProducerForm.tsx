@@ -8,7 +8,7 @@ import {
   SecondaryButton,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import {
@@ -27,6 +27,7 @@ import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/sch
 import { createAclRequest } from "src/domain/acl/acl-api";
 import { Environment } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { Dialog } from "src/app/components/Dialog";
 
 // eslint-disable-next-line import/exports-last
 export interface TopicProducerFormProps {
@@ -44,6 +45,8 @@ const TopicProducerForm = ({
   renderAclTypeField,
   isAivenCluster,
 }: TopicProducerFormProps) => {
+  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
+
   const navigate = useNavigate();
   const { aclIpPrincipleType, aclPatternType, topicname } =
     topicProducerForm.getValues();
@@ -88,6 +91,11 @@ const TopicProducerForm = ({
     mutate(formData);
   };
 
+  function cancelRequest() {
+    topicProducerForm.reset();
+    navigate(-1);
+  }
+
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || isAivenCluster === undefined;
   const hideTopicNameOrPrefixField = aclPatternType === undefined;
@@ -99,7 +107,11 @@ const TopicProducerForm = ({
           <Alert type="warning">{parseErrorMsg(error)}</Alert>
         </Box>
       )}
-      <Form {...topicProducerForm} onSubmit={onSubmitTopicProducer}>
+      <Form
+        {...topicProducerForm}
+        ariaLabel={"Request producer ACL"}
+        onSubmit={onSubmitTopicProducer}
+      >
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
           <GridItem>{renderAclTypeField()}</GridItem>
           <GridItem>
@@ -163,15 +175,39 @@ const TopicProducerForm = ({
 
         <Grid cols={"2"} colGap={"4"} width={"fit"}>
           <GridItem>
-            <SubmitButton loading={isLoading}>Submit</SubmitButton>
+            <SubmitButton loading={isLoading}>Submit request</SubmitButton>
           </GridItem>
           <GridItem>
-            <SecondaryButton disabled={isLoading} onClick={() => navigate(-1)}>
+            <SecondaryButton
+              disabled={isLoading}
+              type="button"
+              onClick={
+                topicProducerForm.formState.isDirty
+                  ? () => setCancelDialogVisible(true)
+                  : () => cancelRequest()
+              }
+            >
               Cancel
             </SecondaryButton>
           </GridItem>
         </Grid>
       </Form>
+      {cancelDialogVisible && (
+        <Dialog
+          title={"Cancel ACL request"}
+          primaryAction={{
+            text: "Cancel request",
+            onClick: () => cancelRequest(),
+          }}
+          secondaryAction={{
+            text: "Continue with request",
+            onClick: () => setCancelDialogVisible(false),
+          }}
+          type={"warning"}
+        >
+          <>Do you want to cancel this request? The data added will be lost.</>
+        </Dialog>
+      )}
     </>
   );
 };

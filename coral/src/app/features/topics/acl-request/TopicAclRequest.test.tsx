@@ -1,4 +1,4 @@
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
@@ -826,6 +826,107 @@ describe("<TopicAclRequest />", () => {
       jest.clearAllMocks();
     });
 
+    describe("when user cancels form input", () => {
+      beforeEach(async () => {
+        await assertSkeleton();
+        const aclConsumerTypeInput = screen.getByRole("radio", {
+          name: "Producer",
+        });
+        await userEvent.click(aclConsumerTypeInput);
+      });
+
+      const getForm = () => {
+        return screen.getByRole("form", {
+          name: `Request producer ACL`,
+        });
+      };
+
+      it("redirects user to the previous page if they click 'Cancel' on empty form", async () => {
+        const form = getForm();
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+
+        expect(mockedNavigate).toHaveBeenCalledWith(-1);
+      });
+
+      it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+        const form = getForm();
+
+        const remarkInput = screen.getByRole("textbox", {
+          name: "Remarks",
+        });
+        await userEvent.type(remarkInput, "Important information");
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+        const dialog = screen.getByRole("dialog");
+
+        expect(dialog).toBeVisible();
+        expect(dialog).toHaveTextContent("Cancel ACL request");
+        expect(dialog).toHaveTextContent(
+          "Do you want to cancel this request? The data added will be lost."
+        );
+
+        expect(mockedNavigate).not.toHaveBeenCalled();
+      });
+
+      it("brings the user back to the form when they do not cancel", async () => {
+        const form = getForm();
+
+        const remarkInput = screen.getByRole("textbox", {
+          name: "Remarks",
+        });
+        await userEvent.type(remarkInput, "Important information");
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+        const dialog = screen.getByRole("dialog");
+
+        const returnButton = screen.getByRole("button", {
+          name: "Continue with request",
+        });
+
+        await userEvent.click(returnButton);
+
+        expect(mockedNavigate).not.toHaveBeenCalled();
+
+        expect(dialog).not.toBeInTheDocument();
+      });
+
+      it("redirects user to previous page if they cancel the request", async () => {
+        const form = getForm();
+
+        const remarkInput = screen.getByRole("textbox", {
+          name: "Remarks",
+        });
+        await userEvent.type(remarkInput, "Important information");
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+
+        const returnButton = screen.getByRole("button", {
+          name: "Cancel request",
+        });
+
+        await userEvent.click(returnButton);
+
+        expect(mockedNavigate).toHaveBeenCalledWith(-1);
+      });
+    });
+
     describe("when API returns an error", () => {
       beforeEach(async () => {
         mockCreateAclRequest({
@@ -840,7 +941,9 @@ describe("<TopicAclRequest />", () => {
       it("renders an error message", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
-        const submitButton = screen.getByRole("button", { name: "Submit" });
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
 
         // Fill form with valid data
         await selectTestEnvironment();
@@ -894,7 +997,9 @@ describe("<TopicAclRequest />", () => {
       it("redirects user to /myAclRequests?reqsType=created&aclCreated=true", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
-        const submitButton = screen.getByRole("button", { name: "Submit" });
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
 
         // Fill form with valid data
         await selectTestEnvironment();
@@ -983,6 +1088,107 @@ describe("<TopicAclRequest />", () => {
       jest.clearAllMocks();
     });
 
+    describe("when user cancels form input", () => {
+      beforeEach(async () => {
+        await assertSkeleton();
+        const aclConsumerTypeInput = screen.getByRole("radio", {
+          name: "Consumer",
+        });
+        await userEvent.click(aclConsumerTypeInput);
+      });
+
+      const getForm = () => {
+        return screen.getByRole("form", {
+          name: `Request consumer ACL`,
+        });
+      };
+
+      it("redirects user to the previous page if they click 'Cancel' on empty form", async () => {
+        const form = getForm();
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+
+        expect(mockedNavigate).toHaveBeenCalledWith(-1);
+      });
+
+      it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+        const form = getForm();
+
+        const remarkInput = screen.getByRole("textbox", {
+          name: "Remarks",
+        });
+        await userEvent.type(remarkInput, "Important information");
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+        const dialog = screen.getByRole("dialog");
+
+        expect(dialog).toBeVisible();
+        expect(dialog).toHaveTextContent("Cancel ACL request");
+        expect(dialog).toHaveTextContent(
+          "Do you want to cancel this request? The data added will be lost."
+        );
+
+        expect(mockedNavigate).not.toHaveBeenCalled();
+      });
+
+      it("brings the user back to the form when they do not cancel", async () => {
+        const form = getForm();
+
+        const remarkInput = screen.getByRole("textbox", {
+          name: "Remarks",
+        });
+        await userEvent.type(remarkInput, "Important information");
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+        const dialog = screen.getByRole("dialog");
+
+        const returnButton = screen.getByRole("button", {
+          name: "Continue with request",
+        });
+
+        await userEvent.click(returnButton);
+
+        expect(mockedNavigate).not.toHaveBeenCalled();
+
+        expect(dialog).not.toBeInTheDocument();
+      });
+
+      it("redirects user to previous page if they cancel the request", async () => {
+        const form = getForm();
+
+        const remarkInput = screen.getByRole("textbox", {
+          name: "Remarks",
+        });
+        await userEvent.type(remarkInput, "Important information");
+
+        const button = within(form).getByRole("button", {
+          name: "Cancel",
+        });
+
+        await userEvent.click(button);
+
+        const returnButton = screen.getByRole("button", {
+          name: "Cancel request",
+        });
+
+        await userEvent.click(returnButton);
+
+        expect(mockedNavigate).toHaveBeenCalledWith(-1);
+      });
+    });
+
     describe("when API returns an error", () => {
       beforeEach(async () => {
         mockCreateAclRequest({
@@ -1004,7 +1210,7 @@ describe("<TopicAclRequest />", () => {
         await userEvent.click(aclConsumerTypeInput);
 
         const submitButton = screen.getByRole("button", {
-          name: "Submit",
+          name: "Submit request",
         });
 
         // Fill form with valid data
@@ -1074,7 +1280,7 @@ describe("<TopicAclRequest />", () => {
         await userEvent.click(aclConsumerTypeInput);
 
         const submitButton = screen.getByRole("button", {
-          name: "Submit",
+          name: "Submit request",
         });
 
         // Fill form with valid data
