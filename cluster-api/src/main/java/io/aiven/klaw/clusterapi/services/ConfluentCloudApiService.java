@@ -337,7 +337,7 @@ public class ConfluentCloudApiService {
     return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
   }
 
-  public String getQueryParams(
+  String getQueryParams(
       ClusterAclRequest clusterAclRequest,
       String resourceType,
       String resourceName,
@@ -431,7 +431,7 @@ public class ConfluentCloudApiService {
     }
   }
 
-  private TopicCreateRequest getTopicCreateObj(ClusterTopicRequest clusterTopicRequest) {
+  TopicCreateRequest getTopicCreateObj(ClusterTopicRequest clusterTopicRequest) {
     TopicCreateRequest topicObject = new TopicCreateRequest();
     topicObject.setTopic_name(clusterTopicRequest.getTopicName());
     topicObject.setPartitions_count(clusterTopicRequest.getPartitions());
@@ -450,7 +450,7 @@ public class ConfluentCloudApiService {
     return topicObject;
   }
 
-  public Map<String, String> updateAclMap(
+  Map<String, String> updateAclMap(
       ClusterAclRequest clusterAclRequest, Map<String, String> aclMap) {
     if (clusterAclRequest.isPrefixAcl()) {
       aclMap.put("pattern_type", AclPatternType.PREFIXED.value);
@@ -487,7 +487,7 @@ public class ConfluentCloudApiService {
     return topicsListUpdated;
   }
 
-  private static List<Map<String, String>> processListAclsResponse(
+  private List<Map<String, String>> processListAclsResponse(
       ResponseEntity<ListAclsResponse> responseEntity) {
     ListAclsResponse aclsList = Objects.requireNonNull(responseEntity.getBody());
     List<Map<String, String>> aclsListUpdated = new ArrayList<>();

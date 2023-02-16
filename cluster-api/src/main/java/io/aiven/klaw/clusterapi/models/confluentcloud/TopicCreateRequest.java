@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 public class TopicCreateRequest {
-  public String topic_name;
-  public int replication_factor;
-  public int partitions_count;
-  public ArrayList<Config> configs;
+  private String topic_name;
+  private int replication_factor;
+  private int partitions_count;
+  private ArrayList<Config> configs;
 }

@@ -27,6 +27,8 @@ import io.aiven.klaw.clusterapi.services.MonitoringService;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -183,12 +185,50 @@ public class ClusterApiControllerTest {
   }
 
   @Test
+  public void createTopicsConfluentCloud() throws Exception {
+    ClusterTopicRequest topicReq = utilMethods.getConfluentCloudTopicRequest();
+    String jsonReq = new ObjectMapper().writer().writeValueAsString(topicReq);
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+
+    when(confluentCloudApiService.createTopic(any(ClusterTopicRequest.class)))
+        .thenReturn(apiResponse);
+
+    mvc.perform(
+            post("/topics/createTopics")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
   public void createAclsProducer() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAclRequest(AclType.PRODUCER.value);
     String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterAclRequest);
 
     when(apacheKafkaAclService.updateProducerAcl(any(ClusterAclRequest.class)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    mvc.perform(
+            post("/topics/createAcls")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding(StandardCharsets.UTF_8))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Test
+  public void createAclsProducerConfluentCloud() throws Exception {
+    ClusterAclRequest clusterAclRequest = utilMethods.getConfluentCloudProducerAclRequest();
+    String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterAclRequest);
+    Map<String, String> aclResponse = new HashMap<>();
+    aclResponse.put("result", ApiResultStatus.SUCCESS.value);
+
+    when(confluentCloudApiService.createAcls(any(ClusterAclRequest.class))).thenReturn(aclResponse);
 
     mvc.perform(
             post("/topics/createAcls")

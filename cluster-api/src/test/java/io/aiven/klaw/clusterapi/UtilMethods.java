@@ -82,12 +82,33 @@ public class UtilMethods {
   }
 
   public ClusterTopicRequest getTopicRequest() {
+    Map<String, String> advancedConfig = new HashMap<>();
+    advancedConfig.put("compression.type", "snappy");
+    advancedConfig.put("cleanup.policy", "delete");
     return ClusterTopicRequest.builder()
         .env("localhost")
         .protocol(KafkaSupportedProtocol.PLAINTEXT)
         .topicName("testtopic")
         .partitions(2)
         .replicationFactor(Short.parseShort("1"))
+        .clusterName("DEV_CC1")
+        .advancedTopicConfiguration(advancedConfig)
+        .build();
+  }
+
+  public ClusterTopicRequest getConfluentCloudTopicRequest() {
+    Map<String, String> advancedConfig = new HashMap<>();
+    advancedConfig.put("compression.type", "snappy");
+    advancedConfig.put("cleanup.policy", "delete");
+    return ClusterTopicRequest.builder()
+        .env("localhost")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .topicName("testtopic")
+        .partitions(2)
+        .replicationFactor(Short.parseShort("1"))
+        .clusterName("DEV_CC1")
+        .advancedTopicConfiguration(advancedConfig)
+        .aclsNativeType(AclsNativeType.CONFLUENT_CLOUD)
         .build();
   }
 
@@ -151,7 +172,7 @@ public class UtilMethods {
         .aclIp("11.12.33.122")
         .aclSsl(null)
         .requestOperationType(RequestOperationType.CREATE)
-        .aclNativeType(AclsNativeType.NATIVE.name())
+        .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
         .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
         .build();
   }
@@ -167,7 +188,7 @@ public class UtilMethods {
         .aclIp("11.12.33.122")
         .aclSsl(null)
         .requestOperationType(RequestOperationType.CREATE)
-        .aclNativeType(AclsNativeType.NATIVE.name())
+        .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
         .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
         .isPrefixAcl(true)
         .build();
@@ -184,7 +205,7 @@ public class UtilMethods {
         .aclIp(null)
         .aclSsl("CN=host")
         .requestOperationType(RequestOperationType.CREATE)
-        .aclNativeType(AclsNativeType.NATIVE.name())
+        .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
         .aclIpPrincipleType(AclIPPrincipleType.PRINCIPAL.name())
         .build();
   }

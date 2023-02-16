@@ -8,9 +8,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.clusterapi.UtilMethods;
+import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
+import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
+import io.aiven.klaw.clusterapi.models.confluentcloud.TopicCreateRequest;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
@@ -189,6 +192,40 @@ public class ConfluentCloudApiServiceTest {
 
     String response = confluentCloudApiService.deleteAcls(clusterAclRequest);
     assertThat(response).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void createTopic() throws Exception {
+    stubTopics();
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+    when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(null);
+
+    ApiResponse apiResponse = confluentCloudApiService.createTopic(clusterTopicRequest);
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void deleteTopic() throws Exception {
+    stubTopics();
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+    when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(null);
+
+    ApiResponse apiResponse = confluentCloudApiService.deleteTopic(clusterTopicRequest);
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void getTopicCreateObj() {
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+    TopicCreateRequest topicCreateRequest =
+        confluentCloudApiService.getTopicCreateObj(clusterTopicRequest);
+    assertThat(topicCreateRequest.getTopic_name()).isEqualTo(clusterTopicRequest.getTopicName());
+    assertThat(topicCreateRequest.getPartitions_count())
+        .isEqualTo(clusterTopicRequest.getPartitions());
+    assertThat(topicCreateRequest.getReplication_factor())
+        .isEqualTo(clusterTopicRequest.getReplicationFactor());
+    assertThat(topicCreateRequest.getConfigs())
+        .hasSize(clusterTopicRequest.getAdvancedTopicConfiguration().size());
   }
 
   @Test
