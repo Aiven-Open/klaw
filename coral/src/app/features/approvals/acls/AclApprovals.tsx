@@ -84,7 +84,7 @@ function AclApprovals() {
       }
 
       // We need to invalidate the query populating the table to reflect the change
-      queryClient.invalidateQueries(["aclRequests", activePage]);
+      queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
       setErrorMessage(parseErrorMsg(error));
@@ -112,7 +112,7 @@ function AclApprovals() {
       }
 
       // We need to invalidate the query populating the table to reflect the change
-      queryClient.invalidateQueries(["aclRequests", activePage]);
+      queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
       setErrorMessage(parseErrorMsg(error));
