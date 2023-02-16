@@ -2889,6 +2889,56 @@
         }
       }
     },
+    "/request/approve" : {
+      "post" : {
+        "operationId" : "approveRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RequestVerdict"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ApiResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/request/decline" : {
+      "post" : {
+        "operationId" : "declineRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RequestVerdict"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ApiResponse"
+              }
+            }
+          }
+        }
+      }
+    },
     "/requests/statistics" : {
       "get" : {
         "operationId" : "getRequestStatistics",
@@ -4268,6 +4318,24 @@
         "count" : {
           "type" : "integer",
           "format" : "int64"
+        }
+      }
+    },
+    "RequestVerdict" : {
+      "type" : "object",
+      "properties" : {
+        "reason" : {
+          "type" : "string"
+        },
+        "requestEntityType" : {
+          "type" : "string",
+          "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+        },
+        "reqIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
         }
       }
     },
