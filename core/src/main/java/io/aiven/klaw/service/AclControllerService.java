@@ -191,13 +191,20 @@ public class AclControllerService {
   }
 
   public List<AclRequestsModel> getAclRequests(
-      String pageNo, String currentPage, String requestsType) {
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      String topic,
+      String env,
+      AclType aclType,
+      boolean isMyRequest) {
 
     String userName = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<AclRequests> aclReqs =
-        dbHandle.getAllAclRequests(false, userName, "", requestsType, false, tenantId);
+        dbHandle.getAllAclRequests(
+            false, userName, "", requestsType, false, topic, env, aclType, isMyRequest, tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -208,10 +215,23 @@ public class AclControllerService {
             .collect(Collectors.toList());
 
     aclReqs = getAclRequestsPaged(aclReqs, pageNo, currentPage, tenantId);
-    return getAclRequestsModels(aclReqs, tenantId);
+
+    return getAclRequestsModels(aclReqs, tenantId, userName);
   }
 
-  private List<AclRequestsModel> getAclRequestsModels(List<AclRequests> aclReqs, int tenantId) {
+  private AclRequestsModel setRequestorPermissions(AclRequestsModel req, String userName) {
+    if (RequestStatus.CREATED.value.equals(req.getAclstatus())
+        && userName != null
+        && userName.equals(req.getUsername())) {
+      req.setDeletable(true);
+      req.setEditable(true);
+    }
+
+    return req;
+  }
+
+  private List<AclRequestsModel> getAclRequestsModels(
+      List<AclRequests> aclReqs, int tenantId, String userName) {
     List<AclRequestsModel> aclRequestsModels = new ArrayList<>();
     AclRequestsModel aclRequestsModel;
 
@@ -248,7 +268,7 @@ public class AclControllerService {
                   tenantId));
         }
 
-        aclRequestsModels.add(aclRequestsModel);
+        aclRequestsModels.add(setRequestorPermissions(aclRequestsModel, userName));
       }
     return aclRequestsModels;
   }
@@ -393,12 +413,16 @@ public class AclControllerService {
             .collect(Collectors.toList());
 
     return getAclRequestModelPaged(
-        updateCreatAclReqsList(createdAclReqs, tenantId), pageNo, currentPage, tenantId);
+        updateCreatAclReqsList(createdAclReqs, tenantId, userDetails),
+        pageNo,
+        currentPage,
+        tenantId);
   }
 
   private List<AclRequestsModel> updateCreatAclReqsList(
-      List<AclRequests> aclRequestsList, int tenantId) {
-    List<AclRequestsModel> aclRequestsModels = getAclRequestsModels(aclRequestsList, tenantId);
+      List<AclRequests> aclRequestsList, int tenantId, String userName) {
+    List<AclRequestsModel> aclRequestsModels =
+        getAclRequestsModels(aclRequestsList, tenantId, userName);
     aclRequestsModels =
         aclRequestsModels.stream()
             .sorted(Comparator.comparing(AclRequestsModel::getRequesttime))
@@ -413,12 +437,13 @@ public class AclControllerService {
           getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
         return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
       }
+      String userName = getCurrentUserName();
       log.info("deleteAclRequests {}", req_no);
       String result =
           manageDatabase
               .getHandleDbRequests()
               .deleteAclRequest(
-                  Integer.parseInt(req_no), commonUtilsService.getTenantId(getCurrentUserName()));
+                  Integer.parseInt(req_no), userName, commonUtilsService.getTenantId(userName));
       return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       log.error("Exception ", e);

@@ -58,7 +58,14 @@ public class SchemaRegstryControllerTest {
     List<SchemaRequestModel> schRequests = utilMethods.getSchemaRequests();
 
     when(schemaRegstryControllerService.getSchemaRequests(
-            anyString(), anyString(), anyString(), anyBoolean(), eq(null), eq(null), eq(null)))
+            anyString(),
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            eq(null),
+            eq(null),
+            eq(null),
+            anyBoolean()))
         .thenReturn(schRequests);
 
     mvc.perform(

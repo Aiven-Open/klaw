@@ -63,7 +63,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
 
             $http({
                 method: "GET",
-                url: "getCreatedConnectorRequests",
+                url: "getConnectorRequestsForApproval",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,

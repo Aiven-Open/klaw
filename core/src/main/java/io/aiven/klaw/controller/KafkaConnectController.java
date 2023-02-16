@@ -35,20 +35,27 @@ public class KafkaConnectController {
         kafkaConnectControllerService.createConnectorRequest(addTopicRequest), HttpStatus.OK);
   }
 
-  /*
-     For executing connector requests
-  */
+  /**
+   * @param pageNo Which page would you like returned e.g. 1
+   * @param currentPage Which Page are you currently on e.g. 1
+   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param search A wildcard search term that searches topicNames.
+   * @return A List of Kafka Connector Requests filtered by the provided parameters.
+   */
   @RequestMapping(
-      value = "/getCreatedConnectorRequests",
+      value = "/getConnectorRequestsForApproval",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<KafkaConnectorRequestModel>> getCreatedConnectorRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType) {
+      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestsType),
+            pageNo, currentPage, requestsType, env, search),
         HttpStatus.OK);
   }
 

@@ -121,7 +121,7 @@ public class UtilControllerService {
       roleToSet = "requestor_subscriptions";
     }
     List<SchemaRequest> allSchemaReqs =
-        reqsHandle.getAllSchemaRequests(true, requestor, tenantId, null, null, null, null);
+        reqsHandle.getAllSchemaRequests(true, requestor, tenantId, null, null, null, null, false);
 
     List<AclRequests> allAclReqs;
     List<TopicRequest> allTopicReqs;
@@ -131,23 +131,41 @@ public class UtilControllerService {
         getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.CREATED.value, false, tenantId);
+              true,
+              requestor,
+              roleToSet,
+              RequestStatus.CREATED.value,
+              false,
+              null,
+              null,
+              null,
+              false,
+              tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
               requestor, RequestStatus.CREATED.value, false, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.CREATED.value, false, tenantId);
+              requestor, RequestStatus.CREATED.value, false, tenantId, null, null);
     } else {
       allAclReqs =
           reqsHandle.getAllAclRequests(
-              true, requestor, roleToSet, RequestStatus.CREATED.value, true, tenantId);
+              true,
+              requestor,
+              roleToSet,
+              RequestStatus.CREATED.value,
+              true,
+              null,
+              null,
+              null,
+              false,
+              tenantId);
       allTopicReqs =
           reqsHandle.getCreatedTopicRequests(
               requestor, RequestStatus.CREATED.value, true, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.CREATED.value, true, tenantId);
+              requestor, RequestStatus.CREATED.value, true, tenantId, null, null);
     }
 
     try {

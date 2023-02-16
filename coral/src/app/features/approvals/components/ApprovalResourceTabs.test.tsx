@@ -1,5 +1,5 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import ApprovalResourceTabs from "src/app/features/approvals/ApprovalResourceTabs";
+import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
 import { ApprovalsTabEnum } from "src/app/router_utils";
 import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";

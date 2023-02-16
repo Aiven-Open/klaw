@@ -95,7 +95,7 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String deleteTopicRequest(int topicId, int tenantId) {
+  public String deleteTopicRequest(int topicId, String userName, int tenantId) {
     log.debug("deleteTopicRequest {}", topicId);
 
     TopicRequestID topicRequestID = new TopicRequestID();
@@ -103,11 +103,15 @@ public class DeleteDataJdbc {
     topicRequestID.setTopicid(topicId);
 
     Optional<TopicRequest> topicReq = topicRequestsRepo.findById(topicRequestID);
-    if (topicReq.isPresent()) {
+    // UserName is transient and is not set in the database but the requestor is. Both are set to
+    // the userName when the request is created.
+    if (topicReq.isPresent() && topicReq.get().getRequestor().equals(userName)) {
       topicReq.get().setTopicstatus("deleted");
       topicRequestsRepo.save(topicReq.get());
+      return ApiResultStatus.SUCCESS.value;
     }
-    return ApiResultStatus.SUCCESS.value;
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
   public String deleteTopic(int topicId, int tenantId) {
@@ -132,29 +136,34 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String deleteSchemaRequest(int avroSchemaId, int tenantId) {
+  public String deleteSchemaRequest(int avroSchemaId, String userName, int tenantId) {
     log.debug("deleteSchemaRequest {}", avroSchemaId);
     SchemaRequestID schemaRequestID = new SchemaRequestID(avroSchemaId, tenantId);
     Optional<SchemaRequest> schemaReq = schemaRequestRepo.findById(schemaRequestID);
-    if (schemaReq.isPresent()) {
+    if (schemaReq.isPresent() && schemaReq.get().getUsername().equals(userName)) {
       schemaReq.get().setTopicstatus("deleted");
       schemaRequestRepo.save(schemaReq.get());
+      return ApiResultStatus.SUCCESS.value;
     }
-    return ApiResultStatus.SUCCESS.value;
+
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
-  public String deleteAclRequest(int aclId, int tenantId) {
+  public String deleteAclRequest(int aclId, String userName, int tenantId) {
     log.debug("deleteAclRequest {}", aclId);
     AclRequestID aclRequestID = new AclRequestID();
     aclRequestID.setReq_no(aclId);
     aclRequestID.setTenantId(tenantId);
     Optional<AclRequests> optAclRequests = aclRequestsRepo.findById(aclRequestID);
-    if (optAclRequests.isPresent()) {
+    if (optAclRequests.isPresent() && optAclRequests.get().getUsername().equals(userName)) {
       optAclRequests.get().setAclstatus("deleted");
       aclRequestsRepo.save(optAclRequests.get());
+      return ApiResultStatus.SUCCESS.value;
     }
 
-    return ApiResultStatus.SUCCESS.value;
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
   public String deleteEnvironment(String envId, int tenantId) {

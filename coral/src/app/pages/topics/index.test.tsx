@@ -99,7 +99,7 @@ describe("Topics", () => {
 
     it("renders a select element to filter topics by Kafka environment", async () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter by environment",
+        name: "Filter by Environment",
       });
 
       expect(select).toBeEnabled();

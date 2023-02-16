@@ -36,6 +36,17 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.UNAUTHORIZED);
   }
 
+  @ExceptionHandler({KlawRestException.class})
+  protected ResponseEntity<ApiResponse> handleKlawRestExceptionInternal(
+      KlawRestException ex, WebRequest request) {
+    log.error("Error ", ex);
+    return new ResponseEntity<>(
+        ApiResponse.builder()
+            .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
+            .build(),
+        HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex,

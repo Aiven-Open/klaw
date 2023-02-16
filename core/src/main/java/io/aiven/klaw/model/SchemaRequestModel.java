@@ -67,4 +67,7 @@ public class SchemaRequestModel implements Serializable {
   private List<String> allPageNos;
 
   private String currentPage;
+
+  private boolean isEditable;
+  private boolean isDeletable;
 }

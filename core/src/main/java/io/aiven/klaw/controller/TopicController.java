@@ -67,6 +67,14 @@ public class TopicController {
         topicControllerService.createClaimTopicRequest(topicName, envId), HttpStatus.OK);
   }
 
+  /**
+   * @param pageNo Which page would you like returned e.g. 1
+   * @param currentPage Which Page are you currently on e.g. 1
+   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param isMyRequest Only return requests created by the user calling the API
+   * @return A List of Topic Requests filtered by the provided parameters.
+   */
   @RequestMapping(
       value = "/getTopicRequests",
       method = RequestMethod.GET,
@@ -74,9 +82,14 @@ public class TopicController {
   public ResponseEntity<List<TopicRequestModel>> getTopicRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType) {
+      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType,
+      @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
+          boolean isMyRequest) {
     return new ResponseEntity<>(
-        topicControllerService.getTopicRequests(pageNo, currentPage, requestsType), HttpStatus.OK);
+        topicControllerService.getTopicRequests(
+            pageNo, currentPage, requestsType, env, isMyRequest),
+        HttpStatus.OK);
   }
 
   @RequestMapping(

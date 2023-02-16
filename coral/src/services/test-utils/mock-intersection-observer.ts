@@ -1,8 +1,5 @@
-// This is needed for Design System <Table />
-// I followed this approach: https://stackoverflow.com/a/58651649
-// we used jest.fn() here before, which lead to errors (that sometimes
-// didn't show up in the async tests) because they may get affected
-// by e.g. jest.restoreAllMocks etc. in afterX methods
+// This is needed for Design System <Table /> and <DataTable />
+// Implementation follows this approach: https://stackoverflow.com/a/58651649
 function mockIntersectionObserver({
   root = null,
   rootMargin = "",

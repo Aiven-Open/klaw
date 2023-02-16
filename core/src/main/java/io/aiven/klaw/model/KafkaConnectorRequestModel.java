@@ -66,4 +66,8 @@ public class KafkaConnectorRequestModel implements Serializable {
   private List<String> possibleTeams;
 
   private String currentPage;
+
+  private boolean editable;
+
+  private boolean deletable;
 }

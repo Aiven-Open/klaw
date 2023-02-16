@@ -1,13 +1,16 @@
-import { createPortal } from "react-dom";
-import { ReactElement, useEffect } from "react";
 import { Box, Button, IconButton, Typography } from "@aivenio/aquarium";
 import cross from "@aivenio/aquarium/icons/cross";
+import { ReactElement, useEffect } from "react";
+import { createPortal } from "react-dom";
 import classes from "src/app/components/Modal.module.css";
 
 type ModalAction = {
   text: string;
   onClick: () => void;
+  loading?: boolean;
+  disabled?: boolean;
 };
+
 type ModalProps = {
   title: string;
   subtitle?: string;
@@ -15,11 +18,21 @@ type ModalProps = {
   primaryAction: ModalAction;
   secondaryAction?: ModalAction;
   children: ReactElement;
+  isDialog?: boolean;
+  dialogTitle?: ReactElement;
 };
 
 function Modal(props: ModalProps) {
-  const { close, primaryAction, secondaryAction, children, title, subtitle } =
-    props;
+  const {
+    close,
+    primaryAction,
+    secondaryAction,
+    children,
+    title,
+    subtitle,
+    isDialog = false,
+    dialogTitle,
+  } = props;
 
   function setFocus(appRoot: HTMLElement, modal: HTMLElement) {
     appRoot.setAttribute("aria-hidden", "true");
@@ -32,6 +45,7 @@ function Modal(props: ModalProps) {
   function removeFocus(appRoot: HTMLElement, modal: HTMLElement) {
     appRoot.removeAttribute("aria-hidden");
     appRoot.removeAttribute("tabindex");
+    appRoot.removeAttribute("inert");
     modal.removeAttribute("tabindex");
   }
 
@@ -124,18 +138,23 @@ function Modal(props: ModalProps) {
               paddingBottom={"l2"}
             >
               <div>
-                <Typography.Subheading
-                  htmlTag={"h1"}
-                  id={"modal-focus"}
-                  data-focusable
-                >
-                  {title}
-                </Typography.Subheading>
-                {subtitle && (
-                  <Typography.SmallText htmlTag={"h2"} color={"grey-60"}>
-                    {subtitle}
-                  </Typography.SmallText>
+                {!isDialog && (
+                  <>
+                    <Typography.Subheading
+                      htmlTag={"h1"}
+                      id={"modal-focus"}
+                      data-focusable
+                    >
+                      {title}
+                    </Typography.Subheading>
+                    {subtitle && (
+                      <Typography.SmallText htmlTag={"h2"} color={"grey-60"}>
+                        {subtitle}
+                      </Typography.SmallText>
+                    )}
+                  </>
                 )}
+                {isDialog && dialogTitle && <>{dialogTitle}</>}
               </div>
               {close && (
                 <IconButton
@@ -143,6 +162,7 @@ function Modal(props: ModalProps) {
                   icon={cross}
                   onClick={close}
                   data-focusable
+                  disabled={secondaryAction?.loading || primaryAction.loading}
                 />
               )}
             </Box>
@@ -155,17 +175,21 @@ function Modal(props: ModalProps) {
             >
               {secondaryAction && (
                 <Button
-                  kind={"secondary"}
+                  kind={isDialog ? "ghost" : "secondary"}
                   onClick={secondaryAction.onClick}
                   data-focusable
+                  disabled={secondaryAction.disabled}
+                  loading={secondaryAction.loading}
                 >
                   {secondaryAction.text}
                 </Button>
               )}
               <Button
-                kind={"primary"}
+                kind={isDialog ? "secondary" : "primary"}
                 onClick={primaryAction.onClick}
                 data-focusable
+                disabled={primaryAction.disabled}
+                loading={primaryAction.loading}
               >
                 {primaryAction.text}
               </Button>
@@ -179,3 +203,4 @@ function Modal(props: ModalProps) {
 }
 
 export { Modal };
+export type { ModalProps };

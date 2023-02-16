@@ -677,7 +677,7 @@ public class TopicAclControllerIT {
     String res =
         mvc.perform(
                 get("/getAclRequests")
-                    .with(user(user3).password(PASSWORD))
+                    .with(user(user1).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
                     .param("pageNo", "1")
                     .accept(MediaType.APPLICATION_JSON))
@@ -693,7 +693,7 @@ public class TopicAclControllerIT {
     String responseNew =
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteAclRequests")
-                    .with(user(user3).password(PASSWORD))
+                    .with(user(user1).password(PASSWORD))
                     .param("req_no", "" + hMap.get("req_no"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -755,6 +755,41 @@ public class TopicAclControllerIT {
 
     List<AclInfo> response = OBJECT_MAPPER.readValue(res, List.class);
     assertThat(response).hasSize(1);
+  }
+
+  // delete acl requests
+  @Order(24)
+  @Test
+  public void deleteAclReqDifferentUseFailsToDeleteRequest() throws Exception {
+    String res =
+        mvc.perform(
+                get("/getAclRequests")
+                    .with(user(user3).password(PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("pageNo", "1")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
+    Object obj = response.get(0);
+    Map<String, Integer> hMap = (HashMap) obj;
+
+    String responseNew =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/deleteAclRequests")
+                    .with(user(user3).password(PASSWORD))
+                    .param("req_no", "" + hMap.get("req_no"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(responseNew).contains(ApiResultStatus.FAILURE.value);
   }
 
   private void login(String user, String pwd, String role) throws Exception {

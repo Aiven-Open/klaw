@@ -1,22 +1,26 @@
 import { KlawApiModel, ResolveIntersectionTypes } from "types/utils";
 
-type SchemaRequest = ResolveIntersectionTypes<
+type CreatedSchemaRequests = ResolveIntersectionTypes<
+  Required<
+    Pick<
+      KlawApiModel<"SchemaRequest">,
+      | "req_no"
+      | "topicname"
+      | "environmentName"
+      | "username"
+      | "requesttimestring"
+    >
+  >
+>;
+
+type SchemaRequestPayload = ResolveIntersectionTypes<
   Required<
     Pick<
       KlawApiModel<"SchemaRequest">,
       "environment" | "schemafull" | "topicname"
     >
   > &
-    Pick<KlawApiModel<"SchemaRequest">, "remarks">
+    Pick<KlawApiModel<"SchemaRequest">, "remarks" | "schemaversion" | "appname">
 >;
 
-type SchemaRequestPayload = ResolveIntersectionTypes<
-  SchemaRequest & {
-    // schemaversion and appname
-    // should be hard coded at the moment
-    schemaversion: "1.0";
-    appname: "App";
-  }
->;
-
-export type { SchemaRequest, SchemaRequestPayload };
+export type { SchemaRequestPayload, CreatedSchemaRequests };

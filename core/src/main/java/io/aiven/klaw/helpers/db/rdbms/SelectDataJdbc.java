@@ -112,27 +112,19 @@ public class SelectDataJdbc {
       String role,
       String status,
       boolean showRequestsOfAllTeams,
-      int tenantId) {
-    return selectAclRequests(
-        allReqs, requestor, role, status, showRequestsOfAllTeams, null, null, null, tenantId);
-  }
-
-  public List<AclRequests> selectAclRequests(
-      boolean allReqs,
-      String requestor,
-      String role,
-      String status,
-      boolean showRequestsOfAllTeams,
       String topic,
       String environment,
       AclType aclType,
+      boolean isMyRequest,
       int tenantId) {
     log.debug("selectAclRequests {}", requestor);
     List<AclRequests> aclList = new ArrayList<>();
     List<AclRequests> aclListSub;
 
     aclListSub =
-        Lists.newArrayList(findAclRequestsByExample(topic, environment, aclType, status, tenantId));
+        Lists.newArrayList(
+            findAclRequestsByExample(
+                topic, environment, aclType, status, isMyRequest ? requestor : null, tenantId));
     if (allReqs) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
@@ -186,11 +178,17 @@ public class SelectDataJdbc {
    * @param environment the environment
    * @param aclType Producer or consumer
    * @param status created/declined/approved
+   * @param requestor the name of the user who created the request in klaw
    * @param tenantId The tenantId
    * @return
    */
   public Iterable<AclRequests> findAclRequestsByExample(
-      String topic, String environment, AclType aclType, String status, int tenantId) {
+      String topic,
+      String environment,
+      AclType aclType,
+      String status,
+      String requestor,
+      int tenantId) {
 
     AclRequests request = new AclRequests();
 
@@ -207,6 +205,10 @@ public class SelectDataJdbc {
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setAclstatus(status);
     }
+
+    if (requestor != null && !requestor.isEmpty()) {
+      request.setUsername(requestor);
+    }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string
     if (log.isDebugEnabled()) {
@@ -222,17 +224,19 @@ public class SelectDataJdbc {
       String topic,
       String env,
       String status,
-      String wildcardSearch) {
+      String wildcardSearch,
+      boolean isMyRequest) {
     if (log.isDebugEnabled()) {
       log.debug(
-          "selectSchemaRequests allReqs {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}",
+          "selectSchemaRequests allReqs {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, isMyRequest: {}",
           allReqs,
           requestor,
           tenantId,
           topic,
           env,
           status,
-          wildcardSearch);
+          wildcardSearch,
+          isMyRequest);
     }
     List<SchemaRequest> schemaList = new ArrayList<>();
     List<SchemaRequest> schemaListSub;
@@ -241,7 +245,12 @@ public class SelectDataJdbc {
       schemaListSub =
           Lists.newArrayList(
               findSchemaRequestsByExample(
-                  topic, env, status != null ? status : "created", teamSelected, tenantId));
+                  topic,
+                  env,
+                  status != null ? status : "created",
+                  teamSelected,
+                  tenantId,
+                  isMyRequest ? requestor : null));
 
       // Placed here as it should only apply for approvers.
       schemaListSub =
@@ -263,7 +272,8 @@ public class SelectDataJdbc {
       // being filtered out after the data was returned.
       schemaListSub =
           Lists.newArrayList(
-              findSchemaRequestsByExample(null, null, status, teamSelected, tenantId));
+              findSchemaRequestsByExample(
+                  topic, env, status, teamSelected, tenantId, isMyRequest ? requestor : null));
     }
 
     for (SchemaRequest row : schemaListSub) {
@@ -282,7 +292,12 @@ public class SelectDataJdbc {
   }
 
   public Iterable<SchemaRequest> findSchemaRequestsByExample(
-      String topic, String environment, String status, Integer teamId, int tenantId) {
+      String topic,
+      String environment,
+      String status,
+      Integer teamId,
+      int tenantId,
+      String userName) {
 
     SchemaRequest request = new SchemaRequest();
 
@@ -299,6 +314,9 @@ public class SelectDataJdbc {
     }
     if (teamId != null) {
       request.setTeamId(teamId);
+    }
+    if (userName != null && !userName.isEmpty()) {
+      request.setUsername(userName);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string
@@ -473,7 +491,8 @@ public class SelectDataJdbc {
       int tenantId,
       Integer teamId,
       String env,
-      String wildcardSearch) {
+      String wildcardSearch,
+      boolean isMyRequest) {
     if (log.isDebugEnabled()) {
       log.debug(
           "selectTopicRequests {} {} {} {} {} {}",
@@ -499,10 +518,13 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  String.valueOf(teamSelected)));
+                  String.valueOf(teamSelected),
+                  isMyRequest ? requestor : null));
 
       topicRequestListSub =
-          Lists.newArrayList(findTopicRequestsByExample(null, teamId, env, status, tenantId, null));
+          Lists.newArrayList(
+              findTopicRequestsByExample(
+                  null, teamId, env, status, tenantId, null, isMyRequest ? requestor : null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -523,12 +545,21 @@ public class SelectDataJdbc {
     } else {
       if (showRequestsOfAllTeams) {
         topicRequestListSub =
-            Lists.newArrayList(findTopicRequestsByExample(null, null, null, null, tenantId, null));
+            Lists.newArrayList(
+                findTopicRequestsByExample(
+                    null, null, env, status, tenantId, null, isMyRequest ? requestor : null));
       } else {
 
         topicRequestListSub =
             Lists.newArrayList(
-                findTopicRequestsByExample(null, teamSelected, null, null, tenantId, null));
+                findTopicRequestsByExample(
+                    null,
+                    teamSelected,
+                    env,
+                    status,
+                    tenantId,
+                    null,
+                    isMyRequest ? requestor : null));
       }
     }
 
@@ -575,7 +606,8 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String description) {
+      String description,
+      String userName) {
 
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
@@ -597,6 +629,10 @@ public class SelectDataJdbc {
     if (status != null && !status.equalsIgnoreCase("all")) {
       request.setTopicstatus(status);
     }
+    // userName is transient and so not available in the database to be queried.
+    if (userName != null && !userName.isEmpty()) {
+      request.setRequestor(userName);
+    }
     // check if debug is enabled so the logger doesn't waste resources converting object request to
     // a
     // string
@@ -607,12 +643,14 @@ public class SelectDataJdbc {
     return topicRequestsRepo.findAll(Example.of(request));
   }
 
-  public List<KafkaConnectorRequest> selectConnectorRequestsByStatus(
+  public List<KafkaConnectorRequest> getFilteredKafkaConnectorRequests(
       boolean allReqs,
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
-      int tenantId) {
+      int tenantId,
+      String env,
+      String search) {
     log.debug("selectConnectorRequestsByStatus {} {}", requestor, status);
     List<KafkaConnectorRequest> topicRequestList = new ArrayList<>();
 
@@ -620,49 +658,52 @@ public class SelectDataJdbc {
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
     if (allReqs) { // approvers
+
+      // Team Name is null here as it is the team who created the requested
+      // Description includes the teamId as that is how Claim topics know who is the owning team.
       List<KafkaConnectorRequest> claimTopicReqs =
-          kafkaConnectorRequestsRepo.findAllByConnectortypeAndTenantId(
-              RequestOperationType.CLAIM.value, tenantId);
+          Lists.newArrayList(
+              findKafkaConnectorRequestsByExample(
+                  RequestOperationType.CLAIM.value,
+                  null,
+                  env,
+                  status,
+                  tenantId,
+                  String.valueOf(teamSelected)));
 
-      if ("all".equals(status)) {
-        topicRequestListSub =
-            Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
+      topicRequestListSub =
+          Lists.newArrayList(
+              findKafkaConnectorRequestsByExample(
+                  null, showRequestsOfAllTeams ? null : teamSelected, env, status, tenantId, null));
+
+      // Only execute just before adding the separate claim list as this will make sure only the
+      // claim topics this team is able to approve will be returned.
+      topicRequestListSub =
+          topicRequestListSub.stream()
+              .filter(
+                  request -> !RequestOperationType.CLAIM.value.equals(request.getConnectortype()))
+              .collect(Collectors.toList());
+
+      topicRequestListSub.addAll(claimTopicReqs);
+      // remove users own requests to approve/show in the list
+      // Placed here as it should only apply for approvers.
+      topicRequestListSub =
+          topicRequestListSub.stream()
+              .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
+              .collect(Collectors.toList());
+      if (search != null && !search.isEmpty()) {
         topicRequestListSub =
             topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !RequestOperationType.CLAIM.value.equals(topicRequest.getConnectortype()))
-                .collect(Collectors.toList());
-
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected))
-                .collect(Collectors.toList());
-      } else {
-        topicRequestListSub =
-            kafkaConnectorRequestsRepo.findAllByConnectorStatusAndTenantId(status, tenantId);
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(
-                    topicRequest ->
-                        !RequestOperationType.CLAIM.value.equals(topicRequest.getConnectortype()))
-                .collect(Collectors.toList());
-
-        claimTopicReqs =
-            claimTopicReqs.stream()
-                .filter(
-                    claimTopicReq ->
-                        Objects.equals(claimTopicReq.getDescription(), "" + teamSelected)
-                            && Objects.equals(claimTopicReq.getConnectorStatus(), status))
+                .filter(topicRequest -> topicRequest.getConnectorName().contains(search))
                 .collect(Collectors.toList());
       }
 
-      topicRequestListSub.addAll(claimTopicReqs);
     } else {
+      // show my teams requests
       topicRequestListSub =
-          Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
+          Lists.newArrayList(
+              findKafkaConnectorRequestsByExample(
+                  null, showRequestsOfAllTeams ? null : teamSelected, null, null, tenantId, null));
     }
 
     for (KafkaConnectorRequest row : topicRequestListSub) {
@@ -674,16 +715,60 @@ public class SelectDataJdbc {
       } catch (Exception ignored) {
       }
 
-      if (showRequestsOfAllTeams) {
-        topicRequestList.add(row); // no team filter
-      } else if (teamSelected != null
-          && (Objects.equals(teamSelected, teamId)
-              || Objects.equals("" + teamSelected, row.getDescription()))) {
-        topicRequestList.add(row);
-      }
+      topicRequestList.add(row); // no team filter
     }
 
     return topicRequestList;
+  }
+
+  /**
+   * Query the KafkaConnectorRequestsRepo by supplying optional search parameters any given search
+   * parameters will be utilised in the search.
+   *
+   * @param requestType The type of topic request Create/claim etc
+   * @param teamId The identifier of the team
+   * @param environment the environment
+   * @param status created/declined/approved
+   * @param tenantId The tenantId
+   * @return An Iterable of all TopicRequests that match the parameters that have been supplied
+   */
+  private Iterable<KafkaConnectorRequest> findKafkaConnectorRequestsByExample(
+      String requestType,
+      Integer teamId,
+      String environment,
+      String status,
+      int tenantId,
+      String description) {
+
+    KafkaConnectorRequest request = new KafkaConnectorRequest();
+    request.setTenantId(tenantId);
+
+    if (requestType != null) {
+      request.setConnectortype(requestType);
+    }
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (teamId != null) {
+      request.setTeamId(teamId);
+    }
+
+    if (description != null && !description.isEmpty()) {
+      request.setDescription(description);
+    }
+
+    if (status != null && !status.equalsIgnoreCase("all")) {
+      request.setConnectorStatus(status);
+    }
+
+    // check if debug is enabled so the logger doesn't waste resources converting object request to
+    // a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
+
+    return kafkaConnectorRequestsRepo.findAll(Example.of(request));
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {

@@ -67,7 +67,8 @@ public interface HandleDbRequests {
 
   RegisterUserInfo getRegistrationDetails(String registrationId, String status);
 
-  List<TopicRequest> getAllTopicRequests(String requestor, int tenantId);
+  List<TopicRequest> getAllTopicRequests(
+      String requestor, String status, String env, boolean isMyRequest, int tenantId);
 
   Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId);
@@ -87,7 +88,12 @@ public interface HandleDbRequests {
   List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId);
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      String env,
+      String search);
 
   TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId);
 
@@ -131,6 +137,10 @@ public interface HandleDbRequests {
       String role,
       String status,
       boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      boolean isMyRequest,
       int tenantId);
 
   List<AclRequests> getCreatedAclRequestsByStatus(
@@ -149,7 +159,8 @@ public interface HandleDbRequests {
       String topic,
       String env,
       String status,
-      String search);
+      String search,
+      boolean isMyRequest);
 
   SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId);
 
@@ -293,13 +304,13 @@ public interface HandleDbRequests {
   /*--------------------Delete */
   String deleteConnectorRequest(int topicId, int tenantId);
 
-  String deleteTopicRequest(int topicId, int tenantId);
+  String deleteTopicRequest(int topicId, String userName, int tenantId);
 
   String deleteTopic(int topicId, int tenantId);
 
   String deleteConnector(int connectorId, int tenantId);
 
-  String deleteAclRequest(int req_no, int tenantId);
+  String deleteAclRequest(int req_no, String userName, int tenantId);
 
   String deleteAclSubscriptionRequest(int req_no, int tenantId);
 
@@ -313,7 +324,7 @@ public interface HandleDbRequests {
 
   String deleteTeamRequest(Integer teamId, int tenantId);
 
-  String deleteSchemaRequest(int schemaId, int tenantId);
+  String deleteSchemaRequest(int schemaId, String userName, int tenantId);
 
   String deleteAllUsers(int tenantId);
 

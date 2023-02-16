@@ -396,12 +396,14 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.getAllTopicRequests(anyString(), anyInt()))
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), anyString(), eq(null), eq(false), anyInt()))
         .thenReturn(getListTopicRequests());
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
-    List<TopicRequestModel> listTopicRqs = topicControllerService.getTopicRequests("1", "", "all");
+    List<TopicRequestModel> listTopicRqs =
+        topicControllerService.getTopicRequests("1", "", "all", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -414,13 +416,16 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     List<TopicRequest> topicRequests = getListTopicRequests();
     topicRequests.get(0).setTopictype(RequestOperationType.CLAIM.value);
-    when(handleDbRequests.getAllTopicRequests(anyString(), anyInt())).thenReturn(topicRequests);
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), anyString(), eq(null), eq(false), anyInt()))
+        .thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
-    List<TopicRequestModel> listTopicRqs = topicControllerService.getTopicRequests("1", "", "all");
+    List<TopicRequestModel> listTopicRqs =
+        topicControllerService.getTopicRequests("1", "", "all", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -433,14 +438,16 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     List<TopicRequest> topicRequests = getListTopicRequests();
     topicRequests.get(0).setTopictype(RequestOperationType.CLAIM.value);
-    when(handleDbRequests.getAllTopicRequests(anyString(), anyInt())).thenReturn(topicRequests);
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), anyString(), eq(null), eq(false), anyInt()))
+        .thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", "created");
+        topicControllerService.getTopicRequests("1", "", "created", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -563,8 +570,9 @@ public class TopicControllerServiceTest {
   @Test
   @Order(22)
   public void deleteTopicRequests() throws KlawException {
-    when(handleDbRequests.deleteTopicRequest(anyInt(), anyInt()))
+    when(handleDbRequests.deleteTopicRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(mailService.getUserName(any())).thenReturn("uiuser1");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     ApiResponse resultResp = topicControllerService.deleteTopicRequests("1001");
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);

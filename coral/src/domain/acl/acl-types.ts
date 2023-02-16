@@ -47,9 +47,18 @@ type GetCreatedAclRequestParameters =
 
 type AclRequest = KlawApiModel<"aclRequest">;
 
+type Paginated<T> = {
+  totalPages: number;
+  currentPage: number;
+  entries: T;
+};
+
+type AclRequestsForApprover = Paginated<AclRequest[]>;
+
 export type {
   CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
   GetCreatedAclRequestParameters,
   AclRequest,
+  AclRequestsForApprover,
 };

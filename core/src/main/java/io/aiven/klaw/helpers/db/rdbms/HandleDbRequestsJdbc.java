@@ -121,9 +121,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   /*--------------------Select */
 
-  public List<TopicRequest> getAllTopicRequests(String requestor, int tenantId) {
+  public List<TopicRequest> getAllTopicRequests(
+      String requestor, String status, String env, boolean isMyRequest, int tenantId) {
     return jdbcSelectHelper.getFilteredTopicRequests(
-        false, requestor, RequestStatus.CREATED.value, false, tenantId, null, null, null);
+        false, requestor, status, false, tenantId, null, env, null, isMyRequest);
   }
 
   @Override
@@ -165,18 +166,31 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String env,
       String wildcardSearch) {
     return jdbcSelectHelper.getFilteredTopicRequests(
-        true, requestor, status, showRequestsOfAllTeams, tenantId, teamId, env, wildcardSearch);
+        true,
+        requestor,
+        status,
+        showRequestsOfAllTeams,
+        tenantId,
+        teamId,
+        env,
+        wildcardSearch,
+        false);
   }
 
   public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
-    return jdbcSelectHelper.selectConnectorRequestsByStatus(
-        false, requestor, RequestStatus.CREATED.value, false, tenantId);
+    return jdbcSelectHelper.getFilteredKafkaConnectorRequests(
+        false, requestor, RequestStatus.CREATED.value, false, tenantId, null, null);
   }
 
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(
-      String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
-    return jdbcSelectHelper.selectConnectorRequestsByStatus(
-        true, requestor, status, showRequestsOfAllTeams, tenantId);
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      String env,
+      String search) {
+    return jdbcSelectHelper.getFilteredKafkaConnectorRequests(
+        true, requestor, status, showRequestsOfAllTeams, tenantId, env, search);
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {
@@ -271,9 +285,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String role,
       String status,
       boolean showRequestsOfAllTeams,
+      String topic,
+      String environment,
+      AclType aclType,
+      boolean isMyRequest,
       int tenantId) {
     return jdbcSelectHelper.selectAclRequests(
-        allReqs, requestor, role, status, showRequestsOfAllTeams, tenantId);
+        allReqs,
+        requestor,
+        role,
+        status,
+        showRequestsOfAllTeams,
+        topic,
+        environment,
+        aclType,
+        isMyRequest,
+        tenantId);
   }
 
   @Override
@@ -286,7 +313,16 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       AclType aclType,
       int tenantId) {
     return jdbcSelectHelper.selectAclRequests(
-        true, requestor, "", status, showRequestsOfAllTeams, topic, environment, aclType, tenantId);
+        true,
+        requestor,
+        "",
+        status,
+        showRequestsOfAllTeams,
+        topic,
+        environment,
+        aclType,
+        false,
+        tenantId);
   }
 
   @Override
@@ -297,9 +333,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String topic,
       String env,
       String status,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredSchemaRequests(
-        allReqs, requestor, tenantId, topic, env, status, search);
+        allReqs, requestor, tenantId, topic, env, status, search, isMyRequest);
   }
 
   @Override
@@ -655,8 +692,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteTopicRequest(int topicId, int tenantId) {
-    return jdbcDeleteHelper.deleteTopicRequest(topicId, tenantId);
+  public String deleteTopicRequest(int topicId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteTopicRequest(topicId, userName, tenantId);
   }
 
   @Override
@@ -670,8 +707,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteAclRequest(int req_no, int tenantId) {
-    return jdbcDeleteHelper.deleteAclRequest(req_no, tenantId);
+  public String deleteAclRequest(int req_no, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteAclRequest(req_no, userName, tenantId);
   }
 
   @Override
@@ -705,8 +742,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteSchemaRequest(int schemaId, int tenantId) {
-    return jdbcDeleteHelper.deleteSchemaRequest(schemaId, tenantId);
+  public String deleteSchemaRequest(int schemaId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteSchemaRequest(schemaId, userName, tenantId);
   }
 
   @Override

@@ -3,17 +3,22 @@ import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
-  transformgetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsResponse,
+  transformGetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicRequestsForApproverResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
-  TopicRequest,
+  TopicRequestApiResponse,
+  TopicRequestStatus,
 } from "src/domain/topic/topic-types";
 import api from "src/services/api";
-import { KlawApiRequest, KlawApiResponse } from "types/utils";
+import {
+  KlawApiRequest,
+  KlawApiResponse,
+  ResolveIntersectionTypes,
+} from "types/utils";
 
 const getTopics = async ({
   currentPage = 1,
@@ -87,7 +92,7 @@ const getTopicAdvancedConfigOptions = (): Promise<
 > =>
   api
     .get<KlawApiResponse<"topicAdvancedConfigGet">>("/getAdvancedTopicConfigs")
-    .then(transformgetTopicAdvancedConfigOptionsResponse);
+    .then(transformGetTopicAdvancedConfigOptionsResponse);
 
 const requestTopic = (
   payload: KlawApiRequest<"topicCreate">
@@ -101,25 +106,37 @@ const requestTopic = (
 type GetTopicRequestsArgs = {
   pageNumber?: number;
   currentPage?: number;
-  requestType: operations["getCreatedTopicRequests"]["parameters"]["query"]["requestsType"];
+  requestStatus: TopicRequestStatus;
 };
 
-const getTopicRequests = ({
-  requestType,
+type GetTopicRequestsQueryParams = ResolveIntersectionTypes<
+  Required<
+    Pick<
+      operations["getTopicRequestsForApprover"]["parameters"]["query"],
+      "pageNo" | "currentPage" | "requestsType"
+    >
+  >
+>;
+
+const getTopicRequestsForApprover = ({
+  requestStatus,
   pageNumber = 1,
   currentPage = 1,
-}: GetTopicRequestsArgs): Promise<TopicRequest[]> => {
-  const queryObject: operations["getCreatedTopicRequests"]["parameters"]["query"] =
-    {
-      pageNo: pageNumber.toString(),
-      currentPage: currentPage.toString(),
-      requestsType: requestType,
-    };
+}: GetTopicRequestsArgs): Promise<TopicRequestApiResponse> => {
+  const queryObject: GetTopicRequestsQueryParams = {
+    pageNo: pageNumber.toString(),
+    currentPage: currentPage.toString(),
+    // This is a naming mix up in backend, we want to query
+    // for the status, not the type. Will be changed there soon.
+    requestsType: requestStatus,
+  };
   return api
-    .get<KlawApiResponse<"getCreatedTopicRequests">>(
-      `/getCreatedTopicRequests?${new URLSearchParams(queryObject).toString()}`
+    .get<KlawApiResponse<"getTopicRequestsForApprover">>(
+      `/getTopicRequestsForApprover?${new URLSearchParams(
+        queryObject
+      ).toString()}`
     )
-    .then(transformGetTopicRequestsResponse);
+    .then(transformGetTopicRequestsForApproverResponse);
 };
 
 export {
@@ -128,5 +145,5 @@ export {
   getTopicTeam,
   getTopicAdvancedConfigOptions,
   requestTopic,
-  getTopicRequests,
+  getTopicRequestsForApprover,
 };

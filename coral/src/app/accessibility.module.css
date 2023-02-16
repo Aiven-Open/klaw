@@ -69,6 +69,17 @@ a:focus-visible {
   font-size: 18px;
 }
 
+/*Accessibility enhancements for DataTable - the component */
+/*needs to be wrapped in a div with the class "a11y-enhancement-data-table"*/
+/*for them to be applied!*/
+
+/*Adds the hover style to <tr>s when an element in the row is */
+/*in focus of the keyboard (same behavior like hovering the <tr> with the mouse)*/
+:global(.a11y-enhancement-data-table) table tr:focus-within {
+  --tw-bg-opacity: 1;
+  background-color: rgb(247 247 250 / var(--tw-bg-opacity));
+}
+
 /****************************************
  * DS overwrites
  ****************************************
@@ -112,4 +123,14 @@ a:focus-visible {
 
 :root [role="tablist"] [role="tab"][aria-selected="true"] {
   background-color: #f7f7fa !important; /* grey-0 */
+}
+
+/* A11y enhancement Table as well as DataTable*/
+/* Workaround to get accessible color until DS ready */
+/* changes color to be accessible contrast */
+/* changes font weight to be distinguishable */
+/* from table cells font */
+:root thead > tr > th {
+  color: black !important;
+  font-weight: 600;
 }

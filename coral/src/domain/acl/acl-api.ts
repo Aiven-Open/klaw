@@ -1,3 +1,4 @@
+import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import {
   CreateAclRequestTopicTypeConsumer,
   CreateAclRequestTopicTypeProducer,
@@ -22,9 +23,11 @@ const createAclRequest = (
 };
 
 const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
-  return api.get<KlawApiResponse<"getAclRequestsForApprover">>(
-    `/getAclRequestsForApprover?${new URLSearchParams(params)}`
-  );
+  return api
+    .get<KlawApiResponse<"getAclRequestsForApprover">>(
+      `/getAclRequestsForApprover?${new URLSearchParams(params)}`
+    )
+    .then(transformAclRequestApiResponse);
 };
 
 const approveAclRequest = (
@@ -35,4 +38,17 @@ const approveAclRequest = (
   );
 };
 
-export { createAclRequest, getAclRequestsForApprover, approveAclRequest };
+const declineAclRequest = (
+  params: KlawApiRequestQueryParameters<"declineAclRequests">
+): Promise<KlawApiResponse<"declineAclRequests">> => {
+  return api.post<KlawApiResponse<"declineAclRequests">, never>(
+    `/execAclRequestDecline?${new URLSearchParams(params)}`
+  );
+};
+
+export {
+  createAclRequest,
+  getAclRequestsForApprover,
+  approveAclRequest,
+  declineAclRequest,
+};

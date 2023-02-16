@@ -16,7 +16,6 @@
     "dev-without-api": "vite",
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
-    "prepare": "cd .. && husky install coral/.husky",
     "preview": "vite build --mode remote-api && cp mockServiceWorker.js dist/mockServiceWorker.js && vite preview --mode remote-api",
     "reformat": "prettier --write src",
     "test": "jest",
@@ -24,7 +23,8 @@
     "test-dev": "jest --watch",
     "tsc": "tsc",
     "bundle-analyze": "BUNDLE_ANALYZE=1 vite build",
-    "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type"
+    "extract-api-types": "openapi-typescript ../openapi.yaml --output types/api.d.ts --make-paths-enum --export-type",
+    "pnpm:devPreinstall": "git config --local core.hooksPath .githooks/"
   },
   "lint-staged": {
     "**/*.ts?(x)": [
@@ -73,7 +73,6 @@
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-no-relative-import-paths": "^1.4.0",
     "eslint-plugin-react": "^7.31.10",
-    "husky": "^8.0.1",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.2.1",
     "jest-environment-jsdom": "^29.2.1",

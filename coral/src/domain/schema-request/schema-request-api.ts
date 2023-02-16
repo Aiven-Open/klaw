@@ -1,14 +1,11 @@
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
 import api from "src/services/api";
-import {
-  SchemaRequest,
-  SchemaRequestPayload,
-} from "src/domain/schema-request/schema-request-types";
+import { SchemaRequestPayload } from "src/domain/schema-request/schema-request-types";
 
 const createSchemaRequest = (
-  params: SchemaRequest
+  params: SchemaRequestPayload
 ): Promise<KlawApiResponse<"schemaUpload">> => {
-  const payload: SchemaRequestPayload = {
+  const payload = {
     ...params,
     schemaversion: "1.0",
     appname: "App",

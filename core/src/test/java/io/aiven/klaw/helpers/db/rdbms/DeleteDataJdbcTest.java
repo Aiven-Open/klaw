@@ -1,13 +1,22 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.AclRequestID;
+import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.SchemaRequestID;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,20 +59,45 @@ public class DeleteDataJdbcTest {
   }
 
   @Test
+  public void deleteTopicRequest_Failure() {
+    String result = deleteDataJdbc.deleteTopicRequest(1001, "uiuser1", 1);
+    assertThat(result).contains(ApiResultStatus.FAILURE.value);
+  }
+
+  @Test
   public void deleteTopicRequest() {
-    String result = deleteDataJdbc.deleteTopicRequest(1001, 1);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    TopicRequestID id = new TopicRequestID(1010, 1);
+    when(topicRequestsRepo.findById(eq(id)))
+        .thenReturn(createTopicRequest("uiuser1", RequestStatus.CREATED));
+    String result = deleteDataJdbc.deleteTopicRequest(1010, "uiuser1", 1);
+    assertThat(result).contains(ApiResultStatus.SUCCESS.value);
+  }
+
+  private Optional<TopicRequest> createTopicRequest(String userName, RequestStatus status) {
+    TopicRequest req = new TopicRequest();
+    req.setUsername(userName);
+    req.setRequestor(userName);
+    req.setTopicstatus(status.value);
+    return Optional.of(req);
   }
 
   @Test
   public void deleteSchemaRequest() {
-    String result = deleteDataJdbc.deleteSchemaRequest(1001, 1);
+    SchemaRequest req = new SchemaRequest();
+    req.setUsername("uiuser1");
+    req.setReq_no(1001);
+    when(schemaRequestRepo.findById(new SchemaRequestID(1001, 1))).thenReturn(Optional.of(req));
+    String result = deleteDataJdbc.deleteSchemaRequest(1001, "uiuser1", 1);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   public void deleteAclRequest() {
-    String result = deleteDataJdbc.deleteAclRequest(1001, 1);
+    AclRequests req = new AclRequests();
+    req.setUsername("uiuser1");
+    req.setReq_no(1001);
+    when(aclRequestsRepo.findById(new AclRequestID(1001, 1))).thenReturn(Optional.of(req));
+    String result = deleteDataJdbc.deleteAclRequest(1001, "uiuser1", 1);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 

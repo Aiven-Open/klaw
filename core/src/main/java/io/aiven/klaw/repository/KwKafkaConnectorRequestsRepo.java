@@ -7,9 +7,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.repository.query.QueryByExampleExecutor;
 
 public interface KwKafkaConnectorRequestsRepo
-    extends CrudRepository<KafkaConnectorRequest, KafkaConnectorRequestID> {
+    extends CrudRepository<KafkaConnectorRequest, KafkaConnectorRequestID>,
+        QueryByExampleExecutor<KafkaConnectorRequest> {
   Optional<KafkaConnectorRequest> findById(KafkaConnectorRequestID connectorRequestId);
 
   List<KafkaConnectorRequest> findAllByConnectorStatusAndTenantId(

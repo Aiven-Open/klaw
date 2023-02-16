@@ -1,6 +1,6 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { Modal } from "src/app/components/Modal";
+import { cleanup, render, RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Modal } from "src/app/components/Modal";
 
 describe("Modal.tsx", () => {
   const testTitle = "Modal title";
@@ -26,18 +26,6 @@ describe("Modal.tsx", () => {
       });
 
       afterAll(cleanup);
-
-      it("sets the app root to aria hidden true", () => {
-        const root = document.getElementById("root");
-
-        expect(root).toHaveAttribute("aria-hidden", "true");
-      });
-
-      it("sets the tabindex of app root to -1 so users can only access modal", () => {
-        const root = document.getElementById("root");
-
-        expect(root).toHaveAttribute("tabindex", "-1");
-      });
 
       it("shows a dialog", () => {
         const dialog = screen.getByRole("dialog");
@@ -112,6 +100,47 @@ describe("Modal.tsx", () => {
 
         await userEvent.keyboard("{Enter}");
         expect(mockPrimary.onClick).toHaveBeenCalled();
+      });
+    });
+
+    describe("traps user input inside the modal", () => {
+      let component: RenderResult;
+
+      beforeEach(() => {
+        component = render(
+          <>
+            <div id={"root"}></div>
+            <Modal title={testTitle} primaryAction={mockPrimary}>
+              {mockChildren}
+            </Modal>
+          </>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it("sets the aria hidden value on app root", () => {
+        const root = document.getElementById("root");
+        expect(root).toHaveAttribute("aria-hidden", "true");
+
+        component.unmount();
+        expect(root).not.toHaveAttribute("aria-hidden");
+      });
+
+      it("sets the tabindex of app root", () => {
+        const root = document.getElementById("root");
+        expect(root).toHaveAttribute("tabindex", "-1");
+
+        component.unmount();
+        expect(root).not.toHaveAttribute("tabindex");
+      });
+
+      it("sets the attribute inert for app root", () => {
+        const root = document.getElementById("root");
+        expect(root).toHaveAttribute("inert", "true");
+
+        component.unmount();
+        expect(root).not.toHaveAttribute("inert");
       });
     });
   });
@@ -219,6 +248,109 @@ describe("Modal.tsx", () => {
         await userEvent.keyboard("{Escape}");
 
         expect(mockClose).toHaveBeenCalled();
+      });
+    });
+
+    describe("handles Modal actions isLoading state", () => {
+      const mockClose = jest.fn();
+      const mockSecondary = {
+        text: "this is the secondary action",
+        onClick: jest.fn(),
+        loading: true,
+      };
+
+      beforeEach(() => {
+        render(
+          <Modal
+            title={testTitle}
+            primaryAction={{ ...mockPrimary, loading: true }}
+            secondaryAction={mockSecondary}
+            close={mockClose}
+          >
+            {mockChildren}
+          </Modal>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it("disables primary and secondary action button", () => {
+        const buttonPrimary = screen.getByRole("button", {
+          name: mockPrimary.text,
+        });
+        const buttonSecondary = screen.getByRole("button", {
+          name: mockSecondary.text,
+        });
+
+        expect(buttonPrimary).toBeDisabled();
+        expect(buttonSecondary).toBeDisabled();
+      });
+    });
+
+    describe("handles Modal actions disabled state", () => {
+      const mockClose = jest.fn();
+      const mockSecondary = {
+        text: "this is the secondary action",
+        onClick: jest.fn(),
+        disabled: true,
+      };
+
+      beforeEach(() => {
+        render(
+          <Modal
+            title={testTitle}
+            primaryAction={{ ...mockPrimary, disabled: true }}
+            secondaryAction={mockSecondary}
+            close={mockClose}
+          >
+            {mockChildren}
+          </Modal>
+        );
+      });
+
+      afterEach(cleanup);
+
+      it("disables primary and secondary action button", () => {
+        const buttonPrimary = screen.getByRole("button", {
+          name: mockPrimary.text,
+        });
+        const buttonSecondary = screen.getByRole("button", {
+          name: mockSecondary.text,
+        });
+
+        expect(buttonPrimary).toBeDisabled();
+        expect(buttonSecondary).toBeDisabled();
+      });
+    });
+
+    describe("renders a dialog based on props", () => {
+      const dialogTitle = (
+        <div>
+          <h1>This is a title</h1>
+        </div>
+      );
+      beforeAll(() => {
+        render(
+          <Modal
+            title={testTitle}
+            primaryAction={mockPrimary}
+            isDialog={true}
+            dialogTitle={dialogTitle}
+          >
+            {mockChildren}
+          </Modal>
+        );
+      });
+
+      it("does not show the headline given by the title prop", () => {
+        const titlePropHeadline = screen.queryByText(testTitle);
+        expect(titlePropHeadline).not.toBeInTheDocument();
+      });
+
+      it("shows the element passed as dialogTitle as title", () => {
+        const title = screen.getByRole("heading", { name: "This is a title" });
+
+        expect(title).toBeVisible();
       });
     });
   });

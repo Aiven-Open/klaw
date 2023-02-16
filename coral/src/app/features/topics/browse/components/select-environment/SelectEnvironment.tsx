@@ -50,7 +50,7 @@ function SelectEnv(props: SelectEnvProps) {
   } else {
     return (
       <NativeSelect
-        labelText="Filter by environment"
+        labelText="Filter by Environment"
         value={environment}
         onChange={(event) => onChangeEnv(event.target.value)}
       >

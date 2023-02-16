@@ -781,6 +781,28 @@
           "required" : false,
           "type" : "string",
           "default" : "all"
+        }, {
+          "name" : "topic",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "aclType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "enum" : [ "PRODUCER", "CONSUMER" ]
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "200" : {
@@ -1391,6 +1413,50 @@
         }
       }
     },
+    "/getConnectorRequestsForApproval" : {
+      "get" : {
+        "operationId" : "getCreatedConnectorRequests",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "requestsType",
+          "in" : "query",
+          "required" : false,
+          "type" : "string",
+          "default" : "created"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/KafkaConnectorRequestModel"
+              }
+            }
+          }
+        }
+      }
+    },
     "/getConnectors" : {
       "get" : {
         "operationId" : "getTopics",
@@ -1467,40 +1533,6 @@
                 "additionalProperties" : {
                   "type" : "string"
                 }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getCreatedConnectorRequests" : {
-      "get" : {
-        "operationId" : "getCreatedConnectorRequests",
-        "produces" : [ "application/json" ],
-        "parameters" : [ {
-          "name" : "pageNo",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "currentPage",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        }, {
-          "name" : "requestsType",
-          "in" : "query",
-          "required" : false,
-          "type" : "string",
-          "default" : "created"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/KafkaConnectorRequestModel"
               }
             }
           }
@@ -1979,6 +2011,22 @@
           "required" : false,
           "type" : "string",
           "default" : "all"
+        }, {
+          "name" : "topic",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "200" : {
@@ -2441,6 +2489,17 @@
           "required" : false,
           "type" : "string",
           "default" : "all"
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean",
+          "default" : false
         } ],
         "responses" : {
           "200" : {
@@ -2825,6 +2884,56 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/request/approve" : {
+      "post" : {
+        "operationId" : "approveRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RequestVerdict"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ApiResponse"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/request/decline" : {
+      "post" : {
+        "operationId" : "declineRequest",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/RequestVerdict"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/ApiResponse"
+              }
             }
           }
         }
@@ -3564,6 +3673,12 @@
         },
         "approvingTeamDetails" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -3950,6 +4065,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -4206,6 +4327,24 @@
         }
       }
     },
+    "RequestVerdict" : {
+      "type" : "object",
+      "properties" : {
+        "reason" : {
+          "type" : "string"
+        },
+        "requestEntityType" : {
+          "type" : "string",
+          "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+        },
+        "reqIds" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
     "RequestsCountOverview" : {
       "type" : "object",
       "properties" : {
@@ -4404,6 +4543,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -4772,6 +4917,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -5022,6 +5173,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
@@ -5122,6 +5279,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
