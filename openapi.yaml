@@ -1483,6 +1483,9 @@ components:
           description: Number of topic requests waiting for approval
     RequestVerdict:
       type: object
+      required:
+        - requestEntityType
+        - reqIds
       properties:
         reason:
           type: string

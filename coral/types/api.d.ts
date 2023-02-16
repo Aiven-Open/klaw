@@ -1006,8 +1006,8 @@ export type components = {
     RequestVerdict: {
       reason?: string;
       /** @enum {string} */
-      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
-      reqIds?: string[];
+      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      reqIds: string[];
     };
   };
 };
