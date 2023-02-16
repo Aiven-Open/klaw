@@ -78,7 +78,7 @@ public class ClusterApiConfluentCloudControllerIT {
 
   @BeforeEach
   public void setup() {
-    int port = 444;
+    int port = 56565;
     utilMethods = new UtilMethods();
     if (!bindPort) mockServerClient.bind(port);
     bindPort = true;
