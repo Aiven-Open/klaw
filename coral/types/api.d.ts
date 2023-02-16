@@ -652,6 +652,8 @@ export type components = {
        * @example 1
        */
       requestingteam?: number;
+      /** @example Ospo */
+      requestingTeamName?: string;
       /** @example App */
       appname?: string;
       /**

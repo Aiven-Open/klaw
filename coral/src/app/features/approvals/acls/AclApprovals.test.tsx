@@ -37,6 +37,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     environmentName: "DEV",
     teamId: 1003,
     requestingteam: 1003,
+    requestingTeamName: "Ospo",
     appname: "App",
     username: "amathieu",
     requesttime: "2023-01-06T14:50:37.912+00:00",
