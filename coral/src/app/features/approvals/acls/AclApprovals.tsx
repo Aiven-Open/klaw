@@ -65,13 +65,24 @@ function AclApprovals() {
 
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
     mutationFn: approveAclRequest,
-    onSuccess: (data) => {
-      if (data.result !== "success") {
+    onSuccess: (response) => {
+      if (response.result !== "success") {
         return setErrorMessage(
-          data.message || data.result || "Unexpected error"
+          response.message || response.result || "Unexpected error"
         );
       }
+      setErrorMessage("");
       setDetailsModal({ isOpen: false, reqNo: "" });
+
+      // If approved request is last in the page, go back to previous page
+      // This avoids staying on a non-existent page of entries, which makes the table bug hard
+      // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+      // We also do not need to invalidate the query, as the activePage does not exist any more
+      // And there is no need to update anything on it
+      if (data?.entries.length === 1 && data?.currentPage > 1) {
+        return setActivePage(activePage - 1);
+      }
+
       // We need to invalidate the query populating the table to reflect the change
       queryClient.invalidateQueries(["aclRequests", activePage]);
     },
@@ -82,13 +93,24 @@ function AclApprovals() {
 
   const { isLoading: rejectIsLoading, mutate: rejectRequest } = useMutation({
     mutationFn: declineAclRequest,
-    onSuccess: (data) => {
-      if (data.result !== "success") {
+    onSuccess: (response) => {
+      if (response.result !== "success") {
         return setErrorMessage(
-          data.message || data.result || "Unexpected error"
+          response.message || response.result || "Unexpected error"
         );
       }
+      setErrorMessage("");
       setRejectModal({ isOpen: false, reqNo: "" });
+
+      // If approved request is last in the page, go back to previous page
+      // This avoids staying on a non-existent page of entries, which makes the table bug hard
+      // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+      // We also do not need to invalidate the query, as the activePage does not exist any more
+      // And there is no need to update anything on it
+      if (data?.entries.length === 1 && data?.currentPage > 1) {
+        return setActivePage(activePage - 1);
+      }
+
       // We need to invalidate the query populating the table to reflect the change
       queryClient.invalidateQueries(["aclRequests", activePage]);
     },
