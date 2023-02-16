@@ -100,7 +100,9 @@ public class ClusterApiController {
     Set<Map<String, String>> topics;
     if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
       topics = confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
-    } else topics = apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
+    } else {
+      topics = apacheKafkaTopicService.loadTopics(bootstrapServers, protocol, clusterName);
+    }
     return new ResponseEntity<>(topics, HttpStatus.OK);
   }
 

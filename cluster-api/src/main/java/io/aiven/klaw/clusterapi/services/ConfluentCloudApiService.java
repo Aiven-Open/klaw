@@ -39,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 /*
 Confluent cloud API Reference
@@ -191,7 +192,7 @@ public class ConfluentCloudApiService {
     RestTemplate restTemplate = getRestTemplate();
     log.info("deleteAcls {}", clusterAclRequest);
 
-    String deleteAclsUri =
+    String baseAclsUri =
         getResourceUri(
             clusterAclRequest.getClusterName(), clusterAclRequest.getEnv(), "deleteAcls", "ACLS");
 
@@ -201,54 +202,53 @@ public class ConfluentCloudApiService {
 
     if (clusterAclRequest.getAclType().equals(AclType.PRODUCER.value)) {
       // delete WRITE on Topic acls
-      deleteAclsUri =
-          deleteAclsUri
-              + "?"
-              + getQueryParams(
-                  clusterAclRequest,
-                  ResourceType.TOPIC.name(),
-                  clusterAclRequest.getTopicName(),
-                  AclOperation.WRITE.name());
+      String deleteAclsUri =
+          updateQueryParams(
+              clusterAclRequest,
+              ResourceType.TOPIC.name(),
+              clusterAclRequest.getTopicName(),
+              AclOperation.WRITE.name(),
+              baseAclsUri);
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
 
       // delete DESCRIBE on Topic acls
       deleteAclsUri =
-          deleteAclsUri.replaceAll(
-              "operation=" + AclOperation.WRITE.name(),
-              "operation=" + AclOperation.DESCRIBE.name());
+          updateQueryParams(
+              clusterAclRequest,
+              ResourceType.TOPIC.name(),
+              clusterAclRequest.getTopicName(),
+              AclOperation.DESCRIBE.name(),
+              baseAclsUri);
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
     } else {
       // delete consumer group read acls
-      deleteAclsUri =
-          deleteAclsUri
-              + "?"
-              + getQueryParams(
-                  clusterAclRequest,
-                  ResourceType.GROUP.name(),
-                  clusterAclRequest.getConsumerGroup(),
-                  AclOperation.READ.name());
-
+      String deleteAclsUri =
+          updateQueryParams(
+              clusterAclRequest,
+              ResourceType.GROUP.name(),
+              clusterAclRequest.getConsumerGroup(),
+              AclOperation.READ.name(),
+              baseAclsUri);
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
 
       // delete consumer group DESCRIBE acls
       deleteAclsUri =
-          deleteAclsUri.replaceAll(
-              "operation=" + AclOperation.READ.name(), "operation=" + AclOperation.DESCRIBE.name());
+          updateQueryParams(
+              clusterAclRequest,
+              ResourceType.GROUP.name(),
+              clusterAclRequest.getConsumerGroup(),
+              AclOperation.DESCRIBE.name(),
+              baseAclsUri);
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
 
       // delete read topic acls
       deleteAclsUri =
-          getResourceUri(
-              clusterAclRequest.getClusterName(), clusterAclRequest.getEnv(), "deleteAcls", "ACLS");
-      deleteAclsUri =
-          deleteAclsUri
-              + "?"
-              + getQueryParams(
-                  clusterAclRequest,
-                  ResourceType.TOPIC.name(),
-                  clusterAclRequest.getTopicName(),
-                  AclOperation.READ.name());
-
+          updateQueryParams(
+              clusterAclRequest,
+              ResourceType.TOPIC.name(),
+              clusterAclRequest.getTopicName(),
+              AclOperation.READ.name(),
+              baseAclsUri);
       deleteAclsRestCall(restTemplate, deleteAclsUri, clusterAclRequest, request);
     }
 
@@ -337,29 +337,35 @@ public class ConfluentCloudApiService {
     return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
   }
 
-  String getQueryParams(
+  String updateQueryParams(
       ClusterAclRequest clusterAclRequest,
       String resourceType,
       String resourceName,
-      String operation) {
-    return String.join(
-        "&",
-        "resource_type=" + resourceType,
-        "resource_name=" + resourceName,
-        "pattern_type="
-            + (clusterAclRequest.isPrefixAcl() ? AclPatternType.PREFIXED : AclPatternType.LITERAL),
-        "principal="
-            + (clusterAclRequest.getAclIpPrincipleType().equals(AclIPPrincipleType.PRINCIPAL.name())
+      String operation,
+      String baseAclsUri) {
+    DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(baseAclsUri);
+    uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+    return uriBuilderFactory
+        .builder()
+        .queryParam("resource_type", resourceType)
+        .queryParam("resource_name", resourceName)
+        .queryParam(
+            "pattern_type",
+            (clusterAclRequest.isPrefixAcl() ? AclPatternType.PREFIXED : AclPatternType.LITERAL))
+        .queryParam(
+            "principal",
+            (clusterAclRequest.getAclIpPrincipleType().equals(AclIPPrincipleType.PRINCIPAL.name())
                 ? "User:" + clusterAclRequest.getAclSsl()
-                : "User:*"),
-        "host="
-            + (clusterAclRequest
-                    .getAclIpPrincipleType()
-                    .equals(AclIPPrincipleType.IP_ADDRESS.name())
+                : "User:*"))
+        .queryParam(
+            "host",
+            (clusterAclRequest.getAclIpPrincipleType().equals(AclIPPrincipleType.IP_ADDRESS.name())
                 ? clusterAclRequest.getAclIp()
-                : "*"),
-        "operation=" + operation,
-        "permission=" + AclPermissionType.ALLOW.name());
+                : "*"))
+        .queryParam("operation", operation)
+        .queryParam("permission", AclPermissionType.ALLOW.name())
+        .build()
+        .toString();
   }
 
   private String getResourceUri(

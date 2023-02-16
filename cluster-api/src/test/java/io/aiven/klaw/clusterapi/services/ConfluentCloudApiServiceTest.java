@@ -234,11 +234,15 @@ public class ConfluentCloudApiServiceTest {
     String resourceType = "TOPIC";
     String operation = "WRITE";
     String response =
-        confluentCloudApiService.getQueryParams(
-            clusterAclRequest, resourceType, clusterAclRequest.getTopicName(), operation);
+        confluentCloudApiService.updateQueryParams(
+            clusterAclRequest,
+            resourceType,
+            clusterAclRequest.getTopicName(),
+            operation,
+            "https://host");
     assertThat(response)
         .isEqualTo(
-            "resource_type="
+            "https://host?resource_type="
                 + resourceType
                 + "&resource_name="
                 + clusterAclRequest.getTopicName()
@@ -255,11 +259,15 @@ public class ConfluentCloudApiServiceTest {
     String resourceType = "CONSUMER";
     String operation = "READ";
     String response =
-        confluentCloudApiService.getQueryParams(
-            clusterAclRequest, resourceType, clusterAclRequest.getConsumerGroup(), operation);
+        confluentCloudApiService.updateQueryParams(
+            clusterAclRequest,
+            resourceType,
+            clusterAclRequest.getConsumerGroup(),
+            operation,
+            "https://host");
     assertThat(response)
         .isEqualTo(
-            "resource_type="
+            "https://host?resource_type="
                 + resourceType
                 + "&resource_name="
                 + clusterAclRequest.getConsumerGroup()
