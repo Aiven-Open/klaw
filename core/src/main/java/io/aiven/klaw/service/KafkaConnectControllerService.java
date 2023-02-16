@@ -1157,9 +1157,10 @@ public class KafkaConnectControllerService {
       List<KafkaConnectorRequest> topicsList, boolean fromSyncTopics) {
     List<KafkaConnectorRequestModel> topicRequestModelList = new ArrayList<>();
     KafkaConnectorRequestModel topicRequestModel;
-    Integer userTeamId = commonUtilsService.getTeamId(getUserName());
+    String userName = getUserName();
+    Integer userTeamId = commonUtilsService.getTeamId(userName);
 
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    int tenantId = commonUtilsService.getTenantId(userName);
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<UserInfo> userList =
@@ -1196,9 +1197,20 @@ public class KafkaConnectControllerService {
         }
       }
 
-      topicRequestModelList.add(topicRequestModel);
+      topicRequestModelList.add(setRequestorPermissions(topicRequestModel, userName));
     }
     return topicRequestModelList;
+  }
+
+  private KafkaConnectorRequestModel setRequestorPermissions(
+      KafkaConnectorRequestModel req, String userName) {
+    if (RequestStatus.CREATED.value.equals(req.getConnectorStatus())
+        && userName != null
+        && userName.equals(req.getRequestor())) {
+      req.setDeletable(true);
+      req.setEditable(true);
+    }
+    return req;
   }
 
   private String updateApproverInfo(

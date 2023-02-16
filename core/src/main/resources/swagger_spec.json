@@ -4065,6 +4065,12 @@
         },
         "currentPage" : {
           "type" : "string"
+        },
+        "editable" : {
+          "type" : "boolean"
+        },
+        "deletable" : {
+          "type" : "boolean"
         }
       }
     },
