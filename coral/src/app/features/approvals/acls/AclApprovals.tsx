@@ -382,7 +382,11 @@ function AclApprovals() {
           isLoading={rejectIsLoading}
         />
       )}
-      {errorMessage !== "" && <Alert type="warning">{errorMessage}</Alert>}
+      {errorMessage !== "" && (
+        <div role="alert">
+          <Alert type="warning">{errorMessage}</Alert>
+        </div>
+      )}
       <ApprovalsLayout
         filters={filters}
         table={
