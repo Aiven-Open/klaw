@@ -1,4 +1,5 @@
 import {
+  Alert,
   DataTable,
   DataTableColumn,
   Flexbox,
@@ -27,6 +28,7 @@ import {
   getAclRequestsForApprover,
 } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 interface AclRequestTableRows {
   id: number;
@@ -53,6 +55,8 @@ function AclApprovals() {
   });
   const [rejectModal, setRejectModal] = useState({ isOpen: false, reqNo: "" });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const { data, isLoading } = useQuery<AclRequestsForApprover, Error>({
     queryKey: ["aclRequests", activePage],
     queryFn: () => getAclRequestsForApprover({ pageNo: String(activePage) }),
@@ -63,11 +67,16 @@ function AclApprovals() {
     mutationFn: approveAclRequest,
     onSuccess: (data) => {
       if (data.result !== "success") {
-        return alert(data.result);
+        return setErrorMessage(
+          data.message || data.result || "Unexpected error"
+        );
       }
       setDetailsModal({ isOpen: false, reqNo: "" });
       // We need to invalidate the query populating the table to reflect the change
       queryClient.invalidateQueries(["aclRequests", activePage]);
+    },
+    onError: (error: Error) => {
+      setErrorMessage(parseErrorMsg(error));
     },
   });
 
@@ -75,11 +84,16 @@ function AclApprovals() {
     mutationFn: declineAclRequest,
     onSuccess: (data) => {
       if (data.result !== "success") {
-        return alert(data.result);
+        return setErrorMessage(
+          data.message || data.result || "Unexpected error"
+        );
       }
       setRejectModal({ isOpen: false, reqNo: "" });
       // We need to invalidate the query populating the table to reflect the change
       queryClient.invalidateQueries(["aclRequests", activePage]);
+    },
+    onError: (error: Error) => {
+      setErrorMessage(parseErrorMsg(error));
     },
   });
 
@@ -348,6 +362,7 @@ function AclApprovals() {
           isLoading={rejectIsLoading}
         />
       )}
+      {errorMessage !== "" && <Alert type="warning">{errorMessage}</Alert>}
       <ApprovalsLayout
         filters={filters}
         table={
