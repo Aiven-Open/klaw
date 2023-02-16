@@ -54,8 +54,8 @@ export type paths = {
   "/uploadSchema": {
     post: operations["schemaUpload"];
   };
-  "/getCreatedTopicRequests": {
-    get: operations["getCreatedTopicRequests"];
+  "/getTopicRequestsForApprover": {
+    get: operations["getTopicRequestsForApprover"];
   };
   "/getAuth": {
     get: operations["getAuth"];
@@ -154,6 +154,18 @@ export type components = {
       result?: string;
       data?: { [key: string]: unknown };
     };
+    /**
+     * Type of request related to topic
+     * @example Update
+     * @enum {string}
+     */
+    RequestType: "Create" | "Update" | "Delete" | "Claim" | "Promote";
+    /**
+     * Status of a request
+     * @example created
+     * @enum {string}
+     */
+    RequestStatus: "created" | "deleted" | "declined" | "approved" | "all";
     UserAuthenticationRequest: {
       /**
        * username
@@ -181,12 +193,6 @@ export type components = {
        */
       tokenType: "JWT";
     };
-    /**
-     * Type of request related to topic
-     * @example Update
-     * @enum {string}
-     */
-    TopicRequestTypes: "Create" | "Update" | "Delete" | "Claim";
     TopicsGetResponse: components["schemas"]["TopicInfo"][][];
     /**
      * @example [
@@ -465,12 +471,6 @@ export type components = {
       /** @enum {string} */
       aivenCluster: "true" | "false";
     };
-    /**
-     * Status of a request
-     * @example created
-     * @enum {string}
-     */
-    RequestStatus: "created" | "deleted" | "declined" | "approved";
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
@@ -668,11 +668,7 @@ export type components = {
       requesttime?: string;
       /** @example 10-11-2020 10:45:30 */
       requesttimestring?: string;
-      /**
-       * @example created
-       * @enum {string}
-       */
-      aclstatus?: "created" | "approved" | "denied" | "deleted";
+      aclstatus?: components["schemas"]["RequestStatus"];
       approver?: string;
       /**
        * Format: date-time
@@ -796,7 +792,7 @@ export type components = {
        */
       requesttimestring?: string;
       topicstatus?: components["schemas"]["RequestStatus"];
-      requesttype?: components["schemas"]["TopicRequestTypes"];
+      requesttype?: components["schemas"]["RequestType"];
       /**
        * Remarks
        * @description SchemaRequest specific comment
@@ -896,11 +892,7 @@ export type components = {
       }[];
       /** App name */
       appname?: string;
-      /**
-       * Topic type
-       * @enum {string}
-       */
-      topictype?: "Create" | "Update" | "Delete" | "Claim";
+      topictype?: components["schemas"]["RequestType"];
       /** Requestor */
       requestor?: string;
       /**
@@ -1254,19 +1246,23 @@ export type operations = {
       };
     };
   };
-  getCreatedTopicRequests: {
+  getTopicRequestsForApprover: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestsType?: "all" | "created" | "declined" | "approved";
+        /** Naming is a mistake (will change), this relates to the status of a request */
+        requestsType?: components["schemas"]["RequestStatus"];
+        teamId?: number;
+        env?: string;
+        search?: string;
       };
     };
     responses: {
       /** successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicRequest"][];
+          "application/json": components["schemas"]["TopicRequestModel"][];
         };
       };
     };
@@ -1301,6 +1297,6 @@ export enum ApiPaths {
   createAclRequest = "/createAcl",
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",
-  getCreatedTopicRequests = "/getCreatedTopicRequests",
+  getTopicRequestsForApprover = "/getTopicRequestsForApprover",
   getAuth = "/getAuth",
 }
