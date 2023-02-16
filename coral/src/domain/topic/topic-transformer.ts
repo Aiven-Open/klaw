@@ -1,7 +1,7 @@
 import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
-  TopicRequest,
+  TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
 
@@ -134,7 +134,7 @@ const ADVANCED_TOPIC_CONFIG_DOCUMENTATION: Record<
   },
 };
 
-function transformgetTopicAdvancedConfigOptionsResponse(
+function transformGetTopicAdvancedConfigOptionsResponse(
   apiResponse: KlawApiResponse<"topicAdvancedConfigGet">
 ): TopicAdvancedConfigurationOptions[] {
   return Object.entries(apiResponse).map(([key, name]) => {
@@ -149,14 +149,26 @@ function transformgetTopicAdvancedConfigOptionsResponse(
   });
 }
 
-function transformGetTopicRequestsResponse(
-  apiResponse: KlawApiResponse<"getCreatedTopicRequests">
-): TopicRequest[] {
-  return apiResponse.map((request) => ({ topicName: request.topicname }));
+function transformGetTopicRequestsForApproverResponse(
+  apiResponse: KlawApiResponse<"getTopicRequestsForApprover">
+): TopicRequestApiResponse {
+  if (apiResponse.length === 0) {
+    return {
+      totalPages: 0,
+      currentPage: 0,
+      entries: [],
+    };
+  }
+
+  return {
+    totalPages: Number(apiResponse[0].totalNoPages),
+    currentPage: Number(apiResponse[0].currentPage),
+    entries: apiResponse,
+  };
 }
 
 export {
   transformTopicApiResponse,
-  transformgetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsResponse,
+  transformGetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicRequestsForApproverResponse,
 };

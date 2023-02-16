@@ -217,12 +217,14 @@ function mockGetTopicRequests({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: KlawApiResponse<"getCreatedTopicRequests"> | { message: string };
+    data: KlawApiResponse<"getTopicRequestsForApprover"> | { message: string };
   };
 }) {
   mswInstance.use(
-    rest.get(`${getHTTPBaseAPIUrl()}/getCreatedTopicRequests`, (_, res, ctx) =>
-      res(ctx.status(response.status ?? 200), ctx.json(response.data))
+    rest.get(
+      `${getHTTPBaseAPIUrl()}/getTopicRequestsForApprover`,
+      (_, res, ctx) =>
+        res(ctx.status(response.status ?? 200), ctx.json(response.data))
     )
   );
 }

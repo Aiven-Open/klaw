@@ -6,11 +6,10 @@ import {
 import {
   Topic,
   TopicNames,
-  TopicRequest,
   TopicRequestTypes,
   TopicTeam,
   TopicRequestStatus,
-  TopicRequestNew,
+  TopicRequest,
 } from "src/domain/topic/topic-types";
 
 export type {
@@ -18,7 +17,6 @@ export type {
   TopicNames,
   TopicTeam,
   TopicRequest,
-  TopicRequestNew,
   TopicRequestTypes,
   TopicRequestStatus,
 };

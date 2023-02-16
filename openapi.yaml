@@ -295,7 +295,6 @@ paths:
             type: string
             enum: ["all", "created", "approved", "denied", "deleted"]
           example: "created"
-          default: "created"
         - name: topic
           in: query
           required: false
@@ -425,42 +424,50 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GenericApiResponse"
-  /getCreatedTopicRequests:
+  /getTopicRequestsForApprover:
     get:
-      operationId: getCreatedTopicRequests
-      tags:
-        - Topic
+      operationId: getTopicRequestsForApprover
       parameters:
         - name: pageNo
           in: query
           required: true
+          example: "2"
           schema:
             type: string
         - name: currentPage
           in: query
-          required: false
+          example: "2"
           schema:
             type: string
         - name: requestsType
           in: query
-          required: false
+          description: Naming is a mistake (will change), this relates to the status of a request
+          schema:
+            $ref: "#/components/schemas/RequestStatus"
+        - name: teamId
+          in: query
+          schema:
+            type: integer
+            format: int32
+            example: 1001
+        - name: env
+          in: query
           schema:
             type: string
-            enum:
-              - all
-              - created
-              - declined
-              - approved
-            default: created
+          example: "1"
+        - name: search
+          in: query
+          schema:
+            type: string
       responses:
-        "200":
+        200:
           description: successful operation
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TopicRequest"
+                  $ref: "#/components/schemas/TopicRequestModel"
   /getAuth:
     get:
       operationId: getAuth
@@ -567,6 +574,26 @@ components:
           type: string
         data:
           type: object
+    RequestType:
+      title: Type of request related to topic
+      type: string
+      enum:
+        - Create
+        - Update
+        - Delete
+        - Claim
+        - Promote
+      example: Update
+    RequestStatus:
+      type: string
+      title: Status of a request
+      enum:
+        - created
+        - deleted
+        - declined
+        - approved
+        - all
+      example: created
     UserAuthenticationRequest:
       type: object
       required:
@@ -600,15 +627,6 @@ components:
           example: JWT
           type: string
           enum: [JWT]
-    TopicRequestTypes:
-      title: Type of request related to topic
-      type: string
-      enum:
-        - Create
-        - Update
-        - Delete
-        - Claim
-      example: Update
     TopicsGetResponse:
       type: array
       items:
@@ -905,15 +923,6 @@ components:
           type: string
           enum: ["true", "false"]
       example: { "aivenCluster": "false" }
-    RequestStatus:
-      type: string
-      title: Status of a request
-      enum:
-        - created
-        - deleted
-        - declined
-        - approved
-      example: created
     topicCreateRequest:
       title: TopicCreateRequest
       type: object
@@ -1133,9 +1142,7 @@ components:
           pattern: dd-MMM-yyyy HH:mm:ss
           example: "10-11-2020 10:45:30"
         aclstatus:
-          type: string
-          enum: ["created", "approved", "denied", "deleted"]
-          example: "created"
+          $ref: "#/components/schemas/RequestStatus"
         approver:
           type: string
         approvingtime:
@@ -1239,7 +1246,7 @@ components:
         topicstatus:
           $ref: "#/components/schemas/RequestStatus"
         requesttype:
-          $ref: "#/components/schemas/TopicRequestTypes"
+          $ref: "#/components/schemas/RequestType"
         remarks:
           title: Remarks
           description: SchemaRequest specific comment
@@ -1334,13 +1341,7 @@ components:
           title: App name
           type: string
         topictype:
-          title: Topic type
-          type: string
-          enum:
-            - Create
-            - Update
-            - Delete
-            - Claim
+          $ref: "#/components/schemas/RequestType"
         requestor:
           title: Requestor
           type: string

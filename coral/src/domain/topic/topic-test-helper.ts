@@ -1,4 +1,9 @@
-import { Topic, TopicRequest } from "src/domain/topic/topic-types";
+import {
+  Topic,
+  TopicRequest,
+  TopicRequestStatus,
+  TopicRequestTypes,
+} from "src/domain/topic/topic-types";
 import { KlawApiModel, KlawApiResponse } from "types/utils";
 
 // currently this file is used in code (topcis-api.msw.ts)
@@ -113,7 +118,32 @@ function createMockTopicApiResponse({
 }
 
 const defaultTopicRequest: TopicRequest = {
-  topicName: "test",
+  topicname: "test-topic-1",
+  environment: "1",
+  topicpartitions: 4,
+  teamname: "NCC1701D",
+  remarks: "asap",
+  description: "This topic is for test",
+  replicationfactor: "2",
+  environmentName: "BRG",
+  topicid: 1000,
+  advancedTopicConfigEntries: [
+    {
+      configKey: "cleanup.policy",
+      configValue: "delete",
+    },
+  ],
+  topictype: "Create" as TopicRequestTypes,
+  requestor: "jlpicard",
+  requesttime: "1987-09-28T13:37:00.001+00:00",
+  requesttimestring: "28-Sep-1987 13:37:00",
+  topicstatus: "created" as TopicRequestStatus,
+  totalNoPages: "1",
+  approvingTeamDetails:
+    "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
+  teamId: 1003,
+  allPageNos: ["1"],
+  currentPage: "1",
 };
 
 function createMockTopicRequest(request?: Partial<TopicRequest>): TopicRequest {
