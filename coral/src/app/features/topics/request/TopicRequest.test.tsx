@@ -900,7 +900,7 @@ describe("<TopicRequest />", () => {
       const dialog = screen.getByRole("dialog");
 
       expect(dialog).toBeVisible();
-      expect(dialog).toHaveTextContent("Cancel topic request");
+      expect(dialog).toHaveTextContent("Cancel topic request?");
       expect(dialog).toHaveTextContent(
         "Do you want to cancel this request? The data added will be lost."
       );

@@ -183,7 +183,7 @@ function TopicRequest() {
       </Box>
       {cancelDialogVisible && (
         <Dialog
-          title={"Cancel topic request"}
+          title={"Cancel topic request?"}
           primaryAction={{
             text: "Cancel request",
             onClick: () => cancelRequest(),

@@ -398,7 +398,7 @@ describe("TopicSchemaRequest", () => {
       const dialog = screen.getByRole("dialog");
 
       expect(dialog).toBeVisible();
-      expect(dialog).toHaveTextContent("Cancel schema request");
+      expect(dialog).toHaveTextContent("Cancel schema request?");
       expect(dialog).toHaveTextContent(
         "Do you want to cancel this request? The data added will be lost."
       );

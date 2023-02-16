@@ -160,7 +160,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       </Box>
       {cancelDialogVisible && (
         <Dialog
-          title={"Cancel schema request"}
+          title={"Cancel schema request?"}
           primaryAction={{
             text: "Cancel request",
             onClick: () => cancelRequest(),
