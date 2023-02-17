@@ -8,6 +8,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
 import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("src/domain/topic/topic-api.ts");
 
@@ -186,7 +187,7 @@ describe("TopicApprovals", () => {
     });
   });
 
-  describe("renders a pagination navigation dependent on response", () => {
+  describe("renders pagination dependent on response", () => {
     afterEach(() => {
       cleanup();
       jest.clearAllMocks();
@@ -208,7 +209,7 @@ describe("TopicApprovals", () => {
       expect(pagination).not.toBeInTheDocument();
     });
 
-    it("shows a pagination when response has 2 pages", async () => {
+    it("shows a pagination when response has more then one page", async () => {
       mockGetTopicRequestsForApprover.mockResolvedValue({
         totalPages: 2,
         currentPage: 1,
@@ -226,6 +227,51 @@ describe("TopicApprovals", () => {
         name: "Pagination navigation, you're on page 1 of 2",
       });
       expect(pagination).toBeVisible();
+    });
+  });
+
+  describe("handles user stepping through pagination", () => {
+    beforeEach(async () => {
+      mockGetTopicRequestsForApprover.mockResolvedValue({
+        totalPages: 3,
+        currentPage: 1,
+        entries: [],
+      });
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows page 2 as currently active page and the total page number", () => {
+      const pagination = screen.getByRole("navigation", {
+        name: /Pagination/,
+      });
+
+      expect(pagination).toHaveAccessibleName(
+        "Pagination navigation, you're on page 1 of 3"
+      );
+    });
+
+    it("fetches new data when user clicks on next page", async () => {
+      const pageTwoButton = screen.getByRole("button", {
+        name: "Go to next page, page 2",
+      });
+
+      await userEvent.click(pageTwoButton);
+
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(2, {
+        pageNumber: 2,
+        requestStatus: "all",
+      });
     });
   });
 });
