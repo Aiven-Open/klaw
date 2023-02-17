@@ -21,7 +21,6 @@ import DetailsModalContent from "src/app/features/approvals/acls/components/Deta
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
-import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import {
   approveAclRequest,
   declineAclRequest,
@@ -43,6 +42,37 @@ interface AclRequestTableRows {
   requesttimestring: string;
 }
 
+const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
+  if (entries === undefined) {
+    return [];
+  }
+  return entries.map(
+    ({
+      req_no,
+      acl_ssl,
+      acl_ip,
+      topicname,
+      aclPatternType,
+      environmentName,
+      teamname,
+      topictype,
+      username,
+      requesttimestring,
+    }) => ({
+      id: Number(req_no),
+      acl_ssl: acl_ssl ?? [],
+      acl_ip: acl_ip ?? [],
+      topicname: topicname,
+      prefixed: aclPatternType === "PREFIXED",
+      environmentName: environmentName ?? "-",
+      teamname,
+      topictype,
+      username: username ?? "-",
+      requesttimestring: requesttimestring ?? "-",
+    })
+  );
+};
+
 function AclApprovals() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,7 +87,10 @@ function AclApprovals() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data, isLoading } = useQuery<AclRequestsForApprover, Error>({
+  const { data, isLoading, isError, error } = useQuery<
+    AclRequestsForApprover,
+    Error
+  >({
     queryKey: ["aclRequests", activePage],
     queryFn: () => getAclRequestsForApprover({ pageNo: String(activePage) }),
     keepPreviousData: true,
@@ -118,10 +151,6 @@ function AclApprovals() {
       setErrorMessage(parseErrorMsg(error));
     },
   });
-
-  if (data === undefined || isLoading) {
-    return <SkeletonTable />;
-  }
 
   const columns: Array<DataTableColumn<AclRequestTableRows>> = [
     {
@@ -278,32 +307,6 @@ function AclApprovals() {
     },
   ];
 
-  const rows: AclRequestTableRows[] = data.entries.map(
-    ({
-      req_no,
-      acl_ssl,
-      acl_ip,
-      topicname,
-      aclPatternType,
-      environmentName,
-      teamname,
-      topictype,
-      username,
-      requesttimestring,
-    }) => ({
-      id: Number(req_no),
-      acl_ssl: acl_ssl ?? [],
-      acl_ip: acl_ip ?? [],
-      topicname: topicname,
-      prefixed: aclPatternType === "PREFIXED",
-      environmentName: environmentName ?? "-",
-      teamname,
-      topictype,
-      username: username ?? "-",
-      requesttimestring: requesttimestring ?? "-",
-    })
-  );
-
   const handleChangePage = (activePage: number) => {
     setActivePage(activePage);
     searchParams.set("page", activePage.toString());
@@ -348,6 +351,15 @@ function AclApprovals() {
     </div>,
   ];
 
+  const pagination =
+    data?.totalPages && data.totalPages > 1 ? (
+      <Pagination
+        activePage={data.currentPage}
+        totalPages={data.totalPages}
+        setActivePage={handleChangePage}
+      />
+    ) : undefined;
+
   return (
     <>
       {detailsModal.isOpen && (
@@ -363,7 +375,7 @@ function AclApprovals() {
           isLoading={approveIsLoading}
         >
           <DetailsModalContent
-            aclRequest={data.entries.find(
+            aclRequest={data?.entries.find(
               (request) => request.req_no === Number(detailsModal.reqNo)
             )}
           />
@@ -387,23 +399,21 @@ function AclApprovals() {
           <Alert type="warning">{errorMessage}</Alert>
         </div>
       )}
+
       <ApprovalsLayout
         filters={filters}
         table={
           <DataTable
             ariaLabel={"Acl requests"}
             columns={columns}
-            rows={rows}
+            rows={getRows(data?.entries)}
             noWrap={false}
           />
         }
-        pagination={
-          <Pagination
-            activePage={data.currentPage}
-            totalPages={data.totalPages}
-            setActivePage={handleChangePage}
-          />
-        }
+        pagination={pagination}
+        isLoading={isLoading}
+        isErrorLoading={isError}
+        errorMessage={error}
       />
     </>
   );
