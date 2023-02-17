@@ -679,6 +679,7 @@ export type components = {
       requesttime?: string;
       /** @example 10-11-2020 10:45:30 */
       requesttimestring?: string;
+      /** @example created */
       aclstatus?: components["schemas"]["RequestStatus"];
       approver?: string;
       /**
@@ -1178,7 +1179,7 @@ export type operations = {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestsType?: "all" | "created" | "approved" | "denied" | "deleted";
+        requestsType?: components["schemas"]["RequestStatus"];
         topic?: string;
         env?: string;
         aclType?: "CONSUMER" | "PRODUCER";
