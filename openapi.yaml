@@ -1334,6 +1334,8 @@ components:
           $ref: "#/components/schemas/RequestStatus"
         requesttype:
           $ref: "#/components/schemas/RequestType"
+        forceRegister:
+          type: boolean
         remarks:
           title: Remarks
           description: SchemaRequest specific comment
@@ -1367,6 +1369,10 @@ components:
           title: Current page number
           type: string
           example: "2"
+        editable:
+          type: boolean
+        deletable:
+          type: boolean
     TopicRequest:
       type: object
       properties:
