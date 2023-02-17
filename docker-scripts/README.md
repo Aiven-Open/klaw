@@ -42,8 +42,8 @@ The keystore and truststore should be copied to the klaw data volume so that it 
 \\wsl$\docker-desktop-data\data\docker\volumes\docker-scripts_klaw_data\_data
 
 
-#### How to configure the keystores
-Once the Keystores have been copied to the Klaw docker volume the keystore location is simply set to ./client.keystore.p12 and ./client.truststore.jks
+#### How to configure the docker images
+Once the Keystores have been copied to the Klaw docker volume the keystore location is simply set to /klaw/client.keystore.p12 and /klaw/client.truststore.jks
 
 This can be configured in two ways.
 
@@ -77,3 +77,7 @@ This can be configured in two ways.
       SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
       SPRING_CONFIG_LOCATION: "/klaw/klaw-application.properties"
 ````
+
+#### How to use an existing H2 Database
+If you already have a configured environment with users etc those can also be transferred over to the docker image by copying the klawprodb files into the docker volume.
+It is recommended that any existing prodb files in the docker volume be backed up in case of any need to revert in the future.
