@@ -57,10 +57,10 @@ public class SchemaRequest implements Serializable {
   @Transient private String requesttimestring;
 
   @Column(name = "topicstatus")
-  private String topicstatus;
+  private String requestStatus;
 
   @Column(name = "requesttype")
-  private String requesttype;
+  private String requestOperationType;
 
   @Column(name = "remarks")
   private String remarks;

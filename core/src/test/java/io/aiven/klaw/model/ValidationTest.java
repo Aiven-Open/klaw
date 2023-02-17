@@ -45,7 +45,7 @@ public class ValidationTest {
     aclRequests.setRequestingteam(1);
     aclRequests.setApprover("user1");
     aclRequests.setTopicname("newtopic");
-    aclRequests.setTopictype("producer");
+    aclRequests.setAclType("producer");
 
     assertThat(aclRequests).isNotNull();
   }

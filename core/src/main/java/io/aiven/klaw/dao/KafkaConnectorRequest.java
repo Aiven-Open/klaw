@@ -40,7 +40,7 @@ public class KafkaConnectorRequest implements Serializable {
 
   // Create, Update
   @Column(name = "connectortype")
-  private String connectortype;
+  private String requestOperationType;
 
   @Column(name = "requestor")
   private String requestor;
@@ -49,7 +49,7 @@ public class KafkaConnectorRequest implements Serializable {
   private Timestamp requesttime;
 
   @Column(name = "connectorstatus")
-  private String connectorStatus;
+  private String requestStatus;
 
   @Column(name = "connectorconfig")
   private String connectorConfig;

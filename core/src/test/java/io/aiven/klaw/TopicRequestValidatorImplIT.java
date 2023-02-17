@@ -168,7 +168,7 @@ public class TopicRequestValidatorImplIT {
     Env env = utilMethods.getEnvLists().get(0);
 
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
-    addTopicRequest.setTopictype(RequestOperationType.PROMOTE.value);
+    addTopicRequest.setRequestOperationType(RequestOperationType.PROMOTE);
     addTopicRequest.setEnvironment("2");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");

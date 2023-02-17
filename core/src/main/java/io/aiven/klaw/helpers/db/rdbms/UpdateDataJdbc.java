@@ -107,7 +107,7 @@ public class UpdateDataJdbc {
   public String declineTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("declineTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
-    topicRequest.setTopicstatus("declined");
+    topicRequest.setRequestStatus("declined");
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
@@ -117,7 +117,7 @@ public class UpdateDataJdbc {
   public String declineConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("declineConnectorRequest {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);
-    connectorRequest.setConnectorStatus("declined");
+    connectorRequest.setRequestStatus("declined");
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
@@ -127,7 +127,7 @@ public class UpdateDataJdbc {
   public String updateTopicRequestStatus(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequestStatus {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
-    topicRequest.setTopicstatus(RequestStatus.APPROVED.value);
+    topicRequest.setRequestStatus(RequestStatus.APPROVED.value);
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
@@ -138,7 +138,7 @@ public class UpdateDataJdbc {
       KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("updateConnectorRequestStatus {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);
-    connectorRequest.setConnectorStatus(RequestStatus.APPROVED.value);
+    connectorRequest.setRequestStatus(RequestStatus.APPROVED.value);
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
@@ -148,7 +148,7 @@ public class UpdateDataJdbc {
   public String updateTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
-    topicRequest.setTopicstatus(RequestStatus.APPROVED.value);
+    topicRequest.setRequestStatus(RequestStatus.APPROVED.value);
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
@@ -165,11 +165,11 @@ public class UpdateDataJdbc {
     topicObj.setHistory(topicRequest.getHistory());
     topics.add(topicObj);
 
-    if (topicRequest.getTopictype().equals(RequestOperationType.CREATE.value)) {
+    if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
       insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
-    } else if (topicRequest.getTopictype().equals(RequestOperationType.UPDATE.value)) {
+    } else if (topicRequest.getRequestOperationType().equals(RequestOperationType.UPDATE.value)) {
       updateTopicSOT(topics, topicRequest.getOtherParams());
-    } else if (topicRequest.getTopictype().equals(RequestOperationType.DELETE.value)) {
+    } else if (topicRequest.getRequestOperationType().equals(RequestOperationType.DELETE.value)) {
       deleteDataJdbcHelper.deleteTopics(topicObj);
     }
 
@@ -179,7 +179,7 @@ public class UpdateDataJdbc {
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("updateConnectorRequest {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);
-    connectorRequest.setConnectorStatus(RequestStatus.APPROVED.value);
+    connectorRequest.setRequestStatus(RequestStatus.APPROVED.value);
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
@@ -195,11 +195,15 @@ public class UpdateDataJdbc {
     topicObj.setHistory(connectorRequest.getHistory());
     connectors.add(topicObj);
 
-    if (connectorRequest.getConnectortype().equals(RequestOperationType.CREATE.value)) {
+    if (connectorRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
       insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
-    } else if (connectorRequest.getConnectortype().equals(RequestOperationType.UPDATE.value)) {
+    } else if (connectorRequest
+        .getRequestOperationType()
+        .equals(RequestOperationType.UPDATE.value)) {
       updateConnectorSOT(connectors, connectorRequest.getOtherParams());
-    } else if (connectorRequest.getConnectortype().equals(RequestOperationType.DELETE.value)) {
+    } else if (connectorRequest
+        .getRequestOperationType()
+        .equals(RequestOperationType.DELETE.value)) {
       deleteDataJdbcHelper.deleteConnectors(topicObj);
     }
 
@@ -227,7 +231,7 @@ public class UpdateDataJdbc {
   public String updateAclRequest(AclRequests aclReq, String approver, String jsonParams) {
     log.debug("updateAclRequest {} {}", aclReq.getTopicname(), approver);
     aclReq.setApprover(approver);
-    aclReq.setAclstatus("approved");
+    aclReq.setRequestStatus("approved");
     aclReq.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     aclRequestsRepo.save(aclReq);
 
@@ -249,8 +253,8 @@ public class UpdateDataJdbc {
         aclObj.setAclssl(aclReq.getAcl_ssl());
         acls.add(aclObj);
 
-        if (aclReq.getAclType() != null
-            && RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
+        if (aclReq.getRequestOperationType() != null
+            && RequestOperationType.CREATE.value.equals(aclReq.getRequestOperationType())) {
           acls.forEach(acl -> acl.setReq_no(null));
           insertDataJdbcHelper.insertIntoAclsSOT(acls, false);
         } else {
@@ -271,8 +275,8 @@ public class UpdateDataJdbc {
         aclObj.setAclssl(aclString);
         acls.add(aclObj);
 
-        if (aclReq.getAclType() != null
-            && RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
+        if (aclReq.getRequestOperationType() != null
+            && RequestOperationType.CREATE.value.equals(aclReq.getRequestOperationType())) {
           acls.forEach(acl -> acl.setReq_no(null));
           insertDataJdbcHelper.insertIntoAclsSOT(acls, false);
         } else {
@@ -288,7 +292,7 @@ public class UpdateDataJdbc {
   public String declineAclRequest(AclRequests aclRequests, String approver) {
     log.debug("declineAclRequest {} {}", aclRequests.getTopicname(), approver);
     aclRequests.setApprover(approver);
-    aclRequests.setAclstatus("declined");
+    aclRequests.setRequestStatus("declined");
     aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     aclRequestsRepo.save(aclRequests);
 
@@ -310,7 +314,7 @@ public class UpdateDataJdbc {
   public String updateSchemaRequest(SchemaRequest schemaRequest, String approver) {
     log.debug("updateSchemaRequest {} {}", schemaRequest.getTopicname(), approver);
     schemaRequest.setApprover(approver);
-    schemaRequest.setTopicstatus("approved");
+    schemaRequest.setRequestStatus(RequestStatus.APPROVED.value);
     schemaRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
 
     schemaRequestRepo.save(schemaRequest);
@@ -328,7 +332,7 @@ public class UpdateDataJdbc {
   public String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver) {
     log.debug("updateSchemaRequestDecline {} {}", schemaRequest.getTopicname(), approver);
     schemaRequest.setApprover(approver);
-    schemaRequest.setTopicstatus("declined");
+    schemaRequest.setRequestStatus(RequestStatus.DECLINED.value);
     schemaRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
 
     schemaRequestRepo.save(schemaRequest);

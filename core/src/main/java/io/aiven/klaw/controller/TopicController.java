@@ -8,6 +8,7 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.TopicUpdateRequestModel;
 import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.service.TopicControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -70,7 +71,7 @@ public class TopicController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'created' or 'deleted'
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param isMyRequest Only return requests created by the user calling the API
    * @return A List of Topic Requests filtered by the provided parameters.
@@ -82,13 +83,13 @@ public class TopicController {
   public ResponseEntity<List<TopicRequestModel>> getTopicRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequests(
-            pageNo, currentPage, requestsType, env, isMyRequest),
+            pageNo, currentPage, requestStatus.value, env, isMyRequest),
         HttpStatus.OK);
   }
 
@@ -107,7 +108,7 @@ public class TopicController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'created' or 'deleted'
    * @param teamId The identifier of the team that created the request that you wish to filter the
    *     results by, e.g. 1,2,3
    * @param env The name of the environment you would like returned e.g. '1' or '4'
@@ -121,13 +122,13 @@ public class TopicController {
   public ResponseEntity<List<TopicRequestModel>> getTopicRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequestsForApprover(
-            pageNo, currentPage, requestsType, teamId, env, search),
+            pageNo, currentPage, requestStatus.value, teamId, env, search),
         HttpStatus.OK);
   }
 

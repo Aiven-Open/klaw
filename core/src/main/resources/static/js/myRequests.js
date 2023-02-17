@@ -140,7 +140,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             var sPageURL = window.location.search.substring(1);
 
             if(!$scope.requestsType)
-                $scope.requestsType = 'created';
+                $scope.requestsType = 'CREATED';
 
             var alertMessage = null;
 
@@ -228,7 +228,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         params: {'pageNo' : pageNoSelected,
                                  'currentPage' : $scope.currentPageSelected,
-                                 'requestsType': $scope.requestsType }
+                                 'requestStatus': $scope.requestsType }
                     }).success(function(output) {
                         $scope.schemaRequests = output;
                         if(output!=null && output.length>0){
@@ -258,7 +258,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                          'currentPage' : $scope.currentPageSelected,
-                         'requestsType': $scope.requestsType }
+                         'requestStatus': $scope.requestsType }
             }).success(function(output) {
                 $scope.topicRequests = output;
                 if(output!=null && output.length>0){
@@ -288,7 +288,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                          'currentPage' : $scope.currentPageSelected,
-                         'requestsType': $scope.requestsType }
+                         'requestStatus': $scope.requestsType }
             }).success(function(output) {
                 $scope.connectorRequests = output;
                 if(output!=null && output.length>0){
@@ -345,7 +345,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                  params: {'pageNo' : pageNoSelected,
                    'currentPage' : $scope.currentPageSelected,
-                   'requestsType': $scope.requestsType }
+                   'requestStatus': $scope.requestsType }
             }).success(function(output) {
                 $scope.aclRequests = output;
                 if(output!=null && output.length>0){

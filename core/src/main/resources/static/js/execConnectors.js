@@ -51,7 +51,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                     $scope.overwriteReqsType = true;
                     $scope.requestsType = requestType;
                     $scope.alert = "";
-                    $scope.getMyTopicRequests(1, true);
+                    $scope.getMyConnectorRequests(1, true);
                 }
 
         $scope.getMyConnectorRequests = function(pageNoSelected, overwriteFlag) {
@@ -59,7 +59,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                $scope.overwriteReqsType = false;
 
             if(!$scope.requestsType)
-                $scope.requestsType = "created";
+                $scope.requestsType = "CREATED";
 
             $http({
                 method: "GET",
@@ -67,7 +67,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,
-                 'requestsType': $scope.requestsType }
+                 'requestStatus': $scope.requestsType }
             }).success(function(output) {
                 $scope.connectorRequests = output;
                 if(output!=null && output.length>0){

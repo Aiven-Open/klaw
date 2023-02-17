@@ -474,7 +474,7 @@
 					<td align="right" width="20%">
 						<div class="form-group has-success">
 							<label class="text-success">Filter on Status</label>
-							<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
+							<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
 									ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
 							</select>
@@ -498,7 +498,7 @@
 										<table width="100%">
 											<tr>
 												<td align="left"><h3 class="card-title">Topic : {{ schemaRequest.topicname }}</h3></td>
-												<td align="right"  ng-show="schemaRequest.topicstatus == 'created' && userlogged != schemaRequest.username">
+												<td align="right"  ng-show="schemaRequest.requestStatus == 'CREATED' && userlogged != schemaRequest.username">
 													<button type="button" ng-click="execSchemaRequest(schemaRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execSchemaRequestDecline(schemaRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
@@ -523,33 +523,33 @@
 											<h6 class="text-primary">Team</h6><b>{{ schemaRequest.teamname }}</b>
 										</div>
 
-										<div ng-show="schemaRequest.topicstatus == 'created'" class="p-2 border-right" style="width:10%">
+										<div ng-show="schemaRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-success">{{ schemaRequest.topicstatus }}</span></b>
+											<span class="badge badge-success">{{ schemaRequest.requestStatus }}</span></b>
 										</div>
-										<div ng-show="schemaRequest.topicstatus != 'created'" class="p-2 border-right" style="width:10%">
+										<div ng-show="schemaRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.topicstatus }}</span></b>
+											<span class="badge badge-info">{{ schemaRequest.requestStatus }}</span></b>
 										</div>
 
-										<div ng-show="schemaRequest.requesttype == 'Create'" class="p-2 border-right" style="width:12%">
+										<div ng-show="schemaRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.requesttype }} Schema</span></b>
+											<span class="badge badge-info">{{ schemaRequest.requestOperationType }} Schema</span></b>
 										</div>
-										<div ng-show="schemaRequest.requesttype == 'Update'" class="p-2 border-right" style="width:12%">
+										<div ng-show="schemaRequest.requestOperationType == 'UPDATE'" class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-primary">{{ schemaRequest.requesttype }} Schema</span></b>
+											<span class="badge badge-primary">{{ schemaRequest.requestOperationType }} Schema</span></b>
 										</div>
-										<div ng-show="schemaRequest.requesttype == 'Delete'" class="p-2 border-right" style="width:12%">
+										<div ng-show="schemaRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-danger">{{ schemaRequest.requesttype }} Schema</span></b>
+											<span class="badge badge-danger">{{ schemaRequest.requestOperationType }} Schema</span></b>
 										</div>
 
 										<div class="p-2" style="width:15%">
 											<h6 class="text-primary">Date Requested</h6><b>{{ schemaRequest.requesttimestring }}</b>
 										</div>
 
-										<div class="p-2 border-left" ng-show="schemaRequest.topicstatus == 'approved'" style="width:10%">
+										<div class="p-2 border-left" ng-show="schemaRequest.requestStatus == 'APPROVED'" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>
 											<span class="badge badge-info">{{ schemaRequest.approver }}</span></b>
 										</div>

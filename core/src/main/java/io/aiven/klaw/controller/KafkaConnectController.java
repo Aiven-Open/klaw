@@ -5,6 +5,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.service.KafkaConnectControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -38,7 +39,7 @@ public class KafkaConnectController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'created' or 'deleted'
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param search A wildcard search term that searches topicNames.
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
@@ -50,12 +51,12 @@ public class KafkaConnectController {
   public ResponseEntity<List<KafkaConnectorRequestModel>> getCreatedConnectorRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestsType, env, search),
+            pageNo, currentPage, requestStatus.value, env, search),
         HttpStatus.OK);
   }
 
@@ -108,9 +109,10 @@ public class KafkaConnectController {
   public ResponseEntity<List<KafkaConnectorRequestModel>> getConnectorRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType) {
+      @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus) {
     return new ResponseEntity<>(
-        kafkaConnectControllerService.getConnectorRequests(pageNo, currentPage, requestsType),
+        kafkaConnectControllerService.getConnectorRequests(
+            pageNo, currentPage, requestStatus.value),
         HttpStatus.OK);
   }
 
@@ -118,7 +120,7 @@ public class KafkaConnectController {
       value = "/getConnectors",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<List<KafkaConnectorModel>>> getTopics(
+  public ResponseEntity<List<List<KafkaConnectorModel>>> getConnectors(
       @RequestParam("env") String envId,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,

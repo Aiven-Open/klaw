@@ -776,11 +776,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "all"
+          "default" : "ALL",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "topic",
           "in" : "query",
@@ -832,11 +833,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "created"
+          "default" : "CREATED",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "topic",
           "in" : "query",
@@ -1394,11 +1396,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "all"
+          "default" : "ALL",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         } ],
         "responses" : {
           "200" : {
@@ -1428,11 +1431,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "created"
+          "default" : "CREATED",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "env",
           "in" : "query",
@@ -1459,7 +1463,7 @@
     },
     "/getConnectors" : {
       "get" : {
-        "operationId" : "getTopics",
+        "operationId" : "getConnectors",
         "produces" : [ "application/json" ],
         "parameters" : [ {
           "name" : "env",
@@ -2006,11 +2010,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "all"
+          "default" : "ALL",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "topic",
           "in" : "query",
@@ -2056,11 +2061,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "created"
+          "default" : "CREATED",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "topic",
           "in" : "query",
@@ -2484,11 +2490,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "all"
+          "default" : "ALL",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "env",
           "in" : "query",
@@ -2529,11 +2536,12 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "requestsType",
+          "name" : "requestStatus",
           "in" : "query",
           "required" : false,
           "type" : "string",
-          "default" : "created"
+          "default" : "CREATED",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         }, {
           "name" : "teamId",
           "in" : "query",
@@ -3606,12 +3614,21 @@
         "teamname" : {
           "type" : "string"
         },
-        "topictype" : {
-          "type" : "string"
+        "aclType" : {
+          "type" : "string",
+          "enum" : [ "PRODUCER", "CONSUMER" ]
         },
         "aclIpPrincipleType" : {
           "type" : "string",
           "enum" : [ "IP_ADDRESS", "PRINCIPAL", "USERNAME" ]
+        },
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+        },
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
         },
         "environmentName" : {
           "type" : "string"
@@ -3640,18 +3657,12 @@
         "requesttimestring" : {
           "type" : "string"
         },
-        "aclstatus" : {
-          "type" : "string"
-        },
         "approver" : {
           "type" : "string"
         },
         "approvingtime" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "aclType" : {
-          "type" : "string"
         },
         "aclResourceType" : {
           "type" : "string"
@@ -4002,6 +4013,14 @@
         "description" : {
           "type" : "string"
         },
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+        },
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+        },
         "environmentName" : {
           "type" : "string"
         },
@@ -4013,9 +4032,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "connectortype" : {
-          "type" : "string"
-        },
         "requestor" : {
           "type" : "string"
         },
@@ -4024,9 +4040,6 @@
           "format" : "date-time"
         },
         "requesttimestring" : {
-          "type" : "string"
-        },
-        "connectorStatus" : {
           "type" : "string"
         },
         "approver" : {
@@ -4475,6 +4488,12 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "schemafull" : {
+          "type" : "string"
+        },
+        "remarks" : {
+          "type" : "string"
+        },
         "topicname" : {
           "type" : "string"
         },
@@ -4497,9 +4516,6 @@
         "appname" : {
           "type" : "string"
         },
-        "schemafull" : {
-          "type" : "string"
-        },
         "username" : {
           "type" : "string"
         },
@@ -4510,17 +4526,16 @@
         "requesttimestring" : {
           "type" : "string"
         },
-        "topicstatus" : {
-          "type" : "string"
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         },
-        "requesttype" : {
-          "type" : "string"
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
         },
         "forceRegister" : {
           "type" : "boolean"
-        },
-        "remarks" : {
-          "type" : "string"
         },
         "approver" : {
           "type" : "string"
@@ -4861,8 +4876,13 @@
         "appname" : {
           "type" : "string"
         },
-        "topictype" : {
-          "type" : "string"
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+        },
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         },
         "requestor" : {
           "type" : "string"
@@ -4872,9 +4892,6 @@
           "format" : "date-time"
         },
         "requesttimestring" : {
-          "type" : "string"
-        },
-        "topicstatus" : {
           "type" : "string"
         },
         "approver" : {
@@ -5117,8 +5134,13 @@
         "appname" : {
           "type" : "string"
         },
-        "topictype" : {
-          "type" : "string"
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+        },
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         },
         "requestor" : {
           "type" : "string"
@@ -5128,9 +5150,6 @@
           "format" : "date-time"
         },
         "requesttimestring" : {
-          "type" : "string"
-        },
-        "topicstatus" : {
           "type" : "string"
         },
         "approver" : {
@@ -5223,8 +5242,13 @@
         "appname" : {
           "type" : "string"
         },
-        "topictype" : {
-          "type" : "string"
+        "requestOperationType" : {
+          "type" : "string",
+          "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+        },
+        "requestStatus" : {
+          "type" : "string",
+          "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
         },
         "requestor" : {
           "type" : "string"
@@ -5234,9 +5258,6 @@
           "format" : "date-time"
         },
         "requesttimestring" : {
-          "type" : "string"
-        },
-        "topicstatus" : {
           "type" : "string"
         },
         "approver" : {

@@ -191,7 +191,7 @@ public class KafkaConnectorsIntegrationTest {
 
     assertThat(james.size()).isEqualTo(21);
     for (KafkaConnectorRequest req : james) {
-      assertThat(req.getConnectorStatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo("created");
       assertThat(req.getTenantId()).isEqualTo(101);
     }
     assertThat(john.size()).isEqualTo(0);
@@ -402,7 +402,7 @@ public class KafkaConnectorsIntegrationTest {
 
     assertThat(james.size()).isEqualTo(20);
     for (KafkaConnectorRequest req : james) {
-      assertThat(req.getConnectorStatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo("created");
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }
@@ -441,7 +441,7 @@ public class KafkaConnectorsIntegrationTest {
 
     assertThat(joan.size()).isEqualTo(7);
     for (KafkaConnectorRequest req : joan) {
-      assertThat(req.getConnectorStatus()).isEqualTo(RequestStatus.CREATED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
       assertThat(req.getUsername()).isNotEqualTo("Joan");
     }
@@ -457,7 +457,7 @@ public class KafkaConnectorsIntegrationTest {
 
     assertThat(joan.size()).isEqualTo(6);
     for (KafkaConnectorRequest req : joan) {
-      assertThat(req.getConnectorStatus()).isEqualTo(RequestStatus.DELETED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.DELETED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
       assertThat(req.getUsername()).isNotEqualTo("Joan");
     }
@@ -475,7 +475,7 @@ public class KafkaConnectorsIntegrationTest {
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
-      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(103);
         assertThat(req.getDescription()).isEqualTo("101");
       } else {
@@ -496,7 +496,7 @@ public class KafkaConnectorsIntegrationTest {
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
-      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getDescription()).isNotEqualTo("101");
       }
     }
@@ -514,7 +514,7 @@ public class KafkaConnectorsIntegrationTest {
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
-      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
         assertThat(req.getDescription()).isEqualTo("103");
       } else {
@@ -537,7 +537,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(103);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(103);
-      if (req.getConnectorStatus().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         // only show my tems claim requests
         assertThat(req.getDescription()).isNotEqualTo("103");
       }
@@ -591,9 +591,9 @@ public class KafkaConnectorsIntegrationTest {
       kc.setRequestor("Jackie");
       kc.setConnectorName(topicName);
       kc.setEnvironment(env);
-      kc.setConnectortype(connectorType.name());
+      kc.setRequestOperationType(connectorType.name());
       if (status != null) {
-        kc.setConnectorStatus(status);
+        kc.setRequestStatus(status);
       }
 
       if (connectorType.value.equals("Claim")) {

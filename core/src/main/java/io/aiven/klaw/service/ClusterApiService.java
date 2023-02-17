@@ -521,13 +521,13 @@ public class ClusterApiService {
                 .username(aclReq.getAcl_ssl())
                 .build();
 
-        if (Objects.equals(aclReq.getTopictype(), AclType.PRODUCER.value)) {
+        if (Objects.equals(aclReq.getAclType(), AclType.PRODUCER.value)) {
           clusterAclRequest = clusterAclRequest.toBuilder().permission("write").build();
         } else {
           clusterAclRequest = clusterAclRequest.toBuilder().permission("read").build();
         }
 
-        if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getAclType())
+        if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getRequestOperationType())
             && null != aclReq.getJsonParams()) {
           Map<String, String> jsonObj =
               OBJECT_MAPPER.readValue(aclReq.getJsonParams(), new TypeReference<>() {});
@@ -551,7 +551,7 @@ public class ClusterApiService {
                 .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
                 .topicName(aclReq.getTopicname())
                 .consumerGroup(aclReq.getConsumergroup())
-                .aclType(aclReq.getTopictype())
+                .aclType(aclReq.getAclType())
                 .aclIp(aclReq.getAcl_ip())
                 .aclSsl(aclReq.getAcl_ssl())
                 .transactionalId(aclReq.getTransactionalId())
@@ -568,7 +568,7 @@ public class ClusterApiService {
                 .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
                 .topicName(aclReq.getTopicname())
                 .consumerGroup(aclReq.getConsumergroup())
-                .aclType(aclReq.getTopictype())
+                .aclType(aclReq.getAclType())
                 .aclIp(aclReq.getAcl_ip())
                 .aclSsl(aclReq.getAcl_ssl())
                 .transactionalId(aclReq.getTransactionalId())
@@ -577,7 +577,7 @@ public class ClusterApiService {
                 .build();
       }
 
-      if (RequestOperationType.CREATE.value.equals(aclReq.getAclType())) {
+      if (RequestOperationType.CREATE.value.equals(aclReq.getRequestOperationType())) {
         uri = clusterConnUrl + URI_CREATE_ACLS;
         clusterAclRequest =
             clusterAclRequest.toBuilder().requestOperationType(RequestOperationType.CREATE).build();

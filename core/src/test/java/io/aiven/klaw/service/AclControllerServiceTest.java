@@ -506,7 +506,7 @@ public class AclControllerServiceTest {
   public void approveAclRequestsFailure3() throws KlawException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
-    aclReq.setAclstatus("completed");
+    aclReq.setRequestStatus("completed");
 
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
@@ -698,7 +698,7 @@ public class AclControllerServiceTest {
   private AclRequestsModel getAclRequestProducer() {
     AclRequestsModel aclReq = new AclRequestsModel();
     aclReq.setTopicname("testtopic");
-    aclReq.setTopictype(AclType.PRODUCER.value);
+    aclReq.setAclType(AclType.PRODUCER);
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
@@ -711,7 +711,7 @@ public class AclControllerServiceTest {
   private AclRequestsModel getAclRequestConsumer() {
     AclRequestsModel aclReq = new AclRequestsModel();
     aclReq.setTopicname("testtopic");
-    aclReq.setTopictype(AclType.CONSUMER.value);
+    aclReq.setAclType(AclType.CONSUMER);
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
@@ -723,12 +723,12 @@ public class AclControllerServiceTest {
   private AclRequests getAclRequestDao() {
     AclRequests aclReq = new AclRequests();
     aclReq.setTopicname("testtopic");
-    aclReq.setTopictype("producer");
+    aclReq.setAclType("producer");
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setUsername("kwuserb");
-    aclReq.setAclstatus("created");
+    aclReq.setRequestStatus("created");
     aclReq.setAcl_ip("1.2.3.4");
     aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
     return aclReq;
@@ -742,7 +742,7 @@ public class AclControllerServiceTest {
       aclReq = new AclRequests();
       aclReq.setEnvironment("1");
       aclReq.setTopicname(topicPrefix + i);
-      aclReq.setTopictype("producer");
+      aclReq.setAclType("producer");
       aclReq.setRequestingteam(1);
       aclReq.setTeamId(1);
       aclReq.setAcl_ip("1.2.3.4<ACL>3.2.4.5<ACL>11.22.33.44");

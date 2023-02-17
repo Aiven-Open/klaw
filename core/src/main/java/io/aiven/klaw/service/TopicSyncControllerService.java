@@ -136,7 +136,7 @@ public class TopicSyncControllerService {
     topicRequestModelList.forEach(
         topicReq -> {
           topicReq.setEnvironmentName(getEnvDetails(envId).getName());
-          topicReq.setTopicstatus("ON_CLUSTER");
+          topicReq.setRequestStatus(RequestStatus.APPROVED);
         });
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
@@ -340,9 +340,9 @@ public class TopicSyncControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getTopicstatus())) {
-          if (topicRequestModel.getTopictype() != null
-              && RequestOperationType.CLAIM.value.equals(topicRequestModel.getTopictype())) {
+        if (RequestStatus.APPROVED != topicRequestModel.getRequestStatus()) {
+          if (topicRequestModel.getRequestOperationType() != null
+              && RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -474,7 +474,7 @@ public class TopicSyncControllerService {
       List<String> deletedTopicsFromClusterListTmp =
           sotTopicStringList.stream()
               .filter(topicName -> !clusterTopicStringList.contains(topicName))
-              .collect(Collectors.toList());
+              .toList();
       deletedTopicsFromClusterListTmp.forEach(
           topicName -> deletedTopicsFromClusterList.add(sotTopics.get(topicName)));
     } catch (Exception e) {
@@ -602,7 +602,7 @@ public class TopicSyncControllerService {
 
       TopicRequest topicRequest;
       topicRequest = new TopicRequest();
-      topicRequest.setTopictype(RequestOperationType.CREATE.value);
+      topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
       topicRequest.setTopicname(topicFound.getTopicname());
       topicRequest.setEnvironment(syncBackTopics.getTargetEnv());
       topicRequest.setTopicpartitions(topicFound.getNoOfPartitions());

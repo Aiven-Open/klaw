@@ -1,5 +1,7 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -27,7 +29,6 @@ public class TopicRequestModel implements Serializable {
 
   private String teamname;
 
-  @Pattern(message = "Invalid remarks", regexp = "^$|^[a-zA-Z 0-9_.,-]{3,}$")
   private String remarks;
 
   @NotNull
@@ -46,15 +47,16 @@ public class TopicRequestModel implements Serializable {
 
   private String appname;
 
-  private String topictype;
+  // CREATE / DELETE / ..
+  private RequestOperationType requestOperationType;
+
+  private RequestStatus requestStatus;
 
   private String requestor;
 
   private Timestamp requesttime;
 
   private String requesttimestring;
-
-  private String topicstatus;
 
   private String approver;
 

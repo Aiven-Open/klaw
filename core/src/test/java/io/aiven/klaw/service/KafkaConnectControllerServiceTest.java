@@ -15,6 +15,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashMap;
@@ -164,6 +165,7 @@ public class KafkaConnectControllerServiceTest {
     kafkaConnectorRequestModel.setConnectorConfig(getValidConnConfig());
     kafkaConnectorRequestModel.setEnvironment(env.getId());
     kafkaConnectorRequestModel.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    kafkaConnectorRequestModel.setRequestOperationType(RequestOperationType.CREATE);
 
     return kafkaConnectorRequestModel;
   }

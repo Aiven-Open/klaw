@@ -14,13 +14,10 @@ public interface KwKafkaConnectorRequestsRepo
         QueryByExampleExecutor<KafkaConnectorRequest> {
   Optional<KafkaConnectorRequest> findById(KafkaConnectorRequestID connectorRequestId);
 
-  List<KafkaConnectorRequest> findAllByConnectorStatusAndTenantId(
-      String connectorStatus, int tenantId);
-
-  List<KafkaConnectorRequest> findAllByConnectortypeAndTenantId(String connectorType, int tenantId);
-
-  List<KafkaConnectorRequest> findAllByConnectorStatusAndConnectorNameAndEnvironmentAndTenantId(
+  List<KafkaConnectorRequest> findAllByRequestStatusAndConnectorNameAndEnvironmentAndTenantId(
       String connectorStatus, String connectorName, String envId, int tenantId);
+
+  List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
 
   @Query(
       value =
@@ -40,8 +37,6 @@ public interface KwKafkaConnectorRequestsRepo
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
-
-  List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
 
   @Query(
       value =

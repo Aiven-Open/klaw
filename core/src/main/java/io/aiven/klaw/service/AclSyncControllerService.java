@@ -183,7 +183,7 @@ public class AclSyncControllerService {
       aclReq.setAcl_ssl(aclFound.getAclssl());
       aclReq.setEnvironment(syncBackAcls.getTargetEnv());
       aclReq.setRequestingteam(aclFound.getTeamId());
-      aclReq.setAclType(RequestOperationType.CREATE.value);
+      aclReq.setRequestOperationType(RequestOperationType.CREATE.value);
       aclReq.setUsername(userName);
       aclReq.setTenantId(tenantId);
 
