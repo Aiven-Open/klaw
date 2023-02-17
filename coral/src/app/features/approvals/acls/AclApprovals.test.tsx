@@ -100,27 +100,41 @@ describe("AclApprovals", () => {
     jest.resetAllMocks();
   });
 
-  describe("Skeleton", () => {
-    beforeAll(() => {
+  describe("shows loading or error state for fetching acls requests", () => {
+    afterEach(cleanup);
+
+    afterAll(() => {
+      useQuerySpy.mockRestore();
+    });
+
+    it("shows a skeleton table while loading", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: [], isLoading: true });
+      useQuerySpy.mockReturnValue({ data: { entries: [] }, isLoading: true });
 
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
       });
-    });
-
-    afterAll(() => {
-      cleanup();
-      useQuerySpy.mockRestore();
-    });
-
-    it("shows a skeleton table", () => {
       const skeleton = screen.getByTestId("skeleton-table");
 
       expect(skeleton).toBeVisible();
+    });
+
+    it("shows an error message when an error occurs", () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      useQuerySpy.mockReturnValue({ data: { entries: [] }, isError: true });
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const error = screen.getByText(
+        "Unexpected error. Please try again later!"
+      );
+
+      expect(error).toBeVisible();
     });
   });
 
