@@ -58,6 +58,12 @@ function AclApprovals() {
 
   const { environment, status, aclType, topic, filters } = useTableFilters();
 
+  const handleChangePage = (activePage: number) => {
+    setActivePage(activePage);
+    searchParams.set("page", activePage.toString());
+    setSearchParams(searchParams);
+  };
+
   const { data, isLoading } = useQuery<AclRequestsForApprover, Error>({
     queryKey: ["aclRequests", activePage, environment, status, aclType, topic],
     queryFn: () =>
@@ -68,6 +74,18 @@ function AclApprovals() {
         aclType,
         topic,
       }),
+    onSuccess: (data) => {
+      // If through filtering a user finds themselves on a non existent page, reset page to 1
+      // For example:
+      // - one request returns 4 pages of results
+      // - navigate to page 4
+      // - change filters, to a request that returns 1 page of results
+      // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
+      console.log(data);
+      if (data.entries.length === 0) {
+        handleChangePage(1);
+      }
+    },
     keepPreviousData: true,
   });
 
@@ -311,12 +329,6 @@ function AclApprovals() {
       requesttimestring: requesttimestring ?? "-",
     })
   );
-
-  const handleChangePage = (activePage: number) => {
-    setActivePage(activePage);
-    searchParams.set("page", activePage.toString());
-    setSearchParams(searchParams);
-  };
 
   return (
     <>
