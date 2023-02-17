@@ -81,8 +81,7 @@ function AclApprovals() {
       // - navigate to page 4
       // - change filters, to a request that returns 1 page of results
       // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
-      console.log(data);
-      if (data.entries.length === 0) {
+      if (data.entries.length === 0 && activePage !== 1) {
         handleChangePage(1);
       }
     },
