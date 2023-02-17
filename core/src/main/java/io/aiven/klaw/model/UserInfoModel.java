@@ -30,7 +30,9 @@ public class UserInfoModel implements Serializable {
 
   @NotNull(message = "Fullname cannot be null")
   @Size(min = 5, max = 50, message = "Name must be above 4 characters")
-  @Pattern(message = "Invalid Full name", regexp = "^[a-zA-z ]*$")
+  @Pattern(
+      message = "Invalid Full name",
+      regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$") // Pattern a-zA-z accents and umlaut and/or spaces.
   private String fullname;
 
   @Email(message = "Email should be valid")

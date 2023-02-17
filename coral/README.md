@@ -40,6 +40,7 @@
 ### Usage: How to run Coral in development
 
 - navigate to this directory
+- run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 - run `pnpm install`
 - to start development mode, run:
   - `pnpm dev`sto start the frontend app for development in development mode **with remote API**

@@ -1,4 +1,5 @@
-import { KlawApiModel, ResolveIntersectionTypes } from "types/utils";
+import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
+import { RequestStatus, RequestType } from "src/domain/requests";
 
 type CreatedSchemaRequests = ResolveIntersectionTypes<
   Required<
@@ -23,4 +24,37 @@ type SchemaRequestPayload = ResolveIntersectionTypes<
     Pick<KlawApiModel<"SchemaRequest">, "remarks" | "schemaversion" | "appname">
 >;
 
-export type { SchemaRequestPayload, CreatedSchemaRequests };
+type SchemaRequestType = RequestType;
+type SchemaRequestStatus = RequestStatus;
+
+type SchemaRequest = ResolveIntersectionTypes<
+  Required<
+    Pick<
+      KlawApiModel<"SchemaRequest">,
+      | "req_no"
+      | "topicname"
+      | "environment"
+      | "environmentName"
+      | "teamname"
+      | "username"
+      | "requesttimestring"
+      | "requesttype"
+      | "remarks"
+      | "approvingTeamDetails"
+    >
+  > &
+    KlawApiModel<"SchemaRequest">
+>;
+
+type SchemaRequestApiResponse = ResolveIntersectionTypes<
+  Paginated<SchemaRequest[]>
+>;
+
+export type {
+  SchemaRequestPayload,
+  CreatedSchemaRequests,
+  SchemaRequest,
+  SchemaRequestType,
+  SchemaRequestStatus,
+  SchemaRequestApiResponse,
+};

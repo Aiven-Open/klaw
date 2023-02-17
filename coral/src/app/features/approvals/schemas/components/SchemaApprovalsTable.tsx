@@ -1,5 +1,5 @@
 import { DataTable, DataTableColumn, GhostButton } from "@aivenio/aquarium";
-import { CreatedSchemaRequests } from "src/domain/schema-request/schema-request-types";
+import { SchemaRequest } from "src/domain/schema-request";
 import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
 import deleteIcon from "@aivenio/aquarium/icons/delete";
@@ -85,13 +85,13 @@ const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
 ];
 
 type SchemaApprovalsTableProps = {
-  requests: CreatedSchemaRequests[];
+  requests: SchemaRequest[];
 };
 function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
   const { requests } = props;
 
   const rows: SchemaRequestTableData[] = requests.map(
-    (request: CreatedSchemaRequests) => {
+    (request: SchemaRequest) => {
       return {
         id: request.req_no,
         topicname: request.topicname,
