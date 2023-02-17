@@ -79,7 +79,8 @@ function TopicRequest() {
 
   return (
     <>
-      <Box style={{ maxWidth: 1200 }}>
+      {/*<Box style={{ maxWidth: 1200 }}>*/}
+      <Box maxWidth={"4xl"}>
         {isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="warning">{parseErrorMsg(error)}</Alert>
@@ -194,7 +195,7 @@ function TopicRequest() {
           }}
           type={"warning"}
         >
-          <>Do you want to cancel this request? The data added will be lost.</>
+          Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
     </>

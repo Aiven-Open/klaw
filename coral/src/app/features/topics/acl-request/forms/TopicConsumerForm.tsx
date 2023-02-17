@@ -188,7 +188,7 @@ const TopicConsumerForm = ({
           }}
           type={"warning"}
         >
-          <>Do you want to cancel this request? The data added will be lost.</>
+          Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
     </>
