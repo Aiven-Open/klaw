@@ -107,6 +107,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
       };
     }
   );
+
   return (
     <DataTable
       ariaLabel={"Topic requests"}
