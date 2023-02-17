@@ -108,7 +108,7 @@ function AclApprovals() {
         return handleChangePage(activePage - 1);
       }
 
-      // We need to invalidate the query populating the table to reflect the change
+      // We need to refetch all aclrequests queries to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
@@ -136,7 +136,7 @@ function AclApprovals() {
         return handleChangePage(activePage - 1);
       }
 
-      // We need to invalidate the query populating the table to reflect the change
+      // We need to refetch all aclrequests queries to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
