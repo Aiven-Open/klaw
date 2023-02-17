@@ -66,6 +66,9 @@ export type paths = {
   "/request/decline": {
     post: operations["declineRequest"];
   };
+  "/getSchemaRequestsForApprover": {
+    get: operations["getSchemaRequestsForApprover"];
+  };
 };
 
 export type components = {
@@ -1320,6 +1323,29 @@ export type operations = {
       };
     };
   };
+  getSchemaRequestsForApprover: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        /** Naming is a mistake (will change), this relates to the status of a request */
+        requestsType?: components["schemas"]["RequestStatus"];
+        /** Name of a topic */
+        topic?: string;
+        /** Environment identifier */
+        env?: string;
+        search?: string;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaRequestModel"][];
+        };
+      };
+    };
+  };
 };
 
 export type external = {};
@@ -1345,4 +1371,5 @@ export enum ApiPaths {
   getAuth = "/getAuth",
   approveRequest = "/request/approve",
   declineRequest = "/request/decline",
+  getSchemaRequestsForApprover = "/getSchemaRequestsForApprover",
 }
