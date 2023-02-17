@@ -10,7 +10,7 @@ type PaginationProps = {
   setActivePage: (pageNumber: number) => void;
 };
 
-function Pagination(props: PaginationProps) {
+function PaginationBase(props: PaginationProps) {
   const { activePage, totalPages, setActivePage } = props;
 
   function onUpdatePage(nextPageNumber: number) {
@@ -81,4 +81,4 @@ function Pagination(props: PaginationProps) {
   );
 }
 
-export { Pagination };
+export { PaginationBase };

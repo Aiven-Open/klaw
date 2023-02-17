@@ -201,7 +201,7 @@ describe("BrowseTopics.tsx", () => {
 
     it("renders the topic table with information about the pages", () => {
       const table = screen.getByRole("table", {
-        name: "Topics overview, page 2 of 4",
+        name: "Topics overview, page 1 of 4",
       });
 
       expect(table).toBeVisible();
@@ -215,11 +215,11 @@ describe("BrowseTopics.tsx", () => {
       expect(pagination).toBeVisible();
     });
 
-    it("shows page 2 as currently active page and the total page number", () => {
+    it("shows page 1 as currently active page and the total page number", () => {
       const pagination = screen.getByRole("navigation", { name: /Pagination/ });
 
       expect(pagination).toHaveAccessibleName(
-        "Pagination navigation, you're on page 2 of 4"
+        "Pagination navigation, you're on page 1 of 4"
       );
     });
   });
@@ -239,25 +239,25 @@ describe("BrowseTopics.tsx", () => {
       cleanup();
     });
 
-    it("shows page 2 as currently active page and the total page number", () => {
+    it("shows page 1 as currently active page and the total page number", () => {
       const pagination = screen.getByRole("navigation", {
         name: /Pagination/,
       });
 
       expect(pagination).toHaveAccessibleName(
-        "Pagination navigation, you're on page 2 of 4"
+        "Pagination navigation, you're on page 1 of 4"
       );
     });
 
     it("fetches new data when user clicks on next page", async () => {
       const pageTwoButton = screen.getByRole("button", {
-        name: "Go to next page, page 3",
+        name: "Go to next page, page 2",
       });
 
       await userEvent.click(pageTwoButton);
 
       expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
-        currentPage: 3,
+        currentPage: 2,
         environment: "ALL",
         searchTerm: undefined,
         teamName: "f5ed03b4-c0da-4b18-a534-c7e9a13d1342",

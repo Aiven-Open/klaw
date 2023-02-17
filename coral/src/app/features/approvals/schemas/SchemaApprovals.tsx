@@ -1,5 +1,5 @@
 import { SearchInput, NativeSelect } from "@aivenio/aquarium";
-import { Pagination } from "src/app/components/Pagination";
+import { PaginationBase } from "src/app/components/PaginationBase";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import { SchemaRequest } from "src/domain/schema-request";
@@ -101,7 +101,7 @@ function SchemaApprovals() {
 
   const table = <SchemaApprovalsTable requests={mockedResponse} />;
   const pagination = (
-    <Pagination activePage={1} totalPages={2} setActivePage={changePage} />
+    <PaginationBase activePage={1} totalPages={2} setActivePage={changePage} />
   );
 
   return (

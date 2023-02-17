@@ -1,6 +1,6 @@
 import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
-import { Pagination } from "src/app/components/Pagination";
+import { PaginationBase } from "src/app/components/PaginationBase";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TopicRequestTypes, TopicRequestStatus } from "src/domain/topic";
 
@@ -106,7 +106,7 @@ function TopicApprovals() {
 
   const table = <TopicApprovalsTable requests={mockedRequests} />;
   const pagination = (
-    <Pagination activePage={1} totalPages={2} setActivePage={changePage} />
+    <PaginationBase activePage={1} totalPages={2} setActivePage={changePage} />
   );
 
   return (

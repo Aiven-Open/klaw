@@ -14,7 +14,7 @@ import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Pagination } from "src/app/components/Pagination";
+import { PaginationBase } from "src/app/components/PaginationBase";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
 import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
@@ -334,7 +334,7 @@ function AclApprovals() {
 
   const pagination =
     data?.totalPages && data.totalPages > 1 ? (
-      <Pagination
+      <PaginationBase
         activePage={data.currentPage}
         totalPages={data.totalPages}
         setActivePage={handleChangePage}

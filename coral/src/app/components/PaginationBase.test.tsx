@@ -1,12 +1,12 @@
 import { cleanup, render, within, screen } from "@testing-library/react";
-import { Pagination } from "src/app/components/Pagination";
+import { PaginationBase } from "src/app/components/PaginationBase";
 import userEvent from "@testing-library/user-event";
 
 function getNavigationElement() {
   return screen.getByRole("navigation", { name: /Pagination/ });
 }
 
-describe("Pagination.tsx", () => {
+describe("PaginationBase.tsx", () => {
   describe("renders the pagination by default with active page `1`", () => {
     const activePage = 1;
     const totalPages = 5;
@@ -14,7 +14,7 @@ describe("Pagination.tsx", () => {
     describe("shows all necessary elements", () => {
       beforeAll(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={jest.fn()}
@@ -111,7 +111,7 @@ describe("Pagination.tsx", () => {
       const mockedSetActivePage = jest.fn();
       beforeEach(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={mockedSetActivePage}
@@ -167,7 +167,7 @@ describe("Pagination.tsx", () => {
       const mockSetActivePage = jest.fn();
       beforeEach(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={mockSetActivePage}
@@ -221,7 +221,7 @@ describe("Pagination.tsx", () => {
     describe("shows all necessary elements", () => {
       beforeAll(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={jest.fn()}
@@ -283,7 +283,7 @@ describe("Pagination.tsx", () => {
       const mockedSetActivePage = jest.fn();
       beforeEach(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={mockedSetActivePage}
@@ -337,7 +337,7 @@ describe("Pagination.tsx", () => {
       const mockSetActivePage = jest.fn();
       beforeEach(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={mockSetActivePage}
@@ -431,7 +431,7 @@ describe("Pagination.tsx", () => {
     describe("shows all necessary elements", () => {
       beforeAll(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={jest.fn()}
@@ -511,7 +511,7 @@ describe("Pagination.tsx", () => {
       const mockedSetActivePage = jest.fn();
       beforeEach(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={mockedSetActivePage}
@@ -567,7 +567,7 @@ describe("Pagination.tsx", () => {
       const mockSetActivePage = jest.fn();
       beforeEach(() => {
         render(
-          <Pagination
+          <PaginationBase
             activePage={activePage}
             totalPages={totalPages}
             setActivePage={mockSetActivePage}
