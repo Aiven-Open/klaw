@@ -39,7 +39,7 @@ public class KafkaConnectController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestStatus What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param search A wildcard search term that searches topicNames.
    * @return A List of Kafka Connector Requests filtered by the provided parameters.

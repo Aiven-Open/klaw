@@ -90,7 +90,7 @@ public class DeleteDataJdbc {
     Optional<KafkaConnectorRequest> topicReq =
         kafkaConnectorRequestsRepo.findById(kafkaConnectorRequestID);
     if (topicReq.isPresent()) {
-      topicReq.get().setRequestStatus("deleted");
+      topicReq.get().setRequestStatus(RequestStatus.DELETED.value);
       kafkaConnectorRequestsRepo.save(topicReq.get());
     }
     return ApiResultStatus.SUCCESS.value;
@@ -158,7 +158,7 @@ public class DeleteDataJdbc {
     aclRequestID.setTenantId(tenantId);
     Optional<AclRequests> optAclRequests = aclRequestsRepo.findById(aclRequestID);
     if (optAclRequests.isPresent() && optAclRequests.get().getUsername().equals(userName)) {
-      optAclRequests.get().setRequestStatus("deleted");
+      optAclRequests.get().setRequestStatus(RequestStatus.DELETED.value);
       aclRequestsRepo.save(optAclRequests.get());
       return ApiResultStatus.SUCCESS.value;
     }

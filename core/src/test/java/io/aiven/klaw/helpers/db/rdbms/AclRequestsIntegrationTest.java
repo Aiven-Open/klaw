@@ -166,14 +166,32 @@ public class AclRequestsIntegrationTest {
 
     List<AclRequests> james =
         selectDataJdbc.selectAclRequests(
-            true, "James", "USER", "created", true, null, "dev", null, false, 101);
+            true,
+            "James",
+            "USER",
+            RequestStatus.CREATED.value,
+            true,
+            null,
+            "dev",
+            null,
+            false,
+            101);
     List<AclRequests> john =
         selectDataJdbc.selectAclRequests(
-            true, "John", "USER", "declined", true, null, "dev", null, false, 103);
+            true,
+            "John",
+            "USER",
+            RequestStatus.DECLINED.value,
+            true,
+            null,
+            "dev",
+            null,
+            false,
+            103);
 
     assertThat(james.size()).isEqualTo(20);
     for (AclRequests req : james) {
-      assertThat(req.getRequestStatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }
@@ -423,7 +441,7 @@ public class AclRequestsIntegrationTest {
     assertThat(jackie.size()).isEqualTo(1);
     for (AclRequests req : jackie) {
       assertThat(req.getUsername()).isEqualTo("Jackie");
-      assertThat(req.getAclType()).isEqualTo("Producer");
+      assertThat(req.getAclType()).isEqualTo(AclType.PRODUCER.value);
     }
   }
 
@@ -466,7 +484,7 @@ public class AclRequestsIntegrationTest {
       assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getTopicname()).isEqualTo("secondtopic");
       assertThat(req.getEnvironment()).isEqualTo("test");
-      assertThat(req.getAclType()).isEqualTo("Consumer");
+      assertThat(req.getAclType()).isEqualTo(AclType.CONSUMER.value);
     }
   }
 

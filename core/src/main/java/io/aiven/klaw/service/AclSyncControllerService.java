@@ -97,7 +97,7 @@ public class AclSyncControllerService {
         t.setTeamId(
             manageDatabase.getTeamIdFromTeamName(tenantId, syncAclUpdateItem.getTeamSelected()));
         t.setEnvironment(syncAclUpdateItem.getEnvSelected());
-        t.setTopictype(syncAclUpdateItem.getAclType());
+        t.setAclType(syncAclUpdateItem.getAclType());
         t.setAclPatternType(AclPatternType.LITERAL.value);
         t.setTenantId(tenantId);
 
@@ -392,7 +392,7 @@ public class AclSyncControllerService {
       mp.setTransactionalId(aclSotItem.getTransactionalId());
       mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
       mp.setConsumergroup(aclSotItem.getConsumergroup());
-      mp.setTopictype(aclSotItem.getTopictype());
+      mp.setTopictype(aclSotItem.getAclType());
       mp.setAclPatternType(aclSotItem.getAclPatternType());
       mp.setReq_no(aclSotItem.getReq_no() + "");
       if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam))
@@ -465,7 +465,7 @@ public class AclSyncControllerService {
             && Objects.equals(aclListItem.get("resourceName"), aclSotItem.getTopicname())
             && Objects.equals(aclListItem.get("host"), acl_host)
             && Objects.equals(aclListItem.get("principle"), acl_ssl)
-            && Objects.equals(aclSotItem.getTopictype(), mp.getTopictype())) {
+            && Objects.equals(aclSotItem.getAclType(), mp.getTopictype())) {
           mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
           mp.setReq_no(aclSotItem.getReq_no() + "");
           break;

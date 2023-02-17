@@ -155,7 +155,7 @@ public class UtilMethods {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl topicRequest = new Acl();
     topicRequest.setTeamId(3);
-    topicRequest.setTopictype(AclType.PRODUCER.value);
+    topicRequest.setAclType(AclType.PRODUCER.value);
     topicRequest.setTenantId(101);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
@@ -257,7 +257,7 @@ public class UtilMethods {
     topicRequest.setConsumergroup("congrp");
     topicRequest.setEnvironment("1");
     topicRequest.setAclip("12.22.126.21");
-    topicRequest.setTopictype(AclType.PRODUCER.value);
+    topicRequest.setAclType(AclType.PRODUCER.value);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -266,7 +266,7 @@ public class UtilMethods {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl acl = new Acl();
     acl.setTeamId(3);
-    acl.setTopictype(AclType.PRODUCER.value);
+    acl.setAclType(AclType.PRODUCER.value);
     allTopicReqs.add(acl);
 
     acl = new Acl();
@@ -274,7 +274,7 @@ public class UtilMethods {
     acl.setConsumergroup("congrp");
     acl.setEnvironment("1");
     acl.setAclip("12.22.126.21");
-    acl.setTopictype(AclType.PRODUCER.value);
+    acl.setAclType(AclType.PRODUCER.value);
     acl.setOtherParams("101");
     acl.setTeamId(101);
     allTopicReqs.add(acl);
@@ -308,7 +308,7 @@ public class UtilMethods {
     List<TopicRequest> allTopicReqs = new ArrayList<>();
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTeamId(3);
-    topicRequest.setRequestStatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestor("Jackie");
     allTopicReqs.add(topicRequest);

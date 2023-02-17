@@ -1142,7 +1142,7 @@ public class TopicControllerServiceTest {
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTeamId(101);
     topicRequest.setRequestor("Jackie");
-    topicRequest.setRequestStatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     return topicRequest;
   }
 
@@ -1164,7 +1164,7 @@ public class TopicControllerServiceTest {
     topicRequest.setReplicationfactor("1");
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTeamId(101);
-    topicRequest.setRequestStatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequestor("kwuserb");
     topicRequest.setJsonParams(
         "{\"advancedTopicConfiguration\":{\"compression.type\":\"snappy\",\"cleanup.policy\":\"compact\"}}");
@@ -1179,7 +1179,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
     topicRequest.setTeamId(101);
-    topicRequest.setRequestStatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
 
     List<TopicRequest> listReqs = new ArrayList<>();

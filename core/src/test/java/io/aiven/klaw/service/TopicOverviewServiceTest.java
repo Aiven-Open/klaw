@@ -345,7 +345,7 @@ public class TopicOverviewServiceTest {
     aclReq.setAclssl(null);
     aclReq.setEnvironment("1");
     aclReq.setConsumergroup("mygrp1");
-    aclReq.setTopictype(AclType.CONSUMER.value);
+    aclReq.setAclType(AclType.CONSUMER.value);
 
     aclList.add(aclReq);
     return aclList;

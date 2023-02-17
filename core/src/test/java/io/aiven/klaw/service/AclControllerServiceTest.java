@@ -26,6 +26,7 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -506,7 +507,7 @@ public class AclControllerServiceTest {
   public void approveAclRequestsFailure3() throws KlawException {
     String req_no = "1001";
     AclRequests aclReq = getAclRequestDao();
-    aclReq.setRequestStatus("completed");
+    aclReq.setRequestStatus(RequestStatus.APPROVED.value);
 
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
@@ -723,12 +724,12 @@ public class AclControllerServiceTest {
   private AclRequests getAclRequestDao() {
     AclRequests aclReq = new AclRequests();
     aclReq.setTopicname("testtopic");
-    aclReq.setAclType("producer");
+    aclReq.setAclType(AclType.PRODUCER.value);
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setUsername("kwuserb");
-    aclReq.setRequestStatus("created");
+    aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setAcl_ip("1.2.3.4");
     aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
     return aclReq;
@@ -742,7 +743,7 @@ public class AclControllerServiceTest {
       aclReq = new AclRequests();
       aclReq.setEnvironment("1");
       aclReq.setTopicname(topicPrefix + i);
-      aclReq.setAclType("producer");
+      aclReq.setAclType(AclType.PRODUCER.value);
       aclReq.setRequestingteam(1);
       aclReq.setTeamId(1);
       aclReq.setAcl_ip("1.2.3.4<ACL>3.2.4.5<ACL>11.22.33.44");

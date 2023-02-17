@@ -95,7 +95,7 @@ public abstract class BaseOverviewService {
       mp.setTransactionalId(aclSotItem.getTransactionalId());
       mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
       mp.setConsumergroup(aclSotItem.getConsumergroup());
-      mp.setTopictype(aclSotItem.getTopictype());
+      mp.setTopictype(aclSotItem.getAclType());
       mp.setAclPatternType(aclSotItem.getAclPatternType());
       mp.setReq_no(aclSotItem.getReq_no() + "");
       mp.setKafkaFlavorType(

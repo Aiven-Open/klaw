@@ -184,14 +184,14 @@ public class KafkaConnectorsIntegrationTest {
 
     List<KafkaConnectorRequest> james =
         selectDataJdbc.getFilteredKafkaConnectorRequests(
-            true, "James", "created", true, 101, null, null);
+            true, "James", RequestStatus.CREATED.value, true, 101, null, null);
     List<KafkaConnectorRequest> john =
         selectDataJdbc.getFilteredKafkaConnectorRequests(
-            true, "John", "declined", true, 103, null, null);
+            true, "John", RequestStatus.DECLINED.value, true, 103, null, null);
 
     assertThat(james.size()).isEqualTo(21);
     for (KafkaConnectorRequest req : james) {
-      assertThat(req.getRequestStatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
     }
     assertThat(john.size()).isEqualTo(0);
@@ -395,14 +395,14 @@ public class KafkaConnectorsIntegrationTest {
 
     List<KafkaConnectorRequest> james =
         selectDataJdbc.getFilteredKafkaConnectorRequests(
-            true, "James", "created", true, 101, "dev", null);
+            true, "James", RequestStatus.CREATED.value, true, 101, "dev", null);
     List<KafkaConnectorRequest> john =
         selectDataJdbc.getFilteredKafkaConnectorRequests(
-            true, "John", "declined", true, 103, "test", null);
+            true, "John", RequestStatus.DECLINED.value, true, 103, "test", null);
 
     assertThat(james.size()).isEqualTo(20);
     for (KafkaConnectorRequest req : james) {
-      assertThat(req.getRequestStatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }

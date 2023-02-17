@@ -281,7 +281,7 @@ public class AclControllerService {
 
   private String updateApprovingInfo(
       String topicName,
-      RequestOperationType aclType,
+      RequestOperationType requestOperationType,
       Integer team,
       List<String> approverRoles,
       String requester,
@@ -292,7 +292,7 @@ public class AclControllerService {
       Integer teamId =
           commonUtilsService.getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
-      if (RequestOperationType.DELETE == aclType) teamId = team;
+      if (RequestOperationType.DELETE == requestOperationType) teamId = team;
       List<UserInfo> userList =
           manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId);
 

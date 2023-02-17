@@ -41,7 +41,7 @@ public class Acl implements Serializable {
 
   // producer or consumer
   @Column(name = "topictype")
-  private String topictype;
+  private String aclType;
 
   @Column(name = "aclip")
   private String aclip;

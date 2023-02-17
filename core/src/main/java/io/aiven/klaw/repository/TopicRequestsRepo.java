@@ -15,10 +15,6 @@ public interface TopicRequestsRepo
 
   List<TopicRequest> findAllByTenantId(int tenantId);
 
-  //  List<TopicRequest> findAllByTeamIdAndTenantId(Integer requestedByTeamId, int tenantId);
-  //
-  //  List<TopicRequest> findAllByTopictypeAndTenantId(String topicType, int tenantId);
-
   List<TopicRequest> findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
 

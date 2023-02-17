@@ -535,14 +535,14 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "created", true, 101, null, "dev", null, false);
+            true, "James", RequestStatus.CREATED.value, true, 101, null, "dev", null, false);
     List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", "declined", true, 103, null, "test", null, false);
+            true, "John", RequestStatus.DECLINED.value, true, 103, null, "test", null, false);
 
     assertThat(james.size()).isEqualTo(17);
     for (TopicRequest req : james) {
-      assertThat(req.getRequestStatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }

@@ -107,7 +107,7 @@ public class UpdateDataJdbc {
   public String declineTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("declineTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
-    topicRequest.setRequestStatus("declined");
+    topicRequest.setRequestStatus(RequestStatus.DECLINED.value);
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
 
@@ -117,7 +117,7 @@ public class UpdateDataJdbc {
   public String declineConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("declineConnectorRequest {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);
-    connectorRequest.setRequestStatus("declined");
+    connectorRequest.setRequestStatus(RequestStatus.DECLINED.value);
     connectorRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
@@ -231,7 +231,7 @@ public class UpdateDataJdbc {
   public String updateAclRequest(AclRequests aclReq, String approver, String jsonParams) {
     log.debug("updateAclRequest {} {}", aclReq.getTopicname(), approver);
     aclReq.setApprover(approver);
-    aclReq.setRequestStatus("approved");
+    aclReq.setRequestStatus(RequestStatus.APPROVED.value);
     aclReq.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     aclRequestsRepo.save(aclReq);
 
@@ -292,7 +292,7 @@ public class UpdateDataJdbc {
   public String declineAclRequest(AclRequests aclRequests, String approver) {
     log.debug("declineAclRequest {} {}", aclRequests.getTopicname(), approver);
     aclRequests.setApprover(approver);
-    aclRequests.setRequestStatus("declined");
+    aclRequests.setRequestStatus(RequestStatus.DECLINED.value);
     aclRequests.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     aclRequestsRepo.save(aclRequests);
 

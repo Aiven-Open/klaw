@@ -3685,10 +3685,10 @@
         "approvingTeamDetails" : {
           "type" : "string"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         }
       }
@@ -4559,10 +4559,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         }
       }
@@ -4935,10 +4935,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         }
       }
@@ -5193,10 +5193,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         }
       }
@@ -5301,10 +5301,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         }
       }

@@ -13,15 +13,17 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   List<Acl> findAllByEnvironmentAndTenantId(String environment, int tenantId);
 
-  List<Acl> findAllByTopictypeAndTeamIdAndTenantId(String topicType, Integer teamId, int tenantId);
+  List<Acl> findAllByAclTypeAndTeamIdAndTenantId(String topicType, Integer teamId, int tenantId);
 
-  List<Acl> findAllByTopictypeAndTenantId(String topicType, int tenantId);
+  List<Acl> findAllByAclTypeAndTenantId(String topicType, int tenantId);
 
   List<Acl> findAllByEnvironmentAndTopicnameAndTenantId(
       String environment, String topicName, int tenantId);
 
   List<Acl> findAllByEnvironmentAndAclPatternTypeAndTenantId(
       String environment, String aclPatternType, int tenantId);
+
+  List<Acl> findAllByTenantId(int tenantId);
 
   @Query(
       value = "select count(*) from kwacls where env = :envId and tenantid = :tenantId",
@@ -79,6 +81,4 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   @Query(value = "select max(aclid) from kwacls where tenantid = :tenantId", nativeQuery = true)
   Integer getNextAclId(@Param("tenantId") Integer tenantId);
-
-  List<Acl> findAllByTenantId(int tenantId);
 }

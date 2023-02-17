@@ -382,7 +382,7 @@ public class SelectDataJdbc {
     Map<String, String> dashboardMap = new HashMap<>();
     int countProducers = 0, countConsumers = 0;
     List<Acl> acls =
-        aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
+        aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
     List<String> topicList = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicList.add(a.getTopicname()));
@@ -390,7 +390,7 @@ public class SelectDataJdbc {
     }
     dashboardMap.put("producerCount", "" + countProducers);
 
-    acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
+    acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
@@ -415,7 +415,7 @@ public class SelectDataJdbc {
       topicType = AclType.CONSUMER.value;
     }
 
-    List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
+    List<Acl> acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
     Map<String, List<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
@@ -1335,12 +1335,11 @@ public class SelectDataJdbc {
   }
 
   public List<Acl> getConsumerGroupsforTeam(Integer teamId, int tenantId) {
-    return aclRepo.findAllByTopictypeAndTeamIdAndTenantId(
-        AclType.CONSUMER.name(), teamId, tenantId);
+    return aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.name(), teamId, tenantId);
   }
 
   public List<Acl> getAllConsumerGroups(int tenantId) {
-    return aclRepo.findAllByTopictypeAndTenantId(AclType.CONSUMER.name(), tenantId);
+    return aclRepo.findAllByAclTypeAndTenantId(AclType.CONSUMER.name(), tenantId);
   }
 
   public List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId) {
