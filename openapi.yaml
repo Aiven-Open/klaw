@@ -442,6 +442,7 @@ paths:
         - name: requestsType
           in: query
           description: Naming is a mistake (will change), this relates to the status of a request
+          example: created
           schema:
             $ref: "#/components/schemas/RequestStatus"
         - name: teamId
@@ -515,6 +516,51 @@ paths:
                 items:
                   $ref: "#/components/schemas/ApiResponse"
       x-codegen-request-body-name: body
+  /getSchemaRequestsForApprover:
+    get:
+      operationId: getSchemaRequestsForApprover
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          example: "1"
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          example: "1"
+          schema:
+            type: string
+        - name: requestsType
+          in: query
+          description: Naming is a mistake (will change), this relates to the status of a request
+          schema:
+            $ref: "#/components/schemas/RequestStatus"
+        - name: topic
+          description: Name of a topic
+          example: "testtopic1"
+          in: query
+          schema:
+            type: string
+        - name: env
+          in: query
+          description: Environment identifier
+          example: "3"
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SchemaRequestModel"
 components:
   schemas:
     CommonError:
