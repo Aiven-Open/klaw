@@ -16,10 +16,17 @@ type ResolveIntersectionTypes<T> = {
   // eslint-disable-next-line @typescript-eslint/ban-types
 } & {};
 
+type Paginated<T> = {
+  totalPages: number;
+  currentPage: number;
+  entries: T;
+};
+
 export type {
   KlawApiResponse,
   KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   ResolveIntersectionTypes,
+  Paginated,
 };
