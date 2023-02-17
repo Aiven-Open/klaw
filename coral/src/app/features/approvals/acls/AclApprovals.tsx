@@ -42,6 +42,37 @@ interface AclRequestTableRows {
   requesttimestring: string;
 }
 
+const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
+  if (entries === undefined) {
+    return [];
+  }
+  return entries.map(
+    ({
+      req_no,
+      acl_ssl,
+      acl_ip,
+      topicname,
+      aclPatternType,
+      environmentName,
+      teamname,
+      topictype,
+      username,
+      requesttimestring,
+    }) => ({
+      id: Number(req_no),
+      acl_ssl: acl_ssl ?? [],
+      acl_ip: acl_ip ?? [],
+      topicname: topicname,
+      prefixed: aclPatternType === "PREFIXED",
+      environmentName: environmentName ?? "-",
+      teamname,
+      topictype,
+      username: username ?? "-",
+      requesttimestring: requesttimestring ?? "-",
+    })
+  );
+};
+
 function AclApprovals() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -276,33 +307,6 @@ function AclApprovals() {
     },
   ];
 
-  const rows: AclRequestTableRows[] =
-    data?.entries.map(
-      ({
-        req_no,
-        acl_ssl,
-        acl_ip,
-        topicname,
-        aclPatternType,
-        environmentName,
-        teamname,
-        topictype,
-        username,
-        requesttimestring,
-      }) => ({
-        id: Number(req_no),
-        acl_ssl: acl_ssl ?? [],
-        acl_ip: acl_ip ?? [],
-        topicname: topicname,
-        prefixed: aclPatternType === "PREFIXED",
-        environmentName: environmentName ?? "-",
-        teamname,
-        topictype,
-        username: username ?? "-",
-        requesttimestring: requesttimestring ?? "-",
-      })
-    ) || [];
-
   const handleChangePage = (activePage: number) => {
     setActivePage(activePage);
     searchParams.set("page", activePage.toString());
@@ -402,7 +406,7 @@ function AclApprovals() {
           <DataTable
             ariaLabel={"Acl requests"}
             columns={columns}
-            rows={rows}
+            rows={getRows(data?.entries)}
             noWrap={false}
           />
         }
