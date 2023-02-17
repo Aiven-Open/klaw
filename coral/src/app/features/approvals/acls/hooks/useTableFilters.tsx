@@ -84,7 +84,12 @@ const useTableFilters = () => {
         defaultValue={topic}
         onChange={debounce((e) => {
           const parsedName = String(e.target.value).trim();
-          searchParams.set("aclType", parsedName);
+          if (parsedName === "") {
+            searchParams.delete("topic");
+            setTopic(parsedName);
+            return setSearchParams(searchParams);
+          }
+          searchParams.set("topic", parsedName);
           setSearchParams(searchParams);
           setTopic(parsedName);
         }, 500)}
