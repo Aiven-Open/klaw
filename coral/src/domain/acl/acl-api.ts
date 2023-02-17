@@ -23,6 +23,9 @@ const createAclRequest = (
 };
 
 const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
+  if (params.env === "ALL") {
+    delete params.env;
+  }
   return api
     .get<KlawApiResponse<"getAclRequestsForApprover">>(
       `/getAclRequestsForApprover?${new URLSearchParams(params)}`

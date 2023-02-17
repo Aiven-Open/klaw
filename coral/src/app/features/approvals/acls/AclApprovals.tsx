@@ -5,8 +5,6 @@ import {
   Flexbox,
   GhostButton,
   Icon,
-  NativeSelect,
-  SearchInput,
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
@@ -18,6 +16,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
+import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
@@ -57,9 +56,18 @@ function AclApprovals() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { environment, status, aclType, topic, filters } = useTableFilters();
+
   const { data, isLoading } = useQuery<AclRequestsForApprover, Error>({
-    queryKey: ["aclRequests", activePage],
-    queryFn: () => getAclRequestsForApprover({ pageNo: String(activePage) }),
+    queryKey: ["aclRequests", activePage, environment, status, aclType, topic],
+    queryFn: () =>
+      getAclRequestsForApprover({
+        pageNo: String(activePage),
+        env: environment,
+        requestsType: status,
+        aclType,
+        topic,
+      }),
     keepPreviousData: true,
   });
 
@@ -309,44 +317,6 @@ function AclApprovals() {
     searchParams.set("page", activePage.toString());
     setSearchParams(searchParams);
   };
-
-  const filters = [
-    <NativeSelect labelText={"Filter by Topic"} key={"filter-topic"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <NativeSelect
-      labelText={"Filter by Environment"}
-      key={"filter-environment"}
-    >
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <NativeSelect labelText={"Filter by status"} key={"filter-status"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <NativeSelect labelText={"Filter by ACL type"} key={"filter-acl-type"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <div key={"search"}>
-      <SearchInput
-        type={"search"}
-        aria-describedby={"search-field-description"}
-        role="search"
-        placeholder={"Search for..."}
-      />
-      <div id={"search-field-description"} className={"visually-hidden"}>
-        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
-        to delete all your input.
-      </div>
-    </div>,
-  ];
 
   return (
     <>
