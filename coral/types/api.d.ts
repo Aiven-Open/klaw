@@ -804,6 +804,7 @@ export type components = {
       requesttimestring?: string;
       topicstatus?: components["schemas"]["RequestStatus"];
       requesttype?: components["schemas"]["RequestType"];
+      forceRegister?: boolean;
       /**
        * Remarks
        * @description SchemaRequest specific comment
@@ -843,6 +844,8 @@ export type components = {
        * @example 2
        */
       currentPage?: string;
+      editable?: boolean;
+      deletable?: boolean;
     };
     TopicRequest: {
       /**
