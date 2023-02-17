@@ -1,5 +1,11 @@
-import { createSchemaRequest } from "src/domain/schema-request/schema-request-api";
-import { CreatedSchemaRequests } from "src/domain/schema-request/schema-request-types";
+import {
+  createSchemaRequest,
+  getSchemaRequestsForApprover,
+} from "src/domain/schema-request/schema-request-api";
+import {
+  CreatedSchemaRequests,
+  SchemaRequest,
+} from "src/domain/schema-request/schema-request-types";
 
-export type { CreatedSchemaRequests };
-export { createSchemaRequest };
+export type { CreatedSchemaRequests, SchemaRequest };
+export { createSchemaRequest, getSchemaRequestsForApprover };

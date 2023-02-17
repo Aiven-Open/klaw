@@ -1,11 +1,9 @@
-import type { KlawApiModel, ResolveIntersectionTypes } from "types/utils";
+import type {
+  KlawApiModel,
+  Paginated,
+  ResolveIntersectionTypes,
+} from "types/utils";
 import { RequestStatus, RequestType } from "src/domain/requests";
-
-type Paginated<T> = {
-  totalPages: number;
-  currentPage: number;
-  entries: T;
-};
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 

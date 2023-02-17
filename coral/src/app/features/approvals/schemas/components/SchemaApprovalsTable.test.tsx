@@ -1,8 +1,9 @@
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { SchemaRequest } from "src/domain/schema-request";
 
-const mockedRequests = [
+const mockedRequests: SchemaRequest[] = [
   {
     req_no: 1014,
     topicname: "testtopic-first",
@@ -18,15 +19,16 @@ const mockedRequests = [
     requesttimestring: "28-Sep-1987 13:37:00",
     topicstatus: "created",
     requesttype: "Create",
-    forceRegister: false,
     remarks: "asap",
-    approver: null,
-    approvingtime: null,
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
-    totalNoPages: "1",
+    approvingtime: "2022-11-04T14:54:13.414+00:00",
+    totalNoPages: "4",
     allPageNos: ["1"],
     currentPage: "1",
+    deletable: false,
+    editable: false,
+    forceRegister: false,
   },
   {
     req_no: 1013,
@@ -42,16 +44,17 @@ const mockedRequests = [
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
     topicstatus: "created",
-    requesttype: "Create",
-    forceRegister: false,
+    requesttype: "Delete",
     remarks: "asap",
-    approver: null,
-    approvingtime: null,
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
-    totalNoPages: "1",
+    approvingtime: "2022-11-04T14:54:13.414+00:00",
+    totalNoPages: "4",
     allPageNos: ["1"],
     currentPage: "1",
+    deletable: false,
+    editable: false,
+    forceRegister: false,
   },
 ];
 

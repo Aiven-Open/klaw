@@ -3,6 +3,7 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiModel,
   ResolveIntersectionTypes,
+  Paginated,
 } from "types/utils";
 
 // Several types are dependent on topictype when it is "Consumer":
@@ -47,13 +48,7 @@ type GetCreatedAclRequestParameters =
 
 type AclRequest = KlawApiModel<"aclRequest">;
 
-type Paginated<T> = {
-  totalPages: number;
-  currentPage: number;
-  entries: T;
-};
-
-type AclRequestsForApprover = Paginated<AclRequest[]>;
+type AclRequestsForApprover = ResolveIntersectionTypes<Paginated<AclRequest[]>>;
 
 export type {
   CreateAclRequestTopicTypeProducer,
