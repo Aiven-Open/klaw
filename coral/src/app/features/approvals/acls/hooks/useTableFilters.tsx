@@ -13,8 +13,8 @@ const statusList: RequestStatus[] = [
   "declined",
   "deleted",
 ];
-type AclType = "CONSUMER" | "PRODUCER";
-const aclTypes: AclType[] = ["CONSUMER", "PRODUCER"];
+type AclType = "ALL" | "CONSUMER" | "PRODUCER";
+const aclTypes: AclType[] = ["ALL", "CONSUMER", "PRODUCER"];
 
 const useTableFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,9 +26,7 @@ const useTableFilters = () => {
     envParam ?? ENVIRONMENT_NOT_INITIALIZED
   );
   const [status, setStatus] = useState<RequestStatus>(statusParam ?? "created");
-  const [aclType, setAclType] = useState<"CONSUMER" | "PRODUCER">(
-    aclTypeParam ?? "CONSUMER"
-  );
+  const [aclType, setAclType] = useState<AclType>(aclTypeParam ?? "ALL");
   const [topic, setTopic] = useState(searchParams.get("topic") ?? "");
 
   const filters = [
@@ -44,9 +42,12 @@ const useTableFilters = () => {
         setStatus(status);
       }}
     >
-      {statusList.map((status) => (
-        <option key={status}>all</option>
-      ))}
+      {statusList.map((status) => {
+        if (status === "all") {
+          return <option key={status}>All statuses</option>;
+        }
+        return <option key={status}>{status}</option>;
+      })}
     </NativeSelect>,
     <NativeSelect
       labelText={"Filter by ACL type"}
@@ -59,9 +60,16 @@ const useTableFilters = () => {
         setAclType(selectedType);
       }}
     >
-      {aclTypes.map((type) => (
-        <option key={type}>{type}</option>
-      ))}
+      {aclTypes.map((type) => {
+        if (type === "ALL") {
+          return (
+            <option key={type} value="ALL">
+              All ACL types
+            </option>
+          );
+        }
+        return <option key={type}>{type}</option>;
+      })}
     </NativeSelect>,
     <div key={"search"}>
       <SearchInput
