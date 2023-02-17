@@ -79,8 +79,7 @@ function TopicRequest() {
 
   return (
     <>
-      {/*<Box style={{ maxWidth: 1200 }}>*/}
-      <Box maxWidth={"4xl"}>
+      <Box maxWidth={"7xl"}>
         {isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="warning">{parseErrorMsg(error)}</Alert>

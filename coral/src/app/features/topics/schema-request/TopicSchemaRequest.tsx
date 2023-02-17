@@ -87,7 +87,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   return (
     <>
-      <Box style={{ maxWidth: 1200 }}>
+      <Box maxWidth={"7xl"}>
         {schemaRequestMutation.isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="warning">

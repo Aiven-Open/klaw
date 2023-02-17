@@ -110,7 +110,7 @@ const TopicAclRequest = () => {
   const currentTopicNames = selectedEnvironment?.topicNames || [];
 
   return (
-    <Box style={{ maxWidth: 1200 }}>
+    <Box maxWidth={"7xl"}>
       {topicType === "Consumer" ? (
         <TopicConsumerForm
           renderAclTypeField={() => (
