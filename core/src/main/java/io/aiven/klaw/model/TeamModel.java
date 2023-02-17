@@ -24,13 +24,13 @@ public class TeamModel implements Serializable {
   private String teammail;
 
   @NotNull
-  @Pattern(message = "Invalid Team phone.", regexp = "(^$|[0-9]*)")
+  @Pattern(message = "Invalid Team phone.", regexp = "(^$|[+]{0,1}[0-9]*)")
   private String teamphone;
 
   @NotNull
   @Pattern(
       message = "Invalid Team contact.",
-      regexp = "^[a-zA-z ]*$") // Pattern a-zA-z and/or spaces.
+      regexp = "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$") // Pattern a-zA-z accents and umlaut and/or spaces.
   private String contactperson;
 
   private Integer tenantId;
