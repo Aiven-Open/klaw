@@ -3,7 +3,6 @@ import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
-import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { RequestStatus } from "src/domain/requests";
 
 const statusList: RequestStatus[] = [
@@ -22,9 +21,7 @@ const useTableFilters = () => {
   const statusParam = searchParams.get("status") as RequestStatus | null;
   const aclTypeParam = searchParams.get("aclType") as AclType | null;
 
-  const [environment, setEnvironment] = useState(
-    envParam ?? ENVIRONMENT_NOT_INITIALIZED
-  );
+  const [environment, setEnvironment] = useState(envParam ?? "ALL");
   const [status, setStatus] = useState<RequestStatus>(statusParam ?? "created");
   const [aclType, setAclType] = useState<AclType>(aclTypeParam ?? "ALL");
   const [topic, setTopic] = useState(searchParams.get("topic") ?? "");
