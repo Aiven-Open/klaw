@@ -105,7 +105,7 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return setActivePage(activePage - 1);
+        return handleChangePage(activePage - 1);
       }
 
       // We need to invalidate the query populating the table to reflect the change
@@ -133,7 +133,7 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return setActivePage(activePage - 1);
+        return handleChangePage(activePage - 1);
       }
 
       // We need to invalidate the query populating the table to reflect the change
