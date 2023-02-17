@@ -44,7 +44,11 @@ const useTableFilters = () => {
     >
       {statusList.map((status) => {
         if (status === "all") {
-          return <option key={status}>All statuses</option>;
+          return (
+            <option key={status} value={"ALL"}>
+              All statuses
+            </option>
+          );
         }
         return <option key={status}>{status}</option>;
       })}
