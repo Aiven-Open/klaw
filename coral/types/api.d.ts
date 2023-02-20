@@ -716,49 +716,49 @@ export type components = {
        * unique identifier
        * Format: int32
        */
-      req_no?: number;
+      req_no: number;
       /**
        * Topic name
        * @description Kafka Topic name
        * @example testtopic
        */
-      topicname?: string;
+      topicname: string;
       /**
        * environment
        * @description Id of the environment
        * @example 3
        */
-      environment?: string;
+      environment: string;
       /**
        * environmentName
        * @description Name of the environment
        * @example DEV
        */
-      environmentName?: string;
+      environmentName: string;
       /**
        * schemaversion
        * @description SchemaRequest version
        * @example 1.0
        */
-      schemaversion?: string;
+      schemaversion: string;
       /**
        * Team name
        * @description Topic owner team name
        * @example Infra
        */
-      teamname?: string;
+      teamname: string;
       /**
        * Team ID
        * Format: int32
        * @description Team identifier
        * @example 1010
        */
-      teamId?: number;
+      teamId: number;
       /**
        * App name
        * @example App
        */
-      appname?: string;
+      appname: string;
       /**
        * schemafull
        * @description A valid json/avro schema
@@ -784,20 +784,20 @@ export type components = {
        * @description Username
        * @example jon.snow@klaw-project.io
        */
-      username?: string;
+      username: string;
       /**
        * Request time
        * Format: date-time
        * @example 2018-11-13T20:20:39.000Z
        */
-      requesttime?: string;
+      requesttime: string;
       /**
        * Request time string representation
        * @example 28-Dec-2022 14:54:57
        */
-      requesttimestring?: string;
-      requestStatus?: components["schemas"]["RequestStatus"];
-      requestOperationType?: components["schemas"]["RequestOperationType"];
+      requesttimestring: string;
+      requestStatus: components["schemas"]["RequestStatus"];
+      requestOperationType: components["schemas"]["RequestOperationType"];
       forceRegister?: boolean;
       /**
        * Remarks
@@ -817,7 +817,7 @@ export type components = {
        * Approving team details
        * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
        */
-      approvingTeamDetails?: string;
+      approvingTeamDetails: string;
       /**
        * Total number of pages
        * @example 3
@@ -838,8 +838,8 @@ export type components = {
        * @example 2
        */
       currentPage?: string;
-      editable?: boolean;
-      deletable?: boolean;
+      editable: boolean;
+      deletable: boolean;
     };
     TopicRequest: {
       /**
@@ -853,12 +853,12 @@ export type components = {
        * @description ID of environment
        * @example 1
        */
-      environment?: string;
+      environment: string;
       /**
        * Topic partitions
        * Format: int32
        */
-      topicpartitions?: number;
+      topicpartitions: number;
       /**
        * Team name
        * @description Topic owner team name
@@ -880,7 +880,7 @@ export type components = {
        * Replication factor
        * @example 1
        */
-      replicationfactor?: string;
+      replicationfactor: string;
       /**
        * Environment name
        * @example DEV
@@ -908,10 +908,10 @@ export type components = {
        * Format: date-time
        * @example 2018-11-13T20:20:39.000Z
        */
-      requesttime?: string;
+      requesttime: string;
       /** Request time string */
       requesttimestring: string;
-      requestStatus?: components["schemas"]["RequestStatus"];
+      requestStatus: components["schemas"]["RequestStatus"];
       /**
        * Approver
        * @example jon.snow@klaw-project.io
@@ -943,7 +943,7 @@ export type components = {
        * Approving team details
        * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
        */
-      approvingTeamDetails?: string;
+      approvingTeamDetails: string;
       /**
        * Other parameters
        * @description Topic configuration parameters
@@ -955,7 +955,7 @@ export type components = {
        * Format: int32
        * @example 1010
        */
-      teamId?: number;
+      teamId: number;
       /**
        * All page numbers
        * @description List of all page numbers
@@ -971,6 +971,10 @@ export type components = {
        * @example 1
        */
       currentPage?: string;
+      /** Topic can be edited */
+      editable: boolean;
+      /** Topic can be deleted */
+      deletable: boolean;
     };
     /** GetAuthResponse */
     GetAuthResponse: {

@@ -313,7 +313,6 @@ paths:
             type: string
             enum: ["CONSUMER", "PRODUCER"]
           example: "CONSUMER"
-          default: "CONSUMER"
       responses:
         "200":
           description: OK
@@ -1137,7 +1136,7 @@ components:
         - topicname
         - environment
         - teamname
-        - topictype
+        - aclType
         - aclIpPrincipleType
       type: object
       properties:
@@ -1165,7 +1164,9 @@ components:
           type: string
           enum: ["LITERAL", "PREFIXED"]
           example: "LITERAL"
-          description: "If topictype is consumer, this field can only be LITERAL. If topictype is producer, this field can be LITERAL or PREFIXED"
+          description:
+            "If aclType is consumer, this field can only be LITERAL. If aclType is producer, this field
+            can be LITERAL or PREFIXED"
         transactionalId:
           pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
           type: string
@@ -1222,7 +1223,6 @@ components:
           example: "10-11-2020 10:45:30"
         requestStatus:
           $ref: "#/components/schemas/RequestStatus"
-          example: "created"
         approver:
           type: string
         approvingtime:
@@ -1256,7 +1256,23 @@ components:
     SchemaRequest:
       title: SchemaRequest
       required:
+        - environment
+        - environmentName
         - schemafull
+        - schemaversion
+        - topicname
+        - appname
+        - teamId
+        - teamname
+        - username
+        - req_no
+        - requesttime
+        - requesttimestring
+        - requestStatus
+        - requestOperationType
+        - approvingTeamDetails
+        - editable
+        - deletable
       type: object
       properties:
         req_no:
@@ -1365,13 +1381,22 @@ components:
     TopicRequest:
       type: object
       required:
-        - "topicid"
-        - "topicname"
-        - "environmentName"
-        - "requestOperationType"
-        - "teamname"
-        - "requestor"
-        - "requesttimestring"
+        - topicname
+        - environment
+        - topicpartitions
+        - teamname
+        - teamId
+        - approvingTeamDetails
+        - replicationfactor
+        - environmentName
+        - topicid
+        - requestOperationType
+        - requestor
+        - requesttime
+        - requesttimestring
+        - requestStatus
+        - editable
+        - deletable
       properties:
         topicname:
           title: Topic name
@@ -1498,6 +1523,12 @@ components:
           title: Current page number
           type: string
           example: "1"
+        editable:
+          title: Topic can be edited
+          type: boolean
+        deletable:
+          title: Topic can be deleted
+          type: boolean
     GetAuthResponse:
       title: GetAuthResponse
       type: object
