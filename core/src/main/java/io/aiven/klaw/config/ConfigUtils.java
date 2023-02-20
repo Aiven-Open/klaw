@@ -2,11 +2,12 @@ package io.aiven.klaw.config;
 
 import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
 import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /*
 - Provide static resources to be loaded, required by the application
@@ -38,7 +39,8 @@ public class ConfigUtils {
                 "/registerUser",
                 "/resetMemoryCache/**",
                 "/userActivation**",
-                "/getActivationInfo**"));
+                "/getActivationInfo**",
+                "/v3/**"));
 
     if (coralEnabled) {
       staticResourcesHtmlArray.add("/assets/coral/**");
