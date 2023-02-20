@@ -614,7 +614,7 @@ export type components = {
        */
       acl_ssl?: string[];
       /**
-       * @description If topictype is consumer, this field can only be LITERAL. If topictype is producer, this field can be LITERAL or PREFIXED
+       * @description If aclType is consumer, this field can only be LITERAL. If aclType is producer, this field can be LITERAL or PREFIXED
        * @example LITERAL
        * @enum {string}
        */
@@ -665,7 +665,7 @@ export type components = {
        * @example PRODUCER
        * @enum {string}
        */
-      aclType?: "PRODUCER" | "CONSUMER";
+      aclType: "PRODUCER" | "CONSUMER";
       /** @example User */
       username?: string;
       /**
@@ -675,7 +675,6 @@ export type components = {
       requesttime?: string;
       /** @example 10-11-2020 10:45:30 */
       requesttimestring?: string;
-      /** @example created */
       requestStatus?: components["schemas"]["RequestStatus"];
       approver?: string;
       /**
@@ -707,8 +706,6 @@ export type components = {
       allPageNos?: string[];
       /** @example DevRel */
       approvingTeamDetails?: string;
-    } & {
-      topictype: unknown;
     };
     /** SchemaRequest */
     SchemaRequest: {
