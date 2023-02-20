@@ -6,11 +6,11 @@ import SelectEnvironment from "src/app/features/topics/browse/components/select-
 import { RequestStatus } from "src/domain/requests";
 
 const statusList: RequestStatus[] = [
-  "all",
-  "created",
-  "approved",
-  "declined",
-  "deleted",
+  "ALL",
+  "CREATED",
+  "APPROVED",
+  "DECLINED",
+  "DELETED",
 ];
 type AclType = "ALL" | "CONSUMER" | "PRODUCER";
 const aclTypes: AclType[] = ["ALL", "CONSUMER", "PRODUCER"];
@@ -22,7 +22,7 @@ const useTableFilters = () => {
   const aclTypeParam = searchParams.get("aclType") as AclType | null;
 
   const [environment, setEnvironment] = useState(envParam ?? "ALL");
-  const [status, setStatus] = useState<RequestStatus>(statusParam ?? "created");
+  const [status, setStatus] = useState<RequestStatus>(statusParam ?? "CREATED");
   const [aclType, setAclType] = useState<AclType>(aclTypeParam ?? "ALL");
   const [topic, setTopic] = useState(searchParams.get("topic") ?? "");
 
@@ -40,7 +40,7 @@ const useTableFilters = () => {
       }}
     >
       {statusList.map((status) => {
-        if (status === "all") {
+        if (status === "ALL") {
           return (
             <option key={status} value={"ALL"}>
               All statuses

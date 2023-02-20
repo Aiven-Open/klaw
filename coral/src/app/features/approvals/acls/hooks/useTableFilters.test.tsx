@@ -39,7 +39,7 @@ describe("useTableFilters.tsx", () => {
         wrapper,
       });
 
-      expect(result.current.status).toBe("created");
+      expect(result.current.status).toBe("CREATED");
     });
     it("returns 'ALL' value by default for environment state", () => {
       const { result } = renderHook(() => useTableFilters(), {

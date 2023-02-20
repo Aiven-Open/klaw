@@ -17,7 +17,7 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
   }
 
   const {
-    topictype,
+    aclType,
     environmentName = "Environment not found",
     topicname,
     acl_ssl,
@@ -38,8 +38,8 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
         <Label>ACL type</Label>
         <dd>
           <StatusChip
-            status={topictype === "Producer" ? "info" : "success"}
-            text={topictype}
+            status={aclType === "PRODUCER" ? "info" : "success"}
+            text={aclType}
           />
         </dd>
       </Flexbox>
@@ -91,7 +91,7 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
         <Flexbox direction={"column"}>
           <Label>Consumer group</Label>
           <dd>
-            {topictype === "Consumer" ? consumergroup : <i>Not applicable</i>}
+            {aclType === "CONSUMER" ? consumergroup : <i>Not applicable</i>}
           </dd>
         </Flexbox>
       </GridItem>

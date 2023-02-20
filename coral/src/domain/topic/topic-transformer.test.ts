@@ -7,8 +7,7 @@ import {
   Topic,
   TopicApiResponse,
   TopicRequestApiResponse,
-  TopicRequestStatus,
-  TopicRequestTypes,
+  TopicRequest,
 } from "src/domain/topic/topic-types";
 import {
   baseTestObjectMockedTopic,
@@ -110,7 +109,7 @@ describe("topic-transformer.ts", () => {
     });
 
     it("transforms all response items into expected type", () => {
-      const mockedResponse = [
+      const mockedResponse: TopicRequest[] = [
         {
           topicname: "test-topic-1",
           environment: "1",
@@ -127,17 +126,19 @@ describe("topic-transformer.ts", () => {
               configValue: "delete",
             },
           ],
-          topictype: "Create" as TopicRequestTypes,
+          requestOperationType: "CREATE",
           requestor: "jlpicard",
           requesttime: "1987-09-28T13:37:00.001+00:00",
           requesttimestring: "28-Sep-1987 13:37:00",
-          topicstatus: "created" as TopicRequestStatus,
+          requestStatus: "CREATED",
           totalNoPages: "3",
           approvingTeamDetails:
             "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
           teamId: 1003,
           allPageNos: ["1"],
           currentPage: "1",
+          editable: true,
+          deletable: true,
         },
         {
           topicname: "test-topic-2",
@@ -156,17 +157,19 @@ describe("topic-transformer.ts", () => {
             },
           ],
 
-          topictype: "Update" as TopicRequestTypes,
+          requestOperationType: "UPDATE",
           requestor: "bcrusher",
           requesttime: "1994-23-05T13:37:00.001+00:00",
           requesttimestring: "23-May-1994 13:37:00",
-          topicstatus: "approved" as TopicRequestStatus,
+          requestStatus: "APPROVED",
           totalNoPages: "3",
           approvingTeamDetails:
             "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
           teamId: 1003,
           allPageNos: ["1"],
           currentPage: "1",
+          editable: true,
+          deletable: true,
         },
       ];
       const transformedResponse =

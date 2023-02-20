@@ -210,7 +210,7 @@ const mockedResponseTopicTeamPrefixed: KlawApiResponse<"topicGetTeam"> = {
   team: "prefixed-Ospo",
 };
 
-function mockGetTopicRequests({
+function mockGetTopicRequestsForApprover({
   mswInstance,
   response,
 }: {
@@ -245,5 +245,5 @@ export {
   mockGetTopicTeam,
   mockedResponseTopicTeamLiteral,
   mockedResponseTopicTeamPrefixed,
-  mockGetTopicRequests,
+  mockGetTopicRequestsForApprover,
 };

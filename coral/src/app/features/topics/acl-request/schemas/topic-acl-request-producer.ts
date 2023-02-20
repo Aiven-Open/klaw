@@ -14,7 +14,7 @@ import {
 import { z } from "zod";
 
 const aclPatternType = z.union([z.literal("LITERAL"), z.literal("PREFIXED")]);
-const topictype = z.literal("Producer");
+const aclType = z.literal("PRODUCER");
 const transactionalId = z
   .string()
   .regex(hasOnlyValidCharacters, {
@@ -32,7 +32,7 @@ const topicProducerFormSchema = z
     aclPatternType,
     topicname,
     environment,
-    topictype,
+    aclType,
     transactionalId,
     teamname,
   })

@@ -113,7 +113,7 @@ type GetTopicRequestsQueryParams = ResolveIntersectionTypes<
   Required<
     Pick<
       operations["getTopicRequestsForApprover"]["parameters"]["query"],
-      "pageNo" | "currentPage" | "requestsType"
+      "pageNo" | "currentPage" | "requestStatus"
     >
   >
 >;
@@ -126,9 +126,7 @@ const getTopicRequestsForApprover = ({
   const queryObject: GetTopicRequestsQueryParams = {
     pageNo: pageNumber.toString(),
     currentPage: currentPage.toString(),
-    // This is a naming mix up in backend, we want to query
-    // for the status, not the type. Will be changed there soon.
-    requestsType: requestStatus,
+    requestStatus: requestStatus,
   };
   return api
     .get<KlawApiResponse<"getTopicRequestsForApprover">>(

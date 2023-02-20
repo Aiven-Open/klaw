@@ -64,6 +64,7 @@ function TopicRequest() {
         "/myTopicRequests?reqsType=created&topicCreated=true"
       ),
   });
+
   const onSubmit: SubmitHandler<Schema> = (data) =>
     mutate(createTopicRequestPayload(data));
 

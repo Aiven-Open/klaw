@@ -3,7 +3,7 @@ import type {
   Paginated,
   ResolveIntersectionTypes,
 } from "types/utils";
-import { RequestStatus, RequestType } from "src/domain/requests";
+import { RequestStatus, RequestOperationType } from "src/domain/requests";
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 
@@ -22,24 +22,10 @@ type TopicAdvancedConfigurationOptions = {
   };
 };
 
-type TopicRequestTypes = RequestType;
+type TopicRequestOperationTypes = RequestOperationType;
 type TopicRequestStatus = RequestStatus;
 
-type TopicRequest = ResolveIntersectionTypes<
-  Required<
-    Pick<
-      KlawApiModel<"TopicRequest">,
-      | "topicid"
-      | "topicname"
-      | "environmentName"
-      | "topictype"
-      | "teamname"
-      | "requestor"
-      | "requesttimestring"
-    >
-  > &
-    KlawApiModel<"TopicRequest">
->;
+type TopicRequest = ResolveIntersectionTypes<KlawApiModel<"TopicRequest">>;
 
 type TopicRequestApiResponse = ResolveIntersectionTypes<
   Paginated<TopicRequest[]>
@@ -52,7 +38,7 @@ export type {
   TopicApiResponse,
   TopicAdvancedConfigurationOptions,
   TopicRequest,
-  TopicRequestTypes,
+  TopicRequestOperationTypes,
   TopicRequestStatus,
   TopicRequestApiResponse,
 };

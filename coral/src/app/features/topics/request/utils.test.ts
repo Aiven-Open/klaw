@@ -32,7 +32,7 @@ describe("TopicRequest utils", () => {
         advancedTopicConfigEntries: [],
         description: "example description",
         remarks: "please approve this topic asap",
-        topictype: "Create",
+        requestOperationType: "CREATE",
       });
     });
   });

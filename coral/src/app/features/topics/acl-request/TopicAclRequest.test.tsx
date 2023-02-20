@@ -983,7 +983,7 @@ describe("<TopicAclRequest />", () => {
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
           environment: "1",
-          topictype: "Producer",
+          aclType: "PRODUCER",
           teamname: "Ospo",
         });
 
@@ -1053,7 +1053,7 @@ describe("<TopicAclRequest />", () => {
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
           environment: "1",
-          topictype: "Producer",
+          aclType: "PRODUCER",
           teamname: "Ospo",
         });
 
@@ -1278,7 +1278,7 @@ describe("<TopicAclRequest />", () => {
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
           environment: "1",
-          topictype: "Consumer",
+          aclType: "CONSUMER",
           teamname: "Ospo",
           consumergroup: "group",
         });
@@ -1365,7 +1365,7 @@ describe("<TopicAclRequest />", () => {
           aclPatternType: "LITERAL",
           topicname: "aivtopic1",
           environment: "1",
-          topictype: "Consumer",
+          aclType: "CONSUMER",
           teamname: "Ospo",
           consumergroup: "group",
         });
