@@ -29,17 +29,34 @@ How to use klaw-docker:
 * --destroy will tear down **both** Klaw containers and Kafka containers.
 
 
+### How to know which version am I deploying?
+If you use the klaw-docker.sh build and all commands this will build the local version of klaw and package that into a docker image ready to be deployed.
+This way any changes code or config made will be packaged within the image.
+
+### Deploying an official dockerhub release
+If you want to deploy an official release of Klaw then you can update the docker-compose-klaw.yaml  'image'
+
+klaw-core:latest -> aivenoy/klaw-core:latest
+
+klaw-cluster-api:latest -> aivenoy/klaw-cluster-api:latest
+
+If you choose to deploy Klaw this way you will need to externalise the configuration to make alterations to it as described below in 'How to Configure the docker images'
+
 
 ### Enabling HTTPS
 A volume is created to store Klaw data this is where you can store your keystore and truststore for both enabling https but also for enabling secure connections between Klaw and Kafka.
 The keystore and truststore should be copied to the klaw data volume so that it may be accessed at run time.
 
 #### Where to find the Klaw docker volume
+Run the following command with your containerId to find the location of your mount. ``docker inspect -f '{{ .Mounts }}' containerid``
 
 #### Linux
-/var/lib/docker/volumes/docker-scripts_klaw_data/_data
+linux volumes are normally in the same location.  
+``/var/lib/docker/volumes/docker-scripts_klaw_data/_data```
 ##### Windows
-\\wsl$\docker-desktop-data\data\docker\volumes\docker-scripts_klaw_data\_data
+Windows locations are also normally in the same location.  
+``\\wsl$\docker-desktop-data\data\docker\volumes\docker-scripts_klaw_data\_data```
+
 
 
 #### How to configure the docker images

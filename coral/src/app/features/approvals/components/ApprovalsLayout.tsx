@@ -1,14 +1,22 @@
-import { Box } from "@aivenio/aquarium";
+import { Alert, Box } from "@aivenio/aquarium";
 import { ReactElement } from "react";
+import SkeletonTable from "src/app/features/approvals/SkeletonTable";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type ApprovalsLayoutProps = {
+  isLoading?: boolean;
+  isErrorLoading?: boolean;
+  errorMessage?: unknown;
   filters: ReactElement[];
   table: ReactElement;
   pagination?: ReactElement;
 };
 
 function ApprovalsLayout(props: ApprovalsLayoutProps) {
-  const { filters, table, pagination } = props;
+  const { filters, table, pagination, isLoading, isErrorLoading } = props;
+
+  const errorMessage = parseErrorMsg(props.errorMessage);
+
   return (
     <>
       <Box
@@ -27,17 +35,22 @@ function ApprovalsLayout(props: ApprovalsLayoutProps) {
           );
         })}
       </Box>
-
-      <Box
-        display={"flex"}
-        flexDirection={"column"}
-        alignItems={"center"}
-        rowGap={"l4"}
-        className={"a11y-enhancement-data-table"}
-      >
-        {table}
-        {pagination}
-      </Box>
+      {isLoading && <SkeletonTable />}
+      {isErrorLoading && (
+        <Alert type={"error"}>{errorMessage}. Please try again later!</Alert>
+      )}
+      {!isLoading && !isErrorLoading && (
+        <Box
+          display={"flex"}
+          flexDirection={"column"}
+          alignItems={"center"}
+          rowGap={"l4"}
+          className={"a11y-enhancement-data-table"}
+        >
+          {table}
+          {pagination}
+        </Box>
+      )}
     </>
   );
 }

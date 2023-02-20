@@ -1,4 +1,3 @@
-import * as ReactQuery from "@tanstack/react-query";
 import {
   cleanup,
   screen,
@@ -12,13 +11,12 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetAclRequestsForApprover =
   getAclRequestsForApprover as jest.MockedFunction<
     typeof getAclRequestsForApprover
   >;
-
-const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
 
 const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
   {
@@ -91,36 +89,55 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
 const mockGetAclRequestsForApproverResponse = transformAclRequestApiResponse(
   mockedAclRequestsForApproverApiResponse
 );
+const mockGetAclRequestsForApproverResponseEmpty =
+  transformAclRequestApiResponse([]);
 
 describe("AclApprovals", () => {
   beforeAll(() => {
     mockIntersectionObserver();
   });
-  afterEach(() => {
+  afterAll(() => {
     jest.resetAllMocks();
   });
 
-  describe("Skeleton", () => {
-    beforeAll(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: [], isLoading: true });
+  describe("shows loading or error state for fetching acls requests", () => {
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows a skeleton table while loading", () => {
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponseEmpty
+      );
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const skeleton = screen.getByTestId("skeleton-table");
+
+      expect(skeleton).toBeVisible();
+    });
+
+    it("shows an error message when an error occurs", async () => {
+      mockGetAclRequestsForApprover.mockRejectedValue(
+        "Unexpected error. Please try again later!"
+      );
 
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
       });
-    });
 
-    afterAll(() => {
-      cleanup();
-      useQuerySpy.mockRestore();
-    });
-
-    it("shows a skeleton table", () => {
       const skeleton = screen.getByTestId("skeleton-table");
 
-      expect(skeleton).toBeVisible();
+      await waitForElementToBeRemoved(skeleton);
+
+      const error = screen.getByText(
+        "Unexpected error. Please try again later!"
+      );
+
+      expect(error).toBeVisible();
     });
   });
 

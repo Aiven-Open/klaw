@@ -68,6 +68,45 @@ describe("ApprovalsLayout", () => {
     });
   });
 
+  describe("renders states dependent on props", () => {
+    afterEach(cleanup);
+
+    it("shows a loading state instead of the table", () => {
+      render(
+        <ApprovalsLayout
+          filters={mockFilter}
+          table={mockTable}
+          isLoading={true}
+        />
+      );
+
+      const table = screen.queryByRole("table");
+      const skeleton = screen.getByTestId("skeleton-table");
+
+      expect(table).not.toBeInTheDocument();
+      expect(skeleton).toBeVisible();
+    });
+
+    it("shows an error message instead of the table", () => {
+      render(
+        <ApprovalsLayout
+          filters={mockFilter}
+          table={mockTable}
+          isErrorLoading={true}
+          errorMessage={{ data: { message: "Oh no, this is an error" } }}
+        />
+      );
+
+      const table = screen.queryByRole("table");
+      const errorMessage = screen.getByText(
+        "Oh no, this is an error. Please try again later!"
+      );
+
+      expect(table).not.toBeInTheDocument();
+      expect(errorMessage).toBeVisible();
+    });
+  });
+
   describe("renders the necessary DOM and CSS to create layout", () => {
     afterEach(cleanup);
 
