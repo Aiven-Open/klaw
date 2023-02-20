@@ -1,16 +1,27 @@
 import {
   cleanup,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import AclApprovals from "src/app/features/approvals/acls/AclApprovals";
 import { getAclRequestsForApprover } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { AclRequest } from "src/domain/acl/acl-types";
+import { Environment, getEnvironments } from "src/domain/environment";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
 
 const mockGetAclRequestsForApprover =
   getAclRequestsForApprover as jest.MockedFunction<
@@ -84,6 +95,8 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
       "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,aindriul,",
   },
 ];
+const mockGetEnvironmentResponse: Environment[] =
+  transformEnvironmentApiResponse(mockedEnvironmentResponse);
 
 const mockGetAclRequestsForApproverResponse = transformAclRequestApiResponse(
   mockedAclRequestsForApproverApiResponse
@@ -215,6 +228,149 @@ describe("AclApprovals", () => {
     it("render Pagination on page 1 on load", async () => {
       const pagination = screen.getByRole("navigation");
       expect(pagination).toHaveTextContent("Page 1 of 2");
+    });
+  });
+
+  describe("handles filtering", () => {
+    beforeEach(async () => {
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponse
+      );
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("renders correct filters", () => {
+      expect(screen.getByLabelText("Filter by Environment")).toBeVisible();
+      expect(screen.getByLabelText("Filter by status")).toBeVisible();
+      expect(screen.getByLabelText("Filter by ACL type")).toBeVisible();
+      expect(screen.getByRole("search")).toBeVisible();
+    });
+
+    it("filters by Environment", async () => {
+      const select = screen.getByLabelText("Filter by Environment");
+
+      const devOption = within(select).getByRole("option", { name: "DEV" });
+
+      expect(devOption).toBeEnabled();
+
+      await userEvent.selectOptions(select, devOption);
+
+      expect(select).toHaveDisplayValue("DEV");
+
+      await waitFor(() => {
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "ALL",
+          env: "1",
+          pageNo: "1",
+          requestsType: "created",
+          topic: "",
+        });
+      });
+    });
+
+    it("filters by Status", async () => {
+      const select = screen.getByLabelText("Filter by status");
+
+      const option = within(select).getByRole("option", {
+        name: "declined",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("declined");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "ALL",
+          env: "ALL",
+          pageNo: "1",
+          requestsType: "declined",
+          topic: "",
+        })
+      );
+    });
+
+    it("filters by ACL type", async () => {
+      const select = screen.getByLabelText("Filter by ACL type");
+
+      const option = within(select).getByRole("option", {
+        name: "PRODUCER",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("PRODUCER");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "PRODUCER",
+          env: "ALL",
+          pageNo: "1",
+          requestsType: "created",
+          topic: "",
+        })
+      );
+    });
+
+    it("filters by Topic", async () => {
+      const search = screen.getByRole("search");
+
+      expect(search).toBeEnabled();
+
+      await userEvent.type(search, "topicname");
+
+      expect(search).toHaveValue("topicname");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "ALL",
+          env: "ALL",
+          pageNo: "1",
+          requestsType: "created",
+          topic: "topicname",
+        })
+      );
+    });
+
+    it("filters by several fields", async () => {
+      const search = screen.getByRole("search");
+      expect(search).toBeEnabled();
+      await userEvent.type(search, "topicname");
+      expect(search).toHaveValue("topicname");
+
+      const select = screen.getByLabelText("Filter by ACL type");
+      const option = within(select).getByRole("option", {
+        name: "PRODUCER",
+      });
+      expect(option).toBeEnabled();
+      await userEvent.selectOptions(select, option);
+      expect(select).toHaveDisplayValue("PRODUCER");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "PRODUCER",
+          env: "ALL",
+          pageNo: "1",
+          requestsType: "created",
+          topic: "topicname",
+        })
+      );
     });
   });
 });
