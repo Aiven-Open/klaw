@@ -11,7 +11,6 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetAclRequestsForApprover =
   getAclRequestsForApprover as jest.MockedFunction<
