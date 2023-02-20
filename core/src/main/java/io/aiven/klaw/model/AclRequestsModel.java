@@ -1,6 +1,9 @@
 package io.aiven.klaw.model;
 
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
+import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -16,7 +19,6 @@ import lombok.ToString;
 @ToString
 public class AclRequestsModel implements Serializable {
 
-  @Pattern(message = "Invalid remarks", regexp = "^$|^[a-zA-Z 0-9_.,-]{3,}$")
   private String remarks;
 
   @Pattern(message = "Invalid consumer group", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
@@ -47,9 +49,15 @@ public class AclRequestsModel implements Serializable {
 
   @NotNull private String teamname;
 
-  @NotNull private String topictype;
+  // Producer/Consumer
+  @NotNull private AclType aclType;
 
   @NotNull private AclIPPrincipleType aclIpPrincipleType;
+
+  private RequestStatus requestStatus;
+
+  // Create/Delete
+  private RequestOperationType requestOperationType;
 
   private String environmentName;
 
@@ -67,13 +75,9 @@ public class AclRequestsModel implements Serializable {
 
   private String requesttimestring;
 
-  private String aclstatus;
-
   private String approver;
 
   private Timestamp approvingtime;
-
-  private String aclType;
 
   // Always TOPIC (for now)
   private String aclResourceType;

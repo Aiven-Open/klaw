@@ -49,7 +49,7 @@ public class AclRequests implements Serializable {
 
   // Producer Consumer
   @Column(name = "topictype")
-  private String topictype;
+  private String aclType;
 
   @Column(name = "consumergroup")
   private String consumergroup;
@@ -63,7 +63,7 @@ public class AclRequests implements Serializable {
   @Transient private String requesttimestring;
 
   @Column(name = "topicstatus")
-  private String aclstatus;
+  private String requestStatus;
 
   @Column(name = "remarks")
   private String remarks;
@@ -80,9 +80,9 @@ public class AclRequests implements Serializable {
   @Column(name = "exectime")
   private Timestamp approvingtime;
 
-  // create or delete
+  // Create or Delete
   @Column(name = "acltype")
-  private String aclType;
+  private String requestOperationType;
 
   // prefixed acls or Literal(default)
   @Column(name = "aclpatterntype")

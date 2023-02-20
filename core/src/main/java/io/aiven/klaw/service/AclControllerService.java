@@ -68,7 +68,7 @@ public class AclControllerService {
   public ApiResponse createAcl(AclRequestsModel aclRequestsModel) throws KlawException {
     log.info("createAcl {}", aclRequestsModel);
     String currentUserName = getCurrentUserName();
-    aclRequestsModel.setAclType(RequestOperationType.CREATE.value);
+    aclRequestsModel.setRequestOperationType(RequestOperationType.CREATE);
     aclRequestsModel.setUsername(currentUserName);
     int tenantId = commonUtilsService.getTenantId(currentUserName);
 
@@ -88,7 +88,7 @@ public class AclControllerService {
           .build();
     }
 
-    if (AclType.CONSUMER.value.equals(aclRequestsModel.getTopictype())) {
+    if (AclType.CONSUMER == aclRequestsModel.getAclType()) {
       if (AclPatternType.PREFIXED.value.equals(aclRequestsModel.getAclPatternType())) {
         result = "Failure : Please change the pattern to LITERAL for topic type.";
         return ApiResponse.builder().result(result).build();
@@ -119,6 +119,8 @@ public class AclControllerService {
 
     AclRequests aclRequestsDao = new AclRequests();
     copyProperties(aclRequestsModel, aclRequestsDao);
+    aclRequestsDao.setAclType(aclRequestsModel.getAclType().value);
+    aclRequestsDao.setRequestOperationType(aclRequestsModel.getRequestOperationType().value);
     handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
 
     aclRequestsDao.setTenantId(tenantId);
@@ -159,7 +161,7 @@ public class AclControllerService {
       if (ApiResultStatus.SUCCESS.value.equals(execRes)) {
         mailService.sendMail(
             aclRequestsDao.getTopicname(),
-            aclRequestsDao.getTopictype(),
+            aclRequestsDao.getAclType(),
             "",
             userDetails,
             manageDatabase.getHandleDbRequests(),
@@ -193,7 +195,7 @@ public class AclControllerService {
   public List<AclRequestsModel> getAclRequests(
       String pageNo,
       String currentPage,
-      String requestsType,
+      String requestStatus,
       String topic,
       String env,
       AclType aclType,
@@ -204,7 +206,7 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<AclRequests> aclReqs =
         dbHandle.getAllAclRequests(
-            false, userName, "", requestsType, false, topic, env, aclType, isMyRequest, tenantId);
+            false, userName, "", requestStatus, false, topic, env, aclType, isMyRequest, tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -220,7 +222,7 @@ public class AclControllerService {
   }
 
   private AclRequestsModel setRequestorPermissions(AclRequestsModel req, String userName) {
-    if (RequestStatus.CREATED.value.equals(req.getAclstatus())
+    if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
         && userName.equals(req.getUsername())) {
       req.setDeletable(true);
@@ -242,6 +244,10 @@ public class AclControllerService {
       for (AclRequests aclRequests : aclReqs) {
         aclRequestsModel = new AclRequestsModel();
         copyProperties(aclRequests, aclRequestsModel);
+        aclRequestsModel.setRequestOperationType(
+            RequestOperationType.of(aclRequests.getRequestOperationType()));
+        aclRequestsModel.setAclType(AclType.of(aclRequests.getAclType()));
+        aclRequestsModel.setRequestStatus(RequestStatus.of(aclRequests.getRequestStatus()));
         if (aclRequests.getAcl_ip() != null) {
           String[] aclListIp = aclRequests.getAcl_ip().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ip(new ArrayList<>(Arrays.asList(aclListIp)));
@@ -257,11 +263,11 @@ public class AclControllerService {
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getRequestingteam()));
 
         // show approving info only before approvals
-        if (!RequestStatus.APPROVED.value.equals(aclRequestsModel.getAclstatus())) {
+        if (RequestStatus.APPROVED != aclRequestsModel.getRequestStatus()) {
           aclRequestsModel.setApprovingTeamDetails(
               updateApprovingInfo(
                   aclRequestsModel.getTopicname(),
-                  aclRequestsModel.getAclType(),
+                  aclRequestsModel.getRequestOperationType(),
                   aclRequestsModel.getRequestingteam(),
                   approverRoles,
                   aclRequestsModel.getUsername(),
@@ -275,7 +281,7 @@ public class AclControllerService {
 
   private String updateApprovingInfo(
       String topicName,
-      String aclType,
+      RequestOperationType requestOperationType,
       Integer team,
       List<String> approverRoles,
       String requester,
@@ -286,7 +292,7 @@ public class AclControllerService {
       Integer teamId =
           commonUtilsService.getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
 
-      if (RequestOperationType.DELETE.value.equals(aclType)) teamId = team;
+      if (RequestOperationType.DELETE == requestOperationType) teamId = team;
       List<UserInfo> userList =
           manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId);
 
@@ -380,11 +386,11 @@ public class AclControllerService {
   public List<AclRequestsModel> getAclRequestsForApprover(
       String pageNo,
       String currentPage,
-      String requestsType,
+      String requestStatus,
       String topic,
       String environment,
       AclType aclType) {
-    log.debug("getCreatedAclRequests {} {}", pageNo, requestsType);
+    log.debug("getCreatedAclRequests {} {}", pageNo, requestStatus);
     String userDetails = getCurrentUserName();
     List<AclRequests> createdAclReqs;
     int tenantId = commonUtilsService.getTenantId(userDetails);
@@ -396,13 +402,13 @@ public class AclControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getCreatedAclRequestsByStatus(
-                  userDetails, requestsType, false, topic, environment, aclType, tenantId);
+                  userDetails, requestStatus, false, topic, environment, aclType, tenantId);
     } else {
       createdAclReqs =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedAclRequestsByStatus(
-                  userDetails, requestsType, true, topic, environment, aclType, tenantId);
+                  userDetails, requestStatus, true, topic, environment, aclType, tenantId);
     }
 
     // tenant filtering
@@ -480,7 +486,7 @@ public class AclControllerService {
     aclRequestsDao.setAcl_ip(acl.getAclip());
     aclRequestsDao.setAcl_ssl(acl.getAclssl());
     aclRequestsDao.setUsername(userDetails);
-    aclRequestsDao.setAclType(RequestOperationType.DELETE.value);
+    aclRequestsDao.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequestsDao.setOtherParams(req_no);
     aclRequestsDao.setJsonParams(acl.getJsonParams());
     return executeAclRequestModel(userDetails, aclRequestsDao, ACL_DELETE_REQUESTED);
@@ -520,7 +526,7 @@ public class AclControllerService {
 
     mailService.sendMail(
         aclReq.getTopicname(),
-        aclReq.getTopictype(),
+        aclReq.getAclType(),
         "",
         aclReq.getUsername(),
         dbHandle,
@@ -540,7 +546,7 @@ public class AclControllerService {
           .build();
     }
 
-    if (!RequestStatus.CREATED.value.equals(aclReq.getAclstatus())) {
+    if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -623,7 +629,7 @@ public class AclControllerService {
       return ApiResponse.builder().result("Record not found !").build();
     }
 
-    if (!RequestStatus.CREATED.value.equals(aclReq.getAclstatus())) {
+    if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -636,7 +642,7 @@ public class AclControllerService {
       String updateAclReqStatus = dbHandle.declineAclRequest(aclReq, userDetails);
       mailService.sendMail(
           aclReq.getTopicname(),
-          aclReq.getTopictype(),
+          aclReq.getAclType(),
           reasonToDecline,
           aclReq.getUsername(),
           dbHandle,

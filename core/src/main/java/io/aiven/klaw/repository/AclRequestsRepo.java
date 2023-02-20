@@ -13,6 +13,8 @@ public interface AclRequestsRepo
     extends CrudRepository<AclRequests, AclRequestID>, QueryByExampleExecutor<AclRequests> {
   Optional<AclRequests> findById(AclRequestID aclRequestID);
 
+  List<AclRequests> findAllByTenantId(int tenantId);
+
   @Query(
       value =
           "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId and topicstatus='created'",
@@ -31,8 +33,6 @@ public interface AclRequestsRepo
       value = "select max(aclid) from kwaclrequests where tenantid = :tenantId",
       nativeQuery = true)
   Integer getNextAclRequestId(@Param("tenantId") Integer tenantId);
-
-  List<AclRequests> findAllByTenantId(int tenantId);
 
   // requests raised by my team
   @Query(

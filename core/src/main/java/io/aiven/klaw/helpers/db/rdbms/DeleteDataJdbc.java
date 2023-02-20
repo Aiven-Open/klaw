@@ -2,6 +2,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.util.List;
 import java.util.Optional;
@@ -89,7 +90,7 @@ public class DeleteDataJdbc {
     Optional<KafkaConnectorRequest> topicReq =
         kafkaConnectorRequestsRepo.findById(kafkaConnectorRequestID);
     if (topicReq.isPresent()) {
-      topicReq.get().setConnectorStatus("deleted");
+      topicReq.get().setRequestStatus(RequestStatus.DELETED.value);
       kafkaConnectorRequestsRepo.save(topicReq.get());
     }
     return ApiResultStatus.SUCCESS.value;
@@ -106,7 +107,7 @@ public class DeleteDataJdbc {
     // UserName is transient and is not set in the database but the requestor is. Both are set to
     // the userName when the request is created.
     if (topicReq.isPresent() && topicReq.get().getRequestor().equals(userName)) {
-      topicReq.get().setTopicstatus("deleted");
+      topicReq.get().setRequestStatus(RequestStatus.DELETED.value);
       topicRequestsRepo.save(topicReq.get());
       return ApiResultStatus.SUCCESS.value;
     }
@@ -141,7 +142,7 @@ public class DeleteDataJdbc {
     SchemaRequestID schemaRequestID = new SchemaRequestID(avroSchemaId, tenantId);
     Optional<SchemaRequest> schemaReq = schemaRequestRepo.findById(schemaRequestID);
     if (schemaReq.isPresent() && schemaReq.get().getUsername().equals(userName)) {
-      schemaReq.get().setTopicstatus("deleted");
+      schemaReq.get().setRequestStatus(RequestStatus.DELETED.value);
       schemaRequestRepo.save(schemaReq.get());
       return ApiResultStatus.SUCCESS.value;
     }
@@ -157,7 +158,7 @@ public class DeleteDataJdbc {
     aclRequestID.setTenantId(tenantId);
     Optional<AclRequests> optAclRequests = aclRequestsRepo.findById(aclRequestID);
     if (optAclRequests.isPresent() && optAclRequests.get().getUsername().equals(userName)) {
-      optAclRequests.get().setAclstatus("deleted");
+      optAclRequests.get().setRequestStatus(RequestStatus.DELETED.value);
       aclRequestsRepo.save(optAclRequests.get());
       return ApiResultStatus.SUCCESS.value;
     }
@@ -174,7 +175,6 @@ public class DeleteDataJdbc {
     Optional<Env> env = envRepo.findById(envID);
 
     if (env.isPresent()) {
-      //            env.get().setEnvExists("false");
       envRepo.delete(env.get());
       return ApiResultStatus.SUCCESS.value;
     } else {

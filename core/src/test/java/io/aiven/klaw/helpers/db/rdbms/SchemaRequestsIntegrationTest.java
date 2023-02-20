@@ -217,7 +217,7 @@ public class SchemaRequestsIntegrationTest {
             true, "James", 101, null, null, null, null, false);
 
     for (SchemaRequest req : results) {
-      assertThat(req.getTopicstatus()).isEqualTo(RequestStatus.CREATED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
@@ -233,7 +233,7 @@ public class SchemaRequestsIntegrationTest {
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus())
+      assertThat(req.getRequestStatus())
           .containsAnyOf(
               RequestStatus.CREATED.value,
               RequestStatus.APPROVED.value,
@@ -254,7 +254,7 @@ public class SchemaRequestsIntegrationTest {
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus()).containsAnyOf(RequestStatus.DECLINED.value);
+      assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.DECLINED.value);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
@@ -270,7 +270,7 @@ public class SchemaRequestsIntegrationTest {
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus()).containsAnyOf(RequestStatus.APPROVED.value);
+      assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.APPROVED.value);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
@@ -286,7 +286,7 @@ public class SchemaRequestsIntegrationTest {
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus()).containsAnyOf(RequestStatus.DECLINED.value);
+      assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.DECLINED.value);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
@@ -302,7 +302,7 @@ public class SchemaRequestsIntegrationTest {
 
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus()).containsAnyOf(RequestStatus.APPROVED.value);
+      assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.APPROVED.value);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
@@ -352,7 +352,7 @@ public class SchemaRequestsIntegrationTest {
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus())
+      assertThat(req.getRequestStatus())
           .containsAnyOf(
               RequestStatus.CREATED.value,
               RequestStatus.APPROVED.value,
@@ -373,7 +373,7 @@ public class SchemaRequestsIntegrationTest {
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus())
+      assertThat(req.getRequestStatus())
           .containsAnyOf(
               RequestStatus.CREATED.value,
               RequestStatus.APPROVED.value,
@@ -410,7 +410,7 @@ public class SchemaRequestsIntegrationTest {
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
       // All Statuses allowed
-      assertThat(req.getTopicstatus())
+      assertThat(req.getRequestStatus())
           .containsAnyOf(
               RequestStatus.CREATED.value,
               RequestStatus.APPROVED.value,
@@ -536,8 +536,8 @@ public class SchemaRequestsIntegrationTest {
       schemaRequest.setTeamId(teamId);
       schemaRequest.setTopicname(topicName + "" + i);
       schemaRequest.setEnvironment(env);
-      schemaRequest.setTopicstatus(requestStatus.value);
-      schemaRequest.setRequesttype(requestOperationType.value);
+      schemaRequest.setRequestStatus(requestStatus.value);
+      schemaRequest.setRequestOperationType(requestOperationType.value);
       schemaRequest.setReq_no(topicIdentifier + i);
       schemaRequest.setSchemafull("{schema}");
       schemaRequest.setForceRegister(false);

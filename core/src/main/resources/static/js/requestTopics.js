@@ -266,15 +266,15 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             serviceInput['description'] = $scope.addTopic.description;
             serviceInput['advancedTopicConfigEntries'] = advancedTopicConfigEntries;
             if($scope.requestType === 'CreateTopic'){
-                serviceInput['topictype'] = 'Create';
+                serviceInput['requestOperationType'] = 'CREATE';
                 $scope.httpCreateTopicReq(serviceInput);
             }
            else if($scope.requestType === 'PromoteTopic'){
-                serviceInput['topictype'] = 'Promote';
+                serviceInput['requestOperationType'] = 'PROMOTE';
                 $scope.httpCreateTopicReq(serviceInput);
             }
             else{
-                serviceInput['topictype'] = 'Update';
+                serviceInput['requestOperationType'] = 'UPDATE';
                 serviceInput['otherParams'] = $scope.topicIdForEdit;
 
                 if($scope.addTopic.topicpartitions < $scope.oldtopicpartitions) {
@@ -319,7 +319,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                                  text: "Topic Request : "+output.result,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
-                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&topicCreated=true";
+                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&topicCreated=true";
                              });
                     }
                     else{
@@ -347,7 +347,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                                          text: "Topic Request : "+output.result,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
-                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&topicCreated=true";
+                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&topicCreated=true";
                                      });
                             }
                             else{

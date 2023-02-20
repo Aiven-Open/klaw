@@ -192,8 +192,8 @@ public class ConnectorRequestsIntegrationTest {
       connectorRequest.setConnectorName(topicName);
       connectorRequest.setTeamId(teamId);
       connectorRequest.setEnvironment(env);
-      connectorRequest.setConnectorStatus(requestStatus.value);
-      connectorRequest.setConnectortype(requestOperationType.value);
+      connectorRequest.setRequestStatus(requestStatus.value);
+      connectorRequest.setRequestOperationType(requestOperationType.value);
       connectorRequest.setConnectorId(topicIdentifier + i);
       connectorRequest.setConnectorConfig("{config}");
 

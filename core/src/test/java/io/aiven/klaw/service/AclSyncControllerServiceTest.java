@@ -232,7 +232,7 @@ public class AclSyncControllerServiceTest {
     aclReq.setAclip("2.1.2.1");
     aclReq.setAclssl(null);
     aclReq.setConsumergroup("mygrp1");
-    aclReq.setTopictype(AclType.CONSUMER.value);
+    aclReq.setAclType(AclType.CONSUMER.value);
 
     aclList.add(aclReq);
 

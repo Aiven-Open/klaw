@@ -1,5 +1,7 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
@@ -24,12 +26,15 @@ public class KafkaConnectorRequestModel implements Serializable {
 
   @NotNull private String teamName;
 
-  @Pattern(message = "Invalid remarks", regexp = "^$|^[a-zA-Z 0-9_.,-]{3,}$")
   private String remarks;
 
   @NotNull
   @Pattern(message = "Invalid description", regexp = "^[a-zA-Z 0-9_.,-]{3,}$")
   private String description;
+
+  private RequestStatus requestStatus;
+
+  private RequestOperationType requestOperationType;
 
   private String environmentName;
 
@@ -37,15 +42,11 @@ public class KafkaConnectorRequestModel implements Serializable {
 
   private Integer connectorId;
 
-  private String connectortype;
-
   private String requestor;
 
   private Timestamp requesttime;
 
   private String requesttimestring;
-
-  private String connectorStatus;
 
   private String approver;
 

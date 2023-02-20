@@ -135,7 +135,7 @@ public interface HandleDbRequests {
       boolean allReqs,
       String requestor,
       String role,
-      String status,
+      String requestStatus,
       boolean showRequestsOfAllTeams,
       String topic,
       String environment,

@@ -158,7 +158,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                $scope.overwriteReqsType = false;
 
             if(!$scope.requestsType)
-                $scope.requestsType = "created";
+                $scope.requestsType = "CREATED";
 
             $http({
                 method: "GET",
@@ -166,7 +166,7 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,
-                 'requestsType': $scope.requestsType }
+                 'requestStatus': $scope.requestsType }
             }).success(function(output) {
                 $scope.aclRequests = output;
                 if(output!=null && output.length>0){

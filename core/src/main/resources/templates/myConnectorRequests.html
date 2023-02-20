@@ -445,7 +445,7 @@
 				<td align="right" width="20%">
 					<div class="form-group has-success">
 						<label class="text-success">Filter on Status</label>
-						<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestTypeConnectors(requestTypeSelected);"
+						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestTypeConnectors(requestTypeSelected);"
 								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
 						</select>
@@ -476,7 +476,7 @@
 											<td align="left">
 												<h3 class="card-title">Connector : {{ topicRequest.connectorName }}</h3>
 											</td>
-											<td ng-show="topicRequest.connectorStatus == 'created'" align="right">
+											<td ng-show="topicRequest.requestStatus == 'CREATED'" align="right">
 												<button type="button" ng-click="deleteConnectorRequest(topicRequest.connectorId);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
 												</button></td>
 										</tr>
@@ -485,7 +485,7 @@
 								<hr size="1" color="black">
 								<div class="d-flex flex-row">
 
-									<div class="p-2 border-right" style="width:12%" ng-show="topicRequest.connectortype != 'Claim'">
+									<div class="p-2 border-right" style="width:12%" ng-show="topicRequest.requestOperationType != 'CLAIM'">
 										<h6 class="text-primary">Environment</h6><b>
 										<span class="badge badge-warning">{{ topicRequest.environmentName }}</span>
 									</b>
@@ -500,30 +500,30 @@
 										<h6 class="text-primary">Team</h6><b>{{ topicRequest.teamName }}</b>
 									</div>
 
-									<div ng-show="topicRequest.connectorStatus == 'created'" class="p-2 border-right" style="width:10%">
+									<div ng-show="topicRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
 										<h6 class="text-primary">Status</h6><b>
-										<span class="badge badge-success">{{ topicRequest.connectorStatus }}</span></b>
+										<span class="badge badge-success">{{ topicRequest.requestStatus }}</span></b>
 									</div>
-									<div ng-show="topicRequest.connectorStatus != 'created'" class="p-2 border-right" style="width:10%">
+									<div ng-show="topicRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
 										<h6 class="text-primary">Status</h6><b>
-										<span class="badge badge-info">{{ topicRequest.connectorStatus }}</span></b>
+										<span class="badge badge-info">{{ topicRequest.requestStatus }}</span></b>
 									</div>
 
-									<div ng-show="topicRequest.connectortype == 'Create'" class="p-2 border-right" style="width:12%">
+									<div ng-show="topicRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:12%">
 										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-info">{{ topicRequest.connectortype }} Connector</span></b>
+										<span class="badge badge-info">{{ topicRequest.requestOperationType }} Connector</span></b>
 									</div>
-									<div ng-show="topicRequest.connectortype == 'Update'" class="p-2 border-right" style="width:20%">
+									<div ng-show="topicRequest.requestOperationType == 'UPDATE'" class="p-2 border-right" style="width:20%">
 										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-primary">{{ topicRequest.connectortype }} Connector</span></b>
+										<span class="badge badge-primary">{{ topicRequest.requestOperationType }} Connector</span></b>
 									</div>
-									<div ng-show="topicRequest.connectortype == 'Delete'" class="p-2 border-right" style="width:20%">
+									<div ng-show="topicRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:20%">
 										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-danger">{{ topicRequest.connectortype }} Connector</span></b>
+										<span class="badge badge-danger">{{ topicRequest.requestOperationType }} Connector</span></b>
 									</div>
-									<div ng-show="topicRequest.connectortype == 'Claim'" class="p-2 border-right" style="width:20%">
+									<div ng-show="topicRequest.requestOperationType == 'CLAIM'" class="p-2 border-right" style="width:20%">
 										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-secondary">{{ topicRequest.connectortype }} Connector</span></b>
+										<span class="badge badge-secondary">{{ topicRequest.requestOperationType }} Connector</span></b>
 									</div>
 
 									<div class="p-2" style="width:15%">
@@ -541,11 +541,11 @@
 										<h6 class="text-primary">Remarks</h6><b>
 										{{ topicRequest.remarks }}</b>
 									</div>
-									<div class="p-2 border-left" style="width:10%" ng-show="topicRequest.connectorStatus == 'approved'">
+									<div class="p-2 border-left" style="width:10%" ng-show="topicRequest.requestStatus == 'APPROVED'">
 										<h6 class="text-primary">Approver</h6><b>
 										<span class="badge badge-info">{{ topicRequest.approver }}</span></b>
 									</div>
-									<div ng-show="topicRequest.connectorStatus != 'approved'" class="p-2 border-left" style="width:10%;align:center;">
+									<div ng-show="topicRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
 										<h6 class="text-primary">Approving Info</h6>
 										<a class="mytooltip" href="javascript:void(0)">
 											<i class="fas fa-users"></i>

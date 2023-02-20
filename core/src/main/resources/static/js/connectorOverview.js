@@ -194,7 +194,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                          text: "Connector Delete Request : "+output.result,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
-                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=created&deleteConnectorCreated=true";
+                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&deleteConnectorCreated=true";
                                         });
                                 }
                                 else{
@@ -245,7 +245,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                              text: "Connector Claim Request : "+output.result,
                                              showConfirmButton: true
                                          }).then(function(isConfirm){
-                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=created&claimConnectorCreated=true";
+                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&claimConnectorCreated=true";
                                              });
                                     }
                                     else{
@@ -311,7 +311,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                              text: "Connector Promotion Request : "+output.result,
                                              showConfirmButton: true
                                          }).then(function(isConfirm){
-                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=created&connectorPromotionCreated=true";
+                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&connectorPromotionCreated=true";
                                           });
                                     }
                                     else{

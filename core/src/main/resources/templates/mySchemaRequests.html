@@ -444,7 +444,7 @@
 				<td align="right" width="20%">
 					<div class="form-group has-success">
 						<label class="text-success">Filter on Status</label>
-						<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestTypeSchema(requestTypeSelected);"
+						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestTypeSchema(requestTypeSelected);"
 								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
 						</select>
@@ -499,37 +499,37 @@
 										<div class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Team</h6><b>{{ schemaRequest.teamname }}</b>
 										</div>
-										<div ng-show="schemaRequest.topicstatus == 'created'" class="p-2 border-right" style="width:10%">
+										<div ng-show="schemaRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-success">{{ schemaRequest.topicstatus }}</span></b>
+											<span class="badge badge-success">{{ schemaRequest.requestStatus }}</span></b>
 										</div>
-										<div ng-show="schemaRequest.topicstatus != 'created'" class="p-2 border-right" style="width:10%">
+										<div ng-show="schemaRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.topicstatus }}</span></b>
+											<span class="badge badge-info">{{ schemaRequest.requestStatus }}</span></b>
 										</div>
 
-										<div ng-show="schemaRequest.requesttype == 'Create'" class="p-2 border-right" style="width:12%">
+										<div ng-show="schemaRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.requesttype }} Schema</span></b>
+											<span class="badge badge-info">{{ schemaRequest.requestOperationType }} Schema</span></b>
 										</div>
-										<div ng-show="schemaRequest.requesttype == 'Update'" class="p-2 border-right" style="width:12%">
+										<div ng-show="schemaRequest.requestOperationType == 'UPDATE'" class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-primary">{{ schemaRequest.requesttype }} Schema</span></b>
+											<span class="badge badge-primary">{{ schemaRequest.requestOperationType }} Schema</span></b>
 										</div>
-										<div ng-show="schemaRequest.requesttype == 'Delete'" class="p-2 border-right" style="width:12%">
+										<div ng-show="schemaRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-danger">{{ schemaRequest.requesttype }} Schema</span></b>
+											<span class="badge badge-danger">{{ schemaRequest.requestOperationType }} Schema</span></b>
 										</div>
 
 										<div class="p-2" style="width:15%">
 											<h6 class="text-primary">Date Requested</h6><b>{{ schemaRequest.requesttimestring }}</b>
 										</div>
 
-										<div class="p-2 border-left" ng-show="schemaRequest.topicstatus == 'approved'" style="width:10%">
+										<div class="p-2 border-left" ng-show="schemaRequest.requestStatus == 'APPROVED'" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>
 											<span class="badge badge-info">{{ schemaRequest.approver }}</span></b>
 										</div>
-										<div ng-show="schemaRequest.topicstatus != 'approved'" class="p-2 border-left" style="width:10%;align:center;">
+										<div ng-show="schemaRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
 											<h6 class="text-primary">Approving Info</h6>
 											<a class="mytooltip" href="javascript:void(0)">
 												<i class="fas fa-users"></i>

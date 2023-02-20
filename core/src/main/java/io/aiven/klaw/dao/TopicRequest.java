@@ -50,7 +50,7 @@ public class TopicRequest implements Serializable {
   private String appname;
 
   @Column(name = "topictype")
-  private String topictype;
+  private String requestOperationType;
 
   @Column(name = "requestor")
   private String requestor;
@@ -61,7 +61,7 @@ public class TopicRequest implements Serializable {
   @Transient private String requesttimestring;
 
   @Column(name = "topicstatus")
-  private String topicstatus;
+  private String requestStatus;
 
   @Column(name = "remarks")
   private String remarks;

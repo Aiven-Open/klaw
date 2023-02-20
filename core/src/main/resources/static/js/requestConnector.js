@@ -172,11 +172,11 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
             serviceInput['remarks'] = $scope.addConnector.remarks;
             serviceInput['description'] = $scope.addConnector.description;
 
-            if($scope.requestType == 'CreateConnector'){
-                serviceInput['connectortype'] = 'Create';
+            if($scope.requestType === 'CreateConnector'){
+                serviceInput['requestOperationType'] = 'CREATE';
             }
             else{
-                serviceInput['connectortype'] = 'Update';
+                serviceInput['requestOperationType'] = 'UPDATE';
                 serviceInput['otherParams'] = $scope.connectorIdForEdit;
             }
 
@@ -197,7 +197,7 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                                  text: "Connector Request : "+output.result,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
-                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=created&connectorCreated=true";
+                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&connectorCreated=true";
                              });
                     }
                     else{

@@ -53,20 +53,20 @@ public class SchemaRegstryControllerService {
   public List<SchemaRequestModel> getSchemaRequests(
       String pageNo,
       String currentPage,
-      String requestsType,
+      String requestStatus,
       boolean isApproval,
       String topic,
       String env,
       String search,
       boolean isMyRequest) {
-    log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestsType);
+    log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestStatus);
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
             .getAllSchemaRequests(
-                isApproval, userName, tenantId, topic, env, requestsType, search, isMyRequest);
+                isApproval, userName, tenantId, topic, env, requestStatus, search, isMyRequest);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -95,9 +95,12 @@ public class SchemaRegstryControllerService {
                 .selectEnvDetails(schemaReq.getEnvironment(), tenantId)
                 .getName());
         copyProperties(schemaReq, schemaRequestModel);
+        schemaRequestModel.setRequestStatus(RequestStatus.of(schemaReq.getRequestStatus()));
+        schemaRequestModel.setRequestOperationType(
+            RequestOperationType.of(schemaReq.getRequestOperationType()));
 
         // show approving info only before approvals
-        if (!RequestStatus.APPROVED.value.equals(schemaRequestModel.getTopicstatus())) {
+        if (RequestStatus.APPROVED != schemaRequestModel.getRequestStatus()) {
           schemaRequestModel.setApprovingTeamDetails(
               updateApproverInfo(
                   userList,
@@ -128,7 +131,7 @@ public class SchemaRegstryControllerService {
 
   private SchemaRequestModel setRequestorPermissions(SchemaRequestModel req, String userName) {
 
-    if (RequestStatus.CREATED.value.equals(req.getTopicstatus())
+    if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
         && userName.equals(req.getUsername())) {
       req.setDeletable(true);
@@ -422,7 +425,7 @@ public class SchemaRegstryControllerService {
           schemaReqs.stream()
               .filter(
                   schemaRequest1 ->
-                      "created".equals(schemaRequest1.getTopicstatus())
+                      "created".equals(schemaRequest1.getRequestStatus())
                           && Objects.equals(
                               schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
@@ -436,7 +439,7 @@ public class SchemaRegstryControllerService {
     schemaRequest.setUsername(userDetails);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
-    schemaRequestDao.setRequesttype(RequestOperationType.CREATE.value);
+    schemaRequestDao.setRequestOperationType(RequestOperationType.CREATE.value);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     schemaRequestDao.setTenantId(tenantId);
     try {

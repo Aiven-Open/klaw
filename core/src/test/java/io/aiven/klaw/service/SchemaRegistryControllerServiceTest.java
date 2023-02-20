@@ -27,6 +27,7 @@ import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -534,7 +535,7 @@ public class SchemaRegistryControllerServiceTest {
     SchemaRequest schReq = new SchemaRequest();
     schReq.setSchemafull("<Schema>");
     schReq.setEnvironment("1");
-    schReq.setTopicstatus("created");
+    schReq.setRequestStatus(RequestStatus.CREATED.value);
     schReq.setTeamId(101);
     schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
     schList.add(schReq);
@@ -542,7 +543,7 @@ public class SchemaRegistryControllerServiceTest {
     schReq = new SchemaRequest();
     schReq.setSchemafull("<Schema1>");
     schReq.setEnvironment("1");
-    schReq.setTopicstatus("created");
+    schReq.setRequestStatus(RequestStatus.CREATED.value);
     schReq.setTeamId(102);
     schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
     schList.add(schReq);

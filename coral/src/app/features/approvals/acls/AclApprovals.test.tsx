@@ -101,10 +101,7 @@ describe("AclApprovals", () => {
   });
 
   describe("shows loading or error state for fetching acls requests", () => {
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
+    afterEach(cleanup);
 
     it("shows a skeleton table while loading", () => {
       mockGetAclRequestsForApprover.mockResolvedValue(

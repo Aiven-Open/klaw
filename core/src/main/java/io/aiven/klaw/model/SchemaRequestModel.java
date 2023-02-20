@@ -1,7 +1,8 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -14,6 +15,12 @@ import lombok.Setter;
 public class SchemaRequestModel implements Serializable {
 
   private Integer req_no;
+
+  @NotNull
+  @Size(min = 8, message = "Please fill in a valid schema.")
+  private String schemafull;
+
+  private String remarks;
 
   private String topicname;
 
@@ -29,24 +36,17 @@ public class SchemaRequestModel implements Serializable {
 
   private String appname;
 
-  @NotNull
-  @Size(min = 8, message = "Please fill in a valid schema.")
-  private String schemafull;
-
   private String username;
 
   private Timestamp requesttime;
 
   private String requesttimestring;
 
-  private String topicstatus;
+  private RequestStatus requestStatus;
 
-  private String requesttype;
+  private RequestOperationType requestOperationType;
 
   private boolean forceRegister;
-
-  @Pattern(message = "Invalid remarks", regexp = "^$|^[a-zA-Z 0-9_.-]{3,}$")
-  private String remarks;
 
   private String approver;
 
