@@ -32,8 +32,8 @@
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
-        <springdoc-openapi-ui.version>1.6.14</springdoc-openapi-ui.version>
-        <swagger-maven-plugin.version>3.1.8</swagger-maven-plugin.version>
+        <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
+        <springdoc-openapi-ui.version>2.0.2</springdoc-openapi-ui.version>
     </properties>
 
     <dependencies>
@@ -132,7 +132,12 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
         </dependency>
         <dependency>
@@ -245,39 +250,44 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>com.github.kongchen</groupId>
-                <artifactId>swagger-maven-plugin</artifactId>
-                <version>${swagger-maven-plugin.version}</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <apiSources>
-                        <apiSource>
-                            <springmvc>true</springmvc>
-                            <locations>
-                                <location>io.aiven.klaw.controller</location>
-                            </locations>
-                            <basePath>/</basePath>
-                            <info>
-                                <title>Klaw Core</title>
-                                <version>${project.parent.version}</version>
-                                <contact>
-                                    <email>info@klaw-project.io</email>
-                                </contact>
-                            </info>
-                            <outputFormats>json</outputFormats>
-                            <swaggerFileName>swagger_spec</swaggerFileName>
-                            <swaggerDirectory>${project.basedir}/src/main/resources</swaggerDirectory>
-                        </apiSource>
-                    </apiSources>
+                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                <version>${springdoc-openapi-maven-plugin.version}</version>
+                <configuration>
+                    <apiDocsUrl>http://localhost:9097/v3/api-docs</apiDocsUrl>
+                    <outputFileName>openapi.yaml</outputFileName>
+                    <outputDir>${project.basedir}/src/main/resources</outputDir>
+                    <skip>false</skip>
+                    <headers>
+                        <header1key>header1value</header1key>
+                        <header2key>header2value</header2key>
+                    </headers>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 
