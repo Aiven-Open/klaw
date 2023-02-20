@@ -146,7 +146,9 @@ describe("<TopicConsumerForm />", () => {
     });
 
     it("renders Submit and Cancel buttons", () => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit request",
+      });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
@@ -260,7 +262,9 @@ describe("<TopicConsumerForm />", () => {
     });
 
     it("renders Submit and Cancel buttons", () => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit request",
+      });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
@@ -374,7 +378,9 @@ describe("<TopicConsumerForm />", () => {
     });
 
     it("renders Submit and Cancel buttons", () => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit request",
+      });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();

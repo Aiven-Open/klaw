@@ -42,7 +42,7 @@ function BrowseTopics() {
           display={"flex"}
           justifyContent={"end"}
           colGap={"l1"}
-          maxWidth={"6xl"}
+          maxWidth={"7xl"}
         >
           <SearchTopics onChange={searchTopics} value={searchTerm} />
         </Box>
@@ -50,7 +50,7 @@ function BrowseTopics() {
           display={"flex"}
           flexDirection={"row"}
           colGap={"l1"}
-          maxWidth={"6xl"}
+          maxWidth={"7xl"}
         >
           <Box grow={1}>
             <SelectTeam onChange={setTeamName} />

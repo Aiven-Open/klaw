@@ -15,7 +15,7 @@ import {
 
 const SkeletonForm = () => {
   return (
-    <Box data-testid={"skeleton"} maxWidth={"4xl"}>
+    <Box data-testid={"skeleton"} maxWidth={"7xl"}>
       <Grid cols="2" minWidth={"fit"} colGap={"9"}>
         <GridItem>
           <Flexbox gap={"4"}>

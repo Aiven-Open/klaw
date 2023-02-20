@@ -1,6 +1,13 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FieldErrorsImpl, SubmitHandler } from "react-hook-form";
-import { Alert, Box, Divider, Flexbox, FlexboxItem } from "@aivenio/aquarium";
+import {
+  Alert,
+  Box,
+  Button,
+  Divider,
+  Flexbox,
+  FlexboxItem,
+} from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
@@ -21,8 +28,14 @@ import AdvancedConfiguration from "src/app/features/topics/request/components/Ad
 import { requestTopic } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
+import { Dialog } from "src/app/components/Dialog";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function TopicRequest() {
+  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
+  const navigate = useNavigate();
+
   const { data: environments } = useQuery<Environment[], Error>(
     ["environments-for-team"],
     getEnvironmentsForTeam
@@ -59,91 +72,132 @@ function TopicRequest() {
     isInitialized: defaultValues !== undefined,
   });
 
+  function cancelRequest() {
+    form.reset();
+    navigate(-1);
+  }
+
   return (
-    <Box style={{ maxWidth: 1200 }}>
-      {isError && (
-        <Box marginBottom={"l1"} role="alert">
-          <Alert type="warning">{parseErrorMsg(error)}</Alert>
-        </Box>
-      )}
-      <Form {...form} onSubmit={onSubmit} onError={onError}>
-        <Box width={"full"}>
-          {Array.isArray(environments) ? (
-            <ComplexNativeSelect<Schema, Environment>
-              name="environment"
-              labelText={"Environment"}
-              placeholder={"-- Please select --"}
-              options={environments}
-              identifierValue={"id"}
-              identifierName={"name"}
+    <>
+      <Box maxWidth={"7xl"}>
+        {isError && (
+          <Box marginBottom={"l1"} role="alert">
+            <Alert type="warning">{parseErrorMsg(error)}</Alert>
+          </Box>
+        )}
+        <Form
+          {...form}
+          ariaLabel={"Request a new topic"}
+          onSubmit={onSubmit}
+          onError={onError}
+        >
+          <Box width={"full"}>
+            {Array.isArray(environments) ? (
+              <ComplexNativeSelect<Schema, Environment>
+                name="environment"
+                labelText={"Environment"}
+                placeholder={"-- Please select --"}
+                options={environments}
+                identifierValue={"id"}
+                identifierName={"name"}
+              />
+            ) : (
+              <NativeSelect.Skeleton></NativeSelect.Skeleton>
+            )}
+          </Box>
+          <Box>
+            <Box paddingY={"l1"}>
+              <Divider />
+            </Box>
+            <TextInput<Schema>
+              name={"topicname"}
+              labelText="Topic name"
+              placeholder="e.g. my-topic"
+              required={true}
             />
-          ) : (
-            <NativeSelect.Skeleton></NativeSelect.Skeleton>
-          )}
-        </Box>
-        <Box>
-          <Box paddingY={"l1"}>
-            <Divider />
-          </Box>
-          <TextInput<Schema>
-            name={"topicname"}
-            labelText="Topic name"
-            placeholder="e.g. my-topic"
-            required={true}
-          />
-          <Box component={Flexbox} gap={"l1"}>
-            <Box component={FlexboxItem} grow={1} width={"1/2"}>
-              <SelectOrNumberInput
-                name={"topicpartitions"}
-                label={"Topic partitions"}
-                max={selectedEnvironment?.maxPartitions}
-                required={true}
-              />
-            </Box>
-            <Box component={FlexboxItem} grow={1} width={"1/2"}>
-              <SelectOrNumberInput
-                name={"replicationfactor"}
-                label={"Replication factor"}
-                max={selectedEnvironment?.maxReplicationFactor}
-                required={true}
-              />
+            <Box component={Flexbox} gap={"l1"}>
+              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+                <SelectOrNumberInput
+                  name={"topicpartitions"}
+                  label={"Topic partitions"}
+                  max={selectedEnvironment?.maxPartitions}
+                  required={true}
+                />
+              </Box>
+              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+                <SelectOrNumberInput
+                  name={"replicationfactor"}
+                  label={"Replication factor"}
+                  max={selectedEnvironment?.maxReplicationFactor}
+                  required={true}
+                />
+              </Box>
             </Box>
           </Box>
-        </Box>
-        <Box>
-          <Box paddingY={"l1"}>
-            <Divider />
+          <Box>
+            <Box paddingY={"l1"}>
+              <Divider />
+            </Box>
+            <AdvancedConfiguration name={"advancedConfiguration"} />
           </Box>
-          <AdvancedConfiguration name={"advancedConfiguration"} />
-        </Box>
 
-        <Box>
-          <Box paddingY={"l1"}>
-            <Divider />
-          </Box>
-          <Box component={Flexbox} gap={"l1"}>
-            <Box component={FlexboxItem} grow={1} width={"1/2"}>
-              <Textarea<Schema>
-                name="description"
-                labelText="Description"
-                rows={5}
-                required={true}
-              />
+          <Box>
+            <Box paddingY={"l1"}>
+              <Divider />
             </Box>
-            <Box component={FlexboxItem} grow={1} width={"1/2"}>
-              {" "}
-              <Textarea<Schema>
-                name="remarks"
-                labelText="Message for approval"
-                rows={5}
-              />
+            <Box component={Flexbox} gap={"l1"}>
+              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+                <Textarea<Schema>
+                  name="description"
+                  labelText="Description"
+                  rows={5}
+                  required={true}
+                />
+              </Box>
+              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+                {" "}
+                <Textarea<Schema>
+                  name="remarks"
+                  labelText="Message for approval"
+                  rows={5}
+                />
+              </Box>
             </Box>
           </Box>
-        </Box>
 
-        <SubmitButton loading={isLoading}>Request topic</SubmitButton>
-      </Form>
-    </Box>
+          <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
+            <SubmitButton loading={isLoading}>Submit request</SubmitButton>
+            <Button
+              type="button"
+              kind={"secondary"}
+              onClick={
+                form.formState.isDirty
+                  ? () => setCancelDialogVisible(true)
+                  : () => cancelRequest()
+              }
+            >
+              Cancel
+            </Button>
+          </Box>
+        </Form>
+      </Box>
+      {cancelDialogVisible && (
+        <Dialog
+          title={"Cancel topic request?"}
+          primaryAction={{
+            text: "Cancel request",
+            onClick: () => cancelRequest(),
+          }}
+          secondaryAction={{
+            text: "Continue with request",
+            onClick: () => setCancelDialogVisible(false),
+          }}
+          type={"warning"}
+        >
+          Do you want to cancel this request? The data added will be lost.
+        </Dialog>
+      )}
+    </>
   );
 
   function onError(err: Partial<FieldErrorsImpl<Schema>>) {

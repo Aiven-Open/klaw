@@ -6,7 +6,7 @@ import error from "@aivenio/aquarium/dist/src/icons/error";
 
 describe("Dialog.tsx", () => {
   const testTitle = "Dialog title";
-  const mockChildren = <div>This is child content</div>;
+  const textContent = "This is the content given!";
   const mockPrimary = {
     text: "Primary action 1",
     onClick: jest.fn(),
@@ -29,7 +29,7 @@ describe("Dialog.tsx", () => {
             primaryAction={mockPrimary}
             secondaryAction={mockSecondary}
           >
-            {mockChildren}
+            {textContent}
           </Dialog>
         </>
       );
@@ -51,7 +51,7 @@ describe("Dialog.tsx", () => {
     });
 
     it("shows the given content", () => {
-      const text = screen.getByText("This is child content");
+      const text = screen.getByText(textContent);
 
       expect(text).toBeVisible();
     });
@@ -90,7 +90,7 @@ describe("Dialog.tsx", () => {
             primaryAction={mockPrimary}
             secondaryAction={mockSecondary}
           >
-            {mockChildren}
+            {textContent}
           </Dialog>
         </>
       );
@@ -112,7 +112,7 @@ describe("Dialog.tsx", () => {
             primaryAction={mockPrimary}
             secondaryAction={mockSecondary}
           >
-            {mockChildren}
+            {textContent}
           </Dialog>
         </>
       );
@@ -134,7 +134,7 @@ describe("Dialog.tsx", () => {
             primaryAction={mockPrimary}
             secondaryAction={mockSecondary}
           >
-            {mockChildren}
+            {textContent}
           </Dialog>
         </>
       );
