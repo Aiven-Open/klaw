@@ -292,8 +292,7 @@ paths:
           in: query
           required: false
           schema:
-            type: string
-            enum: ["all", "created", "approved", "denied", "deleted"]
+            $ref: "#/components/schemas/RequestStatus"
           example: "created"
         - name: topic
           in: query
@@ -1230,6 +1229,7 @@ components:
           example: "10-11-2020 10:45:30"
         aclstatus:
           $ref: "#/components/schemas/RequestStatus"
+          example: "created"
         approver:
           type: string
         approvingtime:

@@ -5,8 +5,6 @@ import {
   Flexbox,
   GhostButton,
   Icon,
-  NativeSelect,
-  SearchInput,
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
@@ -18,6 +16,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
+import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
@@ -87,12 +86,38 @@ function AclApprovals() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
+  const { environment, status, aclType, topic, filters } = useTableFilters();
+
+  const handleChangePage = (activePage: number) => {
+    setActivePage(activePage);
+    searchParams.set("page", activePage.toString());
+    setSearchParams(searchParams);
+  };
+
   const { data, isLoading, isError, error } = useQuery<
     AclRequestsForApprover,
     Error
   >({
-    queryKey: ["aclRequests", activePage],
-    queryFn: () => getAclRequestsForApprover({ pageNo: String(activePage) }),
+    queryKey: ["aclRequests", activePage, environment, status, aclType, topic],
+    queryFn: () =>
+      getAclRequestsForApprover({
+        pageNo: String(activePage),
+        env: environment,
+        requestsType: status,
+        aclType,
+        topic,
+      }),
+    onSuccess: (data) => {
+      // If through filtering a user finds themselves on a non existent page, reset page to 1
+      // For example:
+      // - one request returns 4 pages of results
+      // - navigate to page 4
+      // - change filters, to a request that returns 1 page of results
+      // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
+      if (data.entries.length === 0 && activePage !== 1) {
+        handleChangePage(1);
+      }
+    },
     keepPreviousData: true,
   });
 
@@ -113,10 +138,10 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return setActivePage(activePage - 1);
+        return handleChangePage(activePage - 1);
       }
 
-      // We need to invalidate the query populating the table to reflect the change
+      // We need to refetch all aclrequests queries to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
@@ -141,10 +166,10 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return setActivePage(activePage - 1);
+        return handleChangePage(activePage - 1);
       }
 
-      // We need to invalidate the query populating the table to reflect the change
+      // We need to refetch all aclrequests queries to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
@@ -305,50 +330,6 @@ function AclApprovals() {
         );
       },
     },
-  ];
-
-  const handleChangePage = (activePage: number) => {
-    setActivePage(activePage);
-    searchParams.set("page", activePage.toString());
-    setSearchParams(searchParams);
-  };
-
-  const filters = [
-    <NativeSelect labelText={"Filter by Topic"} key={"filter-topic"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <NativeSelect
-      labelText={"Filter by Environment"}
-      key={"filter-environment"}
-    >
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <NativeSelect labelText={"Filter by status"} key={"filter-status"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <NativeSelect labelText={"Filter by ACL type"} key={"filter-acl-type"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <div key={"search"}>
-      <SearchInput
-        type={"search"}
-        aria-describedby={"search-field-description"}
-        role="search"
-        placeholder={"Search for..."}
-      />
-      <div id={"search-field-description"} className={"visually-hidden"}>
-        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
-        to delete all your input.
-      </div>
-    </div>,
   ];
 
   const pagination =

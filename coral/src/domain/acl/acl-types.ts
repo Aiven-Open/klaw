@@ -43,8 +43,11 @@ type CreateAclRequestTopicTypeConsumer = ResolveIntersectionTypes<
   }
 >;
 
-type GetCreatedAclRequestParameters =
-  KlawApiRequestQueryParameters<"getAclRequestsForApprover">;
+type GetCreatedAclRequestParameters = ResolveIntersectionTypes<
+  Omit<KlawApiRequestQueryParameters<"getAclRequestsForApprover">, "aclType">
+> & {
+  aclType?: "ALL" | "PRODUCER" | "CONSUMER";
+};
 
 type AclRequest = KlawApiModel<"aclRequest">;
 
