@@ -84,11 +84,12 @@ const useTableFilters = () => {
           if (parsedName === "") {
             searchParams.delete("topic");
             setTopic(parsedName);
-            return setSearchParams(searchParams);
+            setSearchParams(searchParams);
+          } else {
+            searchParams.set("topic", parsedName);
+            setSearchParams(searchParams);
+            setTopic(parsedName);
           }
-          searchParams.set("topic", parsedName);
-          setSearchParams(searchParams);
-          setTopic(parsedName);
         }, 500)}
       />
       <div id={"search-field-description"} className={"visually-hidden"}>
