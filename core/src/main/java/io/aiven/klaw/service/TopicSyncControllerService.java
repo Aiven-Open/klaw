@@ -136,7 +136,6 @@ public class TopicSyncControllerService {
     topicRequestModelList.forEach(
         topicReq -> {
           topicReq.setEnvironmentName(getEnvDetails(envId).getName());
-          topicReq.setRequestStatus(RequestStatus.APPROVED);
         });
     int tenantId = commonUtilsService.getTenantId(getUserName());
 

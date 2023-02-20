@@ -3685,10 +3685,10 @@
         "approvingTeamDetails" : {
           "type" : "string"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         }
       }
@@ -3809,10 +3809,10 @@
         "titleForReport" : {
           "type" : "string"
         },
-        "xaxisLabel" : {
+        "yaxisLabel" : {
           "type" : "string"
         },
-        "yaxisLabel" : {
+        "xaxisLabel" : {
           "type" : "string"
         }
       }
@@ -4559,10 +4559,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         }
       }
@@ -4935,10 +4935,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         }
       }
@@ -5193,10 +5193,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         }
       }
@@ -5301,10 +5301,10 @@
         "currentPage" : {
           "type" : "string"
         },
-        "deletable" : {
+        "editable" : {
           "type" : "boolean"
         },
-        "editable" : {
+        "deletable" : {
           "type" : "boolean"
         }
       }

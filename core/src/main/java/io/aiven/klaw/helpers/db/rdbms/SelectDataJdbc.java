@@ -142,7 +142,7 @@ public class SelectDataJdbc {
 
     for (AclRequests row : aclListSub) {
       Integer teamName;
-      String rowAclType = row.getRequestOperationType();
+      String requestOperationType = row.getRequestOperationType();
       if (allReqs) {
         if ("requestor_subscriptions".equals(role)) {
           teamName = row.getRequestingteam();
@@ -150,7 +150,7 @@ public class SelectDataJdbc {
           teamName = row.getTeamId();
         }
 
-        if (RequestOperationType.DELETE.value.equals(rowAclType)) {
+        if (RequestOperationType.DELETE.value.equals(requestOperationType)) {
           teamName = row.getRequestingteam();
         }
 

@@ -1190,7 +1190,7 @@ public class TopicControllerServiceTest {
     topicRequest1.setEnvironment(env.getId());
     topicRequest1.setTopicpartitions(2);
     topicRequest1.setTeamId(101);
-    topicRequest1.setRequestStatus("created");
+    topicRequest1.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest1.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest1.setJsonParams(
         "{\"advancedTopicConfiguration\":{\"compression.type\":\"snappy\",\"cleanup.policy\":\"compact\"}}");
