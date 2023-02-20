@@ -17,13 +17,11 @@ public class OpenApiConfig {
 
   @Bean
   public OpenAPI springShopOpenAPI() {
-    Contact contact = new Contact();
-    contact.setEmail("info@klaw-project.io");
     return new OpenAPI()
         .info(
             new Info()
                 .title("Klaw - OpenAPI")
-                .contact(contact)
+                .contact(new Contact().email("info@klaw-project.io"))
                 .description(
                     "This specification is still a work in progress and is not yet implemented in any API."
                         + " The purpose of this specification is to facilitate developers discussions.")
