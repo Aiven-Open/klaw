@@ -288,12 +288,12 @@ paths:
           required: false
           schema:
             type: string
-        - name: requestsType
+        - name: requestStatus
           in: query
           required: false
           schema:
             $ref: "#/components/schemas/RequestStatus"
-          example: "created"
+          example: "CREATED"
         - name: topic
           in: query
           required: false
@@ -438,10 +438,9 @@ paths:
           example: "2"
           schema:
             type: string
-        - name: requestsType
+        - name: requestStatus
           in: query
-          description: Naming is a mistake (will change), this relates to the status of a request
-          example: created
+          example: "CREATED"
           schema:
             $ref: "#/components/schemas/RequestStatus"
         - name: teamId
@@ -467,7 +466,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/TopicRequestModel"
+                  $ref: "#/components/schemas/TopicRequest"
   /getAuth:
     get:
       operationId: getAuth
@@ -530,11 +529,11 @@ paths:
           example: "1"
           schema:
             type: string
-        - name: requestsType
+        - name: requestStatus
           in: query
-          description: Naming is a mistake (will change), this relates to the status of a request
           schema:
             $ref: "#/components/schemas/RequestStatus"
+          example: "CREATED"
         - name: topic
           description: Name of a topic
           example: "testtopic1"
@@ -559,7 +558,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SchemaRequestModel"
+                  $ref: "#/components/schemas/SchemaRequest"
 components:
   schemas:
     CommonError:
@@ -657,26 +656,26 @@ components:
           type: string
         data:
           type: object
-    RequestType:
-      title: Type of request related to topic
+    RequestOperationType:
+      title: Type of request operation
       type: string
       enum:
-        - Create
-        - Update
-        - Delete
-        - Claim
-        - Promote
-      example: Update
+        - CREATE
+        - UPDATE
+        - DELETE
+        - CLAIM
+        - PROMOTE
+      example: UPDATE
     RequestStatus:
       type: string
       title: Status of a request
       enum:
-        - created
-        - deleted
-        - declined
-        - approved
-        - all
-      example: created
+        - CREATED
+        - DELETED
+        - DECLINED
+        - APPROVED
+        - ALL
+      example: CREATED
     UserAuthenticationRequest:
       type: object
       required:
@@ -1070,14 +1069,8 @@ components:
         appname:
           title: App name
           type: string
-        topictype:
-          title: Topic type
-          type: string
-          enum:
-            - Create
-            - Update
-            - Delete
-            - Claim
+        requestOperationType:
+          $ref: "#/components/schemas/RequestOperationType"
         requestor:
           title: Requestor
           type: string
@@ -1089,7 +1082,7 @@ components:
         requesttimestring:
           title: Request time string
           type: string
-        topicstatus:
+        requestStatus:
           $ref: "#/components/schemas/RequestStatus"
         approver:
           title: Approver
@@ -1157,7 +1150,7 @@ components:
           pattern: ^$|^[a-zA-Z0-9_.-]{3,}$
           type: string
           example: "Group-one"
-          description: "This is mandatory if topictype is consumer"
+          description: "This is mandatory if acl type is consumer"
         acl_ip:
           type: array
           items:
@@ -1212,10 +1205,10 @@ components:
         appname:
           type: string
           example: "App"
-        topictype:
+        aclType:
           type: string
-          enum: ["Producer", "Consumer"]
-          example: "Producer"
+          enum: ["PRODUCER", "CONSUMER"]
+          example: "PRODUCER"
         username:
           type: string
           example: "User"
@@ -1227,7 +1220,7 @@ components:
           type: string
           pattern: dd-MMM-yyyy HH:mm:ss
           example: "10-11-2020 10:45:30"
-        aclstatus:
+        requestStatus:
           $ref: "#/components/schemas/RequestStatus"
           example: "created"
         approver:
@@ -1236,10 +1229,6 @@ components:
           type: string
           format: date-time
           example: "2018-03-20T09:12:28Z"
-        aclType:
-          type: string
-          enum: ["Producer", "Consumer"]
-          example: "Producer"
         aclIpPrincipleType:
           type: string
           enum: ["IP_ADDRESS", "PRINCIPAL", "USERNAME"]
@@ -1330,10 +1319,10 @@ components:
           title: Request time string representation
           type: string
           example: "28-Dec-2022 14:54:57"
-        topicstatus:
+        requestStatus:
           $ref: "#/components/schemas/RequestStatus"
-        requesttype:
-          $ref: "#/components/schemas/RequestType"
+        requestOperationType:
+          $ref: "#/components/schemas/RequestOperationType"
         forceRegister:
           type: boolean
         remarks:
@@ -1375,6 +1364,14 @@ components:
           type: boolean
     TopicRequest:
       type: object
+      required:
+        - "topicid"
+        - "topicname"
+        - "environmentName"
+        - "requestOperationType"
+        - "teamname"
+        - "requestor"
+        - "requesttimestring"
       properties:
         topicname:
           title: Topic name
@@ -1433,8 +1430,8 @@ components:
         appname:
           title: App name
           type: string
-        topictype:
-          $ref: "#/components/schemas/RequestType"
+        requestOperationType:
+          $ref: "#/components/schemas/RequestOperationType"
         requestor:
           title: Requestor
           type: string
@@ -1446,7 +1443,7 @@ components:
         requesttimestring:
           title: Request time string
           type: string
-        topicstatus:
+        requestStatus:
           $ref: "#/components/schemas/RequestStatus"
         approver:
           title: Approver
