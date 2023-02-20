@@ -415,7 +415,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     List<TopicRequest> topicRequests = getListTopicRequests();
-    topicRequests.get(0).setTopictype(RequestOperationType.CLAIM.value);
+    topicRequests.get(0).setRequestOperationType(RequestOperationType.CLAIM.value);
     when(handleDbRequests.getAllTopicRequests(
             anyString(), anyString(), eq(null), eq(false), anyInt()))
         .thenReturn(topicRequests);
@@ -437,7 +437,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     List<TopicRequest> topicRequests = getListTopicRequests();
-    topicRequests.get(0).setTopictype(RequestOperationType.CLAIM.value);
+    topicRequests.get(0).setRequestOperationType(RequestOperationType.CLAIM.value);
     when(handleDbRequests.getAllTopicRequests(
             anyString(), anyString(), eq(null), eq(false), anyInt()))
         .thenReturn(topicRequests);
@@ -606,7 +606,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    topicRequest.setTopictype(RequestOperationType.CLAIM.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
@@ -636,7 +636,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    topicRequest.setTopictype(RequestOperationType.UPDATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.UPDATE.value);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
@@ -948,7 +948,7 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    topicRequest.setTopicstatus(RequestStatus.APPROVED.value);
+    topicRequest.setRequestStatus(RequestStatus.APPROVED.value);
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -1115,7 +1115,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
     TopicConfigEntry topicConfigEntry1 = new TopicConfigEntry("compression.type", "snappy");
     TopicConfigEntry topicConfigEntry2 = new TopicConfigEntry("flush.ms", "12345");
@@ -1131,7 +1131,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }
 
@@ -1142,7 +1142,7 @@ public class TopicControllerServiceTest {
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTeamId(101);
     topicRequest.setRequestor("Jackie");
-    topicRequest.setTopicstatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     return topicRequest;
   }
 
@@ -1152,7 +1152,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(-1);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }
 
@@ -1164,11 +1164,11 @@ public class TopicControllerServiceTest {
     topicRequest.setReplicationfactor("1");
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setTeamId(101);
-    topicRequest.setTopicstatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequestor("kwuserb");
     topicRequest.setJsonParams(
         "{\"advancedTopicConfiguration\":{\"compression.type\":\"snappy\",\"cleanup.policy\":\"compact\"}}");
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
     topicRequest.setTenantId(101);
     return topicRequest;
   }
@@ -1179,7 +1179,7 @@ public class TopicControllerServiceTest {
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
     topicRequest.setTeamId(101);
-    topicRequest.setTopicstatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
 
     List<TopicRequest> listReqs = new ArrayList<>();
@@ -1190,7 +1190,7 @@ public class TopicControllerServiceTest {
     topicRequest1.setEnvironment(env.getId());
     topicRequest1.setTopicpartitions(2);
     topicRequest1.setTeamId(101);
-    topicRequest1.setTopicstatus("created");
+    topicRequest1.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest1.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest1.setJsonParams(
         "{\"advancedTopicConfiguration\":{\"compression.type\":\"snappy\",\"cleanup.policy\":\"compact\"}}");

@@ -207,7 +207,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                          text: "Topic Delete Request : "+output.result,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
-                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&deleteTopicCreated=true";
+                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&deleteTopicCreated=true";
                                         });
                                 }
                                 else{
@@ -258,7 +258,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                              text: "Topic Claim Request : "+output.result,
                                              showConfirmButton: true
                                          }).then(function(isConfirm){
-                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +  "/myTopicRequests?reqsType=created&claimTopicCreated=true";
+                                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +  "/myTopicRequests?reqsType=CREATED&claimTopicCreated=true";
                                              });
                                     }
                                     else{
@@ -319,7 +319,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                                  text: "Delete Subscription Request : "+output.result,
                                                  showConfirmButton: true
                                              }).then(function(isConfirm){
-                                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=created&deleteAclCreated=true";
+                                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=CREATED&deleteAclCreated=true";
                                                 });
                                         }
                                 }).error(
@@ -399,7 +399,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                     	 text: "Schema Promotion Request : " + output.result,
                                     	 showConfirmButton: true
                                      }).then(function(isConfirm){
-                                           $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/mySchemaRequests?reqsType=created";
+                                           $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/mySchemaRequests?reqsType=CREATED";
                                       });
                                 }
                                 else{
@@ -414,95 +414,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                             );
 
         }
-
-    	$scope.onFinalPromote = function(envSelected) {
-
-                var serviceInput = {};
-                $scope.alertTopicDelete = null;
-                $scope.alert = null;
-
-                if(!$scope.partitionsSelected || $scope.partitionsSelected == 'selected'){
-                    $scope.alertnote = "Please select topic partitions.";
-                    $scope.alert = $scope.alertnote;
-                    $scope.showAlertToast();
-                    return;
-                }
-
-                var tmpPartitionsSelected = $scope.partitionsSelected;
-                var tmpRepsSelected = $scope.replicationFactorSelected;
-
-                // selecting default partitions
-                if(tmpPartitionsSelected.indexOf("default") > 0)
-                {
-                    tmpPartitionsSelected = tmpPartitionsSelected.replace(" (default)","");
-                }
-
-                // selecting default rf
-                if(tmpRepsSelected.indexOf("default") > 0)
-                {
-                    tmpRepsSelected = tmpRepsSelected.replace(" (default)","");
-                }
-
-                serviceInput['environment'] = envSelected;
-                serviceInput['topicname'] = $scope.topicSelectedParam;
-                serviceInput['topicpartitions'] = tmpPartitionsSelected;
-                serviceInput['replicationfactor'] = tmpRepsSelected;
-                serviceInput['teamname'] = $scope.teamname;
-                serviceInput['appname'] = "App";//$scope.addTopic.app;
-                serviceInput['remarks'] = "Topic promotion."
-                serviceInput['topictype'] = 'Create';
-                serviceInput['description'] = $scope.topicSelectedParam + " topic."
-
-                $http({
-                    method: "POST",
-                    url: "createTopics",
-                    headers : { 'Content-Type' : 'application/json' },
-                    params: {'addTopicRequest' : serviceInput },
-                    data: serviceInput
-                }).success(function(output) {
-                    if(output.result == 'success'){
-                        swal({
-                        	 title: "",
-                        	 text: "Topic Promotion Request : "+output.result,
-                        	 showConfirmButton: true
-                         }).then(function(isConfirm){
-                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=created&topicPromotionCreated=true";
-                          });
-                    }
-                    else{
-                            $scope.alert = "Topic Promotion Request : "+output.result;
-                            $scope.showSubmitFailed('','');
-                        }
-                }).error(
-                    function(error)
-                    {
-                        $scope.handleValidationErrors(error);
-                    }
-                );
-
-            };
-
-    	$scope.onFirstPromote = function(envSelected){
-    	    $scope.firstPromote = "true";
-    	    $scope.alertTopicDelete = null;
-    	    $scope.alert = null;
-
-    	    $http({
-            			method: "GET",
-            			url: "getEnvParams",
-                        headers : { 'Content-Type' : 'application/json' },
-                        params: {'envSelected' : envSelected }
-            		}).success(function(output) {
-            			$scope.promotionParams = output;
-            		}).error(
-            			function(error)
-            			{
-            				$scope.alert = error;
-            			}
-            		);
-    	}
-
-
 
     $scope.addDocsVar = false;
 

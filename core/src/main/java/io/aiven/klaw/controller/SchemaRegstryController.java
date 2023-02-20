@@ -5,6 +5,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.SchemaPromotion;
 import io.aiven.klaw.model.SchemaRequestModel;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.service.SchemaOverviewService;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
@@ -35,7 +36,8 @@ public class SchemaRegstryController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'all' 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'all' 'created' or
+   *     'deleted'
    * @return A list of filtered Schema Requests for My (Teams) Requests page
    */
   @RequestMapping(
@@ -45,21 +47,22 @@ public class SchemaRegstryController {
   public ResponseEntity<List<SchemaRequestModel>> getSchemaRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
         schemaRegstryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestsType, false, topic, env, null, isMyRequest),
+            pageNo, currentPage, requestStatus.value, false, topic, env, null, isMyRequest),
         HttpStatus.OK);
   }
 
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'all' 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'all' 'created' or
+   *     'deleted'
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1'
    * @param search A wildcard seearch on the topic name allowing
@@ -72,13 +75,13 @@ public class SchemaRegstryController {
   public ResponseEntity<List<SchemaRequestModel>> getSchemaRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         schemaRegstryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestsType, true, topic, env, search, false),
+            pageNo, currentPage, requestStatus.value, true, topic, env, search, false),
         HttpStatus.OK);
   }
 

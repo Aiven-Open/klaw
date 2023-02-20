@@ -110,7 +110,7 @@ public class SelectDataJdbc {
       boolean allReqs,
       String requestor,
       String role,
-      String status,
+      String requestStatus,
       boolean showRequestsOfAllTeams,
       String topic,
       String environment,
@@ -124,7 +124,12 @@ public class SelectDataJdbc {
     aclListSub =
         Lists.newArrayList(
             findAclRequestsByExample(
-                topic, environment, aclType, status, isMyRequest ? requestor : null, tenantId));
+                topic,
+                environment,
+                aclType,
+                requestStatus,
+                isMyRequest ? requestor : null,
+                tenantId));
     if (allReqs) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
@@ -137,7 +142,7 @@ public class SelectDataJdbc {
 
     for (AclRequests row : aclListSub) {
       Integer teamName;
-      String rowAclType = row.getAclType();
+      String requestOperationType = row.getRequestOperationType();
       if (allReqs) {
         if ("requestor_subscriptions".equals(role)) {
           teamName = row.getRequestingteam();
@@ -145,7 +150,7 @@ public class SelectDataJdbc {
           teamName = row.getTeamId();
         }
 
-        if (RequestOperationType.DELETE.value.equals(rowAclType)) {
+        if (RequestOperationType.DELETE.value.equals(requestOperationType)) {
           teamName = row.getRequestingteam();
         }
 
@@ -177,7 +182,7 @@ public class SelectDataJdbc {
    * @param topic The topic Name
    * @param environment the environment
    * @param aclType Producer or consumer
-   * @param status created/declined/approved
+   * @param requestStatus created/declined/approved
    * @param requestor the name of the user who created the request in klaw
    * @param tenantId The tenantId
    * @return
@@ -186,7 +191,7 @@ public class SelectDataJdbc {
       String topic,
       String environment,
       AclType aclType,
-      String status,
+      String requestStatus,
       String requestor,
       int tenantId) {
 
@@ -194,7 +199,7 @@ public class SelectDataJdbc {
 
     request.setTenantId(tenantId);
     if (aclType != null) {
-      request.setTopictype(aclType.value);
+      request.setAclType(aclType.value);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -202,8 +207,8 @@ public class SelectDataJdbc {
     if (topic != null && !topic.isEmpty()) {
       request.setTopicname(topic);
     }
-    if (status != null && !status.equalsIgnoreCase("all")) {
-      request.setAclstatus(status);
+    if (requestStatus != null && !requestStatus.equalsIgnoreCase("all")) {
+      request.setRequestStatus(requestStatus);
     }
 
     if (requestor != null && !requestor.isEmpty()) {
@@ -247,7 +252,7 @@ public class SelectDataJdbc {
               findSchemaRequestsByExample(
                   topic,
                   env,
-                  status != null ? status : "created",
+                  status != null ? status : RequestStatus.CREATED.value,
                   teamSelected,
                   tenantId,
                   isMyRequest ? requestor : null));
@@ -310,7 +315,7 @@ public class SelectDataJdbc {
       request.setTopicname(topic);
     }
     if (status != null && !status.equalsIgnoreCase("all")) {
-      request.setTopicstatus(status);
+      request.setRequestStatus(status);
     }
     if (teamId != null) {
       request.setTeamId(teamId);
@@ -377,7 +382,7 @@ public class SelectDataJdbc {
     Map<String, String> dashboardMap = new HashMap<>();
     int countProducers = 0, countConsumers = 0;
     List<Acl> acls =
-        aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
+        aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
     List<String> topicList = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicList.add(a.getTopicname()));
@@ -385,7 +390,7 @@ public class SelectDataJdbc {
     }
     dashboardMap.put("producerCount", "" + countProducers);
 
-    acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
+    acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
     if (acls != null) {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
@@ -410,7 +415,7 @@ public class SelectDataJdbc {
       topicType = AclType.CONSUMER.value;
     }
 
-    List<Acl> acls = aclRepo.findAllByTopictypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
+    List<Acl> acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(topicType, teamId, tenantId);
     Topic t;
     Map<String, List<String>> topicEnvMap = new HashMap<>();
     String tmpTopicName;
@@ -532,7 +537,8 @@ public class SelectDataJdbc {
           topicRequestListSub.stream()
               .filter(
                   topicRequest ->
-                      !RequestOperationType.CLAIM.value.equals(topicRequest.getTopictype()))
+                      !RequestOperationType.CLAIM.value.equals(
+                          topicRequest.getRequestOperationType()))
               .collect(Collectors.toList());
 
       topicRequestListSub.addAll(claimTopicReqs);
@@ -613,7 +619,7 @@ public class SelectDataJdbc {
     request.setTenantId(tenantId);
 
     if (requestType != null) {
-      request.setTopictype(requestType);
+      request.setRequestOperationType(requestType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -627,7 +633,7 @@ public class SelectDataJdbc {
     }
 
     if (status != null && !status.equalsIgnoreCase("all")) {
-      request.setTopicstatus(status);
+      request.setRequestStatus(status);
     }
     // userName is transient and so not available in the database to be queried.
     if (userName != null && !userName.isEmpty()) {
@@ -681,7 +687,8 @@ public class SelectDataJdbc {
       topicRequestListSub =
           topicRequestListSub.stream()
               .filter(
-                  request -> !RequestOperationType.CLAIM.value.equals(request.getConnectortype()))
+                  request ->
+                      !RequestOperationType.CLAIM.value.equals(request.getRequestOperationType()))
               .collect(Collectors.toList());
 
       topicRequestListSub.addAll(claimTopicReqs);
@@ -707,7 +714,6 @@ public class SelectDataJdbc {
     }
 
     for (KafkaConnectorRequest row : topicRequestListSub) {
-      Integer teamId = row.getTeamId();
       try {
         row.setRequesttimestring(
             (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
@@ -744,7 +750,7 @@ public class SelectDataJdbc {
     request.setTenantId(tenantId);
 
     if (requestType != null) {
-      request.setConnectortype(requestType);
+      request.setRequestOperationType(requestType);
     }
     if (environment != null) {
       request.setEnvironment(environment);
@@ -758,7 +764,7 @@ public class SelectDataJdbc {
     }
 
     if (status != null && !status.equalsIgnoreCase("all")) {
-      request.setConnectorStatus(status);
+      request.setRequestStatus(status);
     }
 
     // check if debug is enabled so the logger doesn't waste resources converting object request to
@@ -1285,14 +1291,14 @@ public class SelectDataJdbc {
 
   public List<TopicRequest> selectTopicRequests(
       String topicName, String envId, String status, int tenantId) {
-    return topicRequestsRepo.findAllByTopicstatusAndTopicnameAndEnvironmentAndTenantId(
+    return topicRequestsRepo.findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
         status, topicName, envId, tenantId);
   }
 
   public List<KafkaConnectorRequest> selectConnectorRequests(
       String connectorName, String envId, String status, int tenantId) {
     return kafkaConnectorRequestsRepo
-        .findAllByConnectorStatusAndConnectorNameAndEnvironmentAndTenantId(
+        .findAllByRequestStatusAndConnectorNameAndEnvironmentAndTenantId(
             status, connectorName, envId, tenantId);
   }
 
@@ -1329,12 +1335,11 @@ public class SelectDataJdbc {
   }
 
   public List<Acl> getConsumerGroupsforTeam(Integer teamId, int tenantId) {
-    return aclRepo.findAllByTopictypeAndTeamIdAndTenantId(
-        AclType.CONSUMER.name(), teamId, tenantId);
+    return aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.name(), teamId, tenantId);
   }
 
   public List<Acl> getAllConsumerGroups(int tenantId) {
-    return aclRepo.findAllByTopictypeAndTenantId(AclType.CONSUMER.name(), tenantId);
+    return aclRepo.findAllByAclTypeAndTenantId(AclType.CONSUMER.name(), tenantId);
   }
 
   public List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId) {

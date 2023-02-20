@@ -106,6 +106,8 @@ public class TopicControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestDao = new TopicRequest();
     copyProperties(topicRequestReq, topicRequestDao);
+    topicRequestDao.setRequestOperationType(topicRequestReq.getRequestOperationType().value);
+
     mapAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
     topicRequestDao.setTenantId(commonUtilsService.getTenantId(userName));
 
@@ -185,7 +187,7 @@ public class TopicControllerService {
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
-    topicRequestReq.setTopictype(RequestOperationType.DELETE.value);
+    topicRequestReq.setRequestOperationType(RequestOperationType.DELETE.value);
     topicRequestReq.setTenantId(tenantId);
 
     Optional<Topic> topicOb = Optional.empty();
@@ -265,7 +267,7 @@ public class TopicControllerService {
     topicRequestReq.setTenantId(tenantId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
-    topicRequestReq.setTopictype(RequestOperationType.CLAIM.value);
+    topicRequestReq.setRequestOperationType(RequestOperationType.CLAIM.value);
     topicRequestReq.setDescription(topicOwnerTeamId + "");
     topicRequestReq.setRemarks("Topic Claim request for all available environments.");
 
@@ -321,12 +323,12 @@ public class TopicControllerService {
   }
 
   private TopicRequestModel setRequestorPermissions(TopicRequestModel req, String userName) {
-    log.info(
+    log.debug(
         " My Topic Status {} and userName {} and userName {}",
-        req.getTopicstatus(),
+        req.getRequestStatus(),
         userName,
         req.getRequestor());
-    if (RequestStatus.CREATED.value.equals(req.getTopicstatus())
+    if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
         && userName.equals(req.getRequestor())) {
       req.setDeletable(true);
@@ -497,6 +499,10 @@ public class TopicControllerService {
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestModel();
       copyProperties(topicReq, topicRequestModel);
+      topicRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
+      topicRequestModel.setRequestOperationType(
+          RequestOperationType.of(topicReq.getRequestOperationType()));
+
       validateAndCopyTopicConfigs(topicReq, topicRequestModel);
 
       topicRequestModel.setTeamname(
@@ -504,9 +510,9 @@ public class TopicControllerService {
 
       if (fromSyncTopics) {
         // show approving info only before approvals
-        if (!RequestStatus.APPROVED.value.equals(topicRequestModel.getTopicstatus())) {
-          if (topicRequestModel.getTopictype() != null
-              && RequestOperationType.CLAIM.value.equals(topicRequestModel.getTopictype())) {
+        if (RequestStatus.APPROVED != topicRequestModel.getRequestStatus()) {
+          if (topicRequestModel.getRequestOperationType() != null
+              && RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
             List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
@@ -618,7 +624,7 @@ public class TopicControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
 
-    if (RequestOperationType.CLAIM.value.equals(topicRequest.getTopictype())) {
+    if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
         allTopic.setTeamId(topicRequest.getTeamId()); // for claim reqs, team stored in description
@@ -661,7 +667,7 @@ public class TopicControllerService {
     ResponseEntity<ApiResponse> response =
         clusterApiService.approveTopicRequests(
             topicRequest.getTopicname(),
-            topicRequest.getTopictype(),
+            topicRequest.getRequestOperationType(),
             topicRequest.getTopicpartitions(),
             topicRequest.getReplicationfactor(),
             topicRequest.getEnvironment(),
@@ -692,7 +698,7 @@ public class TopicControllerService {
           .build();
     }
 
-    if (!RequestStatus.CREATED.value.equals(topicRequest.getTopicstatus())) {
+    if (!RequestStatus.CREATED.value.equals(topicRequest.getRequestStatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 
@@ -710,7 +716,7 @@ public class TopicControllerService {
       List<TopicHistory> existingTopicHistory;
       List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-      if (RequestOperationType.UPDATE.value.equals(topicRequest.getTopictype())) {
+      if (RequestOperationType.UPDATE.value.equals(topicRequest.getRequestOperationType())) {
         List<Topic> existingTopicList =
             getTopicFromName(topicRequest.getTopicname(), topicRequest.getTenantId());
         existingTopicList.stream()
@@ -731,7 +737,7 @@ public class TopicControllerService {
       topicHistory.setRequestedTime(simpleDateFormat.format(topicRequest.getRequesttime()));
       topicHistory.setApprovedBy(userName);
       topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
-      topicHistory.setRemarks(topicRequest.getTopictype());
+      topicHistory.setRemarks(topicRequest.getRequestOperationType());
       topicHistoryList.add(topicHistory);
 
       topicRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
@@ -753,7 +759,7 @@ public class TopicControllerService {
         dbHandle.selectTopicRequestsForTopic(
             Integer.parseInt(topicId), commonUtilsService.getTenantId(userName));
 
-    if (!RequestStatus.CREATED.value.equals(topicRequest.getTopicstatus())) {
+    if (!RequestStatus.CREATED.value.equals(topicRequest.getRequestStatus())) {
       return ApiResponse.builder().result("This request does not exist anymore.").build();
     }
 

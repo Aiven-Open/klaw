@@ -5,6 +5,7 @@ import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
@@ -40,7 +41,7 @@ public class AclController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param aclType The Type of acl Consumer/Producer
@@ -54,7 +55,7 @@ public class AclController {
   public ResponseEntity<List<AclRequestsModel>> getAclRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "all") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "aclType", required = false) AclType aclType,
@@ -62,14 +63,14 @@ public class AclController {
           boolean isMyRequest) {
     return new ResponseEntity<>(
         aclControllerService.getAclRequests(
-            pageNo, currentPage, requestsType, topic, env, aclType, isMyRequest),
+            pageNo, currentPage, requestStatus.value, topic, env, aclType, isMyRequest),
         HttpStatus.OK);
   }
 
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestsType What type of requests are you looking for e.g. 'created' or 'deleted'
+   * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param aclType The Type of acl Consumer/Producer
@@ -85,13 +86,13 @@ public class AclController {
   public ResponseEntity<List<AclRequestsModel>> getAclRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestsType", defaultValue = "created") String requestsType,
+      @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "aclType", required = false) AclType aclType) {
     return new ResponseEntity<>(
         aclControllerService.getAclRequestsForApprover(
-            pageNo, currentPage, requestsType, topic, env, aclType),
+            pageNo, currentPage, requestStatus.value, topic, env, aclType),
         HttpStatus.OK);
   }
 

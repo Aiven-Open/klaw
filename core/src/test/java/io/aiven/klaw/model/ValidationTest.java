@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.model.enums.AclType;
 import java.util.ArrayList;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -45,7 +46,7 @@ public class ValidationTest {
     aclRequests.setRequestingteam(1);
     aclRequests.setApprover("user1");
     aclRequests.setTopicname("newtopic");
-    aclRequests.setTopictype("producer");
+    aclRequests.setAclType(AclType.PRODUCER.value);
 
     assertThat(aclRequests).isNotNull();
   }

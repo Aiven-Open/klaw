@@ -2,6 +2,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public class InsertDataJdbc {
 
     topicRequest.setTopicid(topicId);
 
-    topicRequest.setTopicstatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     topicRequestsRepo.save(topicRequest);
 
@@ -96,7 +97,7 @@ public class InsertDataJdbc {
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(topicRequest.getTenantId()));
     activityLog.setActivityName("TopicRequest");
-    activityLog.setActivityType(topicRequest.getTopictype());
+    activityLog.setActivityType(topicRequest.getRequestOperationType());
     activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
     activityLog.setTeamId(userInfo.getTeamId());
     activityLog.setDetails(topicRequest.getTopicname());
@@ -123,7 +124,7 @@ public class InsertDataJdbc {
 
     connectorRequest.setConnectorId(topicId);
 
-    connectorRequest.setConnectorStatus("created");
+    connectorRequest.setRequestStatus(RequestStatus.CREATED.value);
     connectorRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
@@ -132,11 +133,11 @@ public class InsertDataJdbc {
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(connectorRequest.getTenantId()));
     activityLog.setActivityName("ConnectorRequest");
-    activityLog.setActivityType(connectorRequest.getConnectortype());
+    activityLog.setActivityType(connectorRequest.getRequestOperationType());
     activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
     activityLog.setTeamId(userInfo.getTeamId());
     activityLog.setDetails(
-        connectorRequest.getConnectorName() + "," + connectorRequest.getConnectortype());
+        connectorRequest.getConnectorName() + "," + connectorRequest.getRequestOperationType());
     activityLog.setUser(connectorRequest.getUsername());
     activityLog.setEnv(connectorRequest.getEnvironment());
     activityLog.setTenantId(connectorRequest.getTenantId());
@@ -151,7 +152,6 @@ public class InsertDataJdbc {
   }
 
   public synchronized String insertIntoTopicSOT(List<Topic> topics, boolean isSyncTopics) {
-
     topics.forEach(
         topic -> {
           log.debug("insertIntoTopicSOT {}", topic.getTopicname());
@@ -205,11 +205,11 @@ public class InsertDataJdbc {
     Integer aclId = getNextAclRequestId(aclReq.getTenantId());
     hashMap.put("aclId", "" + aclId);
 
-    if (aclReq.getAclType() != null) {
+    if (aclReq.getRequestOperationType() != null) {
       aclReq.setReq_no(aclId);
     }
 
-    aclReq.setAclstatus("created");
+    aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
     aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getUsername()).getTeamId());
     aclRequestsRepo.save(aclReq);
@@ -219,7 +219,7 @@ public class InsertDataJdbc {
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(aclReq.getTenantId()));
     activityLog.setActivityName("AclRequest");
-    activityLog.setActivityType(aclReq.getAclType());
+    activityLog.setActivityType(aclReq.getRequestOperationType());
     activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
     activityLog.setTeamId(userInfo.getTeamId());
     activityLog.setDetails(
@@ -231,7 +231,7 @@ public class InsertDataJdbc {
             + "-"
             + aclReq.getConsumergroup()
             + "-"
-            + aclReq.getTopictype());
+            + aclReq.getAclType());
     activityLog.setUser(aclReq.getUsername());
     activityLog.setEnv(aclReq.getEnvironment());
     activityLog.setTenantId(aclReq.getTenantId());
@@ -260,7 +260,7 @@ public class InsertDataJdbc {
 
     schemaRequest.setReq_no(getNextSchemaRequestId("SCHEMA_REQ_ID", schemaRequest.getTenantId()));
     schemaRequest.setSchemafull(schemaRequest.getSchemafull().trim());
-    schemaRequest.setTopicstatus("created");
+    schemaRequest.setRequestStatus(RequestStatus.CREATED.value);
     schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     schemaRequest.setTeamId(
         jdbcSelectHelper.selectUserInfo(schemaRequest.getUsername()).getTeamId());

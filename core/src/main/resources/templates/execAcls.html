@@ -474,7 +474,7 @@
 					<td align="right" width="20%">
 						<div class="form-group has-success">
 							<label class="text-success">Filter on Status</label>
-							<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
+							<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
 									ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
 							</select>
@@ -502,7 +502,7 @@
 
 													<h3 ng-show="aclRequest.aclPatternType == 'PREFIXED'" class="card-title">Topic : <a href="topicOverview?topicname={{aclRequest.topicname}}">{{ aclRequest.topicname }}</a> (PREFIXED)</h3>
 												</td>
-												<td align="right" ng-show="aclRequest.aclstatus == 'created' && userlogged != aclRequest.username">
+												<td align="right" ng-show="aclRequest.requestStatus == 'CREATED' && userlogged != aclRequest.username">
 													<button type="button" ng-click="execAclRequest(aclRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execAclRequestDecline(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
@@ -514,14 +514,14 @@
 									<hr size="1" color="black">
 									<div class="d-flex flex-row">
 
-										<div ng-show="aclRequest.topictype == 'Producer'" style="width:15%" class="p-2 pl-0 border-right">
+										<div ng-show="aclRequest.aclType == 'PRODUCER'" style="width:15%" class="p-2 pl-0 border-right">
 											<h6 class="text-primary">AclType</h6><b>
-											<span class="badge badge-info">{{ aclRequest.topictype }}</span></b>
+											<span class="badge badge-info">{{ aclRequest.aclType }}</span></b>
 										</div>
 
-										<div ng-show="aclRequest.topictype == 'Consumer'" style="width:15%" class="p-2 pl-0 border-right">
+										<div ng-show="aclRequest.aclType == 'CONSUMER'" style="width:15%" class="p-2 pl-0 border-right">
 											<h6 class="text-primary">AclType</h6><b>
-											<span class="badge badge-primary">{{ aclRequest.topictype }}</span></b>
+											<span class="badge badge-primary">{{ aclRequest.aclType }}</span></b>
 										</div>
 
 
@@ -562,13 +562,13 @@
 										<div class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Requesting Team</h6><b>{{ aclRequest.requestingTeamName }}</b>
 										</div>
-										<div class="p-2 border-right" ng-show="aclRequest.aclType == 'Create'" style="width:20%">
+										<div class="p-2 border-right" ng-show="aclRequest.requestOperationType == 'CREATE'" style="width:20%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-info">{{ aclRequest.aclType }} Acl</span></b>
+											<span class="badge badge-info">{{ aclRequest.requestOperationType }} Acl</span></b>
 										</div>
-										<div class="p-2 border-right" ng-show="aclRequest.aclType == 'Delete'" style="width:20%">
+										<div class="p-2 border-right" ng-show="aclRequest.requestOperationType == 'DELETE'" style="width:20%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-danger">{{ aclRequest.aclType }} Acl</span></b>
+											<span class="badge badge-danger">{{ aclRequest.requestOperationType }} Acl</span></b>
 										</div>
 										<div class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Date Requested</h6><b>{{ aclRequest.requesttimestring }}</b>
@@ -585,18 +585,18 @@
 										<div class="p-2"  style="width:75%">
 											<h6 class="text-primary">Remarks</h6><b>{{ aclRequest.remarks }}</b>
 										</div>
-										<div ng-show="aclRequest.aclstatus != 'created'" class="p-2 border-left" style="width:10%">
+										<div ng-show="aclRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>
 											<span class="badge badge-success">{{ aclRequest.approver }}</span></b>
 										</div>
 
-										<div ng-show="aclRequest.aclstatus == 'created'" class="p-2 border-left" style="width:15%">
+										<div ng-show="aclRequest.requestStatus == 'CREATED'" class="p-2 border-left" style="width:15%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-success">{{ aclRequest.aclstatus }}</span></b>
+											<span class="badge badge-success">{{ aclRequest.requestStatus }}</span></b>
 										</div>
-										<div ng-show="aclRequest.aclstatus != 'created'" class="p-2 border-left" style="width:15%">
+										<div ng-show="aclRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:15%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-info">{{ aclRequest.aclstatus }}</span></b>
+											<span class="badge badge-info">{{ aclRequest.requestStatus }}</span></b>
 										</div>
 
 									</div>

@@ -472,7 +472,7 @@
 					<td align="right" width="20%">
 						<div class="form-group has-success">
 							<label class="text-success">Filter on Status</label>
-							<select ng-init="requestTypeSelected = 'created'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
+							<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
 									ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
 							</select>
@@ -496,7 +496,7 @@
 										<table width="100%">
 											<tr>
 												<td align="left"><h3 class="card-title">Topic : {{ topicRequest.topicname }}</h3></td>
-												<td align="right" ng-show="topicRequest.topicstatus == 'created' && userlogged != topicRequest.requestor">
+												<td align="right" ng-show="topicRequest.requestStatus == 'CREATED' && userlogged != topicRequest.requestor">
 													<button type="button" ng-click="execTopicRequestUp(topicRequest.topicid);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execTopicRequestReject(topicRequest.topicid);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
@@ -529,25 +529,25 @@
 											<h6 class="text-primary">Team</h6><b>{{ topicRequest.teamname }}</b>
 										</div>
 
-										<div ng-show="topicRequest.topictype == 'Create'" class="p-2 border-right" style="width:15%">
+										<div ng-show="topicRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-info">{{ topicRequest.topictype }} Topic</span></b>
+											<span class="badge badge-info">{{ topicRequest.requestOperationType }} Topic</span></b>
 										</div>
-										<div ng-show="topicRequest.topictype == 'Promote'" class="p-2 border-right" style="width:15%">
+										<div ng-show="topicRequest.requestOperationType == 'PROMOTE'" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-info">{{ topicRequest.topictype }} Topic</span></b>
+											<span class="badge badge-info">{{ topicRequest.requestOperationType }} Topic</span></b>
 										</div>
-										<div ng-show="topicRequest.topictype == 'Update'" class="p-2 border-right" style="width:15%">
+										<div ng-show="topicRequest.requestOperationType == 'UPDATE'" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-primary">{{ topicRequest.topictype }} Topic</span></b>
+											<span class="badge badge-primary">{{ topicRequest.requestOperationType }} Topic</span></b>
 										</div>
-										<div ng-show="topicRequest.topictype == 'Delete'" class="p-2 border-right" style="width:15%">
+										<div ng-show="topicRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-danger">{{ topicRequest.topictype }} Topic</span></b>
+											<span class="badge badge-danger">{{ topicRequest.requestOperationType }} Topic</span></b>
 										</div>
-										<div ng-show="topicRequest.topictype == 'Claim'" class="p-2 border-right" style="width:15%">
+										<div ng-show="topicRequest.requestOperationType == 'CLAIM'" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-secondary">{{ topicRequest.topictype }} Topic</span></b>
+											<span class="badge badge-secondary">{{ topicRequest.requestOperationType }} Topic</span></b>
 										</div>
 
 										<div class="p-2" style="width:15%">
@@ -570,18 +570,18 @@
 											<h6 class="text-primary">Remarks</h6><b>{{ topicRequest.remarks }}</b>
 										</div>
 
-										<div ng-show="topicRequest.topicstatus != 'created'" class="p-2 border-left" style="width:10%">
+										<div ng-show="topicRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:10%">
 											<h6 class="text-primary">Approver</h6><b>
 											<span class="badge badge-success">{{ topicRequest.approver }}</span></b>
 										</div>
 
-										<div ng-show="topicRequest.topicstatus == 'created'" class="p-2 border-left" style="width:15%">
+										<div ng-show="topicRequest.requestStatus == 'CREATED'" class="p-2 border-left" style="width:15%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-success">{{ topicRequest.topicstatus }}</span></b>
+											<span class="badge badge-success">{{ topicRequest.requestStatus }}</span></b>
 										</div>
-										<div ng-show="topicRequest.topicstatus != 'created'" class="p-2 border-left" style="width:15%">
+										<div ng-show="topicRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:15%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-info">{{ topicRequest.topicstatus }}</span></b>
+											<span class="badge badge-info">{{ topicRequest.requestStatus }}</span></b>
 										</div>
 									</div>
 

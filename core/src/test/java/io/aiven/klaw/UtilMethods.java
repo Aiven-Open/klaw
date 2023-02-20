@@ -155,7 +155,7 @@ public class UtilMethods {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl topicRequest = new Acl();
     topicRequest.setTeamId(3);
-    topicRequest.setTopictype(AclType.PRODUCER.value);
+    topicRequest.setAclType(AclType.PRODUCER.value);
     topicRequest.setTenantId(101);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
@@ -257,7 +257,7 @@ public class UtilMethods {
     topicRequest.setConsumergroup("congrp");
     topicRequest.setEnvironment("1");
     topicRequest.setAclip("12.22.126.21");
-    topicRequest.setTopictype(AclType.PRODUCER.value);
+    topicRequest.setAclType(AclType.PRODUCER.value);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -266,7 +266,7 @@ public class UtilMethods {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl acl = new Acl();
     acl.setTeamId(3);
-    acl.setTopictype(AclType.PRODUCER.value);
+    acl.setAclType(AclType.PRODUCER.value);
     allTopicReqs.add(acl);
 
     acl = new Acl();
@@ -274,7 +274,7 @@ public class UtilMethods {
     acl.setConsumergroup("congrp");
     acl.setEnvironment("1");
     acl.setAclip("12.22.126.21");
-    acl.setTopictype(AclType.PRODUCER.value);
+    acl.setAclType(AclType.PRODUCER.value);
     acl.setOtherParams("101");
     acl.setTeamId(101);
     allTopicReqs.add(acl);
@@ -308,7 +308,7 @@ public class UtilMethods {
     List<TopicRequest> allTopicReqs = new ArrayList<>();
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTeamId(3);
-    topicRequest.setTopicstatus("created");
+    topicRequest.setRequestStatus(RequestStatus.CREATED.value);
     topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestor("Jackie");
     allTopicReqs.add(topicRequest);
@@ -332,7 +332,7 @@ public class UtilMethods {
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
     topicRequest.setDescription("Test desc");
     topicRequest.setTenantId(101);
     return topicRequest;
@@ -346,8 +346,8 @@ public class UtilMethods {
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
-    topicRequest.setTopicstatus("created");
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestStatus(RequestStatus.CREATED);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     topicRequest.setDescription("Test desc");
     return topicRequest;
   }
@@ -360,7 +360,7 @@ public class UtilMethods {
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
-    topicRequest.setTopictype(RequestOperationType.UPDATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.UPDATE);
     topicRequest.setDescription("Test desc");
     return topicRequest;
   }
@@ -371,8 +371,8 @@ public class UtilMethods {
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topicName);
     aclRequest.setUsername("kwusera");
-    aclRequest.setTopictype(AclType.CONSUMER.value);
-    aclRequest.setAclType(RequestOperationType.DELETE.value);
+    aclRequest.setAclType(AclType.CONSUMER.value);
+    aclRequest.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequest.setConsumergroup("congroup1");
     aclRequest.setAcl_ip("10.11.112.113");
     aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
@@ -387,8 +387,8 @@ public class UtilMethods {
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topicName);
     aclRequest.setUsername("kwusera");
-    aclRequest.setTopictype(AclType.CONSUMER.value);
-    aclRequest.setAclType(RequestOperationType.CREATE.value);
+    aclRequest.setAclType(AclType.CONSUMER.value);
+    aclRequest.setRequestOperationType(RequestOperationType.CREATE.value);
     aclRequest.setConsumergroup("congroup1");
     aclRequest.setAcl_ip("10.11.112.113");
     aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
@@ -435,7 +435,7 @@ public class UtilMethods {
     AclRequestsModel aclRequests1 = new AclRequestsModel();
     aclRequests1.setTeamname("Seahorses");
     aclRequests1.setRequestingteam(2);
-    aclRequests1.setAclType(RequestOperationType.CREATE.value);
+    aclRequests1.setRequestOperationType(RequestOperationType.CREATE);
     aclRequests1.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequests.add(aclRequests1);
     return aclRequests;
@@ -446,7 +446,7 @@ public class UtilMethods {
     AclRequests aclRequests1 = new AclRequests();
     aclRequests1.setTeamId(3);
     aclRequests1.setRequestingteam(3);
-    aclRequests1.setAclType(RequestOperationType.CREATE.value);
+    aclRequests1.setRequestOperationType(RequestOperationType.CREATE.value);
     aclRequests1.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequests.add(aclRequests1);
     return aclRequests;
@@ -563,7 +563,7 @@ public class UtilMethods {
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topic);
     aclRequest.setUsername("kwusera");
-    aclRequest.setTopictype(AclType.CONSUMER.value);
+    aclRequest.setAclType(AclType.CONSUMER);
     aclRequest.setConsumergroup("mygrp1");
     ArrayList<String> ipList = new ArrayList<>();
     ipList.add("2.1.2.1");

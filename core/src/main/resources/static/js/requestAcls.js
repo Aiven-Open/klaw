@@ -50,7 +50,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.showAlertToast();
         }
 	
-    $scope.TopReqTypeList = [ { label: 'Producer', value: 'Producer' }, { label: 'Consumer', value: 'Consumer' }	];
+    $scope.TopReqTypeList = [ { label: 'PRODUCER', value: 'PRODUCER' }, { label: 'CONSUMER', value: 'CONSUMER' }	];
 
         $scope.refreshPage = function(){
                 $window.location.reload();
@@ -213,7 +213,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             $scope.disable_consumergrp = false;
 
             $scope.changeTopicType = function(){
-                if($scope.addAcl.topicreqtype.value == "Consumer"){
+                if($scope.addAcl.topicreqtype.value == "CONSUMER"){
                     $scope.disable_consumergrp=false;
                     $scope.enablePrefixedTopicPattern = 'false';
                     $scope.aclpattern = 'LITERAL';
@@ -369,14 +369,14 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.addAcl.consumergroup = '-na-';
             }
 
-            if($scope.addAcl.topicreqtype.value == 'Consumer' && !$scope.addAcl.consumergroup)
+            if($scope.addAcl.topicreqtype.value == 'CONSUMER' && !$scope.addAcl.consumergroup)
             {
-                $scope.alertnote = "Consumer group is not filled."
+                $scope.alertnote = "CONSUMER group is not filled."
                 $scope.showAlertToast();
                 return;
             }
 
-            if($scope.addAcl.topicreqtype.value == 'Producer' && !$scope.addAcl.acl_lit_pre)
+            if($scope.addAcl.topicreqtype.value == 'PRODUCER' && !$scope.addAcl.acl_lit_pre)
             {
                 $scope.alertnote = "Please select acl literal type."
                 $scope.showAlertToast();
@@ -424,7 +424,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 for (var i = 0; i < $scope.acl_ipaddress.length; i++) {
                     if($scope.acl_ipaddress[i].length === 0 && $scope.acl_ip_ssl === 'IP' && $scope.aivenCluster === 'false')
                     {
-                      $scope.alertnote = "Please fill in a valid IP address of the Producer/Consumer client";
+                      $scope.alertnote = "Please fill in a valid IP address of the PRODUCER/CONSUMER client";
                       $scope.showAlertToast();
                       return;
                     }
@@ -435,7 +435,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 for (var i = 0; i < $scope.acl_ssl.length; i++) {
                     if($scope.acl_ssl[i].length === 0 && $scope.acl_ip_ssl === 'SSL')
                     {
-                      $scope.alertnote = "Please fill in a valid Principal of the Producer/Consumer client";
+                      $scope.alertnote = "Please fill in a valid Principal of the PRODUCER/CONSUMER client";
                       $scope.showAlertToast();
                       return;
                     }
@@ -445,7 +445,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             if(($scope.acl_ipaddress !=null) ||  ($scope.acl_ssl !=null)){}
              else
              {
-                $scope.alertnote = "Please fill in a valid IP address or Principal of the Producer/Consumer client";
+                $scope.alertnote = "Please fill in a valid IP address or Principal of the PRODUCER/CONSUMER client";
                  $scope.showAlertToast();
                 return;
              }
@@ -458,7 +458,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
              serviceInput['environment'] = $scope.addAcl.envName;
              serviceInput['topicname'] = $scope.addAcl.topicname;
-             serviceInput['topictype'] = $scope.addAcl.topicreqtype.value;
+             serviceInput['aclType'] = $scope.addAcl.topicreqtype.value;
              serviceInput['teamname'] = $scope.addAcl.team;
              serviceInput['appname'] = "App";//$scope.addAcl.app;
              serviceInput['remarks'] = $scope.addAcl.remarks;
@@ -482,7 +482,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                                  text: "Subscription Request : "+output.result,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
-                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=created&aclCreated=true";
+                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=CREATED&aclCreated=true";
                              });
                     }
                 else{

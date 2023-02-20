@@ -13,8 +13,6 @@ public interface SchemaRequestRepo
     extends CrudRepository<SchemaRequest, SchemaRequestID>, QueryByExampleExecutor<SchemaRequest> {
   Optional<SchemaRequest> findById(SchemaRequestID schemaRequestId);
 
-  List<SchemaRequest> findAllByTopicstatusAndTenantId(String topicStatus, int tenantId);
-
   @Query(
       value = "select max(avroschemaid) from kwschemarequests where tenantid = :tenantId",
       nativeQuery = true)

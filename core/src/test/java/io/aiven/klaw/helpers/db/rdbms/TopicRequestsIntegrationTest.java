@@ -331,12 +331,12 @@ public class TopicRequestsIntegrationTest {
     assertThat(james2.size()).isEqualTo(10);
     for (TopicRequest req : james2) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getTopicstatus()).isEqualTo(RequestStatus.DECLINED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.DECLINED.value);
     }
 
     for (TopicRequest req : john) {
       assertThat(req.getTenantId()).isEqualTo(103);
-      assertThat(req.getTopicstatus()).isEqualTo(RequestStatus.CREATED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
     }
   }
 
@@ -396,7 +396,7 @@ public class TopicRequestsIntegrationTest {
     assertThat(james.size()).isEqualTo(32);
     for (TopicRequest req : james) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      if (!req.getTopictype().equals(RequestOperationType.CLAIM.value)) {
+      if (!req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
       } else {
         assertThat(req.getTeamId()).isNotEqualTo(101);
@@ -535,14 +535,14 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "James", "created", true, 101, null, "dev", null, false);
+            true, "James", RequestStatus.CREATED.value, true, 101, null, "dev", null, false);
     List<TopicRequest> john =
         selectDataJdbc.getFilteredTopicRequests(
-            true, "John", "declined", true, 103, null, "test", null, false);
+            true, "John", RequestStatus.DECLINED.value, true, 103, null, "test", null, false);
 
     assertThat(james.size()).isEqualTo(17);
     for (TopicRequest req : james) {
-      assertThat(req.getTopicstatus()).isEqualTo("created");
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }
@@ -581,7 +581,7 @@ public class TopicRequestsIntegrationTest {
 
     assertThat(joan.size()).isEqualTo(7);
     for (TopicRequest req : joan) {
-      assertThat(req.getTopicstatus()).isEqualTo(RequestStatus.CREATED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
       assertThat(req.getUsername()).isNotEqualTo("Joan");
     }
@@ -597,7 +597,7 @@ public class TopicRequestsIntegrationTest {
 
     assertThat(joan.size()).isEqualTo(6);
     for (TopicRequest req : joan) {
-      assertThat(req.getTopicstatus()).isEqualTo(RequestStatus.DELETED.value);
+      assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.DELETED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
       assertThat(req.getUsername()).isNotEqualTo("Joan");
     }
@@ -615,7 +615,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
-      if (req.getTopictype().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(103);
         assertThat(req.getDescription()).isEqualTo("101");
       } else {
@@ -636,7 +636,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
-      if (req.getTopictype().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getDescription()).isNotEqualTo("101");
       }
     }
@@ -654,7 +654,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
-      if (req.getTopictype().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
         assertThat(req.getDescription()).isEqualTo("103");
       } else {
@@ -677,7 +677,7 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(103);
-      if (req.getTopictype().equals(RequestOperationType.CLAIM.value)) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getDescription()).isNotEqualTo("103");
       }
     }
@@ -724,7 +724,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : jackie) {
       assertThat(req.getRequestor().equals("Jackie"));
       assertThat(req.getEnvironment().equals("dev"));
-      assertThat(req.getTopicstatus().equals("created"));
+      assertThat(req.getRequestStatus().equals("created"));
     }
   }
 
@@ -740,7 +740,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : jackie) {
       assertThat(req.getRequestor().equals("Jackie"));
       assertThat(req.getEnvironment().equals("dev"));
-      assertThat(req.getTopicstatus().equals("created"));
+      assertThat(req.getRequestStatus().equals("created"));
     }
   }
 
@@ -776,8 +776,8 @@ public class TopicRequestsIntegrationTest {
       topicRequest.setTopicname(topicName + "" + i);
       topicRequest.setEnvironment(env);
       topicRequest.setRequestor("Jackie");
-      topicRequest.setTopicstatus(requestStatus.value);
-      topicRequest.setTopictype(requestOperationType.value);
+      topicRequest.setRequestStatus(requestStatus.value);
+      topicRequest.setRequestOperationType(requestOperationType.value);
       topicRequest.setTopicpartitions(1);
       topicRequest.setReplicationfactor("1");
       topicRequest.setTopicid(topicIdentifier + i);

@@ -196,7 +196,7 @@ public class ClusterApiServiceTest {
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
     topicRequest.setEnvironment("DEV");
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
@@ -222,7 +222,7 @@ public class ClusterApiServiceTest {
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicname("testtopic");
     topicRequest.setEnvironment("DEV");
-    topicRequest.setTopictype(RequestOperationType.CREATE.value);
+    topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
@@ -248,7 +248,7 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType(RequestOperationType.CREATE.value);
+    aclRequests.setRequestOperationType(RequestOperationType.CREATE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
@@ -280,7 +280,7 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType(RequestOperationType.DELETE.value);
+    aclRequests.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
@@ -312,7 +312,7 @@ public class ClusterApiServiceTest {
     aclRequests.setReq_no(1001);
     aclRequests.setEnvironment("DEV");
     aclRequests.setTopicname("testtopic");
-    aclRequests.setAclType(RequestOperationType.CREATE.value);
+    aclRequests.setRequestOperationType(RequestOperationType.CREATE.value);
 
     assertThatThrownBy(() -> clusterApiService.approveAclRequests(aclRequests, 1))
         .isInstanceOf(KlawException.class);

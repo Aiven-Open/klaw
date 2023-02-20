@@ -77,7 +77,7 @@ public class DeleteDataJdbcTest {
     TopicRequest req = new TopicRequest();
     req.setUsername(userName);
     req.setRequestor(userName);
-    req.setTopicstatus(status.value);
+    req.setRequestStatus(status.value);
     return Optional.of(req);
   }
 

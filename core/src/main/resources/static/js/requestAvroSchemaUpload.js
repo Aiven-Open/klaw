@@ -201,7 +201,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                              text: "Schema Request : " + output.result,
                              showConfirmButton: true
                          }).then(function(isConfirm){
-                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +"/mySchemaRequests?reqsType=created&schemaCreated=true";
+                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +"/mySchemaRequests?reqsType=CREATED&schemaCreated=true";
                          });
                  }else
                  {
