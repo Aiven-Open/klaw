@@ -164,17 +164,17 @@ export type components = {
       data?: { [key: string]: unknown };
     };
     /**
-     * Type of request related to topic
-     * @example Update
+     * Type of request operation
+     * @example UPDATE
      * @enum {string}
      */
-    RequestType: "Create" | "Update" | "Delete" | "Claim" | "Promote";
+    RequestOperationType: "CREATE" | "UPDATE" | "DELETE" | "CLAIM" | "PROMOTE";
     /**
      * Status of a request
-     * @example created
+     * @example CREATED
      * @enum {string}
      */
-    RequestStatus: "created" | "deleted" | "declined" | "approved" | "all";
+    RequestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
     UserAuthenticationRequest: {
       /**
        * username
@@ -526,11 +526,7 @@ export type components = {
       }[];
       /** App name */
       appname?: string;
-      /**
-       * Topic type
-       * @enum {string}
-       */
-      topictype?: "Create" | "Update" | "Delete" | "Claim";
+      requestOperationType?: components["schemas"]["RequestOperationType"];
       /** Requestor */
       requestor?: string;
       /**
@@ -541,7 +537,7 @@ export type components = {
       requesttime?: string;
       /** Request time string */
       requesttimestring?: string;
-      topicstatus?: components["schemas"]["RequestStatus"];
+      requestStatus?: components["schemas"]["RequestStatus"];
       /**
        * Approver
        * @example jon.snow@klaw-project.io
@@ -599,7 +595,7 @@ export type components = {
        */
       remarks?: string;
       /**
-       * @description This is mandatory if topictype is consumer
+       * @description This is mandatory if acl type is consumer
        * @example Group-one
        */
       consumergroup?: string;
@@ -666,10 +662,10 @@ export type components = {
       /** @example App */
       appname?: string;
       /**
-       * @example Producer
+       * @example PRODUCER
        * @enum {string}
        */
-      topictype: "Producer" | "Consumer";
+      aclType?: "PRODUCER" | "CONSUMER";
       /** @example User */
       username?: string;
       /**
@@ -680,18 +676,13 @@ export type components = {
       /** @example 10-11-2020 10:45:30 */
       requesttimestring?: string;
       /** @example created */
-      aclstatus?: components["schemas"]["RequestStatus"];
+      requestStatus?: components["schemas"]["RequestStatus"];
       approver?: string;
       /**
        * Format: date-time
        * @example 2018-03-20T09:12:28Z
        */
       approvingtime?: string;
-      /**
-       * @example Producer
-       * @enum {string}
-       */
-      aclType?: "Producer" | "Consumer";
       /**
        * @example PRINCIPAL
        * @enum {string}
@@ -716,6 +707,8 @@ export type components = {
       allPageNos?: string[];
       /** @example DevRel */
       approvingTeamDetails?: string;
+    } & {
+      topictype: unknown;
     };
     /** SchemaRequest */
     SchemaRequest: {
@@ -803,8 +796,8 @@ export type components = {
        * @example 28-Dec-2022 14:54:57
        */
       requesttimestring?: string;
-      topicstatus?: components["schemas"]["RequestStatus"];
-      requesttype?: components["schemas"]["RequestType"];
+      requestStatus?: components["schemas"]["RequestStatus"];
+      requestOperationType?: components["schemas"]["RequestOperationType"];
       forceRegister?: boolean;
       /**
        * Remarks
@@ -854,7 +847,7 @@ export type components = {
        * @description Kafka Topic name
        * @example topicName
        */
-      topicname?: string;
+      topicname: string;
       /**
        * Environment
        * @description ID of environment
@@ -871,7 +864,7 @@ export type components = {
        * @description Topic owner team name
        * @example application-X-developers
        */
-      teamname?: string;
+      teamname: string;
       /**
        * Remarks
        * @description Message for the approval
@@ -892,14 +885,14 @@ export type components = {
        * Environment name
        * @example DEV
        */
-      environmentName?: string;
+      environmentName: string;
       /**
        * Topic identifier
        * Format: int32
        * @description This identifier is used in Klaw metadata store to ensure uniquenes.
        * @example 1010
        */
-      topicid?: number;
+      topicid: number;
       /** Advanced topic configuration entries */
       advancedTopicConfigEntries?: {
         configKey?: string;
@@ -907,9 +900,9 @@ export type components = {
       }[];
       /** App name */
       appname?: string;
-      topictype?: components["schemas"]["RequestType"];
+      requestOperationType: components["schemas"]["RequestOperationType"];
       /** Requestor */
-      requestor?: string;
+      requestor: string;
       /**
        * Request time
        * Format: date-time
@@ -917,8 +910,8 @@ export type components = {
        */
       requesttime?: string;
       /** Request time string */
-      requesttimestring?: string;
-      topicstatus?: components["schemas"]["RequestStatus"];
+      requesttimestring: string;
+      requestStatus?: components["schemas"]["RequestStatus"];
       /**
        * Approver
        * @example jon.snow@klaw-project.io
@@ -1179,7 +1172,7 @@ export type operations = {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestsType?: components["schemas"]["RequestStatus"];
+        requestStatus?: components["schemas"]["RequestStatus"];
         topic?: string;
         env?: string;
         aclType?: "CONSUMER" | "PRODUCER";
@@ -1272,8 +1265,7 @@ export type operations = {
       query: {
         pageNo: string;
         currentPage?: string;
-        /** Naming is a mistake (will change), this relates to the status of a request */
-        requestsType?: components["schemas"]["RequestStatus"];
+        requestStatus?: components["schemas"]["RequestStatus"];
         teamId?: number;
         env?: string;
         search?: string;
@@ -1283,7 +1275,7 @@ export type operations = {
       /** successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicRequestModel"][];
+          "application/json": components["schemas"]["TopicRequest"][];
         };
       };
     };
@@ -1332,8 +1324,7 @@ export type operations = {
       query: {
         pageNo: string;
         currentPage?: string;
-        /** Naming is a mistake (will change), this relates to the status of a request */
-        requestsType?: components["schemas"]["RequestStatus"];
+        requestStatus?: components["schemas"]["RequestStatus"];
         /** Name of a topic */
         topic?: string;
         /** Environment identifier */
@@ -1345,7 +1336,7 @@ export type operations = {
       /** successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["SchemaRequestModel"][];
+          "application/json": components["schemas"]["SchemaRequest"][];
         };
       };
     };
