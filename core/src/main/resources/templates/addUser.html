@@ -544,6 +544,25 @@
 										<!--/span-->
 									</div>
 
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="custom-control custom-checkbox">
+													<input ng-change="onChangeSwitchTeams()" id="switchteams" type="checkbox" class="custom-control-input" ng-model="addNewUser.canswitchteams">
+													<span class="custom-control-label">Can Switch Teams ?</span>
+												</label>
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6" ng-if="displayTeamsForSwitch">
+											<label>Switch between Teams</label>
+											<select multiple='multiple' class="form-control custom-select" ng-model="addNewUser.switchallowedteams" ng-options="team as team.teamname for team in allTeams">
+
+											</select>
+										</div>
+										<!--/span-->
+									</div>
+
 									<!--/row-->
 
 								</div>

@@ -36,6 +36,12 @@ public class UserInfo implements Serializable {
   @Column(name = "mailid")
   private String mailid;
 
+  @Column(name = "switchteams")
+  private boolean switchTeams;
+
+  @Column(name = "switchallowedteams")
+  private String switchAllowedTeamIds;
+
   @Column(name = "otherparams")
   private String otherParams;
 }

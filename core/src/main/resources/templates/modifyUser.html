@@ -510,7 +510,7 @@
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">Select a Team</label>
-												<select class="form-control custom-select" ng-model="userDetails.team" ng-options="team.teamname as team.teamname for team in allTeams">
+												<select class="form-control custom-select" ng-model="userDetails.teamId" ng-options="team.teamId as team.teamname for team in allTeams">
 
 												</select>
 											</div>
@@ -523,6 +523,25 @@
 
 												</select>
 											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="custom-control custom-checkbox">
+													<input ng-change="onChangeSwitchTeams()" id="switchteams" type="checkbox" class="custom-control-input" ng-model="userDetails.switchTeams">
+													<span class="custom-control-label">Can Switch Teams ?</span>
+												</label>
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6" ng-if="displayTeamsForSwitch">
+											<label>Switch between Teams</label>
+											<select multiple='multiple' class="form-control custom-select" ng-model="userDetails.switchAllowedTeamIds" ng-options="team.teamId as team.teamname for team in allTeams">
+
+											</select>
 										</div>
 										<!--/span-->
 									</div>

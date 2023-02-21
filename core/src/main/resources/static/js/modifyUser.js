@@ -121,8 +121,9 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                     data: {'userId' : decodeURI(userId)}
                 }).success(function(output) {
                     $scope.userDetails = output;
-                    $scope.userDetails.team = decodeURI(output.team);
-                    if(output == null || output == "")
+                    $scope.userDetails.teamId = output.teamId;
+                    $scope.displayTeamsForSwitch = $scope.userDetails.switchTeams;
+                    if(output === null || output === "")
                         $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/users";
                 }).error(
                     function(error)
@@ -169,19 +170,35 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            if(!$scope.userDetails.team)
+            if(!$scope.userDetails.teamId)
             {
                 $scope.alertnote = "Please select a team.";
                 $scope.showAlertToast();
                 return;
             }
 
+            if($scope.userDetails.switchTeams){
+                $scope.getUpdatedListOfSwitchTeams();
+                if($scope.updatedTeamsSwitchList.length < 2){
+                    $scope.alertnote = "Please select atleast 2 teams, to switch between.";
+                    $scope.showAlertToast();
+                    return;
+                }
+                if(!$scope.updatedTeamsSwitchList.includes($scope.userDetails.teamId)){
+                    $scope.alertnote = "Please select your own team, in the switch teams list.";
+                    $scope.showAlertToast();
+                    return;
+                }
+            }
+
             serviceInput['username'] = $scope.userDetails.username;
             serviceInput['fullname'] = $scope.userDetails.fullname;
             serviceInput['userPassword'] = $scope.userDetails.userPassword;
-            serviceInput['team'] = $scope.userDetails.team;
+            serviceInput['teamId'] = $scope.userDetails.teamId;
             serviceInput['role'] = $scope.userDetails.role;
             serviceInput['mailid'] = $scope.userDetails.mailid;
+            serviceInput['switchTeams'] = $scope.userDetails.switchTeams;
+            serviceInput['switchAllowedTeamIds'] = $scope.updatedTeamsSwitchList;
 
             $http({
                 method: "POST",
@@ -207,18 +224,35 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                     $scope.handleValidationErrors(error);
                 }
             );
-
         };
 
-        $scope.cancelRequest = function() {
-                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/teams";
+        $scope.onChangeSwitchTeams = function(){
+            if($scope.userDetails.switchTeams){
+                $scope.displayTeamsForSwitch = true;
+            }else{
+                $scope.displayTeamsForSwitch = false;
+            }
+        }
+
+        $scope.updatedTeamsSwitchList = [];
+        $scope.getUpdatedListOfSwitchTeams = function() {
+            $scope.updatedTeamsSwitchList = [];
+            if($scope.userDetails.switchAllowedTeamIds !== null){
+                for (let i = 0; i < $scope.userDetails.switchAllowedTeamIds.length; i++)
+                {
+                    $scope.updatedTeamsSwitchList.push($scope.userDetails.switchAllowedTeamIds[i]);
                 }
-
-        $scope.cancelUserRequest = function() {
-                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/users";
-                        }
+            }
+        }
 
 
+    $scope.cancelRequest = function() {
+                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/teams";
+            }
+
+    $scope.cancelUserRequest = function() {
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/users";
+                    }
 
 	$scope.refreshPage = function(){
             $window.location.reload();

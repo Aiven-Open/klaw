@@ -4709,6 +4709,24 @@
           "mailid" : {
             "type" : "string"
           },
+          "switchTeams" : {
+            "type" : "boolean"
+          },
+          "switchAllowedTeamIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            },
+            "uniqueItems" : true
+          },
+          "switchAllowedTeamNames" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
           "tenantName" : {
             "type" : "string"
           },

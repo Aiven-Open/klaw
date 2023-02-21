@@ -5,6 +5,9 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.RegisterUserInfo;
@@ -27,11 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,6 +57,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UsersTeamsControllerService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String MASKED_PWD = "*******";
   private static final String SAAS = "saas";
 
@@ -87,12 +93,36 @@ public class UsersTeamsControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       copyProperties(userInfo, userInfoModel);
+      updateSwitchTeamsList(userInfoModel, userInfo, -1, false);
       userInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfoModel.getTeamId()));
       userInfoModel.setUserPassword(MASKED_PWD);
       return userInfoModel;
     } else {
       return null;
+    }
+  }
+
+  private void updateSwitchTeamsList(
+      UserInfoModel userInfoModel, UserInfo userInfo, int tenantId, boolean updateTeamName) {
+    if (userInfo.isSwitchTeams()) {
+      try {
+        String switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
+        if (switchAllowedTeamIds != null) {
+          Set<String> switchAllowedTeamNames = new HashSet<>();
+          userInfoModel.setSwitchAllowedTeamIds(
+              OBJECT_MAPPER.readValue(switchAllowedTeamIds, new TypeReference<>() {}));
+          if (updateTeamName) {
+            for (Integer switchAllowedTeamId : userInfoModel.getSwitchAllowedTeamIds()) {
+              switchAllowedTeamNames.add(
+                  manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));
+            }
+            userInfoModel.setSwitchAllowedTeamNames(switchAllowedTeamNames);
+          }
+        }
+      } catch (JsonProcessingException e) {
+        log.error("Ignore error : Unable to parse switch team ids : {}", userInfo.getUsername());
+      }
     }
   }
 
@@ -171,8 +201,11 @@ public class UsersTeamsControllerService {
 
       copyProperties(newUser, userInfo);
       userInfo.setPwd(newUser.getUserPassword());
-      userInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
       userInfo.setTenantId(tenantId);
+      if (updateSwitchTeams(newUser, userInfo))
+        return ApiResponse.builder()
+            .result("Please select your own team, in the switch teams list.")
+            .build();
 
       return ApiResponse.builder().result(dbHandle.updateUser(userInfo)).build();
     } catch (Exception e) {
@@ -478,6 +511,12 @@ public class UsersTeamsControllerService {
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
       UserInfo userInfo = new UserInfo();
       copyProperties(newUser, userInfo);
+
+      if (updateSwitchTeams(newUser, userInfo))
+        return ApiResponse.builder()
+            .result("Please select your own team, in the switch teams list.")
+            .build();
+
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
 
@@ -511,6 +550,22 @@ public class UsersTeamsControllerService {
         throw new KlawException("Unable to create the user.");
       }
     }
+  }
+
+  private static boolean updateSwitchTeams(UserInfoModel sourceUser, UserInfo targetUser)
+      throws JsonProcessingException {
+    if (sourceUser.isSwitchTeams()) {
+      Set<Integer> switchAllowedTeamIds = sourceUser.getSwitchAllowedTeamIds();
+      if (!switchAllowedTeamIds.isEmpty()
+          && !switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
+        return true;
+      }
+      if (!switchAllowedTeamIds.isEmpty()) {
+        targetUser.setSwitchAllowedTeamIds(
+            OBJECT_MAPPER.writer().writeValueAsString(switchAllowedTeamIds));
+      }
+    }
+    return false;
   }
 
   public ApiResponse addNewTeam(TeamModel newTeam, boolean isExternal) throws KlawException {
@@ -626,6 +681,7 @@ public class UsersTeamsControllerService {
         userListItem -> {
           UserInfoModel userInfoModel = new UserInfoModel();
           copyProperties(userListItem, userInfoModel);
+          updateSwitchTeamsList(userInfoModel, userListItem, tenantId, true);
           if (teamName != null && !teamName.equals("")) {
             if (Objects.equals(
                 manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()),

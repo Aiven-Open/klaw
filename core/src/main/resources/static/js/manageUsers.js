@@ -342,7 +342,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
-            if($scope.addNewUser.pwd != $scope.addNewUser.reppwd)
+            if($scope.addNewUser.pwd !== $scope.addNewUser.reppwd)
             {
                 $scope.alertnote = "Passwords are not equal.";
                 $scope.showAlertToast();
@@ -383,12 +383,28 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
+            if($scope.addNewUser.canswitchteams){
+                $scope.getUpdatedListOfSwitchTeams();
+                if($scope.updatedTeamsSwitchList.length < 2){
+                    $scope.alertnote = "Please select atleast 2 teams, to switch between.";
+                    $scope.showAlertToast();
+                    return;
+                }
+                if(!$scope.updatedTeamsSwitchList.includes($scope.addNewUser.team.teamId)){
+                    $scope.alertnote = "Please select your own team, in the switch teams list.";
+                    $scope.showAlertToast();
+                    return;
+                }
+            }
+
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['userPassword'] = $scope.addNewUser.pwd;
             serviceInput['team'] = $scope.addNewUser.team.teamname;
             serviceInput['role'] = $scope.addNewUser.role;
             serviceInput['mailid'] = $scope.addNewUser.emailid;
+            serviceInput['switchTeams'] = $scope.addNewUser.canswitchteams;
+            serviceInput['switchAllowedTeamIds'] = $scope.updatedTeamsSwitchList;
 
             $scope.addUserHttpCall(serviceInput);
         };
@@ -531,7 +547,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         return;
                     }
 
-                    if($scope.dashboardDetails.adAuthRoleEnabled == 'true')
+                    if($scope.dashboardDetails.adAuthRoleEnabled === 'true')
                         $scope.addNewUser.role = 'NA';
 
                     if(!$scope.addNewUser.role)
@@ -646,7 +662,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "New Team added : "+output.result;
-                    if(output.result == 'success'){
+                    if(output.result === 'success'){
                         swal({
                              title: "",
                              text: "New Team added : "+output.result,
@@ -691,12 +707,12 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
 
             var teamSelectedFromDropDown = $scope.teamsearch;
             var teamSel="";
-            if(!teamSelectedFromDropDown && teamSelectedFromDropDown != "")
+            if(!teamSelectedFromDropDown && teamSelectedFromDropDown !== "")
             {
                 for (var i = 0; i < sURLVariables.length; i++)
                     {
                         var sParameterName = sURLVariables[i].split('=');
-                        if (sParameterName[0] == "team")
+                        if (sParameterName[0] === "team")
                         {
                             teamSel = sParameterName[1];
                         }
@@ -705,12 +721,12 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 teamSel = teamSelectedFromDropDown;
             }
 
-            if($scope.onChangeTeamVar == "true")
+            if($scope.onChangeTeamVar === "true")
             {
                 teamSel = teamSelectedFromDropDown;
             }
 
-            if(teamSel == "null" || teamSel == null || !teamSel)
+            if(teamSel === "null" || teamSel == null || !teamSel)
                 teamSel = "";
 
             $http({
@@ -756,6 +772,26 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             );
         }
 
+
+    $scope.displayTeamsForSwitch = false;
+    $scope.onChangeSwitchTeams = function(){
+        if($scope.addNewUser.canswitchteams){
+            $scope.displayTeamsForSwitch = true;
+        }else{
+            $scope.displayTeamsForSwitch = false;
+        }
+    }
+
+    $scope.updatedTeamsSwitchList = [];
+    $scope.getUpdatedListOfSwitchTeams = function() {
+        $scope.updatedTeamsSwitchList = [];
+        if($scope.addNewUser.switchallowedteams !== null){
+            for (let i = 0; i < $scope.addNewUser.switchallowedteams.length; i++)
+            {
+                $scope.updatedTeamsSwitchList.push($scope.addNewUser.switchallowedteams[i].teamId);
+            }
+        }
+    }
 
 	$scope.refreshPage = function(){
             $window.location.reload();

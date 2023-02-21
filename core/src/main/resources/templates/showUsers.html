@@ -463,13 +463,15 @@
 								<table width="100%" class="table table-hover color-table success-table" style="table-layout:fixed;">
 									<thead><tr>
 
-										<th>Username</th>
-										<th width="20%">Name</th>
-										<th>Team</th>
-										<th>Role</th>
-										<th>EmailId</th>
-										<th width="10%" ng-show="dashboardDetails.addUser=='Authorized'">Edit</th>
-										<th width="10%" ng-show="dashboardDetails.addUser=='Authorized'">Delete</th>
+										<th width="10%">Username</th>
+										<th width="10%">Name</th>
+										<th width="10%">Team</th>
+										<th width="10%">Role</th>
+										<th width="10%">EmailId</th>
+										<th width="10%">Can Switch Teams</th>
+										<th width="10%">Switch Teams List</th>
+										<th width="5%" ng-show="dashboardDetails.addUser=='Authorized'">Edit</th>
+										<th width="5%" ng-show="dashboardDetails.addUser=='Authorized'">Delete</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -480,6 +482,10 @@
 										<td><span class="badge badge-info">{{ userDetails.role }}</span></td>
 
 										<td>{{ userDetails.mailid }}</td>
+										<td ng-show="userDetails.switchTeams == true"><span class="badge badge-success">{{ userDetails.switchTeams }}</span></td>
+										<td ng-show="userDetails.switchTeams == false"><span class="badge badge-info">{{ userDetails.switchTeams }}</span></td>
+
+										<td>{{ userDetails.switchAllowedTeamNames }}</td>
 										<td ng-show="dashboardDetails.addUser=='Authorized'">
 											<a href="modifyUser?userId={{ userDetails.username}}">
 												<button type="button"
