@@ -7,6 +7,7 @@ interface RequestDetailsModalProps {
   onReject: () => void;
   children: ReactElement;
   isLoading: boolean;
+  disabledActions?: boolean;
 }
 
 const RequestDetailsModal = ({
@@ -15,6 +16,7 @@ const RequestDetailsModal = ({
   onApprove,
   onReject,
   isLoading,
+  disabledActions,
 }: RequestDetailsModalProps) => {
   return (
     <Modal
@@ -24,11 +26,12 @@ const RequestDetailsModal = ({
         text: "Approve",
         onClick: onApprove,
         loading: isLoading,
+        disabled: disabledActions,
       }}
       secondaryAction={{
         text: "Reject",
         onClick: onReject,
-        disabled: isLoading,
+        disabled: isLoading || disabledActions,
       }}
     >
       {children}

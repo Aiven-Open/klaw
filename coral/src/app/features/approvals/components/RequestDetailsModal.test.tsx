@@ -73,6 +73,39 @@ describe("RequestDetailsModal.test", () => {
     });
   });
 
+  describe("renders a Modal with correct elements when disabledActions is true", () => {
+    beforeAll(() => {
+      render(
+        <RequestDetailsModal
+          {...baseProps}
+          isLoading={false}
+          disabledActions={true}
+        >
+          <div>content</div>
+        </RequestDetailsModal>
+      );
+    });
+    afterAll(cleanup);
+
+    it("renders correct heading", () => {
+      expect(
+        screen.getByRole("heading", { name: "Request details" })
+      ).toBeVisible();
+    });
+
+    it("renders enabled Close button", () => {
+      expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
+    });
+
+    it("renders disabled Approve button", () => {
+      expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+    });
+
+    it("renders disabled Reject request button", () => {
+      expect(screen.getByRole("button", { name: "Reject" })).toBeDisabled();
+    });
+  });
+
   describe("handles user interaction", () => {
     beforeAll(() => {
       render(
