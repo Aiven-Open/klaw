@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 
 function SchemaApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = searchParams.get("page")
+  const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
@@ -18,11 +18,11 @@ function SchemaApprovals() {
     isError: schemaRequestsIsError,
     error: schemaRequestsError,
   } = useQuery({
-    queryKey: ["schemaRequestsForApprover", initialPage],
+    queryKey: ["schemaRequestsForApprover", currentPage],
     queryFn: () =>
       getSchemaRequestsForApprover({
         requestStatus: "ALL",
-        pageNumber: initialPage,
+        pageNumber: currentPage,
       }),
     keepPreviousData: true,
   });
