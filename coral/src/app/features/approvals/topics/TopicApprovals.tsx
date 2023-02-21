@@ -9,7 +9,7 @@ import { useSearchParams } from "react-router-dom";
 function TopicApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const initialPage = searchParams.get("page")
+  const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
@@ -19,11 +19,11 @@ function TopicApprovals() {
     isError: topicRequestsIsError,
     error: topicRequestsError,
   } = useQuery({
-    queryKey: ["topicRequestsForApprover", initialPage],
+    queryKey: ["topicRequestsForApprover", currentPage],
     queryFn: () =>
       getTopicRequestsForApprover({
         requestStatus: "ALL",
-        pageNumber: initialPage,
+        pageNumber: currentPage,
       }),
     keepPreviousData: true,
   });
