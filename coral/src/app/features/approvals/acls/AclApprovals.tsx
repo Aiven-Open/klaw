@@ -36,7 +36,7 @@ interface AclRequestTableRows {
   prefixed: boolean;
   environmentName: string;
   teamname: AclRequest["teamname"];
-  topictype: AclRequest["topictype"];
+  aclType: AclRequest["aclType"];
   username: string;
   requesttimestring: string;
 }
@@ -54,7 +54,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
       aclPatternType,
       environmentName,
       teamname,
-      topictype,
+      aclType,
       username,
       requesttimestring,
     }) => ({
@@ -65,7 +65,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
       prefixed: aclPatternType === "PREFIXED",
       environmentName: environmentName ?? "-",
       teamname,
-      topictype,
+      aclType,
       username: username ?? "-",
       requesttimestring: requesttimestring ?? "-",
     })
@@ -103,7 +103,7 @@ function AclApprovals() {
       getAclRequestsForApprover({
         pageNo: String(activePage),
         env: environment,
-        requestsType: status,
+        requestStatus: status,
         aclType,
         topic,
       }),
@@ -249,11 +249,11 @@ function AclApprovals() {
     },
     {
       type: "status",
-      field: "topictype",
+      field: "aclType",
       headerName: "ACL type",
-      status: ({ topictype }) => ({
-        status: topictype === "Consumer" ? "success" : "info",
-        text: topictype,
+      status: ({ aclType }) => ({
+        status: aclType === "CONSUMER" ? "success" : "info",
+        text: aclType,
       }),
     },
     {

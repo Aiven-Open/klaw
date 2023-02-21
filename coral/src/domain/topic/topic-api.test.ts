@@ -5,10 +5,9 @@ import {
 import { server } from "src/services/api-mocks/server";
 import api from "src/services/api";
 import {
-  mockGetTopicRequests,
+  mockGetTopicRequestsForApprover,
   mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
-import { createMockTopicRequestApiResource } from "src/domain/topic/topic-test-helper";
 
 describe("topic-api", () => {
   beforeAll(() => {
@@ -50,19 +49,19 @@ describe("topic-api", () => {
 
   describe("getTopicRequests", () => {
     beforeEach(() => {
-      mockGetTopicRequests({
+      mockGetTopicRequestsForApprover({
         mswInstance: server,
         response: {
-          data: [createMockTopicRequestApiResource()],
+          data: [],
         },
       });
     });
     it("calls api.get with correct URL", async () => {
       const getSpy = jest.spyOn(api, "get");
-      await getTopicRequestsForApprover({ requestStatus: "created" });
+      await getTopicRequestsForApprover({ requestStatus: "CREATED" });
       expect(getSpy).toHaveBeenCalledTimes(1);
       expect(getSpy).toHaveBeenCalledWith(
-        "/getTopicRequestsForApprover?pageNo=1&currentPage=1&requestsType=created"
+        "/getTopicRequestsForApprover?pageNo=1&currentPage=1&requestStatus=CREATED"
       );
     });
   });

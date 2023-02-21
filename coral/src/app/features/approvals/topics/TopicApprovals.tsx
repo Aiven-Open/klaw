@@ -2,9 +2,9 @@ import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import { Pagination } from "src/app/components/Pagination";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
-import { TopicRequestTypes, TopicRequestStatus } from "src/domain/topic";
+import { TopicRequest } from "src/domain/topic";
 
-const mockedRequests = [
+const mockedRequests: TopicRequest[] = [
   {
     topicname: "test-topic-1",
     environment: "1",
@@ -21,17 +21,19 @@ const mockedRequests = [
         configValue: "delete",
       },
     ],
-    topictype: "Create" as TopicRequestTypes,
+    requestOperationType: "CREATE",
     requestor: "jlpicard",
     requesttime: "1987-09-28T13:37:00.001+00:00",
     requesttimestring: "28-Sep-1987 13:37:00",
-    topicstatus: "created" as TopicRequestStatus,
+    requestStatus: "CREATED",
     totalNoPages: "1",
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
     teamId: 1003,
     allPageNos: ["1"],
     currentPage: "1",
+    deletable: true,
+    editable: true,
   },
   {
     topicname: "test-topic-2",
@@ -50,17 +52,19 @@ const mockedRequests = [
       },
     ],
 
-    topictype: "Update" as TopicRequestTypes,
+    requestOperationType: "UPDATE",
     requestor: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
-    topicstatus: "approved" as TopicRequestStatus,
+    requestStatus: "APPROVED",
     totalNoPages: "1",
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
     teamId: 1003,
     allPageNos: ["1"],
     currentPage: "1",
+    deletable: true,
+    editable: true,
   },
 ];
 

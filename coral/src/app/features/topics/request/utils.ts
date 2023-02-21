@@ -15,7 +15,7 @@ function createTopicRequestPayload(
     advancedTopicConfigEntries: transformAdvancedConfigEntries(
       formData.advancedConfiguration
     ),
-    topictype: "Create" as const,
+    requestOperationType: "CREATE",
   };
 }
 function coerceToString(value: unknown): string | undefined {

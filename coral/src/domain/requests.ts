@@ -1,7 +1,7 @@
 import { components } from "types/api";
 
-type RequestType = components["schemas"]["RequestType"];
+type RequestOperationType = components["schemas"]["RequestOperationType"];
 type RequestStatus = components["schemas"]["RequestStatus"];
 type RequestVerdict = components["schemas"]["RequestVerdict"];
 
-export type { RequestType, RequestStatus, RequestVerdict };
+export type { RequestOperationType, RequestStatus, RequestVerdict };

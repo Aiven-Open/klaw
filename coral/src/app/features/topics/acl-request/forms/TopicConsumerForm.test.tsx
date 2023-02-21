@@ -24,7 +24,7 @@ const baseProps = {
     }),
   ],
   renderAclTypeField: () => (
-    <AclTypeField topicType={"Producer"} handleChange={() => null} />
+    <AclTypeField aclType={"PRODUCER"} handleChange={() => null} />
   ),
 } as TopicConsumerFormProps;
 
@@ -46,7 +46,7 @@ describe("<TopicConsumerForm />", () => {
           schema: topicConsumerFormSchema,
           defaultValues: {
             topicname: "aiventopic1",
-            topictype: "Consumer",
+            aclType: "CONSUMER",
           },
         })
       );
@@ -168,7 +168,7 @@ describe("<TopicConsumerForm />", () => {
           defaultValues: {
             topicname: "aiventopic1",
             environment: "1",
-            topictype: "Consumer",
+            aclType: "CONSUMER",
             aclIpPrincipleType: "PRINCIPAL",
           },
         })
@@ -284,7 +284,7 @@ describe("<TopicConsumerForm />", () => {
           defaultValues: {
             topicname: "aiventopic1",
             environment: "2",
-            topictype: "Consumer",
+            aclType: "CONSUMER",
           },
         })
       );

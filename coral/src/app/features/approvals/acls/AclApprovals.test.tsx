@@ -40,7 +40,6 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     topicname: "aivtopic1",
     environment: "1",
     teamname: "Ospo",
-    topictype: "Consumer",
     aclIpPrincipleType: "PRINCIPAL",
     environmentName: "DEV",
     teamId: 1003,
@@ -50,10 +49,10 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     username: "amathieu",
     requesttime: "2023-01-06T14:50:37.912+00:00",
     requesttimestring: "06-Jan-2023 14:50:37",
-    aclstatus: "created",
+    requestStatus: "CREATED",
     approver: undefined,
     approvingtime: undefined,
-    aclType: "Consumer",
+    aclType: "CONSUMER",
     aclResourceType: undefined,
     currentPage: "1",
     otherParams: undefined,
@@ -73,7 +72,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     topicname: "newaudittopic",
     environment: "2",
     teamname: "Ospo",
-    topictype: "Producer",
+    aclType: "PRODUCER",
     aclIpPrincipleType: "IP_ADDRESS",
     environmentName: "TST",
     teamId: 1003,
@@ -82,10 +81,9 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     username: "amathieu",
     requesttime: "2023-01-10T13:19:10.757+00:00",
     requesttimestring: "10-Jan-2023 13:19:10",
-    aclstatus: "created",
+    requestStatus: "CREATED",
     approver: undefined,
     approvingtime: undefined,
-    aclType: "Producer",
     aclResourceType: undefined,
     currentPage: "1",
     otherParams: undefined,
@@ -274,7 +272,7 @@ describe("AclApprovals", () => {
           aclType: "ALL",
           env: "1",
           pageNo: "1",
-          requestsType: "created",
+          requestStatus: "CREATED",
           topic: "",
         });
       });
@@ -284,21 +282,21 @@ describe("AclApprovals", () => {
       const select = screen.getByLabelText("Filter by status");
 
       const option = within(select).getByRole("option", {
-        name: "declined",
+        name: "DECLINED",
       });
 
       expect(option).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveDisplayValue("declined");
+      expect(select).toHaveDisplayValue("DECLINED");
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
           aclType: "ALL",
           env: "ALL",
           pageNo: "1",
-          requestsType: "declined",
+          requestStatus: "DECLINED",
           topic: "",
         })
       );
@@ -322,7 +320,7 @@ describe("AclApprovals", () => {
           aclType: "PRODUCER",
           env: "ALL",
           pageNo: "1",
-          requestsType: "created",
+          requestStatus: "CREATED",
           topic: "",
         })
       );
@@ -342,7 +340,7 @@ describe("AclApprovals", () => {
           aclType: "ALL",
           env: "ALL",
           pageNo: "1",
-          requestsType: "created",
+          requestStatus: "CREATED",
           topic: "topicname",
         })
       );
@@ -367,7 +365,7 @@ describe("AclApprovals", () => {
           aclType: "PRODUCER",
           env: "ALL",
           pageNo: "1",
-          requestsType: "created",
+          requestStatus: "CREATED",
           topic: "topicname",
         })
       );

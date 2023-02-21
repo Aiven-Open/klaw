@@ -2,8 +2,6 @@ import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema
 import {
   SchemaRequest,
   SchemaRequestApiResponse,
-  SchemaRequestStatus,
-  SchemaRequestType,
 } from "src/domain/schema-request/schema-request-types";
 
 describe("schema-request-transformer.ts", () => {
@@ -37,8 +35,8 @@ describe("schema-request-transformer.ts", () => {
           username: "jlpicard",
           requesttime: "1987-09-28T13:37:00.001+00:00",
           requesttimestring: "28-Sep-1987 13:37:00",
-          topicstatus: "created" as SchemaRequestStatus,
-          requesttype: "Create" as SchemaRequestType,
+          requestStatus: "CREATED",
+          requestOperationType: "CREATE",
           remarks: "asap",
           approvingTeamDetails:
             "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
@@ -63,8 +61,8 @@ describe("schema-request-transformer.ts", () => {
           username: "bcrusher",
           requesttime: "1994-23-05T13:37:00.001+00:00",
           requesttimestring: "23-May-1994 13:37:00",
-          topicstatus: "created" as SchemaRequestStatus,
-          requesttype: "Delete" as SchemaRequestType,
+          requestStatus: "CREATED",
+          requestOperationType: "DELETE",
           remarks: "asap",
           approvingTeamDetails:
             "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",

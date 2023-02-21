@@ -1,10 +1,5 @@
-import {
-  Topic,
-  TopicRequest,
-  TopicRequestStatus,
-  TopicRequestTypes,
-} from "src/domain/topic/topic-types";
-import { KlawApiModel, KlawApiResponse } from "types/utils";
+import { Topic, TopicRequest } from "src/domain/topic/topic-types";
+import { KlawApiResponse } from "types/utils";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
@@ -133,29 +128,23 @@ const defaultTopicRequest: TopicRequest = {
       configValue: "delete",
     },
   ],
-  topictype: "Create" as TopicRequestTypes,
+  requestOperationType: "CREATE",
   requestor: "jlpicard",
   requesttime: "1987-09-28T13:37:00.001+00:00",
   requesttimestring: "28-Sep-1987 13:37:00",
-  topicstatus: "created" as TopicRequestStatus,
+  requestStatus: "CREATED",
   totalNoPages: "1",
   approvingTeamDetails:
     "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
   teamId: 1003,
   allPageNos: ["1"],
   currentPage: "1",
+  editable: true,
+  deletable: true,
 };
 
 function createMockTopicRequest(request?: Partial<TopicRequest>): TopicRequest {
   return { ...defaultTopicRequest, ...request };
-}
-
-const defaultTopicRequestApiResource = {};
-
-function createMockTopicRequestApiResource(
-  request?: Partial<KlawApiModel<"TopicRequest">>
-): KlawApiModel<"TopicRequest"> {
-  return { ...defaultTopicRequestApiResource, ...request };
 }
 
 export {
@@ -163,5 +152,4 @@ export {
   createMockTopicApiResponse,
   baseTestObjectMockedTopic,
   createMockTopicRequest,
-  createMockTopicRequestApiResource,
 };

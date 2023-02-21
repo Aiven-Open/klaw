@@ -768,7 +768,7 @@ describe("<TopicRequest />", () => {
           advancedTopicConfigEntries: [],
           description: "test",
           remarks: "",
-          topictype: "Create",
+          requestOperationType: "CREATE",
         });
 
         const alert = await screen.findByRole("alert");
@@ -820,7 +820,7 @@ describe("<TopicRequest />", () => {
           advancedTopicConfigEntries: [],
           description: "test",
           remarks: "",
-          topictype: "Create",
+          requestOperationType: "CREATE",
         });
 
         await waitFor(() => {
