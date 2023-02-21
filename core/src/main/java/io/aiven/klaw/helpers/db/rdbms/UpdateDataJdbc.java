@@ -372,6 +372,18 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  public String updateUserTeam(String userId, int teamId) {
+    log.debug("updateUserTeam {}", userId);
+    Optional<UserInfo> userExists = userInfoRepo.findById(userId);
+    if (userExists.isEmpty()) {
+      return "Failure. User doesn't exist";
+    }
+    UserInfo userInfo = userExists.get();
+    userInfo.setTeamId(teamId);
+    userInfoRepo.save(userInfo);
+    return ApiResultStatus.SUCCESS.value;
+  }
+
   public String updateTeam(Team team) {
     log.debug("updateTeam {}", team);
     TeamID teamID = new TeamID(team.getTeamId(), team.getTenantId());

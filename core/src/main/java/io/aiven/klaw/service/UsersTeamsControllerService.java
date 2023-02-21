@@ -1010,4 +1010,68 @@ public class UsersTeamsControllerService {
     Matcher m2 = defaultPattern.matcher(userName);
     return m1.matches() || m2.matches();
   }
+
+  public List<TeamModel> getSwitchTeams(String userId) {
+    List<TeamModel> teamModelList = new ArrayList<>();
+    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+    if (userInfo.isSwitchTeams()) {
+      try {
+        String switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
+        if (switchAllowedTeamIds != null) {
+          Set<Integer> teamIds =
+              OBJECT_MAPPER.readValue(switchAllowedTeamIds, new TypeReference<>() {});
+          for (Integer switchAllowedTeamId : teamIds) {
+            TeamModel teamModel = new TeamModel();
+            teamModel.setTeamId(switchAllowedTeamId);
+            teamModel.setTeamname(
+                manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));
+            teamModelList.add(teamModel);
+          }
+        }
+      } catch (JsonProcessingException e) {
+        log.error("Ignore error : Unable to parse switch team ids : {}", userInfo.getUsername());
+      }
+    }
+
+    return teamModelList;
+  }
+
+  public ApiResponse updateProfileTeam(UserInfoModel userProfileDetails) {
+    String userIdToBeUpdated = userProfileDetails.getUsername();
+    Integer newTeamId = userProfileDetails.getTeamId();
+    log.info("updateProfileTeam {}", userIdToBeUpdated);
+
+    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToBeUpdated);
+    boolean authorizedUser = true;
+
+    if (!userInfo.isSwitchTeams()) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
+
+    String switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
+    if (switchAllowedTeamIds != null) {
+      Set<Integer> teamIds;
+      try {
+        teamIds = OBJECT_MAPPER.readValue(switchAllowedTeamIds, new TypeReference<>() {});
+        if (teamIds == null || teamIds.isEmpty()) {
+          authorizedUser = false;
+        } else if (!teamIds.contains(userProfileDetails.getTeamId())) {
+          authorizedUser = false;
+        }
+      } catch (JsonProcessingException e) {
+        log.error("Ignore error : Unable to parse switch team ids : {}", userInfo.getUsername());
+        authorizedUser = false;
+      }
+    } else {
+      authorizedUser = false;
+    }
+
+    if (!authorizedUser)
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+
+    return ApiResponse.builder()
+        .result(manageDatabase.getHandleDbRequests().updateUserTeam(userIdToBeUpdated, newTeamId))
+        .build();
+  }
 }
