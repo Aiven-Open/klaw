@@ -4,24 +4,34 @@ import { Pagination } from "src/app/components/Pagination";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { useQuery } from "@tanstack/react-query";
 import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
-import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 function TopicApprovals() {
-  const [page, setPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
+
   const {
     data: topicRequests,
     isLoading: topicRequestsLoading,
     isError: topicRequestsIsError,
     error: topicRequestsError,
   } = useQuery({
-    queryKey: ["topicRequestsForApprover", page],
+    queryKey: ["topicRequestsForApprover", initialPage],
     queryFn: () =>
       getTopicRequestsForApprover({
         requestStatus: "ALL",
-        pageNumber: page,
+        pageNumber: initialPage,
       }),
     keepPreviousData: true,
   });
+
+  const setCurrentPage = (page: number) => {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  };
 
   const filters = [
     <NativeSelect labelText={"Filter by team"} key={"filter-team"}>
@@ -62,9 +72,9 @@ function TopicApprovals() {
   const pagination =
     topicRequests?.totalPages && topicRequests.totalPages > 1 ? (
       <Pagination
-        activePage={page}
+        activePage={topicRequests.currentPage}
         totalPages={topicRequests?.totalPages}
-        setActivePage={setPage}
+        setActivePage={setCurrentPage}
       />
     ) : undefined;
 
