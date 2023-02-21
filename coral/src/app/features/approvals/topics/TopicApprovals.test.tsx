@@ -197,8 +197,41 @@ describe("TopicApprovals", () => {
       jest.clearAllMocks();
     });
 
+    it("fetches the right page number if a page is set in serach params", async () => {
+      const routePath = `/?page=100`;
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: routePath,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+        pageNumber: 100,
+        requestStatus: "ALL",
+      });
+    });
+
+    it("fetches the first page if no search param is defined", async () => {
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+        pageNumber: 1,
+        requestStatus: "ALL",
+      });
+    });
+
     it("shows no pagination for a response with only one page", async () => {
-      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetTopicRequestsForApprover.mockResolvedValue({
+        ...mockedApiResponse,
+        totalPages: 1,
+      });
 
       customRender(<TopicApprovals />, {
         queryClient: true,
@@ -232,6 +265,26 @@ describe("TopicApprovals", () => {
       });
       expect(pagination).toBeVisible();
     });
+
+    it("shows the currently active page based on api response", async () => {
+      mockGetTopicRequestsForApprover.mockResolvedValue({
+        totalPages: 4,
+        currentPage: 2,
+        entries: [],
+      });
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      const pagination = screen.getByRole("navigation", {
+        name: "Pagination navigation, you're on page 2 of 4",
+      });
+      expect(pagination).toBeVisible();
+    });
   });
 
   describe("handles user stepping through pagination", () => {
@@ -255,7 +308,7 @@ describe("TopicApprovals", () => {
       cleanup();
     });
 
-    it("shows page 2 as currently active page and the total page number", () => {
+    it("shows page 1 as currently active page and the total page number", () => {
       const pagination = screen.getByRole("navigation", {
         name: /Pagination/,
       });
