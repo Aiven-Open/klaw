@@ -59,7 +59,7 @@ function TopicApprovals() {
         type={"search"}
         aria-describedby={"search-field-description"}
         role="search"
-        placeholder={"Search for Topic..."}
+        placeholder={"Search Topic (exact match)"}
       />
       <div id={"search-field-description"} className={"visually-hidden"}>
         Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
