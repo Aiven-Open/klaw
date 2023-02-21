@@ -2,70 +2,38 @@ import { SearchInput, NativeSelect } from "@aivenio/aquarium";
 import { Pagination } from "src/app/components/Pagination";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
-import { SchemaRequest } from "src/domain/schema-request";
-
-const mockedResponse: SchemaRequest[] = [
-  {
-    req_no: 1014,
-    topicname: "testtopic-first",
-    environment: "1",
-    environmentName: "BRG",
-    schemaversion: "1.0",
-    teamname: "NCC1701D",
-    teamId: 1701,
-    appname: "App",
-    schemafull: "",
-    username: "jlpicard",
-    requesttime: "1987-09-28T13:37:00.001+00:00",
-    requesttimestring: "28-Sep-1987 13:37:00",
-    requestStatus: "CREATED",
-    requestOperationType: "CREATE",
-    remarks: "asap",
-    approvingTeamDetails:
-      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
-    approvingtime: "2022-11-04T14:54:13.414+00:00",
-    totalNoPages: "4",
-    allPageNos: ["1"],
-    currentPage: "1",
-    deletable: false,
-    editable: false,
-    forceRegister: false,
-  },
-  {
-    req_no: 1013,
-    topicname: "testtopic-second",
-    environment: "2",
-    environmentName: "SEC",
-    schemaversion: "1.0",
-    teamname: "NCC1701D",
-    teamId: 1701,
-    appname: "App",
-    schemafull: "",
-    username: "bcrusher",
-    requesttime: "1994-23-05T13:37:00.001+00:00",
-    requesttimestring: "23-May-1994 13:37:00",
-    requestStatus: "CREATED",
-    requestOperationType: "DELETE",
-    remarks: "asap",
-    approvingTeamDetails:
-      "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
-    approvingtime: "2022-11-04T14:54:13.414+00:00",
-    totalNoPages: "4",
-    allPageNos: ["1"],
-    currentPage: "1",
-    deletable: false,
-    editable: false,
-    forceRegister: false,
-  },
-];
-
-function changePage() {
-  console.log("page changed");
-}
+import { getSchemaRequestsForApprover } from "src/domain/schema-request";
+import { useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 function SchemaApprovals() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
+
+  const {
+    data: schemaRequests,
+    isLoading: schemaRequestsIsLoading,
+    isError: schemaRequestsIsError,
+    error: schemaRequestsError,
+  } = useQuery({
+    queryKey: ["schemaRequestsForApprover", currentPage],
+    queryFn: () =>
+      getSchemaRequestsForApprover({
+        requestStatus: "ALL",
+        pageNumber: currentPage,
+      }),
+    keepPreviousData: true,
+  });
+
+  const setCurrentPage = (page: number) => {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  };
+
   const filters = [
-    <NativeSelect labelText={"Filter by topics"} key={"filter-topic"}>
+    <NativeSelect labelText={"Filter by team"} key={"filter-team"}>
       <option> one </option>
       <option> two </option>
       <option> three </option>
@@ -90,7 +58,7 @@ function SchemaApprovals() {
         type={"search"}
         aria-describedby={"search-field-description"}
         role="search"
-        placeholder={"Search for..."}
+        placeholder={"Search Topic (exact match)"}
       />
       <div id={"search-field-description"} className={"visually-hidden"}>
         Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
@@ -99,13 +67,27 @@ function SchemaApprovals() {
     </div>,
   ];
 
-  const table = <SchemaApprovalsTable requests={mockedResponse} />;
-  const pagination = (
-    <Pagination activePage={1} totalPages={2} setActivePage={changePage} />
+  const table = (
+    <SchemaApprovalsTable requests={schemaRequests?.entries || []} />
   );
+  const pagination =
+    schemaRequests?.totalPages && schemaRequests.totalPages > 1 ? (
+      <Pagination
+        activePage={schemaRequests.currentPage}
+        totalPages={schemaRequests?.totalPages}
+        setActivePage={setCurrentPage}
+      />
+    ) : undefined;
 
   return (
-    <ApprovalsLayout filters={filters} table={table} pagination={pagination} />
+    <ApprovalsLayout
+      filters={filters}
+      table={table}
+      pagination={pagination}
+      isLoading={schemaRequestsIsLoading}
+      isErrorLoading={schemaRequestsIsError}
+      errorMessage={schemaRequestsError}
+    />
   );
 }
 
