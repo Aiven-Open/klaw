@@ -17,7 +17,7 @@ function TopicApprovals() {
     queryKey: ["topicRequestsForApprover", page],
     queryFn: () =>
       getTopicRequestsForApprover({
-        requestStatus: "all",
+        requestStatus: "ALL",
         pageNumber: page,
       }),
     keepPreviousData: true,

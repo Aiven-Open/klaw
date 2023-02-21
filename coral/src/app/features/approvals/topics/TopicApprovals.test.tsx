@@ -2,7 +2,7 @@ import * as ReactQuery from "@tanstack/react-query";
 import { cleanup, screen, within } from "@testing-library/react";
 import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
 import { transformGetTopicRequestsForApproverResponse } from "src/domain/topic/topic-transformer";
-import { TopicRequestTypes, TopicRequestStatus } from "src/domain/topic";
+import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
@@ -19,7 +19,7 @@ const mockGetTopicRequestsForApprover =
 
 const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
 
-const mockedResponse = [
+const mockedResponse: TopicRequest[] = [
   {
     topicname: "test-topic-1",
     environment: "1",
@@ -36,17 +36,19 @@ const mockedResponse = [
         configValue: "delete",
       },
     ],
-    topictype: "Create" as TopicRequestTypes,
+    requestOperationType: "CREATE",
     requestor: "jlpicard",
     requesttime: "1987-09-28T13:37:00.001+00:00",
     requesttimestring: "28-Sep-1987 13:37:00",
-    topicstatus: "created" as TopicRequestStatus,
+    requestStatus: "CREATED",
     totalNoPages: "1",
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
     teamId: 1003,
     allPageNos: ["1"],
     currentPage: "1",
+    deletable: true,
+    editable: true,
   },
   {
     topicname: "test-topic-2",
@@ -65,17 +67,19 @@ const mockedResponse = [
       },
     ],
 
-    topictype: "Update" as TopicRequestTypes,
+    requestOperationType: "UPDATE",
     requestor: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
-    topicstatus: "approved" as TopicRequestStatus,
+    requestStatus: "APPROVED",
     totalNoPages: "1",
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
     teamId: 1003,
     allPageNos: ["1"],
     currentPage: "1",
+    deletable: true,
+    editable: true,
   },
 ];
 
@@ -270,7 +274,7 @@ describe("TopicApprovals", () => {
 
       expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(2, {
         pageNumber: 2,
-        requestStatus: "all",
+        requestStatus: "ALL",
       });
     });
   });
