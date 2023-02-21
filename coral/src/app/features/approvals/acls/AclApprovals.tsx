@@ -1,5 +1,6 @@
 import {
   Alert,
+  ChipStatus,
   DataTable,
   DataTableColumn,
   Flexbox,
@@ -28,7 +29,7 @@ import {
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
-interface AclRequestTableRows {
+interface AclRequestTableRow {
   id: number;
   acl_ssl: string[];
   acl_ip: string[];
@@ -39,9 +40,10 @@ interface AclRequestTableRows {
   aclType: AclRequest["aclType"];
   username: string;
   requesttimestring: string;
+  requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL" | "-";
 }
 
-const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
+const getRows = (entries: AclRequest[] | undefined): AclRequestTableRow[] => {
   if (entries === undefined) {
     return [];
   }
@@ -57,6 +59,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
       aclType,
       username,
       requesttimestring,
+      requestStatus,
     }) => ({
       id: Number(req_no),
       acl_ssl: acl_ssl ?? [],
@@ -68,6 +71,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
       aclType,
       username: username ?? "-",
       requesttimestring: requesttimestring ?? "-",
+      requestStatus: requestStatus ?? "-",
     })
   );
 };
@@ -177,12 +181,12 @@ function AclApprovals() {
     },
   });
 
-  const columns: Array<DataTableColumn<AclRequestTableRows>> = [
+  const columns: Array<DataTableColumn<AclRequestTableRow>> = [
     {
       type: "custom",
       field: "acl_ssl",
       headerName: "Principals/Usernames",
-      UNSAFE_render: ({ acl_ssl }: AclRequestTableRows) => {
+      UNSAFE_render: ({ acl_ssl }: AclRequestTableRow) => {
         return (
           <Flexbox wrap={"wrap"} gap={"2"}>
             {acl_ssl.map((ssl, index) => (
@@ -203,7 +207,7 @@ function AclApprovals() {
       type: "custom",
       field: "acl_ip",
       headerName: "IP addresses",
-      UNSAFE_render: ({ acl_ip }: AclRequestTableRows) => {
+      UNSAFE_render: ({ acl_ip }: AclRequestTableRow) => {
         return (
           <Flexbox wrap={"wrap"} gap={"2"}>
             {acl_ip.map((ip, index) => (
@@ -224,7 +228,7 @@ function AclApprovals() {
       type: "custom",
       field: "topicname",
       headerName: "Topic",
-      UNSAFE_render({ topicname, prefixed }: AclRequestTableRows) {
+      UNSAFE_render({ topicname, prefixed }: AclRequestTableRow) {
         return (
           <>
             {topicname}
@@ -257,6 +261,27 @@ function AclApprovals() {
       }),
     },
     {
+      type: "status",
+      field: "requestStatus",
+      headerName: "Status",
+      status: ({ requestStatus }) => {
+        const statusKind: {
+          [key in AclRequestTableRow["requestStatus"]]: ChipStatus;
+        } = {
+          CREATED: "info",
+          DELETED: "danger",
+          DECLINED: "warning",
+          APPROVED: "success",
+          ALL: "neutral",
+          "-": "neutral",
+        };
+        return {
+          status: statusKind[requestStatus],
+          text: requestStatus,
+        };
+      },
+    },
+    {
       type: "text",
       field: "username",
       headerName: "Requested by",
@@ -274,7 +299,7 @@ function AclApprovals() {
       // Warning: Encountered two children with the same key, ``.
       headerName: "",
       type: "custom",
-      UNSAFE_render: ({ id }: AclRequestTableRows) => {
+      UNSAFE_render: ({ id }: AclRequestTableRow) => {
         return (
           <GhostButton
             icon={infoSign}
@@ -293,7 +318,7 @@ function AclApprovals() {
       // Warning: Encountered two children with the same key, ``.
       headerName: "",
       type: "custom",
-      UNSAFE_render: ({ id }: AclRequestTableRows) => {
+      UNSAFE_render: ({ id }: AclRequestTableRow) => {
         const [isLoading, setIsLoading] = useState(false);
 
         return (
@@ -319,7 +344,7 @@ function AclApprovals() {
       // Warning: Encountered two children with the same key, ``.
       headerName: "",
       type: "custom",
-      UNSAFE_render: ({ id }: AclRequestTableRows) => {
+      UNSAFE_render: ({ id }: AclRequestTableRow) => {
         return (
           <GhostButton
             onClick={() => setRejectModal({ isOpen: true, reqNo: String(id) })}
