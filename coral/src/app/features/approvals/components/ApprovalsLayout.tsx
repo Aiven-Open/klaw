@@ -39,18 +39,17 @@ function ApprovalsLayout(props: ApprovalsLayoutProps) {
       {isErrorLoading && (
         <Alert type={"error"}>{errorMessage}. Please try again later!</Alert>
       )}
-      {!isLoading && !isErrorLoading && (
-        <Box
-          display={"flex"}
-          flexDirection={"column"}
-          alignItems={"center"}
-          rowGap={"l4"}
-          className={"a11y-enhancement-data-table"}
-        >
-          {table}
-          {pagination}
-        </Box>
-      )}
+
+      <Box
+        display={"flex"}
+        flexDirection={"column"}
+        alignItems={"center"}
+        rowGap={"l4"}
+        className={"a11y-enhancement-data-table"}
+      >
+        {!isLoading && !isErrorLoading && table}
+        {pagination}
+      </Box>
     </>
   );
 }

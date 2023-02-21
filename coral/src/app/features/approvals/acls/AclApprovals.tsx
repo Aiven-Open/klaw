@@ -14,7 +14,6 @@ import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { PaginationBase } from "src/app/components/PaginationBase";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
 import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
@@ -27,6 +26,7 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { Pagination } from "src/app/features/components/Pagination";
 
 interface AclRequestTableRows {
   id: number;
@@ -74,9 +74,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRows[] => {
 
 function AclApprovals() {
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = Number(searchParams.get("page"));
-  const [activePage, setActivePage] = useState(initialPage || 1);
+  const [page, setPage] = useState<number>(0);
 
   const [detailsModal, setDetailsModal] = useState({
     isOpen: false,
@@ -88,37 +86,27 @@ function AclApprovals() {
 
   const { environment, status, aclType, topic, filters } = useTableFilters();
 
-  const handleChangePage = (activePage: number) => {
-    setActivePage(activePage);
-    searchParams.set("page", activePage.toString());
-    setSearchParams(searchParams);
-  };
-
   const { data, isLoading, isError, error } = useQuery<
     AclRequestsForApprover,
     Error
   >({
-    queryKey: ["aclRequests", activePage, environment, status, aclType, topic],
+    queryKey: ["aclRequests", page, environment, status, aclType, topic],
     queryFn: () =>
       getAclRequestsForApprover({
-        pageNo: String(activePage),
+        pageNo: String(page),
         env: environment,
         requestsType: status,
         aclType,
         topic,
       }),
-    onSuccess: (data) => {
-      // If through filtering a user finds themselves on a non existent page, reset page to 1
-      // For example:
-      // - one request returns 4 pages of results
-      // - navigate to page 4
-      // - change filters, to a request that returns 1 page of results
-      // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
-      if (data.entries.length === 0 && activePage !== 1) {
-        handleChangePage(1);
-      }
-    },
     keepPreviousData: true,
+    // apiCall only if the page is set either to
+    // the one from searchParams or 1 to avoid
+    // multiple calls
+    enabled: page > 0,
+    onSuccess: (data) => {
+      setPage(data.currentPage);
+    },
   });
 
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
@@ -138,7 +126,7 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(activePage - 1);
+        setPage(page - 1);
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync
@@ -166,7 +154,9 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(activePage - 1);
+        console.log("request was last on page");
+        console.log("page", page);
+        console.log("data.currentPage", data.currentPage);
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync
@@ -272,7 +262,7 @@ function AclApprovals() {
     {
       // Not having a headerName triggers React error:
       // Warning: Encountered two children with the same key, ``.
-      headerName: "",
+      headerName: "df",
       type: "custom",
       UNSAFE_render: ({ id }: AclRequestTableRows) => {
         return (
@@ -291,7 +281,7 @@ function AclApprovals() {
       width: 30,
       // Not having a headerName triggers React error:
       // Warning: Encountered two children with the same key, ``.
-      headerName: "",
+      headerName: "ff",
       type: "custom",
       UNSAFE_render: ({ id }: AclRequestTableRows) => {
         const [isLoading, setIsLoading] = useState(false);
@@ -317,7 +307,7 @@ function AclApprovals() {
       width: 30,
       // Not having a headerName triggers React error:
       // Warning: Encountered two children with the same key, ``.
-      headerName: "",
+      headerName: "f",
       type: "custom",
       UNSAFE_render: ({ id }: AclRequestTableRows) => {
         return (
@@ -332,14 +322,13 @@ function AclApprovals() {
     },
   ];
 
-  const pagination =
-    data?.totalPages && data.totalPages > 1 ? (
-      <PaginationBase
-        activePage={data.currentPage}
-        totalPages={data.totalPages}
-        setActivePage={handleChangePage}
-      />
-    ) : undefined;
+  const pagination = (
+    <Pagination
+      page={data?.currentPage}
+      totalPages={data?.totalPages}
+      setPage={setPage}
+    />
+  );
 
   return (
     <>

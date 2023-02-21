@@ -24,6 +24,7 @@ const createAclRequest = (
 };
 
 const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
+  console.log("api call");
   const filteredParams = omitBy(params, (value, property) => {
     const omitEnv = property === "env" && value === "ALL";
     const omitAclType = property === "aclType" && value === "ALL";
