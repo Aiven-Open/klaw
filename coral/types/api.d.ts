@@ -706,6 +706,8 @@ export type components = {
       allPageNos?: string[];
       /** @example DevRel */
       approvingTeamDetails?: string;
+      editable?: boolean;
+      deletable?: boolean;
     };
     /** SchemaRequest */
     SchemaRequest: {

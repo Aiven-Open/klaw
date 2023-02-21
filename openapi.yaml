@@ -1253,6 +1253,10 @@ components:
         approvingTeamDetails:
           type: string
           example: "DevRel"
+        editable:
+          type: boolean
+        deletable:
+          type: boolean
     SchemaRequest:
       title: SchemaRequest
       required:
