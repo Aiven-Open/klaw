@@ -16,7 +16,7 @@ public class OpenApiConfig {
   private String kwVersion;
 
   @Bean
-  public OpenAPI springShopOpenAPI() {
+  public OpenAPI klawOpenAPI() {
     return new OpenAPI()
         .info(
             new Info()

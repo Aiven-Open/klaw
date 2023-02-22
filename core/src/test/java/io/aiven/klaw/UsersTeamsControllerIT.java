@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TeamModel;
@@ -35,6 +36,7 @@ public class UsersTeamsControllerIT {
 
   private static final String INFRATEAM_ID = "1001";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String STAGINGTEAM = "STAGINGTEAM";
 
   private static MockMethods mockMethods;
 
@@ -42,12 +44,15 @@ public class UsersTeamsControllerIT {
 
   private static String superAdmin = "superadmin";
   private static String superAdminPwd = "kwsuperadmin123$$";
-  private static String user1 = "kwusera", user2 = "kwuserb";
-  private static String teamName = "Octopus";
+  private static String user1 = "kwusera",
+      user2 = "kwuserb",
+      switchUser1 = "kwuserc",
+      switchUser2 = "kwuserd",
+      switchUser3 = "kwusere";
+  private static String octopusTeamName = "Octopus";
   private static String userPwd = "user";
 
   private static final String INFRATEAM = "INFRATEAM";
-  private static final String PASSWORD = "user";
 
   @BeforeAll
   public static void setup() {
@@ -94,7 +99,7 @@ public class UsersTeamsControllerIT {
   @Test
   @Order(1)
   public void createTeamSuccess() throws Exception {
-    TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
+    TeamModel teamModelRequest = mockMethods.getTeamModel(octopusTeamName);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
@@ -125,14 +130,14 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
 
     TeamModel teamModel = OBJECT_MAPPER.readValue(response, TeamModel.class);
-    assertThat(teamModel.getTeamname()).isEqualTo(teamName);
+    assertThat(teamModel.getTeamname()).isEqualTo(octopusTeamName);
   }
 
   // Create same team again, failure
   @Test
   @Order(2)
   public void createSameTeamAgainFailure() throws Exception {
-    TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
+    TeamModel teamModelRequest = mockMethods.getTeamModel(octopusTeamName);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
@@ -155,7 +160,7 @@ public class UsersTeamsControllerIT {
   @Test
   @Order(3)
   public void createTeamWithInvalidEmailId() throws Exception {
-    TeamModel teamModelRequest = mockMethods.getTeamModelFailure(teamName);
+    TeamModel teamModelRequest = mockMethods.getTeamModelFailure(octopusTeamName);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
@@ -176,7 +181,7 @@ public class UsersTeamsControllerIT {
   @Order(4)
   public void modifyTeamSuccess() throws Exception {
     String emailId = "testteam@testteam.com";
-    TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
+    TeamModel teamModelRequest = mockMethods.getTeamModel(octopusTeamName);
     teamModelRequest.setTenantId(101);
     teamModelRequest.setTeamId(1003);
     teamModelRequest.setTeammail(emailId);
@@ -218,7 +223,7 @@ public class UsersTeamsControllerIT {
   @Test
   @Order(6)
   public void createTeamFailureNotAuthorized() throws Exception {
-    TeamModel teamModelRequest = mockMethods.getTeamModel(teamName);
+    TeamModel teamModelRequest = mockMethods.getTeamModel(octopusTeamName);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(teamModelRequest);
 
     String response =
@@ -357,7 +362,308 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TeamModel> teamModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<TeamModel> teamModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModels).hasSize(3);
+  }
+
+  // Create user with USER role, switch teams
+  @Test
+  @Order(11)
+  public void createUserWithSwitchTeams() throws Exception {
+    String role = "USER";
+    UserInfoModel userInfoModel =
+        mockMethods.getUserInfoModelSwitchTeams(
+            switchUser1, role, INFRATEAM, 2); // switch teams 1001, 1002
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(12)
+  public void getSwitchTeamsOfUser() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/user/" + switchUser1 + "/switchTeamsList")
+                    .with(user(superAdmin).password(superAdmin))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    List<TeamModel> teamModelList =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(teamModelList)
+        .hasSize(2)
+        .extracting(TeamModel::getTeamId)
+        .containsExactlyInAnyOrder(1001, 1002);
+    assertThat(teamModelList)
+        .extracting(TeamModel::getTeamname)
+        .containsExactlyInAnyOrder(INFRATEAM, STAGINGTEAM);
+  }
+
+  @Test
+  @Order(13)
+  public void createUserWithSwitchTeamsOwnTeamIsNotInSwitchTeamsFailure() throws Exception {
+    String role = "USER";
+    UserInfoModel userInfoModel =
+        mockMethods.getUserInfoModelSwitchTeams(switchUser2, role, octopusTeamName, 2);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains("Please select your own team, in the switch teams list.");
+  }
+
+  @Test
+  @Order(14)
+  public void createUserWithSwitchTeamsOnlyOneTeamSelectedFailure() throws Exception {
+    String role = "USER";
+    UserInfoModel userInfoModel =
+        mockMethods.getUserInfoModelSwitchTeams(
+            switchUser3, role, octopusTeamName, 1); // 1 switch team
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains("Please make sure atleast 2 teams are selected.");
+  }
+
+  @Test
+  @Order(15)
+  public void createUserWithSwitchTeamsNoTeamSelectedFailure() throws Exception {
+    String role = "USER";
+    UserInfoModel userInfoModel =
+        mockMethods.getUserInfoModelSwitchTeams(
+            "kwuserf", role, octopusTeamName, 0); // 0 switch teams
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains("Please make sure atleast 2 teams are selected.");
+  }
+
+  @Test
+  @Order(16)
+  public void updateUserTeam() throws Exception {
+    UserInfoModel userInfoModel = new UserInfoModel();
+    userInfoModel.setUsername(switchUser1); // base team : INFRATEAM 1001
+    int newTeamId = 1002;
+    userInfoModel.setTeamId(newTeamId); // 1002 is one of the switch teams for this user
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/user/updateTeam")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getUserDetails")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("userId", switchUser1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UserInfoModel userInfoModelActual =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(userInfoModelActual.getTeamId()).isEqualTo(newTeamId);
+    assertThat(userInfoModelActual.getTeam()).isEqualTo(STAGINGTEAM);
+    assertThat(userInfoModelActual.getSwitchAllowedTeamIds())
+        .hasSize(2)
+        .containsExactlyInAnyOrder(1001, 1002);
+  }
+
+  @Test
+  @Order(17)
+  public void updateUserTeamInvalidSwitchTeam() throws Exception {
+    UserInfoModel userInfoModel = new UserInfoModel();
+    userInfoModel.setUsername(
+        switchUser1); // base team : STAGINGTEAM 1002, switch teams : 1001, 1002
+    int newTeamId = 1003; // Octopus, not in switch teams
+    userInfoModel.setTeamId(newTeamId);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/user/updateTeam")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains(ApiResultStatus.NOT_AUTHORIZED.value);
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getUserDetails")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("userId", switchUser1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UserInfoModel userInfoModelActual =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(userInfoModelActual.getTeamId()).isEqualTo(1002); // no change
+    assertThat(userInfoModelActual.getTeam()).isEqualTo(STAGINGTEAM); // no change, old team
+  }
+
+  // Update user with USER role, switch teams
+  @Test
+  @Order(18)
+  public void updateUserWithSwitchTeams() throws Exception {
+    String role = "USER";
+    UserInfoModel userInfoModel =
+        mockMethods.getUserInfoModelSwitchTeams(
+            user2, role, INFRATEAM, 2); // add switch teams 1001, 1002
+    userInfoModel.setTeamId(1001);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/updateUser")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(19)
+  public void getSwitchTeamsOfUpdatedUser() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/user/" + user2 + "/switchTeamsList")
+                    .with(user(superAdmin).password(superAdmin))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    List<TeamModel> teamModelList =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(teamModelList)
+        .hasSize(2)
+        .extracting(TeamModel::getTeamId)
+        .containsExactlyInAnyOrder(1001, 1002);
+    assertThat(teamModelList)
+        .extracting(TeamModel::getTeamname)
+        .containsExactlyInAnyOrder(INFRATEAM, STAGINGTEAM);
+  }
+
+  @Test
+  @Order(20)
+  public void showUserList() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/showUserList")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    List<UserInfoModel> userInfoModelList =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(userInfoModelList).hasSize(3); // superadmin, kwuserb, kwuserc
+    assertThat(
+            userInfoModelList.stream()
+                .filter(userInfo -> userInfo.getUsername().equals(switchUser1))
+                .findFirst()
+                .get()
+                .getSwitchAllowedTeamIds())
+        .containsExactlyInAnyOrder(1001, 1002);
+    assertThat(
+            userInfoModelList.stream()
+                .filter(userInfo -> userInfo.getUsername().equals(user2))
+                .findFirst()
+                .get()
+                .getSwitchAllowedTeamIds())
+        .containsExactlyInAnyOrder(1001, 1002);
+  }
+
+  @Test
+  @Order(21)
+  public void myProfileInfo() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getMyProfileInfo")
+                    .with(user(switchUser1).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    UserInfoModel userInfoModelActual =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(userInfoModelActual.getTeamId()).isEqualTo(1002); // no change
+    assertThat(userInfoModelActual.getTeam()).isEqualTo(STAGINGTEAM); // no change, old team
+    assertThat(userInfoModelActual.getSwitchAllowedTeamIds())
+        .hasSize(2)
+        .containsExactlyInAnyOrder(1001, 1002);
   }
 }

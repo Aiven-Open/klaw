@@ -41,6 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -148,6 +149,10 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
+    if (newUser.getTeamId() == null) {
+      return ApiResponse.builder().result("Team id cannot be empty.").build();
+    }
+
     UserInfo existingUserInfo =
         manageDatabase.getHandleDbRequests().getUsersInfo(newUser.getUsername());
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -197,17 +202,15 @@ public class UsersTeamsControllerService {
       }
 
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-      UserInfo userInfo = new UserInfo();
 
-      copyProperties(newUser, userInfo);
-      userInfo.setPwd(newUser.getUserPassword());
-      userInfo.setTenantId(tenantId);
-      if (updateSwitchTeams(newUser, userInfo))
-        return ApiResponse.builder()
-            .result("Please select your own team, in the switch teams list.")
-            .build();
+      copyProperties(newUser, existingUserInfo);
+      existingUserInfo.setPwd(newUser.getUserPassword());
+      existingUserInfo.setTenantId(tenantId);
+      Pair<Boolean, String> switchTeamsCheck = updateSwitchTeams(newUser, existingUserInfo);
+      if (switchTeamsCheck.getLeft())
+        return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
 
-      return ApiResponse.builder().result(dbHandle.updateUser(userInfo)).build();
+      return ApiResponse.builder().result(dbHandle.updateUser(existingUserInfo)).build();
     } catch (Exception e) {
       log.error("Error from updateUser ", e);
       throw new KlawException(e.getMessage());
@@ -512,10 +515,9 @@ public class UsersTeamsControllerService {
       UserInfo userInfo = new UserInfo();
       copyProperties(newUser, userInfo);
 
-      if (updateSwitchTeams(newUser, userInfo))
-        return ApiResponse.builder()
-            .result("Please select your own team, in the switch teams list.")
-            .build();
+      Pair<Boolean, String> switchTeamsCheck = updateSwitchTeams(newUser, userInfo);
+      if (switchTeamsCheck.getLeft())
+        return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
 
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
@@ -552,20 +554,22 @@ public class UsersTeamsControllerService {
     }
   }
 
-  private static boolean updateSwitchTeams(UserInfoModel sourceUser, UserInfo targetUser)
+  private Pair<Boolean, String> updateSwitchTeams(UserInfoModel sourceUser, UserInfo targetUser)
       throws JsonProcessingException {
     if (sourceUser.isSwitchTeams()) {
       Set<Integer> switchAllowedTeamIds = sourceUser.getSwitchAllowedTeamIds();
-      if (!switchAllowedTeamIds.isEmpty()
-          && !switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
-        return true;
+      if (switchAllowedTeamIds == null
+          || switchAllowedTeamIds.isEmpty()
+          || switchAllowedTeamIds.size() < 2) { // make sure atleast 2 teams are selected to switch
+        return Pair.of(Boolean.TRUE, "Please make sure atleast 2 teams are selected.");
+      } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
+        return Pair.of(Boolean.TRUE, "Please select your own team, in the switch teams list.");
       }
-      if (!switchAllowedTeamIds.isEmpty()) {
-        targetUser.setSwitchAllowedTeamIds(
-            OBJECT_MAPPER.writer().writeValueAsString(switchAllowedTeamIds));
-      }
+
+      targetUser.setSwitchAllowedTeamIds(
+          OBJECT_MAPPER.writer().writeValueAsString(switchAllowedTeamIds));
     }
-    return false;
+    return Pair.of(Boolean.FALSE, "");
   }
 
   public ApiResponse addNewTeam(TeamModel newTeam, boolean isExternal) throws KlawException {
@@ -737,6 +741,7 @@ public class UsersTeamsControllerService {
     UserInfoModel userInfoModel = new UserInfoModel();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails);
     copyProperties(userInfo, userInfoModel);
+    updateSwitchTeamsList(userInfoModel, userInfo, userInfo.getTenantId(), true);
     userInfoModel.setTeam(
         manageDatabase.getTeamNameFromTeamId(
             commonUtilsService.getTenantId(userDetails), userInfo.getTeamId()));
@@ -1037,7 +1042,7 @@ public class UsersTeamsControllerService {
     return teamModelList;
   }
 
-  public ApiResponse updateProfileTeam(UserInfoModel userProfileDetails) {
+  public ApiResponse updateUserTeamFromSwitchTeams(UserInfoModel userProfileDetails) {
     String userIdToBeUpdated = userProfileDetails.getUsername();
     Integer newTeamId = userProfileDetails.getTeamId();
     log.info("updateProfileTeam {}", userIdToBeUpdated);

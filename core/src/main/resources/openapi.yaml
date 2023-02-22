@@ -24,7 +24,7 @@
     "/user/updateTeam" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
-        "operationId" : "updateProfileTeam",
+        "operationId" : "updateUserTeamFromSwitchTeams",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -1821,16 +1821,18 @@
         "parameters" : [ {
           "name" : "teamName",
           "in" : "query",
-          "required" : true,
+          "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "default" : ""
           }
         }, {
           "name" : "pageNo",
           "in" : "query",
-          "required" : true,
+          "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "string",
+            "default" : "1"
           }
         }, {
           "name" : "searchUserParam",
@@ -6142,13 +6144,13 @@
       },
       "Scales" : {
         "properties" : {
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"

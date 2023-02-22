@@ -180,8 +180,8 @@ public class UsersTeamsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<UserInfoModel>> showUsers(
-      @RequestParam("teamName") String teamName,
-      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "teamName", defaultValue = "") String teamName,
+      @RequestParam(value = "pageNo", defaultValue = "1") String pageNo,
       @RequestParam(value = "searchUserParam", defaultValue = "") String searchUserParam) {
     return new ResponseEntity<>(
         usersTeamsControllerService.showUsers(teamName, searchUserParam, pageNo), HttpStatus.OK);
@@ -224,11 +224,13 @@ public class UsersTeamsController {
   }
 
   /*
-  Update switch teams for a user
+  Update base team for a user.
+  Base team should be one of the switch teams.
    */
   @PostMapping(value = "/user/updateTeam")
-  public ResponseEntity<ApiResponse> updateProfileTeam(@RequestBody UserInfoModel userInfoModel) {
+  public ResponseEntity<ApiResponse> updateUserTeamFromSwitchTeams(
+      @RequestBody UserInfoModel userInfoModel) {
     return new ResponseEntity<>(
-        usersTeamsControllerService.updateProfileTeam(userInfoModel), HttpStatus.OK);
+        usersTeamsControllerService.updateUserTeamFromSwitchTeams(userInfoModel), HttpStatus.OK);
   }
 }
