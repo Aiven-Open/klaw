@@ -324,4 +324,53 @@ describe("SchemaApprovals", () => {
       });
     });
   });
+
+  describe("shows a detail modal for schema request", () => {
+    beforeEach(async () => {
+      mockGetSchemaRequestsForApprover.mockResolvedValue(mockedApiResponse);
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows detail modal for first request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockedApiResponse.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(firstRequest.topicname);
+    });
+
+    it("shows detail modal for last request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const lastRequest =
+        mockedApiResponse.entries[mockedApiResponse.entries.length - 1];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${lastRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+  });
 });
