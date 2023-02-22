@@ -5,8 +5,6 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
@@ -107,22 +105,15 @@ public class UsersTeamsControllerService {
   private void updateSwitchTeamsList(
       UserInfoModel userInfoModel, UserInfo userInfo, int tenantId, boolean updateTeamName) {
     if (userInfo.isSwitchTeams()) {
-      try {
-        String switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
-        if (switchAllowedTeamIds != null) {
-          Set<String> switchAllowedTeamNames = new HashSet<>();
-          userInfoModel.setSwitchAllowedTeamIds(
-              OBJECT_MAPPER.readValue(switchAllowedTeamIds, new TypeReference<>() {}));
-          if (updateTeamName) {
-            for (Integer switchAllowedTeamId : userInfoModel.getSwitchAllowedTeamIds()) {
-              switchAllowedTeamNames.add(
-                  manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));
-            }
-            userInfoModel.setSwitchAllowedTeamNames(switchAllowedTeamNames);
-          }
-        }
-      } catch (JsonProcessingException e) {
-        log.error("Ignore error : Unable to parse switch team ids : {}", userInfo.getUsername());
+      Set<Integer> switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
+      Set<String> switchAllowedTeamNames = new HashSet<>();
+
+      if (updateTeamName) {
+        switchAllowedTeamIds.forEach(
+            switchAllowedTeamId ->
+                switchAllowedTeamNames.add(
+                    manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId)));
+        userInfoModel.setSwitchAllowedTeamNames(switchAllowedTeamNames);
       }
     }
   }
@@ -206,9 +197,10 @@ public class UsersTeamsControllerService {
       copyProperties(newUser, existingUserInfo);
       existingUserInfo.setPwd(newUser.getUserPassword());
       existingUserInfo.setTenantId(tenantId);
-      Pair<Boolean, String> switchTeamsCheck = updateSwitchTeams(newUser, existingUserInfo);
-      if (switchTeamsCheck.getLeft())
+      Pair<Boolean, String> switchTeamsCheck = validateSwitchTeams(newUser);
+      if (switchTeamsCheck.getLeft()) {
         return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
+      }
 
       return ApiResponse.builder().result(dbHandle.updateUser(existingUserInfo)).build();
     } catch (Exception e) {
@@ -515,7 +507,7 @@ public class UsersTeamsControllerService {
       UserInfo userInfo = new UserInfo();
       copyProperties(newUser, userInfo);
 
-      Pair<Boolean, String> switchTeamsCheck = updateSwitchTeams(newUser, userInfo);
+      Pair<Boolean, String> switchTeamsCheck = validateSwitchTeams(newUser);
       if (switchTeamsCheck.getLeft())
         return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
 
@@ -554,8 +546,7 @@ public class UsersTeamsControllerService {
     }
   }
 
-  private Pair<Boolean, String> updateSwitchTeams(UserInfoModel sourceUser, UserInfo targetUser)
-      throws JsonProcessingException {
+  private Pair<Boolean, String> validateSwitchTeams(UserInfoModel sourceUser) {
     if (sourceUser.isSwitchTeams()) {
       Set<Integer> switchAllowedTeamIds = sourceUser.getSwitchAllowedTeamIds();
       if (switchAllowedTeamIds == null
@@ -565,9 +556,6 @@ public class UsersTeamsControllerService {
       } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
         return Pair.of(Boolean.TRUE, "Please select your own team, in the switch teams list.");
       }
-
-      targetUser.setSwitchAllowedTeamIds(
-          OBJECT_MAPPER.writer().writeValueAsString(switchAllowedTeamIds));
     }
     return Pair.of(Boolean.FALSE, "");
   }
@@ -1021,21 +1009,15 @@ public class UsersTeamsControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (userInfo.isSwitchTeams()) {
-      try {
-        String switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
-        if (switchAllowedTeamIds != null) {
-          Set<Integer> teamIds =
-              OBJECT_MAPPER.readValue(switchAllowedTeamIds, new TypeReference<>() {});
-          for (Integer switchAllowedTeamId : teamIds) {
-            TeamModel teamModel = new TeamModel();
-            teamModel.setTeamId(switchAllowedTeamId);
-            teamModel.setTeamname(
-                manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));
-            teamModelList.add(teamModel);
-          }
+      Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();
+      if (teamIds != null) {
+        for (Integer switchAllowedTeamId : teamIds) {
+          TeamModel teamModel = new TeamModel();
+          teamModel.setTeamId(switchAllowedTeamId);
+          teamModel.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));
+          teamModelList.add(teamModel);
         }
-      } catch (JsonProcessingException e) {
-        log.error("Ignore error : Unable to parse switch team ids : {}", userInfo.getUsername());
       }
     }
 
@@ -1054,18 +1036,11 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    String switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
-    if (switchAllowedTeamIds != null) {
-      Set<Integer> teamIds;
-      try {
-        teamIds = OBJECT_MAPPER.readValue(switchAllowedTeamIds, new TypeReference<>() {});
-        if (teamIds == null || teamIds.isEmpty()) {
-          authorizedUser = false;
-        } else if (!teamIds.contains(userProfileDetails.getTeamId())) {
-          authorizedUser = false;
-        }
-      } catch (JsonProcessingException e) {
-        log.error("Ignore error : Unable to parse switch team ids : {}", userInfo.getUsername());
+    Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();
+    if (teamIds != null) {
+      if (teamIds.isEmpty()) {
+        authorizedUser = false;
+      } else if (!teamIds.contains(userProfileDetails.getTeamId())) {
         authorizedUser = false;
       }
     } else {
