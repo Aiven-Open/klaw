@@ -2,6 +2,9 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TopicRequest } from "src/domain/topic";
+import userEvent from "@testing-library/user-event";
+
+const mockedSetDetailsModal = jest.fn();
 
 const mockedRequests: TopicRequest[] = [
   {
@@ -85,7 +88,7 @@ describe("TopicApprovalsTable", () => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
-          setDetailsModal={() => null}
+          setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
         />
       );
@@ -174,7 +177,7 @@ describe("TopicApprovalsTable", () => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
-          setDetailsModal={() => null}
+          setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
         />
       );
@@ -227,6 +230,32 @@ describe("TopicApprovalsTable", () => {
           });
         });
       }
+    });
+  });
+
+  describe("handles interaction with action columns", () => {
+    beforeAll(() => {
+      mockIntersectionObserver();
+      render(
+        <TopicApprovalsTable
+          setDetailsModal={mockedSetDetailsModal}
+          requests={mockedRequests}
+        />
+      );
+    });
+    afterAll(cleanup);
+
+    it("shows a Modal when clicking Show details", async () => {
+      const showDetails = screen.getByRole("button", {
+        name: "View topic request for test-topic-1",
+      });
+
+      await userEvent.click(showDetails);
+
+      expect(mockedSetDetailsModal).toHaveBeenCalledWith({
+        isOpen: true,
+        topicId: 1000,
+      });
     });
   });
 });
