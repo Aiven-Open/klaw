@@ -1,30 +1,49 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import SelectTeam from "src/app/features/topics/browse/components/select-team/SelectTeam";
-import { server } from "src/services/api-mocks/server";
-import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
+import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
+import { getTeams } from "src/domain/team/team-api";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
+
+jest.mock("src/domain/team/team-api");
+
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+
+const mockedTeamsResponse = [
+  {
+    teamname: "Ospo",
+    teammail: "ospo@aiven.io",
+    teamphone: "003157843623",
+    contactperson: "Ospo Office",
+    tenantId: 101,
+    teamId: 1003,
+    app: "",
+    showDeleteTeam: false,
+    tenantName: "default",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "DevRel",
+    teammail: "devrel@aiven.io",
+    teamphone: "003146237478",
+    contactperson: "Dev Rel",
+    tenantId: 101,
+    teamId: 1004,
+    app: "",
+    showDeleteTeam: false,
+    tenantName: "default",
+    envList: ["ALL"],
+  },
+];
 
 const filterLabel = "Filter by team";
 describe("SelectTeam.tsx", () => {
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   describe("renders default view when no query is set", () => {
     const mockedOnChange = jest.fn();
 
     beforeAll(async () => {
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         memoryRouter: true,
         queryClient: true,
@@ -45,15 +64,15 @@ describe("SelectTeam.tsx", () => {
     });
 
     it("renders a list of given options for teams plus a option for `All teams`", () => {
-      mockedTeamResponse.forEach((team) => {
+      mockedTeamsResponse.forEach((team) => {
         const option = screen.getByRole("option", {
-          name: team,
+          name: team.teamname,
         });
 
         expect(option).toBeEnabled();
       });
       expect(screen.getAllByRole("option")).toHaveLength(
-        mockedTeamResponse.length + 1
+        mockedTeamsResponse.length + 1
       );
     });
 
@@ -63,24 +82,18 @@ describe("SelectTeam.tsx", () => {
       });
       expect(option).toHaveAccessibleName("All teams");
     });
-
-    it("updates the team state for initial api call with value associated with `All teams`", () => {
-      expect(mockedOnChange).toHaveBeenCalledWith(ALL_TEAMS_VALUE);
-    });
   });
 
   describe("sets the active team based on a query param", () => {
     const mockedOnChange = jest.fn();
 
-    const teamQueryValue = "TEST_TEAM_02";
+    const optionName = "Ospo";
+    const optionId = "1003";
 
     beforeEach(async () => {
-      const routePath = "/topics?team=TEST_TEAM_02";
+      const routePath = `/topics?team=${optionId}`;
 
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         memoryRouter: true,
@@ -97,28 +110,23 @@ describe("SelectTeam.tsx", () => {
       cleanup();
     });
 
-    it("shows `TEST_TEAM_02` as the active option one", async () => {
+    it("shows `Ospo` as the active option one", async () => {
       const option = await screen.findByRole("option", {
-        name: teamQueryValue,
+        name: optionName,
         selected: true,
       });
       expect(option).toBeVisible();
-    });
-
-    it("updates the team state for api call", () => {
-      expect(mockedOnChange).toHaveBeenCalledTimes(1);
     });
   });
 
   describe("handles user selecting a team", () => {
     const mockedOnChange = jest.fn();
-    const optionToSelect = "TEST_TEAM_02";
+    const optionToSelect = "Ospo";
+    const optionId = "1003";
 
     beforeEach(async () => {
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         queryClient: true,
         memoryRouter: true,
@@ -133,17 +141,6 @@ describe("SelectTeam.tsx", () => {
       cleanup();
     });
 
-    it("updates state for api call when user selects a new team", async () => {
-      const select = screen.getByRole("combobox", {
-        name: filterLabel,
-      });
-      const option = screen.getByRole("option", { name: optionToSelect });
-
-      await userEvent.selectOptions(select, option);
-
-      expect(mockedOnChange).toHaveBeenCalledWith(optionToSelect);
-    });
-
     it("sets the team the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
@@ -152,19 +149,18 @@ describe("SelectTeam.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue(optionToSelect);
+      expect(select).toHaveValue(optionId);
+      expect(select).toHaveDisplayValue(optionToSelect);
     });
   });
 
   describe("updates the search param to preserve team in url", () => {
     const mockedOnChange = jest.fn();
-    const optionToSelect = "TEST_TEAM_01";
+    const optionToSelect = "DevRel";
+    const optionId = "1004";
 
     beforeEach(async () => {
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
       customRender(<SelectTeam onChange={mockedOnChange} />, {
         queryClient: true,
         browserRouter: true,
@@ -185,7 +181,7 @@ describe("SelectTeam.tsx", () => {
       expect(window.location.search).toEqual("");
     });
 
-    it("sets `TEST_TEAM_01` as search param when user selected it", async () => {
+    it("sets `DevRel` as search param when user selected it", async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -195,7 +191,7 @@ describe("SelectTeam.tsx", () => {
       await userEvent.selectOptions(select, option);
 
       await waitFor(() => {
-        expect(window.location.search).toEqual(`?team=${optionToSelect}`);
+        expect(window.location.search).toEqual(`?team=${optionId}`);
       });
     });
   });

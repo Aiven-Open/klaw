@@ -2,7 +2,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { ReactElement } from "react";
 import { server } from "src/services/api-mocks/server";
-import { useGetTeams } from "src/app/features/topics/browse/hooks/teams/useGetTeams";
+import { useGetTeamNames } from "src/app/features/topics/browse/hooks/team-names/useGetTeamNames";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
 
@@ -12,7 +12,7 @@ const wrapper = ({ children }: { children: ReactElement }) => (
   </QueryClientProvider>
 );
 
-describe("useGetTeams", () => {
+describe("useGetTeamNames", () => {
   const originalConsoleError = console.error;
 
   beforeAll(() => {
@@ -35,7 +35,7 @@ describe("useGetTeams", () => {
         response: { data: mockedTeamResponse },
       });
 
-      const { result } = await renderHook(() => useGetTeams(), {
+      const { result } = await renderHook(() => useGetTeamNames(), {
         wrapper,
       });
       expect(result.current.isLoading).toBe(true);
@@ -53,7 +53,7 @@ describe("useGetTeams", () => {
         response: { status: 400, data: { message: "" } },
       });
 
-      const { result } = await renderHook(() => useGetTeams(), {
+      const { result } = await renderHook(() => useGetTeamNames(), {
         wrapper,
       });
 
@@ -71,7 +71,7 @@ describe("useGetTeams", () => {
         response: { data: mockedTeamResponse },
       });
 
-      const { result } = await renderHook(() => useGetTeams(), {
+      const { result } = await renderHook(() => useGetTeamNames(), {
         wrapper,
       });
 
