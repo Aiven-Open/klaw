@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import SelectTeam from "src/app/features/topics/browse/components/select-team/SelectTeam";
+import SelectTeamName from "src/app/features/topics/browse/components/select-team-name/SelectTeamName";
 import { server } from "src/services/api-mocks/server";
 import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -8,7 +8,7 @@ import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 const filterLabel = "Filter by team";
-describe("SelectTeam.tsx", () => {
+describe("SelectTeamName.tsx", () => {
   beforeAll(() => {
     server.listen();
   });
@@ -25,7 +25,7 @@ describe("SelectTeam.tsx", () => {
         mswInstance: server,
         response: { data: mockedTeamResponse },
       });
-      customRender(<SelectTeam onChange={mockedOnChange} />, {
+      customRender(<SelectTeamName onChange={mockedOnChange} />, {
         memoryRouter: true,
         queryClient: true,
       });
@@ -82,7 +82,7 @@ describe("SelectTeam.tsx", () => {
         response: { data: mockedTeamResponse },
       });
 
-      customRender(<SelectTeam onChange={mockedOnChange} />, {
+      customRender(<SelectTeamName onChange={mockedOnChange} />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -119,7 +119,7 @@ describe("SelectTeam.tsx", () => {
         mswInstance: server,
         response: { data: mockedTeamResponse },
       });
-      customRender(<SelectTeam onChange={mockedOnChange} />, {
+      customRender(<SelectTeamName onChange={mockedOnChange} />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -165,7 +165,7 @@ describe("SelectTeam.tsx", () => {
         mswInstance: server,
         response: { data: mockedTeamResponse },
       });
-      customRender(<SelectTeam onChange={mockedOnChange} />, {
+      customRender(<SelectTeamName onChange={mockedOnChange} />, {
         queryClient: true,
         browserRouter: true,
       });

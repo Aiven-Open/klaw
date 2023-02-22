@@ -5,11 +5,11 @@ import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 import { useSearchParams } from "react-router-dom";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 
-type SelectTeamProps = {
+type SelectTeamNameProps = {
   onChange: (teamName: Team) => void;
 };
 
-function SelectTeam(props: SelectTeamProps) {
+function SelectTeamName(props: SelectTeamNameProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const initialTeam = searchParams.get("team");
@@ -65,4 +65,4 @@ function SelectTeam(props: SelectTeamProps) {
   }
 }
 
-export default SelectTeam;
+export default SelectTeamName;
