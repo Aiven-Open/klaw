@@ -1,4 +1,4 @@
-import type { operations } from "types/api";
+import omitBy from "lodash/omitBy";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
@@ -11,13 +11,12 @@ import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
   TopicRequestApiResponse,
-  TopicRequestStatus,
 } from "src/domain/topic/topic-types";
 import api from "src/services/api";
 import {
   KlawApiRequest,
+  KlawApiRequestQueryParameters,
   KlawApiResponse,
-  ResolveIntersectionTypes,
 } from "types/utils";
 
 const getTopics = async ({
@@ -103,36 +102,24 @@ const requestTopic = (
   >("/createTopics", payload);
 };
 
-type GetTopicRequestsArgs = {
-  pageNumber?: number;
-  currentPage?: number;
-  requestStatus: TopicRequestStatus;
-};
+const getTopicRequestsForApprover = (
+  params: KlawApiRequestQueryParameters<"getTopicRequestsForApprover">
+): Promise<TopicRequestApiResponse> => {
+  const filteredParams = omitBy(
+    { ...params, teamId: String(params.teamId) },
+    (value, property) => {
+      const omitTeamId = property === "teamId" && value === "undefined";
+      const omitSearch = property === "search" && value === "";
+      const omitEnv =
+        property === "env" && (value === "ALL" || value === undefined);
 
-type GetTopicRequestsQueryParams = ResolveIntersectionTypes<
-  Required<
-    Pick<
-      operations["getTopicRequestsForApprover"]["parameters"]["query"],
-      "pageNo" | "currentPage" | "requestStatus"
-    >
-  >
->;
+      return omitTeamId || omitSearch || omitEnv;
+    }
+  );
 
-const getTopicRequestsForApprover = ({
-  requestStatus,
-  pageNumber = 1,
-  currentPage = 1,
-}: GetTopicRequestsArgs): Promise<TopicRequestApiResponse> => {
-  const queryObject: GetTopicRequestsQueryParams = {
-    pageNo: pageNumber.toString(),
-    currentPage: currentPage.toString(),
-    requestStatus: requestStatus,
-  };
   return api
     .get<KlawApiResponse<"getTopicRequestsForApprover">>(
-      `/getTopicRequestsForApprover?${new URLSearchParams(
-        queryObject
-      ).toString()}`
+      `/getTopicRequestsForApprover?${new URLSearchParams(filteredParams)}`
     )
     .then(transformGetTopicRequestsForApproverResponse);
 };
