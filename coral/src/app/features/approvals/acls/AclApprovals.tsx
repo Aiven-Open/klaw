@@ -318,24 +318,25 @@ function AclApprovals() {
       // Warning: Encountered two children with the same key, ``.
       headerName: "",
       type: "custom",
-      UNSAFE_render: ({ id }: AclRequestTableRow) => {
+      UNSAFE_render: ({ id, requestStatus }: AclRequestTableRow) => {
         const [isLoading, setIsLoading] = useState(false);
-
-        return (
-          <GhostButton
-            onClick={() => {
-              setIsLoading(true);
-              return approveRequest({ req_no: String(id) });
-            }}
-            title={"Approve request"}
-          >
-            {isLoading && approveIsLoading ? (
-              <Icon color="grey-70" icon={loadingIcon} />
-            ) : (
-              <Icon color="grey-70" icon={tickCircle} />
-            )}
-          </GhostButton>
-        );
+        if (requestStatus === "CREATED") {
+          return (
+            <GhostButton
+              onClick={() => {
+                setIsLoading(true);
+                return approveRequest({ req_no: String(id) });
+              }}
+              title={"Approve request"}
+            >
+              {isLoading && approveIsLoading ? (
+                <Icon color="grey-70" icon={loadingIcon} />
+              ) : (
+                <Icon color="grey-70" icon={tickCircle} />
+              )}
+            </GhostButton>
+          );
+        }
       },
     },
     {
@@ -344,15 +345,19 @@ function AclApprovals() {
       // Warning: Encountered two children with the same key, ``.
       headerName: "",
       type: "custom",
-      UNSAFE_render: ({ id }: AclRequestTableRow) => {
-        return (
-          <GhostButton
-            onClick={() => setRejectModal({ isOpen: true, reqNo: String(id) })}
-            title={"Reject request"}
-          >
-            <Icon color="grey-70" icon={deleteIcon} />
-          </GhostButton>
-        );
+      UNSAFE_render: ({ id, requestStatus }: AclRequestTableRow) => {
+        if (requestStatus === "CREATED") {
+          return (
+            <GhostButton
+              onClick={() =>
+                setRejectModal({ isOpen: true, reqNo: String(id) })
+              }
+              title={"Reject request"}
+            >
+              <Icon color="grey-70" icon={deleteIcon} />
+            </GhostButton>
+          );
+        }
       },
     },
   ];
@@ -365,6 +370,10 @@ function AclApprovals() {
         setActivePage={handleChangePage}
       />
     ) : undefined;
+
+  const selectedRequest = data?.entries.find(
+    (request) => request.req_no === Number(detailsModal.reqNo)
+  );
 
   return (
     <>
@@ -379,12 +388,9 @@ function AclApprovals() {
             setRejectModal({ isOpen: true, reqNo: detailsModal.reqNo });
           }}
           isLoading={approveIsLoading}
+          disabledActions={selectedRequest?.requestStatus !== "CREATED"}
         >
-          <DetailsModalContent
-            aclRequest={data?.entries.find(
-              (request) => request.req_no === Number(detailsModal.reqNo)
-            )}
-          />
+          <DetailsModalContent aclRequest={selectedRequest} />
         </RequestDetailsModal>
       )}
       {rejectModal.isOpen && (

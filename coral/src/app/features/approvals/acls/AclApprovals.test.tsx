@@ -81,7 +81,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     username: "amathieu",
     requesttime: "2023-01-10T13:19:10.757+00:00",
     requesttimestring: "10-Jan-2023 13:19:10",
-    requestStatus: "CREATED",
+    requestStatus: "APPROVED",
     approver: undefined,
     approvingtime: undefined,
     aclResourceType: undefined,
@@ -197,6 +197,28 @@ describe("AclApprovals", () => {
         cells.filter((cell) => cell.textContent === "3.3.3.32 3.3.3.33 ")
       ).toHaveLength(1);
     });
+
+    it("render action buttons when status is CREATED", () => {
+      const createdRow = screen.getAllByRole("row")[1];
+
+      expect(createdRow).toContainElement(
+        screen.getByRole("button", { name: "Approve request" })
+      );
+      expect(createdRow).toContainElement(
+        screen.getByRole("button", { name: "Reject request" })
+      );
+    });
+
+    it("does not render action buttons when status is not CREATED", () => {
+      const approvedRow = screen.getAllByRole("row")[2];
+
+      expect(approvedRow).not.toContainElement(
+        screen.getByRole("button", { name: "Approve request" })
+      );
+      expect(approvedRow).not.toContainElement(
+        screen.getByRole("button", { name: "Reject request" })
+      );
+    });
   });
 
   describe("handles paginated data", () => {
@@ -226,6 +248,42 @@ describe("AclApprovals", () => {
     it("render Pagination on page 1 on load", async () => {
       const pagination = screen.getByRole("navigation");
       expect(pagination).toHaveTextContent("Page 1 of 2");
+    });
+
+    it("should render disabled actions in Details modal", async () => {
+      const approvedRow = screen.getAllByRole("row")[2];
+      await userEvent.click(
+        within(approvedRow).getByRole("button", { name: "View details" })
+      );
+      const modal = screen.getByRole("dialog");
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      const rejectButton = within(modal).getByRole("button", {
+        name: "Reject",
+      });
+
+      expect(approveButton).toBeDisabled();
+      expect(rejectButton).toBeDisabled();
+    });
+
+    it("should render enabled actions in Details modal", async () => {
+      const createdRow = screen.getAllByRole("row")[1];
+
+      await userEvent.click(
+        within(createdRow).getByRole("button", { name: "View details" })
+      );
+
+      const modal = screen.getByRole("dialog");
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      const rejectButton = within(modal).getByRole("button", {
+        name: "Reject",
+      });
+
+      expect(approveButton).toBeEnabled();
+      expect(rejectButton).toBeEnabled();
     });
   });
 
