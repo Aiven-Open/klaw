@@ -74,16 +74,21 @@ describe("TopicApprovalsTable", () => {
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Claim by team", relatedField: "teamname" },
     { columnHeader: "Requested by", relatedField: "requestor" },
-    { columnHeader: "Date requested", relatedField: "requesttimestring" },
-    { columnHeader: "Details", relatedField: null },
-    { columnHeader: "Approve", relatedField: null },
-    { columnHeader: "Decline", relatedField: null },
+    { columnHeader: "Requested on", relatedField: "requesttimestring" },
+    { columnHeader: "", relatedField: null },
+    { columnHeader: "", relatedField: null },
+    { columnHeader: "", relatedField: null },
   ];
 
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(<TopicApprovalsTable requests={mockedRequests} />);
+      render(
+        <TopicApprovalsTable
+          setDetailsModal={() => null}
+          requests={mockedRequests}
+        />
+      );
     });
     afterAll(cleanup);
 
@@ -167,7 +172,12 @@ describe("TopicApprovalsTable", () => {
   describe("renders all content based on the column definition", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(<TopicApprovalsTable requests={mockedRequests} />);
+      render(
+        <TopicApprovalsTable
+          setDetailsModal={() => null}
+          requests={mockedRequests}
+        />
+      );
     });
 
     afterAll(cleanup);
@@ -185,6 +195,9 @@ describe("TopicApprovalsTable", () => {
 
     columnsFieldMap.forEach((column) => {
       it(`shows a column header for ${column.columnHeader}`, () => {
+        if (column.relatedField === null) {
+          return;
+        }
         const table = screen.getByRole("table", {
           name: "Topic requests",
         });
@@ -205,7 +218,7 @@ describe("TopicApprovalsTable", () => {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
             const content = `${request[column.relatedField]}`;
-            const isFormattedTime = column.columnHeader === "Date requested";
+            const isFormattedTime = column.columnHeader === "Requested on";
 
             const text = `${content}${isFormattedTime ? " UTC" : ""}`;
             const cell = within(table).getByRole("cell", { name: text });
