@@ -35,6 +35,11 @@ const findTerm = (term: string) => {
     .find((value) => value.textContent === term);
 };
 
+// since all our dt/dd pairs are always wrapped in a div
+// this makes sure the right pairs relate to each other.
+// this depends heavily on DOM structure, so it can be
+// brittle in case we change that. In that case, the helper
+// function has to be updated.
 const findDefinition = (term: HTMLElement | undefined) => {
   if (!term) throw Error("term is null");
   const termParent = term.parentElement;
