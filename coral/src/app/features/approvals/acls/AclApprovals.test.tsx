@@ -81,7 +81,7 @@ const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
     username: "amathieu",
     requesttime: "2023-01-10T13:19:10.757+00:00",
     requesttimestring: "10-Jan-2023 13:19:10",
-    requestStatus: "CREATED",
+    requestStatus: "APPROVED",
     approver: undefined,
     approvingtime: undefined,
     aclResourceType: undefined,
@@ -196,6 +196,28 @@ describe("AclApprovals", () => {
       expect(
         cells.filter((cell) => cell.textContent === "3.3.3.32 3.3.3.33 ")
       ).toHaveLength(1);
+    });
+
+    it("render action buttons when status is CREATED", () => {
+      const createdRow = screen.getAllByRole("row")[1];
+
+      expect(createdRow).toContainElement(
+        screen.getByRole("button", { name: "Approve request" })
+      );
+      expect(createdRow).toContainElement(
+        screen.getByRole("button", { name: "Reject request" })
+      );
+    });
+
+    it("does not render action buttons when status is not CREATED", () => {
+      const approvedRow = screen.getAllByRole("row")[2];
+
+      expect(approvedRow).not.toContainElement(
+        screen.getByRole("button", { name: "Approve request" })
+      );
+      expect(approvedRow).not.toContainElement(
+        screen.getByRole("button", { name: "Reject request" })
+      );
     });
   });
 
