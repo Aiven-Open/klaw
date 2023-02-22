@@ -27,6 +27,9 @@ export type paths = {
   "/getAllTeamsSUOnly": {
     get: operations["teamNamesGet"];
   };
+  "/getAllTeamsSU": {
+    get: operations["teamsGet"];
+  };
   "/getEnvs": {
     get: operations["environmentsGet"];
   };
@@ -334,6 +337,20 @@ export type components = {
      * ]
      */
     TeamNamesGetResponse: string[];
+    TeamsGetResponse: {
+      teamname: string;
+      teammail?: string;
+      teamphone: string;
+      contactperson: string;
+      /** Format: int32 */
+      tenantId?: number;
+      /** Format: int32 */
+      teamId?: number;
+      app?: string;
+      showDeleteTeam?: boolean;
+      tenantName?: string;
+      envList?: string[];
+    };
     Environment: {
       /**
        * id
@@ -1132,6 +1149,16 @@ export type operations = {
       };
     };
   };
+  teamsGet: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamsGetResponse"][];
+        };
+      };
+    };
+  };
   environmentsGet: {
     responses: {
       /** OK */
@@ -1356,6 +1383,7 @@ export enum ApiPaths {
   topicCreate = "/createTopics",
   topicAdvancedConfigGet = "/getAdvancedTopicConfigs",
   teamNamesGet = "/getAllTeamsSUOnly",
+  teamsGet = "/getAllTeamsSU",
   environmentsGet = "/getEnvs",
   envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
   clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",

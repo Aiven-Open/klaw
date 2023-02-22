@@ -14,7 +14,7 @@ import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { transformTeamNamesGetResponse } from "src/domain/team/team-transformer";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
-import { getTeams, Team } from "src/domain/team";
+import { getTeamNames, Team } from "src/domain/team";
 import { getTopics } from "src/domain/topic";
 import { Environment, getEnvironments } from "src/domain/environment";
 
@@ -22,7 +22,7 @@ jest.mock("src/domain/team/team-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockGetTeams = getTeamNames as jest.MockedFunction<typeof getTeamNames>;
 const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
 const mockGetEnvironments = getEnvironments as jest.MockedFunction<
   typeof getEnvironments

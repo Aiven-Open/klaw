@@ -212,6 +212,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/TeamNamesGetResponse"
+  /getAllTeamsSU:
+    get:
+      operationId: teamsGet
+      summary: Get teams
+      tags:
+        - Team
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamsGetResponse"
   /getEnvs:
     get:
       operationId: environmentsGet
@@ -846,6 +861,40 @@ components:
         type: string
         example: Team A
       example: ["All teams", "Team A", "Team B"]
+    TeamsGetResponse:
+      type: object
+      properties:
+        teamname:
+          type: string
+          pattern: "^[a-zA-z 0-9]*$"
+        teammail:
+          type: string
+        teamphone:
+          type: string
+          pattern: "(^$|[+]{0,1}[0-9]*)"
+        contactperson:
+          type: string
+          pattern: "^[A-Za-zÀ-ÖØ-öø-ÿ' ]*$"
+        tenantId:
+          type: integer
+          format: int32
+        teamId:
+          type: integer
+          format: int32
+        app:
+          type: string
+        showDeleteTeam:
+          type: boolean
+        tenantName:
+          type: string
+        envList:
+          type: array
+          items:
+            type: string
+      required:
+        - contactperson
+        - teamname
+        - teamphone
     Environment:
       type: object
       properties:
