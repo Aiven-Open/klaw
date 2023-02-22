@@ -249,6 +249,42 @@ describe("AclApprovals", () => {
       const pagination = screen.getByRole("navigation");
       expect(pagination).toHaveTextContent("Page 1 of 2");
     });
+
+    it("should render disabled actions in Details modal", async () => {
+      const approvedRow = screen.getAllByRole("row")[2];
+      await userEvent.click(
+        within(approvedRow).getByRole("button", { name: "View details" })
+      );
+      const modal = screen.getByRole("dialog");
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      const rejectButton = within(modal).getByRole("button", {
+        name: "Reject",
+      });
+
+      expect(approveButton).toBeDisabled();
+      expect(rejectButton).toBeDisabled();
+    });
+
+    it("should render enabled actions in Details modal", async () => {
+      const createdRow = screen.getAllByRole("row")[1];
+
+      await userEvent.click(
+        within(createdRow).getByRole("button", { name: "View details" })
+      );
+
+      const modal = screen.getByRole("dialog");
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      const rejectButton = within(modal).getByRole("button", {
+        name: "Reject",
+      });
+
+      expect(approveButton).toBeEnabled();
+      expect(rejectButton).toBeEnabled();
+    });
   });
 
   describe("handles filtering", () => {
