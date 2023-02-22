@@ -1,6 +1,6 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useEffect, useState } from "react";
-import { useGetTeams } from "src/app/features/topics/browse/hooks/teams/useGetTeams";
+import { useGetTeamNames } from "src/app/features/topics/browse/hooks/team-names/useGetTeamNames";
 import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
 import { useSearchParams } from "react-router-dom";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
@@ -16,7 +16,7 @@ function SelectTeamName(props: SelectTeamNameProps) {
   const [team, setTeam] = useState<Team>(TEAM_NOT_INITIALIZED);
   const { onChange } = props;
 
-  const { data: topicTeams } = useGetTeams();
+  const { data: topicTeams } = useGetTeamNames();
 
   useEffect(() => {
     if (initialTeam) {
