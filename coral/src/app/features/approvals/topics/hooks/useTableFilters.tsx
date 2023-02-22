@@ -2,7 +2,7 @@ import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import SelectTeam from "src/app/features/approvals/topics/components/SelectTeam";
+import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests";
 import { TopicRequest } from "src/domain/topic/topic-types";
