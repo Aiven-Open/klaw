@@ -1,4 +1,3 @@
-import * as ReactQuery from "@tanstack/react-query";
 import { cleanup, screen, within } from "@testing-library/react";
 import {
   getSchemaRequestsForApprover,
@@ -11,17 +10,33 @@ import userEvent from "@testing-library/user-event";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
 import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
+import { getEnvironments } from "src/domain/environment";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+
+const mockGetEnvironment = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
 
 const mockGetSchemaRequestsForApprover =
   getSchemaRequestsForApprover as jest.MockedFunction<
     typeof getSchemaRequestsForApprover
   >;
 
-const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
+const mockedEnvironments = [
+  { name: "DEV", id: "1" },
+  { name: "TST", id: "2" },
+];
 
-const mockedResponse: SchemaRequest[] = [
+const mockedEnvironmentResponse = transformEnvironmentApiResponse([
+  createMockEnvironmentDTO(mockedEnvironments[0]),
+  createMockEnvironmentDTO(mockedEnvironments[1]),
+]);
+
+const mockedResponseSchemaRequests: SchemaRequest[] = [
   {
     req_no: 1014,
     topicname: "testtopic-first",
@@ -76,25 +91,41 @@ const mockedResponse: SchemaRequest[] = [
   },
 ];
 
-const mockedApiResponse: SchemaRequestApiResponse =
-  transformGetSchemaRequestsForApproverResponse(mockedResponse);
+const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
+  transformGetSchemaRequestsForApproverResponse(mockedResponseSchemaRequests);
 
 describe("SchemaApprovals", () => {
   beforeAll(() => {
     mockIntersectionObserver();
   });
 
+  //@TODO - I remove the useQuery mock because that isn't useful for a component
+  // using more then one query. While this block still covers the cases, it's
+  // more brittle due to it's dependency on the async process of the api call
+  // I'll add a helper for controlling api mocks better (get a loading state etc)
+  // after this release cycle.
   describe("handles loading and error state when fetching the requests", () => {
-    afterEach(cleanup);
-    afterAll(() => {
-      useQuerySpy.mockRestore();
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      // used to swallow a console.error that _should_ happen
+      // while making sure to not swallow other console.errors
+      console.error = jest.fn();
+
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        entries: [],
+        totalPages: 1,
+        currentPage: 1,
+      });
+      mockGetEnvironment.mockResolvedValue([]);
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.clearAllMocks();
     });
 
     it("shows a loading state instead of a table while schema requests are being fetched", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: { entries: [] }, isLoading: true });
-
       customRender(<SchemaApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -105,12 +136,11 @@ describe("SchemaApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
 
-    it("shows a error message in case of an error for fetching schema requests", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: { entries: [] }, isError: true });
+    it("shows a error message in case of an error for fetching schema requests", async () => {
+      mockGetSchemaRequestsForApprover.mockRejectedValue("mock-error");
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -118,18 +148,22 @@ describe("SchemaApprovals", () => {
       });
 
       const table = screen.queryByRole("table");
-      const errorMessage = screen.getByText(
+      const errorMessage = await screen.findByText(
         "Unexpected error. Please try again later!"
       );
 
       expect(table).not.toBeInTheDocument();
       expect(errorMessage).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith("mock-error");
     });
   });
 
-  describe("renders all necessary elements ", () => {
+  describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironment.mockResolvedValue(mockedEnvironmentResponse);
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -142,12 +176,6 @@ describe("SchemaApprovals", () => {
     afterAll(() => {
       cleanup();
       jest.clearAllMocks();
-    });
-
-    it("shows a select to filter by teams", () => {
-      const select = screen.getByRole("combobox", { name: "Filter by team" });
-
-      expect(select).toBeVisible();
     });
 
     it("shows a select to filter by environment", () => {
@@ -180,7 +208,7 @@ describe("SchemaApprovals", () => {
       const rows = within(table).getAllByRole("rowgroup");
 
       expect(table).toBeVisible();
-      expect(rows).toHaveLength(mockedApiResponse.entries.length);
+      expect(rows).toHaveLength(mockedApiResponseSchemaRequests.entries.length);
     });
   });
 
@@ -222,7 +250,7 @@ describe("SchemaApprovals", () => {
 
     it("shows no pagination for a response with only one page", async () => {
       mockGetSchemaRequestsForApprover.mockResolvedValue({
-        ...mockedApiResponse,
+        ...mockedApiResponseSchemaRequests,
         totalPages: 1,
       });
 

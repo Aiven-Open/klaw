@@ -1,10 +1,10 @@
-import { SearchInput, NativeSelect } from "@aivenio/aquarium";
 import { Pagination } from "src/app/components/Pagination";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import { getSchemaRequestsForApprover } from "src/domain/schema-request";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import useTableFilters from "src/app/features/approvals/schemas/hooks/useTableFilters";
 import { useState } from "react";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
@@ -14,6 +14,8 @@ function SchemaApprovals() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
+
+  const { filters } = useTableFilters();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -39,41 +41,6 @@ function SchemaApprovals() {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   };
-
-  const filters = [
-    <NativeSelect labelText={"Filter by team"} key={"filter-team"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-
-    <NativeSelect
-      labelText={"Filter by Environment"}
-      key={"filter-environment"}
-    >
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-
-    <NativeSelect labelText={"Filter by status"} key={"filter-status"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <div key={"search"}>
-      <SearchInput
-        type={"search"}
-        aria-describedby={"search-field-description"}
-        role="search"
-        placeholder={"Search Topic (exact match)"}
-      />
-      <div id={"search-field-description"} className={"visually-hidden"}>
-        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
-        to delete all your input.
-      </div>
-    </div>,
-  ];
 
   const table = (
     <SchemaApprovalsTable
