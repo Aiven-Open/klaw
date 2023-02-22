@@ -286,7 +286,7 @@ public class EnvsClustersTenantsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, String>> getUpdateEnvStatus(
-      @RequestParam(value = "envId") String envId) {
+      @RequestParam(value = "envId") String envId) throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getUpdateEnvStatus(envId), HttpStatus.OK);
   }

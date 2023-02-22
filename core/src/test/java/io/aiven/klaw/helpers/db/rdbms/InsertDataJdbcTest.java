@@ -13,7 +13,9 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EnvType;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
@@ -156,8 +158,12 @@ public class InsertDataJdbcTest {
   }
 
   @Test
-  public void insertIntoEnvs() {
-    String result = insertData.insertIntoEnvs(new Env());
+  public void insertIntoEnvs() throws KlawException {
+    Env env = new Env();
+    env.setId("2");
+    env.setName("Two");
+    env.setType(EnvType.KAFKA.value);
+    String result = insertData.insertIntoEnvs(env, null);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

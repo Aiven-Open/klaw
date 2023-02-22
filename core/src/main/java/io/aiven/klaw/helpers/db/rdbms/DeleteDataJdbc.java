@@ -2,6 +2,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EnvType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 @Slf4j
@@ -34,6 +36,9 @@ public class DeleteDataJdbc {
 
   @Autowired(required = false)
   EnvRepo envRepo;
+
+  @Autowired(required = false)
+  EnvMappingRepo envMappingRepo;
 
   @Autowired(required = false)
   KwClusterRepo kwClusterRepo;
@@ -167,6 +172,7 @@ public class DeleteDataJdbc {
         + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
+  @Transactional
   public String deleteEnvironment(String envId, int tenantId) {
     log.debug("deleteEnvironment {}", envId);
     EnvID envID = new EnvID();
@@ -176,6 +182,12 @@ public class DeleteDataJdbc {
 
     if (env.isPresent()) {
       envRepo.delete(env.get());
+      if (EnvType.KAFKA.value.equals(env.get().getType())) {
+        Optional<EnvMapping> mapping = envMappingRepo.findById(envID);
+        if (mapping.isPresent()) {
+          envMappingRepo.delete(mapping.get());
+        }
+      }
       return ApiResultStatus.SUCCESS.value;
     } else {
       return ApiResultStatus.FAILURE.value;

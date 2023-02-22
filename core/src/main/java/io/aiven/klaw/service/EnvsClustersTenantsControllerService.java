@@ -9,6 +9,9 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvID;
+import io.aiven.klaw.dao.EnvMapping;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.UserInfo;
@@ -22,6 +25,7 @@ import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.EnvType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.MetadataOperationType;
@@ -704,7 +708,9 @@ public class EnvsClustersTenantsControllerService {
     env.setEnvExists("true");
 
     try {
-      String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
+      EnvMapping mapping = setEnvironmentMapping(env);
+      log.info("The mapping {} and env: {}", mapping, env);
+      String result = manageDatabase.getHandleDbRequests().addNewEnv(env, mapping);
       commonUtilsService.updateMetadata(
           tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
       return ApiResponse.builder().result(result).build();
@@ -712,6 +718,63 @@ public class EnvsClustersTenantsControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private EnvMapping setEnvironmentMapping(Env env) throws KlawException {
+    if (env.getType().equals(EnvType.KAFKA.value)) {
+      boolean exists =
+          manageDatabase
+              .getHandleDbRequests()
+              .envMappingExists(new EnvID(env.getId(), env.getTenantId()));
+      if (!exists) {
+        // Add in EnvMapping
+        EnvMapping mapping = new EnvMapping();
+        mapping.setId(env.getId());
+        mapping.setTenantId(env.getTenantId());
+        mapping.setName(env.getName());
+        // Update env to reference the mapping Environment.
+        env.setAssociatedEnv(mapping.getId());
+        return mapping;
+      }
+    } else if (env.getAssociatedEnv() != null && !env.getAssociatedEnv().isEmpty()) {
+      return setSchemaAndConnectorMapping(env);
+    }
+    return null;
+  }
+
+  private EnvMapping setSchemaAndConnectorMapping(Env env) throws KlawException {
+    EnvMapping mapping =
+        manageDatabase
+            .getHandleDbRequests()
+            .findEnvMappingById(new EnvID(env.getId(), env.getTenantId()));
+    if (mapping != null) {
+
+      if (EnvType.SCHEMAREGISTRY.value.equals(env.getType())) {
+        return addSchemaRegistryEntry(mapping, env);
+      } else if (EnvType.SCHEMAREGISTRY.value.equals(env.getType())) {
+        return addKafkaConnectorEntry(mapping, env);
+      }
+    } else {
+      throw new KlawException("Environment Mapping does not exist.");
+    }
+    return null;
+  }
+
+  private EnvMapping addSchemaRegistryEntry(EnvMapping mapping, Env env) {
+    EnvTag tag = new EnvTag(env.getId(), env.getName());
+    if (!mapping.getSchemaEnvs().contains(tag)) {
+      mapping.getSchemaEnvs().add(tag);
+    }
+
+    return mapping;
+  }
+
+  private EnvMapping addKafkaConnectorEntry(EnvMapping mapping, Env env) {
+    EnvTag tag = new EnvTag(env.getId(), env.getName());
+    if (!mapping.getSchemaEnvs().contains(tag)) {
+      mapping.getSchemaEnvs().add(tag);
+    }
+    return mapping;
   }
 
   public ApiResponse addNewCluster(KwClustersModel kwClustersModel) {
@@ -896,6 +959,62 @@ public class EnvsClustersTenantsControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private boolean removeEnvironmentMapping(String id, int tenantId, String envType) {
+
+    EnvMapping envMapping =
+        manageDatabase.getHandleDbRequests().findEnvMappingById(new EnvID(id, tenantId));
+    if (EnvType.KAFKA.value.equals(envType)) {
+      unlinkEnvsFromMapping(id, tenantId, envMapping);
+    } else {
+      if (EnvType.SCHEMAREGISTRY.value.equals(envType)) {
+        envMapping.setSchemaEnvs(
+            envMapping.getSchemaEnvs().stream()
+                .filter(tag -> !tag.getId().equals(id))
+                .collect(Collectors.toList()));
+      } else if (EnvType.KAFKACONNECT.value.equals(envType)) {
+        envMapping.setConnectorEnvs(
+            envMapping.getConnectorEnvs().stream()
+                .filter(tag -> !tag.getId().equals(id))
+                .collect(Collectors.toList()));
+      }
+    }
+
+    return true;
+  }
+
+  private void unlinkEnvsFromMapping(String id, int tenantId, EnvMapping envMapping) {
+
+    // remove any attached SchemaRegistry Env
+    envMapping
+        .getSchemaEnvs()
+        .forEach(
+            env -> {
+              Env schemaEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
+              schemaEnv.setAssociatedEnv(null);
+
+              try {
+                manageDatabase.getHandleDbRequests().addNewEnv(schemaEnv, null);
+              } catch (KlawException e) {
+
+              }
+            });
+
+    // remove any attached Connector Env
+    // remove any attached SchemaRegistry Env
+    envMapping
+        .getConnectorEnvs()
+        .forEach(
+            env -> {
+              Env schemaEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
+              schemaEnv.setAssociatedEnv(null);
+              try {
+                manageDatabase.getHandleDbRequests().addNewEnv(schemaEnv, null);
+              } catch (KlawException e) {
+
+              }
+            });
   }
 
   private String getUserName() {
@@ -1191,7 +1310,7 @@ public class EnvsClustersTenantsControllerService {
     return kwPublicKeyMap;
   }
 
-  public Map<String, String> getUpdateEnvStatus(String envId) {
+  public Map<String, String> getUpdateEnvStatus(String envId) throws KlawException {
     Map<String, String> envUpdatedStatus = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
@@ -1215,7 +1334,7 @@ public class EnvsClustersTenantsControllerService {
       log.error("Error from getUpdateEnvStatus ", e);
     }
     env.setEnvStatus(status);
-    manageDatabase.getHandleDbRequests().addNewEnv(env);
+    manageDatabase.getHandleDbRequests().updateEnvStatus(env);
     manageDatabase.loadEnvMapForOneTenant(tenantId);
 
     envUpdatedStatus.put("result", ApiResultStatus.SUCCESS.value);

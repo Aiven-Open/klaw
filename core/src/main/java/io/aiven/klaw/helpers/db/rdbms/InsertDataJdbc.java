@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Slf4j
@@ -29,6 +31,9 @@ public class InsertDataJdbc {
 
   @Autowired(required = false)
   private EnvRepo envRepo;
+
+  @Autowired(required = false)
+  private EnvMappingRepo envMappingRepo;
 
   @Autowired(required = false)
   private KwClusterRepo kwClusterRepo;
@@ -334,9 +339,19 @@ public class InsertDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String insertIntoEnvs(Env env) {
-    log.debug("insertIntoEnvs {}", env.getName());
+  @Transactional
+  public String insertIntoEnvs(Env env, EnvMapping mapping) throws KlawException {
+    log.info("insertIntoEnvs {} , associated {}", env.getName(), env.getAssociatedEnv());
 
+    envRepo.save(env);
+    if (mapping != null) {
+      envMappingRepo.save(mapping);
+    }
+    return ApiResultStatus.SUCCESS.value;
+  }
+
+  public String updateEnvStatus(Env env) {
+    log.debug("updateEnvStatus {}", env.getName());
     envRepo.save(env);
     return ApiResultStatus.SUCCESS.value;
   }

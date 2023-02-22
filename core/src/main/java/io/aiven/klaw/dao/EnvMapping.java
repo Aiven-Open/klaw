@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,8 +16,8 @@ import lombok.ToString;
 @Setter
 @Entity
 @IdClass(EnvID.class)
-@Table(name = "kwenv")
-public class Env implements Serializable {
+@Table(name = "kwenvmapping")
+public class EnvMapping implements Serializable {
 
   @Id
   @Column(name = "id")
@@ -29,24 +30,9 @@ public class Env implements Serializable {
   @Column(name = "envname")
   private String name;
 
-  @Column(name = "stretchcode")
-  private String stretchCode;
+  @Column(name = "schemaenvs")
+  private List<EnvTag> schemaEnvs;
 
-  @Column(name = "clusterid")
-  private Integer clusterId;
-
-  @Column(name = "envtype")
-  private String type;
-
-  @Column(name = "otherparams")
-  private String otherParams;
-
-  @Column(name = "envexists")
-  private String envExists;
-
-  @Column(name = "envstatus")
-  private String envStatus;
-
-  @Column(name = "associatedenv")
-  private String associatedEnv;
+  @Column(name = "connectorenvs")
+  private List<EnvTag> connectorEnvs;
 }
