@@ -15,7 +15,6 @@ function SelectTeam(props: SelectTeamProps) {
 
   const { data: topicTeams } = useQuery(["topic-get-teams"], {
     queryFn: () => getTeams(),
-    keepPreviousData: true,
   });
 
   function onChangeEnv(nextTeam: string) {
