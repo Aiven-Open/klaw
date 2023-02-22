@@ -2,6 +2,7 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { SchemaRequest } from "src/domain/schema-request";
+import userEvent from "@testing-library/user-event";
 
 const mockedRequests: SchemaRequest[] = [
   {
@@ -58,7 +59,11 @@ const mockedRequests: SchemaRequest[] = [
   },
 ];
 
+const mockSetDetailsModal = jest.fn();
+
 describe("SchemaApprovalsTable", () => {
+  beforeAll(mockIntersectionObserver);
+
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
@@ -71,8 +76,12 @@ describe("SchemaApprovalsTable", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(() => {
-      mockIntersectionObserver();
-      render(<SchemaApprovalsTable requests={mockedRequests} />);
+      render(
+        <SchemaApprovalsTable
+          requests={mockedRequests}
+          setDetailsModal={mockSetDetailsModal}
+        />
+      );
     });
     afterAll(cleanup);
 
@@ -155,8 +164,12 @@ describe("SchemaApprovalsTable", () => {
 
   describe("renders all content based on the column definition", () => {
     beforeAll(() => {
-      mockIntersectionObserver();
-      render(<SchemaApprovalsTable requests={mockedRequests} />);
+      render(
+        <SchemaApprovalsTable
+          requests={mockedRequests}
+          setDetailsModal={mockSetDetailsModal}
+        />
+      );
     });
 
     afterAll(cleanup);
@@ -203,6 +216,49 @@ describe("SchemaApprovalsTable", () => {
           });
         });
       }
+    });
+  });
+
+  describe("triggers opening of a modal with all details if user clicks button for overview", () => {
+    beforeEach(() => {
+      render(
+        <SchemaApprovalsTable
+          requests={mockedRequests}
+          setDetailsModal={mockSetDetailsModal}
+        />
+      );
+    });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("triggers opening a modal with details for the first given schema request", async () => {
+      const button = screen.getByRole("button", {
+        name: `View schema request for ${mockedRequests[0].topicname}`,
+      });
+
+      await userEvent.click(button);
+
+      expect(mockSetDetailsModal).toHaveBeenCalledWith({
+        isOpen: true,
+        req_no: mockedRequests[0].req_no,
+      });
+    });
+
+    it("triggers opening a modal with details for the laft given schema request", async () => {
+      const button = screen.getByRole("button", {
+        name: `View schema request for ${
+          mockedRequests[mockedRequests.length - 1].topicname
+        }`,
+      });
+
+      await userEvent.click(button);
+
+      expect(mockSetDetailsModal).toHaveBeenCalledWith({
+        isOpen: true,
+        req_no: mockedRequests[mockedRequests.length - 1].req_no,
+      });
     });
   });
 });
