@@ -1,4 +1,4 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
@@ -384,6 +384,7 @@ describe("TopicApprovals", () => {
       });
     });
   });
+
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
@@ -430,6 +431,148 @@ describe("TopicApprovals", () => {
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+  });
+
+  describe("handles filtering", () => {
+    beforeEach(async () => {
+      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("renders correct filters", () => {
+      expect(screen.getByLabelText("Filter by Environment")).toBeVisible();
+      expect(screen.getByLabelText("Filter by status")).toBeVisible();
+      expect(screen.getByLabelText("Filter by team")).toBeVisible();
+      expect(screen.getByRole("search")).toBeVisible();
+    });
+
+    it("filters by Environment", async () => {
+      const select = screen.getByLabelText("Filter by Environment");
+
+      const devOption = within(select).getByRole("option", { name: "DEV" });
+
+      expect(devOption).toBeEnabled();
+
+      await userEvent.selectOptions(select, devOption);
+
+      expect(select).toHaveDisplayValue("DEV");
+
+      await waitFor(() => {
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "1",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "",
+          teamId: undefined,
+        });
+      });
+    });
+
+    it("filters by Status", async () => {
+      const select = screen.getByLabelText("Filter by status");
+
+      const option = within(select).getByRole("option", {
+        name: "DECLINED",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("DECLINED");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "DECLINED",
+          search: "",
+          teamId: undefined,
+        })
+      );
+    });
+
+    it("filters by ACL type", async () => {
+      const select = screen.getByLabelText("Filter by team");
+
+      const option = within(select).getByRole("option", {
+        name: "Ospo",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Ospo");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "",
+          teamId: 1003,
+        })
+      );
+    });
+
+    it("filters by Topic", async () => {
+      const search = screen.getByRole("search");
+
+      expect(search).toBeEnabled();
+
+      await userEvent.type(search, "topicname");
+
+      expect(search).toHaveValue("topicname");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "topicname",
+          teamId: undefined,
+        })
+      );
+    });
+
+    it("filters by several fields", async () => {
+      const search = screen.getByRole("search");
+      expect(search).toBeEnabled();
+      await userEvent.type(search, "topicname");
+      expect(search).toHaveValue("topicname");
+
+      const select = screen.getByLabelText("Filter by team");
+      const option = within(select).getByRole("option", {
+        name: "Ospo",
+      });
+      expect(option).toBeEnabled();
+      await userEvent.selectOptions(select, option);
+      expect(select).toHaveDisplayValue("Ospo");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "topicname",
+          teamId: 1003,
+        })
+      );
     });
   });
 });
