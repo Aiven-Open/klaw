@@ -62,7 +62,8 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
             if($scope.userlogged != null)
                 $scope.loggedinuser = "true";
 
-            $scope.checkPendingApprovals();
+            $scope.checkSwitchTeams($scope.dashboardDetails.canSwitchTeams, $scope.dashboardDetails.teamId, $scope.userlogged);
+                   $scope.checkPendingApprovals();
         }).error(
             function(error)
             {
@@ -70,6 +71,140 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
             }
         );
 	}
+
+        $scope.onSwitchTeam = function() {
+            var serviceInput = {};
+            serviceInput['username'] = $scope.userlogged;
+            serviceInput['teamId'] = $scope.teamId;
+
+            swal({
+                title: "Are you sure?",
+                text: "You would like to update your team ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes !",
+                cancelButtonText: "No, cancel please!",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }).then(function(isConfirm) {
+                if (isConfirm.dismiss !== "cancel") {
+                    $http({
+                        method: "POST",
+                        url: "user/updateTeam",
+                        headers : { 'Content-Type' : 'application/json' },
+                        data: serviceInput
+                    }).success(function (output) {
+                        $scope.alert = "User team update request : "+output.result;
+                        if(output.result === 'success'){
+                            swal({
+                                title: "",
+                                text: "User team update request : "+output.result,
+                                timer: 2000,
+                                showConfirmButton: true
+                            }).then(function(isConfirm){
+                                $scope.refreshPage();
+                            });
+                        }else $scope.showSubmitFailed('','');
+                    }).error(
+                        function (error) {
+                            $scope.handleValidationErrors(error);
+                        }
+                    );
+                } else {
+                    return;
+                }
+            });
+        }
+
+        $scope.checkSwitchTeams = function(canSwitchTeams, teamId, userId){
+            if(canSwitchTeams === 'true'){
+                $scope.teamId = parseInt(teamId);
+                $scope.getSwitchTeamsList(userId);
+            }
+        }
+
+        $scope.getSwitchTeamsList = function(userId) {
+            $http({
+                method: "GET",
+                url: "user/" + userId + "/switchTeamsList",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.switchTeamsListDashboard = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
+
+        $scope.onSwitchTeam = function() {
+            var serviceInput = {};
+            serviceInput['username'] = $scope.userlogged;
+            serviceInput['teamId'] = $scope.teamId;
+
+            swal({
+                title: "Are you sure?",
+                text: "You would like to update your team ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes !",
+                cancelButtonText: "No, cancel please!",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }).then(function(isConfirm) {
+                if (isConfirm.dismiss !== "cancel") {
+                    $http({
+                        method: "POST",
+                        url: "user/updateTeam",
+                        headers : { 'Content-Type' : 'application/json' },
+                        data: serviceInput
+                    }).success(function (output) {
+                        $scope.alert = "User team update request : "+output.result;
+                        if(output.result === 'success'){
+                            swal({
+                                title: "",
+                                text: "User team update request : "+output.result,
+                                timer: 2000,
+                                showConfirmButton: true
+                            }).then(function(isConfirm){
+                                $scope.refreshPage();
+                            });
+                        }else $scope.showSubmitFailed('','');
+                    }).error(
+                        function (error) {
+                            $scope.handleValidationErrors(error);
+                        }
+                    );
+                } else {
+                    return;
+                }
+            });
+        }
+
+        $scope.checkSwitchTeams = function(canSwitchTeams, teamId, userId){
+            if(canSwitchTeams === 'true'){
+                $scope.teamId = parseInt(teamId);
+                $scope.getSwitchTeamsList(userId);
+            }
+        }
+
+        $scope.getSwitchTeamsList = function(userId) {
+            $http({
+                method: "GET",
+                url: "user/" + userId + "/switchTeamsList",
+                headers : { 'Content-Type' : 'application/json' }
+            }).success(function(output) {
+                $scope.switchTeamsListDashboard = output;
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
 
 		$scope.redirectToPendingReqs = function(redirectPage){
 				swal({

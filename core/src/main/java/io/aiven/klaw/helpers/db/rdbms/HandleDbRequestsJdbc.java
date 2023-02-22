@@ -676,6 +676,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String updateUserTeam(String userId, int teamId) {
+    return jdbcUpdateHelper.updateUserTeam(userId, teamId);
+  }
+
+  @Override
   public String updateTeam(Team team) {
     return jdbcUpdateHelper.updateTeam(team);
   }

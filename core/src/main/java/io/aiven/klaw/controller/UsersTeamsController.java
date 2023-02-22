@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -179,8 +180,8 @@ public class UsersTeamsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<UserInfoModel>> showUsers(
-      @RequestParam("teamName") String teamName,
-      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "teamName", defaultValue = "") String teamName,
+      @RequestParam(value = "pageNo", defaultValue = "1") String pageNo,
       @RequestParam(value = "searchUserParam", defaultValue = "") String searchUserParam) {
     return new ResponseEntity<>(
         usersTeamsControllerService.showUsers(teamName, searchUserParam, pageNo), HttpStatus.OK);
@@ -208,5 +209,28 @@ public class UsersTeamsController {
   public ResponseEntity<Map<String, String>> resetPassword(
       @RequestParam("username") String username) {
     return new ResponseEntity<>(usersTeamsControllerService.resetPassword(username), HttpStatus.OK);
+  }
+
+  /*
+  Retrieve the list of teams which the user can swith between, if switch teams is enabled for the user
+   */
+  @RequestMapping(
+      value = "/user/{userId}/switchTeamsList",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<TeamModel>> getSwitchTeams(
+      @PathVariable(value = "userId") String userId) {
+    return new ResponseEntity<>(usersTeamsControllerService.getSwitchTeams(userId), HttpStatus.OK);
+  }
+
+  /*
+  Update base team for a user.
+  Base team should be one of the switch teams.
+   */
+  @PostMapping(value = "/user/updateTeam")
+  public ResponseEntity<ApiResponse> updateUserTeamFromSwitchTeams(
+      @RequestBody UserInfoModel userInfoModel) {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.updateUserTeamFromSwitchTeams(userInfoModel), HttpStatus.OK);
   }
 }

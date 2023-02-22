@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -37,6 +38,12 @@ public class UserInfoModel implements Serializable {
 
   @Email(message = "Email should be valid")
   private String mailid;
+
+  private boolean switchTeams;
+
+  private Set<Integer> switchAllowedTeamIds;
+
+  private Set<String> switchAllowedTeamNames;
 
   private String tenantName;
 

@@ -298,11 +298,22 @@
 
 						</tr>
 						<tr>
-							<td width="100%">
+							<td width="100%" ng-show="dashboardDetails.canSwitchTeams == 'false'">
 								<li class="nav-item d-none d-md-block search-box">
 									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
 											id="userbackground">
 										{{teamname}} | {{userrole}}</button>
+								</li>
+							</td>
+							<td width="100%" ng-show="dashboardDetails.canSwitchTeams == 'true'">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											id="userbackground1">
+										<select style="font-size: xx-small" ng-change="onSwitchTeam()" ng-model="teamId" ng-options="team.teamId as team.teamname for team in switchTeamsListDashboard">
+
+										</select>
+										| {{userrole}}
+									</button>
 
 								</li>
 							</td>
@@ -433,7 +444,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="getMyProfile();">
+			<div class="row" ng-init="getMyProfile();loadTeamsSU();">
 				<div class="col-lg-12">
 					<div class="card card-outline-success">
 						<div class="card-body">
@@ -501,6 +512,25 @@
 										</div>
 										<!--/span-->
 
+										<!--/span-->
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="custom-control custom-checkbox">
+													<input disabled id="switchteams" type="checkbox" class="custom-control-input" ng-model="myProfInfo.switchTeams">
+													<span class="custom-control-label">Can switch Teams ?</span>
+												</label>
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6" ng-if="myProfInfo.switchTeams === true">
+											<label>Switch between Teams</label>
+											<select disabled multiple='multiple' class="form-control custom-select" ng-model="myProfInfo.switchAllowedTeamIds" ng-options="team.teamId as team.teamname for team in allTeams">
+
+											</select>
+										</div>
 										<!--/span-->
 									</div>
 

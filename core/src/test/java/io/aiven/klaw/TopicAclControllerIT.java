@@ -74,7 +74,7 @@ public class TopicAclControllerIT {
 
   private static final String superAdmin = "superadmin";
   private static final String superAdminPwd = "kwsuperadmin123$$";
-  private static final String user1 = "kwusera", user2 = "kwuserb", user3 = "kwuserc";
+  private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
   private static final String topicName = "testtopic";
   private static final int topicId = 1001;
 

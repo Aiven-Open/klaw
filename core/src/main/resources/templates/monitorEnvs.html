@@ -294,11 +294,22 @@
 
                         </tr>
                         <tr>
-                            <td width="100%">
+                            <td width="100%" ng-show="dashboardDetails.canSwitchTeams == 'false'">
                                 <li class="nav-item d-none d-md-block search-box">
                                     <button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
                                             id="userbackground">
                                         {{teamname}} | {{userrole}}</button>
+                                </li>
+                            </td>
+                            <td width="100%" ng-show="dashboardDetails.canSwitchTeams == 'true'">
+                                <li class="nav-item d-none d-md-block search-box">
+                                    <button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+                                            id="userbackground1">
+                                        <select style="font-size: xx-small" ng-change="onSwitchTeam()" ng-model="teamId" ng-options="team.teamId as team.teamname for team in switchTeamsListDashboard">
+
+                                        </select>
+                                        | {{userrole}}
+                                    </button>
 
                                 </li>
                             </td>

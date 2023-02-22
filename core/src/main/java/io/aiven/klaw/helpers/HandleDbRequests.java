@@ -297,6 +297,8 @@ public interface HandleDbRequests {
 
   String updateUser(UserInfo userInfo);
 
+  String updateUserTeam(String userId, int teamId);
+
   String updateTeam(Team team);
 
   String updateKwProperty(KwProperties kwProperties, int tenantId);

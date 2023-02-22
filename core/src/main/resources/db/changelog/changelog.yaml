@@ -932,3 +932,17 @@ databaseChangeLog:
                     defaultValue: false
                     name: forceregister
                     type: BOOLEAN
+    - changeSet:
+        id: 21-02-23 New Columns to store if the user can switch teams
+        author: muralibasani
+        changes:
+          - addColumn:
+              tableName: kwusers
+              columns:
+                - column:
+                    defaultValue: false
+                    name: switchteams
+                    type: BOOLEAN
+                - column:
+                    name: switchallowedteams
+                    type: VARCHAR(150)

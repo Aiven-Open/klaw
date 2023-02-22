@@ -1,10 +1,13 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.helpers.SwitchTeamsConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +38,13 @@ public class UserInfo implements Serializable {
 
   @Column(name = "mailid")
   private String mailid;
+
+  @Column(name = "switchteams")
+  private boolean switchTeams;
+
+  @Column(name = "switchallowedteams")
+  @Convert(converter = SwitchTeamsConverter.class)
+  private Set<Integer> switchAllowedTeamIds;
 
   @Column(name = "otherparams")
   private String otherParams;
