@@ -3,9 +3,8 @@ import api from "src/services/api";
 import {
   SchemaRequestApiResponse,
   CreateSchemaRequestPayload,
-  SchemaRequestStatus,
 } from "src/domain/schema-request/schema-request-types";
-import { components, operations } from "types/api";
+import { operations } from "types/api";
 import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
 
 const createSchemaRequest = (
@@ -23,38 +22,30 @@ const createSchemaRequest = (
   );
 };
 
-type GetSchemaRequestsArgs = {
-  pageNumber?: number;
-  requestStatus: SchemaRequestStatus;
-};
-
 type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
   Required<
     Pick<
       operations["getSchemaRequestsForApprover"]["parameters"]["query"],
       "pageNo" | "requestStatus"
     >
-  >
+  > &
+    Pick<
+      operations["getSchemaRequestsForApprover"]["parameters"]["query"],
+      "env" | "topic"
+    >
 >;
 
-// query: {
-//   pageNo: string;
-//   currentPage?: string;
-//   requestStatus?: components["schemas"]["RequestStatus"];
-//   /** Name of a topic */
-//   topic?: string;
-//   /** Environment identifier */
-//   env?: string;
-//   search?: string;
-// };
-const getSchemaRequestsForApprover = ({
-  requestStatus = "CREATED",
-  pageNumber = 1,
-}: GetSchemaRequestsArgs): Promise<SchemaRequestApiResponse> => {
+const getSchemaRequestsForApprover = (
+  args: GetSchemaRequestsQueryParams
+): Promise<SchemaRequestApiResponse> => {
+  console.log("api call", args);
   const queryObject: GetSchemaRequestsQueryParams = {
-    pageNo: pageNumber.toString(),
-    requestStatus: requestStatus,
+    pageNo: args.pageNo,
+    requestStatus: args.requestStatus,
+    ...(args.topic && { topic: args.topic }),
+    ...(args.env && args.env !== "ALL" && { env: args.env }),
   };
+
   return api
     .get<KlawApiResponse<"getSchemaRequestsForApprover">>(
       `/getSchemaRequestsForApprover?${new URLSearchParams(

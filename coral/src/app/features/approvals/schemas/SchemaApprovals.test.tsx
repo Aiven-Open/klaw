@@ -10,16 +10,17 @@ import userEvent from "@testing-library/user-event";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
 import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
-import { getEnvironments } from "src/domain/environment";
+import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironment = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
->;
+const mockGetSchemaRegistryEnvironments =
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
+  >;
 
 const mockGetSchemaRequestsForApprover =
   getSchemaRequestsForApprover as jest.MockedFunction<
@@ -95,6 +96,11 @@ const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
   transformGetSchemaRequestsForApproverResponse(mockedResponseSchemaRequests);
 
 describe("SchemaApprovals", () => {
+  const defaultApiParams = {
+    pageNo: "1",
+    requestStatus: "CREATED",
+    env: "ALL",
+  };
   beforeAll(() => {
     mockIntersectionObserver();
   });
@@ -116,7 +122,7 @@ describe("SchemaApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetEnvironment.mockResolvedValue([]);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -160,7 +166,9 @@ describe("SchemaApprovals", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetEnvironment.mockResolvedValue(mockedEnvironmentResponse);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );
@@ -218,7 +226,7 @@ describe("SchemaApprovals", () => {
       jest.clearAllMocks();
     });
 
-    it("fetches the right page number if a page is set in serach params", async () => {
+    it("fetches the right page number if a page is set in search params", async () => {
       const routePath = `/?page=100`;
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -229,8 +237,8 @@ describe("SchemaApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenCalledWith({
-        pageNumber: 100,
-        requestStatus: "ALL",
+        ...defaultApiParams,
+        pageNo: "100",
       });
     });
 
@@ -243,8 +251,8 @@ describe("SchemaApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenCalledWith({
-        pageNumber: 1,
-        requestStatus: "ALL",
+        ...defaultApiParams,
+        pageNo: "1",
       });
     });
 
@@ -347,8 +355,8 @@ describe("SchemaApprovals", () => {
       await userEvent.click(pageTwoButton);
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
-        pageNumber: 2,
-        requestStatus: "ALL",
+        ...defaultApiParams,
+        pageNo: "2",
       });
     });
   });
@@ -403,9 +411,10 @@ describe("SchemaApprovals", () => {
   });
 
   describe("handles filtering entries in the table", () => {
-    const initial = { pageNumber: 1, requestStatus: "CREATED" };
     beforeEach(async () => {
-      mockGetEnvironment.mockResolvedValue([]);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequestsForApprover.mockResolvedValue({
         totalPages: 1,
         currentPage: 1,
@@ -428,7 +437,7 @@ describe("SchemaApprovals", () => {
     it("enables user to filter by 'status'", async () => {
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
-        initial
+        defaultApiParams
       );
 
       const statusFilter = screen.getByRole("combobox", {
@@ -438,8 +447,28 @@ describe("SchemaApprovals", () => {
       await userEvent.selectOptions(statusFilter, statusOption);
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
-        pageNumber: 1,
+        ...defaultApiParams,
         requestStatus: "ALL",
+      });
+    });
+
+    it("enables user to filter by 'environment'", async () => {
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        env: mockedEnvironments[0].id,
       });
     });
   });

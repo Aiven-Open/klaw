@@ -62,7 +62,8 @@ describe("useTableFilters.tsx", () => {
   describe("return correct values when there are searchParams", () => {
     it("returns '1' if 'env' search param is set to 1", () => {
       const { result } = renderHook(() => useTableFilters(), {
-        wrapper: ({ children }) => wrapper({ children, searchParam: "?env=1" }),
+        wrapper: ({ children }) =>
+          wrapper({ children, searchParam: "?environment=1" }),
       });
 
       expect(result.current.environment).toBe("1");
@@ -91,7 +92,7 @@ describe("useTableFilters.tsx", () => {
         wrapper: ({ children }) =>
           wrapper({
             children,
-            searchParam: "?status=APPROVED&env=2&topic=myothertopic",
+            searchParam: "?status=APPROVED&environment=2&topic=myothertopic",
           }),
       });
       expect(result.current.status).toBe("APPROVED");

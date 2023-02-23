@@ -2,10 +2,11 @@ import { SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests";
 import { getRequestStatusName } from "src/app/features/approvals/utils/request-status-helper";
 import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
+import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/components/SelectSchemaRegEnvironment";
+import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 
 const statusList: RequestStatus[] = [
   "ALL",
@@ -18,11 +19,13 @@ const statusList: RequestStatus[] = [
 const useTableFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const envParam = searchParams.get("env");
+  const envParam = searchParams.get("environment");
   const statusParam = searchParams.get("status") as RequestStatus | null;
   const topicParam = searchParams.get("topic") as string | null;
 
-  const [environment, setEnvironment] = useState(envParam ?? "ALL");
+  const [environment, setEnvironment] = useState(
+    envParam ?? ALL_ENVIRONMENTS_VALUE
+  );
   const [status, setStatus] = useState<RequestStatus>(statusParam ?? "CREATED");
   const [topic, setTopic] = useState(topicParam ?? "");
 
@@ -32,7 +35,15 @@ const useTableFilters = () => {
     });
 
   const filters = [
-    <SelectEnvironment key={"filter-environment"} onChange={setEnvironment} />,
+    <SelectSchemaRegEnvironment
+      key={"filter-environment"}
+      value={environment}
+      onChange={(envId: string) => {
+        searchParams.set("environment", envId);
+        setSearchParams(searchParams);
+        setEnvironment(envId);
+      }}
+    />,
     <ComplexNativeSelect<{ value: RequestStatus; name: string }>
       labelText={"Filter by status"}
       key={"filter-status"}

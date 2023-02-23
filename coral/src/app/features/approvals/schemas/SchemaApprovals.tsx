@@ -15,7 +15,7 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { status, filters } = useTableFilters();
+  const { environment, status, filters } = useTableFilters();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -28,11 +28,12 @@ function SchemaApprovals() {
     isError: schemaRequestsIsError,
     error: schemaRequestsError,
   } = useQuery({
-    queryKey: ["schemaRequestsForApprover", currentPage, status],
+    queryKey: ["schemaRequestsForApprover", currentPage, status, environment],
     queryFn: () =>
       getSchemaRequestsForApprover({
         requestStatus: status,
-        pageNumber: currentPage,
+        pageNo: currentPage.toString(),
+        env: environment,
       }),
     keepPreviousData: true,
   });
