@@ -1,4 +1,4 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import {
   getSchemaRequestsForApprover,
   SchemaRequest,
@@ -100,6 +100,7 @@ describe("SchemaApprovals", () => {
     pageNo: "1",
     requestStatus: "CREATED",
     env: "ALL",
+    topic: "",
   };
   beforeAll(() => {
     mockIntersectionObserver();
@@ -469,6 +470,24 @@ describe("SchemaApprovals", () => {
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
         env: mockedEnvironments[0].id,
+      });
+    });
+
+    it("enables user to search for topic", async () => {
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const search = screen.getByRole("search");
+
+      await userEvent.type(search, "myTopic");
+
+      await waitFor(() => {
+        expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
+          ...defaultApiParams,
+          topic: "myTopic",
+        });
       });
     });
   });
