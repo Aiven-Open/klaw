@@ -1,5 +1,6 @@
 import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
 import { RequestStatus, RequestOperationType } from "src/domain/requests";
+import { operations } from "types/api";
 
 type CreatedSchemaRequests = ResolveIntersectionTypes<
   Required<
@@ -33,6 +34,15 @@ type SchemaRequestApiResponse = ResolveIntersectionTypes<
   Paginated<SchemaRequest[]>
 >;
 
+type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
+  Required<
+    Pick<
+      operations["getSchemaRequestsForApprover"]["parameters"]["query"],
+      "pageNo" | "requestStatus"
+    >
+  >
+>;
+
 export type {
   CreateSchemaRequestPayload,
   CreatedSchemaRequests,
@@ -40,4 +50,5 @@ export type {
   SchemaRequestOperationType,
   SchemaRequestStatus,
   SchemaRequestApiResponse,
+  GetSchemaRequestsQueryParams,
 };
