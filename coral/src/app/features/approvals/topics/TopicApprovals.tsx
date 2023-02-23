@@ -1,4 +1,3 @@
-import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -7,6 +6,7 @@ import { ApprovalsLayout } from "src/app/features/approvals/components/Approvals
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
+import useTableFilters from "src/app/features/approvals/topics/hooks/useTableFilters";
 import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
 
 function TopicApprovals() {
@@ -24,17 +24,29 @@ function TopicApprovals() {
     topicId: null,
   });
 
+  const { environment, status, team, topic, filters } = useTableFilters();
+
   const {
     data: topicRequests,
     isLoading: topicRequestsLoading,
     isError: topicRequestsIsError,
     error: topicRequestsError,
   } = useQuery({
-    queryKey: ["topicRequestsForApprover", currentPage],
+    queryKey: [
+      "topicRequestsForApprover",
+      currentPage,
+      environment,
+      status,
+      team,
+      topic,
+    ],
     queryFn: () =>
       getTopicRequestsForApprover({
-        requestStatus: "ALL",
-        pageNumber: currentPage,
+        pageNo: String(currentPage),
+        env: environment,
+        requestStatus: status,
+        teamId: team === "ALL" ? undefined : Number(team),
+        search: topic,
       }),
     keepPreviousData: true,
   });
@@ -43,41 +55,6 @@ function TopicApprovals() {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   };
-
-  const filters = [
-    <NativeSelect labelText={"Filter by team"} key={"filter-team"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-
-    <NativeSelect
-      labelText={"Filter by Environment"}
-      key={"filter-environments"}
-    >
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-
-    <NativeSelect labelText={"Filter by status"} key={"filter-status"}>
-      <option> one </option>
-      <option> two </option>
-      <option> three </option>
-    </NativeSelect>,
-    <div key={"search"}>
-      <SearchInput
-        type={"search"}
-        aria-describedby={"search-field-description"}
-        role="search"
-        placeholder={"Search Topic (exact match)"}
-      />
-      <div id={"search-field-description"} className={"visually-hidden"}>
-        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
-        to delete all your input.
-      </div>
-    </div>,
-  ];
 
   const table = (
     <TopicApprovalsTable

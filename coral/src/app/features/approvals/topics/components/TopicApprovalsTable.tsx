@@ -34,7 +34,15 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
 
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
-    { type: "text", field: "environmentName", headerName: "Environment" },
+    {
+      type: "status",
+      field: "environmentName",
+      headerName: "Environment",
+      status: ({ environmentName }) => ({
+        status: "neutral",
+        text: environmentName,
+      }),
+    },
     { type: "text", field: "requestStatus", headerName: "Status" },
     { type: "text", field: "teamname", headerName: "Claim by team" },
     { type: "text", field: "requestor", headerName: "Requested by" },

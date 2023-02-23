@@ -1,25 +1,33 @@
-import * as ReactQuery from "@tanstack/react-query";
-import { cleanup, screen, within } from "@testing-library/react";
-import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
-import { transformGetTopicRequestsForApproverResponse } from "src/domain/topic/topic-transformer";
-import { TopicRequest } from "src/domain/topic";
-import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
-import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
+import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
+import { getEnvironments } from "src/domain/environment";
+import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { getTeams } from "src/domain/team/team-api";
+import { TopicRequest } from "src/domain/topic";
+import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
+import { transformGetTopicRequestsForApproverResponse } from "src/domain/topic/topic-transformer";
+import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/topic/topic-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+jest.mock("src/domain/team/team-api");
+
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
 
 const mockGetTopicRequestsForApprover =
   getTopicRequestsForApprover as jest.MockedFunction<
     typeof getTopicRequestsForApprover
   >;
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 
-const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
-
-const mockedResponse: TopicRequest[] = [
+const mockedTopicRequestsResponse: TopicRequest[] = [
   {
     topicname: "test-topic-1",
     environment: "1",
@@ -83,24 +91,54 @@ const mockedResponse: TopicRequest[] = [
   },
 ];
 
+const mockedTeamsResponse = [
+  {
+    teamname: "Ospo",
+    teammail: "ospo@aiven.io",
+    teamphone: "003157843623",
+    contactperson: "Ospo Office",
+    tenantId: 101,
+    teamId: 1003,
+    app: "",
+    showDeleteTeam: false,
+    tenantName: "default",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "DevRel",
+    teammail: "devrel@aiven.io",
+    teamphone: "003146237478",
+    contactperson: "Dev Rel",
+    tenantId: 101,
+    teamId: 1004,
+    app: "",
+    showDeleteTeam: false,
+    tenantName: "default",
+    envList: ["ALL"],
+  },
+];
+
 const mockedApiResponse: TopicRequestApiResponse =
-  transformGetTopicRequestsForApproverResponse(mockedResponse);
+  transformGetTopicRequestsForApproverResponse(mockedTopicRequestsResponse);
+const mockGetEnvironmentResponse = transformEnvironmentApiResponse(
+  mockedEnvironmentResponse
+);
 
 describe("TopicApprovals", () => {
   beforeAll(() => {
     mockIntersectionObserver();
   });
+  afterAll(() => {
+    jest.resetAllMocks();
+  });
 
   describe("handles loading and error state when fetching the requests", () => {
     afterEach(cleanup);
-    afterAll(() => {
-      useQuerySpy.mockRestore();
-    });
 
     it("shows a loading state instead of a table while topic requests are being fetched", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: { entries: [] }, isLoading: true });
+      mockGetTopicRequestsForApprover.mockResolvedValue(
+        transformGetTopicRequestsForApproverResponse([])
+      );
 
       customRender(<TopicApprovals />, {
         queryClient: true,
@@ -114,15 +152,19 @@ describe("TopicApprovals", () => {
       expect(loading).toBeVisible();
     });
 
-    it("shows a error message in case of an error for fetching topic requests", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: { entries: [] }, isError: true });
+    it("shows a error message in case of an error for fetching topic requests", async () => {
+      mockGetTopicRequestsForApprover.mockRejectedValue(
+        "Unexpected error. Please try again later!"
+      );
 
       customRender(<TopicApprovals />, {
         queryClient: true,
         memoryRouter: true,
       });
+
+      const skeleton = screen.getByTestId("skeleton-table");
+
+      await waitForElementToBeRemoved(skeleton);
 
       const table = screen.queryByRole("table");
       const errorMessage = screen.getByText(
@@ -137,6 +179,8 @@ describe("TopicApprovals", () => {
   describe("renders all necessary elements ", () => {
     beforeAll(async () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
       customRender(<TopicApprovals />, {
         queryClient: true,
@@ -208,8 +252,11 @@ describe("TopicApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-        pageNumber: 100,
-        requestStatus: "ALL",
+        env: "ALL",
+        pageNo: "100",
+        requestStatus: "CREATED",
+        search: "",
+        teamId: undefined,
       });
     });
 
@@ -222,8 +269,11 @@ describe("TopicApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-        pageNumber: 1,
-        requestStatus: "ALL",
+        env: "ALL",
+        pageNo: "1",
+        requestStatus: "CREATED",
+        search: "",
+        teamId: undefined,
       });
     });
 
@@ -326,11 +376,15 @@ describe("TopicApprovals", () => {
       await userEvent.click(pageTwoButton);
 
       expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(2, {
-        pageNumber: 2,
-        requestStatus: "ALL",
+        env: "ALL",
+        pageNo: "2",
+        requestStatus: "CREATED",
+        search: "",
+        teamId: undefined,
       });
     });
   });
+
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
@@ -377,6 +431,148 @@ describe("TopicApprovals", () => {
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+  });
+
+  describe("handles filtering", () => {
+    beforeEach(async () => {
+      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("renders correct filters", () => {
+      expect(screen.getByLabelText("Filter by Environment")).toBeVisible();
+      expect(screen.getByLabelText("Filter by status")).toBeVisible();
+      expect(screen.getByLabelText("Filter by team")).toBeVisible();
+      expect(screen.getByRole("search")).toBeVisible();
+    });
+
+    it("filters by Environment", async () => {
+      const select = screen.getByLabelText("Filter by Environment");
+
+      const devOption = within(select).getByRole("option", { name: "DEV" });
+
+      expect(devOption).toBeEnabled();
+
+      await userEvent.selectOptions(select, devOption);
+
+      expect(select).toHaveDisplayValue("DEV");
+
+      await waitFor(() => {
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "1",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "",
+          teamId: undefined,
+        });
+      });
+    });
+
+    it("filters by Status", async () => {
+      const select = screen.getByLabelText("Filter by status");
+
+      const option = within(select).getByRole("option", {
+        name: "DECLINED",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("DECLINED");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "DECLINED",
+          search: "",
+          teamId: undefined,
+        })
+      );
+    });
+
+    it("filters by ACL type", async () => {
+      const select = screen.getByLabelText("Filter by team");
+
+      const option = within(select).getByRole("option", {
+        name: "Ospo",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Ospo");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "",
+          teamId: 1003,
+        })
+      );
+    });
+
+    it("filters by Topic", async () => {
+      const search = screen.getByRole("search");
+
+      expect(search).toBeEnabled();
+
+      await userEvent.type(search, "topicname");
+
+      expect(search).toHaveValue("topicname");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "topicname",
+          teamId: undefined,
+        })
+      );
+    });
+
+    it("filters by several fields", async () => {
+      const search = screen.getByRole("search");
+      expect(search).toBeEnabled();
+      await userEvent.type(search, "topicname");
+      expect(search).toHaveValue("topicname");
+
+      const select = screen.getByLabelText("Filter by team");
+      const option = within(select).getByRole("option", {
+        name: "Ospo",
+      });
+      expect(option).toBeEnabled();
+      await userEvent.selectOptions(select, option);
+      expect(select).toHaveDisplayValue("Ospo");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "topicname",
+          teamId: 1003,
+        })
+      );
     });
   });
 });

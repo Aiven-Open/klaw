@@ -58,10 +58,13 @@ describe("topic-api", () => {
     });
     it("calls api.get with correct URL", async () => {
       const getSpy = jest.spyOn(api, "get");
-      await getTopicRequestsForApprover({ requestStatus: "CREATED" });
+      await getTopicRequestsForApprover({
+        pageNo: "1",
+        requestStatus: "CREATED",
+      });
       expect(getSpy).toHaveBeenCalledTimes(1);
       expect(getSpy).toHaveBeenCalledWith(
-        "/getTopicRequestsForApprover?pageNo=1&currentPage=1&requestStatus=CREATED"
+        "/getTopicRequestsForApprover?pageNo=1&requestStatus=CREATED"
       );
     });
   });
