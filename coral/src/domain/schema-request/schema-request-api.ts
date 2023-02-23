@@ -38,7 +38,6 @@ type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
 const getSchemaRequestsForApprover = (
   args: GetSchemaRequestsQueryParams
 ): Promise<SchemaRequestApiResponse> => {
-  console.log("api call", args);
   const queryObject: GetSchemaRequestsQueryParams = {
     pageNo: args.pageNo,
     requestStatus: args.requestStatus,

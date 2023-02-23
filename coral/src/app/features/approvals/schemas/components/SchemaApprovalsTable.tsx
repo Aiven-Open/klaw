@@ -28,31 +28,32 @@ type SchemaApprovalsTableProps = {
   >;
 };
 function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
-  const { requests, setDetailsModal } = props;const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
-  { type: "text", field: "topicname", headerName: "Topic" },
-  {
-    type: "status",
-    field: "environmentName",
-    headerName: "Environment",
-    status: ({ environmentName }) => {
-      return {
-        status: "neutral",
-        text: environmentName,
-      };
+  const { requests, setDetailsModal } = props;
+  const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
+    { type: "text", field: "topicname", headerName: "Topic" },
+    {
+      type: "status",
+      field: "environmentName",
+      headerName: "Environment",
+      status: ({ environmentName }) => {
+        return {
+          status: "neutral",
+          text: environmentName,
+        };
+      },
     },
-  },
-  {
-    type: "status",
-    field: "requestStatus",
-    headerName: "Status",
-    status: ({ requestStatus }) => {
-      return {
-        status: getRequestStatusColor(requestStatus),
-        text: getRequestStatusName(requestStatus),
-      };
+    {
+      type: "status",
+      field: "requestStatus",
+      headerName: "Status",
+      status: ({ requestStatus }) => {
+        return {
+          status: getRequestStatusColor(requestStatus),
+          text: getRequestStatusName(requestStatus),
+        };
+      },
     },
-  },
-  { type: "text", field: "username", headerName: "Requested by" },
+    { type: "text", field: "username", headerName: "Requested by" },
     {
       type: "text",
       field: "requesttimestring",
