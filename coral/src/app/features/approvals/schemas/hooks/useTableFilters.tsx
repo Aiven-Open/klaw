@@ -1,10 +1,11 @@
-import { NativeSelect, SearchInput } from "@aivenio/aquarium";
+import { SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests";
 import { getRequestStatusName } from "src/app/features/approvals/utils/request-status-helper";
+import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
 
 const statusList: RequestStatus[] = [
   "ALL",
@@ -25,23 +26,27 @@ const useTableFilters = () => {
   const [status, setStatus] = useState<RequestStatus>(statusParam ?? "CREATED");
   const [topic, setTopic] = useState(topicParam ?? "");
 
+  const statusOptions: Array<{ value: RequestStatus; name: string }> =
+    statusList.map((status) => {
+      return { value: status, name: getRequestStatusName(status) };
+    });
+
   const filters = [
     <SelectEnvironment key={"filter-environment"} onChange={setEnvironment} />,
-    <NativeSelect
+    <ComplexNativeSelect<{ value: RequestStatus; name: string }>
       labelText={"Filter by status"}
       key={"filter-status"}
       defaultValue={status}
-      onChange={(e) => {
-        const status = e.target.value as RequestStatus;
-        searchParams.set("status", status);
+      options={statusOptions}
+      identifierValue={"value"}
+      identifierName={"name"}
+      onBlur={(option) => {
+        const { value } = option as { value: RequestStatus; name: string };
+        searchParams.set("status", value);
         setSearchParams(searchParams);
-        setStatus(status);
+        setStatus(value);
       }}
-    >
-      {statusList.map((status) => {
-        return <option key={status}>{getRequestStatusName(status)}</option>;
-      })}
-    </NativeSelect>,
+    />,
     <div key={"search"}>
       <SearchInput
         type={"search"}

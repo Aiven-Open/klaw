@@ -5,7 +5,7 @@ import {
   CreateSchemaRequestPayload,
   SchemaRequestStatus,
 } from "src/domain/schema-request/schema-request-types";
-import { operations } from "types/api";
+import { components, operations } from "types/api";
 import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
 
 const createSchemaRequest = (
@@ -37,8 +37,18 @@ type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
   >
 >;
 
+// query: {
+//   pageNo: string;
+//   currentPage?: string;
+//   requestStatus?: components["schemas"]["RequestStatus"];
+//   /** Name of a topic */
+//   topic?: string;
+//   /** Environment identifier */
+//   env?: string;
+//   search?: string;
+// };
 const getSchemaRequestsForApprover = ({
-  requestStatus,
+  requestStatus = "CREATED",
   pageNumber = 1,
 }: GetSchemaRequestsArgs): Promise<SchemaRequestApiResponse> => {
   const queryObject: GetSchemaRequestsQueryParams = {

@@ -401,4 +401,46 @@ describe("SchemaApprovals", () => {
       expect(modal).toHaveTextContent(lastRequest.topicname);
     });
   });
+
+  describe("handles filtering entries in the table", () => {
+    const initial = { pageNumber: 1, requestStatus: "CREATED" };
+    beforeEach(async () => {
+      mockGetEnvironment.mockResolvedValue([]);
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        totalPages: 1,
+        currentPage: 1,
+        entries: mockedResponseSchemaRequests,
+      });
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        initial
+      );
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+      const statusOption = screen.getByRole("option", { name: "All statuses" });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
+        pageNumber: 1,
+        requestStatus: "ALL",
+      });
+    });
+  });
 });
