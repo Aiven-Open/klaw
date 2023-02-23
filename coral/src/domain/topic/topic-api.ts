@@ -17,6 +17,7 @@ import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
+  ResolveIntersectionTypes,
 } from "types/utils";
 
 const getTopics = async ({
