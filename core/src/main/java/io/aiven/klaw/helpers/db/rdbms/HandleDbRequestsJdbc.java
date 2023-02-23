@@ -68,6 +68,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.findEnvMappingById(id);
   }
 
+  @Override
+  public List<EnvMapping> getAllEnvMappingsForTenant(int tenantId) {
+    return jdbcSelectHelper.findAllEnvMappingsByTenantId(tenantId);
+  }
+
   public String addNewEnv(Env env, EnvMapping mapping) throws KlawException {
     return jdbcInsertHelper.insertIntoEnvs(env, mapping);
   }

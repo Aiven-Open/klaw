@@ -812,6 +812,10 @@ public class SelectDataJdbc {
     }
   }
 
+  public List<EnvMapping> findAllEnvMappingsByTenantId(int tenantId) {
+    return envMappingRepo.findAllByTenantId(tenantId);
+  }
+
   public Env selectEnvDetails(String environmentId, int tenantId) {
     EnvID envID = new EnvID();
     envID.setId(environmentId);

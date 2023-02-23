@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.dao.EnvMapping;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,6 +103,24 @@ public class EnvsClustersTenantsController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<EnvModel>> getEnvs() {
     return new ResponseEntity<>(envsClustersTenantsControllerService.getKafkaEnvs(), HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/env/mapping/{id}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<EnvMapping> getEnvMapping(@PathVariable("id") String id) {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getEnvMapping(id), HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/env/mapping",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<EnvMapping>> getEnvMapping() {
+    return new ResponseEntity<>(
+        envsClustersTenantsControllerService.getAllEnvMappings(), HttpStatus.OK);
   }
 
   @RequestMapping(

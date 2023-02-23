@@ -381,6 +381,16 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
+  public EnvMapping getEnvMapping(String id) {
+    int tenantId = getUserDetails(getUserName()).getTenantId();
+    return manageDatabase.getHandleDbRequests().findEnvMappingById(new EnvID(id, tenantId));
+  }
+
+  public List<EnvMapping> getAllEnvMappings() {
+    int tenantId = getUserDetails(getUserName()).getTenantId();
+    return manageDatabase.getHandleDbRequests().getAllEnvMappingsForTenant(tenantId);
+  }
+
   public List<EnvModel> getConnectorEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
@@ -949,6 +959,7 @@ public class EnvsClustersTenantsControllerService {
     }
 
     try {
+      removeEnvironmentMapping(envId, tenantId, envType);
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       commonUtilsService.updateMetadata(
@@ -961,60 +972,61 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  private boolean removeEnvironmentMapping(String id, int tenantId, String envType) {
+  private void removeEnvironmentMapping(String id, int tenantId, String envType)
+      throws KlawException {
 
-    EnvMapping envMapping =
-        manageDatabase.getHandleDbRequests().findEnvMappingById(new EnvID(id, tenantId));
     if (EnvType.KAFKA.value.equals(envType)) {
-      unlinkEnvsFromMapping(id, tenantId, envMapping);
+
+      EnvID envId = new EnvID(id, tenantId);
+      if (manageDatabase.getHandleDbRequests().envMappingExists(envId)) {
+        EnvMapping envMapping = manageDatabase.getHandleDbRequests().findEnvMappingById(envId);
+        // Unlink all the other environment as we are going to delete this Kafka Cluster and its
+        // EnvMapping
+        unlinkEnvsFromMapping(id, tenantId, envMapping);
+      }
     } else {
-      if (EnvType.SCHEMAREGISTRY.value.equals(envType)) {
-        envMapping.setSchemaEnvs(
-            envMapping.getSchemaEnvs().stream()
-                .filter(tag -> !tag.getId().equals(id))
-                .collect(Collectors.toList()));
-      } else if (EnvType.KAFKACONNECT.value.equals(envType)) {
-        envMapping.setConnectorEnvs(
-            envMapping.getConnectorEnvs().stream()
-                .filter(tag -> !tag.getId().equals(id))
-                .collect(Collectors.toList()));
+      Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
+      if (env.getAssociatedEnv() != null) {
+        EnvMapping envMapping =
+            manageDatabase
+                .getHandleDbRequests()
+                .findEnvMappingById(new EnvID(env.getAssociatedEnv(), tenantId));
+        if (envMapping != null) {
+          if (EnvType.SCHEMAREGISTRY.value.equals(envType)) {
+            envMapping.setSchemaEnvs(
+                envMapping.getSchemaEnvs().stream()
+                    .filter(tag -> !tag.getId().equals(id))
+                    .collect(Collectors.toList()));
+          } else if (EnvType.KAFKACONNECT.value.equals(envType)) {
+            envMapping.setConnectorEnvs(
+                envMapping.getConnectorEnvs().stream()
+                    .filter(tag -> !tag.getId().equals(id))
+                    .collect(Collectors.toList()));
+          }
+        }
       }
     }
-
-    return true;
   }
 
-  private void unlinkEnvsFromMapping(String id, int tenantId, EnvMapping envMapping) {
+  private void unlinkEnvsFromMapping(String id, int tenantId, EnvMapping envMapping)
+      throws KlawException {
 
     // remove any attached SchemaRegistry Env
-    envMapping
-        .getSchemaEnvs()
-        .forEach(
-            env -> {
-              Env schemaEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
-              schemaEnv.setAssociatedEnv(null);
-
-              try {
-                manageDatabase.getHandleDbRequests().addNewEnv(schemaEnv, null);
-              } catch (KlawException e) {
-
-              }
-            });
-
+    removeAssociatedEnvFromEachEnv(tenantId, envMapping.getSchemaEnvs());
     // remove any attached Connector Env
-    // remove any attached SchemaRegistry Env
-    envMapping
-        .getConnectorEnvs()
-        .forEach(
-            env -> {
-              Env schemaEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
-              schemaEnv.setAssociatedEnv(null);
-              try {
-                manageDatabase.getHandleDbRequests().addNewEnv(schemaEnv, null);
-              } catch (KlawException e) {
+    removeAssociatedEnvFromEachEnv(tenantId, envMapping.getConnectorEnvs());
+  }
 
-              }
-            });
+  private void removeAssociatedEnvFromEachEnv(int tenantId, List<EnvTag> tags)
+      throws KlawException {
+    if (tags == null) {
+      return;
+    }
+    for (EnvTag env : tags) {
+      Env schemaEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(env.getId(), tenantId);
+      schemaEnv.setAssociatedEnv(null);
+      manageDatabase.getHandleDbRequests().addNewEnv(schemaEnv, null);
+    }
   }
 
   private String getUserName() {

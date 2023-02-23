@@ -29,6 +29,8 @@ public interface HandleDbRequests {
 
   EnvMapping findEnvMappingById(EnvID id);
 
+  List<EnvMapping> getAllEnvMappingsForTenant(int tenantId);
+
   String addNewEnv(Env env, EnvMapping mapping) throws KlawException;
 
   String updateEnvStatus(Env env);
