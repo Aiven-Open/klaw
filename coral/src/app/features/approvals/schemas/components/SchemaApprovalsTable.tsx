@@ -3,14 +3,19 @@ import { SchemaRequest } from "src/domain/schema-request";
 import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
 import deleteIcon from "@aivenio/aquarium/icons/delete";
+import {
+  getRequestStatusColor,
+  getRequestStatusName,
+} from "src/app/features/approvals/utils/request-status-helper";
 import { Dispatch, SetStateAction } from "react";
 
 interface SchemaRequestTableData {
-  id: number;
-  topicname: string;
-  environmentName: string;
-  username: string;
-  requesttimestring: string;
+  id: SchemaRequest["req_no"];
+  topicname: SchemaRequest["topicname"];
+  environmentName: SchemaRequest["environmentName"];
+  username: SchemaRequest["username"];
+  requesttimestring: SchemaRequest["requesttimestring"];
+  requestStatus: SchemaRequest["requestStatus"];
 }
 
 type SchemaApprovalsTableProps = {
@@ -27,7 +32,18 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
   const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
     { type: "text", field: "environmentName", headerName: "Environment" },
-    { type: "text", field: "username", headerName: "Requested by" },
+    {
+    type: "status",
+    field: "requestStatus",
+    headerName: "Status",
+    status: ({ requestStatus }) => {
+      return {
+        status: getRequestStatusColor(requestStatus),
+        text: getRequestStatusName(requestStatus),
+      };
+    },
+  },
+  { type: "text", field: "username", headerName: "Requested by" },
     {
       type: "text",
       field: "requesttimestring",
@@ -107,6 +123,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
         environmentName: request.environmentName,
         username: request.username,
         requesttimestring: request.requesttimestring,
+        requestStatus: request.requestStatus,
       };
     }
   );
