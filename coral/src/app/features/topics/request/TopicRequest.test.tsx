@@ -19,6 +19,12 @@ import {
 } from "src/domain/topic/topic-api.msw";
 import api from "src/services/api";
 
+const mockedUsedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedUsedNavigate,
+}));
+
 describe("<TopicRequest />", () => {
   const originalConsoleError = console.error;
   let user: ReturnType<typeof userEvent.setup>;
@@ -744,10 +750,12 @@ describe("<TopicRequest />", () => {
       it("renders an error message", async () => {
         const spyPost = jest.spyOn(api, "post");
 
-        await user.click(screen.getByRole("button", { name: "Request topic" }));
+        await user.click(
+          screen.getByRole("button", { name: "Submit request" })
+        );
 
         await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Request topic" });
+          const btn = screen.getByRole("button", { name: "Submit request" });
           expect(btn).toBeDisabled();
         });
 
@@ -760,7 +768,7 @@ describe("<TopicRequest />", () => {
           advancedTopicConfigEntries: [],
           description: "test",
           remarks: "",
-          topictype: "Create",
+          requestOperationType: "CREATE",
         });
 
         const alert = await screen.findByRole("alert");
@@ -794,10 +802,12 @@ describe("<TopicRequest />", () => {
       it("redirects user to previous page", async () => {
         const spyPost = jest.spyOn(api, "post");
 
-        await user.click(screen.getByRole("button", { name: "Request topic" }));
+        await user.click(
+          screen.getByRole("button", { name: "Submit request" })
+        );
 
         await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Request topic" });
+          const btn = screen.getByRole("button", { name: "Submit request" });
           expect(btn).toBeDisabled();
         });
 
@@ -810,7 +820,7 @@ describe("<TopicRequest />", () => {
           advancedTopicConfigEntries: [],
           description: "test",
           remarks: "",
-          topictype: "Create",
+          requestOperationType: "CREATE",
         });
 
         await waitFor(() => {
@@ -820,6 +830,131 @@ describe("<TopicRequest />", () => {
           );
         });
       });
+    });
+  });
+
+  describe("enables user to cancel the form input", () => {
+    const getForm = () => {
+      return screen.getByRole("form", {
+        name: `Request a new topic`,
+      });
+    };
+
+    beforeEach(async () => {
+      mockGetEnvironmentsForTeam({
+        mswInstance: server,
+        response: {
+          data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
+        },
+      });
+
+      mockgetTopicAdvancedConfigOptions({
+        mswInstance: server,
+        response: {
+          data: defaultgetTopicAdvancedConfigOptionsResponse,
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicRequest />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+
+      // Wait all API calls to resolve, which are required for the render
+      await screen.findByLabelText("Environment");
+      await screen.findByRole("option", { name: "DEV" });
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("redirects user to the previous page if they click 'Cancel' on empty form", async () => {
+      const form = getForm();
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+    });
+
+    it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+      const form = getForm();
+
+      const nameInput = screen.getByRole("textbox", {
+        name: "Topic name *",
+      });
+      await userEvent.type(nameInput, "Some name");
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+      const dialog = screen.getByRole("dialog");
+
+      expect(dialog).toBeVisible();
+      expect(dialog).toHaveTextContent("Cancel topic request?");
+      expect(dialog).toHaveTextContent(
+        "Do you want to cancel this request? The data added will be lost."
+      );
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+    });
+
+    it("brings the user back to the form when they do not cancel", async () => {
+      const form = getForm();
+
+      const nameInput = screen.getByRole("textbox", {
+        name: "Topic name *",
+      });
+      await userEvent.type(nameInput, "Some name");
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+      const dialog = screen.getByRole("dialog");
+
+      const returnButton = screen.getByRole("button", {
+        name: "Continue with request",
+      });
+
+      await userEvent.click(returnButton);
+
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+
+      expect(dialog).not.toBeInTheDocument();
+    });
+
+    it("redirects user to previous page if they cancel the request", async () => {
+      const form = getForm();
+
+      const nameInput = screen.getByRole("textbox", {
+        name: "Topic name *",
+      });
+      await userEvent.type(nameInput, "Some name");
+
+      const button = within(form).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(button);
+
+      const returnButton = screen.getByRole("button", {
+        name: "Cancel request",
+      });
+
+      await userEvent.click(returnButton);
+
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
     });
   });
 });

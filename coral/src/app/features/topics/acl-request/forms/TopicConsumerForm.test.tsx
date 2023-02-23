@@ -24,7 +24,7 @@ const baseProps = {
     }),
   ],
   renderAclTypeField: () => (
-    <AclTypeField topicType={"Producer"} handleChange={() => null} />
+    <AclTypeField aclType={"PRODUCER"} handleChange={() => null} />
   ),
 } as TopicConsumerFormProps;
 
@@ -46,7 +46,7 @@ describe("<TopicConsumerForm />", () => {
           schema: topicConsumerFormSchema,
           defaultValues: {
             topicname: "aiventopic1",
-            topictype: "Consumer",
+            aclType: "CONSUMER",
           },
         })
       );
@@ -146,7 +146,9 @@ describe("<TopicConsumerForm />", () => {
     });
 
     it("renders Submit and Cancel buttons", () => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit request",
+      });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
@@ -166,7 +168,7 @@ describe("<TopicConsumerForm />", () => {
           defaultValues: {
             topicname: "aiventopic1",
             environment: "1",
-            topictype: "Consumer",
+            aclType: "CONSUMER",
             aclIpPrincipleType: "PRINCIPAL",
           },
         })
@@ -260,7 +262,9 @@ describe("<TopicConsumerForm />", () => {
     });
 
     it("renders Submit and Cancel buttons", () => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit request",
+      });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
@@ -280,7 +284,7 @@ describe("<TopicConsumerForm />", () => {
           defaultValues: {
             topicname: "aiventopic1",
             environment: "2",
-            topictype: "Consumer",
+            aclType: "CONSUMER",
           },
         })
       );
@@ -374,7 +378,9 @@ describe("<TopicConsumerForm />", () => {
     });
 
     it("renders Submit and Cancel buttons", () => {
-      const submitButton = screen.getByRole("button", { name: "Submit" });
+      const submitButton = screen.getByRole("button", {
+        name: "Submit request",
+      });
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();

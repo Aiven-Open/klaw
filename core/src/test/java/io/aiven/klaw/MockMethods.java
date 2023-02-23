@@ -3,6 +3,8 @@ package io.aiven.klaw;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MockMethods {
 
@@ -39,6 +41,25 @@ public class MockMethods {
     userInfoModel.setTeam(team);
     userInfoModel.setFullname("New User");
     userInfoModel.setMailid("test@test.com");
+
+    return userInfoModel;
+  }
+
+  public UserInfoModel getUserInfoModelSwitchTeams(
+      String username, String role, String team, int switchTeamSize) {
+    UserInfoModel userInfoModel = new UserInfoModel();
+    userInfoModel.setUsername(username);
+    userInfoModel.setUserPassword("user");
+    userInfoModel.setRole(role);
+    userInfoModel.setTeam(team);
+    userInfoModel.setFullname("New User");
+    userInfoModel.setMailid("test@test.com");
+    userInfoModel.setSwitchTeams(true);
+    Set<Integer> teamIds = new HashSet<>();
+    if (switchTeamSize > 0) teamIds.add(1001); // INFRATEAM
+    if (switchTeamSize > 1) teamIds.add(1002); // STAGINGTEAM
+
+    userInfoModel.setSwitchAllowedTeamIds(teamIds);
 
     return userInfoModel;
   }

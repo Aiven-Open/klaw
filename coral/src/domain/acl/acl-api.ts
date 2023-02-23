@@ -1,3 +1,4 @@
+import omitBy from "lodash/omitBy";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import {
   CreateAclRequestTopicTypeConsumer,
@@ -23,9 +24,17 @@ const createAclRequest = (
 };
 
 const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
+  const filteredParams = omitBy(params, (value, property) => {
+    const omitEnv = property === "env" && value === "ALL";
+    const omitAclType = property === "aclType" && value === "ALL";
+    const omitTopic = property === "topic" && value === "";
+
+    return omitEnv || omitAclType || omitTopic;
+  });
+
   return api
     .get<KlawApiResponse<"getAclRequestsForApprover">>(
-      `/getAclRequestsForApprover?${new URLSearchParams(params)}`
+      `/getAclRequestsForApprover?${new URLSearchParams(filteredParams)}`
     )
     .then(transformAclRequestApiResponse);
 };

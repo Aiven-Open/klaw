@@ -4,6 +4,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
@@ -44,6 +45,7 @@ import org.springframework.stereotype.Service;
 @ConfigurationProperties(prefix = "spring.security.oauth2.client", ignoreInvalidFields = false)
 public class UtilControllerService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String IMAGE_URI = ".imageURI";
   @Autowired ManageDatabase manageDatabase;
 
@@ -92,8 +94,7 @@ public class UtilControllerService {
     return mailService.getUserName(getPrincipal());
   }
 
-  public String getTenantNameFromUser(String userId) {
-    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
+  public String getTenantNameFromUser(String userId, UserInfo userInfo) {
     if (userInfo != null) {
       return manageDatabase.getTenantMap().entrySet().stream()
           .filter(obj -> Objects.equals(obj.getKey(), userInfo.getTenantId()))
@@ -537,6 +538,9 @@ public class UtilControllerService {
         broadCastText += " Announcement : " + broadCastTextGlobal;
       }
 
+      UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userName);
+      dashboardData.put("canSwitchTeams", "" + userInfo.isSwitchTeams());
+
       dashboardData.put("broadcastText", broadCastText);
       dashboardData.put("saasEnabled", kwInstallationType);
       dashboardData.put(
@@ -545,7 +549,8 @@ public class UtilControllerService {
       dashboardData.put("username", userName);
       dashboardData.put("authenticationType", authenticationType);
       dashboardData.put("teamname", teamName);
-      dashboardData.put("tenantName", getTenantNameFromUser(getUserName()));
+      dashboardData.put("teamId", "" + commonUtilsService.getTeamId(userName));
+      dashboardData.put("tenantName", getTenantNameFromUser(userName, userInfo));
       dashboardData.put("userrole", authority);
       dashboardData.put("companyinfo", companyInfo);
       dashboardData.put("klawversion", klawVersion);

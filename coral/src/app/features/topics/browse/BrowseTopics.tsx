@@ -1,6 +1,6 @@
 import { useGetTopics } from "src/app/features/topics/browse/hooks/topic-list/useGetTopics";
 import { Pagination } from "src/app/components/Pagination";
-import SelectTeam from "src/app/features/topics/browse/components/select-team/SelectTeam";
+import SelectTeamName from "src/app/features/topics/browse/components/select-team-name/SelectTeamName";
 import TopicTable from "src/app/features/topics/browse/components/topic-table/TopicTable";
 import { useState } from "react";
 import { Box } from "@aivenio/aquarium";
@@ -42,7 +42,7 @@ function BrowseTopics() {
           display={"flex"}
           justifyContent={"end"}
           colGap={"l1"}
-          maxWidth={"6xl"}
+          maxWidth={"7xl"}
         >
           <SearchTopics onChange={searchTopics} value={searchTerm} />
         </Box>
@@ -50,10 +50,10 @@ function BrowseTopics() {
           display={"flex"}
           flexDirection={"row"}
           colGap={"l1"}
-          maxWidth={"6xl"}
+          maxWidth={"7xl"}
         >
           <Box grow={1}>
-            <SelectTeam onChange={setTeamName} />
+            <SelectTeamName onChange={setTeamName} />
           </Box>
           <Box grow={1}>
             <SelectEnvironment onChange={setEnvironment} />

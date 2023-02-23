@@ -5,6 +5,7 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.RegisterUserInfo;
@@ -27,15 +28,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,6 +56,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class UsersTeamsControllerService {
 
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String MASKED_PWD = "*******";
   private static final String SAAS = "saas";
 
@@ -87,12 +92,29 @@ public class UsersTeamsControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       copyProperties(userInfo, userInfoModel);
+      updateSwitchTeamsList(userInfoModel, userInfo, -1, false);
       userInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(userInfo.getTenantId(), userInfoModel.getTeamId()));
       userInfoModel.setUserPassword(MASKED_PWD);
       return userInfoModel;
     } else {
       return null;
+    }
+  }
+
+  private void updateSwitchTeamsList(
+      UserInfoModel userInfoModel, UserInfo userInfo, int tenantId, boolean updateTeamName) {
+    if (userInfo.isSwitchTeams()) {
+      Set<Integer> switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
+      Set<String> switchAllowedTeamNames = new HashSet<>();
+
+      if (updateTeamName) {
+        switchAllowedTeamIds.forEach(
+            switchAllowedTeamId ->
+                switchAllowedTeamNames.add(
+                    manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId)));
+        userInfoModel.setSwitchAllowedTeamNames(switchAllowedTeamNames);
+      }
     }
   }
 
@@ -116,6 +138,10 @@ public class UsersTeamsControllerService {
     if (commonUtilsService.isNotAuthorizedUser(
         getUserName(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
+
+    if (newUser.getTeamId() == null) {
+      return ApiResponse.builder().result("Team id cannot be empty.").build();
     }
 
     UserInfo existingUserInfo =
@@ -167,14 +193,16 @@ public class UsersTeamsControllerService {
       }
 
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-      UserInfo userInfo = new UserInfo();
 
-      copyProperties(newUser, userInfo);
-      userInfo.setPwd(newUser.getUserPassword());
-      userInfo.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
-      userInfo.setTenantId(tenantId);
+      copyProperties(newUser, existingUserInfo);
+      existingUserInfo.setPwd(newUser.getUserPassword());
+      existingUserInfo.setTenantId(tenantId);
+      Pair<Boolean, String> switchTeamsCheck = validateSwitchTeams(newUser);
+      if (switchTeamsCheck.getLeft()) {
+        return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
+      }
 
-      return ApiResponse.builder().result(dbHandle.updateUser(userInfo)).build();
+      return ApiResponse.builder().result(dbHandle.updateUser(existingUserInfo)).build();
     } catch (Exception e) {
       log.error("Error from updateUser ", e);
       throw new KlawException(e.getMessage());
@@ -478,6 +506,11 @@ public class UsersTeamsControllerService {
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
       UserInfo userInfo = new UserInfo();
       copyProperties(newUser, userInfo);
+
+      Pair<Boolean, String> switchTeamsCheck = validateSwitchTeams(newUser);
+      if (switchTeamsCheck.getLeft())
+        return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
+
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
 
@@ -511,6 +544,20 @@ public class UsersTeamsControllerService {
         throw new KlawException("Unable to create the user.");
       }
     }
+  }
+
+  private Pair<Boolean, String> validateSwitchTeams(UserInfoModel sourceUser) {
+    if (sourceUser.isSwitchTeams()) {
+      Set<Integer> switchAllowedTeamIds = sourceUser.getSwitchAllowedTeamIds();
+      if (switchAllowedTeamIds == null
+          || switchAllowedTeamIds.isEmpty()
+          || switchAllowedTeamIds.size() < 2) { // make sure atleast 2 teams are selected to switch
+        return Pair.of(Boolean.TRUE, "Please make sure atleast 2 teams are selected.");
+      } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
+        return Pair.of(Boolean.TRUE, "Please select your own team, in the switch teams list.");
+      }
+    }
+    return Pair.of(Boolean.FALSE, "");
   }
 
   public ApiResponse addNewTeam(TeamModel newTeam, boolean isExternal) throws KlawException {
@@ -626,6 +673,7 @@ public class UsersTeamsControllerService {
         userListItem -> {
           UserInfoModel userInfoModel = new UserInfoModel();
           copyProperties(userListItem, userInfoModel);
+          updateSwitchTeamsList(userInfoModel, userListItem, tenantId, true);
           if (teamName != null && !teamName.equals("")) {
             if (Objects.equals(
                 manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()),
@@ -681,6 +729,7 @@ public class UsersTeamsControllerService {
     UserInfoModel userInfoModel = new UserInfoModel();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails);
     copyProperties(userInfo, userInfoModel);
+    updateSwitchTeamsList(userInfoModel, userInfo, userInfo.getTenantId(), true);
     userInfoModel.setTeam(
         manageDatabase.getTeamNameFromTeamId(
             commonUtilsService.getTenantId(userDetails), userInfo.getTeamId()));
@@ -953,5 +1002,56 @@ public class UsersTeamsControllerService {
     Matcher m1 = saasPattern.matcher(userName);
     Matcher m2 = defaultPattern.matcher(userName);
     return m1.matches() || m2.matches();
+  }
+
+  public List<TeamModel> getSwitchTeams(String userId) {
+    List<TeamModel> teamModelList = new ArrayList<>();
+    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+    if (userInfo.isSwitchTeams()) {
+      Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();
+      if (teamIds != null) {
+        for (Integer switchAllowedTeamId : teamIds) {
+          TeamModel teamModel = new TeamModel();
+          teamModel.setTeamId(switchAllowedTeamId);
+          teamModel.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));
+          teamModelList.add(teamModel);
+        }
+      }
+    }
+
+    return teamModelList;
+  }
+
+  public ApiResponse updateUserTeamFromSwitchTeams(UserInfoModel userProfileDetails) {
+    String userIdToBeUpdated = userProfileDetails.getUsername();
+    Integer newTeamId = userProfileDetails.getTeamId();
+    log.info("updateProfileTeam {}", userIdToBeUpdated);
+
+    UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToBeUpdated);
+    boolean authorizedUser = true;
+
+    if (!userInfo.isSwitchTeams()) {
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+    }
+
+    Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();
+    if (teamIds != null) {
+      if (teamIds.isEmpty()) {
+        authorizedUser = false;
+      } else if (!teamIds.contains(userProfileDetails.getTeamId())) {
+        authorizedUser = false;
+      }
+    } else {
+      authorizedUser = false;
+    }
+
+    if (!authorizedUser)
+      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+
+    return ApiResponse.builder()
+        .result(manageDatabase.getHandleDbRequests().updateUserTeam(userIdToBeUpdated, newTeamId))
+        .build();
   }
 }

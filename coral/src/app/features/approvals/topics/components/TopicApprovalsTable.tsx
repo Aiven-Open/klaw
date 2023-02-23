@@ -8,7 +8,7 @@ interface TopicRequestTableData {
   id: number; // unclear
   topicname: string;
   environmentName: string;
-  topictype: string;
+  requestStatus: string;
   teamname: string; // unclear
   requestor: string;
   requesttimestring: string;
@@ -17,7 +17,7 @@ interface TopicRequestTableData {
 const columns: Array<DataTableColumn<TopicRequestTableData>> = [
   { type: "text", field: "topicname", headerName: "Topic" },
   { type: "text", field: "environmentName", headerName: "Environment" },
-  { type: "text", field: "topictype", headerName: "Type" },
+  { type: "text", field: "requestStatus", headerName: "Status" },
   { type: "text", field: "teamname", headerName: "Claim by team" },
   { type: "text", field: "requestor", headerName: "Requested by" },
   {
@@ -100,13 +100,14 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
         id: request.topicid,
         topicname: request.topicname,
         environmentName: request.environmentName,
-        topictype: request.topictype,
+        requestStatus: request.requestStatus,
         teamname: request.teamname,
         requestor: request.requestor,
         requesttimestring: request.requesttimestring,
       };
     }
   );
+
   return (
     <DataTable
       ariaLabel={"Topic requests"}

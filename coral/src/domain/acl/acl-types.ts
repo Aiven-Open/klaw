@@ -19,7 +19,7 @@ type BaseCreateAclRequest = Pick<
   KlawApiRequest<"createAclRequest">,
   | "remarks"
   | "aclPatternType"
-  | "topictype"
+  | "aclType"
   | "topicname"
   | "environment"
   | "teamname"
@@ -30,25 +30,30 @@ type BaseCreateAclRequest = Pick<
 
 type CreateAclRequestTopicTypeProducer = ResolveIntersectionTypes<
   BaseCreateAclRequest & {
-    topictype: "Producer";
+    aclType: "PRODUCER";
   }
 >;
 
 type CreateAclRequestTopicTypeConsumer = ResolveIntersectionTypes<
   BaseCreateAclRequest & {
     transactionalId?: string;
-    topictype: "Consumer";
+    aclType: "CONSUMER";
     aclPatternType: "LITERAL";
     consumergroup: string;
   }
 >;
 
-type GetCreatedAclRequestParameters =
-  KlawApiRequestQueryParameters<"getAclRequestsForApprover">;
+type GetCreatedAclRequestParameters = ResolveIntersectionTypes<
+  Omit<KlawApiRequestQueryParameters<"getAclRequestsForApprover">, "aclType">
+> & {
+  aclType?: "ALL" | "PRODUCER" | "CONSUMER";
+};
 
 type AclRequest = KlawApiModel<"aclRequest">;
 
 type AclRequestsForApprover = ResolveIntersectionTypes<Paginated<AclRequest[]>>;
+
+type AclType = KlawApiModel<"aclRequest">["aclType"];
 
 export type {
   CreateAclRequestTopicTypeProducer,
@@ -56,4 +61,5 @@ export type {
   GetCreatedAclRequestParameters,
   AclRequest,
   AclRequestsForApprover,
+  AclType,
 };

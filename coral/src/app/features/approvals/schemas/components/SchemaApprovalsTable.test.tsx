@@ -17,8 +17,8 @@ const mockedRequests: SchemaRequest[] = [
     username: "jlpicard",
     requesttime: "1987-09-28T13:37:00.001+00:00",
     requesttimestring: "28-Sep-1987 13:37:00",
-    topicstatus: "created",
-    requesttype: "Create",
+    requestStatus: "CREATED",
+    requestOperationType: "CREATE",
     remarks: "asap",
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",
@@ -43,8 +43,8 @@ const mockedRequests: SchemaRequest[] = [
     username: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
-    topicstatus: "created",
-    requesttype: "Delete",
+    requestStatus: "CREATED",
+    requestOperationType: "DELETE",
     remarks: "asap",
     approvingTeamDetails:
       "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf",

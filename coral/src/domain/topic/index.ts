@@ -6,7 +6,7 @@ import {
 import {
   Topic,
   TopicNames,
-  TopicRequestTypes,
+  TopicRequestOperationTypes,
   TopicTeam,
   TopicRequestStatus,
   TopicRequest,
@@ -17,7 +17,7 @@ export type {
   TopicNames,
   TopicTeam,
   TopicRequest,
-  TopicRequestTypes,
+  TopicRequestOperationTypes,
   TopicRequestStatus,
 };
 export { getTopics, getTopicNames, getTopicTeam };

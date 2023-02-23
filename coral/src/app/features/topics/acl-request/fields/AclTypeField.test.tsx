@@ -15,7 +15,7 @@ describe("AclTypeField", () => {
 
   it("renders AclTypeField with two options", () => {
     const result = render(
-      <AclTypeField handleChange={handleChange} topicType={"Producer"} />
+      <AclTypeField handleChange={handleChange} aclType={"PRODUCER"} />
     );
     const radioButtons = result.getAllByRole("radio");
     expect(radioButtons).toHaveLength(2);
@@ -23,7 +23,7 @@ describe("AclTypeField", () => {
 
   it("should render AclTypeField with Consumer option checked by default", () => {
     const result = render(
-      <AclTypeField handleChange={handleChange} topicType={"Consumer"} />
+      <AclTypeField handleChange={handleChange} aclType={"CONSUMER"} />
     );
     const consumerRadioButton = result.getByLabelText("Consumer");
     const producerRadioButton = result.getByLabelText("Producer");
@@ -33,7 +33,7 @@ describe("AclTypeField", () => {
 
   it("should render AclTypeField with Producer option checked by default", () => {
     const result = render(
-      <AclTypeField handleChange={handleChange} topicType={"Producer"} />
+      <AclTypeField handleChange={handleChange} aclType={"PRODUCER"} />
     );
     const consumerRadioButton = result.getByLabelText("Consumer");
     const producerRadioButton = result.getByLabelText("Producer");
@@ -43,7 +43,7 @@ describe("AclTypeField", () => {
 
   it("should call handleChange when options are clicked", async () => {
     const result = render(
-      <AclTypeField handleChange={handleChange} topicType={"Producer"} />
+      <AclTypeField handleChange={handleChange} aclType={"PRODUCER"} />
     );
     const consumerRadioButton = result.getByLabelText("Consumer");
 

@@ -8,9 +8,11 @@ import { Box, Icon, Typography } from "@aivenio/aquarium";
 import { ResolveIntersectionTypes } from "types/utils";
 
 type DialogProps = ResolveIntersectionTypes<
-  Omit<ModalProps, "isDialog" | "dialogTitle" | "close"> &
+  Omit<ModalProps, "isDialog" | "dialogTitle" | "close" | "children"> &
     Required<Pick<ModalProps, "secondaryAction">> & {
       type: DialogType;
+    } & {
+      children: string;
     }
 >;
 

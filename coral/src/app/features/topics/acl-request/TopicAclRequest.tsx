@@ -15,16 +15,17 @@ import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
 import { getTopicTeam, TopicTeam } from "src/domain/topic";
+import { AclType } from "src/domain/acl";
 
 const TopicAclRequest = () => {
   const { topicName } = useParams();
-  const [topicType, setTopicType] = useState("Producer");
+  const [aclType, setAclType] = useState<AclType>("PRODUCER");
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
     schema: topicProducerFormSchema,
     defaultValues: {
       topicname: topicName,
-      topictype: "Producer",
+      aclType: "PRODUCER",
     },
   });
 
@@ -33,7 +34,7 @@ const TopicAclRequest = () => {
     defaultValues: {
       aclPatternType: "LITERAL",
       topicname: topicName,
-      topictype: "Consumer",
+      aclType: "CONSUMER",
       consumergroup: "",
     },
   });
@@ -44,7 +45,7 @@ const TopicAclRequest = () => {
   // Will trigger infinite rerender when selecting an environment if not memoized
   const selectedEnvironment = useMemo(
     () =>
-      topicType === "Producer"
+      aclType === "PRODUCER"
         ? extendedEnvironments.find(
             (env) => env.id === topicProducerForm.watch("environment")
           )
@@ -52,22 +53,22 @@ const TopicAclRequest = () => {
             (env) => env.id === topicConsumerForm.watch("environment")
           ),
     [
-      topicType,
+      aclType,
       topicProducerForm.watch("environment"),
       topicConsumerForm.watch("environment"),
     ]
   );
 
   const selectedPatternType =
-    topicType === "Producer"
+    aclType === "PRODUCER"
       ? topicProducerForm.watch("aclPatternType")
       : "LITERAL";
   const selectedTopicName =
-    topicType === "Producer"
+    aclType === "PRODUCER"
       ? topicProducerForm.watch("topicname")
       : topicConsumerForm.watch("topicname");
   useQuery<TopicTeam, Error>({
-    queryKey: ["topicTeam", selectedTopicName, selectedPatternType, topicType],
+    queryKey: ["topicTeam", selectedTopicName, selectedPatternType, aclType],
     queryFn: () =>
       getTopicTeam({
         topicName: selectedTopicName,
@@ -77,7 +78,7 @@ const TopicAclRequest = () => {
       if (data === undefined) {
         throw new Error("Could not fetch team for current Topic");
       }
-      return topicType === "Producer"
+      return aclType === "PRODUCER"
         ? topicProducerForm.setValue("teamname", data.team)
         : topicConsumerForm.setValue("teamname", data.team);
     },
@@ -92,12 +93,12 @@ const TopicAclRequest = () => {
       selectedEnvironment !== undefined &&
       selectedEnvironment.isAivenCluster
     ) {
-      if (topicType === "Producer") {
+      if (aclType === "PRODUCER") {
         topicProducerForm.setValue("aclPatternType", "LITERAL");
         topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
         topicProducerForm.resetField("transactionalId");
       }
-      if (topicType === "Consumer") {
+      if (aclType === "CONSUMER") {
         topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
       }
     }
@@ -110,11 +111,11 @@ const TopicAclRequest = () => {
   const currentTopicNames = selectedEnvironment?.topicNames || [];
 
   return (
-    <Box maxWidth={"4xl"}>
-      {topicType === "Consumer" ? (
+    <Box maxWidth={"7xl"}>
+      {aclType === "CONSUMER" ? (
         <TopicConsumerForm
           renderAclTypeField={() => (
-            <AclTypeField topicType={topicType} handleChange={setTopicType} />
+            <AclTypeField aclType={aclType} handleChange={setAclType} />
           )}
           topicConsumerForm={topicConsumerForm}
           topicNames={currentTopicNames}
@@ -124,7 +125,7 @@ const TopicAclRequest = () => {
       ) : (
         <TopicProducerForm
           renderAclTypeField={() => (
-            <AclTypeField topicType={topicType} handleChange={setTopicType} />
+            <AclTypeField aclType={aclType} handleChange={setAclType} />
           )}
           topicProducerForm={topicProducerForm}
           topicNames={currentTopicNames}

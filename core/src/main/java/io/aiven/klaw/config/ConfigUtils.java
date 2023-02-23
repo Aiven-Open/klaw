@@ -38,7 +38,8 @@ public class ConfigUtils {
                 "/registerUser",
                 "/resetMemoryCache/**",
                 "/userActivation**",
-                "/getActivationInfo**"));
+                "/getActivationInfo**",
+                "/v3/**"));
 
     if (coralEnabled) {
       staticResourcesHtmlArray.add("/assets/coral/**");

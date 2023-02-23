@@ -13,7 +13,6 @@ const mockedIpsAclRequest: AclRequest = {
   topicname: "newaudittopic",
   environment: "2",
   teamname: "Ospo",
-  topictype: "Producer",
   aclIpPrincipleType: "IP_ADDRESS",
   environmentName: "TST",
   teamId: 1003,
@@ -23,10 +22,10 @@ const mockedIpsAclRequest: AclRequest = {
   username: "amathieu",
   requesttime: "2023-01-10T13:19:10.757+00:00",
   requesttimestring: "10-Jan-2023 13:19:10",
-  aclstatus: "created",
+  requestStatus: "CREATED",
   approver: undefined,
   approvingtime: undefined,
-  aclType: "Producer",
+  aclType: "PRODUCER",
   aclResourceType: undefined,
   currentPage: "1",
   otherParams: undefined,
@@ -47,7 +46,6 @@ const mockedPrincipalsAclrequest: AclRequest = {
   topicname: "aivtopic1",
   environment: "1",
   teamname: "Ospo",
-  topictype: "Consumer",
   aclIpPrincipleType: "PRINCIPAL",
   environmentName: "DEV",
   teamId: 1003,
@@ -57,10 +55,10 @@ const mockedPrincipalsAclrequest: AclRequest = {
   username: "amathieu",
   requesttime: "2023-01-06T14:50:37.912+00:00",
   requesttimestring: "06-Jan-2023 14:50:37",
-  aclstatus: "created",
+  requestStatus: "CREATED",
   approver: undefined,
   approvingtime: undefined,
-  aclType: "Consumer",
+  aclType: "CONSUMER",
   aclResourceType: undefined,
   currentPage: "1",
   otherParams: undefined,
@@ -91,7 +89,7 @@ describe("DetailsModalContent", () => {
 
     it("renders ACL type", () => {
       expect(findTerm("ACL type")).toBeVisible();
-      expect(findDefinition(mockedIpsAclRequest.topictype)).toBeVisible();
+      expect(findDefinition(mockedIpsAclRequest.aclType)).toBeVisible();
     });
     it("renders Requesting team", () => {
       expect(findTerm("Requesting team")).toBeVisible();
@@ -140,9 +138,7 @@ describe("DetailsModalContent", () => {
 
     it("renders ACL type", () => {
       expect(findTerm("ACL type")).toBeVisible();
-      expect(
-        findDefinition(mockedPrincipalsAclrequest.topictype)
-      ).toBeVisible();
+      expect(findDefinition(mockedPrincipalsAclrequest.aclType)).toBeVisible();
     });
     it("renders Requesting team", () => {
       expect(findTerm("Requesting team")).toBeVisible();

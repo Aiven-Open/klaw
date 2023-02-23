@@ -21,7 +21,7 @@ const consumergroup = z
     message: "Only characters allowed: a-z, A-Z, 0-9, ., _,-.",
   });
 const aclPatternType = z.literal("LITERAL");
-const topictype = z.literal("Consumer");
+const aclType = z.literal("CONSUMER");
 
 const topicConsumerFormSchema = z
   .object({
@@ -33,7 +33,7 @@ const topicConsumerFormSchema = z
     aclPatternType,
     topicname,
     environment,
-    topictype,
+    aclType,
     teamname,
   })
   // We check if the user has entered valid values for acl_ssl or acl_ip

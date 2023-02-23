@@ -177,7 +177,7 @@ const useExtendedFormValidationAndTriggers = (
   }, [topicPartitions]);
 
   useEffect(() => {
-    if (isInitialized && topicName.length > 0) {
+    if (isInitialized && topicName?.length > 0) {
       form.trigger("topicname");
     }
   }, [topicName]);
