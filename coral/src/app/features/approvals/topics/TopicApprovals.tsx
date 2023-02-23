@@ -1,10 +1,13 @@
 import { NativeSelect, SearchInput } from "@aivenio/aquarium";
-import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
-import { Pagination } from "src/app/components/Pagination";
-import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { useQuery } from "@tanstack/react-query";
-import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Pagination } from "src/app/components/Pagination";
+import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
+import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
+import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
+import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
 
 function TopicApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,6 +15,14 @@ function TopicApprovals() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
+
+  const [detailsModal, setDetailsModal] = useState<{
+    isOpen: boolean;
+    topicId: number | null;
+  }>({
+    isOpen: false,
+    topicId: null,
+  });
 
   const {
     data: topicRequests,
@@ -68,7 +79,12 @@ function TopicApprovals() {
     </div>,
   ];
 
-  const table = <TopicApprovalsTable requests={topicRequests?.entries || []} />;
+  const table = (
+    <TopicApprovalsTable
+      requests={topicRequests?.entries || []}
+      setDetailsModal={setDetailsModal}
+    />
+  );
   const pagination =
     topicRequests?.totalPages && topicRequests.totalPages > 1 ? (
       <Pagination
@@ -78,15 +94,34 @@ function TopicApprovals() {
       />
     ) : undefined;
 
+  const selectedTopicRequest = topicRequests?.entries.find(
+    (request) => request.topicid === Number(detailsModal.topicId)
+  );
   return (
-    <ApprovalsLayout
-      filters={filters}
-      table={table}
-      pagination={pagination}
-      isLoading={topicRequestsLoading}
-      isErrorLoading={topicRequestsIsError}
-      errorMessage={topicRequestsError}
-    />
+    <>
+      {detailsModal.isOpen && (
+        <RequestDetailsModal
+          onClose={() => setDetailsModal({ isOpen: false, topicId: null })}
+          onApprove={() => {
+            alert("approve");
+          }}
+          onReject={() => {
+            alert("reject");
+          }}
+          isLoading={false}
+        >
+          <DetailsModalContent topicRequest={selectedTopicRequest} />
+        </RequestDetailsModal>
+      )}
+      <ApprovalsLayout
+        filters={filters}
+        table={table}
+        pagination={pagination}
+        isLoading={topicRequestsLoading}
+        isErrorLoading={topicRequestsIsError}
+        errorMessage={topicRequestsError}
+      />
+    </>
   );
 }
 
