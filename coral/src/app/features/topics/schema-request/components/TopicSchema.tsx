@@ -129,9 +129,6 @@ function TopicSchema(props: TopicSchemaProps) {
                     folding: false,
                     lineNumbers: "off",
                     scrollBeyondLastLine: false,
-                    scrollbar: {
-                      vertical: "hidden",
-                    },
                   }}
                 />
               )}

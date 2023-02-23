@@ -29,7 +29,6 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
 
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
-          {/*//@TODO add editor preview*/}
           <Label>Schema</Label>
           <dd>
             <MonacoEditor
@@ -48,9 +47,6 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
                 folding: false,
                 lineNumbers: "off",
                 scrollBeyondLastLine: false,
-                scrollbar: {
-                  vertical: "hidden",
-                },
               }}
             />
           </dd>
