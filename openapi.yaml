@@ -495,7 +495,7 @@ paths:
       operationId: approveRequest
       requestBody:
         content:
-          "*/*":
+          application/json:
             schema:
               $ref: "#/components/schemas/RequestVerdict"
         required: false
@@ -507,14 +507,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ApiResponse"
+                  $ref: "#/components/schemas/GenericApiResponse"
       x-codegen-request-body-name: body
   /request/decline:
     post:
       operationId: declineRequest
       requestBody:
         content:
-          "*/*":
+          application/json:
             schema:
               $ref: "#/components/schemas/RequestVerdict"
         required: false
@@ -526,7 +526,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/ApiResponse"
+                  $ref: "#/components/schemas/GenericApiResponse"
       x-codegen-request-body-name: body
   /getSchemaRequestsForApprover:
     get:
