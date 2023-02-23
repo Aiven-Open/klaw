@@ -458,7 +458,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="getTenants();getSchemaRegistryClusters();">
+			<div class="row" ng-init="getTenants();getSchemaRegistryClusters();getEnvMappings();">
 				<div ng-if="dashboardDetails.addDeleteEditEnvs=='Authorized'" class="col-lg-12">
 					<div class="card card-outline-success">
 						<div class="card-body">
@@ -530,6 +530,16 @@
 											</div>
 										</div>
 										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Select Associated Kafka Environment</label>
+												<a class="mytooltip" href="javascript:void(0)">
+													<span class="tooltip-content3">Assign this Schema Environment to the Kafka Environment it is associated to</span>
+												<select class="form-control custom-select" required ng-model="addNewSchemaEnv.associatedEnv" ng-options="mapping.id as mapping.name for mapping in allEnvMappings">
+												</select>
+												</a>
+											</div>
+
+										</div>
 
 										</div>
 									</div>

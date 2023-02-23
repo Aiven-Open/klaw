@@ -18,8 +18,11 @@ public class EnvTagListConverter implements AttributeConverter<List<EnvTag>, Str
   @Override
   public String convertToDatabaseColumn(List<EnvTag> envTags) {
     String envTagsStr = null;
+    log.info("Convert to String {}", envTags);
     try {
-      envTagsStr = mapper.writeValueAsString(envTags);
+      if (envTags != null) {
+        envTagsStr = mapper.writeValueAsString(envTags);
+      }
     } catch (JsonProcessingException e) {
       log.error("Exception converting object to json: {}", e.getMessage());
     }
@@ -29,8 +32,11 @@ public class EnvTagListConverter implements AttributeConverter<List<EnvTag>, Str
   @Override
   public List<EnvTag> convertToEntityAttribute(String envTagsStr) {
     List<EnvTag> envTags = null;
+    log.info("Convert to List {}", envTagsStr);
     try {
-      envTags = mapper.readValue(envTagsStr, new TypeReference<List<EnvTag>>() {});
+      if (envTags != null) {
+        envTags = mapper.readValue(envTagsStr, new TypeReference<List<EnvTag>>() {});
+      }
     } catch (JsonProcessingException e) {
       log.error("Exception converting json to object: {}", e.getMessage());
     }

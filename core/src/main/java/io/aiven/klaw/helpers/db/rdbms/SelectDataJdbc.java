@@ -818,9 +818,10 @@ public class SelectDataJdbc {
 
   public Env selectEnvDetails(String environmentId, int tenantId) {
     EnvID envID = new EnvID();
+
     envID.setId(environmentId);
     envID.setTenantId(tenantId);
-
+    log.info(" Id: {} tenantId : {} , envID {}", environmentId, tenantId, envID);
     Optional<Env> env = envRepo.findById(envID);
     return env.orElse(null);
   }
@@ -830,7 +831,9 @@ public class SelectDataJdbc {
   }
 
   public EnvMapping findEnvMappingById(EnvID id) {
-    return envMappingRepo.findById(id).get();
+
+    log.info("envID {}", id);
+    return envMappingRepo.findById(id).orElse(null);
   }
 
   public UserInfo selectUserInfo(String username) {

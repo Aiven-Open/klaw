@@ -756,7 +756,7 @@ public class EnvsClustersTenantsControllerService {
     EnvMapping mapping =
         manageDatabase
             .getHandleDbRequests()
-            .findEnvMappingById(new EnvID(env.getId(), env.getTenantId()));
+            .findEnvMappingById(new EnvID(env.getAssociatedEnv(), env.getTenantId()));
     if (mapping != null) {
 
       if (EnvType.SCHEMAREGISTRY.value.equals(env.getType())) {
@@ -772,8 +772,10 @@ public class EnvsClustersTenantsControllerService {
 
   private EnvMapping addSchemaRegistryEntry(EnvMapping mapping, Env env) {
     EnvTag tag = new EnvTag(env.getId(), env.getName());
-    if (!mapping.getSchemaEnvs().contains(tag)) {
+    if (mapping.getSchemaEnvs() != null && !mapping.getSchemaEnvs().contains(tag)) {
       mapping.getSchemaEnvs().add(tag);
+    } else if (mapping.getSchemaEnvs() == null) {
+      mapping.setSchemaEnvs(Arrays.asList(tag));
     }
 
     return mapping;
@@ -781,8 +783,10 @@ public class EnvsClustersTenantsControllerService {
 
   private EnvMapping addKafkaConnectorEntry(EnvMapping mapping, Env env) {
     EnvTag tag = new EnvTag(env.getId(), env.getName());
-    if (!mapping.getSchemaEnvs().contains(tag)) {
+    if (mapping.getConnectorEnvs() != null && !mapping.getConnectorEnvs().contains(tag)) {
       mapping.getSchemaEnvs().add(tag);
+    } else if (mapping.getConnectorEnvs() == null) {
+      mapping.setConnectorEnvs(Arrays.asList(tag));
     }
     return mapping;
   }
@@ -992,12 +996,13 @@ public class EnvsClustersTenantsControllerService {
                 .getHandleDbRequests()
                 .findEnvMappingById(new EnvID(env.getAssociatedEnv(), tenantId));
         if (envMapping != null) {
-          if (EnvType.SCHEMAREGISTRY.value.equals(envType)) {
+          if (EnvType.SCHEMAREGISTRY.value.equals(envType) && envMapping.getSchemaEnvs() != null) {
             envMapping.setSchemaEnvs(
                 envMapping.getSchemaEnvs().stream()
                     .filter(tag -> !tag.getId().equals(id))
                     .collect(Collectors.toList()));
-          } else if (EnvType.KAFKACONNECT.value.equals(envType)) {
+          } else if (EnvType.KAFKACONNECT.value.equals(envType)
+              && envMapping.getConnectorEnvs() != null) {
             envMapping.setConnectorEnvs(
                 envMapping.getConnectorEnvs().stream()
                     .filter(tag -> !tag.getId().equals(id))

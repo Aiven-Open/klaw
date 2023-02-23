@@ -1,6 +1,8 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.converter.EnvTagListConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -31,8 +33,10 @@ public class EnvMapping implements Serializable {
   private String name;
 
   @Column(name = "schemaenvs")
+  @Convert(converter = EnvTagListConverter.class)
   private List<EnvTag> schemaEnvs;
 
   @Column(name = "connectorenvs")
+  @Convert(converter = EnvTagListConverter.class)
   private List<EnvTag> connectorEnvs;
 }

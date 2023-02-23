@@ -218,6 +218,21 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 );
         }
 
+        $scope.getEnvMappings = function() {
+            $http({
+                    method: "GET",
+                    url: "env/mapping",
+                    headers : { 'Content-Type' : 'application/json' }
+                }).success(function(output) {
+                    $scope.allEnvMappings = output;
+                }).error(
+                    function(error)
+                    {
+                        $scope.alert = error;
+                    }
+                );
+        }
+
         $scope.getKafkaConnectClusters = function() {
             $http({
                     method: "GET",
@@ -610,7 +625,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     serviceInput['clusterId'] = $scope.envDetails.clusterId;
                     serviceInput['tenantId'] = $scope.envDetails.tenantId;
                     serviceInput['type'] = $scope.envDetails.type;
-
+                    serviceInput['associatedEnv'] = $scope.envDetails.associatedEnv;
                     $http({
                         method: "POST",
                         url: "addNewEnv",
@@ -669,6 +684,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
             serviceInput['clusterId'] = $scope.envDetails.clusterId;
             serviceInput['tenantId'] = $scope.envDetails.tenantId;
             serviceInput['type'] = $scope.envDetails.type;
+            serviceInput['associatedEnv'] = $scope.envDetails.associatedEnv;
 
             $http({
                 method: "POST",

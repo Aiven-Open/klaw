@@ -593,10 +593,19 @@
 										</div>
 										<div class="col-md-6">
 
+											<div class="form-group" ng-if="addNewEnv.envname != null">
+												<label class="control-label">Associated Kafka Environment</label>
+												<a class="mytooltip" href="javascript:void(0)">
+													<span class="tooltip-content3">A new Kafka Cluster Environment will be created by this environment</span>
+												<input value="{{ addNewEnv.envname }}" disabled
+													   type="text" maxlength="20" class="form-control">
+												</a>
+											</div>
+
 										</div>
 									</div>
 
-									<!--/row-->
+
 
 								</div>
 
