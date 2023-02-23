@@ -1324,13 +1324,13 @@ export type operations = {
       /** successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": components["schemas"]["GenericApiResponse"][];
         };
       };
     };
     requestBody: {
       content: {
-        "*/*": components["schemas"]["RequestVerdict"];
+        "application/json": components["schemas"]["RequestVerdict"];
       };
     };
   };
@@ -1339,13 +1339,13 @@ export type operations = {
       /** successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"][];
+          "application/json": components["schemas"]["GenericApiResponse"][];
         };
       };
     };
     requestBody: {
       content: {
-        "*/*": components["schemas"]["RequestVerdict"];
+        "application/json": components["schemas"]["RequestVerdict"];
       };
     };
   };

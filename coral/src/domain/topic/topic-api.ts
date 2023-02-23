@@ -137,6 +137,33 @@ const getTopicRequestsForApprover = ({
     .then(transformGetTopicRequestsForApproverResponse);
 };
 
+type ApproveTopicRequestPayload = ResolveIntersectionTypes<
+  Omit<KlawApiRequest<"approveRequest">, "reason"> & {
+    requestEntityType: "TOPIC";
+  }
+>;
+
+const approveTopicRequest = (payload: ApproveTopicRequestPayload) => {
+  return api.post<
+    KlawApiResponse<"approveRequest">,
+    ApproveTopicRequestPayload
+  >(`/request/approve`, payload);
+};
+
+type RejectTopicRequestPayload = ResolveIntersectionTypes<
+  KlawApiRequest<"declineRequest"> & {
+    reason: string;
+    requestEntityType: "TOPIC";
+  }
+>;
+
+const rejectTopicRequest = (payload: RejectTopicRequestPayload) => {
+  return api.post<KlawApiResponse<"declineRequest">, RejectTopicRequestPayload>(
+    `/request/decline`,
+    payload
+  );
+};
+
 export {
   getTopics,
   getTopicNames,
@@ -144,4 +171,6 @@ export {
   getTopicAdvancedConfigOptions,
   requestTopic,
   getTopicRequestsForApprover,
+  approveTopicRequest,
+  rejectTopicRequest,
 };
