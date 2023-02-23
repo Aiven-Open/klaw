@@ -28,11 +28,20 @@ type SchemaApprovalsTableProps = {
   >;
 };
 function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
-  const { requests, setDetailsModal } = props;
-  const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
-    { type: "text", field: "topicname", headerName: "Topic" },
-    { type: "text", field: "environmentName", headerName: "Environment" },
-    {
+  const { requests, setDetailsModal } = props;const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
+  { type: "text", field: "topicname", headerName: "Topic" },
+  {
+    type: "status",
+    field: "environmentName",
+    headerName: "Environment",
+    status: ({ environmentName }) => {
+      return {
+        status: "neutral",
+        text: environmentName,
+      };
+    },
+  },
+  {
     type: "status",
     field: "requestStatus",
     headerName: "Status",
