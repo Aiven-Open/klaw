@@ -3,17 +3,12 @@ import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { RequestStatus } from "src/domain/requests";
-import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import {
+  requestStatusNameMap,
+  statusList,
+} from "src/app/features/approvals/utils/request-status-helper";
 import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/components/SelectSchemaRegEnvironment";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
-
-const statusList: RequestStatus[] = [
-  "ALL",
-  "CREATED",
-  "APPROVED",
-  "DECLINED",
-  "DELETED",
-];
 
 const useTableFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();

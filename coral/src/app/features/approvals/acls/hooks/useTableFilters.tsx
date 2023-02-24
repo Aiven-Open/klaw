@@ -4,15 +4,11 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests";
-import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import {
+  requestStatusNameMap,
+  statusList,
+} from "src/app/features/approvals/utils/request-status-helper";
 
-const statusList: RequestStatus[] = [
-  "ALL",
-  "CREATED",
-  "APPROVED",
-  "DECLINED",
-  "DELETED",
-];
 type AclType = "ALL" | "CONSUMER" | "PRODUCER";
 const aclTypes: AclType[] = ["ALL", "CONSUMER", "PRODUCER"];
 

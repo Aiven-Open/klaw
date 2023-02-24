@@ -1,9 +1,16 @@
 import { RequestStatus } from "src/domain/requests";
 import { ChipStatus } from "@aivenio/aquarium";
 
-const requestStatusChipStatusMap: {
-  [key in RequestStatus]: ChipStatus;
-} = {
+// @TODO add safe list
+const statusList: RequestStatus[] = [
+  "ALL",
+  "APPROVED",
+  "CREATED",
+  "DECLINED",
+  "DELETED",
+];
+
+const requestStatusChipStatusMap: { [key in RequestStatus]: ChipStatus } = {
   ALL: "neutral",
   APPROVED: "success",
   CREATED: "info",
@@ -21,4 +28,4 @@ const requestStatusNameMap: {
   DELETED: "Deleted",
 };
 
-export { requestStatusNameMap, requestStatusChipStatusMap };
+export { requestStatusNameMap, requestStatusChipStatusMap, statusList };
