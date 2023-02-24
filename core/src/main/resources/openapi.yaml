@@ -1935,7 +1935,7 @@
           "required" : true,
           "schema" : {
             "type" : "string",
-            "enum" : [ "TO_APPROVE", "MY_REQUESTS" ]
+            "enum" : [ "TO_APPROVE", "MY_APPROVALS", "MY_REQUESTS" ]
           }
         } ],
         "responses" : {
@@ -6144,13 +6144,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"

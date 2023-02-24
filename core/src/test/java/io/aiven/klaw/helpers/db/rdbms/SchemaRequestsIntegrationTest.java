@@ -144,7 +144,7 @@ public class SchemaRequestsIntegrationTest {
   @Order(1)
   public void getSchemaRequestsCountsForMyRequestsTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getSchemaRequestsCounts(101, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getSchemaRequestsCounts(101, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -161,7 +161,7 @@ public class SchemaRequestsIntegrationTest {
   @Order(2)
   public void getSchemaRequestsCountsForApproveForTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getSchemaRequestsCounts(101, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getSchemaRequestsCounts(101, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -178,7 +178,7 @@ public class SchemaRequestsIntegrationTest {
   @Order(3)
   public void getSchemaRequestsCountsForApproveForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -195,7 +195,7 @@ public class SchemaRequestsIntegrationTest {
   @Order(3)
   public void getSchemaRequestsCountsForMyRequestsForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -517,6 +517,42 @@ public class SchemaRequestsIntegrationTest {
         selectDataJdbc.selectFilteredSchemaRequests(
             false, "James", 101, null, null, RequestStatus.ALL.value, null, false);
     assertThat(results.size()).isEqualTo(17);
+  }
+
+  @Test
+  @Order(24)
+  public void getSchemaRequestsCountsForMyApprovals() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "Jackie");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results.size()).isEqualTo(2);
+    // Jackie created all the requests so there should be none returned for Jackie.
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+  }
+
+  @Test
+  @Order(25)
+  public void getSchemaRequestsCountsForMyApprovalsJohnCreatedNone() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "John");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results.size()).isEqualTo(2);
+
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
   }
 
   private void generateData(

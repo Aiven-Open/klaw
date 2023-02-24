@@ -238,7 +238,7 @@ public class TopicRequestsIntegrationTest {
   @Order(1)
   public void getTopicRequestsCountsForMyRequestsTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getTopicRequestsCounts(101, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getTopicRequestsCounts(101, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -258,7 +258,7 @@ public class TopicRequestsIntegrationTest {
   @Order(2)
   public void getTopicRequestsCountsForApproveForTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getTopicRequestsCounts(101, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getTopicRequestsCounts(101, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -277,7 +277,7 @@ public class TopicRequestsIntegrationTest {
   @Order(3)
   public void getTopicRequestsCountsForApproveForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getTopicRequestsCounts(103, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getTopicRequestsCounts(103, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -296,7 +296,7 @@ public class TopicRequestsIntegrationTest {
   @Order(3)
   public void getTopicRequestsCountsForMyRequestsForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getTopicRequestsCounts(103, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getTopicRequestsCounts(103, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -756,6 +756,45 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : john) {
       assertThat(req.getDescription().equals("John"));
     }
+  }
+
+  @Test
+  @Order(29)
+  public void getTopicRequestsCountsForMyApprovals() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getTopicRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "Jackie");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results.size()).isEqualTo(2);
+    // Jackie created all the requests so we expect 0 for created status which is approval status
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(7L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+  }
+
+  @Test
+  @Order(30)
+  public void getTopicRequestsCountsForMyApprovalsJohnCreatedNone() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getTopicRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "John");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results.size()).isEqualTo(2);
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(7L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
   }
 
   private void generateData(

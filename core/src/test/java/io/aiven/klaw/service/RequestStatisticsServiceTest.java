@@ -63,14 +63,17 @@ public class RequestStatisticsServiceTest {
   public void getRequestsCountOverview() {
     stubUserInfo();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(handleDbRequests.getTopicRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+    when(handleDbRequests.getTopicRequestsCounts(
+            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt(), anyString()))
         .thenReturn(utilMethods.getRequestCounts());
-    when(handleDbRequests.getAclRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+    when(handleDbRequests.getAclRequestsCounts(
+            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt(), anyString()))
         .thenReturn(utilMethods.getRequestCounts());
-    when(handleDbRequests.getSchemaRequestsCounts(anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+    when(handleDbRequests.getSchemaRequestsCounts(
+            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt(), anyString()))
         .thenReturn(utilMethods.getRequestCounts());
     when(handleDbRequests.getConnectorRequestsCounts(
-            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt()))
+            anyInt(), eq(RequestMode.MY_REQUESTS), anyInt(), anyString()))
         .thenReturn(utilMethods.getRequestCounts());
     RequestsCountOverview requestsCountOverview =
         requestStatisticsService.getRequestsCountOverview(RequestMode.MY_REQUESTS);

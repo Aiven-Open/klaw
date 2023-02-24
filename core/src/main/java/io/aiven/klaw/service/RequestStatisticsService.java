@@ -29,15 +29,16 @@ public class RequestStatisticsService {
   public RequestsCountOverview getRequestsCountOverview(RequestMode requestMode) {
     RequestsCountOverview requestsCountOverview = new RequestsCountOverview();
     Set<RequestEntityStatusCount> requestEntityStatusCountSet = new HashSet<>();
-
+    String userName = getUserName();
     // get topics count and update requestsCountOverview
     Map<String, Map<String, Long>> topicRequestCountsMap =
         manageDatabase
             .getHandleDbRequests()
             .getTopicRequestsCounts(
-                commonUtilsService.getTeamId(getUserName()),
+                commonUtilsService.getTeamId(userName),
                 requestMode,
-                commonUtilsService.getTenantId(getUserName()));
+                commonUtilsService.getTenantId(userName),
+                userName);
     updateRequestsCountOverview(
         topicRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.TOPIC);
 
@@ -46,9 +47,10 @@ public class RequestStatisticsService {
         manageDatabase
             .getHandleDbRequests()
             .getAclRequestsCounts(
-                commonUtilsService.getTeamId(getUserName()),
+                commonUtilsService.getTeamId(userName),
                 requestMode,
-                commonUtilsService.getTenantId(getUserName()));
+                commonUtilsService.getTenantId(userName),
+                userName);
     updateRequestsCountOverview(
         aclsRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.ACL);
 
@@ -57,9 +59,10 @@ public class RequestStatisticsService {
         manageDatabase
             .getHandleDbRequests()
             .getSchemaRequestsCounts(
-                commonUtilsService.getTeamId(getUserName()),
+                commonUtilsService.getTeamId(userName),
                 requestMode,
-                commonUtilsService.getTenantId(getUserName()));
+                commonUtilsService.getTenantId(userName),
+                userName);
     updateRequestsCountOverview(
         schemasRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.SCHEMA);
 
@@ -68,9 +71,10 @@ public class RequestStatisticsService {
         manageDatabase
             .getHandleDbRequests()
             .getConnectorRequestsCounts(
-                commonUtilsService.getTeamId(getUserName()),
+                commonUtilsService.getTeamId(userName),
                 requestMode,
-                commonUtilsService.getTenantId(getUserName()));
+                commonUtilsService.getTenantId(userName),
+                userName);
     updateRequestsCountOverview(
         connectorRequestCountsMap, requestEntityStatusCountSet, RequestEntityType.CONNECTOR);
 

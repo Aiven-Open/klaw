@@ -317,7 +317,7 @@ public class AclRequestsIntegrationTest {
   @Order(11)
   public void getAclRequestsCountsForMyRequestsTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getAclRequestsCounts(101, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getAclRequestsCounts(101, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -336,7 +336,7 @@ public class AclRequestsIntegrationTest {
   @Order(12)
   public void getAclRequestsCountsForApproveForTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getAclRequestsCounts(101, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getAclRequestsCounts(101, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -355,7 +355,7 @@ public class AclRequestsIntegrationTest {
   @Order(13)
   public void getAclRequestsCountsForApproveForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getAclRequestsCounts(103, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getAclRequestsCounts(103, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -374,7 +374,7 @@ public class AclRequestsIntegrationTest {
   @Order(14)
   public void getAclRequestsCountsForMyRequestsForTeam2Tenant1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -393,7 +393,7 @@ public class AclRequestsIntegrationTest {
   @Order(15)
   public void getAclRequestsCountsForMyRequestsForTeam2Tenant2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_REQUESTS, 103);
+        selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_REQUESTS, 103, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -495,6 +495,44 @@ public class AclRequestsIntegrationTest {
         selectDataJdbc.selectAclRequests(
             false, "Jackie", "USER", "ALL", true, null, null, null, false, 101);
     assertThat(jackie.size()).isEqualTo(31);
+  }
+
+  @Test
+  @Order(22)
+  public void getAclRequestsCountsForMyApprovals() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "Jackie");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results.size()).isEqualTo(2);
+    // Jackie created all the requests so there should be none returned for Jackie.
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(10L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(20L);
+    assertThat(operationTypeCount.get(RequestOperationType.DELETE.value)).isEqualTo(0L);
+  }
+
+  @Test
+  @Order(23)
+  public void getAclRequestsCountsForMyApprovalsJohnCreatedNone() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getAclRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "John");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results.size()).isEqualTo(2);
+
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(10L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(10L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(20L);
+    assertThat(operationTypeCount.get(RequestOperationType.DELETE.value)).isEqualTo(0L);
   }
 
   private void generateData(
