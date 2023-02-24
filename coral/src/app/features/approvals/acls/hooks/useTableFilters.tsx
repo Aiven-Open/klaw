@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 
 const statusList: RequestStatus[] = [
   "ALL",
@@ -40,14 +41,11 @@ const useTableFilters = () => {
       }}
     >
       {statusList.map((status) => {
-        if (status === "ALL") {
-          return (
-            <option key={status} value={"ALL"}>
-              All statuses
-            </option>
-          );
-        }
-        return <option key={status}>{status}</option>;
+        return (
+          <option key={status} value={status}>
+            {requestStatusNameMap[status]}
+          </option>
+        );
       })}
     </NativeSelect>,
     <NativeSelect
