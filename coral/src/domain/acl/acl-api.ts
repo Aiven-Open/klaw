@@ -5,12 +5,12 @@ import {
   CreateAclRequestTopicTypeProducer,
   GetCreatedAclRequestParameters,
 } from "src/domain/acl/acl-types";
-import api from "src/services/api";
 import {
-  KlawApiRequest,
-  KlawApiRequestQueryParameters,
-  KlawApiResponse,
-} from "types/utils";
+  RequestVerdictApproval,
+  RequestVerdictDecline,
+} from "src/domain/requests";
+import api from "src/services/api";
+import { KlawApiRequest, KlawApiResponse } from "types/utils";
 
 const createAclRequest = (
   aclParams:
@@ -39,19 +39,19 @@ const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
     .then(transformAclRequestApiResponse);
 };
 
-const approveAclRequest = (
-  params: KlawApiRequestQueryParameters<"approveAclRequests">
-): Promise<KlawApiResponse<"approveAclRequests">> => {
-  return api.post<KlawApiResponse<"approveAclRequests">, never>(
-    `/execAclRequest?${new URLSearchParams(params)}`
+type ApproveAclRequestPayload = RequestVerdictApproval<"ACL">;
+const approveAclRequest = (payload: ApproveAclRequestPayload) => {
+  return api.post<KlawApiResponse<"approveRequest">, ApproveAclRequestPayload>(
+    `/request/approve`,
+    payload
   );
 };
 
-const declineAclRequest = (
-  params: KlawApiRequestQueryParameters<"declineAclRequests">
-): Promise<KlawApiResponse<"declineAclRequests">> => {
-  return api.post<KlawApiResponse<"declineAclRequests">, never>(
-    `/execAclRequestDecline?${new URLSearchParams(params)}`
+type RejectAclRequestPayload = RequestVerdictDecline<"ACL">;
+const declineAclRequest = (payload: RejectAclRequestPayload) => {
+  return api.post<KlawApiResponse<"declineRequest">, RejectAclRequestPayload>(
+    `/request/decline`,
+    payload
   );
 };
 
