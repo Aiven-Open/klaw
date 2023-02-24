@@ -4,8 +4,8 @@ import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
 import deleteIcon from "@aivenio/aquarium/icons/delete";
 import {
-  getRequestStatusColor,
-  getRequestStatusName,
+  requestStatusChipStatusMap,
+  requestStatusNameMap,
 } from "src/app/features/approvals/utils/request-status-helper";
 import { Dispatch, SetStateAction } from "react";
 
@@ -48,8 +48,8 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
-          status: getRequestStatusColor(requestStatus),
-          text: getRequestStatusName(requestStatus),
+          status: requestStatusChipStatusMap[requestStatus],
+          text: requestStatusNameMap[requestStatus],
         };
       },
     },

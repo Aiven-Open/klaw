@@ -3,7 +3,7 @@ import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { RequestStatus } from "src/domain/requests";
-import { getRequestStatusName } from "src/app/features/approvals/utils/request-status-helper";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
 import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/components/SelectSchemaRegEnvironment";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
@@ -31,7 +31,7 @@ const useTableFilters = () => {
 
   const statusOptions: Array<{ value: RequestStatus; name: string }> =
     statusList.map((status) => {
-      return { value: status, name: getRequestStatusName(status) };
+      return { value: status, name: requestStatusNameMap[status] };
     });
 
   const filters = [

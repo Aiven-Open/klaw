@@ -2,8 +2,9 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { SchemaRequest } from "src/domain/schema-request";
-import { getRequestStatusName } from "src/app/features/approvals/utils/request-status-helper";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import userEvent from "@testing-library/user-event";
+import { RequestStatus } from "src/domain/requests";
 
 const mockedRequests: SchemaRequest[] = [
   {
@@ -215,7 +216,7 @@ describe("SchemaApprovalsTable", () => {
               text = `${field} UTC`;
             }
             if (column.columnHeader === "Status") {
-              text = getRequestStatusName(field);
+              text = requestStatusNameMap[field as RequestStatus];
             }
             const cell = within(table).getByRole("cell", { name: text });
 
