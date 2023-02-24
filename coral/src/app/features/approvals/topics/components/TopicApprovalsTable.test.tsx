@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import { RequestStatus } from "src/domain/requests";
 
 const mockedSetDetailsModal = jest.fn();
 const mockedSetRejectModal = jest.fn();
@@ -205,10 +207,15 @@ describe("TopicApprovalsTable", () => {
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            const content = `${request[column.relatedField]}`;
-            const isFormattedTime = column.columnHeader === "Requested on";
+            const field = request[column.relatedField];
 
-            const text = `${content}${isFormattedTime ? " UTC" : ""}`;
+            let text = field;
+            if (column.columnHeader === "Requested on") {
+              text = `${field} UTC`;
+            }
+            if (column.columnHeader === "Status") {
+              text = requestStatusNameMap[field as RequestStatus];
+            }
             const cell = within(table).getByRole("cell", { name: text });
 
             expect(cell).toBeVisible();

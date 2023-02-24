@@ -12,6 +12,10 @@ import { UseMutateFunction } from "@tanstack/react-query";
 import { Dispatch, SetStateAction, useState } from "react";
 import { TopicRequest } from "src/domain/topic/topic-types";
 import { GenericApiResponse, HTTPError } from "src/services/api";
+import {
+  requestStatusChipStatusMap,
+  requestStatusNameMap,
+} from "src/app/features/approvals/utils/request-status-helper";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
@@ -64,7 +68,17 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
         text: environmentName,
       }),
     },
-    { type: "text", field: "requestStatus", headerName: "Status" },
+    {
+      type: "status",
+      field: "requestStatus",
+      headerName: "Status",
+      status: ({ requestStatus }) => {
+        return {
+          status: requestStatusChipStatusMap[requestStatus],
+          text: requestStatusNameMap[requestStatus],
+        };
+      },
+    },
     { type: "text", field: "teamname", headerName: "Claim by team" },
     { type: "text", field: "requestor", headerName: "Requested by" },
     {

@@ -530,14 +530,14 @@ describe("TopicApprovals", () => {
       const select = screen.getByLabelText("Filter by status");
 
       const option = within(select).getByRole("option", {
-        name: "DECLINED",
+        name: "Declined",
       });
 
       expect(option).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveDisplayValue("DECLINED");
+      expect(select).toHaveDisplayValue("Declined");
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
