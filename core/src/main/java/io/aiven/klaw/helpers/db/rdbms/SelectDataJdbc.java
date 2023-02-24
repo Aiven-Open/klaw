@@ -1523,7 +1523,9 @@ public class SelectDataJdbc {
     Map<String, Long> operationTypeCountsMap = new HashMap<>();
     Map<String, Long> statusCountsMap = new HashMap<>();
 
-    if (RequestMode.MY_REQUESTS == requestMode || RequestMode.TO_APPROVE == requestMode) {
+    if (RequestMode.MY_REQUESTS == requestMode
+        || RequestMode.TO_APPROVE == requestMode
+        || RequestMode.MY_APPROVALS == requestMode) {
       List<Object[]> schemaRequestsOperationTypObj =
           schemaRequestRepo.findAllSchemaRequestsGroupByOperationType(teamId, tenantId);
       updateMap(operationTypeCountsMap, schemaRequestsOperationTypObj);

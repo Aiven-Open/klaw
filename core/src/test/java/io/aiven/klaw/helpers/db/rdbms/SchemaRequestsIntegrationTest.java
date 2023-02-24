@@ -523,36 +523,36 @@ public class SchemaRequestsIntegrationTest {
   @Order(24)
   public void getSchemaRequestsCountsForMyApprovals() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "Jackie");
+        selectDataJdbc.getSchemaRequestsCounts(101, RequestMode.MY_APPROVALS, 101, "Jackie");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
     assertThat(results.size()).isEqualTo(2);
     // Jackie created all the requests so there should be none returned for Jackie.
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(3L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(7L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(2L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(15L);
   }
 
   @Test
   @Order(25)
   public void getSchemaRequestsCountsForMyApprovalsJohnCreatedNone() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getSchemaRequestsCounts(103, RequestMode.MY_APPROVALS, 101, "John");
+        selectDataJdbc.getSchemaRequestsCounts(101, RequestMode.MY_APPROVALS, 101, "John");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
     assertThat(results.size()).isEqualTo(2);
 
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(5L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(3L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(7L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(2L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(15L);
   }
 
   private void generateData(
