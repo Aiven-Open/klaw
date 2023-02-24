@@ -76,7 +76,8 @@ public class DeleteDataJdbc {
       TeamRepo teamRepo,
       AclRequestsRepo aclRequestsRepo,
       AclRepo aclRepo,
-      UserInfoRepo userInfoRepo) {
+      UserInfoRepo userInfoRepo,
+      EnvMappingRepo envMappingRepo) {
     this.topicRequestsRepo = topicRequestsRepo;
     this.schemaRequestRepo = schemaRequestRepo;
     this.envRepo = envRepo;
@@ -84,6 +85,7 @@ public class DeleteDataJdbc {
     this.aclRepo = aclRepo;
     this.aclRequestsRepo = aclRequestsRepo;
     this.userInfoRepo = userInfoRepo;
+    this.envMappingRepo = envMappingRepo;
   }
 
   public String deleteConnectorRequest(int connectorId, int tenantId) {

@@ -831,8 +831,6 @@ public class SelectDataJdbc {
   }
 
   public EnvMapping findEnvMappingById(EnvID id) {
-
-    log.info("envID {}", id);
     return envMappingRepo.findById(id).orElse(null);
   }
 

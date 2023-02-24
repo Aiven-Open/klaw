@@ -1001,12 +1001,14 @@ public class EnvsClustersTenantsControllerService {
                 envMapping.getSchemaEnvs().stream()
                     .filter(tag -> !tag.getId().equals(id))
                     .collect(Collectors.toList()));
+            manageDatabase.getHandleDbRequests().updateEnvMapping(envMapping);
           } else if (EnvType.KAFKACONNECT.value.equals(envType)
               && envMapping.getConnectorEnvs() != null) {
             envMapping.setConnectorEnvs(
                 envMapping.getConnectorEnvs().stream()
                     .filter(tag -> !tag.getId().equals(id))
                     .collect(Collectors.toList()));
+            manageDatabase.getHandleDbRequests().updateEnvMapping(envMapping);
           }
         }
       }

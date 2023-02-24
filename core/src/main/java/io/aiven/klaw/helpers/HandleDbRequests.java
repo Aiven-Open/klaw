@@ -27,6 +27,8 @@ public interface HandleDbRequests {
 
   boolean envMappingExists(EnvID id);
 
+  String updateEnvMapping(EnvMapping mapping);
+
   EnvMapping findEnvMappingById(EnvID id);
 
   List<EnvMapping> getAllEnvMappingsForTenant(int tenantId);

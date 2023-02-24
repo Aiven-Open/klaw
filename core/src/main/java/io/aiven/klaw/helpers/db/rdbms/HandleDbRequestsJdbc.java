@@ -64,6 +64,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String updateEnvMapping(EnvMapping mapping) {
+    return jdbcUpdateHelper.updateEnvMapping(mapping);
+  }
+
+  @Override
   public EnvMapping findEnvMappingById(EnvID id) {
     return jdbcSelectHelper.findEnvMappingById(id);
   }

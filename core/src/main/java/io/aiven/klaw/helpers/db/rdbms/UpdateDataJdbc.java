@@ -4,6 +4,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.EnvMapping;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.KwKafkaConnectorID;
@@ -24,6 +25,7 @@ import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.EnvMappingRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.KwPropertiesRepo;
@@ -61,6 +63,9 @@ public class UpdateDataJdbc {
 
   @Autowired(required = false)
   private AclRequestsRepo aclRequestsRepo;
+
+  @Autowired(required = false)
+  private EnvMappingRepo envMappingRepo;
 
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;
@@ -286,6 +291,11 @@ public class UpdateDataJdbc {
       }
     }
 
+    return ApiResultStatus.SUCCESS.value;
+  }
+
+  public String updateEnvMapping(EnvMapping mapping) {
+    envMappingRepo.save(mapping);
     return ApiResultStatus.SUCCESS.value;
   }
 
