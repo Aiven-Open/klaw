@@ -1,5 +1,4 @@
-import * as ReactQuery from "@tanstack/react-query";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import {
   getSchemaRequestsForApprover,
   SchemaRequest,
@@ -11,17 +10,34 @@ import userEvent from "@testing-library/user-event";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
 import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
+import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+
+const mockGetSchemaRegistryEnvironments =
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
+  >;
 
 const mockGetSchemaRequestsForApprover =
   getSchemaRequestsForApprover as jest.MockedFunction<
     typeof getSchemaRequestsForApprover
   >;
 
-const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
+const mockedEnvironments = [
+  { name: "DEV", id: "1" },
+  { name: "TST", id: "2" },
+];
 
-const mockedResponse: SchemaRequest[] = [
+const mockedEnvironmentResponse = transformEnvironmentApiResponse([
+  createMockEnvironmentDTO(mockedEnvironments[0]),
+  createMockEnvironmentDTO(mockedEnvironments[1]),
+]);
+
+const mockedResponseSchemaRequests: SchemaRequest[] = [
   {
     req_no: 1014,
     topicname: "testtopic-first",
@@ -76,25 +92,47 @@ const mockedResponse: SchemaRequest[] = [
   },
 ];
 
-const mockedApiResponse: SchemaRequestApiResponse =
-  transformGetSchemaRequestsForApproverResponse(mockedResponse);
+const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
+  transformGetSchemaRequestsForApproverResponse(mockedResponseSchemaRequests);
 
 describe("SchemaApprovals", () => {
+  const defaultApiParams = {
+    pageNo: "1",
+    requestStatus: "CREATED",
+    env: "ALL",
+    topic: "",
+  };
   beforeAll(() => {
     mockIntersectionObserver();
   });
 
+  //@TODO - I remove the useQuery mock because that isn't useful for a component
+  // using more then one query. While this block still covers the cases, it's
+  // more brittle due to it's dependency on the async process of the api call
+  // I'll add a helper for controlling api mocks better (get a loading state etc)
+  // after this release cycle.
   describe("handles loading and error state when fetching the requests", () => {
-    afterEach(cleanup);
-    afterAll(() => {
-      useQuerySpy.mockRestore();
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      // used to swallow a console.error that _should_ happen
+      // while making sure to not swallow other console.errors
+      console.error = jest.fn();
+
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        entries: [],
+        totalPages: 1,
+        currentPage: 1,
+      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.clearAllMocks();
     });
 
     it("shows a loading state instead of a table while schema requests are being fetched", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: { entries: [] }, isLoading: true });
-
       customRender(<SchemaApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -105,12 +143,11 @@ describe("SchemaApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
 
-    it("shows a error message in case of an error for fetching schema requests", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: { entries: [] }, isError: true });
+    it("shows a error message in case of an error for fetching schema requests", async () => {
+      mockGetSchemaRequestsForApprover.mockRejectedValue("mock-error");
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -118,18 +155,24 @@ describe("SchemaApprovals", () => {
       });
 
       const table = screen.queryByRole("table");
-      const errorMessage = screen.getByText(
+      const errorMessage = await screen.findByText(
         "Unexpected error. Please try again later!"
       );
 
       expect(table).not.toBeInTheDocument();
       expect(errorMessage).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith("mock-error");
     });
   });
 
-  describe("renders all necessary elements ", () => {
+  describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -142,12 +185,6 @@ describe("SchemaApprovals", () => {
     afterAll(() => {
       cleanup();
       jest.clearAllMocks();
-    });
-
-    it("shows a select to filter by teams", () => {
-      const select = screen.getByRole("combobox", { name: "Filter by team" });
-
-      expect(select).toBeVisible();
     });
 
     it("shows a select to filter by environment", () => {
@@ -180,7 +217,7 @@ describe("SchemaApprovals", () => {
       const rows = within(table).getAllByRole("rowgroup");
 
       expect(table).toBeVisible();
-      expect(rows).toHaveLength(mockedApiResponse.entries.length);
+      expect(rows).toHaveLength(mockedApiResponseSchemaRequests.entries.length);
     });
   });
 
@@ -190,7 +227,7 @@ describe("SchemaApprovals", () => {
       jest.clearAllMocks();
     });
 
-    it("fetches the right page number if a page is set in serach params", async () => {
+    it("fetches the right page number if a page is set in search params", async () => {
       const routePath = `/?page=100`;
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -201,8 +238,8 @@ describe("SchemaApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenCalledWith({
-        pageNumber: 100,
-        requestStatus: "ALL",
+        ...defaultApiParams,
+        pageNo: "100",
       });
     });
 
@@ -215,14 +252,14 @@ describe("SchemaApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenCalledWith({
-        pageNumber: 1,
-        requestStatus: "ALL",
+        ...defaultApiParams,
+        pageNo: "1",
       });
     });
 
     it("shows no pagination for a response with only one page", async () => {
       mockGetSchemaRequestsForApprover.mockResolvedValue({
-        ...mockedApiResponse,
+        ...mockedApiResponseSchemaRequests,
         totalPages: 1,
       });
 
@@ -319,15 +356,17 @@ describe("SchemaApprovals", () => {
       await userEvent.click(pageTwoButton);
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
-        pageNumber: 2,
-        requestStatus: "ALL",
+        ...defaultApiParams,
+        pageNo: "2",
       });
     });
   });
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -345,7 +384,7 @@ describe("SchemaApprovals", () => {
     it("shows detail modal for first request returned from the api", async () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
-      const firstRequest = mockedApiResponse.entries[0];
+      const firstRequest = mockedApiResponseSchemaRequests.entries[0];
       const viewDetailsButton = screen.getByRole("button", {
         name: `View schema request for ${firstRequest.topicname}`,
       });
@@ -361,7 +400,9 @@ describe("SchemaApprovals", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
       const lastRequest =
-        mockedApiResponse.entries[mockedApiResponse.entries.length - 1];
+        mockedApiResponseSchemaRequests.entries[
+          mockedApiResponseSchemaRequests.entries.length - 1
+        ];
       const viewDetailsButton = screen.getByRole("button", {
         name: `View schema request for ${lastRequest.topicname}`,
       });
@@ -371,6 +412,87 @@ describe("SchemaApprovals", () => {
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+  });
+
+  describe("handles filtering entries in the table", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        totalPages: 1,
+        currentPage: 1,
+        entries: mockedResponseSchemaRequests,
+      });
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+      const statusOption = screen.getByRole("option", { name: "All statuses" });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        requestStatus: "ALL",
+      });
+    });
+
+    it("enables user to filter by 'environment'", async () => {
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        env: mockedEnvironments[0].id,
+      });
+    });
+
+    it("enables user to search for topic", async () => {
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const search = screen.getByRole("search");
+
+      await userEvent.type(search, "myTopic");
+
+      await waitFor(() => {
+        expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
+          ...defaultApiParams,
+          topic: "myTopic",
+        });
+      });
     });
   });
 });

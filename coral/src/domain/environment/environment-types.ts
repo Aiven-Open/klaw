@@ -1,5 +1,8 @@
 import { KlawApiModel } from "types/utils";
 
+//@TODO this seems to be specifically modified to fit
+// for creating a TopicRequest, we should check this
+// with backend and align API and our types/needs
 type Environment = {
   name: KlawApiModel<"Environment">["name"];
   id: KlawApiModel<"Environment">["id"];

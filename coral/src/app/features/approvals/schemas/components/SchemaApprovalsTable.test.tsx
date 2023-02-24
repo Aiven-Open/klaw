@@ -2,7 +2,9 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { SchemaRequest } from "src/domain/schema-request";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import userEvent from "@testing-library/user-event";
+import { RequestStatus } from "src/domain/requests";
 
 const mockedRequests: SchemaRequest[] = [
   {
@@ -44,7 +46,7 @@ const mockedRequests: SchemaRequest[] = [
     username: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
-    requestStatus: "CREATED",
+    requestStatus: "APPROVED",
     requestOperationType: "DELETE",
     remarks: "asap",
     approvingTeamDetails:
@@ -67,6 +69,7 @@ describe("SchemaApprovalsTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Requested by", relatedField: "username" },
     { columnHeader: "Date requested", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
@@ -206,10 +209,15 @@ describe("SchemaApprovalsTable", () => {
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             //@ts-ignore
-            const content = `${request[column.relatedField]}`;
-            const isFormattedTime = column.columnHeader === "Date requested";
+            const field = request[column.relatedField];
 
-            const text = `${content}${isFormattedTime ? " UTC" : ""}`;
+            let text = field;
+            if (column.columnHeader === "Date requested") {
+              text = `${field} UTC`;
+            }
+            if (column.columnHeader === "Status") {
+              text = requestStatusNameMap[field as RequestStatus];
+            }
             const cell = within(table).getByRole("cell", { name: text });
 
             expect(cell).toBeVisible();

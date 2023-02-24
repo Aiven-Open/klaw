@@ -63,7 +63,6 @@ const withAdvancedConfigRequest: TopicRequest = {
 
 const findDefinition = (term?: string) => {
   return screen.getAllByRole("definition").find((value) => {
-    console.log(value.textContent);
     return value.textContent === term;
   });
 };
