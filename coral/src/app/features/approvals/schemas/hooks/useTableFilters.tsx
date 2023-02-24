@@ -21,7 +21,7 @@ const useTableFilters = () => {
 
   const envParam = searchParams.get("environment");
   const statusParam = searchParams.get("status") as RequestStatus | null;
-  const topicParam = searchParams.get("topic") as string | null;
+  const topicParam = searchParams.get("topic");
 
   const [environment, setEnvironment] = useState(
     envParam ?? ALL_ENVIRONMENTS_VALUE
