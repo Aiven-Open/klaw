@@ -17,8 +17,11 @@ import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
-  ResolveIntersectionTypes,
 } from "types/utils";
+import {
+  RequestVerdictApproval,
+  RequestVerdictDecline,
+} from "src/domain/requests";
 
 const getTopics = async ({
   currentPage = 1,
@@ -125,12 +128,7 @@ const getTopicRequestsForApprover = (
     .then(transformGetTopicRequestsForApproverResponse);
 };
 
-type ApproveTopicRequestPayload = ResolveIntersectionTypes<
-  Omit<KlawApiRequest<"approveRequest">, "reason"> & {
-    requestEntityType: "TOPIC";
-  }
->;
-
+type ApproveTopicRequestPayload = RequestVerdictApproval<"TOPIC">;
 const approveTopicRequest = (payload: ApproveTopicRequestPayload) => {
   return api.post<
     KlawApiResponse<"approveRequest">,
@@ -138,13 +136,7 @@ const approveTopicRequest = (payload: ApproveTopicRequestPayload) => {
   >(`/request/approve`, payload);
 };
 
-type RejectTopicRequestPayload = ResolveIntersectionTypes<
-  KlawApiRequest<"declineRequest"> & {
-    reason: string;
-    requestEntityType: "TOPIC";
-  }
->;
-
+type RejectTopicRequestPayload = RequestVerdictDecline<"TOPIC">;
 const rejectTopicRequest = (payload: RejectTopicRequestPayload) => {
   return api.post<KlawApiResponse<"declineRequest">, RejectTopicRequestPayload>(
     `/request/decline`,

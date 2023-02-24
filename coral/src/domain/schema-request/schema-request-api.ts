@@ -7,6 +7,10 @@ import {
 } from "src/domain/schema-request/schema-request-types";
 import { operations } from "types/api";
 import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
+import {
+  RequestVerdictApproval,
+  RequestVerdictDecline,
+} from "src/domain/requests";
 
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload
@@ -54,4 +58,23 @@ const getSchemaRequestsForApprover = ({
     .then(transformGetSchemaRequestsForApproverResponse);
 };
 
-export { createSchemaRequest, getSchemaRequestsForApprover };
+const approveSchemaRequest = (payload: RequestVerdictApproval<"SCHEMA">) => {
+  return api.post<
+    KlawApiResponse<"approveRequest">,
+    RequestVerdictApproval<"SCHEMA">
+  >(`/request/approve`, payload);
+};
+
+const declineSchemaRequest = (payload: RequestVerdictDecline<"SCHEMA">) => {
+  return api.post<
+    KlawApiResponse<"declineRequest">,
+    RequestVerdictDecline<"SCHEMA">
+  >(`/request/approve`, payload);
+};
+
+export {
+  createSchemaRequest,
+  getSchemaRequestsForApprover,
+  approveSchemaRequest,
+  declineSchemaRequest,
+};
