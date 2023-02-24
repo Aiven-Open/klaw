@@ -385,7 +385,7 @@ describe("TopicApprovals", () => {
     });
   });
 
-  describe("shows a detail modal for schema request", () => {
+  describe("shows a detail modal for Topic request", () => {
     beforeEach(async () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
 
@@ -431,6 +431,50 @@ describe("TopicApprovals", () => {
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+
+    it("should render disabled actions in Details modal", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const approvedRequest = mockedApiResponse.entries[1];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${approvedRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      const rejectButton = within(modal).getByRole("button", {
+        name: "Reject",
+      });
+
+      expect(approveButton).toBeDisabled();
+      expect(rejectButton).toBeDisabled();
+    });
+
+    it("should render enabled actions in Details modal", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const createdRequest = mockedApiResponse.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${createdRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      const rejectButton = within(modal).getByRole("button", {
+        name: "Reject",
+      });
+
+      expect(approveButton).toBeEnabled();
+      expect(rejectButton).toBeEnabled();
     });
   });
 

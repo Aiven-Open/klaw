@@ -5,6 +5,8 @@ import { TopicRequest } from "src/domain/topic";
 import userEvent from "@testing-library/user-event";
 
 const mockedSetDetailsModal = jest.fn();
+const mockedSetRejectModal = jest.fn();
+const mockedApproveRequest = jest.fn();
 
 const mockedRequests: TopicRequest[] = [
   {
@@ -90,6 +92,9 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
+          approveIsLoading={false}
+          setRejectModal={mockedSetRejectModal}
+          approveRequest={mockedApproveRequest}
         />
       );
     });
@@ -115,7 +120,7 @@ describe("TopicApprovalsTable", () => {
       expect(row).toHaveLength(mockedRequests.length + 1);
     });
 
-    it("shows an detail button for every row", () => {
+    it("shows a Show details button for every row", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /View topic request for /,
@@ -124,51 +129,28 @@ describe("TopicApprovalsTable", () => {
       expect(buttons).toHaveLength(mockedRequests.length);
     });
 
-    it("shows an approve button for every row", () => {
+    it("shows an approve button for every row with status CREATED", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Approve topic request for /,
       });
+      const createdRequests = mockedRequests.filter(
+        ({ requestStatus }) => requestStatus === "CREATED"
+      );
 
-      expect(buttons).toHaveLength(mockedRequests.length);
+      expect(buttons).toHaveLength(createdRequests.length);
     });
 
-    it("shows an decline button for every row", () => {
+    it("shows an decline button for every row with status CREATED", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Decline topic request for /,
       });
+      const createdRequests = mockedRequests.filter(
+        ({ requestStatus }) => requestStatus === "CREATED"
+      );
 
-      expect(buttons).toHaveLength(mockedRequests.length);
-    });
-
-    mockedRequests.forEach((request) => {
-      it(`shows a button to show the detailed topic request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Topic requests" });
-        const button = within(table).getByRole("button", {
-          name: `View topic request for ${request.topicname}`,
-        });
-
-        expect(button).toBeEnabled();
-      });
-
-      it(`shows a button to approve topic request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Topic requests" });
-        const button = within(table).getByRole("button", {
-          name: `Approve topic request for ${request.topicname}`,
-        });
-
-        expect(button).toBeEnabled();
-      });
-
-      it(`shows a button to approve topic request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Topic requests" });
-        const button = within(table).getByRole("button", {
-          name: `Decline topic request for ${request.topicname}`,
-        });
-
-        expect(button).toBeEnabled();
-      });
+      expect(buttons).toHaveLength(createdRequests.length);
     });
   });
 
@@ -179,6 +161,9 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
+          approveIsLoading={false}
+          setRejectModal={mockedSetRejectModal}
+          approveRequest={mockedApproveRequest}
         />
       );
     });
@@ -240,6 +225,9 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
+          approveIsLoading={false}
+          setRejectModal={mockedSetRejectModal}
+          approveRequest={mockedApproveRequest}
         />
       );
     });
@@ -255,6 +243,32 @@ describe("TopicApprovalsTable", () => {
       expect(mockedSetDetailsModal).toHaveBeenCalledWith({
         isOpen: true,
         topicId: 1000,
+      });
+    });
+
+    it("shows a Modal when clicking Reject button", async () => {
+      const showDetails = screen.getByRole("button", {
+        name: "Decline topic request for test-topic-1",
+      });
+
+      await userEvent.click(showDetails);
+
+      expect(mockedSetRejectModal).toHaveBeenCalledWith({
+        isOpen: true,
+        topicId: 1000,
+      });
+    });
+
+    it("approves request when clicking Approve button", async () => {
+      const showDetails = screen.getByRole("button", {
+        name: "Approve topic request for test-topic-1",
+      });
+
+      await userEvent.click(showDetails);
+
+      expect(mockedApproveRequest).toHaveBeenCalledWith({
+        requestEntityType: "TOPIC",
+        reqIds: ["1000"],
       });
     });
   });
