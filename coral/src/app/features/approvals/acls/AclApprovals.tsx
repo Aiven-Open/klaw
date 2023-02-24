@@ -127,7 +127,8 @@ function AclApprovals() {
 
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
     mutationFn: approveAclRequest,
-    onSuccess: (response) => {
+    onSuccess: (responses) => {
+      const response = responses[0];
       if (response.result !== "success") {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
@@ -155,7 +156,8 @@ function AclApprovals() {
 
   const { isLoading: rejectIsLoading, mutate: rejectRequest } = useMutation({
     mutationFn: declineAclRequest,
-    onSuccess: (response) => {
+    onSuccess: (responses) => {
+      const response = responses[0];
       if (response.result !== "success") {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
@@ -325,7 +327,10 @@ function AclApprovals() {
             <GhostButton
               onClick={() => {
                 setIsLoading(true);
-                return approveRequest({ req_no: String(id) });
+                return approveRequest({
+                  requestEntityType: "ACL",
+                  reqIds: [String(id)],
+                });
               }}
               title={"Approve request"}
             >
@@ -381,7 +386,10 @@ function AclApprovals() {
         <RequestDetailsModal
           onClose={() => setDetailsModal({ isOpen: false, reqNo: "" })}
           onApprove={() => {
-            approveRequest({ req_no: detailsModal.reqNo });
+            approveRequest({
+              requestEntityType: "ACL",
+              reqIds: [detailsModal.reqNo],
+            });
           }}
           onReject={() => {
             setDetailsModal({ isOpen: false, reqNo: "" });
@@ -399,8 +407,9 @@ function AclApprovals() {
           onCancel={() => setRejectModal({ isOpen: false, reqNo: "" })}
           onSubmit={(message: string) => {
             rejectRequest({
-              req_no: rejectModal.reqNo,
-              reasonForDecline: message,
+              requestEntityType: "ACL",
+              reqIds: [rejectModal.reqNo],
+              reason: message,
             });
           }}
           isLoading={rejectIsLoading}
