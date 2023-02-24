@@ -495,4 +495,37 @@ describe("SchemaApprovals", () => {
       });
     });
   });
+
+  describe("shows a reject modal for schema request", () => {
+    beforeEach(async () => {
+      mockGetSchemaRequestsForApprover.mockResolvedValue(mockedApiResponse);
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows decline modal for requests", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockedApiResponse.entries[0];
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent("Reject request");
+    });
+  });
 });

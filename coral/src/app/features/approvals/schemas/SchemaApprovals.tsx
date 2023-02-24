@@ -8,6 +8,7 @@ import useTableFilters from "src/app/features/approvals/schemas/hooks/useTableFi
 import { useState } from "react";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
+import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
 
 function SchemaApprovals() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -50,6 +51,10 @@ function SchemaApprovals() {
     setSearchParams(searchParams);
   };
 
+  function closeModal() {
+    setModals({ open: "NONE", req_no: null });
+  }
+
   const table = (
     <SchemaApprovalsTable
       requests={schemaRequests?.entries || []}
@@ -77,9 +82,11 @@ function SchemaApprovals() {
     <>
       {modals.open === "DETAILS" && (
         <RequestDetailsModal
-          onClose={() => setModals({ open: "NONE", req_no: null })}
+          onClose={closeModal}
           onApprove={() => {
-            approveRequest(modals.req_no);
+            //api call
+            console.log("APPROVE", modals.req_no);
+            closeModal();
           }}
           onDecline={() => {
             setModals({ open: "NONE", req_no: null });
@@ -94,7 +101,21 @@ function SchemaApprovals() {
           />
         </RequestDetailsModal>
       )}
-
+      {modals.open === "REJECT" && (
+        <RequestRejectModal
+          onClose={() => closeModal()}
+          onCancel={() => closeModal()}
+          onSubmit={(message: string) => {
+            if (modals.req_no === null) {
+              throw Error("req_no can't be null");
+            }
+            //do api call
+            alert(`rejected nr ${modals.req_no} for reason: ${message}`);
+            closeModal();
+          }}
+          isLoading={false}
+        />
+      )}
       <ApprovalsLayout
         filters={filters}
         table={table}
