@@ -1,5 +1,9 @@
 import omitBy from "lodash/omitBy";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
+import {
+  RequestVerdictApproval,
+  RequestVerdictDecline,
+} from "src/domain/requests";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
@@ -18,10 +22,6 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
-import {
-  RequestVerdictApproval,
-  RequestVerdictDecline,
-} from "src/domain/requests";
 
 const getTopics = async ({
   currentPage = 1,
