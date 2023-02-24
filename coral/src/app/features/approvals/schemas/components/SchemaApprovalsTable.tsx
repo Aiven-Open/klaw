@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, GhostButton } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  GhostButton,
+  Icon,
+} from "@aivenio/aquarium";
 import { SchemaRequest } from "src/domain/schema-request";
 import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
@@ -8,6 +13,7 @@ import {
   requestStatusNameMap,
 } from "src/app/features/approvals/utils/request-status-helper";
 import { Dispatch, SetStateAction } from "react";
+import loadingIcon from "@aivenio/aquarium/icons/loading";
 
 interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
@@ -67,16 +73,18 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Details",
       headerInvisible: true,
       width: 30,
-      UNSAFE_render: (row) => {
+      UNSAFE_render: (request) => {
         return (
           <GhostButton
-            onClick={() => setDetailsModal({ isOpen: true, req_no: row.id })}
+            onClick={() =>
+              setDetailsModal({ isOpen: true, req_no: request.id })
+            }
             icon={infoSign}
             dense
           >
             <span aria-hidden={"true"}>View details</span>
             <span className={"visually-hidden"}>
-              View schema request for {row.topicname}
+              View schema request for {request.topicname}
             </span>
           </GhostButton>
         );
@@ -87,14 +95,15 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Approve",
       headerInvisible: true,
       width: 30,
-      UNSAFE_render: (row) => {
+      UNSAFE_render: (request) => {
         return (
           <GhostButton
             onClick={() => alert("Approve")}
-            aria-label={`Approve schema request for ${row.topicname}`}
-            title={`Approve schema request`}
-            icon={tickCircle}
-          />
+            title={"Approve request"}
+            aria-label={`Approve schema request for ${request.topicname}`}
+          >
+            <Icon color="grey-70" icon={tickCircle} />
+          </GhostButton>
         );
       },
     },
@@ -103,14 +112,15 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Decline",
       headerInvisible: true,
       width: 30,
-      UNSAFE_render: (row) => {
+      UNSAFE_render: (request) => {
         return (
           <GhostButton
             onClick={() => alert("Decline")}
-            aria-label={`Decline schema request for ${row.topicname}`}
-            title={`Decline schema request`}
-            icon={deleteIcon}
-          />
+            aria-label={`Decline schema request for ${request.topicname}`}
+            title={"Decline request"}
+          >
+            <Icon color="grey-70" icon={deleteIcon} />
+          </GhostButton>
         );
       },
     },
