@@ -17,10 +17,10 @@ function SchemaApprovals() {
 
   const { environment, status, topic, filters } = useTableFilters();
 
-  const [detailsModal, setDetailsModal] = useState<{
-    isOpen: boolean;
+  const [modals, setModals] = useState<{
+    open: "DETAILS" | "REJECT" | "NONE";
     req_no: number | null;
-  }>({ isOpen: false, req_no: null });
+  }>({ open: "NONE", req_no: null });
 
   const {
     data: schemaRequests,
@@ -53,7 +53,7 @@ function SchemaApprovals() {
   const table = (
     <SchemaApprovalsTable
       requests={schemaRequests?.entries || []}
-      setDetailsModal={setDetailsModal}
+      setModals={setModals}
     />
   );
   const pagination =
@@ -75,25 +75,26 @@ function SchemaApprovals() {
 
   return (
     <>
-      {detailsModal.isOpen && (
+      {modals.open === "DETAILS" && (
         <RequestDetailsModal
-          onClose={() => setDetailsModal({ isOpen: false, req_no: null })}
+          onClose={() => setModals({ open: "NONE", req_no: null })}
           onApprove={() => {
-            approveRequest(detailsModal.req_no);
+            approveRequest(modals.req_no);
           }}
           onDecline={() => {
-            setDetailsModal({ isOpen: false, req_no: null });
-            declineRequest(detailsModal.req_no);
+            setModals({ open: "NONE", req_no: null });
+            declineRequest(modals.req_no);
           }}
           isLoading={false}
         >
           <SchemaRequestDetails
             request={schemaRequests?.entries.find(
-              (request) => request.req_no === detailsModal.req_no
+              (request) => request.req_no === modals.req_no
             )}
           />
         </RequestDetailsModal>
       )}
+
       <ApprovalsLayout
         filters={filters}
         table={table}

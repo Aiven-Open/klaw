@@ -13,7 +13,6 @@ import {
   requestStatusNameMap,
 } from "src/app/features/approvals/utils/request-status-helper";
 import { Dispatch, SetStateAction } from "react";
-import loadingIcon from "@aivenio/aquarium/icons/loading";
 
 interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
@@ -26,15 +25,16 @@ interface SchemaRequestTableData {
 
 type SchemaApprovalsTableProps = {
   requests: SchemaRequest[];
-  setDetailsModal: Dispatch<
+  setModals: Dispatch<
     SetStateAction<{
-      isOpen: boolean;
+      open: "DETAILS" | "REJECT" | "NONE";
       req_no: number | null;
     }>
   >;
 };
+
 function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
-  const { requests, setDetailsModal } = props;
+  const { requests, setModals } = props;
   const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
     {
@@ -76,9 +76,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       UNSAFE_render: (request) => {
         return (
           <GhostButton
-            onClick={() =>
-              setDetailsModal({ isOpen: true, req_no: request.id })
-            }
+            onClick={() => setModals({ open: "DETAILS", req_no: request.id })}
             icon={infoSign}
             dense
           >
@@ -115,7 +113,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       UNSAFE_render: (request) => {
         return (
           <GhostButton
-            onClick={() => alert("Decline")}
+            onClick={() => setModals({ open: "REJECT", req_no: request.id })}
             aria-label={`Decline schema request for ${request.topicname}`}
             title={"Decline request"}
           >

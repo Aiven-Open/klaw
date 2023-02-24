@@ -61,7 +61,7 @@ const mockedRequests: SchemaRequest[] = [
   },
 ];
 
-const mockSetDetailsModal = jest.fn();
+const mockSetModals = jest.fn();
 
 describe("SchemaApprovalsTable", () => {
   beforeAll(mockIntersectionObserver);
@@ -82,7 +82,7 @@ describe("SchemaApprovalsTable", () => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
-          setDetailsModal={mockSetDetailsModal}
+          setModals={mockSetModals}
         />
       );
     });
@@ -170,7 +170,7 @@ describe("SchemaApprovalsTable", () => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
-          setDetailsModal={mockSetDetailsModal}
+          setModals={mockSetModals}
         />
       );
     });
@@ -232,7 +232,7 @@ describe("SchemaApprovalsTable", () => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
-          setDetailsModal={mockSetDetailsModal}
+          setModals={mockSetModals}
         />
       );
     });
@@ -248,8 +248,8 @@ describe("SchemaApprovalsTable", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetDetailsModal).toHaveBeenCalledWith({
-        isOpen: true,
+      expect(mockSetModals).toHaveBeenCalledWith({
+        open: "DETAILS",
         req_no: mockedRequests[0].req_no,
       });
     });
@@ -263,8 +263,8 @@ describe("SchemaApprovalsTable", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetDetailsModal).toHaveBeenCalledWith({
-        isOpen: true,
+      expect(mockSetModals).toHaveBeenCalledWith({
+        open: "DETAILS",
         req_no: mockedRequests[mockedRequests.length - 1].req_no,
       });
     });
