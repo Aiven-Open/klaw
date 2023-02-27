@@ -55,13 +55,14 @@ function ApprovalResourceTabs({ currentTab }: Props) {
         {currentTab === ApprovalsTabEnum.SCHEMAS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
-        title="Connectors"
+        title="Connectors (coming soon)"
         value={ApprovalsTabEnum.CONNECTORS}
         badge={getBadgeValue(numberOfPendingSchemaApprovals)}
         aria-label={getTabAriaLabel(
           "Connectors",
           numberOfPendingConnectorApprovals
         )}
+        disabled
       >
         {currentTab === ApprovalsTabEnum.CONNECTORS && <Outlet />}
       </Tabs.Tab>
