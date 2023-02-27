@@ -5,14 +5,14 @@ import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
-import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import useTableFilters from "src/app/features/approvals/topics/hooks/useTableFilters";
 import {
   approveTopicRequest,
   getTopicRequestsForApprover,
-  rejectTopicRequest,
+  declineTopicRequest,
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
 
@@ -32,7 +32,7 @@ function TopicApprovals() {
     isOpen: false,
     topicId: null,
   });
-  const [rejectModal, setRejectModal] = useState<{
+  const [declineModal, setDeclineModal] = useState<{
     isOpen: boolean;
     topicId: number | null;
   }>({
@@ -112,8 +112,8 @@ function TopicApprovals() {
     },
   });
 
-  const { isLoading: rejectIsLoading, mutate: rejectRequest } = useMutation({
-    mutationFn: rejectTopicRequest,
+  const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
+    mutationFn: declineTopicRequest,
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
@@ -124,7 +124,7 @@ function TopicApprovals() {
         );
       }
       setErrorMessage("");
-      setRejectModal({ isOpen: false, topicId: null });
+      setDeclineModal({ isOpen: false, topicId: null });
 
       // If approved request is last in the page, go back to previous page
       // This avoids staying on a non-existent page of entries, which makes the table bug hard
@@ -159,7 +159,7 @@ function TopicApprovals() {
     <TopicApprovalsTable
       requests={topicRequests?.entries || []}
       setDetailsModal={setDetailsModal}
-      setRejectModal={setRejectModal}
+      setDeclineModal={setDeclineModal}
       approveRequest={approveRequest}
       approveIsLoading={approveIsLoading}
     />
@@ -191,9 +191,9 @@ function TopicApprovals() {
               reqIds: [String(detailsModal.topicId)],
             });
           }}
-          onReject={() => {
+          onDecline={() => {
             setDetailsModal({ isOpen: false, topicId: null });
-            setRejectModal({ isOpen: true, topicId: detailsModal.topicId });
+            setDeclineModal({ isOpen: true, topicId: detailsModal.topicId });
           }}
           isLoading={approveIsLoading}
           disabledActions={selectedTopicRequest?.requestStatus !== "CREATED"}
@@ -201,22 +201,22 @@ function TopicApprovals() {
           <DetailsModalContent topicRequest={selectedTopicRequest} />
         </RequestDetailsModal>
       )}
-      {rejectModal.isOpen && (
-        <RequestRejectModal
-          onClose={() => setRejectModal({ isOpen: false, topicId: null })}
-          onCancel={() => setRejectModal({ isOpen: false, topicId: null })}
+      {declineModal.isOpen && (
+        <RequestDeclineModal
+          onClose={() => setDeclineModal({ isOpen: false, topicId: null })}
+          onCancel={() => setDeclineModal({ isOpen: false, topicId: null })}
           onSubmit={(message: string) => {
-            if (rejectModal.topicId === null) {
+            if (declineModal.topicId === null) {
               setErrorMessage("topicId is null, it should be a number");
               return;
             }
-            rejectRequest({
+            declineRequest({
               requestEntityType: "TOPIC",
-              reqIds: [String(rejectModal.topicId)],
+              reqIds: [String(declineModal.topicId)],
               reason: message,
             });
           }}
-          isLoading={rejectIsLoading}
+          isLoading={declineIsLoading}
         />
       )}
       {errorMessage !== "" && (

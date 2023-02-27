@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 
 const baseProps = {
   onClose: jest.fn(),
@@ -8,10 +8,10 @@ const baseProps = {
   onCancel: jest.fn(),
 };
 
-describe("RequestRejectModal.test", () => {
+describe("RequestDeclineModal.test", () => {
   describe("renders a Modal with correct elements when isLoading is false (before interaction)", () => {
     beforeAll(() => {
-      render(<RequestRejectModal {...baseProps} isLoading={false} />);
+      render(<RequestDeclineModal {...baseProps} isLoading={false} />);
     });
     afterAll(cleanup);
 
@@ -21,7 +21,7 @@ describe("RequestRejectModal.test", () => {
 
     it("renders correct heading", () => {
       expect(
-        screen.getByRole("heading", { name: "Reject request" })
+        screen.getByRole("heading", { name: "Decline request" })
       ).toBeVisible();
     });
 
@@ -41,22 +41,22 @@ describe("RequestRejectModal.test", () => {
       expect(screen.getByRole("button", { name: "Cancel" })).toBeEnabled();
     });
 
-    it("renders disabled Reject request button", () => {
+    it("renders disabled Decline request button", () => {
       expect(
-        screen.getByRole("button", { name: "Reject request" })
+        screen.getByRole("button", { name: "Decline request" })
       ).toBeDisabled();
     });
   });
 
   describe("renders a Modal with correct elements when isLoading is true", () => {
     beforeAll(() => {
-      render(<RequestRejectModal {...baseProps} isLoading={true} />);
+      render(<RequestDeclineModal {...baseProps} isLoading={true} />);
     });
     afterAll(cleanup);
 
     it("renders correct heading", () => {
       expect(
-        screen.getByRole("heading", { name: "Reject request" })
+        screen.getByRole("heading", { name: "Decline request" })
       ).toBeVisible();
     });
 
@@ -78,16 +78,16 @@ describe("RequestRejectModal.test", () => {
       expect(screen.getByRole("button", { name: "Cancel" })).toBeDisabled();
     });
 
-    it("renders disabled Reject request button", () => {
+    it("renders disabled Decline request button", () => {
       expect(
-        screen.getByRole("button", { name: "Reject request" })
+        screen.getByRole("button", { name: "Decline request" })
       ).toBeDisabled();
     });
   });
 
   describe("handles user interaction", () => {
     beforeAll(() => {
-      render(<RequestRejectModal {...baseProps} isLoading={false} />);
+      render(<RequestDeclineModal {...baseProps} isLoading={false} />);
     });
     afterAll(cleanup);
 
@@ -108,18 +108,18 @@ describe("RequestRejectModal.test", () => {
       expect(onCancel).toHaveBeenCalledTimes(1);
     });
 
-    it("user can reject", async () => {
+    it("user can decline", async () => {
       const { onSubmit } = baseProps;
 
-      const rejectButton = screen.getByRole("button", {
-        name: "Reject request",
+      const declineButton = screen.getByRole("button", {
+        name: "Decline request",
       });
       const textArea = screen.getByRole("textbox", {
         name: "Submit a reason to decline the request *",
       });
 
       await userEvent.type(textArea, "reason");
-      await userEvent.click(rejectButton);
+      await userEvent.click(declineButton);
       expect(onSubmit).toHaveBeenCalledWith("reason");
     });
 
@@ -127,15 +127,15 @@ describe("RequestRejectModal.test", () => {
       const tooLong =
         "Quisque commodo aliquam tristique. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed ornare turpis ac cursus vulputate. Morbi auctor sodales porttitor. Mauris placerat ante id facilisis vehicula. Pellentesque ornare quis massa elementum auctor. Suspendisse potenti. Phasellus dignissim sit amet risus vitae aliquet. Vivamus at dolor vehicula, placerat odio sit amet, imperdiet enim. Donec scelerisque pretium metus ut dignissim. Morbi posuere tortor in cursus porttitor. Maecenas a diam ut urna mattis convallis a vel ligula.";
 
-      const rejectButton = screen.getByRole("button", {
-        name: "Reject request",
+      const declineButton = screen.getByRole("button", {
+        name: "Decline request",
       });
       const textArea = screen.getByRole("textbox", {
         name: "Submit a reason to decline the request *",
       });
 
       await userEvent.type(textArea, tooLong);
-      expect(rejectButton).toBeDisabled();
+      expect(declineButton).toBeDisabled();
       expect(textArea).toBeInvalid();
     });
   });

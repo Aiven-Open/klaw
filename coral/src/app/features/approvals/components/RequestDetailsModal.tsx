@@ -4,7 +4,7 @@ import { Modal } from "src/app/components/Modal";
 interface RequestDetailsModalProps {
   onClose: () => void;
   onApprove: () => void;
-  onReject: () => void;
+  onDecline: () => void;
   children: ReactElement;
   isLoading: boolean;
   disabledActions?: boolean;
@@ -14,7 +14,7 @@ const RequestDetailsModal = ({
   children,
   onClose,
   onApprove,
-  onReject,
+  onDecline,
   isLoading,
   disabledActions,
 }: RequestDetailsModalProps) => {
@@ -29,8 +29,8 @@ const RequestDetailsModal = ({
         disabled: disabledActions,
       }}
       secondaryAction={{
-        text: "Reject",
-        onClick: onReject,
+        text: "Decline",
+        onClick: onDecline,
         disabled: isLoading || disabledActions,
       }}
     >
