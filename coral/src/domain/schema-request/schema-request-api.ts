@@ -65,11 +65,19 @@ const approveSchemaRequest = (payload: RequestVerdictApproval<"SCHEMA">) => {
   >(`/request/approve`, payload);
 };
 
-const declineSchemaRequest = (payload: RequestVerdictDecline<"SCHEMA">) => {
+type DeclineSchemaRequestPayload = ResolveIntersectionTypes<
+  Omit<RequestVerdictDecline<"SCHEMA">, "requestEntityType">
+>;
+const declineSchemaRequest = (payload: DeclineSchemaRequestPayload) => {
+  const payloadPassed: RequestVerdictDecline<"SCHEMA"> = {
+    ...payload,
+    reqIds: ["4325252524"],
+    requestEntityType: "SCHEMA",
+  };
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"SCHEMA">
-  >(`/request/approve`, payload);
+  >(`/request/approve`, payloadPassed);
 };
 
 export {
