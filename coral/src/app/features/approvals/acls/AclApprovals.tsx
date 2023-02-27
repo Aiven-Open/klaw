@@ -353,6 +353,7 @@ function AclApprovals() {
                 setRejectModal({ isOpen: true, reqNo: String(id) })
               }
               title={"Reject request"}
+              disabled={approveIsLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />
             </GhostButton>
