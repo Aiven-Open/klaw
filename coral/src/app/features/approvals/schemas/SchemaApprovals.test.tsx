@@ -375,6 +375,9 @@ describe("SchemaApprovals", () => {
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );
@@ -425,7 +428,65 @@ describe("SchemaApprovals", () => {
       expect(modal).toHaveTextContent(lastRequest.topicname);
     });
 
-    //@TODO reject and approve workflows from modal
+    it("user can approve a request by clicking a button in the modal", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockedApiResponseSchemaRequests.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      await userEvent.click(approveButton);
+
+      await waitForElementToBeRemoved(modal);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [firstRequest.req_no.toString()],
+      });
+    });
+
+    it("user can decline a request by clicking a button in the modal", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockedApiResponseSchemaRequests.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+
+      const detailsModal = within(screen.getByRole("dialog")).queryByText(
+        "Request details"
+      );
+
+      expect(detailsModal).toBeVisible();
+
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Reject request",
+        })
+      ).not.toBeInTheDocument();
+
+      const declineButton = screen.getByRole("button", {
+        name: "Reject",
+      });
+      await userEvent.click(declineButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Reject request",
+        })
+      ).toBeVisible();
+    });
   });
 
   describe("handles filtering entries in the table", () => {
