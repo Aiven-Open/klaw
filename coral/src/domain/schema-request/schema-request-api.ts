@@ -58,11 +58,19 @@ const getSchemaRequestsForApprover = (
     .then(transformGetSchemaRequestsForApproverResponse);
 };
 
-const approveSchemaRequest = (payload: RequestVerdictApproval<"SCHEMA">) => {
+type ApproveSchemaRequestPayload = ResolveIntersectionTypes<
+  Omit<RequestVerdictApproval<"SCHEMA">, "requestEntityType">
+>;
+const approveSchemaRequest = (payload: ApproveSchemaRequestPayload) => {
+  const payloadPassed: RequestVerdictApproval<"SCHEMA"> = {
+    ...payload,
+    requestEntityType: "SCHEMA",
+  };
+
   return api.post<
     KlawApiResponse<"approveRequest">,
     RequestVerdictApproval<"SCHEMA">
-  >(`/request/approve`, payload);
+  >(`/request/approve`, payloadPassed);
 };
 
 type DeclineSchemaRequestPayload = ResolveIntersectionTypes<

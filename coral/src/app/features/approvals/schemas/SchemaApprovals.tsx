@@ -9,7 +9,10 @@ import { useState } from "react";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
 import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
-import { declineSchemaRequest } from "src/domain/schema-request/schema-request-api";
+import {
+  approveSchemaRequest,
+  declineSchemaRequest,
+} from "src/domain/schema-request/schema-request-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { Alert } from "@aivenio/aquarium";
 
@@ -67,8 +70,44 @@ function SchemaApprovals() {
     keepPreviousData: true,
   });
 
-  const { mutate: declineRequest, isLoading: rejectRequestIsLoading } =
+  const { mutate: declineRequest, isLoading: declineRequestIsLoading } =
     useMutation(declineSchemaRequest, {
+      onSuccess: (responses) => {
+        // @TODO follow up ticket #707
+        // (for all approval tables)
+        const response = responses[0];
+        if (response.result !== "success") {
+          setErrorQuickActions(
+            response.message || response.result || "Unexpected error"
+          );
+        } else {
+          setErrorQuickActions("");
+          // If rejected request is last in the page, go back to previous page
+          // This avoids staying on a non-existent page of entries, which makes the table bug hard
+          // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+          // We also do not need to invalidate the query, as the activePage does not exist any more
+          // And there is no need to update anything on it
+          if (
+            schemaRequests?.entries.length === 1 &&
+            schemaRequests?.currentPage > 1
+          ) {
+            return setCurrentPage(schemaRequests?.currentPage - 1);
+          }
+
+          // We need to refetch all aclrequests queries to keep Table state in sync
+          queryClient.refetchQueries(["schemaRequestsForApprover"]);
+        }
+      },
+      onError(error: Error) {
+        setErrorQuickActions(parseErrorMsg(error));
+      },
+      onSettled() {
+        closeModal();
+      },
+    });
+
+  const { mutate: approveRequest, isLoading: approveRequestIsLoading } =
+    useMutation(approveSchemaRequest, {
       onSuccess: (responses) => {
         // @TODO follow up ticket #707
         // (for all approval tables)
@@ -116,6 +155,10 @@ function SchemaApprovals() {
     <SchemaApprovalsTable
       requests={schemaRequests?.entries || []}
       setModals={setModals}
+      quickActionLoading={approveRequestIsLoading || declineRequestIsLoading}
+      onApprove={(req_no) => {
+        approveRequest({ reqIds: [req_no.toString()] });
+      }}
     />
   );
   const pagination =
@@ -141,15 +184,16 @@ function SchemaApprovals() {
         <RequestDetailsModal
           onClose={closeModal}
           onApprove={() => {
-            //api call
-            console.log("APPROVE", modals.req_no);
-            closeModal();
+            if (modals.req_no === null) {
+              throw Error("req_no can't be null");
+            }
+            approveRequest({ reqIds: [modals.req_no.toString()] });
           }}
           onDecline={() => {
             setModals({ open: "NONE", req_no: null });
             declineRequest(modals.req_no);
           }}
-          isLoading={false}
+          isLoading={declineRequestIsLoading || approveRequestIsLoading}
         >
           <SchemaRequestDetails
             request={schemaRequests?.entries.find(
@@ -171,7 +215,7 @@ function SchemaApprovals() {
               reqIds: [modals.req_no.toString()],
             });
           }}
-          isLoading={rejectRequestIsLoading}
+          isLoading={declineRequestIsLoading || approveRequestIsLoading}
         />
       )}
       {errorQuickActions && (
