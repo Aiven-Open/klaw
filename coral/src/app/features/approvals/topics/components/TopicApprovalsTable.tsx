@@ -157,6 +157,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
               onClick={() => setRejectModal({ isOpen: true, topicId: id })}
               title={"Reject request"}
               aria-label={`Decline topic request for ${topicname}`}
+              disabled={approveIsLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />
             </GhostButton>
