@@ -476,14 +476,14 @@ describe("SchemaApprovals", () => {
       ).not.toBeInTheDocument();
 
       const declineButton = screen.getByRole("button", {
-        name: "Reject",
+        name: "Decline",
       });
       await userEvent.click(declineButton);
 
       expect(detailsModal).not.toBeInTheDocument();
       expect(
         within(screen.getByRole("dialog")).queryByRole("heading", {
-          name: "Reject request",
+          name: "Decline request",
         })
       ).toBeVisible();
     });
@@ -603,7 +603,7 @@ describe("SchemaApprovals", () => {
       const modal = screen.getByRole("dialog");
 
       const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Reject request",
+        name: "Decline request",
       });
       expect(confirmDeclineButton).toBeDisabled();
 
@@ -632,7 +632,7 @@ describe("SchemaApprovals", () => {
       const modal = screen.getByRole("dialog");
 
       const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Reject request",
+        name: "Decline request",
       });
 
       const message = within(modal).getByRole("textbox", {
@@ -664,7 +664,7 @@ describe("SchemaApprovals", () => {
       const modal = screen.getByRole("dialog");
 
       const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Reject request",
+        name: "Decline request",
       });
 
       const message = within(modal).getByRole("textbox", {
@@ -702,7 +702,7 @@ describe("SchemaApprovals", () => {
       const modal = screen.getByRole("dialog");
 
       const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Reject request",
+        name: "Decline request",
       });
 
       const message = within(modal).getByRole("textbox", {

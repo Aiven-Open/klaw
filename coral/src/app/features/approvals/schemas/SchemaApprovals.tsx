@@ -8,13 +8,13 @@ import useTableFilters from "src/app/features/approvals/schemas/hooks/useTableFi
 import { useState } from "react";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
-import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
 import {
   approveSchemaRequest,
   declineSchemaRequest,
 } from "src/domain/schema-request/schema-request-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { Alert } from "@aivenio/aquarium";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 
 function SchemaApprovals() {
   const queryClient = useQueryClient();
@@ -170,14 +170,6 @@ function SchemaApprovals() {
       />
     ) : undefined;
 
-  function approveRequest(req_no: number | null) {
-    console.log("approve", req_no);
-  }
-
-  function declineRequest(req_no: number | null) {
-    console.log("approve", req_no);
-  }
-
   return (
     <>
       {modals.open === "DETAILS" && (
@@ -202,7 +194,7 @@ function SchemaApprovals() {
         </RequestDetailsModal>
       )}
       {modals.open === "DECLINE" && (
-        <RequestRejectModal
+        <RequestDeclineModal
           onClose={() => closeModal()}
           onCancel={() => closeModal()}
           onSubmit={(message: string) => {
