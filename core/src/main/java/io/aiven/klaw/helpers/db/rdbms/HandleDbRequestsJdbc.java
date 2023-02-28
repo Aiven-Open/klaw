@@ -129,26 +129,26 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   @Override
   public Map<String, Map<String, Long>> getTopicRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
-    return jdbcSelectHelper.getTopicRequestsCounts(teamId, requestMode, tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
+    return jdbcSelectHelper.getTopicRequestsCounts(teamId, requestMode, tenantId, requestor);
   }
 
   @Override
   public Map<String, Map<String, Long>> getAclRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
-    return jdbcSelectHelper.getAclRequestsCounts(teamId, requestMode, tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
+    return jdbcSelectHelper.getAclRequestsCounts(teamId, requestMode, tenantId, requestor);
   }
 
   @Override
   public Map<String, Map<String, Long>> getSchemaRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
-    return jdbcSelectHelper.getSchemaRequestsCounts(teamId, requestMode, tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
+    return jdbcSelectHelper.getSchemaRequestsCounts(teamId, requestMode, tenantId, requestor);
   }
 
   @Override
   public Map<String, Map<String, Long>> getConnectorRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
-    return jdbcSelectHelper.getConnectorRequestsCounts(teamId, requestMode, tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
+    return jdbcSelectHelper.getConnectorRequestsCounts(teamId, requestMode, tenantId, requestor);
   }
 
   public List<TopicRequest> getCreatedTopicRequests(

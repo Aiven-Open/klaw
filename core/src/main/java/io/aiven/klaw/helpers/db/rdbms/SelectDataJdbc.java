@@ -1421,7 +1421,7 @@ public class SelectDataJdbc {
   // teamId is requestedBy. For 'topics' all the requests are assigned to the same team, except
   // claim requests
   public Map<String, Map<String, Long>> getTopicRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
     Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
 
     Map<String, Long> operationTypeCountsMap = new HashMap<>();
@@ -1435,7 +1435,7 @@ public class SelectDataJdbc {
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
       updateMap(statusCountsMap, topicRequestsStatusObj);
-    } else if (RequestMode.TO_APPROVE == requestMode) {
+    } else if (RequestMode.TO_APPROVE == requestMode || RequestMode.MY_APPROVALS == requestMode) {
       List<Object[]> topicRequestsStatusObj =
           topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
       updateMap(statusCountsMap, topicRequestsStatusObj);
@@ -1448,6 +1448,15 @@ public class SelectDataJdbc {
       updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
 
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
+      if (RequestMode.MY_APPROVALS == requestMode) {
+        // Make sure to remove any requests which the requestor can not approve
+        Long topicApprovalCount =
+            topicRequestsRepo.countRequestorsTopicRequestsGroupByStatusType(
+                teamId, tenantId, requestor, RequestStatus.CREATED.value);
+
+        statusCountsMap.put(
+            RequestStatus.CREATED.value, topicApprovalCount == null ? 0L : topicApprovalCount);
+      }
     }
 
     // update with 0L if requests don't exist
@@ -1463,7 +1472,7 @@ public class SelectDataJdbc {
   // For requests raised by your team, 'requestingteam' is the column in aclrequests table
   // For requests assigned to your team for approval, 'teamid' is the column in aclrequests table
   public Map<String, Map<String, Long>> getAclRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
     Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
     Map<String, Long> operationTypeCountsMap = new HashMap<>();
     Map<String, Long> statusCountsMap = new HashMap<>();
@@ -1476,7 +1485,7 @@ public class SelectDataJdbc {
       List<Object[]> aclRequestsStatusObj =
           aclRequestsRepo.findAllAclRequestsGroupByStatusMyTeam(teamId, tenantId);
       updateMap(statusCountsMap, aclRequestsStatusObj);
-    } else if (RequestMode.TO_APPROVE == requestMode) {
+    } else if (RequestMode.TO_APPROVE == requestMode || RequestMode.MY_APPROVALS == requestMode) {
       List<Object[]> aclRequestsOperationTypObj =
           aclRequestsRepo.findAllAclRequestsGroupByOperationTypeAssignedToTeam(teamId, tenantId);
       updateMap(operationTypeCountsMap, aclRequestsOperationTypObj);
@@ -1484,8 +1493,16 @@ public class SelectDataJdbc {
       List<Object[]> aclRequestsStatusObj =
           aclRequestsRepo.findAllAclRequestsGroupByStatusAssignedToTeam(teamId, tenantId);
       updateMap(statusCountsMap, aclRequestsStatusObj);
-    }
+      if (RequestMode.MY_APPROVALS == requestMode) {
+        // Make sure to remove any requests which the requestor can not approve
+        Long aclApprovalCount =
+            aclRequestsRepo.countRequestorsAclRequestsGroupByStatusType(
+                teamId, tenantId, requestor, RequestStatus.CREATED.value);
 
+        statusCountsMap.put(
+            RequestStatus.CREATED.value, aclApprovalCount == null ? 0L : aclApprovalCount);
+      }
+    }
     // update with 0L if requests don't exist
     updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
 
@@ -1497,13 +1514,15 @@ public class SelectDataJdbc {
 
   // teamId is requestedBy. For 'schemas' all the requests are assigned to the same team
   public Map<String, Map<String, Long>> getSchemaRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
     Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
 
     Map<String, Long> operationTypeCountsMap = new HashMap<>();
     Map<String, Long> statusCountsMap = new HashMap<>();
 
-    if (RequestMode.MY_REQUESTS == requestMode || RequestMode.TO_APPROVE == requestMode) {
+    if (RequestMode.MY_REQUESTS == requestMode
+        || RequestMode.TO_APPROVE == requestMode
+        || RequestMode.MY_APPROVALS == requestMode) {
       List<Object[]> schemaRequestsOperationTypObj =
           schemaRequestRepo.findAllSchemaRequestsGroupByOperationType(teamId, tenantId);
       updateMap(operationTypeCountsMap, schemaRequestsOperationTypObj);
@@ -1511,6 +1530,14 @@ public class SelectDataJdbc {
       List<Object[]> schemaRequestsStatusObj =
           schemaRequestRepo.findAllSchemaRequestsGroupByStatus(teamId, tenantId);
       updateMap(statusCountsMap, schemaRequestsStatusObj);
+    }
+    if (RequestMode.MY_APPROVALS == requestMode) {
+      // Make sure to remove any requests which the requestor can not approve
+      Long schemaApprovalCount =
+          schemaRequestRepo.countRequestorsSchemaRequestsGroupForStatusType(
+              teamId, tenantId, requestor, RequestStatus.CREATED.value);
+      statusCountsMap.put(
+          RequestStatus.CREATED.value, schemaApprovalCount == null ? 0L : schemaApprovalCount);
     }
 
     // update with 0L if requests don't exist
@@ -1524,13 +1551,15 @@ public class SelectDataJdbc {
 
   // teamId is requestedBy. For 'connectors' all the requests are assigned to the same team
   public Map<String, Map<String, Long>> getConnectorRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId) {
+      int teamId, RequestMode requestMode, int tenantId, String requestor) {
     Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
 
     Map<String, Long> operationTypeCountsMap = new HashMap<>();
     Map<String, Long> statusCountsMap = new HashMap<>();
 
-    if (RequestMode.MY_REQUESTS == requestMode || RequestMode.TO_APPROVE == requestMode) {
+    if (RequestMode.MY_REQUESTS == requestMode
+        || RequestMode.TO_APPROVE == requestMode
+        || RequestMode.MY_APPROVALS == requestMode) {
       List<Object[]> connectorRequestsOperationTypObj =
           kafkaConnectorRequestsRepo.findAllConnectorRequestsGroupByOperationType(teamId, tenantId);
       updateMap(operationTypeCountsMap, connectorRequestsOperationTypObj);
@@ -1538,6 +1567,17 @@ public class SelectDataJdbc {
       List<Object[]> connectorRequestsStatusObj =
           kafkaConnectorRequestsRepo.findAllConnectorRequestsGroupByStatus(teamId, tenantId);
       updateMap(statusCountsMap, connectorRequestsStatusObj);
+    }
+
+    if (RequestMode.MY_APPROVALS == requestMode) {
+      // Make sure to remove any requests which the requestor can not approve
+      Long connectorApprovalCount =
+          kafkaConnectorRequestsRepo.countRequestorsConnectorRequestsGroupByStatusType(
+              teamId, tenantId, requestor, RequestStatus.CREATED.value);
+
+      statusCountsMap.put(
+          RequestStatus.CREATED.value,
+          connectorApprovalCount == null ? 0L : connectorApprovalCount);
     }
 
     // update with 0L if requests don't exist
