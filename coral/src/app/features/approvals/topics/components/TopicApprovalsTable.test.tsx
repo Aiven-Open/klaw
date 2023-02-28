@@ -1,8 +1,8 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import userEvent from "@testing-library/user-event";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TopicRequest } from "src/domain/topic";
-import userEvent from "@testing-library/user-event";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const mockedSetDetailsModal = jest.fn();
 const mockedSetDeclineModal = jest.fn();
@@ -270,6 +270,30 @@ describe("TopicApprovalsTable", () => {
         requestEntityType: "TOPIC",
         reqIds: ["1000"],
       });
+    });
+  });
+
+  describe("handles action columns loading state", () => {
+    beforeAll(() => {
+      mockIntersectionObserver();
+      render(
+        <TopicApprovalsTable
+          setDetailsModal={mockedSetDetailsModal}
+          requests={mockedRequests}
+          approveIsLoading={true}
+          setDeclineModal={mockedSetDeclineModal}
+          approveRequest={mockedApproveRequest}
+        />
+      );
+    });
+    afterAll(cleanup);
+
+    it("renders disabled decline button", async () => {
+      const decline = screen.getByRole("button", {
+        name: "Decline topic request for test-topic-1",
+      });
+
+      expect(decline).toBeDisabled;
     });
   });
 });

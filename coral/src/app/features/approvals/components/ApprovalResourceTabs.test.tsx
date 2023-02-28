@@ -142,12 +142,13 @@ describe("ApprovalResourceTabs", () => {
         replace: true,
       });
     });
-
-    it('navigates to correct URL when "Connectors" tab is clicked', async () => {
-      await user.click(screen.getByRole("tab", { name: "Connectors" }));
-      expect(mockedNavigate).toHaveBeenCalledWith("/approvals/connectors", {
-        replace: true,
-      });
-    });
+    // Tab is disabled because Connectors are not yet implemented in coral
+    // @TODO uncomment test when Connectors are implemented
+    // it('navigates to correct URL when "Connectors" tab is clicked', async () => {
+    //   await user.click(screen.getByRole("tab", { name: "Connectors" }));
+    //   expect(mockedNavigate).toHaveBeenCalledWith("/approvals/connectors", {
+    //     replace: true,
+    //   });
+    // });
   });
 });
