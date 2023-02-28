@@ -29,7 +29,7 @@ public class RequestStatisticsService {
   public RequestsCountOverview getRequestsCountOverview(RequestMode requestMode) {
     RequestsCountOverview requestsCountOverview = new RequestsCountOverview();
     Set<RequestEntityStatusCount> requestEntityStatusCountSet = new HashSet<>();
-    String userName = getUserName();
+    final String userName = getUserName();
     // get topics count and update requestsCountOverview
     Map<String, Map<String, Long>> topicRequestCountsMap =
         manageDatabase
