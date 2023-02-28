@@ -1450,13 +1450,12 @@ public class SelectDataJdbc {
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
       if (RequestMode.MY_APPROVALS == requestMode) {
         // Make sure to remove any requests which the requestor can not approve
-        List<Object[]> connectorApprovalStatusObj =
-            topicRequestsRepo.findOtherRequestorsTopicRequestsGroupByStatus(
+        Long topicApprovalCount =
+            topicRequestsRepo.countRequestorsTopicRequestsGroupByStatusType(
                 teamId, tenantId, requestor, RequestStatus.CREATED.value);
-        updateMap(statusCountsMap, connectorApprovalStatusObj);
-        if (connectorApprovalStatusObj.size() == 0) {
-          statusCountsMap.put(RequestStatus.CREATED.value, 0L);
-        }
+
+        statusCountsMap.put(
+            RequestStatus.CREATED.value, topicApprovalCount == null ? 0L : topicApprovalCount);
       }
     }
 
@@ -1496,14 +1495,12 @@ public class SelectDataJdbc {
       updateMap(statusCountsMap, aclRequestsStatusObj);
       if (RequestMode.MY_APPROVALS == requestMode) {
         // Make sure to remove any requests which the requestor can not approve
-        List<Object[]> aclApprovalRequestsStatusObj =
-            aclRequestsRepo.findOtherRequestorsAclRequestsGroupByStatusAssignedToTeam(
+        Long aclApprovalCount =
+            aclRequestsRepo.countRequestorsAclRequestsGroupByStatusType(
                 teamId, tenantId, requestor, RequestStatus.CREATED.value);
-        if (aclApprovalRequestsStatusObj.size() == 0) {
-          statusCountsMap.put(RequestStatus.CREATED.value, 0L);
-        }
 
-        updateMap(statusCountsMap, aclApprovalRequestsStatusObj);
+        statusCountsMap.put(
+            RequestStatus.CREATED.value, aclApprovalCount == null ? 0L : aclApprovalCount);
       }
     }
     // update with 0L if requests don't exist
@@ -1536,13 +1533,11 @@ public class SelectDataJdbc {
     }
     if (RequestMode.MY_APPROVALS == requestMode) {
       // Make sure to remove any requests which the requestor can not approve
-      List<Object[]> schemaApprovalStatusObj =
-          schemaRequestRepo.findOtherRequestorsSchemaRequestsGroupByStatus(
+      Long schemaApprovalCount =
+          schemaRequestRepo.countRequestorsSchemaRequestsGroupForStatusType(
               teamId, tenantId, requestor, RequestStatus.CREATED.value);
-      updateMap(statusCountsMap, schemaApprovalStatusObj);
-      if (schemaApprovalStatusObj.size() == 0) {
-        statusCountsMap.put(RequestStatus.CREATED.value, 0L);
-      }
+      statusCountsMap.put(
+          RequestStatus.CREATED.value, schemaApprovalCount == null ? 0L : schemaApprovalCount);
     }
 
     // update with 0L if requests don't exist
@@ -1576,13 +1571,13 @@ public class SelectDataJdbc {
 
     if (RequestMode.MY_APPROVALS == requestMode) {
       // Make sure to remove any requests which the requestor can not approve
-      List<Object[]> connectorApprovalStatusObj =
-          kafkaConnectorRequestsRepo.findOtherRequestorsConnectorRequestsGroupByStatus(
+      Long connectorApprovalCount =
+          kafkaConnectorRequestsRepo.countRequestorsConnectorRequestsGroupByStatusType(
               teamId, tenantId, requestor, RequestStatus.CREATED.value);
-      updateMap(statusCountsMap, connectorApprovalStatusObj);
-      if (connectorApprovalStatusObj.size() == 0) {
-        statusCountsMap.put(RequestStatus.CREATED.value, 0L);
-      }
+
+      statusCountsMap.put(
+          RequestStatus.CREATED.value,
+          connectorApprovalCount == null ? 0L : connectorApprovalCount);
     }
 
     // update with 0L if requests don't exist

@@ -528,7 +528,7 @@ public class SchemaRequestsIntegrationTest {
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
-    assertThat(results.size()).isEqualTo(2);
+    assertThat(results).hasSize(2);
     // Jackie created all the requests so there should be none returned for Jackie.
     assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
     assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(3L);
@@ -546,7 +546,7 @@ public class SchemaRequestsIntegrationTest {
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
-    assertThat(results.size()).isEqualTo(2);
+    assertThat(results).hasSize(2);
 
     assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(5L);
     assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(3L);

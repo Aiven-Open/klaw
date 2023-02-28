@@ -52,11 +52,11 @@ public interface SchemaRequestRepo
 
   @Query(
       value =
-          "select topicstatus, count(*) from kwschemarequests where tenantid = :tenantId"
+          "select count(*) from kwschemarequests where tenantid = :tenantId"
               + " and teamid = :teamId and requestor != :requestor "
               + " and topicstatus = :topicStatus group by topicstatus",
       nativeQuery = true)
-  List<Object[]> findOtherRequestorsSchemaRequestsGroupByStatus(
+  Long countRequestorsSchemaRequestsGroupForStatusType(
       @Param("teamId") Integer teamId,
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,

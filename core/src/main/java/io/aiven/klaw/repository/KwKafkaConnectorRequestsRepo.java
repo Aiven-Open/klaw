@@ -56,10 +56,10 @@ public interface KwKafkaConnectorRequestsRepo
 
   @Query(
       value =
-          "select connectorstatus, count(*) from kwkafkaconnectorrequests where tenantid = :tenantId"
+          "select count(*) from kwkafkaconnectorrequests where tenantid = :tenantId"
               + " and teamid = :teamId and requestor != :requestor and connectorstatus = :connectorStatus group by connectorstatus",
       nativeQuery = true)
-  List<Object[]> findOtherRequestorsConnectorRequestsGroupByStatus(
+  Long countRequestorsConnectorRequestsGroupByStatusType(
       @Param("teamId") Integer teamId,
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,

@@ -73,11 +73,11 @@ public interface AclRequestsRepo
   // requests assigned to my team
   @Query(
       value =
-          "select topicstatus, count(*) from kwaclrequests where tenantid = :tenantId"
+          "select count(*) from kwaclrequests where tenantid = :tenantId"
               + " and teamid = :assignedToTeamId and requestor != :requestor "
               + " and topicstatus = :topicStatus group by topicStatus",
       nativeQuery = true)
-  List<Object[]> findOtherRequestorsAclRequestsGroupByStatusAssignedToTeam(
+  Long countRequestorsAclRequestsGroupByStatusType(
       @Param("assignedToTeamId") Integer assignedToTeamId,
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,

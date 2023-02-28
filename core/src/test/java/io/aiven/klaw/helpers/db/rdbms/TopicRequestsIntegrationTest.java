@@ -767,7 +767,7 @@ public class TopicRequestsIntegrationTest {
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
-    assertThat(results.size()).isEqualTo(2);
+    assertThat(results).hasSize(2);
     // Jackie created all the requests so we expect 0 for created status which is approval status
     assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
     assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
@@ -787,7 +787,7 @@ public class TopicRequestsIntegrationTest {
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
-    assertThat(results.size()).isEqualTo(2);
+    assertThat(results).hasSize(2);
     assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(4L);
     assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
     assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(7L);

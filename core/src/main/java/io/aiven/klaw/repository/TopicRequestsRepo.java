@@ -65,11 +65,11 @@ public interface TopicRequestsRepo
 
   @Query(
       value =
-          "select topicstatus, count(*) from kwtopicrequests where tenantid = :tenantId"
+          "select count(*) from kwtopicrequests where tenantid = :tenantId"
               + " and teamid = :teamId and requestor != :requestor "
               + "and topicstatus = :topicStatus  group by topicstatus",
       nativeQuery = true)
-  List<Object[]> findOtherRequestorsTopicRequestsGroupByStatus(
+  Long countRequestorsTopicRequestsGroupByStatusType(
       @Param("teamId") Integer teamId,
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
