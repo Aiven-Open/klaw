@@ -1,7 +1,10 @@
 import { RequestStatus } from "src/domain/requests";
 import { ChipStatus } from "@aivenio/aquarium";
 
-// @TODO add safe list
+// @TODO a nice improvement would be to
+// have a more typesafe / exhaustive list
+// here TS won't complain if a possible
+// value is missing from the array.
 const statusList: RequestStatus[] = [
   "ALL",
   "APPROVED",
