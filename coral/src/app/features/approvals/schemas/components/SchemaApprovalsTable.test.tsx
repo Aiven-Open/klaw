@@ -283,10 +283,10 @@ describe("SchemaApprovalsTable", () => {
     });
   });
 
-  describe("disables the approve and decline buttons dependent on props", () => {
+  describe("disables the quick actions dependent on props", () => {
     const requestsWithStatusCreated = [
       mockedRequests[0],
-      { ...mockedRequests[0], topicname: "Additional-topic" },
+      { ...mockedRequests[0], topicname: "Additional-topic", req_no: 1234 },
     ];
 
     beforeAll(() => {
@@ -303,7 +303,7 @@ describe("SchemaApprovalsTable", () => {
     afterAll(cleanup);
 
     requestsWithStatusCreated.forEach((request) => {
-      it(`shows a button to approve schema request for topic name ${request.topicname}`, () => {
+      it(`disables button to approve schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
           name: `Approve schema request for ${request.topicname}`,
@@ -312,13 +312,22 @@ describe("SchemaApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`shows a button to decline schema request for topic name ${request.topicname}`, () => {
+      it(`disables  button to decline schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
           name: `Decline schema request for ${request.topicname}`,
         });
 
         expect(button).toBeDisabled();
+      });
+
+      it(`disables details for schema request for topic name ${request.topicname}`, () => {
+        const table = screen.getByRole("table", { name: "Schema requests" });
+        const detailsButton = within(table).getByRole("button", {
+          name: `View schema request for ${request.topicname}`,
+        });
+
+        expect(detailsButton).toBeDisabled();
       });
     });
   });
