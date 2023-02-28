@@ -58,34 +58,28 @@ const getSchemaRequestsForApprover = (
     .then(transformGetSchemaRequestsForApproverResponse);
 };
 
-type ApproveSchemaRequestPayload = ResolveIntersectionTypes<
-  Omit<RequestVerdictApproval<"SCHEMA">, "requestEntityType">
->;
-const approveSchemaRequest = (payload: ApproveSchemaRequestPayload) => {
-  const payloadPassed: RequestVerdictApproval<"SCHEMA"> = {
-    ...payload,
-    requestEntityType: "SCHEMA",
-  };
-
+const approveSchemaRequest = (
+  payload: Omit<RequestVerdictApproval<"SCHEMA">, "requestEntityType">
+) => {
   return api.post<
     KlawApiResponse<"approveRequest">,
     RequestVerdictApproval<"SCHEMA">
-  >(`/request/approve`, payloadPassed);
+  >(`/request/approve`, {
+    ...payload,
+    requestEntityType: "SCHEMA",
+  });
 };
 
-type DeclineSchemaRequestPayload = ResolveIntersectionTypes<
-  Omit<RequestVerdictDecline<"SCHEMA">, "requestEntityType">
->;
-const declineSchemaRequest = (payload: DeclineSchemaRequestPayload) => {
-  const payloadPassed: RequestVerdictDecline<"SCHEMA"> = {
-    ...payload,
-    reqIds: ["4325252524"],
-    requestEntityType: "SCHEMA",
-  };
+const declineSchemaRequest = (
+  payload: Omit<RequestVerdictDecline<"SCHEMA">, "requestEntityType">
+) => {
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"SCHEMA">
-  >(`/request/approve`, payloadPassed);
+  >(`/request/approve`, {
+    ...payload,
+    requestEntityType: "SCHEMA",
+  });
 };
 
 export {
