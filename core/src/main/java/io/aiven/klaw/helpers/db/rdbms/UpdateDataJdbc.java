@@ -165,7 +165,9 @@ public class UpdateDataJdbc {
     topicObj.setHistory(topicRequest.getHistory());
     topics.add(topicObj);
 
-    if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
+    // Both create and promote operations create new topic entries in the administration DB.
+    if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)
+        || topicRequest.getRequestOperationType().equals(RequestOperationType.PROMOTE.value)) {
       insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
     } else if (topicRequest.getRequestOperationType().equals(RequestOperationType.UPDATE.value)) {
       updateTopicSOT(topics, topicRequest.getOtherParams());
