@@ -277,7 +277,7 @@ describe("SchemaApprovalsTable", () => {
     });
   });
 
-  describe("disables the approve and reject buttons dependent on props", () => {
+  describe("disables the approve and decline buttons dependent on props", () => {
     beforeAll(() => {
       render(
         <SchemaApprovalsTable

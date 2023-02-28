@@ -28,7 +28,7 @@ type SchemaApprovalsTableProps = {
   requests: SchemaRequest[];
   setModals: Dispatch<
     SetStateAction<{
-      open: "DETAILS" | "REJECT" | "NONE";
+      open: "DETAILS" | "DECLINE" | "NONE";
       req_no: number | null;
     }>
   >;
@@ -126,7 +126,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       UNSAFE_render: (request) => {
         return (
           <GhostButton
-            onClick={() => setModals({ open: "REJECT", req_no: request.id })}
+            onClick={() => setModals({ open: "DECLINE", req_no: request.id })}
             aria-label={`Decline schema request for ${request.topicname}`}
             title={"Decline request"}
             disabled={quickActionLoading}

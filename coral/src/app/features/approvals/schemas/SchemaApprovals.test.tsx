@@ -471,7 +471,7 @@ describe("SchemaApprovals", () => {
 
       expect(
         within(screen.getByRole("dialog")).queryByRole("heading", {
-          name: "Reject request",
+          name: "Decline request",
         })
       ).not.toBeInTheDocument();
 
@@ -570,7 +570,7 @@ describe("SchemaApprovals", () => {
     });
   });
 
-  describe("enables user to reject a request", () => {
+  describe("enables user to decline a request", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
     beforeEach(async () => {
@@ -602,12 +602,12 @@ describe("SchemaApprovals", () => {
       await userEvent.click(declineButton);
       const modal = screen.getByRole("dialog");
 
-      const rejectButton = within(modal).getByRole("button", {
+      const confirmDeclineButton = within(modal).getByRole("button", {
         name: "Reject request",
       });
-      expect(rejectButton).toBeDisabled();
+      expect(confirmDeclineButton).toBeDisabled();
 
-      await userEvent.click(rejectButton);
+      await userEvent.click(confirmDeclineButton);
       expect(mockDeclineSchemaRequest).not.toHaveBeenCalled();
 
       const message = within(modal).getByRole("textbox", {
@@ -618,7 +618,7 @@ describe("SchemaApprovals", () => {
       await userEvent.type(message, "This is my message");
       await userEvent.tab();
 
-      expect(rejectButton).toBeEnabled();
+      expect(confirmDeclineButton).toBeEnabled();
     });
 
     it("send a decline request api call if user declines a schema request", async () => {
@@ -631,7 +631,7 @@ describe("SchemaApprovals", () => {
       await userEvent.click(declineButton);
       const modal = screen.getByRole("dialog");
 
-      const rejectButton = within(modal).getByRole("button", {
+      const confirmDeclineButton = within(modal).getByRole("button", {
         name: "Reject request",
       });
 
@@ -641,7 +641,7 @@ describe("SchemaApprovals", () => {
 
       await userEvent.type(message, "This is my message");
       await userEvent.tab();
-      await userEvent.click(rejectButton);
+      await userEvent.click(confirmDeclineButton);
 
       expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],
@@ -663,7 +663,7 @@ describe("SchemaApprovals", () => {
       await userEvent.click(declineButton);
       const modal = screen.getByRole("dialog");
 
-      const rejectButton = within(modal).getByRole("button", {
+      const confirmDeclineButton = within(modal).getByRole("button", {
         name: "Reject request",
       });
 
@@ -673,7 +673,7 @@ describe("SchemaApprovals", () => {
 
       await userEvent.type(message, "This is my message");
       await userEvent.tab();
-      await userEvent.click(rejectButton);
+      await userEvent.click(confirmDeclineButton);
 
       expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],
@@ -701,7 +701,7 @@ describe("SchemaApprovals", () => {
       await userEvent.click(declineButton);
       const modal = screen.getByRole("dialog");
 
-      const rejectButton = within(modal).getByRole("button", {
+      const confirmDeclineButton = within(modal).getByRole("button", {
         name: "Reject request",
       });
 
@@ -711,7 +711,7 @@ describe("SchemaApprovals", () => {
 
       await userEvent.type(message, "This is my message");
       await userEvent.tab();
-      await userEvent.click(rejectButton);
+      await userEvent.click(confirmDeclineButton);
 
       expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],

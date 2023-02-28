@@ -25,7 +25,7 @@ function SchemaApprovals() {
     : 1;
 
   const [modals, setModals] = useState<{
-    open: "DETAILS" | "REJECT" | "NONE";
+    open: "DETAILS" | "DECLINE" | "NONE";
     req_no: number | null;
   }>({ open: "NONE", req_no: null });
 
@@ -82,7 +82,7 @@ function SchemaApprovals() {
           );
         } else {
           setErrorQuickActions("");
-          // If rejected request is last in the page, go back to previous page
+          // If declined request is last in the page, go back to previous page
           // This avoids staying on a non-existent page of entries, which makes the table bug hard
           // With pagination being 0 of 0, and clicking Previous button sets active page at -1
           // We also do not need to invalidate the query, as the activePage does not exist any more
@@ -118,7 +118,7 @@ function SchemaApprovals() {
           );
         } else {
           setErrorQuickActions("");
-          // If rejected request is last in the page, go back to previous page
+          // If declined request is last in the page, go back to previous page
           // This avoids staying on a non-existent page of entries, which makes the table bug hard
           // With pagination being 0 of 0, and clicking Previous button sets active page at -1
           // We also do not need to invalidate the query, as the activePage does not exist any more
@@ -190,8 +190,7 @@ function SchemaApprovals() {
             approveRequest({ reqIds: [modals.req_no.toString()] });
           }}
           onDecline={() => {
-            setModals({ open: "NONE", req_no: null });
-            declineRequest(modals.req_no);
+            setModals({ ...modals, open: "DECLINE" });
           }}
           isLoading={declineRequestIsLoading || approveRequestIsLoading}
         >
@@ -202,7 +201,7 @@ function SchemaApprovals() {
           />
         </RequestDetailsModal>
       )}
-      {modals.open === "REJECT" && (
+      {modals.open === "DECLINE" && (
         <RequestRejectModal
           onClose={() => closeModal()}
           onCancel={() => closeModal()}
