@@ -69,7 +69,7 @@ function SchemaApprovals() {
     console.log("approve", req_no);
   }
 
-  function rejectRequest(req_no: number | null) {
+  function declineRequest(req_no: number | null) {
     console.log("approve", req_no);
   }
 
@@ -81,9 +81,9 @@ function SchemaApprovals() {
           onApprove={() => {
             approveRequest(detailsModal.req_no);
           }}
-          onReject={() => {
+          onDecline={() => {
             setDetailsModal({ isOpen: false, req_no: null });
-            rejectRequest(detailsModal.req_no);
+            declineRequest(detailsModal.req_no);
           }}
           isLoading={false}
         >

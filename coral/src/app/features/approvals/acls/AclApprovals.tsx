@@ -20,7 +20,7 @@ import DetailsModalContent from "src/app/features/approvals/acls/components/Deta
 import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
-import RequestRejectModal from "src/app/features/approvals/components/RequestRejectModal";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import {
   approveAclRequest,
   declineAclRequest,
@@ -86,7 +86,10 @@ function AclApprovals() {
     isOpen: false,
     reqNo: "",
   });
-  const [rejectModal, setRejectModal] = useState({ isOpen: false, reqNo: "" });
+  const [declineModal, setDeclineModal] = useState({
+    isOpen: false,
+    reqNo: "",
+  });
 
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -154,7 +157,7 @@ function AclApprovals() {
     },
   });
 
-  const { isLoading: rejectIsLoading, mutate: rejectRequest } = useMutation({
+  const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
     mutationFn: declineAclRequest,
     onSuccess: (responses) => {
       const response = responses[0];
@@ -164,7 +167,7 @@ function AclApprovals() {
         );
       }
       setErrorMessage("");
-      setRejectModal({ isOpen: false, reqNo: "" });
+      setDeclineModal({ isOpen: false, reqNo: "" });
 
       // If approved request is last in the page, go back to previous page
       // This avoids staying on a non-existent page of entries, which makes the table bug hard
@@ -355,9 +358,9 @@ function AclApprovals() {
           return (
             <GhostButton
               onClick={() =>
-                setRejectModal({ isOpen: true, reqNo: String(id) })
+                setDeclineModal({ isOpen: true, reqNo: String(id) })
               }
-              title={"Reject request"}
+              title={"Decline request"}
               disabled={approveIsLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />
@@ -392,9 +395,9 @@ function AclApprovals() {
               reqIds: [detailsModal.reqNo],
             });
           }}
-          onReject={() => {
+          onDecline={() => {
             setDetailsModal({ isOpen: false, reqNo: "" });
-            setRejectModal({ isOpen: true, reqNo: detailsModal.reqNo });
+            setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
           }}
           isLoading={approveIsLoading}
           disabledActions={selectedRequest?.requestStatus !== "CREATED"}
@@ -402,18 +405,18 @@ function AclApprovals() {
           <DetailsModalContent aclRequest={selectedRequest} />
         </RequestDetailsModal>
       )}
-      {rejectModal.isOpen && (
-        <RequestRejectModal
-          onClose={() => setRejectModal({ isOpen: false, reqNo: "" })}
-          onCancel={() => setRejectModal({ isOpen: false, reqNo: "" })}
+      {declineModal.isOpen && (
+        <RequestDeclineModal
+          onClose={() => setDeclineModal({ isOpen: false, reqNo: "" })}
+          onCancel={() => setDeclineModal({ isOpen: false, reqNo: "" })}
           onSubmit={(message: string) => {
-            rejectRequest({
+            declineRequest({
               requestEntityType: "ACL",
-              reqIds: [rejectModal.reqNo],
+              reqIds: [declineModal.reqNo],
               reason: message,
             });
           }}
-          isLoading={rejectIsLoading}
+          isLoading={declineIsLoading}
         />
       )}
       {errorMessage !== "" && (

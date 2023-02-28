@@ -5,7 +5,7 @@ import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const mockedSetDetailsModal = jest.fn();
-const mockedSetRejectModal = jest.fn();
+const mockedSetDeclineModal = jest.fn();
 const mockedApproveRequest = jest.fn();
 
 const mockedRequests: TopicRequest[] = [
@@ -93,7 +93,7 @@ describe("TopicApprovalsTable", () => {
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
           approveIsLoading={false}
-          setRejectModal={mockedSetRejectModal}
+          setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
       );
@@ -162,7 +162,7 @@ describe("TopicApprovalsTable", () => {
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
           approveIsLoading={false}
-          setRejectModal={mockedSetRejectModal}
+          setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
       );
@@ -226,7 +226,7 @@ describe("TopicApprovalsTable", () => {
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
           approveIsLoading={false}
-          setRejectModal={mockedSetRejectModal}
+          setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
       );
@@ -246,14 +246,14 @@ describe("TopicApprovalsTable", () => {
       });
     });
 
-    it("shows a Modal when clicking Reject button", async () => {
+    it("shows a Modal when clicking Decline button", async () => {
       const showDetails = screen.getByRole("button", {
         name: "Decline topic request for test-topic-1",
       });
 
       await userEvent.click(showDetails);
 
-      expect(mockedSetRejectModal).toHaveBeenCalledWith({
+      expect(mockedSetDeclineModal).toHaveBeenCalledWith({
         isOpen: true,
         topicId: 1000,
       });
@@ -281,14 +281,14 @@ describe("TopicApprovalsTable", () => {
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
           approveIsLoading={true}
-          setRejectModal={mockedSetRejectModal}
+          setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
       );
     });
     afterAll(cleanup);
 
-    it("renders disabled Reject button", async () => {
+    it("renders disabled decline button", async () => {
       const decline = screen.getByRole("button", {
         name: "Decline topic request for test-topic-1",
       });

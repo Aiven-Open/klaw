@@ -136,12 +136,12 @@ const approveTopicRequest = (payload: ApproveTopicRequestPayload) => {
   >(`/request/approve`, payload);
 };
 
-type RejectTopicRequestPayload = RequestVerdictDecline<"TOPIC">;
-const rejectTopicRequest = (payload: RejectTopicRequestPayload) => {
-  return api.post<KlawApiResponse<"declineRequest">, RejectTopicRequestPayload>(
-    `/request/decline`,
-    payload
-  );
+type DeclineTopicRequestPayload = RequestVerdictDecline<"TOPIC">;
+const declineTopicRequest = (payload: DeclineTopicRequestPayload) => {
+  return api.post<
+    KlawApiResponse<"declineRequest">,
+    DeclineTopicRequestPayload
+  >(`/request/decline`, payload);
 };
 
 export {
@@ -152,5 +152,5 @@ export {
   requestTopic,
   getTopicRequestsForApprover,
   approveTopicRequest,
-  rejectTopicRequest,
+  declineTopicRequest,
 };

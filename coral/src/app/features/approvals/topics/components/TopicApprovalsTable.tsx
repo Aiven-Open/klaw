@@ -31,7 +31,7 @@ type TopicApprovalsTableProp = {
       topicId: number | null;
     }>
   >;
-  setRejectModal: Dispatch<
+  setDeclineModal: Dispatch<
     SetStateAction<{
       isOpen: boolean;
       topicId: number | null;
@@ -48,7 +48,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
   const {
     requests,
     setDetailsModal,
-    setRejectModal,
+    setDeclineModal,
     approveRequest,
     approveIsLoading,
   } = props;
@@ -154,8 +154,8 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
         if (requestStatus === "CREATED") {
           return (
             <GhostButton
-              onClick={() => setRejectModal({ isOpen: true, topicId: id })}
-              title={"Reject request"}
+              onClick={() => setDeclineModal({ isOpen: true, topicId: id })}
+              title={"Decline request"}
               aria-label={`Decline topic request for ${topicname}`}
               disabled={approveIsLoading}
             >

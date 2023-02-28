@@ -47,9 +47,9 @@ const approveAclRequest = (payload: ApproveAclRequestPayload) => {
   );
 };
 
-type RejectAclRequestPayload = RequestVerdictDecline<"ACL">;
-const declineAclRequest = (payload: RejectAclRequestPayload) => {
-  return api.post<KlawApiResponse<"declineRequest">, RejectAclRequestPayload>(
+type DeclineAclRequestPayload = RequestVerdictDecline<"ACL">;
+const declineAclRequest = (payload: DeclineAclRequestPayload) => {
+  return api.post<KlawApiResponse<"declineRequest">, DeclineAclRequestPayload>(
     `/request/decline`,
     payload
   );

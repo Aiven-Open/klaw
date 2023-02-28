@@ -5,7 +5,7 @@ import RequestDetailsModal from "src/app/features/approvals/components/RequestDe
 const baseProps = {
   onClose: jest.fn(),
   onApprove: jest.fn(),
-  onReject: jest.fn(),
+  onDecline: jest.fn(),
 };
 
 describe("RequestDetailsModal.test", () => {
@@ -37,8 +37,8 @@ describe("RequestDetailsModal.test", () => {
       expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
     });
 
-    it("renders enabled Reject request button", () => {
-      expect(screen.getByRole("button", { name: "Reject" })).toBeEnabled();
+    it("renders enabled Decline request button", () => {
+      expect(screen.getByRole("button", { name: "Decline" })).toBeEnabled();
     });
   });
 
@@ -68,8 +68,8 @@ describe("RequestDetailsModal.test", () => {
       expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
     });
 
-    it("renders disabled Reject request button", () => {
-      expect(screen.getByRole("button", { name: "Reject" })).toBeDisabled();
+    it("renders disabled Decline request button", () => {
+      expect(screen.getByRole("button", { name: "Decline" })).toBeDisabled();
     });
   });
 
@@ -101,8 +101,8 @@ describe("RequestDetailsModal.test", () => {
       expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
     });
 
-    it("renders disabled Reject request button", () => {
-      expect(screen.getByRole("button", { name: "Reject" })).toBeDisabled();
+    it("renders disabled Decline request button", () => {
+      expect(screen.getByRole("button", { name: "Decline" })).toBeDisabled();
     });
   });
 
@@ -132,15 +132,15 @@ describe("RequestDetailsModal.test", () => {
       expect(onApprove).toHaveBeenCalledTimes(1);
     });
 
-    it("user can reject", async () => {
-      const { onReject } = baseProps;
+    it("user can decline", async () => {
+      const { onDecline } = baseProps;
 
-      const rejectButton = screen.getByRole("button", {
-        name: "Reject",
+      const declineButton = screen.getByRole("button", {
+        name: "Decline",
       });
 
-      await userEvent.click(rejectButton);
-      expect(onReject).toHaveBeenCalledTimes(1);
+      await userEvent.click(declineButton);
+      expect(onDecline).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -447,12 +447,12 @@ describe("TopicApprovals", () => {
       const approveButton = within(modal).getByRole("button", {
         name: "Approve",
       });
-      const rejectButton = within(modal).getByRole("button", {
-        name: "Reject",
+      const declineButton = within(modal).getByRole("button", {
+        name: "Decline",
       });
 
       expect(approveButton).toBeDisabled();
-      expect(rejectButton).toBeDisabled();
+      expect(declineButton).toBeDisabled();
     });
 
     it("should render enabled actions in Details modal", async () => {
@@ -469,12 +469,12 @@ describe("TopicApprovals", () => {
       const approveButton = within(modal).getByRole("button", {
         name: "Approve",
       });
-      const rejectButton = within(modal).getByRole("button", {
-        name: "Reject",
+      const declineButton = within(modal).getByRole("button", {
+        name: "Decline",
       });
 
       expect(approveButton).toBeEnabled();
-      expect(rejectButton).toBeEnabled();
+      expect(declineButton).toBeEnabled();
     });
   });
 

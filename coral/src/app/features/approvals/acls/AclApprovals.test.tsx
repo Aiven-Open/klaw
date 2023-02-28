@@ -205,7 +205,7 @@ describe("AclApprovals", () => {
         screen.getByRole("button", { name: "Approve request" })
       );
       expect(createdRow).toContainElement(
-        screen.getByRole("button", { name: "Reject request" })
+        screen.getByRole("button", { name: "Decline request" })
       );
     });
 
@@ -216,7 +216,7 @@ describe("AclApprovals", () => {
         screen.getByRole("button", { name: "Approve request" })
       );
       expect(approvedRow).not.toContainElement(
-        screen.getByRole("button", { name: "Reject request" })
+        screen.getByRole("button", { name: "Decline request" })
       );
     });
   });
@@ -259,12 +259,12 @@ describe("AclApprovals", () => {
       const approveButton = within(modal).getByRole("button", {
         name: "Approve",
       });
-      const rejectButton = within(modal).getByRole("button", {
-        name: "Reject",
+      const declineButton = within(modal).getByRole("button", {
+        name: "Decline",
       });
 
       expect(approveButton).toBeDisabled();
-      expect(rejectButton).toBeDisabled();
+      expect(declineButton).toBeDisabled();
     });
 
     it("should render enabled actions in Details modal", async () => {
@@ -278,12 +278,12 @@ describe("AclApprovals", () => {
       const approveButton = within(modal).getByRole("button", {
         name: "Approve",
       });
-      const rejectButton = within(modal).getByRole("button", {
-        name: "Reject",
+      const declineButton = within(modal).getByRole("button", {
+        name: "Decline",
       });
 
       expect(approveButton).toBeEnabled();
-      expect(rejectButton).toBeEnabled();
+      expect(declineButton).toBeEnabled();
     });
   });
 
