@@ -64,12 +64,8 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
     },
     {
       type: "custom",
-      // @TODO PR open in DS to be able to
-      // add an "invisible" header name that
-      // is used as aria-label. That will also
-      // solve the duplicate key warning
-      //https://github.com/aiven/design-system/pull/950
       headerName: "Details",
+      headerInvisible: true,
       width: 30,
       UNSAFE_render: (row) => {
         return (
@@ -88,18 +84,15 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
     },
     {
       type: "custom",
-      // @TODO PR open in DS to be able to
-      // add an "invisible" header name that
-      // is used as aria-label. That will also
-      // solve the duplicate key warning
-      //https://github.com/aiven/design-system/pull/950
       headerName: "Approve",
+      headerInvisible: true,
       width: 30,
       UNSAFE_render: (row) => {
         return (
           <GhostButton
             onClick={() => alert("Approve")}
             aria-label={`Approve schema request for ${row.topicname}`}
+            title={`Approve schema request`}
             icon={tickCircle}
           />
         );
@@ -107,18 +100,15 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
     },
     {
       type: "custom",
-      // @TODO PR open in DS to be able to
-      // add an "invisible" header name that
-      // is used as aria-label. That will also
-      // solve the duplicate key warning
-      //https://github.com/aiven/design-system/pull/950
       headerName: "Decline",
+      headerInvisible: true,
       width: 30,
       UNSAFE_render: (row) => {
         return (
           <GhostButton
             onClick={() => alert("Decline")}
             aria-label={`Decline schema request for ${row.topicname}`}
+            title={`Decline schema request`}
             icon={deleteIcon}
           />
         );
