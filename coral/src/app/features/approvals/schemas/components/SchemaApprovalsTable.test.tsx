@@ -61,6 +61,10 @@ const mockedRequests: SchemaRequest[] = [
   },
 ];
 
+const createdRequests = mockedRequests.filter(
+  (request) => request.requestStatus === "CREATED"
+);
+
 const mockSetModals = jest.fn();
 const mockApproveRequest = jest.fn();
 
@@ -120,22 +124,22 @@ describe("SchemaApprovalsTable", () => {
       expect(buttons).toHaveLength(mockedRequests.length);
     });
 
-    it("shows an approve button for every row", () => {
+    it("shows an approve button for every row where request status is CREATED", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Approve schema request for /,
       });
 
-      expect(buttons).toHaveLength(mockedRequests.length);
+      expect(buttons).toHaveLength(createdRequests.length);
     });
 
-    it("shows an decline button for every row", () => {
+    it("shows an decline button for every row where request status is CREATED", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Decline schema request for /,
       });
 
-      expect(buttons).toHaveLength(mockedRequests.length);
+      expect(buttons).toHaveLength(createdRequests.length);
     });
 
     mockedRequests.forEach((request) => {
@@ -147,7 +151,9 @@ describe("SchemaApprovalsTable", () => {
 
         expect(button).toBeEnabled();
       });
+    });
 
+    createdRequests.forEach((request) => {
       it(`shows a button to approve schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
@@ -278,10 +284,15 @@ describe("SchemaApprovalsTable", () => {
   });
 
   describe("disables the approve and decline buttons dependent on props", () => {
+    const requestsWithStatusCreated = [
+      mockedRequests[0],
+      { ...mockedRequests[0], topicname: "Additional-topic" },
+    ];
+
     beforeAll(() => {
       render(
         <SchemaApprovalsTable
-          requests={mockedRequests}
+          requests={requestsWithStatusCreated}
           setModals={mockSetModals}
           onApprove={mockApproveRequest}
           quickActionLoading={true}
@@ -291,7 +302,7 @@ describe("SchemaApprovalsTable", () => {
 
     afterAll(cleanup);
 
-    mockedRequests.forEach((request) => {
+    requestsWithStatusCreated.forEach((request) => {
       it(`shows a button to approve schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
@@ -301,7 +312,7 @@ describe("SchemaApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`shows a button to approve schema request for topic name ${request.topicname}`, () => {
+      it(`shows a button to decline schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
           name: `Decline schema request for ${request.topicname}`,
