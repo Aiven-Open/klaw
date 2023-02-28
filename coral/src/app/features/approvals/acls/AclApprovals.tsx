@@ -1,6 +1,5 @@
 import {
   Alert,
-  ChipStatus,
   DataTable,
   DataTableColumn,
   Flexbox,
@@ -28,6 +27,11 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {
+  requestStatusChipStatusMap,
+  requestStatusNameMap,
+} from "src/app/features/approvals/utils/request-status-helper";
+import { RequestStatus } from "src/domain/requests";
 
 interface AclRequestTableRow {
   id: number;
@@ -40,7 +44,11 @@ interface AclRequestTableRow {
   aclType: AclRequest["aclType"];
   username: string;
   requesttimestring: string;
-  requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL" | "-";
+  // `requestStatus` is always defined from backend
+  // but api definition says it can be undefined
+  // the empty string is used to make ts compiler
+  // happy :D
+  requestStatus: RequestStatus | "";
 }
 
 const getRows = (entries: AclRequest[] | undefined): AclRequestTableRow[] => {
@@ -71,7 +79,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRow[] => {
       aclType,
       username: username ?? "-",
       requesttimestring: requesttimestring ?? "-",
-      requestStatus: requestStatus ?? "-",
+      requestStatus: requestStatus ?? "",
     })
   );
 };
@@ -270,19 +278,15 @@ function AclApprovals() {
       field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
-        const statusKind: {
-          [key in AclRequestTableRow["requestStatus"]]: ChipStatus;
-        } = {
-          CREATED: "info",
-          DELETED: "danger",
-          DECLINED: "warning",
-          APPROVED: "success",
-          ALL: "neutral",
-          "-": "neutral",
-        };
+        if (requestStatus === "") {
+          return {
+            status: "neutral",
+            text: "-",
+          };
+        }
         return {
-          status: statusKind[requestStatus],
-          text: requestStatus,
+          status: requestStatusChipStatusMap[requestStatus],
+          text: requestStatusNameMap[requestStatus],
         };
       },
     },

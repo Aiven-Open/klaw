@@ -1,20 +1,14 @@
-import { SearchInput } from "@aivenio/aquarium";
+import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { RequestStatus } from "src/domain/requests";
-import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
-import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
+import {
+  requestStatusNameMap,
+  statusList,
+} from "src/app/features/approvals/utils/request-status-helper";
 import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/components/SelectSchemaRegEnvironment";
 import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
-
-const statusList: RequestStatus[] = [
-  "ALL",
-  "CREATED",
-  "APPROVED",
-  "DECLINED",
-  "DELETED",
-];
 
 const useTableFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,11 +23,6 @@ const useTableFilters = () => {
   const [status, setStatus] = useState<RequestStatus>(statusParam ?? "CREATED");
   const [topic, setTopic] = useState(topicParam ?? "");
 
-  const statusOptions: Array<{ value: RequestStatus; name: string }> =
-    statusList.map((status) => {
-      return { value: status, name: requestStatusNameMap[status] };
-    });
-
   const filters = [
     <SelectSchemaRegEnvironment
       key={"filter-environment"}
@@ -44,20 +33,26 @@ const useTableFilters = () => {
         setEnvironment(envId);
       }}
     />,
-    <ComplexNativeSelect<{ value: RequestStatus; name: string }>
+    <NativeSelect
       labelText={"Filter by status"}
       key={"filter-status"}
       defaultValue={status}
-      options={statusOptions}
-      identifierValue={"value"}
-      identifierName={"name"}
-      onBlur={(option) => {
-        const { value } = option as { value: RequestStatus; name: string };
-        searchParams.set("status", value);
+      onChange={(e) => {
+        const status = e.target.value as RequestStatus;
+        searchParams.set("status", status);
         setSearchParams(searchParams);
-        setStatus(value);
+        setStatus(status);
       }}
-    />,
+    >
+      {statusList.map((status) => {
+        return (
+          <option key={status} value={status}>
+            {requestStatusNameMap[status]}
+          </option>
+        );
+      })}
+    </NativeSelect>,
+
     <div key={"search"}>
       <SearchInput
         type={"search"}

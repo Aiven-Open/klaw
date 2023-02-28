@@ -1,9 +1,19 @@
 import { RequestStatus } from "src/domain/requests";
 import { ChipStatus } from "@aivenio/aquarium";
 
-const requestStatusChipStatusMap: {
-  [key in RequestStatus]: ChipStatus;
-} = {
+// @TODO a nice improvement would be to
+// have a more typesafe / exhaustive list
+// here TS won't complain if a possible
+// value is missing from the array.
+const statusList: RequestStatus[] = [
+  "ALL",
+  "APPROVED",
+  "CREATED",
+  "DECLINED",
+  "DELETED",
+];
+
+const requestStatusChipStatusMap: { [key in RequestStatus]: ChipStatus } = {
   ALL: "neutral",
   APPROVED: "success",
   CREATED: "info",
@@ -21,4 +31,4 @@ const requestStatusNameMap: {
   DELETED: "Deleted",
 };
 
-export { requestStatusNameMap, requestStatusChipStatusMap };
+export { requestStatusNameMap, requestStatusChipStatusMap, statusList };

@@ -6,14 +6,10 @@ import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests";
 import { TopicRequest } from "src/domain/topic/topic-types";
-
-const statusList: RequestStatus[] = [
-  "ALL",
-  "CREATED",
-  "APPROVED",
-  "DECLINED",
-  "DELETED",
-];
+import {
+  requestStatusNameMap,
+  statusList,
+} from "src/app/features/approvals/utils/request-status-helper";
 
 const useTableFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,14 +38,11 @@ const useTableFilters = () => {
       }}
     >
       {statusList.map((status) => {
-        if (status === "ALL") {
-          return (
-            <option key={status} value={"ALL"}>
-              All statuses
-            </option>
-          );
-        }
-        return <option key={status}>{status}</option>;
+        return (
+          <option key={status} value={status}>
+            {requestStatusNameMap[status]}
+          </option>
+        );
       })}
     </NativeSelect>,
     <SelectTeam key={"team"} onChange={setTeam} />,
