@@ -300,30 +300,30 @@ function AclApprovals() {
       },
     },
     {
-      // Not having a headerName triggers React error:
-      // Warning: Encountered two children with the same key, ``.
-      headerName: "",
+      headerName: "Details",
+      headerInvisible: true,
       type: "custom",
-      UNSAFE_render: ({ id }: AclRequestTableRow) => {
+      UNSAFE_render: ({ id, topicname }: AclRequestTableRow) => {
         return (
           <GhostButton
             icon={infoSign}
             onClick={() => setDetailsModal({ isOpen: true, reqNo: String(id) })}
-            title={"View request details"}
             dense
           >
-            View details
+            <span aria-hidden={"true"}>View details</span>
+            <span className={"visually-hidden"}>
+              View topic request for {topicname}
+            </span>
           </GhostButton>
         );
       },
     },
     {
       width: 30,
-      // Not having a headerName triggers React error:
-      // Warning: Encountered two children with the same key, ``.
-      headerName: "",
+      headerName: "Approve",
+      headerInvisible: true,
       type: "custom",
-      UNSAFE_render: ({ id, requestStatus }: AclRequestTableRow) => {
+      UNSAFE_render: ({ id, requestStatus, topicname }: AclRequestTableRow) => {
         const [isLoading, setIsLoading] = useState(false);
         if (requestStatus === "CREATED") {
           return (
@@ -335,7 +335,8 @@ function AclApprovals() {
                   reqIds: [String(id)],
                 });
               }}
-              title={"Approve request"}
+              title={"Approve acl request"}
+              aria-label={`Approve schema request for ${topicname}`}
             >
               {isLoading && approveIsLoading ? (
                 <Icon color="grey-70" icon={loadingIcon} />
@@ -349,18 +350,18 @@ function AclApprovals() {
     },
     {
       width: 30,
-      // Not having a headerName triggers React error:
-      // Warning: Encountered two children with the same key, ``.
-      headerName: "",
+      headerName: "Decline",
+      headerInvisible: true,
       type: "custom",
-      UNSAFE_render: ({ id, requestStatus }: AclRequestTableRow) => {
+      UNSAFE_render: ({ id, requestStatus, topicname }: AclRequestTableRow) => {
         if (requestStatus === "CREATED") {
           return (
             <GhostButton
               onClick={() =>
                 setDeclineModal({ isOpen: true, reqNo: String(id) })
               }
-              title={"Decline request"}
+              title={`Decline acl request`}
+              aria-label={`Decline topic request for ${topicname}`}
               disabled={approveIsLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />

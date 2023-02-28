@@ -202,10 +202,10 @@ describe("AclApprovals", () => {
       const createdRow = screen.getAllByRole("row")[1];
 
       expect(createdRow).toContainElement(
-        screen.getByRole("button", { name: "Approve request" })
+        screen.getByRole("button", { name: /Approve/ })
       );
       expect(createdRow).toContainElement(
-        screen.getByRole("button", { name: "Decline request" })
+        screen.getByRole("button", { name: /Decline/ })
       );
     });
 
@@ -213,10 +213,10 @@ describe("AclApprovals", () => {
       const approvedRow = screen.getAllByRole("row")[2];
 
       expect(approvedRow).not.toContainElement(
-        screen.getByRole("button", { name: "Approve request" })
+        screen.getByRole("button", { name: /Approve/ })
       );
       expect(approvedRow).not.toContainElement(
-        screen.getByRole("button", { name: "Decline request" })
+        screen.getByRole("button", { name: /Decline/ })
       );
     });
   });
@@ -253,7 +253,9 @@ describe("AclApprovals", () => {
     it("should render disabled actions in Details modal", async () => {
       const approvedRow = screen.getAllByRole("row")[2];
       await userEvent.click(
-        within(approvedRow).getByRole("button", { name: "View details" })
+        within(approvedRow).getByRole("button", {
+          name: /View topic request for/,
+        })
       );
       const modal = screen.getByRole("dialog");
       const approveButton = within(modal).getByRole("button", {
@@ -271,7 +273,9 @@ describe("AclApprovals", () => {
       const createdRow = screen.getAllByRole("row")[1];
 
       await userEvent.click(
-        within(createdRow).getByRole("button", { name: "View details" })
+        within(createdRow).getByRole("button", {
+          name: /View topic request for/,
+        })
       );
 
       const modal = screen.getByRole("dialog");

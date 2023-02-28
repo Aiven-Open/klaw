@@ -77,12 +77,8 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
     },
     {
       type: "custom",
-      // @TODO PR open in DS to be able to
-      // add an "invisible" header name that
-      // is used as aria-label. That will also
-      // solve the duplicate key warning
-      //https://github.com/aiven/design-system/pull/950
-      headerName: "",
+      headerName: "Details",
+      headerInvisible: true,
       width: 30,
       UNSAFE_render: ({ id, topicname }: TopicRequestTableRow) => {
         return (
@@ -101,12 +97,8 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
     },
     {
       type: "custom",
-      // @TODO PR open in DS to be able to
-      // add an "invisible" header name that
-      // is used as aria-label. That will also
-      // solve the duplicate key warning
-      //https://github.com/aiven/design-system/pull/950
-      headerName: "",
+      headerName: "Approve",
+      headerInvisible: true,
       width: 30,
       UNSAFE_render: ({
         topicname,
@@ -124,7 +116,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
                   reqIds: [String(id)],
                 });
               }}
-              title={`Approve topic request for ${topicname}`}
+              title={`Approve topic request`}
               aria-label={`Approve topic request for ${topicname}`}
             >
               {isLoading && approveIsLoading ? (
@@ -139,12 +131,8 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
     },
     {
       type: "custom",
-      // @TODO PR open in DS to be able to
-      // add an "invisible" header name that
-      // is used as aria-label. That will also
-      // solve the duplicate key warning
-      //https://github.com/aiven/design-system/pull/950
-      headerName: "",
+      headerName: "Decline",
+      headerInvisible: true,
       width: 30,
       UNSAFE_render: ({
         id,
@@ -155,7 +143,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
           return (
             <GhostButton
               onClick={() => setDeclineModal({ isOpen: true, topicId: id })}
-              title={"Decline request"}
+              title={`Decline topic request`}
               aria-label={`Decline topic request for ${topicname}`}
               disabled={approveIsLoading}
             >
