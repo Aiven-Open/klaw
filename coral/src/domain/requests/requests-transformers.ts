@@ -32,12 +32,15 @@ const getRequestsWaitingForApprovalTransformer = (
       return;
     }
 
-    requestsWaitingForApproval = {
-      ...requestsWaitingForApproval,
-      [requestEntityType]: requestStatusCountSet.find(
+    const amountOfRequestsForEntity =
+      requestStatusCountSet.find(
         (requestStatusCountSet) =>
           requestStatusCountSet.requestStatus === "CREATED"
-      )?.count,
+      )?.count || 0;
+
+    requestsWaitingForApproval = {
+      ...requestsWaitingForApproval,
+      [requestEntityType]: amountOfRequestsForEntity,
     };
   });
 
