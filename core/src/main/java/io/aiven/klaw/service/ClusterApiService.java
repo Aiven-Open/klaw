@@ -660,9 +660,12 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     ResponseEntity<ApiResponse> response;
     try {
+      boolean forceReg =
+          schemaRequest.getForceRegister() == null ? false : schemaRequest.getForceRegister();
       String uri = clusterConnUrl + URI_POST_SCHEMA;
 
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
+      log.info("forceRegister set to : {}", forceReg);
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
@@ -674,7 +677,7 @@ public class ClusterApiService {
               .topicName(topicName)
               .fullSchema(schemaRequest.getSchemafull())
               .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
-              .forceRegister(schemaRequest.isForceRegister())
+              .forceRegister(forceReg)
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);

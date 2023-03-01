@@ -46,7 +46,7 @@ public class SchemaRequestModel implements Serializable {
 
   private RequestOperationType requestOperationType;
 
-  private boolean forceRegister;
+  private Boolean forceRegister;
 
   private String approver;
 

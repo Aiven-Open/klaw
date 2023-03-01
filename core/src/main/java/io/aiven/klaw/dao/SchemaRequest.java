@@ -72,5 +72,5 @@ public class SchemaRequest implements Serializable {
   private Timestamp approvingtime;
 
   @Column(name = "forceregister")
-  private boolean forceRegister;
+  private Boolean forceRegister;
 }
