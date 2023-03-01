@@ -165,14 +165,15 @@ public class UpdateDataJdbc {
     topicObj.setHistory(topicRequest.getHistory());
     topics.add(topicObj);
 
-    // Both create and promote operations create new topic entries in the administration DB.
-    if (topicRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)
-        || topicRequest.getRequestOperationType().equals(RequestOperationType.PROMOTE.value)) {
-      insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
-    } else if (topicRequest.getRequestOperationType().equals(RequestOperationType.UPDATE.value)) {
-      updateTopicSOT(topics, topicRequest.getOtherParams());
-    } else if (topicRequest.getRequestOperationType().equals(RequestOperationType.DELETE.value)) {
-      deleteDataJdbcHelper.deleteTopics(topicObj);
+    final RequestOperationType requestOperationType =
+        RequestOperationType.of(topicRequest.getRequestOperationType());
+    if (requestOperationType == null) {
+      return ApiResultStatus.SUCCESS.value;
+    }
+    switch (requestOperationType) {
+      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
+      case UPDATE -> updateTopicSOT(topics, topicRequest.getOtherParams());
+      case DELETE -> deleteDataJdbcHelper.deleteTopics(topicObj);
     }
 
     return ApiResultStatus.SUCCESS.value;

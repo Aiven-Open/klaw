@@ -104,7 +104,7 @@ public class UpdateDataJdbcTest {
     int reqNum = 1001;
     when(insertDataJdbcHelper.insertIntoTopicSOT(any(), anyBoolean()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum++);
+    when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setRequestOperationType(requestOperationType);
     String result = updateData.updateTopicRequest(req, "uiuser2");
