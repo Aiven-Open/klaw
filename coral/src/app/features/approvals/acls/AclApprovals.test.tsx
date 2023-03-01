@@ -111,7 +111,15 @@ describe("AclApprovals", () => {
   });
 
   describe("shows loading or error state for fetching acls requests", () => {
-    afterEach(cleanup);
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      console.error = jest.fn();
+      mockGetEnvironments.mockResolvedValue([]);
+    });
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+    });
 
     it("shows a skeleton table while loading", () => {
       mockGetAclRequestsForApprover.mockResolvedValue(
@@ -124,6 +132,7 @@ describe("AclApprovals", () => {
       const skeleton = screen.getByTestId("skeleton-table");
 
       expect(skeleton).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows an error message when an error occurs", async () => {
@@ -145,16 +154,19 @@ describe("AclApprovals", () => {
       );
 
       expect(error).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith(
+        "Unexpected error. Please try again later!"
+      );
     });
   });
 
   describe("DataTable", () => {
     beforeAll(async () => {
+      mockGetEnvironments.mockResolvedValue([]);
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
+
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -223,6 +235,7 @@ describe("AclApprovals", () => {
 
   describe("handles paginated data", () => {
     beforeAll(async () => {
+      mockGetEnvironments.mockResolvedValue([]);
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );

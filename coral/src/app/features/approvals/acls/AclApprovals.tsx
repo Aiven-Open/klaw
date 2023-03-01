@@ -334,13 +334,14 @@ function AclApprovals() {
             <GhostButton
               onClick={() => {
                 setIsLoading(true);
-                return approveRequest({
+                approveRequest({
                   requestEntityType: "ACL",
                   reqIds: [String(id)],
                 });
               }}
               title={"Approve acl request"}
               aria-label={`Approve schema request for ${topicname}`}
+              disabled={approveIsLoading || declineIsLoading}
             >
               {isLoading && approveIsLoading ? (
                 <Icon color="grey-70" icon={loadingIcon} />
@@ -366,7 +367,7 @@ function AclApprovals() {
               }
               title={`Decline acl request`}
               aria-label={`Decline topic request for ${topicname}`}
-              disabled={approveIsLoading}
+              disabled={approveIsLoading || declineIsLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />
             </GhostButton>
@@ -404,8 +405,12 @@ function AclApprovals() {
             setDetailsModal({ isOpen: false, reqNo: "" });
             setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
           }}
-          isLoading={approveIsLoading}
-          disabledActions={selectedRequest?.requestStatus !== "CREATED"}
+          isLoading={approveIsLoading || declineIsLoading}
+          disabledActions={
+            selectedRequest?.requestStatus !== "CREATED" ||
+            approveIsLoading ||
+            declineIsLoading
+          }
         >
           <DetailsModalContent aclRequest={selectedRequest} />
         </RequestDetailsModal>
