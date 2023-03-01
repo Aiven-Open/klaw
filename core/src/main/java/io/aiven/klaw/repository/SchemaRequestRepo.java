@@ -49,4 +49,16 @@ public interface SchemaRequestRepo
       nativeQuery = true)
   List<Object[]> findAllSchemaRequestsGroupByStatus(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select count(*) from kwschemarequests where tenantid = :tenantId"
+              + " and teamid = :teamId and requestor != :requestor "
+              + " and topicstatus = :topicStatus group by topicstatus",
+      nativeQuery = true)
+  Long countRequestorsSchemaRequestsGroupForStatusType(
+      @Param("teamId") Integer teamId,
+      @Param("tenantId") Integer tenantId,
+      @Param("requestor") String requestor,
+      @Param("topicStatus") String topicStatus);
 }

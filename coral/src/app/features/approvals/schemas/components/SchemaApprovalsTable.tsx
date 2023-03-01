@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, GhostButton } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  GhostButton,
+  Icon,
+} from "@aivenio/aquarium";
 import { SchemaRequest } from "src/domain/schema-request";
 import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
@@ -7,7 +12,8 @@ import {
   requestStatusChipStatusMap,
   requestStatusNameMap,
 } from "src/app/features/approvals/utils/request-status-helper";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import loadingIcon from "@aivenio/aquarium/icons/loading";
 
 interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
@@ -20,15 +26,18 @@ interface SchemaRequestTableData {
 
 type SchemaApprovalsTableProps = {
   requests: SchemaRequest[];
-  setDetailsModal: Dispatch<
+  setModals: Dispatch<
     SetStateAction<{
-      isOpen: boolean;
+      open: "DETAILS" | "DECLINE" | "NONE";
       req_no: number | null;
     }>
   >;
+  quickActionLoading: boolean;
+  onApprove: (req_no: number) => void;
 };
+
 function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
-  const { requests, setDetailsModal } = props;
+  const { requests, setModals, quickActionLoading, onApprove } = props;
   const columns: Array<DataTableColumn<SchemaRequestTableData>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
     {
@@ -67,16 +76,17 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Details",
       headerInvisible: true,
       width: 30,
-      UNSAFE_render: (row) => {
+      UNSAFE_render: (request) => {
         return (
           <GhostButton
-            onClick={() => setDetailsModal({ isOpen: true, req_no: row.id })}
+            onClick={() => setModals({ open: "DETAILS", req_no: request.id })}
             icon={infoSign}
             dense
+            disabled={quickActionLoading}
           >
             <span aria-hidden={"true"}>View details</span>
             <span className={"visually-hidden"}>
-              View schema request for {row.topicname}
+              View schema request for {request.topicname}
             </span>
           </GhostButton>
         );
@@ -87,15 +97,27 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Approve",
       headerInvisible: true,
       width: 30,
-      UNSAFE_render: (row) => {
-        return (
-          <GhostButton
-            onClick={() => alert("Approve")}
-            aria-label={`Approve schema request for ${row.topicname}`}
-            title={`Approve schema request`}
-            icon={tickCircle}
-          />
-        );
+      UNSAFE_render: (request) => {
+        if (request.requestStatus === "CREATED") {
+          const [isLoading, setIsLoading] = useState(false);
+          return (
+            <GhostButton
+              onClick={() => {
+                setIsLoading(true);
+                onApprove(request.id);
+              }}
+              title={"Approve request"}
+              aria-label={`Approve schema request for ${request.topicname}`}
+              disabled={quickActionLoading}
+            >
+              {isLoading && quickActionLoading ? (
+                <Icon color="grey-70" icon={loadingIcon} />
+              ) : (
+                <Icon color="grey-70" icon={tickCircle} />
+              )}
+            </GhostButton>
+          );
+        }
       },
     },
     {
@@ -103,15 +125,19 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       headerName: "Decline",
       headerInvisible: true,
       width: 30,
-      UNSAFE_render: (row) => {
-        return (
-          <GhostButton
-            onClick={() => alert("Decline")}
-            aria-label={`Decline schema request for ${row.topicname}`}
-            title={`Decline schema request`}
-            icon={deleteIcon}
-          />
-        );
+      UNSAFE_render: (request) => {
+        if (request.requestStatus === "CREATED") {
+          return (
+            <GhostButton
+              onClick={() => setModals({ open: "DECLINE", req_no: request.id })}
+              aria-label={`Decline schema request for ${request.topicname}`}
+              title={"Decline request"}
+              disabled={quickActionLoading}
+            >
+              <Icon color="grey-70" icon={deleteIcon} />
+            </GhostButton>
+          );
+        }
       },
     },
   ];

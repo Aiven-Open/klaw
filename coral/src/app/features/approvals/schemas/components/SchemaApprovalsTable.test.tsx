@@ -61,7 +61,12 @@ const mockedRequests: SchemaRequest[] = [
   },
 ];
 
-const mockSetDetailsModal = jest.fn();
+const createdRequests = mockedRequests.filter(
+  (request) => request.requestStatus === "CREATED"
+);
+
+const mockSetModals = jest.fn();
+const mockApproveRequest = jest.fn();
 
 describe("SchemaApprovalsTable", () => {
   beforeAll(mockIntersectionObserver);
@@ -82,7 +87,9 @@ describe("SchemaApprovalsTable", () => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
-          setDetailsModal={mockSetDetailsModal}
+          setModals={mockSetModals}
+          onApprove={mockApproveRequest}
+          quickActionLoading={false}
         />
       );
     });
@@ -117,22 +124,22 @@ describe("SchemaApprovalsTable", () => {
       expect(buttons).toHaveLength(mockedRequests.length);
     });
 
-    it("shows an approve button for every row", () => {
+    it("shows an approve button for every row where request status is CREATED", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Approve schema request for /,
       });
 
-      expect(buttons).toHaveLength(mockedRequests.length);
+      expect(buttons).toHaveLength(createdRequests.length);
     });
 
-    it("shows an decline button for every row", () => {
+    it("shows an decline button for every row where request status is CREATED", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Decline schema request for /,
       });
 
-      expect(buttons).toHaveLength(mockedRequests.length);
+      expect(buttons).toHaveLength(createdRequests.length);
     });
 
     mockedRequests.forEach((request) => {
@@ -144,7 +151,9 @@ describe("SchemaApprovalsTable", () => {
 
         expect(button).toBeEnabled();
       });
+    });
 
+    createdRequests.forEach((request) => {
       it(`shows a button to approve schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
@@ -170,7 +179,9 @@ describe("SchemaApprovalsTable", () => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
-          setDetailsModal={mockSetDetailsModal}
+          setModals={mockSetModals}
+          onApprove={mockApproveRequest}
+          quickActionLoading={false}
         />
       );
     });
@@ -232,7 +243,9 @@ describe("SchemaApprovalsTable", () => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
-          setDetailsModal={mockSetDetailsModal}
+          setModals={mockSetModals}
+          onApprove={mockApproveRequest}
+          quickActionLoading={false}
         />
       );
     });
@@ -248,8 +261,8 @@ describe("SchemaApprovalsTable", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetDetailsModal).toHaveBeenCalledWith({
-        isOpen: true,
+      expect(mockSetModals).toHaveBeenCalledWith({
+        open: "DETAILS",
         req_no: mockedRequests[0].req_no,
       });
     });
@@ -263,10 +276,79 @@ describe("SchemaApprovalsTable", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetDetailsModal).toHaveBeenCalledWith({
-        isOpen: true,
+      expect(mockSetModals).toHaveBeenCalledWith({
+        open: "DETAILS",
         req_no: mockedRequests[mockedRequests.length - 1].req_no,
       });
+    });
+  });
+
+  describe("disables the approve and decline buttons dependent on props", () => {
+    const requestsWithStatusCreated = [
+      mockedRequests[0],
+      { ...mockedRequests[0], topicname: "Additional-topic" },
+    ];
+
+    beforeAll(() => {
+      render(
+        <SchemaApprovalsTable
+          requests={requestsWithStatusCreated}
+          setModals={mockSetModals}
+          onApprove={mockApproveRequest}
+          quickActionLoading={true}
+        />
+      );
+    });
+
+    afterAll(cleanup);
+
+    requestsWithStatusCreated.forEach((request) => {
+      it(`shows a button to approve schema request for topic name ${request.topicname}`, () => {
+        const table = screen.getByRole("table", { name: "Schema requests" });
+        const button = within(table).getByRole("button", {
+          name: `Approve schema request for ${request.topicname}`,
+        });
+
+        expect(button).toBeDisabled();
+      });
+
+      it(`shows a button to decline schema request for topic name ${request.topicname}`, () => {
+        const table = screen.getByRole("table", { name: "Schema requests" });
+        const button = within(table).getByRole("button", {
+          name: `Decline schema request for ${request.topicname}`,
+        });
+
+        expect(button).toBeDisabled();
+      });
+    });
+  });
+
+  describe("triggers approval of a request when user clicks button", () => {
+    const testRequest = mockedRequests[0];
+    beforeEach(() => {
+      render(
+        <SchemaApprovalsTable
+          requests={mockedRequests}
+          setModals={mockSetModals}
+          onApprove={mockApproveRequest}
+          quickActionLoading={false}
+        />
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("triggers the approval of a request when user clicks button", async () => {
+      const button = screen.getByRole("button", {
+        name: `Approve schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(button);
+
+      expect(mockApproveRequest).toHaveBeenCalledWith(testRequest.req_no);
     });
   });
 });

@@ -71,16 +71,16 @@ public interface HandleDbRequests {
       String requestor, String status, String env, boolean isMyRequest, int tenantId);
 
   Map<String, Map<String, Long>> getTopicRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor);
 
   Map<String, Map<String, Long>> getAclRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor);
 
   Map<String, Map<String, Long>> getSchemaRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor);
 
   Map<String, Map<String, Long>> getConnectorRequestsCounts(
-      int teamId, RequestMode requestMode, int tenantId);
+      int teamId, RequestMode requestMode, int tenantId, String requestor);
 
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);

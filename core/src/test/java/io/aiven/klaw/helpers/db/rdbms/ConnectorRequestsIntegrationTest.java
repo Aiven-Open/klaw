@@ -112,7 +112,7 @@ public class ConnectorRequestsIntegrationTest {
   @Order(1)
   public void getConnectorRequestsCountsForMyRequestsTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getConnectorRequestsCounts(101, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getConnectorRequestsCounts(101, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -129,7 +129,7 @@ public class ConnectorRequestsIntegrationTest {
   @Order(2)
   public void getConnectorRequestsCountsForApproveForTeam1() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getConnectorRequestsCounts(101, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getConnectorRequestsCounts(101, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -146,7 +146,7 @@ public class ConnectorRequestsIntegrationTest {
   @Order(3)
   public void getConnectorRequestsCountsForApproveForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getConnectorRequestsCounts(103, RequestMode.TO_APPROVE, 101);
+        selectDataJdbc.getConnectorRequestsCounts(103, RequestMode.TO_APPROVE, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
@@ -163,7 +163,7 @@ public class ConnectorRequestsIntegrationTest {
   @Order(3)
   public void getConnectorRequestsCountsForMyRequestsForTeam2() {
     Map<String, Map<String, Long>> results =
-        selectDataJdbc.getConnectorRequestsCounts(103, RequestMode.MY_REQUESTS, 101);
+        selectDataJdbc.getConnectorRequestsCounts(103, RequestMode.MY_REQUESTS, 101, "James");
 
     Map<String, Long> statsCount = results.get("STATUS_COUNTS");
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
