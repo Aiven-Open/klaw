@@ -1935,7 +1935,7 @@
           "required" : true,
           "schema" : {
             "type" : "string",
-            "enum" : [ "TO_APPROVE", "MY_REQUESTS" ]
+            "enum" : [ "TO_APPROVE", "MY_APPROVALS", "MY_REQUESTS" ]
           }
         } ],
         "responses" : {

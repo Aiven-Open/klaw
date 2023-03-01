@@ -1,19 +1,17 @@
 import { Box, Divider } from "@aivenio/aquarium";
-import database from "@aivenio/aquarium/dist/src/icons/database";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
-import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
-import people from "@aivenio/aquarium/dist/src/icons/people";
-import list from "@aivenio/aquarium/dist/src/icons/list";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
+import database from "@aivenio/aquarium/dist/src/icons/database";
+import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
+import list from "@aivenio/aquarium/dist/src/icons/list";
+import people from "@aivenio/aquarium/dist/src/icons/people";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
+import { useLocation } from "react-router-dom";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
-import useFeatureFlag, { FeatureFlag } from "src/app/hooks/useFeatureFlag";
-import { useLocation } from "react-router-dom";
 import { Routes } from "src/app/router_utils";
 
 function MainNavigation() {
-  const approvalsEnabled = useFeatureFlag(FeatureFlag.APPROVALS);
   const { pathname } = useLocation();
 
   return (
@@ -49,7 +47,7 @@ function MainNavigation() {
             />
             <MainNavigationLink
               to={`/myTopicRequests`}
-              linkText={"My Team's Requests"}
+              linkText={"My team's requests"}
             />
           </MainNavigationSubmenuList>
         </li>
@@ -64,38 +62,30 @@ function MainNavigation() {
             />
             <MainNavigationLink
               to={`/execConnectors`}
-              linkText={"Connector Requests"}
+              linkText={"Connector requests"}
             />
           </MainNavigationSubmenuList>
         </li>
         <li>
-          <MainNavigationSubmenuList icon={people} text={"Users and Teams"}>
+          <MainNavigationSubmenuList icon={people} text={"Users and teams"}>
             <MainNavigationLink to={`/users`} linkText={"Users"} />
             <MainNavigationLink to={`/teams`} linkText={"Teams"} />
-            <MainNavigationLink to={`/execUsers`} linkText={"User Requests"} />
+            <MainNavigationLink to={`/execUsers`} linkText={"User requests"} />
           </MainNavigationSubmenuList>
         </li>
         <li>
-          {approvalsEnabled ? (
-            <MainNavigationLink
-              icon={tickCircle}
-              to={Routes.APPROVALS}
-              linkText={"Approval Requests"}
-              active={pathname.startsWith(Routes.APPROVALS)}
-            />
-          ) : (
-            <MainNavigationLink
-              icon={tickCircle}
-              to={`/execTopics`}
-              linkText={"Approval Requests"}
-            />
-          )}
+          <MainNavigationLink
+            icon={tickCircle}
+            to={Routes.APPROVALS}
+            linkText={"Approve requests"}
+            active={pathname.startsWith(Routes.APPROVALS)}
+          />
         </li>
         <li>
           <MainNavigationLink
             icon={list}
             to={`/activityLog`}
-            linkText={"Audit Log"}
+            linkText={"Audit log"}
           />
         </li>
         <li>

@@ -1,13 +1,13 @@
-import Layout from "src/app/layout/Layout";
-import { PageHeader, Typography } from "@aivenio/aquarium";
+import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
+import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
+import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
+import Layout from "src/app/layout/Layout";
 import {
   ApprovalsTabEnum,
   APPROVALS_TAB_ID_INTO_PATH,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
-import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
-import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 
 const ApprovalsPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,7 +19,6 @@ const ApprovalsPage = () => {
   return (
     <AuthenticationRequiredBoundary>
       <Layout>
-        <Typography.Caption>Approve requests</Typography.Caption>
         <PageHeader title={"Approve requests"} />
         <ApprovalResourceTabs currentTab={currentTab} />
       </Layout>

@@ -3,24 +3,35 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import { getSchemaRequestsForApprover } from "src/domain/schema-request";
 import { useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import useTableFilters from "src/app/features/approvals/schemas/hooks/useTableFilters";
 import { useState } from "react";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
+import {
+  approveSchemaRequest,
+  declineSchemaRequest,
+} from "src/domain/schema-request/schema-request-api";
+import { parseErrorMsg } from "src/services/mutation-utils";
+import { Alert } from "@aivenio/aquarium";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 
 function SchemaApprovals() {
+  const queryClient = useQueryClient();
+
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic, filters } = useTableFilters();
-
-  const [detailsModal, setDetailsModal] = useState<{
-    isOpen: boolean;
+  const [modals, setModals] = useState<{
+    open: "DETAILS" | "DECLINE" | "NONE";
     req_no: number | null;
-  }>({ isOpen: false, req_no: null });
+  }>({ open: "NONE", req_no: null });
+
+  const [errorQuickActions, setErrorQuickActions] = useState("");
+
+  const { environment, status, topic, filters } = useTableFilters();
 
   const {
     data: schemaRequests,
@@ -42,18 +53,112 @@ function SchemaApprovals() {
         env: environment,
         topic,
       }),
+    onSuccess: (newSchemaRequests) => {
+      // If through filtering a user finds themselves on a non existent page, reset page to 1
+      // For example:
+      // - one request returns 4 pages of results
+      // - navigate to page 4
+      // - change filters, to a request that returns 1 page of results
+      // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
+      if (
+        newSchemaRequests.entries.length === 0 &&
+        schemaRequests?.currentPage !== 1
+      ) {
+        setCurrentPage(1);
+      }
+    },
     keepPreviousData: true,
   });
+
+  const { mutate: declineRequest, isLoading: declineRequestIsLoading } =
+    useMutation(declineSchemaRequest, {
+      onSuccess: (responses) => {
+        // @TODO follow up ticket #707
+        // (for all approval tables)
+        const response = responses[0];
+        if (response.result !== "success") {
+          setErrorQuickActions(
+            response.message || response.result || "Unexpected error"
+          );
+        } else {
+          setErrorQuickActions("");
+          // If declined request is last in the page, go back to previous page
+          // This avoids staying on a non-existent page of entries, which makes the table bug hard
+          // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+          // We also do not need to invalidate the query, as the activePage does not exist any more
+          // And there is no need to update anything on it
+          if (
+            schemaRequests?.entries.length === 1 &&
+            schemaRequests?.currentPage > 1
+          ) {
+            return setCurrentPage(schemaRequests?.currentPage - 1);
+          }
+
+          // We need to refetch all aclrequests queries to keep Table state in sync
+          queryClient.refetchQueries(["schemaRequestsForApprover"]);
+        }
+      },
+      onError(error: Error) {
+        setErrorQuickActions(parseErrorMsg(error));
+      },
+      onSettled() {
+        closeModal();
+      },
+    });
+
+  const { mutate: approveRequest, isLoading: approveRequestIsLoading } =
+    useMutation(approveSchemaRequest, {
+      onSuccess: (responses) => {
+        // @TODO follow up ticket #707
+        // (for all approval tables)
+        const response = responses[0];
+        if (response.result !== "success") {
+          setErrorQuickActions(
+            response.message || response.result || "Unexpected error"
+          );
+        } else {
+          setErrorQuickActions("");
+          // If declined request is last in the page, go back to previous page
+          // This avoids staying on a non-existent page of entries, which makes the table bug hard
+          // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+          // We also do not need to invalidate the query, as the activePage does not exist any more
+          // And there is no need to update anything on it
+          if (
+            schemaRequests?.entries.length === 1 &&
+            schemaRequests?.currentPage > 1
+          ) {
+            return setCurrentPage(schemaRequests?.currentPage - 1);
+          }
+
+          // We need to refetch all aclrequests queries to keep Table state in sync
+          queryClient.refetchQueries(["schemaRequestsForApprover"]);
+        }
+      },
+      onError(error: Error) {
+        setErrorQuickActions(parseErrorMsg(error));
+      },
+      onSettled() {
+        closeModal();
+      },
+    });
 
   const setCurrentPage = (page: number) => {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   };
 
+  function closeModal() {
+    setModals({ open: "NONE", req_no: null });
+  }
+
   const table = (
     <SchemaApprovalsTable
       requests={schemaRequests?.entries || []}
-      setDetailsModal={setDetailsModal}
+      setModals={setModals}
+      quickActionLoading={approveRequestIsLoading || declineRequestIsLoading}
+      onApprove={(req_no) => {
+        approveRequest({ reqIds: [req_no.toString()] });
+      }}
     />
   );
   const pagination =
@@ -65,34 +170,49 @@ function SchemaApprovals() {
       />
     ) : undefined;
 
-  function approveRequest(req_no: number | null) {
-    console.log("approve", req_no);
-  }
-
-  function declineRequest(req_no: number | null) {
-    console.log("approve", req_no);
-  }
-
   return (
     <>
-      {detailsModal.isOpen && (
+      {modals.open === "DETAILS" && (
         <RequestDetailsModal
-          onClose={() => setDetailsModal({ isOpen: false, req_no: null })}
+          onClose={closeModal}
           onApprove={() => {
-            approveRequest(detailsModal.req_no);
+            if (modals.req_no === null) {
+              throw Error("req_no can't be null");
+            }
+            approveRequest({ reqIds: [modals.req_no.toString()] });
           }}
           onDecline={() => {
-            setDetailsModal({ isOpen: false, req_no: null });
-            declineRequest(detailsModal.req_no);
+            setModals({ ...modals, open: "DECLINE" });
           }}
-          isLoading={false}
+          isLoading={declineRequestIsLoading || approveRequestIsLoading}
         >
           <SchemaRequestDetails
             request={schemaRequests?.entries.find(
-              (request) => request.req_no === detailsModal.req_no
+              (request) => request.req_no === modals.req_no
             )}
           />
         </RequestDetailsModal>
+      )}
+      {modals.open === "DECLINE" && (
+        <RequestDeclineModal
+          onClose={() => closeModal()}
+          onCancel={() => closeModal()}
+          onSubmit={(message: string) => {
+            if (modals.req_no === null) {
+              throw Error("req_no can't be null");
+            }
+            declineRequest({
+              reason: message,
+              reqIds: [modals.req_no.toString()],
+            });
+          }}
+          isLoading={declineRequestIsLoading || approveRequestIsLoading}
+        />
+      )}
+      {errorQuickActions && (
+        <div role="alert">
+          <Alert type="warning">{errorQuickActions}</Alert>
+        </div>
       )}
       <ApprovalsLayout
         filters={filters}

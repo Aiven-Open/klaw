@@ -1,4 +1,4 @@
-import { Alert, Box } from "@aivenio/aquarium";
+import { Alert, Box, Flexbox } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -40,16 +40,22 @@ function ApprovalsLayout(props: ApprovalsLayoutProps) {
         <Alert type={"error"}>{errorMessage}. Please try again later!</Alert>
       )}
       {!isLoading && !isErrorLoading && (
-        <Box
-          display={"flex"}
-          flexDirection={"column"}
-          alignItems={"center"}
-          rowGap={"l4"}
-          className={"a11y-enhancement-data-table"}
-        >
-          {table}
-          {pagination}
-        </Box>
+        <>
+          <Box
+            style={{
+              overflow: "auto",
+            }}
+            marginBottom={"l4"}
+          >
+            <Box
+              style={{ minWidth: "1280px" }}
+              className={"a11y-enhancement-data-table"}
+            >
+              {table}
+            </Box>
+          </Box>
+          <Flexbox justifyContent={"center"}>{pagination}</Flexbox>
+        </>
       )}
     </>
   );

@@ -13,6 +13,10 @@ import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals"
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import {
+  approveSchemaRequest,
+  declineSchemaRequest,
+} from "src/domain/schema-request/schema-request-api";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
@@ -26,6 +30,13 @@ const mockGetSchemaRequestsForApprover =
   getSchemaRequestsForApprover as jest.MockedFunction<
     typeof getSchemaRequestsForApprover
   >;
+
+const mockDeclineSchemaRequest = declineSchemaRequest as jest.MockedFunction<
+  typeof declineSchemaRequest
+>;
+const mockApproveSchemaRequest = approveSchemaRequest as jest.MockedFunction<
+  typeof approveSchemaRequest
+>;
 
 const mockedEnvironments = [
   { name: "DEV", id: "1" },
@@ -364,6 +375,9 @@ describe("SchemaApprovals", () => {
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );
@@ -412,6 +426,66 @@ describe("SchemaApprovals", () => {
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+
+    it("user can approve a request by clicking a button in the modal", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockedApiResponseSchemaRequests.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+      await userEvent.click(approveButton);
+
+      await waitForElementToBeRemoved(modal);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [firstRequest.req_no.toString()],
+      });
+    });
+
+    it("user can decline a request by clicking a button in the modal", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockedApiResponseSchemaRequests.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+
+      const detailsModal = within(screen.getByRole("dialog")).queryByText(
+        "Request details"
+      );
+
+      expect(detailsModal).toBeVisible();
+
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Decline request",
+        })
+      ).not.toBeInTheDocument();
+
+      const declineButton = screen.getByRole("button", {
+        name: "Decline",
+      });
+      await userEvent.click(declineButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Decline request",
+        })
+      ).toBeVisible();
     });
   });
 
@@ -493,6 +567,247 @@ describe("SchemaApprovals", () => {
           topic: "myTopic",
         });
       });
+    });
+  });
+
+  describe("enables user to decline a request", () => {
+    const testRequest = mockedApiResponseSchemaRequests.entries[0];
+
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("requires user to add a reason for declining", async () => {
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+      expect(confirmDeclineButton).toBeDisabled();
+
+      await userEvent.click(confirmDeclineButton);
+      expect(mockDeclineSchemaRequest).not.toHaveBeenCalled();
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+      expect(message).toBeRequired();
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+
+      expect(confirmDeclineButton).toBeEnabled();
+    });
+
+    it("send a decline request api call if user declines a schema request", async () => {
+      mockDeclineSchemaRequest.mockResolvedValue([{ result: "success" }]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+        reason: "This is my message",
+      });
+    });
+
+    it("updates the the data for the table if user declined a schema request", async () => {
+      mockDeclineSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+        reason: "This is my message",
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockDeclineSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+        reason: "This is my message",
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetSchemaRequestsForApprover).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+    });
+  });
+
+  describe("enables user to approve a request", () => {
+    const testRequest = mockedApiResponseSchemaRequests.entries[0];
+
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a schema request", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+    });
+
+    it("updates the the data for the table if user approves a schema request", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+
+      expect(mockApproveSchemaRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
     });
   });
 });

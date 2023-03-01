@@ -62,4 +62,16 @@ public interface TopicRequestsRepo
       @Param("tenantId") Integer tenantId,
       @Param("description") String description,
       @Param("topictype") String requestOperationType);
+
+  @Query(
+      value =
+          "select count(*) from kwtopicrequests where tenantid = :tenantId"
+              + " and teamid = :teamId and requestor != :requestor "
+              + "and topicstatus = :topicStatus  group by topicstatus",
+      nativeQuery = true)
+  Long countRequestorsTopicRequestsGroupByStatusType(
+      @Param("teamId") Integer teamId,
+      @Param("tenantId") Integer tenantId,
+      @Param("requestor") String requestor,
+      @Param("topicStatus") String topicStatus);
 }

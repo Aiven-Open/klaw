@@ -7,12 +7,14 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -571,6 +573,45 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.getFilteredKafkaConnectorRequests(
             true, "James", RequestStatus.ALL.value, false, 103, null, "lots");
     assertThat(resultSet.size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(26)
+  public void getConnectorRequestsCountsForMyApprovals() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getConnectorRequestsCounts(101, RequestMode.MY_APPROVALS, 101, "Jackie");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results).hasSize(2);
+    // Jackie created all the requests so we expect 0 for created status which is approval status
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(10L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+  }
+
+  @Test
+  @Order(27)
+  public void getConnectorRequestsCountsForMyApprovalsJohnCreatedNone() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getConnectorRequestsCounts(101, RequestMode.MY_APPROVALS, 101, "John");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results).hasSize(2);
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(21L);
+    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
+    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(10L);
+    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
+    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
   }
 
   private void generateData(
