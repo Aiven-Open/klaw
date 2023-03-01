@@ -100,7 +100,6 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
             onClick={() => setDetailsModal({ isOpen: true, topicId: id })}
             icon={infoSign}
             dense
-            disabled={quickActionLoading}
           >
             <span aria-hidden={"true"}>View details</span>
             <span className={"visually-hidden"}>

@@ -313,7 +313,6 @@ function AclApprovals() {
             icon={infoSign}
             onClick={() => setDetailsModal({ isOpen: true, reqNo: String(id) })}
             dense
-            disabled={approveIsLoading || declineIsLoading}
           >
             <span aria-hidden={"true"}>View details</span>
             <span className={"visually-hidden"}>
@@ -335,7 +334,7 @@ function AclApprovals() {
             <GhostButton
               onClick={() => {
                 setIsLoading(true);
-                return approveRequest({
+                approveRequest({
                   requestEntityType: "ACL",
                   reqIds: [String(id)],
                 });
@@ -406,8 +405,12 @@ function AclApprovals() {
             setDetailsModal({ isOpen: false, reqNo: "" });
             setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
           }}
-          isLoading={approveIsLoading}
-          disabledActions={selectedRequest?.requestStatus !== "CREATED"}
+          isLoading={approveIsLoading || declineIsLoading}
+          disabledActions={
+            selectedRequest?.requestStatus !== "CREATED" ||
+            approveIsLoading ||
+            declineIsLoading
+          }
         >
           <DetailsModalContent aclRequest={selectedRequest} />
         </RequestDetailsModal>

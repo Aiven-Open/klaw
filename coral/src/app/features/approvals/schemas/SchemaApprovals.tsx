@@ -185,6 +185,7 @@ function SchemaApprovals() {
             setModals({ ...modals, open: "DECLINE" });
           }}
           isLoading={declineRequestIsLoading || approveRequestIsLoading}
+          disabledActions={declineRequestIsLoading || approveRequestIsLoading}
         >
           <SchemaRequestDetails
             request={schemaRequests?.entries.find(

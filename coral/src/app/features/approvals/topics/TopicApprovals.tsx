@@ -195,8 +195,12 @@ function TopicApprovals() {
             setDetailsModal({ isOpen: false, topicId: null });
             setDeclineModal({ isOpen: true, topicId: detailsModal.topicId });
           }}
-          isLoading={approveIsLoading}
-          disabledActions={selectedTopicRequest?.requestStatus !== "CREATED"}
+          isLoading={approveIsLoading || declineIsLoading}
+          disabledActions={
+            selectedTopicRequest?.requestStatus !== "CREATED" ||
+            approveIsLoading ||
+            declineIsLoading
+          }
         >
           <DetailsModalContent topicRequest={selectedTopicRequest} />
         </RequestDetailsModal>
@@ -216,7 +220,7 @@ function TopicApprovals() {
               reason: message,
             });
           }}
-          isLoading={declineIsLoading}
+          isLoading={declineIsLoading || approveIsLoading}
         />
       )}
       {errorMessage !== "" && (

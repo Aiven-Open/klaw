@@ -312,7 +312,7 @@ describe("SchemaApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`disables  button to decline schema request for topic name ${request.topicname}`, () => {
+      it(`disables button to decline schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
           name: `Decline schema request for ${request.topicname}`,
@@ -321,13 +321,13 @@ describe("SchemaApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`disables details for schema request for topic name ${request.topicname}`, () => {
+      it(`does not disable details for schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const detailsButton = within(table).getByRole("button", {
           name: `View schema request for ${request.topicname}`,
         });
 
-        expect(detailsButton).toBeDisabled();
+        expect(detailsButton).toBeEnabled();
       });
     });
   });

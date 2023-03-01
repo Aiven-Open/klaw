@@ -319,13 +319,13 @@ describe("TopicApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`disables details for schema request for topic name ${request.topicname}`, () => {
+      it(`does not disables details for schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Topic requests" });
         const detailsButton = within(table).getByRole("button", {
           name: `View topic request for ${request.topicname}`,
         });
 
-        expect(detailsButton).toBeDisabled();
+        expect(detailsButton).toBeEnabled();
       });
     });
   });
