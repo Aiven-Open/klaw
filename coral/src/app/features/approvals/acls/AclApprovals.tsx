@@ -18,20 +18,20 @@ import { Pagination } from "src/app/components/Pagination";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
 import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
+import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import {
+  requestStatusChipStatusMap,
+  requestStatusNameMap,
+} from "src/app/features/approvals/utils/request-status-helper";
 import {
   approveAclRequest,
   declineAclRequest,
   getAclRequestsForApprover,
 } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
+import { RequestStatus } from "src/domain/requests/requests-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import {
-  requestStatusChipStatusMap,
-  requestStatusNameMap,
-} from "src/app/features/approvals/utils/request-status-helper";
-import { RequestStatus } from "src/domain/requests";
 
 interface AclRequestTableRow {
   id: number;
@@ -123,6 +123,7 @@ function AclApprovals() {
         topic,
       }),
     onSuccess: (data) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
       // If through filtering a user finds themselves on a non existent page, reset page to 1
       // For example:
       // - one request returns 4 pages of results
@@ -139,6 +140,8 @@ function AclApprovals() {
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
     mutationFn: approveAclRequest,
     onSuccess: (responses) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
       const response = responses[0];
       if (response.result !== "success") {
         return setErrorMessage(

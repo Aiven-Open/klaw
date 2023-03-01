@@ -6,7 +6,7 @@ import {
   APPROVALS_TAB_ID_INTO_PATH,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
-import { getNotificationCounts } from "src/domain/notification/notification-api";
+import { getRequestsWaitingForApproval } from "src/domain/requests/requests-api";
 
 type Props = {
   currentTab: ApprovalsTabEnum;
@@ -15,15 +15,9 @@ type Props = {
 function ApprovalResourceTabs({ currentTab }: Props) {
   const navigate = useNavigate();
 
-  const { data: counts } = useQuery(
-    ["getNotificationCounts"],
-    getNotificationCounts
-  );
-
-  const numberOfPendingTopicApprovals = counts?.topicNotificationCount;
-  const numberOfPendingAclApprovals = counts?.aclNotificationCount;
-  const numberOfPendingSchemaApprovals = counts?.schemaNotificationCount;
-  const numberOfPendingConnectorApprovals = counts?.connectorNotificationCount;
+  const { data } = useQuery(["getRequestsWaitingForApproval"], {
+    queryFn: getRequestsWaitingForApproval,
+  });
 
   return (
     <Tabs
@@ -33,35 +27,32 @@ function ApprovalResourceTabs({ currentTab }: Props) {
       <Tabs.Tab
         title="Topics"
         value={ApprovalsTabEnum.TOPICS}
-        badge={getBadgeValue(numberOfPendingTopicApprovals)}
-        aria-label={getTabAriaLabel("Topics", numberOfPendingTopicApprovals)}
+        badge={getBadgeValue(data?.TOPIC)}
+        aria-label={getTabAriaLabel("Topics", data?.TOPIC)}
       >
         {currentTab === ApprovalsTabEnum.TOPICS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
         title="ACLs"
         value={ApprovalsTabEnum.ACLS}
-        badge={getBadgeValue(numberOfPendingAclApprovals)}
-        aria-label={getTabAriaLabel("ACLs", numberOfPendingAclApprovals)}
+        badge={getBadgeValue(data?.ACL)}
+        aria-label={getTabAriaLabel("ACLs", data?.ACL)}
       >
         {currentTab === ApprovalsTabEnum.ACLS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
         title="Schemas"
         value={ApprovalsTabEnum.SCHEMAS}
-        badge={getBadgeValue(numberOfPendingSchemaApprovals)}
-        aria-label={getTabAriaLabel("Schemas", numberOfPendingSchemaApprovals)}
+        badge={getBadgeValue(data?.SCHEMA)}
+        aria-label={getTabAriaLabel("Schemas", data?.SCHEMA)}
       >
         {currentTab === ApprovalsTabEnum.SCHEMAS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
         title="Connectors (coming soon)"
         value={ApprovalsTabEnum.CONNECTORS}
-        badge={getBadgeValue(numberOfPendingSchemaApprovals)}
-        aria-label={getTabAriaLabel(
-          "Connectors",
-          numberOfPendingConnectorApprovals
-        )}
+        badge={getBadgeValue(data?.CONNECTOR)}
+        aria-label={getTabAriaLabel("Connectors", data?.CONNECTOR)}
         disabled
       >
         {currentTab === ApprovalsTabEnum.CONNECTORS && <Outlet />}

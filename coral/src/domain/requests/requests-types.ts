@@ -21,10 +21,15 @@ type RequestVerdictDecline<T extends RequestEntityType> =
       }
   >;
 
+type RequestsWaitingForApproval = {
+  [key in RequestEntityType]: number;
+};
+
 export type {
   RequestOperationType,
   RequestStatus,
   RequestEntityType,
   RequestVerdictApproval,
   RequestVerdictDecline,
+  RequestsWaitingForApproval,
 };

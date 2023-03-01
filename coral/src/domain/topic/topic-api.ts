@@ -3,7 +3,7 @@ import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
-} from "src/domain/requests";
+} from "src/domain/requests/requests-types";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {

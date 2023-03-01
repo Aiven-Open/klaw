@@ -4,7 +4,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { SchemaRequest } from "src/domain/schema-request";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import userEvent from "@testing-library/user-event";
-import { RequestStatus } from "src/domain/requests";
+import { RequestStatus } from "src/domain/requests/requests-types";
 
 const mockedRequests: SchemaRequest[] = [
   {

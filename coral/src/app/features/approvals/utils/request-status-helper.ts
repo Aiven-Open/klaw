@@ -1,4 +1,4 @@
-import { RequestStatus } from "src/domain/requests";
+import { RequestStatus } from "src/domain/requests/requests-types";
 import { ChipStatus } from "@aivenio/aquarium";
 
 // @TODO a nice improvement would be to

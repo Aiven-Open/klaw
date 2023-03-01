@@ -77,6 +77,8 @@ function TopicApprovals() {
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
     mutationFn: approveTopicRequest,
     onSuccess: (responses) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
 
@@ -115,6 +117,8 @@ function TopicApprovals() {
   const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
     mutationFn: declineTopicRequest,
     onSuccess: (responses) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
 

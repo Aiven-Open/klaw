@@ -428,7 +428,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/SchemaRequest"
+              $ref: "#/components/schemas/SchemaRequest"
         required: true
       responses:
         "200":
@@ -508,7 +508,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/GenericApiResponse"
-      x-codegen-request-body-name: body
   /request/decline:
     post:
       operationId: declineRequest
@@ -527,7 +526,27 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/GenericApiResponse"
-      x-codegen-request-body-name: body
+  /requests/statistics:
+    get:
+      summary: Get counts of all request entity types for different status, operation types
+      operationId: getRequestStatistics
+      parameters:
+        - name: requestMode
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - TO_APPROVE
+              - MY_REQUESTS
+              - MY_APPROVALS
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RequestsCountOverview"
   /getSchemaRequestsForApprover:
     get:
       operationId: getSchemaRequestsForApprover
@@ -1637,3 +1656,56 @@ components:
           type: array
           items:
             type: string
+    RequestsCountOverview:
+      properties:
+        requestEntityStatistics:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequestEntityStatusCount"
+          uniqueItems: true
+    RequestEntityStatusCount:
+      properties:
+        requestEntityType:
+          type: string
+          enum:
+            - TOPIC
+            - ACL
+            - SCHEMA
+            - CONNECTOR
+            - USER
+        requestStatusCountSet:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequestStatusCount"
+          uniqueItems: true
+        requestsOperationTypeCountSet:
+          type: array
+          items:
+            $ref: "#/components/schemas/RequestsOperationTypeCount"
+          uniqueItems: true
+    RequestStatusCount:
+      properties:
+        requestStatus:
+          type: string
+          enum:
+            - CREATED
+            - DELETED
+            - DECLINED
+            - APPROVED
+            - ALL
+        count:
+          type: integer
+          format: int64
+    RequestsOperationTypeCount:
+      properties:
+        requestOperationType:
+          type: string
+          enum:
+            - CREATE
+            - UPDATE
+            - PROMOTE
+            - CLAIM
+            - DELETE
+        count:
+          type: integer
+          format: int64
