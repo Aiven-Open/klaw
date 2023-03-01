@@ -161,7 +161,7 @@ function TopicApprovals() {
       setDetailsModal={setDetailsModal}
       setDeclineModal={setDeclineModal}
       approveRequest={approveRequest}
-      approveIsLoading={approveIsLoading}
+      quickActionLoading={approveIsLoading || declineIsLoading}
     />
   );
   const pagination =
