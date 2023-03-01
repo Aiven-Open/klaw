@@ -79,7 +79,7 @@ const declineSchemaRequest = ({
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"SCHEMA">
-  >(`/request/approve`, {
+  >(`/request/decline`, {
     reqIds,
     reason,
     requestEntityType: "SCHEMA",
