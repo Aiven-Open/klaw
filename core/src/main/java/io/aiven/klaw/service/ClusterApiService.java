@@ -660,8 +660,7 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     ResponseEntity<ApiResponse> response;
     try {
-      boolean forceReg =
-          schemaRequest.getForceRegister() == null ? false : schemaRequest.getForceRegister();
+      boolean forceReg = Objects.requireNonNullElse(schemaRequest.getForceRegister(), false);
       String uri = clusterConnUrl + URI_POST_SCHEMA;
 
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);

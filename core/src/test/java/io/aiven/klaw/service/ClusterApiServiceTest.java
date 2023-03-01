@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -52,6 +51,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
+
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -71,8 +71,7 @@ public class ClusterApiServiceTest {
 
   @Mock private KwClusters kwClusters;
 
-  @Captor
-  private ArgumentCaptor<HttpEntity<ClusterSchemaRequest>> clusterSchemaRequestCaptor;
+  @Captor private ArgumentCaptor<HttpEntity<ClusterSchemaRequest>> clusterSchemaRequestCaptor;
   ClusterApiService clusterApiService;
 
   ResponseEntity<String> response;
@@ -86,6 +85,7 @@ public class ClusterApiServiceTest {
 
     this.env = new Env();
     env.setName("DEV");
+    env.setClusterId(1);
     ReflectionTestUtils.setField(clusterApiService, "httpRestTemplate", restTemplate);
     ReflectionTestUtils.setField(clusterApiService, "clusterApiUser", "testuser");
     ReflectionTestUtils.setField(
@@ -345,26 +345,26 @@ public class ClusterApiServiceTest {
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-            .thenReturn(clustersHashMap);
+        .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn(BOOTSRAP_SERVERS);
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
-            .thenReturn(response);
+        .thenReturn(response);
 
     ResponseEntity<ApiResponse> result =
-            clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
+        clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
     assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @ParameterizedTest
-  @ValueSource(strings = {"null","false"})
+  @ValueSource(strings = {"null", "false"})
   @Order(12)
   public void postSchemaSucessForceRegisterNullOrFalse(String value) throws KlawException {
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull(SCHEMAFULL);
-    schemaRequest.setForceRegister(value.equals("false")?Boolean.valueOf(value) : null);
+    schemaRequest.setForceRegister(value.equals("false") ? Boolean.valueOf(value) : null);
     String envSel = "DEV";
     String topicName = "testtopic";
 
@@ -373,17 +373,18 @@ public class ClusterApiServiceTest {
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-            .thenReturn(clustersHashMap);
-    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(anyInt())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn(BOOTSRAP_SERVERS);
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
-            .thenReturn(response);
+        .thenReturn(response);
 
     ResponseEntity<ApiResponse> result =
-            clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
-    verify(restTemplate,times(1)).postForEntity(anyString(), clusterSchemaRequestCaptor.capture(),eq(ApiResponse.class));
+        clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
+    verify(restTemplate, times(1))
+        .postForEntity(anyString(), clusterSchemaRequestCaptor.capture(), eq(ApiResponse.class));
     assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     ClusterSchemaRequest clusterSchemaRequest = clusterSchemaRequestCaptor.getValue().getBody();
     assertThat(clusterSchemaRequest.isForceRegister()).isFalse();
@@ -404,18 +405,19 @@ public class ClusterApiServiceTest {
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-            .thenReturn(clustersHashMap);
-    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(anyInt())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn(BOOTSRAP_SERVERS);
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(ApiResponse.class)))
-            .thenReturn(response);
+        .thenReturn(response);
 
     ResponseEntity<ApiResponse> result =
-            clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
+        clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
 
-    verify(restTemplate,times(1)).postForEntity(anyString(), clusterSchemaRequestCaptor.capture(),eq(ApiResponse.class));
+    verify(restTemplate, times(1))
+        .postForEntity(anyString(), clusterSchemaRequestCaptor.capture(), eq(ApiResponse.class));
     assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     ClusterSchemaRequest clusterSchemaRequest = clusterSchemaRequestCaptor.getValue().getBody();
     assertThat(clusterSchemaRequest.isForceRegister()).isTrue();
