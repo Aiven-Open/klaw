@@ -313,6 +313,7 @@ function AclApprovals() {
             icon={infoSign}
             onClick={() => setDetailsModal({ isOpen: true, reqNo: String(id) })}
             dense
+            disabled={approveIsLoading || declineIsLoading}
           >
             <span aria-hidden={"true"}>View details</span>
             <span className={"visually-hidden"}>
@@ -341,6 +342,7 @@ function AclApprovals() {
               }}
               title={"Approve acl request"}
               aria-label={`Approve schema request for ${topicname}`}
+              disabled={approveIsLoading || declineIsLoading}
             >
               {isLoading && approveIsLoading ? (
                 <Icon color="grey-70" icon={loadingIcon} />
@@ -366,7 +368,7 @@ function AclApprovals() {
               }
               title={`Decline acl request`}
               aria-label={`Decline topic request for ${topicname}`}
-              disabled={approveIsLoading}
+              disabled={approveIsLoading || declineIsLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />
             </GhostButton>
