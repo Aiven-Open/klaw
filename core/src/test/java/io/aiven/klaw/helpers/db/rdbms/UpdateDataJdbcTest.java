@@ -2,19 +2,25 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -31,6 +37,7 @@ public class UpdateDataJdbcTest {
   @Mock private SchemaRequestRepo schemaRequestRepo;
 
   @Mock private InsertDataJdbc insertDataJdbcHelper;
+  @Mock private TopicRepo topicRepo;
 
   @Mock private DeleteDataJdbc deleteDataJdbcHelper;
 
@@ -51,6 +58,7 @@ public class UpdateDataJdbcTest {
             insertDataJdbcHelper);
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(updateData, "deleteDataJdbcHelper", deleteDataJdbcHelper);
+    ReflectionTestUtils.setField(updateData, "topicRepo", topicRepo);
   }
 
   @Test
@@ -59,14 +67,49 @@ public class UpdateDataJdbcTest {
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
+  // parameters from RequestOperationType
   @Test
-  public void updateTopicRequest() {
+  public void updateUpdateTopicRequest() {
+    int reqNum = 1001;
+    String requestOperationType = "Update";
     when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(1001);
-
-    String result = updateData.updateTopicRequest(utilMethods.getTopicRequest(1001), "uiuser2");
+    when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
+    TopicRequest req = utilMethods.getTopicRequest(1001);
+    req.setOtherParams("1001");
+    req.setRequestOperationType(requestOperationType);
+    String result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    verify(topicRepo, times(1)).save(any());
+  }
+
+  @Test
+  public void updateDeleteTopicRequest() {
+    int reqNum = 1001;
+    String requestOperationType = "Delete";
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
+    TopicRequest req = utilMethods.getTopicRequest(1001);
+
+    req.setRequestOperationType(requestOperationType);
+    String result = updateData.updateTopicRequest(req, "uiuser2");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    verify(deleteDataJdbcHelper, times(1)).deleteTopics(any());
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"Create", "Promote"})
+  public void updateCreateAndPromoteTopicRequest(String requestOperationType) {
+    int reqNum = 1001;
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), anyBoolean()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum++);
+    TopicRequest req = utilMethods.getTopicRequest(1001);
+    req.setRequestOperationType(requestOperationType);
+    String result = updateData.updateTopicRequest(req, "uiuser2");
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any(), anyBoolean());
   }
 
   @Test
