@@ -69,6 +69,9 @@ export type paths = {
   "/request/decline": {
     post: operations["declineRequest"];
   };
+  "/requests/statistics": {
+    get: operations["getRequestStatistics"];
+  };
   "/getSchemaRequestsForApprover": {
     get: operations["getSchemaRequestsForApprover"];
   };
@@ -1031,6 +1034,32 @@ export type components = {
       requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
       reqIds: string[];
     };
+    RequestsCountOverview: {
+      requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
+    };
+    RequestEntityStatusCount: {
+      /** @enum {string} */
+      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestStatusCountSet?: components["schemas"]["RequestStatusCount"][];
+      requestsOperationTypeCountSet?: components["schemas"]["RequestsOperationTypeCount"][];
+    };
+    RequestStatusCount: {
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: int64 */
+      count?: number;
+    };
+    RequestsOperationTypeCount: {
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      /** Format: int64 */
+      count?: number;
+    };
   };
 };
 
@@ -1349,6 +1378,21 @@ export type operations = {
       };
     };
   };
+  getRequestStatistics: {
+    parameters: {
+      query: {
+        requestMode: "TO_APPROVE" | "MY_REQUESTS" | "MY_APPROVALS";
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RequestsCountOverview"];
+        };
+      };
+    };
+  };
   getSchemaRequestsForApprover: {
     parameters: {
       query: {
@@ -1397,5 +1441,6 @@ export enum ApiPaths {
   getAuth = "/getAuth",
   approveRequest = "/request/approve",
   declineRequest = "/request/decline",
+  getRequestStatistics = "/requests/statistics",
   getSchemaRequestsForApprover = "/getSchemaRequestsForApprover",
 }
