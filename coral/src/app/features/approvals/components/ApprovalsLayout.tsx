@@ -1,4 +1,4 @@
-import { Alert, Box, Pagination } from "@aivenio/aquarium";
+import { Alert, Box } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { parseErrorMsg } from "src/services/mutation-utils";
