@@ -1,9 +1,5 @@
-import { RequestEntityType } from "src/domain/requests/requests-types";
+import { RequestsWaitingForApproval } from "src/domain/requests/requests-types";
 import { KlawApiResponse } from "types/utils";
-
-type RequestsWaitingForApproval = {
-  [key in RequestEntityType]: number;
-};
 
 const getRequestsWaitingForApprovalTransformer = (
   data: KlawApiResponse<"getRequestStatistics">
