@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import java.io.Serializable;
 import lombok.Builder;
+import lombok.Data;
 
+@Data
 @Builder(toBuilder = true)
 public class ClusterSchemaRequest implements Serializable {
 

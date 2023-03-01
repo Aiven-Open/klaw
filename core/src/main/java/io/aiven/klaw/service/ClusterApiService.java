@@ -665,7 +665,7 @@ public class ClusterApiService {
       String uri = clusterConnUrl + URI_POST_SCHEMA;
 
       Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
-      log.info("forceRegister set to : {}", forceReg);
+      log.debug("forceRegister set to : {}", forceReg);
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
