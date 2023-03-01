@@ -9,7 +9,7 @@ import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
-} from "src/domain/requests";
+} from "src/domain/requests/requests-types";
 
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload

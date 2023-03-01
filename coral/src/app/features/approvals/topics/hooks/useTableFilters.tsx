@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
-import { RequestStatus } from "src/domain/requests";
+import { RequestStatus } from "src/domain/requests/requests-types";
 import { TopicRequest } from "src/domain/topic/topic-types";
 import {
   requestStatusNameMap,
