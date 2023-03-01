@@ -4796,10 +4796,10 @@
           "currentPage" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -4917,10 +4917,10 @@
           "currentPage" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -5521,10 +5521,10 @@
           "currentPage" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -5739,10 +5739,10 @@
           "approvingTeamDetails" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -6082,10 +6082,10 @@
           "currentPage" : {
             "type" : "string"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           }
         },
@@ -6144,13 +6144,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"

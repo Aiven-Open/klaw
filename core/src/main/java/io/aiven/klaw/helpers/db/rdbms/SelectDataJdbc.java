@@ -323,6 +323,7 @@ public class SelectDataJdbc {
     if (userName != null && !userName.isEmpty()) {
       request.setUsername(userName);
     }
+    request.setForceRegister(null);
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string
     if (log.isDebugEnabled()) {

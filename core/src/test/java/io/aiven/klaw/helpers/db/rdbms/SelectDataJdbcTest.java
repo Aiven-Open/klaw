@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -32,6 +34,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.data.domain.Example;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -40,6 +44,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(SpringExtension.class)
 public class SelectDataJdbcTest {
 
+  public static final String TESTTOPIC = "testtopic";
   @Mock private UserInfoRepo userInfoRepo;
 
   @Mock private TeamRepo teamRepo;
@@ -65,6 +70,8 @@ public class SelectDataJdbcTest {
   private SelectDataJdbc selectData;
 
   private UtilMethods utilMethods;
+
+  @Captor private ArgumentCaptor<Example<SchemaRequest>> schemaRequestCaptor;
 
   @BeforeEach
   public void setUp() {
@@ -112,23 +119,47 @@ public class SelectDataJdbcTest {
 
     List<SchemaRequest> schemaRequestsActual =
         selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null, false);
+    verify(schemaRequestRepo, times(1)).findAll(schemaRequestCaptor.capture());
+    Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();
+    assertThat(value.getProbe().getForceRegister()).isNull();
+    assertThat(value.getProbe().getUsername()).isNull();
+  }
+
+  @Test
+  public void selectSchemaRequestsIsMyRequest() {
+    String requestor = "uiuser1";
+    UserInfo userInfo = new UserInfo();
+    userInfo.setTeamId(1);
+
+    List<SchemaRequest> schemaRequests = utilMethods.getSchemaRequestsDao();
+
+    when(schemaRequestRepo.findAllByTenantId(1)).thenReturn(schemaRequests);
+    when(userInfoRepo.findByUsernameIgnoreCase(requestor))
+        .thenReturn(java.util.Optional.of(userInfo));
+
+    List<SchemaRequest> schemaRequestsActual =
+        selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null, true);
+    verify(schemaRequestRepo, times(1)).findAll(schemaRequestCaptor.capture());
+    Example<SchemaRequest> value = schemaRequestCaptor.getValue();
+    assertThat(schemaRequestsActual).isEmpty();
+    assertThat(value.getProbe().getForceRegister()).isNull();
+    assertThat(value.getProbe().getUsername()).isEqualTo("uiuser1");
   }
 
   @Test
   public void selectSchemaRequest() {
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setReq_no(1001);
-    schemaRequest.setTopicname("testtopic");
+    schemaRequest.setTopicname(TESTTOPIC);
     when(schemaRequestRepo.findById(any())).thenReturn(java.util.Optional.of(schemaRequest));
     SchemaRequest schemaRequestActual = selectData.selectSchemaRequest(1001, 1);
-
-    assertThat(schemaRequestActual.getTopicname()).isEqualTo("testtopic");
+    assertThat(schemaRequestActual.getTopicname()).isEqualTo(TESTTOPIC);
   }
 
   @Test
   public void selectTopicDetailsSuccess() {
-    String topicName = "testtopic", env = "DEV";
+    String topicName = TESTTOPIC;
     List<Topic> topicList = new ArrayList<>();
     topicList.add(utilMethods.getTopic(topicName));
     when(topicRepo.findAllByTopicnameAndTenantId(topicName, 1)).thenReturn(topicList);
@@ -139,7 +170,7 @@ public class SelectDataJdbcTest {
 
   @Test
   public void selectTopicDetailsFailure() {
-    String topicName = "testtopic";
+    String topicName = TESTTOPIC;
     List<Topic> topicList = new ArrayList<>();
     when(topicRepo.findAllByTopicnameAndTenantId(topicName, 1)).thenReturn(topicList);
     List<Topic> topic = selectData.selectTopicDetails(topicName, 1);
