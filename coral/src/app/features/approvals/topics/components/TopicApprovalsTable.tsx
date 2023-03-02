@@ -86,7 +86,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
       field: "requesttimestring",
       headerName: "Requested on",
       formatter: (value) => {
-        return `${value} UTC`;
+        return `${value}${"\u00A0"}UTC`;
       },
     },
     {

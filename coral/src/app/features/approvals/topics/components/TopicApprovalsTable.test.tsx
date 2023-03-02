@@ -211,8 +211,9 @@ describe("TopicApprovalsTable", () => {
 
             let text = field;
             if (column.columnHeader === "Requested on") {
-              text = `${field} UTC`;
+              text = `${field}${"\u00A0"}UTC`;
             }
+
             if (column.columnHeader === "Status") {
               text = requestStatusNameMap[field as RequestStatus];
             }
