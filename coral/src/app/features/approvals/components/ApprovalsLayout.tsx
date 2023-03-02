@@ -37,7 +37,9 @@ function ApprovalsLayout(props: ApprovalsLayoutProps) {
       </Box>
       {isLoading && <SkeletonTable />}
       {isErrorLoading && (
-        <Alert type={"error"}>{errorMessage}. Please try again later!</Alert>
+        <div role={"alert"}>
+          <Alert type={"error"}>{errorMessage}. Please try again later!</Alert>
+        </div>
       )}
       {!isLoading && !isErrorLoading && (
         <>

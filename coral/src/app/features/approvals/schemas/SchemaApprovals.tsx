@@ -216,7 +216,7 @@ function SchemaApprovals() {
       )}
       {errorQuickActions && (
         <div role="alert">
-          <Alert type="warning">{errorQuickActions}</Alert>
+          <Alert type="error">{errorQuickActions}</Alert>
         </div>
       )}
       <ApprovalsLayout

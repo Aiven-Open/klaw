@@ -98,12 +98,12 @@ describe("ApprovalsLayout", () => {
       );
 
       const table = screen.queryByRole("table");
-      const errorMessage = screen.getByText(
-        "Oh no, this is an error. Please try again later!"
-      );
+      const alert = screen.getByRole("alert");
 
       expect(table).not.toBeInTheDocument();
-      expect(errorMessage).toBeVisible();
+      expect(alert).toHaveTextContent(
+        "Oh no, this is an error. Please try again later!"
+      );
     });
   });
 

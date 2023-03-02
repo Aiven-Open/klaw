@@ -229,7 +229,7 @@ function TopicApprovals() {
       )}
       {errorMessage !== "" && (
         <div role="alert">
-          <Alert type="warning">{errorMessage}</Alert>
+          <Alert type="error">{errorMessage}</Alert>
         </div>
       )}
       <ApprovalsLayout
