@@ -16,12 +16,17 @@ import {
   requestStatusChipStatusMap,
   requestStatusNameMap,
 } from "src/app/features/approvals/utils/request-status-helper";
+import {
+  requestOperationTypeChipStatusMap,
+  requestOperationTypeNameMap,
+} from "src/app/features/approvals/utils/request-operation-type-helper";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
   topicname: TopicRequest["topicname"];
   environmentName: TopicRequest["environmentName"];
   requestStatus: TopicRequest["requestStatus"];
+  requestOperationType: TopicRequest["requestOperationType"];
   teamname: TopicRequest["teamname"];
   requestor: TopicRequest["requestor"];
   requesttimestring: TopicRequest["requesttimestring"];
@@ -76,6 +81,17 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
         return {
           status: requestStatusChipStatusMap[requestStatus],
           text: requestStatusNameMap[requestStatus],
+        };
+      },
+    },
+    {
+      type: "status",
+      field: "requestOperationType",
+      headerName: "Request type",
+      status: ({ requestOperationType }) => {
+        return {
+          status: requestOperationTypeChipStatusMap[requestOperationType],
+          text: requestOperationTypeNameMap[requestOperationType],
         };
       },
     },
@@ -176,6 +192,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
       topicname: request.topicname,
       environmentName: request.environmentName,
       requestStatus: request.requestStatus,
+      requestOperationType: request.requestOperationType,
       teamname: request.teamname,
       requestor: request.requestor,
       requesttimestring: request.requesttimestring,
