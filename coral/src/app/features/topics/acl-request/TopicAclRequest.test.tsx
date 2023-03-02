@@ -1014,7 +1014,7 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
-      it("redirects user to /myAclRequests?reqsType=created&aclCreated=true", async () => {
+      it("redirects user to /myAclRequests?reqsType=CREATED&aclCreated=true", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
@@ -1060,7 +1060,7 @@ describe("<TopicAclRequest />", () => {
         // @TODO use when Klaw migration is completed and redirect is handling with react-router
         await waitFor(() => {
           expect(locationAssignSpy).toHaveBeenLastCalledWith(
-            "/myAclRequests?reqsType=created&aclCreated=true"
+            "/myAclRequests?reqsType=CREATED&aclCreated=true"
           );
         });
       });
@@ -1373,7 +1373,7 @@ describe("<TopicAclRequest />", () => {
         // @TODO use when Klaw migration is completed and redirect is handling with react-router
         await waitFor(() => {
           expect(locationAssignSpy).toHaveBeenLastCalledWith(
-            "/myAclRequests?reqsType=created&aclCreated=true"
+            "/myAclRequests?reqsType=CREATED&aclCreated=true"
           );
         });
       });

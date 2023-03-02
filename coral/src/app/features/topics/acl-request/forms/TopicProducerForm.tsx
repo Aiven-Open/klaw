@@ -82,7 +82,7 @@ const TopicProducerForm = ({
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
     onSuccess: () =>
-      window.location.assign("/myAclRequests?reqsType=created&aclCreated=true"),
+      window.location.assign("/myAclRequests?reqsType=CREATED&aclCreated=true"),
   });
 
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
