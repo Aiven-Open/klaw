@@ -28,8 +28,12 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
       </Flexbox>
 
       <GridItem colSpan={"span-2"}>
+        <Label>Schema version</Label>
+        <dd>{request.schemaversion}</dd>
+      </GridItem>
+      <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
-          <Label>Schema</Label>
+          <Label>Schema preview</Label>
           <dd>
             <MonacoEditor
               data-testid="topic-schema"
