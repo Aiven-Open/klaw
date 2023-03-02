@@ -72,7 +72,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const schemaRequestMutation = useMutation(createSchemaRequest, {
     onSuccess: () =>
       window.location.assign(
-        "/mySchemaRequests?reqsType=created&schemaCreated=true"
+        "/mySchemaRequests?reqsType=CREATED&schemaCreated=true"
       ),
   });
 

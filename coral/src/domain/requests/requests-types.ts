@@ -1,5 +1,6 @@
 import { components } from "types/api";
 import { ResolveIntersectionTypes } from "types/utils";
+
 type RequestOperationType = components["schemas"]["RequestOperationType"];
 type RequestStatus = components["schemas"]["RequestStatus"];
 type RequestVerdict = components["schemas"]["RequestVerdict"];

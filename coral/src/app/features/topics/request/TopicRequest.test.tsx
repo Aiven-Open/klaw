@@ -826,7 +826,7 @@ describe("<TopicRequest />", () => {
         await waitFor(() => {
           expect(locationAssignSpy).toHaveBeenCalledTimes(1);
           expect(locationAssignSpy).toHaveBeenCalledWith(
-            "/myTopicRequests?reqsType=created&topicCreated=true"
+            "/myTopicRequests?reqsType=CREATED&topicCreated=true"
           );
         });
       });

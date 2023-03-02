@@ -725,7 +725,7 @@ describe("TopicSchemaRequest", () => {
       await waitFor(() => {
         expect(locationAssignSpy).toHaveBeenCalledTimes(1);
         expect(locationAssignSpy).toHaveBeenCalledWith(
-          "/mySchemaRequests?reqsType=created&schemaCreated=true"
+          "/mySchemaRequests?reqsType=CREATED&schemaCreated=true"
         );
       });
     });

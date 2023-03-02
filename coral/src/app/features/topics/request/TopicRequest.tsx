@@ -61,7 +61,7 @@ function TopicRequest() {
   const { mutate, isLoading, isError, error } = useMutation(requestTopic, {
     onSuccess: () =>
       window.location.assign(
-        "/myTopicRequests?reqsType=created&topicCreated=true"
+        "/myTopicRequests?reqsType=CREATED&topicCreated=true"
       ),
   });
 
