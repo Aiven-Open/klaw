@@ -9,7 +9,7 @@ import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
-} from "src/domain/requests";
+} from "src/domain/requests/requests-types";
 
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload
@@ -79,7 +79,7 @@ const declineSchemaRequest = ({
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"SCHEMA">
-  >(`/request/approve`, {
+  >(`/request/decline`, {
     reqIds,
     reason,
     requestEntityType: "SCHEMA",

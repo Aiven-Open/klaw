@@ -3,7 +3,10 @@ import type {
   Paginated,
   ResolveIntersectionTypes,
 } from "types/utils";
-import { RequestStatus, RequestOperationType } from "src/domain/requests";
+import {
+  RequestStatus,
+  RequestOperationType,
+} from "src/domain/requests/requests-types";
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 

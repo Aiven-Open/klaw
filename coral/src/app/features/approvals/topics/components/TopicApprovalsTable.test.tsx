@@ -4,7 +4,7 @@ import { TopicApprovalsTable } from "src/app/features/approvals/topics/component
 import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
-import { RequestStatus } from "src/domain/requests";
+import { RequestStatus } from "src/domain/requests/requests-types";
 
 const mockedSetDetailsModal = jest.fn();
 const mockedSetDeclineModal = jest.fn();
@@ -94,7 +94,7 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
-          approveIsLoading={false}
+          quickActionLoading={false}
           setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
@@ -163,7 +163,7 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
-          approveIsLoading={false}
+          quickActionLoading={false}
           setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
@@ -232,7 +232,7 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
-          approveIsLoading={false}
+          quickActionLoading={false}
           setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
@@ -280,14 +280,19 @@ describe("TopicApprovalsTable", () => {
     });
   });
 
-  describe("handles action columns loading state", () => {
+  describe("disables the quick actions dependent on props", () => {
+    const requestsWithStatusCreated = [
+      mockedRequests[0],
+      { ...mockedRequests[0], topicname: "Additional-topic", topicid: 1234 },
+    ];
+
     beforeAll(() => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
           setDetailsModal={mockedSetDetailsModal}
-          requests={mockedRequests}
-          approveIsLoading={true}
+          requests={requestsWithStatusCreated}
+          quickActionLoading={true}
           setDeclineModal={mockedSetDeclineModal}
           approveRequest={mockedApproveRequest}
         />
@@ -295,12 +300,33 @@ describe("TopicApprovalsTable", () => {
     });
     afterAll(cleanup);
 
-    it("renders disabled decline button", async () => {
-      const decline = screen.getByRole("button", {
-        name: "Decline topic request for test-topic-1",
+    requestsWithStatusCreated.forEach((request) => {
+      it(`disables button to approve schema request for topic name ${request.topicname}`, () => {
+        const table = screen.getByRole("table", { name: "Topic requests" });
+        const button = within(table).getByRole("button", {
+          name: `Approve topic request for ${request.topicname}`,
+        });
+
+        expect(button).toBeDisabled();
       });
 
-      expect(decline).toBeDisabled;
+      it(`disables  button to decline schema request for topic name ${request.topicname}`, () => {
+        const table = screen.getByRole("table", { name: "Topic requests" });
+        const button = within(table).getByRole("button", {
+          name: `Decline topic request for ${request.topicname}`,
+        });
+
+        expect(button).toBeDisabled();
+      });
+
+      it(`does not disables details for schema request for topic name ${request.topicname}`, () => {
+        const table = screen.getByRole("table", { name: "Topic requests" });
+        const detailsButton = within(table).getByRole("button", {
+          name: `View topic request for ${request.topicname}`,
+        });
+
+        expect(detailsButton).toBeEnabled();
+      });
     });
   });
 });

@@ -82,7 +82,6 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
             onClick={() => setModals({ open: "DETAILS", req_no: request.id })}
             icon={infoSign}
             dense
-            disabled={quickActionLoading}
           >
             <span aria-hidden={"true"}>View details</span>
             <span className={"visually-hidden"}>

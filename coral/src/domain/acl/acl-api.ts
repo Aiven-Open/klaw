@@ -8,7 +8,7 @@ import {
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
-} from "src/domain/requests";
+} from "src/domain/requests/requests-types";
 import api from "src/services/api";
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
 

@@ -46,7 +46,7 @@ type TopicApprovalsTableProp = {
     HTTPError,
     { requestEntityType: "TOPIC"; reqIds: string[] }
   >;
-  approveIsLoading: boolean;
+  quickActionLoading: boolean;
 };
 function TopicApprovalsTable(props: TopicApprovalsTableProp) {
   const {
@@ -54,7 +54,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
     setDetailsModal,
     setDeclineModal,
     approveRequest,
-    approveIsLoading,
+    quickActionLoading,
   } = props;
 
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
@@ -132,8 +132,9 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
               }}
               title={`Approve topic request`}
               aria-label={`Approve topic request for ${topicname}`}
+              disabled={quickActionLoading}
             >
-              {isLoading && approveIsLoading ? (
+              {isLoading && quickActionLoading ? (
                 <Icon color="grey-70" icon={loadingIcon} />
               ) : (
                 <Icon color="grey-70" icon={tickCircle} />
@@ -159,7 +160,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
               onClick={() => setDeclineModal({ isOpen: true, topicId: id })}
               title={`Decline topic request`}
               aria-label={`Decline topic request for ${topicname}`}
-              disabled={approveIsLoading}
+              disabled={quickActionLoading}
             >
               <Icon color="grey-70" icon={deleteIcon} />
             </GhostButton>

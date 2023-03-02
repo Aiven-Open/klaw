@@ -54,6 +54,8 @@ function SchemaApprovals() {
         topic,
       }),
     onSuccess: (newSchemaRequests) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
       // If through filtering a user finds themselves on a non existent page, reset page to 1
       // For example:
       // - one request returns 4 pages of results
@@ -73,6 +75,8 @@ function SchemaApprovals() {
   const { mutate: declineRequest, isLoading: declineRequestIsLoading } =
     useMutation(declineSchemaRequest, {
       onSuccess: (responses) => {
+        queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
         // @TODO follow up ticket #707
         // (for all approval tables)
         const response = responses[0];
@@ -185,6 +189,7 @@ function SchemaApprovals() {
             setModals({ ...modals, open: "DECLINE" });
           }}
           isLoading={declineRequestIsLoading || approveRequestIsLoading}
+          disabledActions={declineRequestIsLoading || approveRequestIsLoading}
         >
           <SchemaRequestDetails
             request={schemaRequests?.entries.find(

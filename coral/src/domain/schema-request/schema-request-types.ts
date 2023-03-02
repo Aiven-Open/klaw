@@ -1,5 +1,8 @@
 import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
-import { RequestStatus, RequestOperationType } from "src/domain/requests";
+import {
+  RequestStatus,
+  RequestOperationType,
+} from "src/domain/requests/requests-types";
 import { operations } from "types/api";
 
 type CreatedSchemaRequests = ResolveIntersectionTypes<

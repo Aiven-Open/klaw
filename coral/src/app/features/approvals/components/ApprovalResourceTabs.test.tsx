@@ -1,10 +1,10 @@
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
-import { ApprovalsTabEnum } from "src/app/router_utils";
 import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as notificationApi from "src/domain/notification/notification-api";
-import { Notifications } from "src/domain/notification/notification-types";
+import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
+import { ApprovalsTabEnum } from "src/app/router_utils";
+import * as requestApi from "src/domain/requests/requests-api";
+import { RequestsWaitingForApproval } from "src/domain/requests/requests-types";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 class Deferred<T> {
   public promise: Promise<T>;
@@ -24,18 +24,18 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigate,
 }));
 
-const mockedNotifications = {
-  topicNotificationCount: 1,
-  aclNotificationCount: 0,
-  schemaNotificationCount: 3,
-  connectorNotificationCount: 2,
-  userNotificationCount: 2,
+const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
+  TOPIC: 1,
+  ACL: 0,
+  SCHEMA: 3,
+  CONNECTOR: 2,
+  USER: 2,
 };
 
 describe("ApprovalResourceTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;
   const getSpy = jest
-    .spyOn(notificationApi, "getNotificationCounts")
+    .spyOn(requestApi, "getRequestsWaitingForApproval")
     .mockImplementation(() => {
       throw Error("getNotificationCounts return must be mocked");
     });
@@ -45,7 +45,7 @@ describe("ApprovalResourceTabs", () => {
   });
 
   describe("Tab badges", () => {
-    let manual: Deferred<Notifications>;
+    let manual: Deferred<RequestsWaitingForApproval>;
 
     beforeAll(() => {
       manual = new Deferred();
@@ -78,7 +78,7 @@ describe("ApprovalResourceTabs", () => {
 
       describe("when notification count request resolves", () => {
         beforeAll(() => {
-          manual.resolve(mockedNotifications);
+          manual.resolve(mockedRequestsWaitingForApproval);
         });
 
         it("renders correct pending approvals for Topics", async () => {
@@ -110,7 +110,7 @@ describe("ApprovalResourceTabs", () => {
   describe("Tab navigation", () => {
     beforeEach(() => {
       user = userEvent.setup();
-      getSpy.mockResolvedValue(mockedNotifications);
+      getSpy.mockResolvedValue(mockedRequestsWaitingForApproval);
       customRender(
         <ApprovalResourceTabs currentTab={ApprovalsTabEnum.TOPICS} />,
         { queryClient: true, memoryRouter: true }

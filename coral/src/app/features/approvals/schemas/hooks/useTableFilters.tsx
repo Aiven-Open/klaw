@@ -2,7 +2,7 @@ import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { RequestStatus } from "src/domain/requests";
+import { RequestStatus } from "src/domain/requests/requests-types";
 import {
   requestStatusNameMap,
   statusList,

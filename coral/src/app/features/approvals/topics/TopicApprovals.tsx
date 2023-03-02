@@ -77,6 +77,8 @@ function TopicApprovals() {
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
     mutationFn: approveTopicRequest,
     onSuccess: (responses) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
 
@@ -115,6 +117,8 @@ function TopicApprovals() {
   const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
     mutationFn: declineTopicRequest,
     onSuccess: (responses) => {
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
 
@@ -161,7 +165,7 @@ function TopicApprovals() {
       setDetailsModal={setDetailsModal}
       setDeclineModal={setDeclineModal}
       approveRequest={approveRequest}
-      approveIsLoading={approveIsLoading}
+      quickActionLoading={approveIsLoading || declineIsLoading}
     />
   );
   const pagination =
@@ -195,8 +199,12 @@ function TopicApprovals() {
             setDetailsModal({ isOpen: false, topicId: null });
             setDeclineModal({ isOpen: true, topicId: detailsModal.topicId });
           }}
-          isLoading={approveIsLoading}
-          disabledActions={selectedTopicRequest?.requestStatus !== "CREATED"}
+          isLoading={approveIsLoading || declineIsLoading}
+          disabledActions={
+            selectedTopicRequest?.requestStatus !== "CREATED" ||
+            approveIsLoading ||
+            declineIsLoading
+          }
         >
           <DetailsModalContent topicRequest={selectedTopicRequest} />
         </RequestDetailsModal>
@@ -216,7 +224,7 @@ function TopicApprovals() {
               reason: message,
             });
           }}
-          isLoading={declineIsLoading}
+          isLoading={declineIsLoading || approveIsLoading}
         />
       )}
       {errorMessage !== "" && (

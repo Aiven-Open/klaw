@@ -133,7 +133,16 @@ describe("TopicApprovals", () => {
   });
 
   describe("handles loading and error state when fetching the requests", () => {
-    afterEach(cleanup);
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      console.error = jest.fn();
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTeams.mockResolvedValue([]);
+    });
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+    });
 
     it("shows a loading state instead of a table while topic requests are being fetched", () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(
@@ -150,6 +159,7 @@ describe("TopicApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(loading).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("shows a error message in case of an error for fetching topic requests", async () => {
@@ -173,6 +183,9 @@ describe("TopicApprovals", () => {
 
       expect(table).not.toBeInTheDocument();
       expect(errorMessage).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith(
+        "Unexpected error. Please try again later!"
+      );
     });
   });
 
@@ -236,6 +249,15 @@ describe("TopicApprovals", () => {
   });
 
   describe("renders pagination dependent on response", () => {
+    beforeEach(() => {
+      mockGetTopicRequestsForApprover.mockResolvedValue({
+        totalPages: 1,
+        currentPage: 1,
+        entries: [],
+      });
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTeams.mockResolvedValue([]);
+    });
     afterEach(() => {
       cleanup();
       jest.clearAllMocks();
@@ -339,6 +361,8 @@ describe("TopicApprovals", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
       mockGetTopicRequestsForApprover.mockResolvedValue({
         totalPages: 3,
         currentPage: 1,
@@ -387,6 +411,8 @@ describe("TopicApprovals", () => {
 
   describe("shows a detail modal for Topic request", () => {
     beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
 
       customRender(<TopicApprovals />, {
