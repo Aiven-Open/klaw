@@ -79,7 +79,7 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
         };
       },
     },
-    { type: "text", field: "teamname", headerName: "Claim by team" },
+    { type: "text", field: "teamname", headerName: "Team" },
     { type: "text", field: "requestor", headerName: "Requested by" },
     {
       type: "text",

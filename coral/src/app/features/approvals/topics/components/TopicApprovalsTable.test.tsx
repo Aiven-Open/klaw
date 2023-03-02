@@ -79,7 +79,7 @@ describe("TopicApprovalsTable", () => {
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
-    { columnHeader: "Claim by team", relatedField: "teamname" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "", relatedField: null },
