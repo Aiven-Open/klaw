@@ -696,6 +696,7 @@ export type components = {
       /** @example 10-11-2020 10:45:30 */
       requesttimestring?: string;
       requestStatus?: components["schemas"]["RequestStatus"];
+      requestOperationType?: components["schemas"]["RequestOperationType"];
       approver?: string;
       /**
        * Format: date-time

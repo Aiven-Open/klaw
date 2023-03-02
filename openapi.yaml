@@ -1291,6 +1291,8 @@ components:
           example: "10-11-2020 10:45:30"
         requestStatus:
           $ref: "#/components/schemas/RequestStatus"
+        requestOperationType:
+          $ref: "#/components/schemas/RequestOperationType"
         approver:
           type: string
         approvingtime:
