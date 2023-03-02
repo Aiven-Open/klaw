@@ -1452,7 +1452,7 @@ public class SelectDataJdbc {
       if (RequestMode.MY_APPROVALS == requestMode) {
         // Make sure to remove any requests which the requestor can not approve
         Long topicApprovalCount =
-            topicRequestsRepo.countRequestorsTopicRequestsGroupByStatusType(
+            topicRequestsRepo.countRequestorsTopicRequests(
                 teamId, tenantId, requestor, RequestStatus.CREATED.value);
 
         statusCountsMap.put(

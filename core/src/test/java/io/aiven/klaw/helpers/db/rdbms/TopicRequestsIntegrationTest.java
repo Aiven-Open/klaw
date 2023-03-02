@@ -797,6 +797,19 @@ public class TopicRequestsIntegrationTest {
     assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
   }
 
+  @Test
+  @Order(31)
+  public void getTopicRequestsStatsIncludingClaimRequestsMyApprovals() {
+    Map<String, Map<String, Long>> results =
+        selectDataJdbc.getTopicRequestsCounts(101, RequestMode.MY_APPROVALS, 101, "Ralph");
+
+    Map<String, Long> statsCount = results.get("STATUS_COUNTS");
+    Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
+
+    assertThat(results).hasSize(2);
+    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(17L);
+  }
+
   private void generateData(
       int number,
       int teamId,
