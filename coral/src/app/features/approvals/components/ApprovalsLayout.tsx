@@ -47,12 +47,7 @@ function ApprovalsLayout(props: ApprovalsLayoutProps) {
             }}
             marginBottom={"l4"}
           >
-            <Box
-              style={{ minWidth: "1280px" }}
-              className={"a11y-enhancement-data-table"}
-            >
-              {table}
-            </Box>
+            <Box className={"a11y-enhancement-data-table"}>{table}</Box>
           </Box>
           <Flexbox justifyContent={"center"}>{pagination}</Flexbox>
         </>
