@@ -72,8 +72,16 @@ describe("SchemaRequestDetails", () => {
       expect(definition).toHaveTextContent(testRequest.topicname);
     });
 
+    it("shows the Schema version", () => {
+      const term = findTerm("Schema version");
+      const definition = findDefinition(term);
+
+      expect(term).toBeVisible();
+      expect(definition).toHaveTextContent(testRequest.schemaversion);
+    });
+
     it("shows a preview of the schema", () => {
-      const term = findTerm("Schema");
+      const term = findTerm("Schema preview");
       const definition = findDefinition(term);
 
       expect(term).toBeVisible();
