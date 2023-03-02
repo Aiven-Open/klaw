@@ -34,7 +34,7 @@ describe("useTableFilters.tsx", () => {
 
       expect(result.current.filters).toHaveLength(4);
     });
-    it("returns 'created' value by default for status state", () => {
+    it("returns 'CREATED' value by default for status state", () => {
       const { result } = renderHook(() => useTableFilters(), {
         wrapper,
       });
