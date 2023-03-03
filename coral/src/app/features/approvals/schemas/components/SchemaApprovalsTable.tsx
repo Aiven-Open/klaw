@@ -82,7 +82,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
     {
       type: "text",
       field: "requesttimestring",
-      headerName: "Date requested",
+      headerName: "Requested on",
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
       },

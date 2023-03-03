@@ -36,7 +36,7 @@ function SelectSchemaRegEnvironment(props: SelectSchemaRegEnvironmentProps) {
         }}
       >
         <Option key={ALL_ENVIRONMENTS_VALUE} value={ALL_ENVIRONMENTS_VALUE}>
-          All environments
+          All Environments
         </Option>
 
         {environments.map((env: Environment) => (

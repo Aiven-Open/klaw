@@ -50,7 +50,7 @@ describe("SelectEnvironment.tsx", () => {
 
     afterAll(cleanup);
 
-    it("shows a select element for Kafka environments", () => {
+    it("shows a select element for Kafka Environments", () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -58,7 +58,7 @@ describe("SelectEnvironment.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders a list of options for environments plus a option for `All environments`", () => {
+    it("renders a list of options for environments plus a option for `All Environments`", () => {
       mockedEnvironmentResponse.forEach((environment) => {
         const option = screen.getByRole("option", {
           name: environment.name,
@@ -71,11 +71,11 @@ describe("SelectEnvironment.tsx", () => {
       );
     });
 
-    it("shows `All environments` as the active option one", () => {
+    it("shows `All Environments` as the active option one", () => {
       const option = screen.getByRole("option", {
         selected: true,
       });
-      expect(option).toHaveAccessibleName("All environments");
+      expect(option).toHaveAccessibleName("All Environments");
     });
 
     it("updates the environment state for initial api call with value associated with `All Environments`", () => {
@@ -225,7 +225,7 @@ describe("SelectEnvironment.tsx", () => {
         name: filterLabel,
       });
 
-      const option = screen.getByRole("option", { name: "All environments" });
+      const option = screen.getByRole("option", { name: "All Environments" });
 
       await userEvent.selectOptions(select, option);
 

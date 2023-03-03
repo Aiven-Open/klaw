@@ -139,7 +139,7 @@ describe("TopicSchemaRequest", () => {
       expect(form).toBeVisible();
     });
 
-    it("shows a loading element while environments are being fetched", () => {
+    it("shows a loading element while Environments are being fetched", () => {
       const form = getForm();
       const loadingEnvironments = within(form).getByTestId(
         "environments-select-loading"
@@ -175,7 +175,7 @@ describe("TopicSchemaRequest", () => {
       expect(form).toBeVisible();
     });
 
-    it("shows a required select element to choose an environment", () => {
+    it("shows a required select element to choose an Environment", () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
         name: /Environment/i,
@@ -185,7 +185,7 @@ describe("TopicSchemaRequest", () => {
       expect(select).toBeRequired();
     });
 
-    it("renders all options for environment based on api data", () => {
+    it("renders all options for Environment based on api data", () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
         name: /Environment/i,
@@ -196,7 +196,7 @@ describe("TopicSchemaRequest", () => {
     });
 
     test.each(mockedEnvironments)(
-      `renders a option $name with the environments id set as value $id`,
+      `renders a option $name with the Environments id set as value $id`,
       ({ name, id }) => {
         const form = getForm();
         const select = within(form).getByRole("combobox", {
@@ -292,7 +292,7 @@ describe("TopicSchemaRequest", () => {
       cleanup();
     });
 
-    it("shows error when user does not fill out environment select", async () => {
+    it("shows error when user does not fill out Environment select", async () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
         name: /Environment/i,

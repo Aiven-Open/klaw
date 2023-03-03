@@ -52,7 +52,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
 
     afterAll(cleanup);
 
-    it("shows a select element for environments", () => {
+    it("shows a select element for Environments", () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -60,7 +60,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders a list of options for environments plus a option for `All environments`", () => {
+    it("renders a list of options for Environments plus a option for `All environments`", () => {
       mockedEnvironmentResponse.forEach((environment) => {
         const option = screen.getByRole("option", {
           name: environment.name,
@@ -73,14 +73,14 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
       );
     });
 
-    it("shows `All environments` as the active option based on given value", () => {
+    it("shows `All Environments` as the active option based on given value", () => {
       const option = screen.getByRole("option", {
         selected: true,
       });
-      expect(option).toHaveAccessibleName("All environments");
+      expect(option).toHaveAccessibleName("All Environments");
     });
 
-    it("has `All environments` as the active value for option", () => {
+    it("has `All Environments` as the active value for option", () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
