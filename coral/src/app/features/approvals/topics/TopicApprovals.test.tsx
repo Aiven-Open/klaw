@@ -208,26 +208,29 @@ describe("TopicApprovals", () => {
       jest.clearAllMocks();
     });
 
-    it("shows a select to filter by teams", () => {
+    it("shows a select to filter by teams with default", () => {
       const select = screen.getByRole("combobox", { name: "Filter by team" });
 
       expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All teams");
     });
 
-    it("shows a select to filter by environment", () => {
+    it("shows a select to filter by environment with default", () => {
       const select = screen.getByRole("combobox", {
         name: "Filter by Environment",
       });
 
       expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All environments");
     });
 
-    it("shows a select to filter by status", () => {
+    it("shows a select to filter by status with default", () => {
       const select = screen.getByRole("combobox", {
         name: "Filter by status",
       });
 
       expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("Awaiting approval");
     });
 
     it("shows a search input to search for topic names", () => {
