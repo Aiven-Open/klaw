@@ -97,7 +97,7 @@ describe("Topics", () => {
       expect(mockedNavigator).toHaveBeenCalledWith("/topics/request");
     });
 
-    it("renders a select element to filter topics by Kafka environment", async () => {
+    it("renders a select element to filter topics by Kafka Environment", async () => {
       const select = screen.getByRole("combobox", {
         name: "Filter by Environment",
       });

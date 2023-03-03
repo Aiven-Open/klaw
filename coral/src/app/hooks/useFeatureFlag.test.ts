@@ -8,7 +8,7 @@ describe("useFeatureFlag", () => {
     process.env = originalEnv;
   });
 
-  describe("when flag is not defined in process environment", () => {
+  describe("when flag is not defined in process Environment", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { FEATURE_FLAG_TOPIC_REQUEST, ...rest } = originalEnv;
     beforeEach(() => {
@@ -21,7 +21,7 @@ describe("useFeatureFlag", () => {
       expect(value).toBe(false);
     });
   });
-  describe('when flag is defined in process environment with value "false"', () => {
+  describe('when flag is defined in process Environment with value "false"', () => {
     beforeEach(() => {
       process.env = {
         ...originalEnv,
@@ -35,7 +35,7 @@ describe("useFeatureFlag", () => {
       expect(value).toBe(false);
     });
   });
-  describe('when flag is defined in process environment with value "true"', () => {
+  describe('when flag is defined in process Environment with value "true"', () => {
     beforeEach(() => {
       process.env = {
         ...originalEnv,

@@ -55,7 +55,7 @@ function SelectEnv(props: SelectEnvProps) {
         onChange={(event) => onChangeEnv(event.target.value)}
       >
         <Option key={ALL_ENVIRONMENTS_VALUE} value={ALL_ENVIRONMENTS_VALUE}>
-          All environments
+          All Environments
         </Option>
 
         {environments.map((env: Environment) => (

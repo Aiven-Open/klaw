@@ -94,7 +94,7 @@ const TopicConsumerForm = ({
     if (hideConsumerGroupField) {
       topicConsumerForm.setValue("consumergroup", "-na-");
     } else {
-      // Reset field to e empty value so that the "-na-" value does not persist between switching environments
+      // Reset field to e empty value so that the "-na-" value does not persist between switching Environments
       topicConsumerForm.setValue("consumergroup", "");
     }
   }, [hideConsumerGroupField]);

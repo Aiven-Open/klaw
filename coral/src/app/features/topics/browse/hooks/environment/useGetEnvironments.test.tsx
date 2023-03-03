@@ -66,7 +66,7 @@ describe("useGetEnvironments", () => {
   });
 
   describe("handles successful response", () => {
-    it("returns a list of environments", async () => {
+    it("returns a list of Environments", async () => {
       mockGetEnvironments({
         mswInstance: server,
         response: { data: mockedEnvironmentResponse },

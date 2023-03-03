@@ -226,7 +226,7 @@ describe("useGetTopics", () => {
     });
   });
 
-  describe("when called with environment name", () => {
+  describe("when called with Environment name", () => {
     it("includes 'env' as a query parameter in the API request", async () => {
       mockTopicGetRequest({
         mswInstance: server,

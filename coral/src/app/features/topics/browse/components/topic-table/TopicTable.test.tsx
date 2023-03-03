@@ -75,7 +75,7 @@ describe("TopicTable.tsx", () => {
         expect(team).toBeVisible();
       });
 
-      it(`renders a list of environments for topic ${topic}`, () => {
+      it(`renders a list of Environments for topic ${topic}`, () => {
         const table = screen.getByRole("table", {
           name: "Topics overview, page 1 of 2",
         });
@@ -90,7 +90,7 @@ describe("TopicTable.tsx", () => {
       });
 
       topic.environmentsList.forEach((env) => {
-        it(`renders environment ${env} for topic ${topic}`, () => {
+        it(`renders Environment ${env} for topic ${topic}`, () => {
           const table = screen.getByRole("table", {
             name: "Topics overview, page 1 of 2",
           });
