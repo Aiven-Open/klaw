@@ -81,7 +81,7 @@ describe("SchemaApprovalsTable", () => {
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Requested by", relatedField: "username" },
-    { columnHeader: "Date requested", relatedField: "requesttimestring" },
+    { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
     { columnHeader: "Approve", relatedField: null },
     { columnHeader: "Decline", relatedField: null },
@@ -228,7 +228,7 @@ describe("SchemaApprovalsTable", () => {
             const field = request[column.relatedField];
 
             let text = field;
-            if (column.columnHeader === "Date requested") {
+            if (column.columnHeader === "Requested on") {
               text = `${field}${"\u00A0"}UTC`;
             }
 
