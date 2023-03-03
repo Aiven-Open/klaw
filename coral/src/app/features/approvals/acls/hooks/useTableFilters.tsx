@@ -87,8 +87,9 @@ const useTableFilters = () => {
         }, 500)}
       />
       <div id={"search-field-description"} className={"visually-hidden"}>
-        Press &quot;Enter&quot; to start your search. Press &quot;Escape&quot;
-        to delete all your input.
+        Search for an exact match for topic name. Searching starts automatically
+        with a little delay while typing. Press &quot;Escape&quot; to delete all
+        your input.
       </div>
     </div>,
   ];

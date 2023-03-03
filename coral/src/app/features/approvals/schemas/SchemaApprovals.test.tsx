@@ -204,7 +204,7 @@ describe("SchemaApprovals", () => {
       });
 
       expect(select).toBeVisible();
-      expect(select).toHaveDisplayValue("All environments");
+      expect(select).toHaveDisplayValue("All Environments");
     });
 
     it("shows a select to filter by status with default value", () => {
@@ -221,7 +221,7 @@ describe("SchemaApprovals", () => {
 
       expect(search).toBeVisible();
       expect(search).toHaveAccessibleDescription(
-        'Press "Enter" to start your search. Press "Escape" to delete all your input.'
+        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
     });
 

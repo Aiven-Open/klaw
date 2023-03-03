@@ -330,7 +330,7 @@ describe("AclApprovals", () => {
       });
 
       expect(select).toBeVisible();
-      expect(select).toHaveDisplayValue("All environments");
+      expect(select).toHaveDisplayValue("All Environments");
     });
 
     it("renders a select to filter by status with default", () => {
@@ -349,7 +349,12 @@ describe("AclApprovals", () => {
     });
 
     it("renders a select to filter by environment with default", () => {
-      expect(screen.getByRole("search")).toBeVisible();
+      const search = screen.getByRole("search");
+
+      expect(search).toBeVisible();
+      expect(search).toHaveAccessibleDescription(
+        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+      );
     });
 
     it("filters by Environment", async () => {
