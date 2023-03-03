@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Klaw - OpenAPI
-  version: 1.0.0
+  version: 2.1.0
   description: >
     This specification is still a work in progress and is not yet implemented in any API. The purpose of this
     specification is to facilitate developers discussions.

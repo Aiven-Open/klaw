@@ -24,6 +24,7 @@ For the versions available, see the [tags on this repository](https://github.com
 
 - Topics (approval): Create, Update, Delete, Promote
   - React UI - New look and feel for Browse topics, Create topic Request
+  - React UI - New look and feel for Approving topics, ACLs, Schemas
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
@@ -62,6 +63,7 @@ For the versions available, see the [tags on this repository](https://github.com
   - Configurable users, teams
   - More than 35 permissions
   - Configurable roles (Roles can be pulled from AD for authorization)
+  - Ability to switch between different teams
 
 - Topic naming conventions
   - Enforce prefix and suffixes per environment
