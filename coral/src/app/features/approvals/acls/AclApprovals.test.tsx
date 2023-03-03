@@ -324,10 +324,31 @@ describe("AclApprovals", () => {
       cleanup();
     });
 
-    it("renders correct filters", () => {
-      expect(screen.getByLabelText("Filter by Environment")).toBeVisible();
-      expect(screen.getByLabelText("Filter by status")).toBeVisible();
-      expect(screen.getByLabelText("Filter by ACL type")).toBeVisible();
+    it("renders a select to filter by environment with default", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All environments");
+    });
+
+    it("renders a select to filter by status with default", () => {
+      const select = screen.getByRole("combobox", { name: "Filter by status" });
+
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("Awaiting approval");
+    });
+
+    it("renders a select to filter by ACL type with default", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by ACL type",
+      });
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All ACL types");
+    });
+
+    it("renders a select to filter by environment with default", () => {
       expect(screen.getByRole("search")).toBeVisible();
     });
 

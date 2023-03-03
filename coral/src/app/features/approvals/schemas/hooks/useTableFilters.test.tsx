@@ -35,7 +35,7 @@ describe("useTableFilters.tsx", () => {
       expect(result.current.filters).toHaveLength(3);
     });
 
-    it("returns 'created' value by default for environment state", () => {
+    it("returns 'ALL' value by default for environment state", () => {
       const { result } = renderHook(() => useTableFilters(), {
         wrapper,
       });
@@ -43,7 +43,7 @@ describe("useTableFilters.tsx", () => {
       expect(result.current.environment).toBe("ALL");
     });
 
-    it("returns 'ALL' value by default for status state", () => {
+    it("returns 'CREATED' value by default for status state", () => {
       const { result } = renderHook(() => useTableFilters(), {
         wrapper,
       });

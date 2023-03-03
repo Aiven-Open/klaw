@@ -4,7 +4,11 @@ import { TopicApprovalsTable } from "src/app/features/approvals/topics/component
 import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import {
+  RequestOperationType,
+  RequestStatus,
+} from "src/domain/requests/requests-types";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 const mockedSetDetailsModal = jest.fn();
 const mockedSetDeclineModal = jest.fn();
@@ -79,7 +83,8 @@ describe("TopicApprovalsTable", () => {
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
-    { columnHeader: "Claim by team", relatedField: "teamname" },
+    { columnHeader: "Request type", relatedField: "requestOperationType" },
+    { columnHeader: "Team", relatedField: "teamname" },
     { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "", relatedField: null },
@@ -216,6 +221,10 @@ describe("TopicApprovalsTable", () => {
 
             if (column.columnHeader === "Status") {
               text = requestStatusNameMap[field as RequestStatus];
+            }
+
+            if (column.columnHeader === "Request type") {
+              text = requestOperationTypeNameMap[field as RequestOperationType];
             }
             const cell = within(table).getByRole("cell", { name: text });
 

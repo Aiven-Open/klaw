@@ -30,8 +30,15 @@ import {
   getAclRequestsForApprover,
 } from "src/domain/acl/acl-api";
 import { AclRequest, AclRequestsForApprover } from "src/domain/acl/acl-types";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import {
+  RequestOperationType,
+  RequestStatus,
+} from "src/domain/requests/requests-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import {
+  requestOperationTypeChipStatusMap,
+  requestOperationTypeNameMap,
+} from "src/app/features/approvals/utils/request-operation-type-helper";
 
 interface AclRequestTableRow {
   id: number;
@@ -44,11 +51,13 @@ interface AclRequestTableRow {
   aclType: AclRequest["aclType"];
   username: string;
   requesttimestring: string;
-  // `requestStatus` is always defined from backend
+  // `requestStatus` and `requestOperationType` are
+  // always defined from backend
   // but api definition says it can be undefined
   // the empty string is used to make ts compiler
   // happy :D
   requestStatus: RequestStatus | "";
+  requestOperationType: RequestOperationType | "";
 }
 
 const getRows = (entries: AclRequest[] | undefined): AclRequestTableRow[] => {
@@ -68,6 +77,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRow[] => {
       username,
       requesttimestring,
       requestStatus,
+      requestOperationType,
     }) => ({
       id: Number(req_no),
       acl_ssl: acl_ssl ?? [],
@@ -80,6 +90,7 @@ const getRows = (entries: AclRequest[] | undefined): AclRequestTableRow[] => {
       username: username ?? "-",
       requesttimestring: requesttimestring ?? "-",
       requestStatus: requestStatus ?? "",
+      requestOperationType: requestOperationType ?? "",
     })
   );
 };
@@ -290,6 +301,23 @@ function AclApprovals() {
         return {
           status: requestStatusChipStatusMap[requestStatus],
           text: requestStatusNameMap[requestStatus],
+        };
+      },
+    },
+    {
+      type: "status",
+      field: "requestOperationType",
+      headerName: "Request type",
+      status: ({ requestOperationType }) => {
+        if (requestOperationType === "") {
+          return {
+            status: "neutral",
+            text: "-",
+          };
+        }
+        return {
+          status: requestOperationTypeChipStatusMap[requestOperationType],
+          text: requestOperationTypeNameMap[requestOperationType],
         };
       },
     },

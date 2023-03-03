@@ -4,7 +4,11 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { SchemaRequest } from "src/domain/schema-request";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import userEvent from "@testing-library/user-event";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import {
+  RequestOperationType,
+  RequestStatus,
+} from "src/domain/requests/requests-types";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 const mockedRequests: SchemaRequest[] = [
   {
@@ -75,6 +79,7 @@ describe("SchemaApprovalsTable", () => {
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
+    { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Requested by", relatedField: "username" },
     { columnHeader: "Date requested", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
@@ -226,8 +231,13 @@ describe("SchemaApprovalsTable", () => {
             if (column.columnHeader === "Date requested") {
               text = `${field}${"\u00A0"}UTC`;
             }
+
             if (column.columnHeader === "Status") {
               text = requestStatusNameMap[field as RequestStatus];
+            }
+
+            if (column.columnHeader === "Request type") {
+              text = requestOperationTypeNameMap[field as RequestOperationType];
             }
             const cell = within(table).getByRole("cell", { name: text });
 

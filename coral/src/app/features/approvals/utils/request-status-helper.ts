@@ -26,7 +26,7 @@ const requestStatusNameMap: {
 } = {
   ALL: "All statuses",
   APPROVED: "Approved",
-  CREATED: "Created",
+  CREATED: "Awaiting approval",
   DECLINED: "Declined",
   DELETED: "Deleted",
 };

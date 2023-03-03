@@ -14,6 +14,10 @@ import {
 } from "src/app/features/approvals/utils/request-status-helper";
 import { Dispatch, SetStateAction, useState } from "react";
 import loadingIcon from "@aivenio/aquarium/icons/loading";
+import {
+  requestOperationTypeChipStatusMap,
+  requestOperationTypeNameMap,
+} from "src/app/features/approvals/utils/request-operation-type-helper";
 
 interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
@@ -22,6 +26,7 @@ interface SchemaRequestTableData {
   username: SchemaRequest["username"];
   requesttimestring: SchemaRequest["requesttimestring"];
   requestStatus: SchemaRequest["requestStatus"];
+  requestOperationType: SchemaRequest["requestOperationType"];
 }
 
 type SchemaApprovalsTableProps = {
@@ -59,6 +64,17 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
         return {
           status: requestStatusChipStatusMap[requestStatus],
           text: requestStatusNameMap[requestStatus],
+        };
+      },
+    },
+    {
+      type: "status",
+      field: "requestOperationType",
+      headerName: "Request type",
+      status: ({ requestOperationType }) => {
+        return {
+          status: requestOperationTypeChipStatusMap[requestOperationType],
+          text: requestOperationTypeNameMap[requestOperationType],
         };
       },
     },
@@ -149,6 +165,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
         username: request.username,
         requesttimestring: request.requesttimestring,
         requestStatus: request.requestStatus,
+        requestOperationType: request.requestOperationType,
       };
     }
   );
