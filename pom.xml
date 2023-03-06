@@ -37,7 +37,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.0.2</version>
+        <version>3.0.4</version>
         <relativePath/>
     </parent>
 
@@ -59,7 +59,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
-        <spotless-maven-plugin.version>2.33.0</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>2.34.0</spotless-maven-plugin.version>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
     </properties>
 

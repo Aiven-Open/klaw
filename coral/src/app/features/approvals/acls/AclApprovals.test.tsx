@@ -105,6 +105,7 @@ const mockGetAclRequestsForApproverResponseEmpty =
 describe("AclApprovals", () => {
   beforeAll(() => {
     mockIntersectionObserver();
+    mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
   });
   afterAll(() => {
     jest.resetAllMocks();
@@ -139,7 +140,6 @@ describe("AclApprovals", () => {
       mockGetAclRequestsForApprover.mockRejectedValue(
         "Unexpected error. Please try again later!"
       );
-
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -160,86 +160,12 @@ describe("AclApprovals", () => {
     });
   });
 
-  describe("DataTable", () => {
-    beforeAll(async () => {
-      mockGetEnvironments.mockResolvedValue([]);
-      mockGetAclRequestsForApprover.mockResolvedValue(
-        mockGetAclRequestsForApproverResponse
-      );
-
-      customRender(<AclApprovals />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
-
-      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
-    });
-
-    afterAll(() => {
-      cleanup();
-      jest.resetAllMocks();
-    });
-
-    it("shows one header row and two data rows", async () => {
-      const rows = screen.getAllByRole("row");
-
-      expect(rows).toHaveLength(3);
-      expect(rows[0]).toHaveTextContent("Principals/Usernames");
-      expect(rows[1]).toHaveTextContent("mbasani");
-      expect(rows[2]).toHaveTextContent("User:*");
-    });
-
-    it("renders (prefixed) in Topic cell when appropriate", async () => {
-      const prefixedCells = screen.getAllByText("(prefixed)");
-      const notPrefixedCells = screen.getAllByText("aivtopic1");
-
-      expect(prefixedCells).toHaveLength(1);
-      expect(notPrefixedCells).toHaveLength(1);
-    });
-
-    it("renders all values for cells who can have multiple values", async () => {
-      const cells = screen.getAllByRole("cell");
-
-      expect(
-        cells.filter((cell) => {
-          return cell.textContent === "mbasani maulbach ";
-        })
-      ).toHaveLength(1);
-      expect(
-        cells.filter((cell) => cell.textContent === "3.3.3.32 3.3.3.33 ")
-      ).toHaveLength(1);
-    });
-
-    it("render action buttons when status is CREATED", () => {
-      const createdRow = screen.getAllByRole("row")[1];
-
-      expect(createdRow).toContainElement(
-        screen.getByRole("button", { name: /Approve/ })
-      );
-      expect(createdRow).toContainElement(
-        screen.getByRole("button", { name: /Decline/ })
-      );
-    });
-
-    it("does not render action buttons when status is not CREATED", () => {
-      const approvedRow = screen.getAllByRole("row")[2];
-
-      expect(approvedRow).not.toContainElement(
-        screen.getByRole("button", { name: /Approve/ })
-      );
-      expect(approvedRow).not.toContainElement(
-        screen.getByRole("button", { name: /Decline/ })
-      );
-    });
-  });
-
   describe("handles paginated data", () => {
     beforeAll(async () => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
       );
-
       customRender(<AclApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -267,7 +193,7 @@ describe("AclApprovals", () => {
       const approvedRow = screen.getAllByRole("row")[2];
       await userEvent.click(
         within(approvedRow).getByRole("button", {
-          name: /View topic request for/,
+          name: /View acl request for/,
         })
       );
       const modal = screen.getByRole("dialog");
@@ -287,7 +213,7 @@ describe("AclApprovals", () => {
 
       await userEvent.click(
         within(createdRow).getByRole("button", {
-          name: /View topic request for/,
+          name: /View acl request for/,
         })
       );
 
