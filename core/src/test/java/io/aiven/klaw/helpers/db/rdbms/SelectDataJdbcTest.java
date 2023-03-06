@@ -4,15 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.ActivityLog;
-import io.aiven.klaw.dao.EnvID;
-import io.aiven.klaw.dao.EnvMapping;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
@@ -22,7 +19,6 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
-import io.aiven.klaw.repository.EnvMappingRepo;
 import io.aiven.klaw.repository.EnvRepo;
 import io.aiven.klaw.repository.KwPropertiesRepo;
 import io.aiven.klaw.repository.RegisterInfoRepo;
@@ -33,7 +29,6 @@ import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,8 +45,6 @@ public class SelectDataJdbcTest {
   @Mock private TeamRepo teamRepo;
 
   @Mock private EnvRepo envRepo;
-
-  @Mock private EnvMappingRepo envMappingRepo;
 
   @Mock private ActivityLogRepo activityLogRepo;
 
@@ -85,7 +78,6 @@ public class SelectDataJdbcTest {
     ReflectionTestUtils.setField(selectData, "aclRepo", aclRepo);
     ReflectionTestUtils.setField(selectData, "topicRequestsRepo", topicRequestsRepo);
     ReflectionTestUtils.setField(selectData, "schemaRequestRepo", schemaRequestRepo);
-    ReflectionTestUtils.setField(selectData, "envMappingRepo", envMappingRepo);
   }
 
   @Test
@@ -279,57 +271,5 @@ public class SelectDataJdbcTest {
 
     teamList = selectData.selectTeamsOfUsers(username, 1);
     assertThat(teamList).isEmpty();
-  }
-
-  @Test
-  public void givenNoEnvMappingsReturnEmptyList() {
-
-    List<EnvMapping> envMapping = selectData.findAllEnvMappingsByTenantId(101);
-    assertThat(envMapping).isNullOrEmpty();
-  }
-
-  @Test
-  public void givenNoEnvMappingsReturnDoesNotExist() {
-
-    boolean exists = selectData.envMappingExists(new EnvID("101", 101));
-    assertThat(exists).isFalse();
-  }
-
-  @Test
-  public void givenNoEnvMappingsReturnNull() {
-
-    EnvMapping mapping = selectData.findEnvMappingById(new EnvID("101", 101));
-    assertThat(mapping).isNull();
-  }
-
-  @Test
-  public void givenMultipleEnvMappingsReturnList() {
-    when(envMappingRepo.findAllByTenantId(eq(101)))
-        .thenReturn(List.of(createEnvMapping("2", "TST", 101)));
-    List<EnvMapping> envMapping = selectData.findAllEnvMappingsByTenantId(101);
-    assertThat(envMapping.size()).isEqualTo(1);
-  }
-
-  @Test
-  public void givenEnvMappingsReturnTrue() {
-    when(envMappingRepo.existsById(any(EnvID.class))).thenReturn(true);
-    boolean exists = selectData.envMappingExists(new EnvID("101", 101));
-    assertThat(exists).isTrue();
-  }
-
-  @Test
-  public void givenNoEnvMappingsReturnMapping() {
-    when(envMappingRepo.findById(any(EnvID.class)))
-        .thenReturn(Optional.of(createEnvMapping("1", "DEV", 101)));
-    EnvMapping mapping = selectData.findEnvMappingById(new EnvID("1", 101));
-    assertThat(mapping).isNotNull();
-  }
-
-  public EnvMapping createEnvMapping(String id, String name, int tenantId) {
-    EnvMapping mapping = new EnvMapping();
-    mapping.setId(id);
-    mapping.setName(name);
-    mapping.setTenantId(tenantId);
-    return mapping;
   }
 }

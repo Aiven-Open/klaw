@@ -96,6 +96,6 @@ public class EnvControllerService {
             tenantId);
 
     env.setEnvStatus(status);
-    manageDatabase.getHandleDbRequests().updateEnvStatus(env);
+    manageDatabase.getHandleDbRequests().addNewEnv(env);
   }
 }

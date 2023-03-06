@@ -47,9 +47,6 @@ public class SelectDataJdbc {
   private EnvRepo envRepo;
 
   @Autowired(required = false)
-  private EnvMappingRepo envMappingRepo;
-
-  @Autowired(required = false)
   private ActivityLogRepo activityLogRepo;
 
   @Autowired(required = false)
@@ -812,24 +809,12 @@ public class SelectDataJdbc {
     }
   }
 
-  public List<EnvMapping> findAllEnvMappingsByTenantId(int tenantId) {
-    return envMappingRepo.findAllByTenantId(tenantId);
-  }
-
   public Env selectEnvDetails(String environmentId, int tenantId) {
     EnvID envID = new EnvID();
     envID.setId(environmentId);
     envID.setTenantId(tenantId);
     Optional<Env> env = envRepo.findById(envID);
     return env.orElse(null);
-  }
-
-  public boolean envMappingExists(EnvID id) {
-    return envMappingRepo.existsById(id);
-  }
-
-  public EnvMapping findEnvMappingById(EnvID id) {
-    return envMappingRepo.findById(id).orElse(null);
   }
 
   public UserInfo selectUserInfo(String username) {

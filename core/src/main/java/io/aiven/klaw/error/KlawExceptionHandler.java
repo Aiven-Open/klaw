@@ -47,6 +47,17 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler({KlawValidationException.class})
+  protected ResponseEntity<ApiResponse> handleKlawValidationExceptionInternal(
+      KlawRestException ex, WebRequest request) {
+    log.error("Error ", ex);
+    return new ResponseEntity<>(
+        ApiResponse.builder()
+            .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
+            .build(),
+        HttpStatus.CONFLICT);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex,

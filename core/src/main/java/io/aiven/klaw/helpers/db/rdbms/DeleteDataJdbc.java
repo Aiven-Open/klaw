@@ -2,7 +2,6 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EnvType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.util.List;
@@ -36,9 +35,6 @@ public class DeleteDataJdbc {
 
   @Autowired(required = false)
   EnvRepo envRepo;
-
-  @Autowired(required = false)
-  EnvMappingRepo envMappingRepo;
 
   @Autowired(required = false)
   KwClusterRepo kwClusterRepo;
@@ -76,8 +72,7 @@ public class DeleteDataJdbc {
       TeamRepo teamRepo,
       AclRequestsRepo aclRequestsRepo,
       AclRepo aclRepo,
-      UserInfoRepo userInfoRepo,
-      EnvMappingRepo envMappingRepo) {
+      UserInfoRepo userInfoRepo) {
     this.topicRequestsRepo = topicRequestsRepo;
     this.schemaRequestRepo = schemaRequestRepo;
     this.envRepo = envRepo;
@@ -85,7 +80,6 @@ public class DeleteDataJdbc {
     this.aclRepo = aclRepo;
     this.aclRequestsRepo = aclRequestsRepo;
     this.userInfoRepo = userInfoRepo;
-    this.envMappingRepo = envMappingRepo;
   }
 
   public String deleteConnectorRequest(int connectorId, int tenantId) {
@@ -184,12 +178,6 @@ public class DeleteDataJdbc {
 
     if (env.isPresent()) {
       envRepo.delete(env.get());
-      if (EnvType.KAFKA.value.equals(env.get().getType())) {
-        Optional<EnvMapping> mapping = envMappingRepo.findById(envID);
-        if (mapping.isPresent()) {
-          envMappingRepo.delete(mapping.get());
-        }
-      }
       return ApiResultStatus.SUCCESS.value;
     } else {
       return ApiResultStatus.FAILURE.value;

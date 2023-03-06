@@ -4622,53 +4622,6 @@
           }
         }
       }
-    },
-    "/env/mapping" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getEnvMapping",
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/EnvMapping"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/env/mapping/{id}" : {
-      "get" : {
-        "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getEnvMapping_1",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/EnvMapping"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components" : {
@@ -5910,7 +5863,7 @@
             }
           },
           "associatedEnv" : {
-            "type" : "string"
+            "$ref" : "#/components/schemas/EnvTag"
           },
           "clusterType" : {
             "type" : "string",
@@ -5919,6 +5872,16 @@
           }
         },
         "required" : [ "clusterId", "name", "type" ]
+      },
+      "EnvTag" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
       },
       "KwClustersModel" : {
         "properties" : {
@@ -6592,42 +6555,6 @@
           "topicIdForDocumentation" : {
             "type" : "integer",
             "format" : "int32"
-          }
-        }
-      },
-      "EnvMapping" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "tenantId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "name" : {
-            "type" : "string"
-          },
-          "schemaEnvs" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/EnvTag"
-            }
-          },
-          "connectorEnvs" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/EnvTag"
-            }
-          }
-        }
-      },
-      "EnvTag" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
           }
         }
       }

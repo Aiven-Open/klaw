@@ -1,7 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -58,32 +57,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcInsertHelper.addNewTenant(kwTenants);
   }
 
-  @Override
-  public boolean envMappingExists(EnvID id) {
-    return jdbcSelectHelper.envMappingExists(id);
-  }
-
-  @Override
-  public String updateEnvMapping(EnvMapping mapping) {
-    return jdbcUpdateHelper.updateEnvMapping(mapping);
-  }
-
-  @Override
-  public EnvMapping findEnvMappingById(EnvID id) {
-    return jdbcSelectHelper.findEnvMappingById(id);
-  }
-
-  @Override
-  public List<EnvMapping> getAllEnvMappingsForTenant(int tenantId) {
-    return jdbcSelectHelper.findAllEnvMappingsByTenantId(tenantId);
-  }
-
-  public String addNewEnv(Env env, EnvMapping mapping) throws KlawException {
-    return jdbcInsertHelper.insertIntoEnvs(env, mapping);
-  }
-
-  public String updateEnvStatus(Env env) {
-    return jdbcInsertHelper.updateEnvStatus(env);
+  public String addNewEnv(Env env) {
+    return jdbcInsertHelper.addNewEnv(env);
   }
 
   @Override

@@ -10,13 +10,11 @@ import io.aiven.klaw.dao.AclRequestID;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
-import io.aiven.klaw.dao.EnvMapping;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.SchemaRequestID;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EnvType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.util.Optional;
@@ -36,8 +34,6 @@ public class DeleteDataJdbcTest {
   @Mock SchemaRequestRepo schemaRequestRepo;
 
   @Mock EnvRepo envRepo;
-  @Mock private EnvMappingRepo envMappingRepo;
-
   @Mock TeamRepo teamRepo;
 
   @Mock AclRequestsRepo aclRequestsRepo;
@@ -58,8 +54,7 @@ public class DeleteDataJdbcTest {
             teamRepo,
             aclRequestsRepo,
             aclRepo,
-            userInfoRepo,
-            envMappingRepo);
+            userInfoRepo);
     utilMethods = new UtilMethods();
   }
 
@@ -110,7 +105,6 @@ public class DeleteDataJdbcTest {
   public void deleteEnvironmentRequest() {
     String clusterId = "1";
     Env envObj = new Env();
-    envObj.setType(EnvType.SCHEMAREGISTRY.value);
     EnvID env = new EnvID();
     env.setId(clusterId);
     env.setTenantId(101);
@@ -126,36 +120,6 @@ public class DeleteDataJdbcTest {
     when(envRepo.findById(any())).thenReturn(java.util.Optional.empty());
     String result = deleteDataJdbc.deleteEnvironment("1", 101);
     assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
-  }
-
-  @Test
-  public void deleteEnvironmentRequestWithMapping() {
-    String clusterId = "1";
-    Env envObj = new Env();
-    envObj.setType(EnvType.KAFKA.value);
-    EnvID env = new EnvID();
-    env.setId(clusterId);
-    env.setTenantId(101);
-    env.setId("1");
-    when(envMappingRepo.findById(any())).thenReturn(Optional.of(createEnvMapping("1", "TST", 101)));
-    when(envRepo.findById(env)).thenReturn(java.util.Optional.of(envObj));
-    String result = deleteDataJdbc.deleteEnvironment("1", 101);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  @Test
-  public void deleteEnvironmentRequestNoMappingExists() {
-    String clusterId = "1";
-    Env envObj = new Env();
-    envObj.setType(EnvType.KAFKA.value);
-    EnvID env = new EnvID();
-    env.setId(clusterId);
-    env.setTenantId(101);
-    env.setId("1");
-    when(envMappingRepo.findById(any())).thenReturn(Optional.empty());
-    when(envRepo.findById(env)).thenReturn(java.util.Optional.of(envObj));
-    String result = deleteDataJdbc.deleteEnvironment("1", 101);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -176,13 +140,5 @@ public class DeleteDataJdbcTest {
 
     String result = deleteDataJdbc.deletePrevAclRecs(utilMethods.getAclRequest("testtopic"));
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  public EnvMapping createEnvMapping(String id, String name, int tenantId) {
-    EnvMapping mapping = new EnvMapping();
-    mapping.setId(id);
-    mapping.setName(name);
-    mapping.setTenantId(tenantId);
-    return mapping;
   }
 }

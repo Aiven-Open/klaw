@@ -7,20 +7,15 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.EnvMapping;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.EnvType;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
-import io.aiven.klaw.repository.EnvMappingRepo;
 import io.aiven.klaw.repository.EnvRepo;
 import io.aiven.klaw.repository.MessageSchemaRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
@@ -45,7 +40,6 @@ public class InsertDataJdbcTest {
   @Mock private TeamRepo teamRepo;
 
   @Mock private EnvRepo envRepo;
-  @Mock private EnvMappingRepo envMappingRepo;
 
   @Mock private ActivityLogRepo activityLogRepo;
 
@@ -84,7 +78,6 @@ public class InsertDataJdbcTest {
     ReflectionTestUtils.setField(insertData, "schemaRequestRepo", schemaRequestRepo);
     ReflectionTestUtils.setField(insertData, "aclRequestsRepo", aclRequestsRepo);
     ReflectionTestUtils.setField(insertData, "envRepo", envRepo);
-    ReflectionTestUtils.setField(insertData, "envMappingRepo", envMappingRepo);
   }
 
   @Test
@@ -158,30 +151,6 @@ public class InsertDataJdbcTest {
   public void insertIntoTeams() {
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     when(teamRepo.getNextTeamId(anyInt())).thenReturn(101);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  @Test
-  public void insertIntoEnvs() throws KlawException {
-    Env env = new Env();
-    env.setId("2");
-    env.setName("Two");
-    env.setType(EnvType.KAFKA.value);
-    String result = insertData.insertIntoEnvs(env, null);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  @Test
-  public void insertIntoEnvsWithMapping() throws KlawException {
-    EnvMapping mapping = new EnvMapping();
-    mapping.setTenantId(101);
-    mapping.setId("2");
-    mapping.setName("Two");
-    Env env = new Env();
-    env.setId("2");
-    env.setName("Two");
-    env.setType(EnvType.KAFKA.value);
-    String result = insertData.insertIntoEnvs(env, mapping);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

@@ -459,7 +459,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="loadEnvDetails();getKafkaClusters();getSchemaRegistryClusters();getKafkaConnectClusters();getStandardEnvNames();getEnvMappings();">
+			<div class="row" ng-init="loadEnvDetails();getKafkaClusters();getSchemaRegistryClusters();getKafkaConnectClusters();getStandardEnvNames();getSchemaRegEnvs();getKafkaEnvs()">
 				<div ng-if="dashboardDetails.addDeleteEditEnvs=='Authorized'" class="col-lg-12">
 					<div ng-if="envTypeToEdit=='kafka'" class="card card-outline-success">
 						<div class="card-body">
@@ -582,13 +582,19 @@
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group" ng-if="envDetails.name != null && envDetails.type === 'kafka'">
-												<label class="control-label">Associated Kafka Environment</label>
+											<div class="form-group">
+												<label class="control-label">Select Associated Schema Environment</label>
 												<a class="mytooltip" href="javascript:void(0)">
-													<span class="tooltip-content3">A new Kafka Cluster Environment will be created by this environment</span>
-													<input value="{{ envDetails.name }}" disabled type="text" maxlength="20" class="form-control">
-												</a>
+													<span class="tooltip-content3">Assign the Schema Environment to this Kafka Cluster</span>
+														<a class="mytooltip" href="javascript:void(0)">
+															<span class="tooltip-content3">Assign this Schema Environment to the Kafka Environment it is associated to</span>
+															<select class="form-control custom-select" required
+																	ng-model="envDetails.associatedEnv.id" ng-options="mapping.id as mapping.name for mapping in allSchemaEnvMappings">
+																<option value=""><option>
+															</select>
+														</a></a>
 											</div>
+
 										</div>
 									</div>
 
@@ -670,9 +676,10 @@
 											<div class="form-group">
 												<label class="control-label">Select Associated Kafka Environment</label>
 												<a class="mytooltip" href="javascript:void(0)">
-												<span class="tooltip-content3">Assign this Schema Environment to the Kafka Environment it is associated to</span>
+												<span class="tooltip-content3">Assign a Schema Environment to this Kafka Environment</span>
 													<select class="form-control custom-select" required
-															ng-model="envDetails.associatedEnv" ng-options="mapping.id as mapping.name for mapping in allEnvMappings">
+															ng-model="envDetails.associatedEnv.id" ng-options="mapping.id as mapping.name for mapping in allKafkaEnvMappings">
+														<option value=""><option>
 													</select>
 												</a>
 											</div>
@@ -757,15 +764,7 @@
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group">
-												<label class="control-label">Select Associated Kafka Environment</label>
-												<a class="mytooltip" href="javascript:void(0)">
-												<span class="tooltip-content3">Assign this Connector Environment to the Kafka Environment it is associated to</span>
-													<select class="form-control custom-select" required
-															ng-model="envDetails.associatedEnv" ng-options="mapping.id as mapping.name for mapping in allEnvMappings">
-													</select>
-												</a>
-											</div>
+
 										</div>
 									</div>
 									<!--/row-->

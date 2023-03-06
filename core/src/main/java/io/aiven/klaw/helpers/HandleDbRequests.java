@@ -1,7 +1,6 @@
 package io.aiven.klaw.helpers;
 
 import io.aiven.klaw.dao.*;
-import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
@@ -25,17 +24,7 @@ public interface HandleDbRequests {
 
   String addNewTenant(KwTenants kwTenants);
 
-  boolean envMappingExists(EnvID id);
-
-  String updateEnvMapping(EnvMapping mapping);
-
-  EnvMapping findEnvMappingById(EnvID id);
-
-  List<EnvMapping> getAllEnvMappingsForTenant(int tenantId);
-
-  String addNewEnv(Env env, EnvMapping mapping) throws KlawException;
-
-  String updateEnvStatus(Env env);
+  String addNewEnv(Env env);
 
   String addNewCluster(KwClusters kwClusters);
 
