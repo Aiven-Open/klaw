@@ -335,7 +335,7 @@ public class InsertDataJdbc {
   }
 
   public String addNewEnv(Env env) {
-    log.debug("updateEnvStatus {}", env.getName());
+    log.debug("Insert or Update Env {}", env.getName());
     envRepo.save(env);
     return ApiResultStatus.SUCCESS.value;
   }

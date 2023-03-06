@@ -9,7 +9,6 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 @Slf4j
@@ -168,7 +167,6 @@ public class DeleteDataJdbc {
         + " Unable to verify ownership of this request. you may only delete your own requests.";
   }
 
-  @Transactional
   public String deleteEnvironment(String envId, int tenantId) {
     log.debug("deleteEnvironment {}", envId);
     EnvID envID = new EnvID();
