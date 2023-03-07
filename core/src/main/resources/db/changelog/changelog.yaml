@@ -946,3 +946,13 @@ databaseChangeLog:
                 - column:
                     name: switchallowedteams
                     type: VARCHAR(150)
+    - changeSet:
+        id: 22-02-23 New Column to store an associated env mapping
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwenv
+              columns:
+                - column:
+                    name: associatedenv
+                    type: CLOB

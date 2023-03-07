@@ -334,9 +334,8 @@ public class InsertDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String insertIntoEnvs(Env env) {
-    log.debug("insertIntoEnvs {}", env.getName());
-
+  public String addNewEnv(Env env) {
+    log.debug("Insert or Update Env {}", env.getName());
     envRepo.save(env);
     return ApiResultStatus.SUCCESS.value;
   }

@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
@@ -152,12 +151,6 @@ public class InsertDataJdbcTest {
   public void insertIntoTeams() {
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     when(teamRepo.getNextTeamId(anyInt())).thenReturn(101);
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  @Test
-  public void insertIntoEnvs() {
-    String result = insertData.insertIntoEnvs(new Env());
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

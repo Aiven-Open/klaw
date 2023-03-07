@@ -1,23 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.ActivityLog;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.KwKafkaConnector;
-import io.aiven.klaw.dao.KwMetrics;
-import io.aiven.klaw.dao.KwProperties;
-import io.aiven.klaw.dao.KwRolesPermissions;
-import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.dao.ProductDetails;
-import io.aiven.klaw.dao.RegisterUserInfo;
-import io.aiven.klaw.dao.SchemaRequest;
-import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -75,7 +58,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   public String addNewEnv(Env env) {
-    return jdbcInsertHelper.insertIntoEnvs(env);
+    return jdbcInsertHelper.addNewEnv(env);
   }
 
   @Override

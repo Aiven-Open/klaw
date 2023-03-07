@@ -8,25 +8,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.repository.AclRepo;
-import io.aiven.klaw.repository.AclRequestsRepo;
-import io.aiven.klaw.repository.ActivityLogRepo;
-import io.aiven.klaw.repository.EnvRepo;
-import io.aiven.klaw.repository.KwClusterRepo;
-import io.aiven.klaw.repository.KwKafkaConnectorRepo;
-import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
-import io.aiven.klaw.repository.KwMetricsRepo;
-import io.aiven.klaw.repository.KwPropertiesRepo;
-import io.aiven.klaw.repository.KwRolesPermsRepo;
-import io.aiven.klaw.repository.MessageSchemaRepo;
-import io.aiven.klaw.repository.ProductDetailsRepo;
-import io.aiven.klaw.repository.RegisterInfoRepo;
-import io.aiven.klaw.repository.SchemaRequestRepo;
-import io.aiven.klaw.repository.TeamRepo;
-import io.aiven.klaw.repository.TenantRepo;
-import io.aiven.klaw.repository.TopicRepo;
-import io.aiven.klaw.repository.TopicRequestsRepo;
-import io.aiven.klaw.repository.UserInfoRepo;
+import io.aiven.klaw.repository.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -832,7 +814,6 @@ public class SelectDataJdbc {
     EnvID envID = new EnvID();
     envID.setId(environmentId);
     envID.setTenantId(tenantId);
-
     Optional<Env> env = envRepo.findById(envID);
     return env.orElse(null);
   }
