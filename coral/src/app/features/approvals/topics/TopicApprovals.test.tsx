@@ -624,11 +624,6 @@ describe("TopicApprovals", () => {
     });
 
     it("filters by several fields", async () => {
-      const search = screen.getByRole("search");
-      expect(search).toBeEnabled();
-      await userEvent.type(search, "topicname");
-      expect(search).toHaveValue("topicname");
-
       const select = screen.getByLabelText("Filter by team");
       const option = within(select).getByRole("option", {
         name: "Ospo",
@@ -636,6 +631,11 @@ describe("TopicApprovals", () => {
       expect(option).toBeEnabled();
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("Ospo");
+
+      const search = screen.getByRole("search");
+      expect(search).toBeEnabled();
+      await userEvent.type(search, "topicname");
+      expect(search).toHaveValue("topicname");
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({

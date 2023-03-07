@@ -3,13 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { getTeams } from "src/domain/team/team-api";
 
-type SelectTeamProps = {
-  onChange: (teamId: string) => void;
-};
-
-function SelectTeam(props: SelectTeamProps) {
-  const { onChange } = props;
-
+function SelectTeam() {
   const [searchParams, setSearchParams] = useSearchParams();
   const team = searchParams.get("team");
 
@@ -17,16 +11,17 @@ function SelectTeam(props: SelectTeamProps) {
     queryFn: () => getTeams(),
   });
 
-  function onChangeEnv(nextTeam: string) {
-    const isAllTeams = nextTeam === "ALL";
+  const handleChangeTeam = (nextTeamId: string) => {
+    const isAllTeams = nextTeamId === "ALL";
     if (isAllTeams) {
       searchParams.delete("team");
+      searchParams.set("page", "1");
     } else {
-      searchParams.set("team", nextTeam);
+      searchParams.set("team", nextTeamId);
+      searchParams.set("page", "1");
     }
-    onChange(nextTeam);
     setSearchParams(searchParams);
-  }
+  };
 
   if (!topicTeams) {
     return (
@@ -39,7 +34,7 @@ function SelectTeam(props: SelectTeamProps) {
       <NativeSelect
         labelText="Filter by team"
         value={team || "ALL"}
-        onChange={(event) => onChangeEnv(event.target.value)}
+        onChange={(event) => handleChangeTeam(event.target.value)}
       >
         <Option key={"ALL"} value={"ALL"}>
           All teams

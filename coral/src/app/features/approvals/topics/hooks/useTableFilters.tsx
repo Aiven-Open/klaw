@@ -5,7 +5,6 @@ import { useSearchParams } from "react-router-dom";
 import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests/requests-types";
-import { TopicRequest } from "src/domain/topic/topic-types";
 import {
   requestStatusNameMap,
   statusList,
@@ -15,13 +14,10 @@ const useTableFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const envParam = searchParams.get("env");
   const statusParam = searchParams.get("status") as RequestStatus | null;
-  const teamParam = searchParams.get("team");
 
   const [environment, setEnvironment] = useState(envParam ?? "ALL");
   const [status, setStatus] = useState<RequestStatus>(statusParam ?? "CREATED");
-  const [team, setTeam] = useState<TopicRequest["teamname"]>(
-    teamParam ?? "ALL"
-  );
+
   const [topic, setTopic] = useState(searchParams.get("topic") ?? "");
 
   const filters = [
@@ -45,7 +41,7 @@ const useTableFilters = () => {
         );
       })}
     </NativeSelect>,
-    <SelectTeam key={"team"} onChange={setTeam} />,
+    <SelectTeam key={"team"} />,
     <div key={"search"}>
       <SearchInput
         type={"search"}
@@ -74,7 +70,7 @@ const useTableFilters = () => {
     </div>,
   ];
 
-  return { environment, status, team, topic, filters };
+  return { environment, status, topic, filters };
 };
 
 export default useTableFilters;

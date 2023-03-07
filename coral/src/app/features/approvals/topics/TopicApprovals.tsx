@@ -25,6 +25,8 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
+  const currentTeam = searchParams.get("team") ?? "ALL";
+
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
     topicId: number | null;
@@ -47,7 +49,7 @@ function TopicApprovals() {
     setSearchParams(searchParams);
   };
 
-  const { environment, status, team, topic, filters } = useTableFilters();
+  const { environment, status, topic, filters } = useTableFilters();
 
   const {
     data: topicRequests,
@@ -60,7 +62,7 @@ function TopicApprovals() {
       currentPage,
       environment,
       status,
-      team,
+      currentTeam,
       topic,
     ],
     queryFn: () =>
@@ -68,7 +70,7 @@ function TopicApprovals() {
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status,
-        teamId: team === "ALL" ? undefined : Number(team),
+        teamId: currentTeam === "ALL" ? undefined : Number(currentTeam),
         search: topic,
       }),
     keepPreviousData: true,
