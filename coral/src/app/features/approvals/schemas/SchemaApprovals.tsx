@@ -60,22 +60,6 @@ function SchemaApprovals() {
         env: currentEnv,
         topic: currentTopic,
       }),
-    onSuccess: (newSchemaRequests) => {
-      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
-
-      // If through filtering a user finds themselves on a non existent page, reset page to 1
-      // For example:
-      // - one request returns 4 pages of results
-      // - navigate to page 4
-      // - change filters, to a request that returns 1 page of results
-      // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
-      if (
-        newSchemaRequests.entries.length === 0 &&
-        schemaRequests?.currentPage !== 1
-      ) {
-        setCurrentPage(1);
-      }
-    },
     keepPreviousData: true,
   });
 
