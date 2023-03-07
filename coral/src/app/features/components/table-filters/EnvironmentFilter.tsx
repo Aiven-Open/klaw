@@ -1,14 +1,32 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { useGetEnvironments } from "src/app/features/topics/browse/hooks/environment/useGetEnvironments";
-import { Environment } from "src/domain/environment";
+import {
+  Environment,
+  getEnvironments,
+  getSchemaRegistryEnvironments,
+} from "src/domain/environment";
+import { HTTPError } from "src/services/api";
 
-function EnvironmentFilter() {
+interface EnvironmentFilterProps {
+  isSchemaRegistryEnvironments?: boolean;
+}
+
+function EnvironmentFilter({
+  isSchemaRegistryEnvironments = false,
+}: EnvironmentFilterProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const environment = searchParams.get("environment") ?? "ALL";
 
-  const { data: environments } = useGetEnvironments();
+  const { data: environments } = useQuery<Environment[], HTTPError>(
+    ["topic-environments"],
+    {
+      queryFn: isSchemaRegistryEnvironments
+        ? getSchemaRegistryEnvironments
+        : getEnvironments,
+    }
+  );
 
   function handleChangeEnv(newEnvironment: string) {
     const isAllEnvironments = newEnvironment === "ALL";
