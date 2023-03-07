@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -44,6 +46,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -81,6 +85,8 @@ public class TopicControllerServiceTest {
 
   @Mock KwTenantConfigModel tenantConfigModel;
 
+  @Captor
+  ArgumentCaptor<TopicRequest> topicRequestCaptor;
   private Env env;
 
   private UtilMethods utilMethods;
@@ -1107,6 +1113,36 @@ public class TopicControllerServiceTest {
         () -> {
           topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
         });
+  }
+
+  @Test
+  @Order(49)
+  public void createClaimTopicRequestCheckCorrectTeamAssigned() throws KlawException {
+    String topicName = "testtopic1";
+    String envId = "1";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
+            .thenReturn(Collections.emptyList());
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+            .thenReturn(List.of(getTopic(topicName)));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(List.of(getTopic(topicName)));
+    List<UserInfo> userList = utilMethods.getUserInfoList("testuser", "");
+    userList.get(0).setTeamId(1);
+    when(handleDbRequests.selectAllUsersInfo(anyInt())).thenReturn(userList);
+    Map<String, String> claimReqResult = new HashMap<>();
+    claimReqResult.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.requestForTopic(any())).thenReturn(claimReqResult);
+
+      ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
+      assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+
+      verify(handleDbRequests,times(1)).requestForTopic(topicRequestCaptor.capture());
+      TopicRequest req = topicRequestCaptor.getValue();
+      assertThat(req.getDescription()).isNull();
+      assertThat(req.getApprovingTeamId()).isEqualTo("1");
+
   }
 
   private TopicRequestModel getTopicWithAdvancedConfigs() {
