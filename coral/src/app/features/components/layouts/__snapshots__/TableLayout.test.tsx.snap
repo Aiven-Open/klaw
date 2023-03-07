@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ApprovalsLayout renders the necessary DOM and CSS to create layout renders correct DOM with optional pagination 1`] = `
+exports[`TableLayout renders the necessary DOM and CSS to create layout renders correct DOM with optional pagination 1`] = `
 {
   "debug": [Function],
   "findAllByAltText": [Function],
@@ -55,7 +55,7 @@ exports[`ApprovalsLayout renders the necessary DOM and CSS to create layout rend
 }
 `;
 
-exports[`ApprovalsLayout renders the necessary DOM and CSS to create layout renders correct DOM with required props 1`] = `
+exports[`TableLayout renders the necessary DOM and CSS to create layout renders correct DOM with required props 1`] = `
 {
   "debug": [Function],
   "findAllByAltText": [Function],

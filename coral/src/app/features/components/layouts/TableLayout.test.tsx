@@ -1,4 +1,4 @@
-import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { cleanup, render, screen } from "@testing-library/react";
 
 const mockFilter = [
@@ -13,10 +13,10 @@ const mockTable = <div data-testid={"table-element"}>Table content</div>;
 
 const mockPagination = <div data-testid={"pagination"} />;
 
-describe("ApprovalsLayout", () => {
+describe("TableLayout", () => {
   describe("renders all necessary elements with required props", () => {
     beforeAll(() => {
-      render(<ApprovalsLayout filters={mockFilter} table={mockTable} />);
+      render(<TableLayout filters={mockFilter} table={mockTable} />);
     });
     afterAll(cleanup);
 
@@ -48,7 +48,7 @@ describe("ApprovalsLayout", () => {
     afterEach(cleanup);
 
     it("does not render a pagination element by default", () => {
-      render(<ApprovalsLayout filters={mockFilter} table={mockTable} />);
+      render(<TableLayout filters={mockFilter} table={mockTable} />);
       const pagination = screen.queryByTestId("pagination");
 
       expect(pagination).not.toBeInTheDocument();
@@ -56,7 +56,7 @@ describe("ApprovalsLayout", () => {
 
     it("renders pagination if prop is set", () => {
       render(
-        <ApprovalsLayout
+        <TableLayout
           filters={mockFilter}
           table={mockTable}
           pagination={mockPagination}
@@ -73,11 +73,7 @@ describe("ApprovalsLayout", () => {
 
     it("shows a loading state instead of the table", () => {
       render(
-        <ApprovalsLayout
-          filters={mockFilter}
-          table={mockTable}
-          isLoading={true}
-        />
+        <TableLayout filters={mockFilter} table={mockTable} isLoading={true} />
       );
 
       const table = screen.queryByRole("table");
@@ -89,7 +85,7 @@ describe("ApprovalsLayout", () => {
 
     it("shows an error message instead of the table", () => {
       render(
-        <ApprovalsLayout
+        <TableLayout
           filters={mockFilter}
           table={mockTable}
           isErrorLoading={true}
@@ -111,14 +107,14 @@ describe("ApprovalsLayout", () => {
     afterEach(cleanup);
 
     it("renders correct DOM with required props", () => {
-      render(<ApprovalsLayout filters={mockFilter} table={mockTable} />);
+      render(<TableLayout filters={mockFilter} table={mockTable} />);
 
       expect(screen).toMatchSnapshot();
     });
 
     it("renders correct DOM with optional pagination", () => {
       render(
-        <ApprovalsLayout
+        <TableLayout
           filters={mockFilter}
           table={mockTable}
           pagination={mockPagination}
