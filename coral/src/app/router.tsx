@@ -2,6 +2,11 @@ import { createBrowserRouter, RouteObject } from "react-router-dom";
 import NotFound from "src/app/pages/not-found";
 import Topics from "src/app/pages/topics";
 import AclRequest from "src/app/pages/topics/acl-request";
+import RequestsPage from "src/app/pages/requests";
+import TopicRequestsPage from "src/app/pages/requests/topics";
+import AclRequestsPage from "src/app/pages/requests/acls";
+import SchemaRequestsPage from "src/app/pages/requests/schemas";
+import ConnectorRequestsPage from "src/app/pages/requests/connectors";
 import ApprovalsPage from "src/app/pages/approvals";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
 import AclApprovalsPage from "src/app/pages/approvals/acls";
@@ -13,7 +18,9 @@ import SchemaRequest from "src/app/pages/topics/schema-request";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
+  RequestsTabEnum,
   Routes,
+  REQUESTS_TAB_ID_INTO_PATH,
 } from "src/app/router_utils";
 
 const routes: Array<RouteObject> = [
@@ -37,6 +44,32 @@ const routes: Array<RouteObject> = [
   {
     path: Routes.TOPIC_SCHEMA_REQUEST,
     element: <SchemaRequest />,
+  },
+  {
+    path: Routes.REQUESTS,
+    element: <RequestsPage />,
+    children: [
+      {
+        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.TOPICS],
+        element: <TopicRequestsPage />,
+        id: RequestsTabEnum.TOPICS,
+      },
+      {
+        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.ACLS],
+        element: <AclRequestsPage />,
+        id: RequestsTabEnum.ACLS,
+      },
+      {
+        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.SCHEMAS],
+        element: <SchemaRequestsPage />,
+        id: RequestsTabEnum.SCHEMAS,
+      },
+      {
+        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.CONNECTORS],
+        element: <ConnectorRequestsPage />,
+        id: RequestsTabEnum.CONNECTORS,
+      },
+    ],
   },
   {
     path: Routes.APPROVALS,
