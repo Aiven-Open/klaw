@@ -35,6 +35,8 @@ public class TopicRequestModel implements Serializable {
   @Pattern(message = "Invalid description", regexp = "^[a-zA-Z 0-9_.,-]{3,}$")
   private String description;
 
+  private String approvingTeamId;
+
   @NotNull
   @Min(value = 1, message = "Replication factor must be greater than zero")
   private String replicationfactor;

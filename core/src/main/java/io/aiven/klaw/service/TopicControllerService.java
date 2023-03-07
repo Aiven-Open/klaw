@@ -268,7 +268,7 @@ public class TopicControllerService {
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
     topicRequestReq.setRequestOperationType(RequestOperationType.CLAIM.value);
-    topicRequestReq.setDescription(topicOwnerTeamId + "");
+    topicRequestReq.setApprovingTeamId(topicOwnerTeamId + "");
     topicRequestReq.setRemarks("Topic Claim request for all available environments.");
 
     mailService.sendMail(
@@ -627,7 +627,8 @@ public class TopicControllerService {
     if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
-        allTopic.setTeamId(topicRequest.getTeamId()); // for claim reqs, team stored in description
+        allTopic.setTeamId(
+            topicRequest.getTeamId()); // for claim reqs, team stored in approving team field
         allTopic.setExistingTopic(true);
       }
 

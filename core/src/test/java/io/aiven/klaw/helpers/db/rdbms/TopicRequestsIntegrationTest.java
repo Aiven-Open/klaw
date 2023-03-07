@@ -617,7 +617,7 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(103);
-        assertThat(req.getDescription()).isEqualTo("101");
+        assertThat(req.getApprovingTeamId()).isEqualTo("101");
       } else {
         assertThat(req.getTeamId()).isEqualTo(101);
       }
@@ -637,7 +637,7 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
-        assertThat(req.getDescription()).isNotEqualTo("101");
+        assertThat(req.getApprovingTeamId()).isNotEqualTo("101");
       }
     }
   }
@@ -656,7 +656,7 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
-        assertThat(req.getDescription()).isEqualTo("103");
+        assertThat(req.getApprovingTeamId()).isEqualTo("103");
       } else {
         assertThat(req.getTeamId()).isEqualTo(101);
       }
@@ -678,7 +678,7 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(103);
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
-        assertThat(req.getDescription()).isNotEqualTo("103");
+        assertThat(req.getApprovingTeamId()).isNotEqualTo("103");
       }
     }
   }
@@ -754,7 +754,7 @@ public class TopicRequestsIntegrationTest {
 
     assertThat(john.size()).isEqualTo(0);
     for (TopicRequest req : john) {
-      assertThat(req.getDescription().equals("John"));
+      assertThat(req.getApprovingTeamId().equals("John"));
     }
   }
 
@@ -821,7 +821,7 @@ public class TopicRequestsIntegrationTest {
       topicRequest.setReplicationfactor("1");
       topicRequest.setTopicid(topicIdentifier + i);
       if (RequestOperationType.CLAIM == requestOperationType) {
-        topicRequest.setDescription("" + claimOwner);
+        topicRequest.setApprovingTeamId("" + claimOwner);
       }
 
       entityManager.persistAndFlush(topicRequest);

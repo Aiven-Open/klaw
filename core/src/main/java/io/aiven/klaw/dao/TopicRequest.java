@@ -75,11 +75,14 @@ public class TopicRequest implements Serializable {
   @Column(name = "otherparams")
   private String otherParams;
 
-  @Column(name = "description")
-  private String description;
+  @Column(name = "approvingteamid")
+  private String approvingTeamId;
 
   @Column(name = "jsonparams")
   private String jsonParams;
+
+  @Column(name = "description")
+  private String description;
 
   @Transient private String sequence;
 

@@ -558,7 +558,7 @@ public class KafkaConnectControllerService {
           getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
       for (KwKafkaConnector allTopic : allTopics) {
         allTopic.setTeamId(
-            connectorRequest.getTeamId()); // for claim reqs, team stored in description
+            connectorRequest.getTeamId()); // for claim reqs, team stored in approving Team
         allTopic.setExistingConnector(true);
       }
 
@@ -854,7 +854,7 @@ public class KafkaConnectControllerService {
     connectorRequest.setConnectorName(connectorName);
     connectorRequest.setConnectorConfig(topics.get(0).getConnectorConfig());
     connectorRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
-    connectorRequest.setDescription("" + topicOwnerTeam);
+    connectorRequest.setApprovingTeamId("" + topicOwnerTeam);
     connectorRequest.setRemarks("Connector Claim request for all available environments.");
     connectorRequest.setTenantId(tenantId);
 

@@ -66,6 +66,9 @@ public class KafkaConnectorRequest implements Serializable {
   @Column(name = "otherparams")
   private String otherParams;
 
+  @Column(name = "approvingteamid")
+  private String approvingTeamId;
+
   @Column(name = "description")
   private String description;
 
