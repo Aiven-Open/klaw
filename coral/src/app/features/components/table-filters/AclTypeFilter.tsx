@@ -5,7 +5,7 @@ import { getTeams } from "src/domain/team/team-api";
 
 function TeamFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const team = searchParams.get("team") ?? "ALL";
+  const team = searchParams.get("team");
 
   const { data: topicTeams } = useQuery(["topic-get-teams"], {
     queryFn: () => getTeams(),
@@ -33,7 +33,7 @@ function TeamFilter() {
     return (
       <NativeSelect
         labelText="Filter by team"
-        value={team}
+        value={team || "ALL"}
         onChange={(event) => handleChangeTeam(event.target.value)}
       >
         <Option key={"ALL"} value={"ALL"}>
