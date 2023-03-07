@@ -3,25 +3,38 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
+import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
-import useTableFilters from "src/app/features/approvals/acls/hooks/useTableFilters";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
+import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
+import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import {
   approveAclRequest,
   declineAclRequest,
   getAclRequestsForApprover,
 } from "src/domain/acl/acl-api";
-import { AclRequestsForApprover } from "src/domain/acl/acl-types";
+import { AclRequestsForApprover, AclType } from "src/domain/acl/acl-types";
+import { RequestStatus } from "src/domain/requests/requests-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
 
 function AclApprovals() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialPage = Number(searchParams.get("page"));
-  const [activePage, setActivePage] = useState(initialPage || 1);
+
+  const currentPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
+
+  // This logic is what should be extracted in a useFilters hook?
+  const currentAclType = (searchParams.get("aclType") as AclType) ?? "ALL";
+  const currentEnv = searchParams.get("environment") ?? "ALL";
+  const currentStatus =
+    (searchParams.get("status") as RequestStatus) ?? "CREATED";
+  const currentTopic = searchParams.get("topic") ?? "";
 
   const [detailsModal, setDetailsModal] = useState({
     isOpen: false,
@@ -34,10 +47,7 @@ function AclApprovals() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { environment, status, aclType, topic, filters } = useTableFilters();
-
   const handleChangePage = (activePage: number) => {
-    setActivePage(activePage);
     searchParams.set("page", activePage.toString());
     setSearchParams(searchParams);
   };
@@ -46,14 +56,21 @@ function AclApprovals() {
     AclRequestsForApprover,
     Error
   >({
-    queryKey: ["aclRequests", activePage, environment, status, aclType, topic],
+    queryKey: [
+      "aclRequests",
+      currentPage,
+      currentAclType,
+      currentEnv,
+      currentStatus,
+      currentTopic,
+    ],
     queryFn: () =>
       getAclRequestsForApprover({
-        pageNo: String(activePage),
-        env: environment,
-        requestStatus: status,
-        aclType,
-        topic,
+        pageNo: String(currentPage),
+        env: currentEnv,
+        requestStatus: currentStatus,
+        aclType: currentAclType,
+        topic: currentTopic,
       }),
     onSuccess: (data) => {
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -63,7 +80,7 @@ function AclApprovals() {
       // - navigate to page 4
       // - change filters, to a request that returns 1 page of results
       // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
-      if (data.entries.length === 0 && activePage !== 1) {
+      if (data.entries.length === 0 && currentPage !== 1) {
         handleChangePage(1);
       }
     },
@@ -94,7 +111,7 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(activePage - 1);
+        return handleChangePage(currentPage - 1);
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync
@@ -123,7 +140,7 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(activePage - 1);
+        return handleChangePage(currentPage - 1);
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync
@@ -212,7 +229,12 @@ function AclApprovals() {
       )}
 
       <ApprovalsLayout
-        filters={filters}
+        filters={[
+          <EnvironmentFilter key={"environment"} />,
+          <StatusFilter key={"status"} />,
+          <AclTypeFilter key={"aclType"} />,
+          <TopicFilter key={"topic"} />,
+        ]}
         table={
           <AclApprovalsTable
             aclRequests={data?.entries ?? []}
