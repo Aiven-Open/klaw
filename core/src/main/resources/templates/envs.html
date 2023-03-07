@@ -486,6 +486,7 @@
 									<thead><tr>
 										<th width="15%">Environment</th>
 										<th width="15%">Cluster</th>
+										<th width="15%">Schema Environment</th>
 										<th width="15%">Tenant</th>
 										<th>Other Params</th>
 										<th width="7%">Status</th>
@@ -502,7 +503,9 @@
 										<td>
 											<a href="clusters?clusterId={{allenv.clusterId}}">{{ allenv.clusterName }}</a>
 										</td>
-
+										<td width="10%">
+											<a href="clusters?clusterId={{allenv.associatedEnv.id}}">{{ allenv.associatedEnv.name || 'N/A'}} </a>
+										</td>
 										<td>{{ allenv.tenantName }}</td>
 
 										<td style="word-wrap: break-word;">{{ allenv.otherParams }}</td>
@@ -577,7 +580,8 @@
 									<thead><tr>
 										<th width="20%">Environment</th>
 										<th width="20%">Cluster</th>
-										<th width="25%">Tenant</th>
+										<th width="20%">Kafka Environment</th>
+										<th width="20%">Tenant</th>
 										<th width="7%">Status</th>
 										<th ng-show="dashboardDetails.addDeleteEditEnvs=='Authorized'">Actions</th>
 									</tr>
@@ -589,6 +593,9 @@
 										</td>
 										<td>
 											<a href="clusters?clusterId={{allenv.clusterId}}">{{ allenv.clusterName }}</a>
+										</td>
+										<td width="10%">
+											<a href="clusters?clusterId={{allenv.associatedEnv.id}}">{{ allenv.associatedEnv.name || 'N/A'}} </a>
 										</td>
 										<td>{{ allenv.tenantName }}</td>
 
