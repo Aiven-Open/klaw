@@ -198,16 +198,15 @@ public class UpdateDataJdbc {
     topicObj.setHistory(connectorRequest.getHistory());
     connectors.add(topicObj);
 
-    if (connectorRequest.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
-      insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
-    } else if (connectorRequest
-        .getRequestOperationType()
-        .equals(RequestOperationType.UPDATE.value)) {
-      updateConnectorSOT(connectors, connectorRequest.getOtherParams());
-    } else if (connectorRequest
-        .getRequestOperationType()
-        .equals(RequestOperationType.DELETE.value)) {
-      deleteDataJdbcHelper.deleteConnectors(topicObj);
+    final RequestOperationType rot =
+        RequestOperationType.of(connectorRequest.getRequestOperationType());
+    if (rot == null) {
+      return ApiResultStatus.SUCCESS.value;
+    }
+    switch (rot) {
+      case CREATE -> insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
+      case UPDATE -> updateConnectorSOT(connectors, connectorRequest.getOtherParams());
+      case DELETE -> deleteDataJdbcHelper.deleteConnectors(topicObj);
     }
 
     return ApiResultStatus.SUCCESS.value;
