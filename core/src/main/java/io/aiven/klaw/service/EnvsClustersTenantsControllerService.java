@@ -707,10 +707,10 @@ public class EnvsClustersTenantsControllerService {
     env.setEnvExists("true");
 
     try {
-      EnvTag tag =
+      EnvTag envTag =
           addEnvironmentMapping(
               env.getAssociatedEnv(), env.getId(), env.getName(), env.getTenantId(), env.getType());
-      env.setAssociatedEnv(tag);
+      env.setAssociatedEnv(envTag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       commonUtilsService.updateMetadata(
           tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
@@ -896,7 +896,7 @@ public class EnvsClustersTenantsControllerService {
     }
 
     try {
-      removeEnvironmentMapping(envId, tenantId, envType);
+      removeAssociatedKafkaOrSchemaEnvironment(envId, tenantId, envType);
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       commonUtilsService.updateMetadata(
@@ -909,12 +909,12 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  private void removeEnvironmentMapping(String id, int tenantId, String envType)
+  private void removeAssociatedKafkaOrSchemaEnvironment(String envId, int tenantId, String envType)
       throws KlawException {
 
     if (KafkaClustersType.KAFKA.value.equals(envType)
         || KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
-      Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
+      Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
       if (env.getAssociatedEnv() != null) {
         Env linkedEnv =
             manageDatabase
@@ -927,38 +927,43 @@ public class EnvsClustersTenantsControllerService {
   }
 
   private EnvTag addEnvironmentMapping(
-      EnvTag tag, String id, String name, int tenantId, String envType)
+      EnvTag envTag, String envId, String envName, int tenantId, String envType)
       throws KlawValidationException {
     // only assignable on a schema registry
     if (KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
       //      EnvTag existingTag = getKafkaAssociation(null, id, tenantId);
-      if (tag != null) {
+      if (envTag != null) {
 
-        associateWithKafkaEnv(tag, id, name, tenantId);
+        associateWithKafkaEnv(envTag, envId, envName, tenantId);
         // remove existing association if it exists
-        removeAssociationWithKafkaEnv(id, tenantId);
+        removeAssociationWithKafkaEnv(envTag, envId, tenantId);
 
       } else {
-        removeAssociationWithKafkaEnv(id, tenantId);
+        // envTag is always null here
+        removeAssociationWithKafkaEnv(null, envId, tenantId);
       }
     } else if (KafkaClustersType.KAFKA.value.equals(envType)) {
-      tag = getKafkaAssociation(tag, id, tenantId);
+      envTag = getKafkaAssociation(envTag, envId, tenantId);
     }
 
-    return tag;
+    return envTag;
   }
 
-  private EnvTag getKafkaAssociation(EnvTag tag, String id, int tenantId) {
-    if (tag == null) {
-      Env existing = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
-      tag = existing != null ? existing.getAssociatedEnv() : tag;
+  private EnvTag getKafkaAssociation(EnvTag KafkaEnvTag, String kafkaEnvId, int tenantId) {
+    if (KafkaEnvTag == null) {
+      Env existing = manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnvId, tenantId);
+      KafkaEnvTag = existing != null ? existing.getAssociatedEnv() : KafkaEnvTag;
     }
-    return tag;
+    return KafkaEnvTag;
   }
 
-  private void removeAssociationWithKafkaEnv(String id, int tenantId) {
-    Env existingEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
-    if (existingEnv != null && existingEnv.getAssociatedEnv() != null) {
+  private void removeAssociationWithKafkaEnv(EnvTag envTag, String envId, int tenantId) {
+    Env existingEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
+    // envTag is equal to null we don't need to check if the associated env is the same as the
+    // passed env tag because this is actualy an operation to remove an association.
+    if (existingEnv != null
+        && existingEnv.getAssociatedEnv() != null
+        && (envTag == null || !existingEnv.getAssociatedEnv().getId().equals(envTag.getId()))) {
       Env linkedEnv =
           manageDatabase
               .getHandleDbRequests()
@@ -968,18 +973,19 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  private void associateWithKafkaEnv(EnvTag tag, String id, String name, int tenantId)
+  private void associateWithKafkaEnv(EnvTag envTag, String envId, String envName, int tenantId)
       throws KlawValidationException {
-    Env linkedEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(tag.getId(), tenantId);
+    Env linkedEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(envTag.getId(), tenantId);
 
-    if (linkedEnv.getAssociatedEnv() != null && !linkedEnv.getAssociatedEnv().getId().equals(id)) {
+    if (linkedEnv.getAssociatedEnv() != null
+        && !linkedEnv.getAssociatedEnv().getId().equals(envId)) {
       throw new KlawValidationException(
           "Target Environment "
               + linkedEnv.getName()
               + " is already assigned to env "
               + linkedEnv.getAssociatedEnv().getName());
     }
-    linkedEnv.setAssociatedEnv(new EnvTag(id, name));
+    linkedEnv.setAssociatedEnv(new EnvTag(envId, envName));
     manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
   }
 
