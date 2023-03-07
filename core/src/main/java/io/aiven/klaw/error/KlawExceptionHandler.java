@@ -49,8 +49,8 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler({KlawValidationException.class})
   protected ResponseEntity<ApiResponse> handleKlawValidationExceptionInternal(
-      KlawRestException ex, WebRequest request) {
-    log.error("Error ", ex);
+      KlawValidationException ex, WebRequest request) {
+    log.error("KlawValidationException handler: ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder()
             .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())

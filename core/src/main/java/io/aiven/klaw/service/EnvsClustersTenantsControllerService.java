@@ -625,7 +625,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException {
+  public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException, KlawValidationException {
     log.info("addNewEnv {}", newEnv);
     int tenantId = getUserDetails(getUserName()).getTenantId();
     if (commonUtilsService.isNotAuthorizedUser(
@@ -707,13 +707,17 @@ public class EnvsClustersTenantsControllerService {
     env.setEnvExists("true");
 
     try {
-      addEnvironmentMapping(
-          env.getAssociatedEnv(), env.getId(), env.getName(), env.getTenantId(), env.getType());
-      log.info("The env: {}", env);
+      EnvTag tag =
+          addEnvironmentMapping(
+              env.getAssociatedEnv(), env.getId(), env.getName(), env.getTenantId(), env.getType());
+      env.setAssociatedEnv(tag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       commonUtilsService.updateMetadata(
           tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
       return ApiResponse.builder().result(result).build();
+    } catch (KlawValidationException ex) {
+      log.error("KlawValidationException:", ex);
+      throw ex;
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -922,39 +926,61 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  private void addEnvironmentMapping(
+  private EnvTag addEnvironmentMapping(
       EnvTag tag, String id, String name, int tenantId, String envType)
       throws KlawValidationException {
-
-    if (KafkaClustersType.KAFKA.value.equals(envType)
-        || KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
-
+    // only assignable on a schema registry
+    if (KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
+      //      EnvTag existingTag = getKafkaAssociation(null, id, tenantId);
       if (tag != null) {
-        Env linkedEnv =
-            manageDatabase.getHandleDbRequests().selectEnvDetails(tag.getId(), tenantId);
 
-        if (linkedEnv.getAssociatedEnv() != null
-            && !linkedEnv.getAssociatedEnv().getId().equals(id)) {
-          throw new KlawValidationException(
-              "Target Environment "
-                  + name
-                  + " is already assigned to env "
-                  + linkedEnv.getAssociatedEnv().getName());
-        }
-        linkedEnv.setAssociatedEnv(new EnvTag(id, name));
-        manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+        associateWithKafkaEnv(tag, id, name, tenantId);
+        // remove existing association if it exists
+        removeAssociationWithKafkaEnv(id, tenantId);
+
       } else {
-        Env existingEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
-        if (existingEnv != null && existingEnv.getAssociatedEnv() != null) {
-          Env linkedEnv =
-              manageDatabase
-                  .getHandleDbRequests()
-                  .selectEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
-          linkedEnv.setAssociatedEnv(null);
-          manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
-        }
+        removeAssociationWithKafkaEnv(id, tenantId);
       }
+    } else if (KafkaClustersType.KAFKA.value.equals(envType)) {
+      tag = getKafkaAssociation(tag, id, tenantId);
     }
+
+    return tag;
+  }
+
+  private EnvTag getKafkaAssociation(EnvTag tag, String id, int tenantId) {
+    if (tag == null) {
+      Env existing = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
+      tag = existing != null ? existing.getAssociatedEnv() : tag;
+    }
+    return tag;
+  }
+
+  private void removeAssociationWithKafkaEnv(String id, int tenantId) {
+    Env existingEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(id, tenantId);
+    if (existingEnv != null && existingEnv.getAssociatedEnv() != null) {
+      Env linkedEnv =
+          manageDatabase
+              .getHandleDbRequests()
+              .selectEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
+      linkedEnv.setAssociatedEnv(null);
+      manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+    }
+  }
+
+  private void associateWithKafkaEnv(EnvTag tag, String id, String name, int tenantId)
+      throws KlawValidationException {
+    Env linkedEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(tag.getId(), tenantId);
+
+    if (linkedEnv.getAssociatedEnv() != null && !linkedEnv.getAssociatedEnv().getId().equals(id)) {
+      throw new KlawValidationException(
+          "Target Environment "
+              + linkedEnv.getName()
+              + " is already assigned to env "
+              + linkedEnv.getAssociatedEnv().getName());
+    }
+    linkedEnv.setAssociatedEnv(new EnvTag(id, name));
+    manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
   }
 
   private String getUserName() {

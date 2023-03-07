@@ -896,11 +896,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                          + ",max.replication.factor=" + $scope.addNewEnv.maxrepfctr
                                          + ",topic.prefix=" + $scope.addNewEnv.topicprefix
                                          + ",topic.suffix=" + $scope.addNewEnv.topicsuffix;
-                if($scope.addNewEnv.associatedEnv != undefined && $scope.addNewEnv.associatedEnv != null && $scope.addNewEnv.associatedEnv.id !=undefined  && $scope.addNewEnv.associatedEnv.id !=null ) {
-                    serviceInput['associatedEnv'] = { id: $scope.addNewEnv.associatedEnv.id , name : $scope.allSchemaEnvMappings.find(element => element.id === $scope.addNewEnv.associatedEnv.id).name };
-                }else {
-                    serviceInput['associatedEnv'] = null;
-                }
+
 
                 $http({
                     method: "POST",
@@ -1060,22 +1056,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 function(error)
                 {
                     $scope.handleValidationErrors(error);
-                }
-            );
-        }
-
-        $scope.getSchemaRegEnvs = function() {
-
-            $http({
-                method: "GET",
-                url: "getSchemaRegEnvs",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.allSchemaEnvMappings = output;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
                 }
             );
         }

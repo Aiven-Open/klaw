@@ -581,11 +581,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                  + ",max.replication.factor=" + $scope.envDetails.maxReplicationFactor
                  + ",topic.prefix=" + $scope.envDetails.topicprefix
                  + ",topic.suffix=" + $scope.envDetails.topicsuffix;
-                     if($scope.envDetails.associatedEnv != undefined && $scope.envDetails.associatedEnv != null && $scope.envDetails.associatedEnv.id !=undefined && $scope.envDetails.associatedEnv.id !=null ) {
-                        serviceInput['associatedEnv'] = { id: $scope.envDetails.associatedEnv.id , name : $scope.allSchemaEnvMappings.find(element => element.id === $scope.envDetails.associatedEnv.id).name };
-                        }else {
-                         serviceInput['associatedEnv'] = null;
-                         }
+
                 $http({
                     method: "POST",
                     url: "addNewEnv",

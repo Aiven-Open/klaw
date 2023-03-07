@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvID;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
@@ -66,7 +67,7 @@ class EnvsClustersTenantsControllerServiceTest {
   @WithMockUser(
       username = "james",
       authorities = {"ADMIN", "USER"})
-  void addNewEnv() throws KlawException {
+  void addNewEnv() throws KlawException, KlawValidationException {
     EnvModel env = getTestEnvModel();
     Env SchemaEnv = new Env();
     SchemaEnv.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
@@ -82,7 +83,7 @@ class EnvsClustersTenantsControllerServiceTest {
   @WithMockUser(
       username = "james",
       authorities = {"ADMIN", "USER"})
-  void addNewEnvNameAlreadyInUse() throws KlawException {
+  void addNewEnvNameAlreadyInUse() throws KlawException, KlawValidationException {
     EnvModel env = getTestEnvModel();
     when(handleDbRequestsJdbc.selectAllEnvs(anyInt()))
         .thenReturn(
