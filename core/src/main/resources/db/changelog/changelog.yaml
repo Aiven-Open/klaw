@@ -947,7 +947,7 @@ databaseChangeLog:
                     name: switchallowedteams
                     type: VARCHAR(150)
     - changeSet:
-        id: 2022-11-09 New column to store the id of the approving team for topic requests
+        id: 2023-03-07 New column to store the id of the approving team for topic requests
         author: aindriu-aiven
         changes:
           - addColumn:
@@ -957,7 +957,7 @@ databaseChangeLog:
                     name: approvingteamid
                     type: VARCHAR(10)
     - changeSet:
-        id: 2022-11-09 New column to store the id of the approving team for connector requests
+        id: 2023-03-07 New column to store the id of the approving team for connector requests
         author: aindriu-aiven
         changes:
           - addColumn:
