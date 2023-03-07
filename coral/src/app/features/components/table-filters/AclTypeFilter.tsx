@@ -1,52 +1,43 @@
-import { NativeSelect, Option } from "@aivenio/aquarium";
-import { useQuery } from "@tanstack/react-query";
+import { NativeSelect } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
-import { getTeams } from "src/domain/team/team-api";
+import { AclType } from "src/domain/acl";
 
-function TeamFilter() {
+type AclTypeForFilter = AclType | "ALL";
+const aclTypesForFilter: AclTypeForFilter[] = ["ALL", "CONSUMER", "PRODUCER"];
+
+function AclTypeFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const team = searchParams.get("team");
+  const aclType = searchParams.get("aclType") ?? ("ALL" as AclType);
 
-  const { data: topicTeams } = useQuery(["topic-get-teams"], {
-    queryFn: () => getTeams(),
-  });
+  const handleChangeAclType = (nextAclType: AclTypeForFilter) => {
+    searchParams.set("aclType", nextAclType);
+    searchParams.set("page", "1");
 
-  const handleChangeTeam = (nextTeamId: string) => {
-    const isAllTeams = nextTeamId === "ALL";
-    if (isAllTeams) {
-      searchParams.delete("team");
-      searchParams.set("page", "1");
-    } else {
-      searchParams.set("team", nextTeamId);
-      searchParams.set("page", "1");
-    }
     setSearchParams(searchParams);
   };
 
-  if (!topicTeams) {
-    return (
-      <div data-testid={"select-team-loading"}>
-        <NativeSelect.Skeleton />
-      </div>
-    );
-  } else {
-    return (
-      <NativeSelect
-        labelText="Filter by team"
-        value={team || "ALL"}
-        onChange={(event) => handleChangeTeam(event.target.value)}
-      >
-        <Option key={"ALL"} value={"ALL"}>
-          All teams
-        </Option>
-        {topicTeams.map((team) => (
-          <Option key={team.teamId} value={team.teamId}>
-            {team.teamname}
-          </Option>
-        ))}
-      </NativeSelect>
-    );
-  }
+  return (
+    <NativeSelect
+      labelText={"Filter by ACL type"}
+      key={"filter-acl-type"}
+      defaultValue={aclType}
+      onChange={(e) => {
+        const selectedType = e.target.value as AclTypeForFilter;
+        return handleChangeAclType(selectedType);
+      }}
+    >
+      {aclTypesForFilter.map((type) => {
+        if (type === "ALL") {
+          return (
+            <option key={type} value="ALL">
+              All ACL types
+            </option>
+          );
+        }
+        return <option key={type}>{type}</option>;
+      })}
+    </NativeSelect>
+  );
 }
 
-export default TeamFilter;
+export default AclTypeFilter;
