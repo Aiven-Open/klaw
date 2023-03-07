@@ -1,20 +1,23 @@
-import { Pagination } from "src/app/components/Pagination";
-import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
-import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
-import { getSchemaRequestsForApprover } from "src/domain/schema-request";
-import { useSearchParams } from "react-router-dom";
+import { Alert } from "@aivenio/aquarium";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import useTableFilters from "src/app/features/approvals/schemas/hooks/useTableFilters";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { Pagination } from "src/app/components/Pagination";
+import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
 import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
+import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
+import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { RequestStatus } from "src/domain/requests/requests-types";
+import { getSchemaRequestsForApprover } from "src/domain/schema-request";
 import {
   approveSchemaRequest,
   declineSchemaRequest,
 } from "src/domain/schema-request/schema-request-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { Alert } from "@aivenio/aquarium";
-import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 
 function SchemaApprovals() {
   const queryClient = useQueryClient();
@@ -24,14 +27,18 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
+  // This logic is what should be extracted in a useFilters hook?
+  const currentEnv = searchParams.get("environment") ?? "ALL";
+  const currentStatus =
+    (searchParams.get("status") as RequestStatus) ?? "CREATED";
+  const currentTopic = searchParams.get("topic") ?? "";
+
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DECLINE" | "NONE";
     req_no: number | null;
   }>({ open: "NONE", req_no: null });
 
   const [errorQuickActions, setErrorQuickActions] = useState("");
-
-  const { environment, status, topic, filters } = useTableFilters();
 
   const {
     data: schemaRequests,
@@ -42,33 +49,17 @@ function SchemaApprovals() {
     queryKey: [
       "schemaRequestsForApprover",
       currentPage,
-      status,
-      environment,
-      topic,
+      currentStatus,
+      currentEnv,
+      currentTopic,
     ],
     queryFn: () =>
       getSchemaRequestsForApprover({
-        requestStatus: status,
+        requestStatus: currentStatus,
         pageNo: currentPage.toString(),
-        env: environment,
-        topic,
+        env: currentEnv,
+        topic: currentTopic,
       }),
-    onSuccess: (newSchemaRequests) => {
-      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
-
-      // If through filtering a user finds themselves on a non existent page, reset page to 1
-      // For example:
-      // - one request returns 4 pages of results
-      // - navigate to page 4
-      // - change filters, to a request that returns 1 page of results
-      // - if not redirected to page 1, table won't be able to handle pagination (clicking "Back" will set page at -1)
-      if (
-        newSchemaRequests.entries.length === 0 &&
-        schemaRequests?.currentPage !== 1
-      ) {
-        setCurrentPage(1);
-      }
-    },
     keepPreviousData: true,
   });
 
@@ -220,7 +211,14 @@ function SchemaApprovals() {
         </div>
       )}
       <ApprovalsLayout
-        filters={filters}
+        filters={[
+          <EnvironmentFilter
+            key={"environment"}
+            isSchemaRegistryEnvironments
+          />,
+          <StatusFilter key={"status"} />,
+          <TopicFilter key={"topic"} />,
+        ]}
         table={table}
         pagination={pagination}
         isLoading={schemaRequestsIsLoading}

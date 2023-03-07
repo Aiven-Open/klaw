@@ -374,11 +374,6 @@ describe("AclApprovals", () => {
     });
 
     it("filters by several fields", async () => {
-      const search = screen.getByRole("search");
-      expect(search).toBeEnabled();
-      await userEvent.type(search, "topicname");
-      expect(search).toHaveValue("topicname");
-
       const select = screen.getByLabelText("Filter by ACL type");
       const option = within(select).getByRole("option", {
         name: "PRODUCER",
@@ -386,6 +381,11 @@ describe("AclApprovals", () => {
       expect(option).toBeEnabled();
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("PRODUCER");
+
+      const search = screen.getByRole("search");
+      expect(search).toBeEnabled();
+      await userEvent.type(search, "topicname");
+      expect(search).toHaveValue("topicname");
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({

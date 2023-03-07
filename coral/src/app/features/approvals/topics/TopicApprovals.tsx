@@ -4,15 +4,19 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
+import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
-import useTableFilters from "src/app/features/approvals/topics/hooks/useTableFilters";
+import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
+import TeamFilter from "src/app/features/components/table-filters/TeamFilter";
+import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { RequestStatus } from "src/domain/requests/requests-types";
 import {
   approveTopicRequest,
-  getTopicRequestsForApprover,
   declineTopicRequest,
+  getTopicRequestsForApprover,
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
 
@@ -24,6 +28,13 @@ function TopicApprovals() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
+
+  // This logic is what should be extracted in a useFilters hook?
+  const currentTeam = searchParams.get("team") ?? "ALL";
+  const currentEnv = searchParams.get("environment") ?? "ALL";
+  const currentStatus =
+    (searchParams.get("status") as RequestStatus) ?? "CREATED";
+  const currentTopic = searchParams.get("topic") ?? "";
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -47,8 +58,6 @@ function TopicApprovals() {
     setSearchParams(searchParams);
   };
 
-  const { environment, status, team, topic, filters } = useTableFilters();
-
   const {
     data: topicRequests,
     isLoading: topicRequestsLoading,
@@ -58,18 +67,18 @@ function TopicApprovals() {
     queryKey: [
       "topicRequestsForApprover",
       currentPage,
-      environment,
-      status,
-      team,
-      topic,
+      currentEnv,
+      currentStatus,
+      currentTeam,
+      currentTopic,
     ],
     queryFn: () =>
       getTopicRequestsForApprover({
         pageNo: String(currentPage),
-        env: environment,
-        requestStatus: status,
-        teamId: team === "ALL" ? undefined : Number(team),
-        search: topic,
+        env: currentEnv,
+        requestStatus: currentStatus,
+        teamId: currentTeam === "ALL" ? undefined : Number(currentTeam),
+        search: currentTopic,
       }),
     keepPreviousData: true,
   });
@@ -233,7 +242,12 @@ function TopicApprovals() {
         </div>
       )}
       <ApprovalsLayout
-        filters={filters}
+        filters={[
+          <EnvironmentFilter key={"environment"} />,
+          <StatusFilter key={"status"} />,
+          <TeamFilter key={"team"} />,
+          <TopicFilter key={"topic"} />,
+        ]}
         table={table}
         pagination={pagination}
         isLoading={topicRequestsLoading}
