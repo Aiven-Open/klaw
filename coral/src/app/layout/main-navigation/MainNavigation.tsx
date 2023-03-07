@@ -46,8 +46,9 @@ function MainNavigation() {
               }
             />
             <MainNavigationLink
-              to={`/myTopicRequests`}
               linkText={"My team's requests"}
+              to={Routes.REQUESTS}
+              active={pathname.startsWith(Routes.REQUESTS)}
             />
           </MainNavigationSubmenuList>
         </li>
