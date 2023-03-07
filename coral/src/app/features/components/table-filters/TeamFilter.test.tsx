@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
-import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
+import TeamFilter from "src/app/features/components/table-filters/TeamFilter";
 import { getTeams } from "src/domain/team/team-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -37,12 +37,12 @@ const mockedTeamsResponse = [
 ];
 
 const filterLabel = "Filter by team";
-describe("SelectTeam.tsx", () => {
+describe("TeamFilter.tsx", () => {
   describe("renders default view when no query is set", () => {
     beforeAll(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
-      customRender(<SelectTeam />, {
+      customRender(<TeamFilter />, {
         memoryRouter: true,
         queryClient: true,
       });
@@ -91,7 +91,7 @@ describe("SelectTeam.tsx", () => {
 
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
-      customRender(<SelectTeam />, {
+      customRender(<TeamFilter />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -122,7 +122,7 @@ describe("SelectTeam.tsx", () => {
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
-      customRender(<SelectTeam />, {
+      customRender(<TeamFilter />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -155,7 +155,7 @@ describe("SelectTeam.tsx", () => {
 
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
-      customRender(<SelectTeam />, {
+      customRender(<TeamFilter />, {
         queryClient: true,
         browserRouter: true,
       });

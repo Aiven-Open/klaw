@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { getTeams } from "src/domain/team/team-api";
 
-function SelectTeam() {
+function TeamFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
   const team = searchParams.get("team");
 
@@ -49,4 +49,4 @@ function SelectTeam() {
   }
 }
 
-export default SelectTeam;
+export default TeamFilter;

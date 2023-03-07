@@ -2,7 +2,7 @@ import { NativeSelect, SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import SelectTeam from "src/app/features/components/table-filters/SelectTeam";
+import TeamFilter from "src/app/features/components/table-filters/TeamFilter";
 import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
 import { RequestStatus } from "src/domain/requests/requests-types";
 import {
@@ -41,7 +41,7 @@ const useTableFilters = () => {
         );
       })}
     </NativeSelect>,
-    <SelectTeam key={"team"} />,
+    <TeamFilter key={"team"} />,
     <div key={"search"}>
       <SearchInput
         type={"search"}
