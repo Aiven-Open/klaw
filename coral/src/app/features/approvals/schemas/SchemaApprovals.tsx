@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
-import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
@@ -210,7 +210,7 @@ function SchemaApprovals() {
           <Alert type="error">{errorQuickActions}</Alert>
         </div>
       )}
-      <ApprovalsLayout
+      <TableLayout
         filters={[
           <EnvironmentFilter
             key={"environment"}

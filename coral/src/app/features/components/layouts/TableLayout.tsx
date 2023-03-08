@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
-type ApprovalsLayoutProps = {
+type TableLayoutProps = {
   isLoading?: boolean;
   isErrorLoading?: boolean;
   errorMessage?: unknown;
@@ -12,7 +12,7 @@ type ApprovalsLayoutProps = {
   pagination?: ReactElement;
 };
 
-function ApprovalsLayout(props: ApprovalsLayoutProps) {
+function TableLayout(props: TableLayoutProps) {
   const { filters, table, pagination, isLoading, isErrorLoading } = props;
 
   const errorMessage = parseErrorMsg(props.errorMessage);
@@ -58,4 +58,4 @@ function ApprovalsLayout(props: ApprovalsLayoutProps) {
   );
 }
 
-export { ApprovalsLayout };
+export { TableLayout };

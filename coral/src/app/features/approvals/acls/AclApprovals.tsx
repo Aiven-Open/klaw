@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
-import { ApprovalsLayout } from "src/app/features/approvals/components/ApprovalsLayout";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
@@ -216,7 +216,7 @@ function AclApprovals() {
         </div>
       )}
 
-      <ApprovalsLayout
+      <TableLayout
         filters={[
           <EnvironmentFilter key={"environment"} />,
           <StatusFilter key={"status"} />,
