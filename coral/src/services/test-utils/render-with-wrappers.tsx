@@ -74,6 +74,21 @@ function withBrowserRouterAndQueryClient({
     ...options,
   });
 }
+
+// To be used for testing URL states (ie, search params)
+function withBrowserRouter({
+  ui,
+  options,
+}: {
+  ui: ReactElement;
+  options?: RenderOptions;
+}) {
+  return render(ui, {
+    wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+    ...options,
+  });
+}
+
 type ValidOptions =
   | "queryClient"
   | "memoryRouter"
@@ -113,6 +128,14 @@ function customRender(
       options,
     });
   }
+
+  if (renderWith?.browserRouter) {
+    return withBrowserRouter({
+      ui,
+      options,
+    });
+  }
+
   if (renderWith?.queryClient) {
     return withQueryClient(ui, options);
   }

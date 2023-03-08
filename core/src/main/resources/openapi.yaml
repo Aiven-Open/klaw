@@ -5871,6 +5871,9 @@
               "type" : "string"
             }
           },
+          "associatedEnv" : {
+            "$ref" : "#/components/schemas/EnvTag"
+          },
           "clusterType" : {
             "type" : "string",
             "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ],
@@ -5878,6 +5881,16 @@
           }
         },
         "required" : [ "clusterId", "name", "type" ]
+      },
+      "EnvTag" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
       },
       "KwClustersModel" : {
         "properties" : {

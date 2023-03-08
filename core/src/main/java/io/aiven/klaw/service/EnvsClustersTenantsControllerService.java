@@ -9,10 +9,12 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
@@ -125,6 +127,7 @@ public class EnvsClustersTenantsControllerService {
       envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
 
       extractKwEnvParameters(envModel);
+      log.info("Return env model {}", envModel);
       return envModel;
     }
     return null;
@@ -622,7 +625,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException {
+  public ApiResponse addNewEnv(EnvModel newEnv) throws KlawException, KlawValidationException {
     log.info("addNewEnv {}", newEnv);
     int tenantId = getUserDetails(getUserName()).getTenantId();
     if (commonUtilsService.isNotAuthorizedUser(
@@ -704,10 +707,17 @@ public class EnvsClustersTenantsControllerService {
     env.setEnvExists("true");
 
     try {
+      EnvTag envTag =
+          addEnvironmentMapping(
+              env.getAssociatedEnv(), env.getId(), env.getName(), env.getTenantId(), env.getType());
+      env.setAssociatedEnv(envTag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       commonUtilsService.updateMetadata(
           tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
       return ApiResponse.builder().result(result).build();
+    } catch (KlawValidationException ex) {
+      log.error("KlawValidationException:", ex);
+      throw ex;
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -886,6 +896,7 @@ public class EnvsClustersTenantsControllerService {
     }
 
     try {
+      removeAssociatedKafkaOrSchemaEnvironment(envId, tenantId, envType);
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       commonUtilsService.updateMetadata(
@@ -896,6 +907,86 @@ public class EnvsClustersTenantsControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private void removeAssociatedKafkaOrSchemaEnvironment(String envId, int tenantId, String envType)
+      throws KlawException {
+
+    if (KafkaClustersType.KAFKA.value.equals(envType)
+        || KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
+      Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
+      if (env.getAssociatedEnv() != null) {
+        Env linkedEnv =
+            manageDatabase
+                .getHandleDbRequests()
+                .selectEnvDetails(env.getAssociatedEnv().getId(), tenantId);
+        linkedEnv.setAssociatedEnv(null);
+        manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+      }
+    }
+  }
+
+  private EnvTag addEnvironmentMapping(
+      EnvTag envTag, String envId, String envName, int tenantId, String envType)
+      throws KlawValidationException {
+    // only assignable on a schema registry
+    if (KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
+      //      EnvTag existingTag = getKafkaAssociation(null, id, tenantId);
+      if (envTag != null) {
+
+        associateWithKafkaEnv(envTag, envId, envName, tenantId);
+        // remove existing association if it exists
+        removeAssociationWithKafkaEnv(envTag, envId, tenantId);
+
+      } else {
+        // envTag is always null here
+        removeAssociationWithKafkaEnv(null, envId, tenantId);
+      }
+    } else if (KafkaClustersType.KAFKA.value.equals(envType)) {
+      envTag = getKafkaAssociation(envTag, envId, tenantId);
+    }
+
+    return envTag;
+  }
+
+  private EnvTag getKafkaAssociation(EnvTag KafkaEnvTag, String kafkaEnvId, int tenantId) {
+    if (KafkaEnvTag == null) {
+      Env existing = manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnvId, tenantId);
+      KafkaEnvTag = existing != null ? existing.getAssociatedEnv() : KafkaEnvTag;
+    }
+    return KafkaEnvTag;
+  }
+
+  private void removeAssociationWithKafkaEnv(EnvTag envTag, String envId, int tenantId) {
+    Env existingEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
+    // envTag is equal to null we don't need to check if the associated env is the same as the
+    // passed env tag because this is actualy an operation to remove an association.
+    if (existingEnv != null
+        && existingEnv.getAssociatedEnv() != null
+        && (envTag == null || !existingEnv.getAssociatedEnv().getId().equals(envTag.getId()))) {
+      Env linkedEnv =
+          manageDatabase
+              .getHandleDbRequests()
+              .selectEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
+      linkedEnv.setAssociatedEnv(null);
+      manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+    }
+  }
+
+  private void associateWithKafkaEnv(EnvTag envTag, String envId, String envName, int tenantId)
+      throws KlawValidationException {
+    Env linkedEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(envTag.getId(), tenantId);
+
+    if (linkedEnv.getAssociatedEnv() != null
+        && !linkedEnv.getAssociatedEnv().getId().equals(envId)) {
+      throw new KlawValidationException(
+          "Target Environment "
+              + linkedEnv.getName()
+              + " is already assigned to env "
+              + linkedEnv.getAssociatedEnv().getName());
+    }
+    linkedEnv.setAssociatedEnv(new EnvTag(envId, envName));
+    manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
   }
 
   private String getUserName() {
@@ -1191,7 +1282,7 @@ public class EnvsClustersTenantsControllerService {
     return kwPublicKeyMap;
   }
 
-  public Map<String, String> getUpdateEnvStatus(String envId) {
+  public Map<String, String> getUpdateEnvStatus(String envId) throws KlawException {
     Map<String, String> envUpdatedStatus = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);

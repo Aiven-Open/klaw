@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -54,6 +55,8 @@ public class EnvModel implements Serializable {
 
   private String totalNoPages;
   private List<String> allPageNos;
+
+  private EnvTag associatedEnv;
 
   public void setClusterType(KafkaClustersType type) {
     this.type = type.value;

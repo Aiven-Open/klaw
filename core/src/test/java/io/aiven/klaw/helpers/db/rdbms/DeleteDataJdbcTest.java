@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +34,6 @@ public class DeleteDataJdbcTest {
   @Mock SchemaRequestRepo schemaRequestRepo;
 
   @Mock EnvRepo envRepo;
-
   @Mock TeamRepo teamRepo;
 
   @Mock AclRequestsRepo aclRequestsRepo;
@@ -105,14 +105,21 @@ public class DeleteDataJdbcTest {
   public void deleteEnvironmentRequest() {
     String clusterId = "1";
     Env envObj = new Env();
-
     EnvID env = new EnvID();
     env.setId(clusterId);
     env.setTenantId(101);
-
+    env.setId("1");
     when(envRepo.findById(env)).thenReturn(java.util.Optional.of(envObj));
     String result = deleteDataJdbc.deleteEnvironment("1", 101);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void deleteEnvironmentThatDoesNotExistRequest() {
+    String clusterId = "1";
+    when(envRepo.findById(any())).thenReturn(java.util.Optional.empty());
+    String result = deleteDataJdbc.deleteEnvironment("1", 101);
+    assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
   }
 
   @Test

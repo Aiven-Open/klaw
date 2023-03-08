@@ -1,8 +1,9 @@
-import { cleanup, screen, render, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import AclApprovalsTable, {
+  type Props,
+} from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import { AclRequest } from "src/domain/acl/acl-types";
-import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
-import { type Props } from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const aclRequests: AclRequest[] = [

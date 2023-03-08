@@ -40,7 +40,7 @@ app.controller("monitorEnvsCtrl", function($scope, $http, $location, $window,  $
                 url: "getSchemaRegEnvsStatus",
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
-                $scope.allschenvs = output;
+                $scope.allSchemaEnvMappings = output;
             }).error(
                 function(error)
                 {

@@ -242,6 +242,36 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 );
         }
 
+        $scope.getSchemaRegEnvs = function() {
+                    $http({
+                            method: "GET",
+                            url: "getSchemaRegEnvs",
+                            headers : { 'Content-Type' : 'application/json' }
+                        }).success(function(output) {
+                            $scope.allSchemaEnvMappings = output;
+                        }).error(
+                            function(error)
+                            {
+                                $scope.alert = error;
+                            }
+                        );
+                }
+
+                $scope.getKafkaEnvs = function() {
+                            $http({
+                                    method: "GET",
+                                    url: "getEnvs",
+                                    headers : { 'Content-Type' : 'application/json' }
+                                }).success(function(output) {
+                                    $scope.allKafkaEnvMappings = output;
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.alert = error;
+                                    }
+                                );
+                        }
+
         $scope.searchClusters = function(){
             $scope.clusterIdFromUrl = "";
             if($scope.searchClusterParam)
@@ -867,6 +897,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                          + ",topic.prefix=" + $scope.addNewEnv.topicprefix
                                          + ",topic.suffix=" + $scope.addNewEnv.topicsuffix;
 
+
                 $http({
                     method: "POST",
                     url: "addNewEnv",
@@ -933,7 +964,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['type'] = $scope.addNewSchemaEnv.type;
                 serviceInput['clusterId'] = $scope.addNewSchemaEnv.cluster;
 //                serviceInput['tenantId'] = $scope.addNewSchemaEnv.tenant;
-
+                if($scope.addNewSchemaEnv.associatedEnv != undefined && $scope.addNewSchemaEnv.associatedEnv != null && $scope.addNewSchemaEnv.associatedEnv.id != undefined && $scope.addNewSchemaEnv.associatedEnv.id !=null ) {
+                serviceInput['associatedEnv'] = { id: $scope.addNewSchemaEnv.associatedEnv.id , name : $scope.allKafkaEnvMappings.find(element => element.id === $scope.addNewSchemaEnv.associatedEnv.id).name };
+                } else {
+                 serviceInput['associatedEnv'] = null;
+                }
                 $http({
                     method: "POST",
                     url: "addNewEnv",
@@ -1021,22 +1056,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 function(error)
                 {
                     $scope.handleValidationErrors(error);
-                }
-            );
-        }
-
-        $scope.getSchemaRegEnvs = function() {
-
-            $http({
-                method: "GET",
-                url: "getSchemaRegEnvs",
-                headers : { 'Content-Type' : 'application/json' }
-            }).success(function(output) {
-                $scope.allschenvs = output;
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
                 }
             );
         }
