@@ -112,11 +112,13 @@ public class SecurityConfigSSO {
   }
 }
 
+@Slf4j
 class CustomJwtDecoder implements JwtDecoder {
   @Override
   public Jwt decode(String token) throws JwtException {
     JWT jwt;
     try {
+      log.info("Custom decoder, token : {}", token);
       jwt = JWTParser.parse(token);
       return createJwt(token, jwt);
     } catch (ParseException e) {
@@ -156,7 +158,9 @@ class CustomJwtDecoder implements JwtDecoder {
 
   public JWTClaimsSet getJWTClaimsSet(JWT parsedJwt) throws ParseException {
     Payload payload = new Payload(parsedJwt.getParsedParts()[1]);
+    log.info("Payload before : {}", payload);
     Map<String, Object> json = toJSONObject(payload);
+    log.info("Payload after : {}", json);
     if (json == null) {
       throw new ParseException("Payload of JWS object is not a valid JSON object", 0);
     } else {
