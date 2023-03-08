@@ -85,8 +85,7 @@ public class TopicControllerServiceTest {
 
   @Mock KwTenantConfigModel tenantConfigModel;
 
-  @Captor
-  ArgumentCaptor<TopicRequest> topicRequestCaptor;
+  @Captor ArgumentCaptor<TopicRequest> topicRequestCaptor;
   private Env env;
 
   private UtilMethods utilMethods;
@@ -1123,11 +1122,11 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
-            .thenReturn(Collections.emptyList());
+        .thenReturn(Collections.emptyList());
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
-            .thenReturn(List.of(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(List.of(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     List<UserInfo> userList = utilMethods.getUserInfoList("testuser", "");
     userList.get(0).setTeamId(1);
     when(handleDbRequests.selectAllUsersInfo(anyInt())).thenReturn(userList);
@@ -1135,14 +1134,13 @@ public class TopicControllerServiceTest {
     claimReqResult.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.requestForTopic(any())).thenReturn(claimReqResult);
 
-      ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
-      assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
+    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
 
-      verify(handleDbRequests,times(1)).requestForTopic(topicRequestCaptor.capture());
-      TopicRequest req = topicRequestCaptor.getValue();
-      assertThat(req.getDescription()).isNull();
-      assertThat(req.getApprovingTeamId()).isEqualTo("1");
-
+    verify(handleDbRequests, times(1)).requestForTopic(topicRequestCaptor.capture());
+    TopicRequest req = topicRequestCaptor.getValue();
+    assertThat(req.getDescription()).isNull();
+    assertThat(req.getApprovingTeamId()).isEqualTo("1");
   }
 
   private TopicRequestModel getTopicWithAdvancedConfigs() {

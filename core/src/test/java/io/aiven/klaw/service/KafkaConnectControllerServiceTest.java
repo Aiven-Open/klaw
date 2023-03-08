@@ -21,6 +21,7 @@ import io.aiven.klaw.model.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,9 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import io.aiven.klaw.model.enums.RequestStatus;
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -72,8 +70,7 @@ public class KafkaConnectControllerServiceTest {
 
   @Mock KwTenantConfigModel tenantConfigModel;
 
-  @Captor
-  ArgumentCaptor<KafkaConnectorRequest> kafkaConnectorRequest;
+  @Captor ArgumentCaptor<KafkaConnectorRequest> kafkaConnectorRequest;
 
   private Env env;
 
@@ -170,46 +167,46 @@ public class KafkaConnectControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     ApiResponse apiResponse =
-            kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
+        kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
     assertThat(apiResponse.getResult())
-            .isEqualTo("Failure. Invalid config. topics and topics.regex both cannot be configured.");
+        .isEqualTo("Failure. Invalid config. topics and topics.regex both cannot be configured.");
   }
-
 
   @Test
   @Order(5)
   public void createClaimConnectorRequest() throws KlawException {
-    Set<String> envListIds= new HashSet<>();
+    Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"),eq(101))).thenReturn(List.of(getKwKafkaConnector()));
+    when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"), eq(101)))
+        .thenReturn(List.of(getKwKafkaConnector()));
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(envListIds);
     ApiResponse apiResponse =
-            kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne","1");
+        kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
-
-    verify(handleDbRequests,times(1)).requestForConnector(kafkaConnectorRequest.capture());
+    verify(handleDbRequests, times(1)).requestForConnector(kafkaConnectorRequest.capture());
     assertThat(kafkaConnectorRequest.getValue().getApprovingTeamId()).isEqualTo("8");
     assertThat(kafkaConnectorRequest.getValue().getDescription()).isNull();
   }
 
-
   @Test
   @Order(6)
   public void createClaimConnectorRequestAlreadyExists() throws KlawException {
-    Set<String> envListIds= new HashSet<>();
+    Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.selectConnectorRequests("ConnectorOne", "1", RequestStatus.CREATED.value, 101)).thenReturn(List.of(new KafkaConnectorRequest()));
+    when(handleDbRequests.selectConnectorRequests(
+            "ConnectorOne", "1", RequestStatus.CREATED.value, 101))
+        .thenReturn(List.of(new KafkaConnectorRequest()));
     ApiResponse apiResponse =
-            kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne","1");
+        kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
-
-    assertThat(apiResponse.getResult()).isEqualTo("Failure. A request already exists for this connector.");
+    assertThat(apiResponse.getResult())
+        .isEqualTo("Failure. A request already exists for this connector.");
   }
 
   private KafkaConnectorRequestModel getConnectRequestModel() {
@@ -222,7 +219,7 @@ public class KafkaConnectControllerServiceTest {
     return kafkaConnectorRequestModel;
   }
 
-  private KwKafkaConnector getKwKafkaConnector(){
+  private KwKafkaConnector getKwKafkaConnector() {
 
     KwKafkaConnector connector = new KwKafkaConnector();
     connector.setConnectorId(2);
