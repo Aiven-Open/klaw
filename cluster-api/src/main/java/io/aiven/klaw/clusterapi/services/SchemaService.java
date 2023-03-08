@@ -150,6 +150,9 @@ public class SchemaService {
           getSchemaVersions(environmentVal, topicName, protocol, clusterIdentification);
       String schemaCompatibility =
           getSubjectSchemaCompatibility(environmentVal, topicName, protocol, clusterIdentification);
+      if (Objects.equals(schemaCompatibility, SCHEMA_COMPATIBILITY_NOT_SET))
+        schemaCompatibility =
+            getGlobalSchemaCompatibility(environmentVal, protocol, clusterIdentification);
       Map<Integer, Map<String, Object>> allSchemaObjects = new TreeMap<>();
 
       if (versionsList != null) {
@@ -231,18 +234,38 @@ public class SchemaService {
       }
 
       String suffixUrl = environmentVal + "/config/" + topicName + "-value";
-      Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol);
-
-      ResponseEntity<Map<String, String>> responseList =
-          getSubjectSchemaCompatibilityRequest(
-              reqDetails, new HashMap<>(), createSchemaRegistryRequest(clusterIdentification));
-      log.info("Schema compatibility " + responseList);
-      return responseList.getBody().get("compatibilityLevel");
+      return getCompatibility(protocol, clusterIdentification, suffixUrl);
     } catch (Exception e) {
       log.error("Error in getting schema compatibility ", e);
       return SCHEMA_COMPATIBILITY_NOT_SET;
     }
+  }
+
+  private String getGlobalSchemaCompatibility(
+      String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
+    try {
+      log.info("Into global getSchema compatibility {}", environmentVal);
+      if (environmentVal == null) {
+        return null;
+      }
+
+      String suffixUrl = environmentVal + "/config";
+      return getCompatibility(protocol, clusterIdentification, suffixUrl);
+    } catch (Exception e) {
+      log.error("Error in getting schema compatibility ", e);
+      return SCHEMA_COMPATIBILITY_NOT_SET;
+    }
+  }
+
+  private String getCompatibility(
+      KafkaSupportedProtocol protocol, String clusterIdentification, String suffixUrl) {
+    Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
+
+    ResponseEntity<Map<String, String>> responseList =
+        getSubjectSchemaCompatibilityRequest(
+            reqDetails, new HashMap<>(), createSchemaRegistryRequest(clusterIdentification));
+    log.info("Schema compatibility " + responseList);
+    return responseList.getBody().get("compatibilityLevel");
   }
 
   private HttpEntity<Object> createSchemaRegistryRequest(String clusterIdentification) {
