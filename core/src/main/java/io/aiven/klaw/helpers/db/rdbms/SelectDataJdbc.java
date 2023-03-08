@@ -497,7 +497,7 @@ public class SelectDataJdbc {
 
     if (allReqs) { // approvers
       // Team Name is null here as it is the team who created the requested
-      // Description includes the teamId as that is how Claim topics know who is the owning team.
+      // Approving Team includes the teamId as that is how Claim topics know who is the owning team.
       List<TopicRequest> claimTopicReqs =
           Lists.newArrayList(
               findTopicRequestsByExample(
@@ -586,7 +586,9 @@ public class SelectDataJdbc {
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
-   * @param tenantId The tenantId
+   * @param tenantId The tenantId @Param approvingTeam The team who is able to approve this request
+   *     will be filled in the case of claim requests. @Param userName of the person who created the
+   *     request
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<TopicRequest> findTopicRequestsByExample(
@@ -595,7 +597,7 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String description,
+      String approvingTeam,
       String userName) {
 
     TopicRequest request = new TopicRequest();
@@ -611,8 +613,8 @@ public class SelectDataJdbc {
       request.setTeamId(teamId);
     }
 
-    if (description != null && !description.isEmpty()) {
-      request.setDescription(description);
+    if (approvingTeam != null && !approvingTeam.isEmpty()) {
+      request.setApprovingTeamId(approvingTeam);
     }
 
     if (status != null && !status.equalsIgnoreCase("all")) {
@@ -649,7 +651,7 @@ public class SelectDataJdbc {
     if (allReqs) { // approvers
 
       // Team Name is null here as it is the team who created the requested
-      // Description includes the teamId as that is how Claim topics know who is the owning team.
+      // Approving Team includes the teamId as that is how Claim topics know who is the owning team.
       List<KafkaConnectorRequest> claimTopicReqs =
           Lists.newArrayList(
               findKafkaConnectorRequestsByExample(
@@ -718,7 +720,8 @@ public class SelectDataJdbc {
    * @param teamId The identifier of the team
    * @param environment the environment
    * @param status created/declined/approved
-   * @param tenantId The tenantId
+   * @param tenantId The tenantId @Param approvingTeam The team who is able to approve this request
+   *     will be filled in the case of claim requests.
    * @return An Iterable of all TopicRequests that match the parameters that have been supplied
    */
   private Iterable<KafkaConnectorRequest> findKafkaConnectorRequestsByExample(
@@ -727,7 +730,7 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String description) {
+      String approvingTeam) {
 
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
@@ -742,8 +745,8 @@ public class SelectDataJdbc {
       request.setTeamId(teamId);
     }
 
-    if (description != null && !description.isEmpty()) {
-      request.setDescription(description);
+    if (approvingTeam != null && !approvingTeam.isEmpty()) {
+      request.setApprovingTeamId(approvingTeam);
     }
 
     if (status != null && !status.equalsIgnoreCase("all")) {
@@ -1423,7 +1426,7 @@ public class SelectDataJdbc {
       updateMap(statusCountsMap, topicRequestsStatusObj);
 
       long assignedToClaimReqs =
-          topicRequestsRepo.countAllTopicRequestsByDescriptionAndTopictype(
+          topicRequestsRepo.countAllTopicRequestsByApprovingTeamAndTopictype(
               tenantId, "" + teamId, RequestOperationType.CLAIM.value);
       List<Object[]> topicRequestsOperationTypObj =
           topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);

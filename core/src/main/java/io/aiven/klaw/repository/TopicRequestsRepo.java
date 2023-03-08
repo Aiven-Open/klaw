@@ -56,17 +56,17 @@ public interface TopicRequestsRepo
   @Query(
       value =
           "select count(*) from kwtopicrequests where tenantid = :tenantId"
-              + " and description = :description and topictype = :topictype",
+              + " and approvingteamId = :approvingteamId and topictype = :topictype",
       nativeQuery = true)
-  long countAllTopicRequestsByDescriptionAndTopictype(
+  long countAllTopicRequestsByApprovingTeamAndTopictype(
       @Param("tenantId") Integer tenantId,
-      @Param("description") String description,
+      @Param("approvingteamId") String approvingteamId,
       @Param("topictype") String requestOperationType);
 
   @Query(
       value =
           "select count(*) from kwtopicrequests where tenantid = :tenantId"
-              + " and teamid = :teamId and requestor != :requestor "
+              + " and (teamid = :teamId or approvingteamid = :teamId) and requestor != :requestor "
               + "and topicstatus = :topicStatus  group by topicstatus",
       nativeQuery = true)
   Long countRequestorsTopicRequestsGroupByStatusType(

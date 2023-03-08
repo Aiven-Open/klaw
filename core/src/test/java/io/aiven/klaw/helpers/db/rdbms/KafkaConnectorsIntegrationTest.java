@@ -479,7 +479,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(103);
-        assertThat(req.getDescription()).isEqualTo("101");
+        assertThat(req.getApprovingTeamId()).isEqualTo("101");
       } else {
         assertThat(req.getTeamId()).isEqualTo(101);
       }
@@ -499,7 +499,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
-        assertThat(req.getDescription()).isNotEqualTo("101");
+        assertThat(req.getApprovingTeamId()).isNotEqualTo("101");
       }
     }
   }
@@ -518,7 +518,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
-        assertThat(req.getDescription()).isEqualTo("103");
+        assertThat(req.getApprovingTeamId()).isEqualTo("103");
       } else {
         assertThat(req.getTeamId()).isEqualTo(101);
       }
@@ -541,7 +541,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTeamId()).isEqualTo(103);
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         // only show my tems claim requests
-        assertThat(req.getDescription()).isNotEqualTo("103");
+        assertThat(req.getApprovingTeamId()).isNotEqualTo("103");
       }
     }
   }
@@ -638,7 +638,7 @@ public class KafkaConnectorsIntegrationTest {
       }
 
       if (connectorType.value.equals("Claim")) {
-        kc.setDescription(claimOwner);
+        kc.setApprovingTeamId(claimOwner);
       }
 
       entityManager.persistAndFlush(kc);

@@ -947,6 +947,26 @@ databaseChangeLog:
                     name: switchallowedteams
                     type: VARCHAR(150)
     - changeSet:
+        id: 2023-03-07 New column to store the id of the approving team for topic requests
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwtopicrequests
+              columns:
+                - column:
+                    name: approvingteamid
+                    type: VARCHAR(10)
+    - changeSet:
+        id: 2023-03-07 New column to store the id of the approving team for connector requests
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwkafkaconnectorrequests
+              columns:
+                - column:
+                    name: approvingteamid
+                    type: VARCHAR(10)
+    - changeSet:
         id: 22-02-23 New Column to store an associated env mapping
         author: aindriu-aiven
         changes:

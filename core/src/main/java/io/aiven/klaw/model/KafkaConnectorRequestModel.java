@@ -60,6 +60,8 @@ public class KafkaConnectorRequestModel implements Serializable {
 
   private String approvingTeamDetails;
 
+  private String approvingTeamId;
+
   private String otherParams;
 
   private List<String> allPageNos;

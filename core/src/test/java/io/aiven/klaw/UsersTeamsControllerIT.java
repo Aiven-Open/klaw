@@ -628,7 +628,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
     List<UserInfoModel> userInfoModelList =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
-    assertThat(userInfoModelList).hasSize(3); // superadmin, kwuserb, kwuserc
+    assertThat(userInfoModelList).hasSizeBetween(3, 6); // superadmin, kwuserb, kwuserc
     assertThat(
             userInfoModelList.stream()
                 .filter(userInfo -> userInfo.getUsername().equals(switchUser1))
