@@ -238,7 +238,7 @@ public class EnvsClustersTenantsControllerService {
                       env.getBootstrapServers()
                           .toLowerCase()
                           .contains(searchClusterParam.toLowerCase()))
-              .collect(Collectors.toList());
+              .toList();
       List<KwClustersModel> envListMap3 =
           kwClustersModelList.stream()
               .filter(
@@ -247,7 +247,7 @@ public class EnvsClustersTenantsControllerService {
                           .getName()
                           .toLowerCase()
                           .contains(searchClusterParam.toLowerCase()))
-              .collect(Collectors.toList());
+              .toList();
       envListMap1.addAll(envListMap2);
       envListMap1.addAll(envListMap3);
 

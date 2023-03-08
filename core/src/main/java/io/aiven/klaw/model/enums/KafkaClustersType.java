@@ -4,7 +4,8 @@ public enum KafkaClustersType {
   ALL("all"),
   KAFKA("kafka"),
   SCHEMA_REGISTRY("schemaregistry"),
-  KAFKA_CONNECT("kafkaconnect");
+  KAFKA_CONNECT("kafkaconnect"),
+  KAFKA_REST_API("kafkarestapi");
 
   public final String value;
 

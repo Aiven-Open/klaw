@@ -24,7 +24,7 @@ public class KwClustersModel implements Serializable {
 
   @NotNull
   @Size(min = 6, message = "Invalid bootstrap servers")
-  @Pattern(message = "Invalid bootstrap servers", regexp = "^[a-zA-Z0-9._:,-]{3,}$")
+  @Pattern(message = "Invalid bootstrap servers", regexp = "^[a-zA-Z0-9._:,-/]{3,}$")
   private String bootstrapServers;
 
   @NotNull(message = "Protocol cannot be null")

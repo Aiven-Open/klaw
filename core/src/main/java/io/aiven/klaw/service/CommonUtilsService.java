@@ -320,7 +320,8 @@ public class CommonUtilsService {
     } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE) {
       manageDatabase.deleteCluster(kwMetadataUpdates.getTenantId());
     } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.CREATE) {
-      manageDatabase.loadClustersForOneTenant(null, null, null, kwMetadataUpdates.getTenantId());
+      manageDatabase.loadClustersForOneTenant(
+          null, null, null, null, kwMetadataUpdates.getTenantId());
     } else if (entityType == EntityType.ENVIRONMENT
         && operationType == MetadataOperationType.CREATE) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());

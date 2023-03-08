@@ -678,14 +678,24 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                         $scope.addNewCluster.type = $scope.addNewCluster.clusterType;
 
-                        if($scope.addNewCluster.host == undefined)
+                        if($scope.addNewCluster.type === 'kafkarestapi'){
+                            $scope.kafkaFlavor = 'Apache Kafka'; // this is independent of any kafka flavor type
+                        }
+
+                        if($scope.addNewCluster.host === undefined  && $scope.addNewCluster.type !== 'kafkarestapi')
                             {
                                 $scope.alertnote = "Please fill in bootstrap servers";
                                 $scope.showAlertToast();
                                 return;
                             }
+                        else if($scope.addNewCluster.host === undefined  && $scope.addNewCluster.type === 'kafkarestapi')
+                        {
+                            $scope.alertnote = "Please fill in Rest Api server";
+                            $scope.showAlertToast();
+                            return;
+                        }
 
-                        if($scope.addNewCluster.envname == undefined)
+                        if($scope.addNewCluster.envname === undefined)
                         {
                             $scope.alertnote = "Please fill in a name for cluster";
                             $scope.showAlertToast();
@@ -706,7 +716,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             return;
                         }
 
-                        if($scope.addNewCluster.protocol == 'SSL' && $scope.dashboardDetails.saasEnabled == 'saas'){
+                        if($scope.addNewCluster.protocol === 'SSL' && $scope.dashboardDetails.saasEnabled === 'saas'){
                             if(!$scope.addNewCluster.pubkeyUploadedFromUI)
                             {
                                 $scope.alertnote = "Please select a valid Public key file";
