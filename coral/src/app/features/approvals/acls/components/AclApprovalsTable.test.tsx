@@ -100,6 +100,12 @@ describe("AclApprovalsTable", () => {
 
   afterEach(cleanup);
 
+  it("shows a message to user in case there are no requests that match the search criteria", () => {
+    renderFromProps({ aclRequests: [] });
+    screen.getByText("No ACL requests");
+    screen.getByText("No ACL request matched your criteria.");
+  });
+
   it("describes the table content and pagination for screen readers", () => {
     renderFromProps();
     screen.getByLabelText(`Acl requests, page 1 of 10`);

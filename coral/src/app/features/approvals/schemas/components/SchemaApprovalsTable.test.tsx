@@ -87,6 +87,19 @@ describe("SchemaApprovalsTable", () => {
     { columnHeader: "Decline", relatedField: null },
   ];
 
+  it("shows a message to user in case there are no requests that match the search criteria", () => {
+    render(
+      <SchemaApprovalsTable
+        requests={[]}
+        setModals={mockSetModals}
+        onApprove={mockApproveRequest}
+        quickActionLoading={false}
+      />
+    );
+    screen.getByText("No Schema requests");
+    screen.getByText("No Schema request matched your criteria.");
+  });
+
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       render(

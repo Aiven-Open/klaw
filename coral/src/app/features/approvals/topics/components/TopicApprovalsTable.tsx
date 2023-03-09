@@ -1,6 +1,7 @@
 import {
   DataTable,
   DataTableColumn,
+  EmptyState,
   GhostButton,
   Icon,
 } from "@aivenio/aquarium";
@@ -198,6 +199,14 @@ function TopicApprovalsTable(props: TopicApprovalsTableProp) {
       requesttimestring: request.requesttimestring,
     };
   });
+
+  if (!rows.length) {
+    return (
+      <EmptyState title="No Topic requests">
+        No Topic request matched your criteria.
+      </EmptyState>
+    );
+  }
 
   return (
     <DataTable

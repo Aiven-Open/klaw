@@ -5,6 +5,7 @@ import {
   Flexbox,
   DataTable,
   DataTableColumn,
+  EmptyState,
 } from "@aivenio/aquarium";
 import { AclRequest } from "src/domain/acl/acl-types";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
@@ -282,11 +283,21 @@ export default function AclApprovalsTable({
     },
   ];
 
+  const rows = getRows(aclRequests);
+
+  if (!rows.length) {
+    return (
+      <EmptyState title="No ACL requests">
+        No ACL request matched your criteria.
+      </EmptyState>
+    );
+  }
+
   return (
     <DataTable
       ariaLabel={`Acl requests, page ${activePage} of ${totalPages}`}
       columns={columns}
-      rows={getRows(aclRequests)}
+      rows={rows}
       noWrap={false}
     />
   );
