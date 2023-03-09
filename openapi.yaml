@@ -481,6 +481,54 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TopicRequest"
+  /getTopicRequests:
+    get:
+      operationId: getTopicRequests
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          example: "2"
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          example: "2"
+          schema:
+            type: string
+        - name: requestStatus
+          in: query
+          example: "CREATED"
+          schema:
+            $ref: "#/components/schemas/RequestStatus"
+        - name: operationType
+          in: query
+          example: "CREATE"
+          schema:
+            $ref: "#/components/schemas/RequestOperationType"
+        - name: env
+          in: query
+          schema:
+            type: string
+          example: "1"
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: isMyRequest
+          in: query
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopicRequest"
+
   /getAuth:
     get:
       operationId: getAuth

@@ -60,6 +60,9 @@ export type paths = {
   "/getTopicRequestsForApprover": {
     get: operations["getTopicRequestsForApprover"];
   };
+  "/getTopicRequests": {
+    get: operations["getTopicRequests"];
+  };
   "/getAuth": {
     get: operations["getAuth"];
   };
@@ -1340,6 +1343,27 @@ export type operations = {
       };
     };
   };
+  getTopicRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: components["schemas"]["RequestStatus"];
+        operationType?: components["schemas"]["RequestOperationType"];
+        env?: string;
+        search?: string;
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** successful operation */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicRequest"][];
+        };
+      };
+    };
+  };
   getAuth: {
     responses: {
       200: {
@@ -1439,6 +1463,7 @@ export enum ApiPaths {
   schemaRegEnvsGet = "/getSchemaRegEnvs",
   schemaUpload = "/uploadSchema",
   getTopicRequestsForApprover = "/getTopicRequestsForApprover",
+  getTopicRequests = "/getTopicRequests",
   getAuth = "/getAuth",
   approveRequest = "/request/approve",
   declineRequest = "/request/decline",
