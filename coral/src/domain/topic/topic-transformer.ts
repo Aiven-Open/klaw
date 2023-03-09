@@ -149,7 +149,7 @@ function transformGetTopicAdvancedConfigOptionsResponse(
   });
 }
 
-function transformGetTopicRequestsForApproverResponse(
+function transformGetTopicRequestsResponse(
   apiResponse: KlawApiResponse<"getTopicRequestsForApprover">
 ): TopicRequestApiResponse {
   if (apiResponse.length === 0) {
@@ -170,5 +170,5 @@ function transformGetTopicRequestsForApproverResponse(
 export {
   transformTopicApiResponse,
   transformGetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsForApproverResponse,
+  transformGetTopicRequestsResponse,
 };

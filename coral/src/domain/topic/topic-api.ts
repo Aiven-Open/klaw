@@ -8,7 +8,7 @@ import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsForApproverResponse,
+  transformGetTopicRequestsResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
@@ -125,7 +125,7 @@ const getTopicRequestsForApprover = (
     .get<KlawApiResponse<"getTopicRequestsForApprover">>(
       `/getTopicRequestsForApprover?${new URLSearchParams(filteredParams)}`
     )
-    .then(transformGetTopicRequestsForApproverResponse);
+    .then(transformGetTopicRequestsResponse);
 };
 
 const getTopicRequests = (
@@ -150,7 +150,7 @@ const getTopicRequests = (
     .get<KlawApiResponse<"getTopicRequests">>(
       `/getTopicRequests?${new URLSearchParams(filteredParams)}`
     )
-    .then(transformGetTopicRequestsForApproverResponse);
+    .then(transformGetTopicRequestsResponse);
 };
 
 type ApproveTopicRequestPayload = RequestVerdictApproval<"TOPIC">;

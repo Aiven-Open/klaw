@@ -1,6 +1,6 @@
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsForApproverResponse,
+  transformGetTopicRequestsResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
@@ -93,11 +93,9 @@ describe("topic-transformer.ts", () => {
     });
   });
 
-  describe("transformGetTopicRequestsForApproverResponse", () => {
+  describe("transformGetTopicRequestsResponse", () => {
     it("transforms empty payload into empty array", () => {
-      const transformedResponse = transformGetTopicRequestsForApproverResponse(
-        []
-      );
+      const transformedResponse = transformGetTopicRequestsResponse([]);
 
       const result: TopicRequestApiResponse = {
         totalPages: 0,
@@ -173,7 +171,7 @@ describe("topic-transformer.ts", () => {
         },
       ];
       const transformedResponse =
-        transformGetTopicRequestsForApproverResponse(mockedResponse);
+        transformGetTopicRequestsResponse(mockedResponse);
 
       const result: TopicRequestApiResponse = {
         totalPages: 3,

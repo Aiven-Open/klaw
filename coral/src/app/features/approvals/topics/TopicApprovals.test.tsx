@@ -8,7 +8,7 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import { getTeams } from "src/domain/team/team-api";
 import { TopicRequest } from "src/domain/topic";
 import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
-import { transformGetTopicRequestsForApproverResponse } from "src/domain/topic/topic-transformer";
+import { transformGetTopicRequestsResponse } from "src/domain/topic/topic-transformer";
 import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -119,7 +119,7 @@ const mockedTeamsResponse = [
 ];
 
 const mockedApiResponse: TopicRequestApiResponse =
-  transformGetTopicRequestsForApproverResponse(mockedTopicRequestsResponse);
+  transformGetTopicRequestsResponse(mockedTopicRequestsResponse);
 const mockGetEnvironmentResponse = transformEnvironmentApiResponse(
   mockedEnvironmentResponse
 );
@@ -146,7 +146,7 @@ describe("TopicApprovals", () => {
 
     it("shows a loading state instead of a table while topic requests are being fetched", () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(
-        transformGetTopicRequestsForApproverResponse([])
+        transformGetTopicRequestsResponse([])
       );
 
       customRender(<TopicApprovals />, {
