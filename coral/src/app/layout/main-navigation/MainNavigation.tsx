@@ -1,6 +1,7 @@
 import { Box, Divider } from "@aivenio/aquarium";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
+import add from "@aivenio/aquarium/dist/src/icons/add";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
 import list from "@aivenio/aquarium/dist/src/icons/list";
@@ -32,25 +33,15 @@ function MainNavigation() {
           />
         </li>
         <li>
-          <MainNavigationSubmenuList
-            expanded={true}
+          <MainNavigationLink
             icon={codeBlock}
-            text={"Topics"}
-          >
-            <MainNavigationLink
-              linkText={"All Topics"}
-              to={Routes.TOPICS}
-              active={
-                pathname.startsWith(Routes.TOPICS) ||
-                pathname.startsWith("/topic")
-              }
-            />
-            <MainNavigationLink
-              linkText={"My team's requests"}
-              to={Routes.REQUESTS}
-              active={pathname.startsWith(Routes.REQUESTS)}
-            />
-          </MainNavigationSubmenuList>
+            linkText={"All Topics"}
+            to={Routes.TOPICS}
+            active={
+              pathname.startsWith(Routes.TOPICS) ||
+              pathname.startsWith("/topic")
+            }
+          />
         </li>
         <li>
           <MainNavigationSubmenuList
@@ -80,6 +71,14 @@ function MainNavigation() {
             to={Routes.APPROVALS}
             linkText={"Approve requests"}
             active={pathname.startsWith(Routes.APPROVALS)}
+          />
+        </li>
+        <li>
+          <MainNavigationLink
+            icon={add}
+            linkText={"My team's requests"}
+            to={Routes.REQUESTS}
+            active={pathname.startsWith(Routes.REQUESTS)}
           />
         </li>
         <li>
