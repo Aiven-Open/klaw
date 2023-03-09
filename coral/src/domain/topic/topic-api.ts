@@ -128,6 +128,31 @@ const getTopicRequestsForApprover = (
     .then(transformGetTopicRequestsForApproverResponse);
 };
 
+const getTopicRequests = (
+  params: KlawApiRequestQueryParameters<"getTopicRequests">
+): Promise<TopicRequestApiResponse> => {
+  const filteredParams = omitBy(
+    { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
+    (value, property) => {
+      const omitIsMyRequest = property === "isMyRequest" && value === "false";
+      const omitSearch = property === "search" && value === "";
+      const omitEnv =
+        property === "env" && (value === "ALL" || value === undefined);
+      const omitOperationType =
+        property === "operationType" &&
+        (value === "ALL" || value === undefined);
+
+      return omitIsMyRequest || omitSearch || omitEnv || omitOperationType;
+    }
+  );
+
+  return api
+    .get<KlawApiResponse<"getTopicRequests">>(
+      `/getTopicRequests?${new URLSearchParams(filteredParams)}`
+    )
+    .then(transformGetTopicRequestsForApproverResponse);
+};
+
 type ApproveTopicRequestPayload = RequestVerdictApproval<"TOPIC">;
 const approveTopicRequest = (payload: ApproveTopicRequestPayload) => {
   return api.post<
@@ -151,6 +176,7 @@ export {
   getTopicAdvancedConfigOptions,
   requestTopic,
   getTopicRequestsForApprover,
+  getTopicRequests,
   approveTopicRequest,
   declineTopicRequest,
 };
