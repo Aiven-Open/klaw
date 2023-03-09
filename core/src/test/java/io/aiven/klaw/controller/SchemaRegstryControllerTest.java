@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.SchemaPromotion;
-import io.aiven.klaw.model.SchemaRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.requests.SchemaPromotion;
+import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

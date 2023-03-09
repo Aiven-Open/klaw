@@ -224,7 +224,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<ApiResponse> response1 =
         clusterApiService.approveTopicRequests(
-            topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1);
+            topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1, false);
     assertThat(Objects.requireNonNull(response1.getBody()).getResult())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
   }
@@ -251,7 +251,7 @@ public class ClusterApiServiceTest {
     assertThatThrownBy(
             () ->
                 clusterApiService.approveTopicRequests(
-                    topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1))
+                    topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1, false))
         .isInstanceOf(KlawException.class);
   }
 

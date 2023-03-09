@@ -26,13 +26,13 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.TopicRequestModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -214,7 +214,7 @@ public class TopicControllerServiceTest {
     assertThrows(
         KlawNotAuthorizedException.class,
         () -> {
-          topicControllerService.createTopicDeleteRequest(topicName, envId);
+          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
         });
   }
 
@@ -228,7 +228,8 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(getListTopicRequests());
     try {
-      ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
+      ApiResponse apiResponse =
+          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getResult())
           .isEqualTo("Failure. A delete topic request already exists.");
     } catch (KlawException e) {
@@ -253,7 +254,8 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
     try {
-      ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
+      ApiResponse apiResponse =
+          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getResult())
           .isEqualTo(
               "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
@@ -282,7 +284,8 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(utilMethods.getAcls());
     try {
-      ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
+      ApiResponse apiResponse =
+          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getResult())
           .isEqualTo(
               "Failure. There are existing subscriptions for topic. Please get them deleted before.");
@@ -309,7 +312,8 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     try {
-      ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
+      ApiResponse apiResponse =
+          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getResult())
           .isEqualTo("Failure. Topic not found on cluster: " + topicName);
     } catch (KlawException e) {
@@ -340,7 +344,8 @@ public class TopicControllerServiceTest {
     deleteReqResult.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.requestForTopic(any())).thenReturn(deleteReqResult);
     try {
-      ApiResponse apiResponse = topicControllerService.createTopicDeleteRequest(topicName, envId);
+      ApiResponse apiResponse =
+          topicControllerService.createTopicDeleteRequest(topicName, envId, false);
       assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     } catch (KlawException e) {
       throw new RuntimeException(e);
@@ -596,7 +601,14 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
-            anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            anyInt(),
+            anyBoolean()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -621,7 +633,14 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
-            anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            anyInt(),
+            anyBoolean()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -651,7 +670,14 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
-            anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            anyInt(),
+            anyBoolean()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -677,7 +703,14 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(clusterApiService.approveTopicRequests(
-            anyString(), anyString(), anyInt(), anyString(), anyString(), any(), anyInt()))
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            anyInt(),
+            anyBoolean()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -1204,6 +1237,7 @@ public class TopicControllerServiceTest {
         "{\"advancedTopicConfiguration\":{\"compression.type\":\"snappy\",\"cleanup.policy\":\"compact\"}}");
     topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
     topicRequest.setTenantId(101);
+    topicRequest.setDeleteAssociatedSchema(false);
     return topicRequest;
   }
 

@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -216,7 +217,14 @@ public class TopicSyncControllerServiceTest {
     mockMultipleTopics();
     mockGetTopicsFromEnv();
     when(clusterApiService.approveTopicRequests(
-            any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
+            any(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            eq(TENANT_ID),
+            anyBoolean()))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
         .thenReturn(
             createAPIResponse(
@@ -256,7 +264,14 @@ public class TopicSyncControllerServiceTest {
     mockMultipleTopics();
     mockGetTopicsFromEnv();
     when(clusterApiService.approveTopicRequests(
-            any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
+            any(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            eq(TENANT_ID),
+            anyBoolean()))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value));
 
     // execute
@@ -292,7 +307,14 @@ public class TopicSyncControllerServiceTest {
 
     mockSelectedOnlyTopics(2, TOPIC_NAME_2, test.getId());
     when(clusterApiService.approveTopicRequests(
-            any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
+            any(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            eq(TENANT_ID),
+            anyBoolean()))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
         .thenReturn(
             createAPIResponse(
@@ -332,7 +354,14 @@ public class TopicSyncControllerServiceTest {
 
     mockSelectedOnlyTopics(2, TOPIC_NAME_2, test.getId());
     when(clusterApiService.approveTopicRequests(
-            any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
+            any(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            eq(TENANT_ID),
+            anyBoolean()))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value));
 
     ApiResponse retval =
@@ -368,7 +397,14 @@ public class TopicSyncControllerServiceTest {
 
     mockSelectedOnlyTopics(2, TOPIC_NAME_2, test.getId());
     when(clusterApiService.approveTopicRequests(
-            any(), anyString(), anyInt(), anyString(), anyString(), any(), eq(TENANT_ID)))
+            any(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            eq(TENANT_ID),
+            anyBoolean()))
         .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
         .thenThrow(
             new KlawException("Could not approve topic request. Please contact Administrator."));

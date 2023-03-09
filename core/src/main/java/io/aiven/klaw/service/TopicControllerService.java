@@ -22,7 +22,6 @@ import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -30,6 +29,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.TopicRequestModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -149,9 +149,14 @@ public class TopicControllerService {
   }
 
   // create a request to delete topic.
-  public ApiResponse createTopicDeleteRequest(String topicName, String envId)
+  public ApiResponse createTopicDeleteRequest(
+      String topicName, String envId, boolean deleteAssociatedSchema)
       throws KlawException, KlawNotAuthorizedException {
-    log.info("createTopicDeleteRequest {} {}", topicName, envId);
+    log.info(
+        "createTopicDeleteRequest topicName {} envId {} deleteAssociatedSchema {}",
+        topicName,
+        envId,
+        deleteAssociatedSchema);
     String userName = getUserName();
 
     // check if authorized user to delete topic request
@@ -189,6 +194,7 @@ public class TopicControllerService {
     topicRequestReq.setTopicname(topicName);
     topicRequestReq.setRequestOperationType(RequestOperationType.DELETE.value);
     topicRequestReq.setTenantId(tenantId);
+    topicRequestReq.setDeleteAssociatedSchema(deleteAssociatedSchema);
 
     Optional<Topic> topicOb = Optional.empty();
     if (topics != null) {
@@ -673,7 +679,8 @@ public class TopicControllerService {
             topicRequest.getReplicationfactor(),
             topicRequest.getEnvironment(),
             topicConfig,
-            tenantId);
+            tenantId,
+            topicRequest.getDeleteAssociatedSchema());
 
     updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getResult();
 

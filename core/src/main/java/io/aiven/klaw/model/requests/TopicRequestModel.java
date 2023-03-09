@@ -1,5 +1,6 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.requests;
 
+import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.validation.constraints.Min;
@@ -85,4 +86,6 @@ public class TopicRequestModel implements Serializable {
   private boolean isDeletable;
 
   private boolean isEditable;
+
+  private Boolean deleteAssociatedSchema;
 }

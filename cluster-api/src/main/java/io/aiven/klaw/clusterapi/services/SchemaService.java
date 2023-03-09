@@ -2,6 +2,8 @@ package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
+import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
@@ -334,6 +336,35 @@ public class SchemaService {
     } catch (RestClientException e) {
       log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
+    }
+  }
+
+  public ApiResponse deleteSchema(ClusterTopicRequest clusterTopicRequest) {
+    String suffixUrl =
+        clusterTopicRequest.getSchemaEnv()
+            + "/subjects/"
+            + clusterTopicRequest.getTopicName()
+            + "-value";
+    Pair<String, RestTemplate> reqDetails =
+        clusterApiUtils.getRequestDetails(suffixUrl, clusterTopicRequest.getSchemaEnvProtocol());
+    HttpEntity<Object> request =
+        createSchemaRegistryRequest(clusterTopicRequest.getSchemaClusterIdentification());
+
+    try {
+      reqDetails
+          .getRight()
+          .exchange(
+              reqDetails.getLeft(),
+              HttpMethod.DELETE,
+              request,
+              new ParameterizedTypeReference<>() {});
+      log.info("Schema deleted {}", clusterTopicRequest);
+      return ApiResponse.builder()
+          .result("Schema deletion " + ApiResultStatus.SUCCESS.value)
+          .build();
+    } catch (RestClientException e) {
+      log.error("Exception:", e);
+      return ApiResponse.builder().result("Schema deletion failure " + e.getMessage()).build();
     }
   }
 }
