@@ -91,6 +91,45 @@ export default function AclApprovalsTable({
   const columns: Array<DataTableColumn<AclRequestTableRow>> = [
     {
       type: "custom",
+      field: "topicname",
+      headerName: "Topic",
+      UNSAFE_render({ topicname, prefixed }: AclRequestTableRow) {
+        return (
+          <>
+            {topicname}
+            {prefixed && <code>(prefixed)</code>}
+          </>
+        );
+      },
+    },
+    {
+      type: "status",
+      field: "environmentName",
+      headerName: "Environment",
+      status: ({ environmentName }) => ({
+        status: "neutral",
+        text: environmentName,
+      }),
+    },
+    {
+      type: "status",
+      field: "requestStatus",
+      headerName: "Status",
+      status: ({ requestStatus }) => {
+        if (requestStatus === "") {
+          return {
+            status: "neutral",
+            text: "-",
+          };
+        }
+        return {
+          status: requestStatusChipStatusMap[requestStatus],
+          text: requestStatusNameMap[requestStatus],
+        };
+      },
+    },
+    {
+      type: "custom",
       field: "acl_ssl",
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ acl_ssl }: AclRequestTableRow) => {
@@ -132,28 +171,6 @@ export default function AclApprovalsTable({
       },
     },
     {
-      type: "custom",
-      field: "topicname",
-      headerName: "Topic",
-      UNSAFE_render({ topicname, prefixed }: AclRequestTableRow) {
-        return (
-          <>
-            {topicname}
-            {prefixed && <code>(prefixed)</code>}
-          </>
-        );
-      },
-    },
-    {
-      type: "status",
-      field: "environmentName",
-      headerName: "Environment",
-      status: ({ environmentName }) => ({
-        status: "neutral",
-        text: environmentName,
-      }),
-    },
-    {
       type: "text",
       field: "teamname",
       headerName: "Team",
@@ -166,23 +183,6 @@ export default function AclApprovalsTable({
         status: aclType === "CONSUMER" ? "success" : "info",
         text: aclType,
       }),
-    },
-    {
-      type: "status",
-      field: "requestStatus",
-      headerName: "Status",
-      status: ({ requestStatus }) => {
-        if (requestStatus === "") {
-          return {
-            status: "neutral",
-            text: "-",
-          };
-        }
-        return {
-          status: requestStatusChipStatusMap[requestStatus],
-          text: requestStatusNameMap[requestStatus],
-        };
-      },
     },
     {
       type: "status",
