@@ -501,7 +501,7 @@ paths:
           example: "CREATED"
           schema:
             $ref: "#/components/schemas/RequestStatus"
-        - name: operationType
+        - name: requestOperationType
           in: query
           example: "CREATE"
           schema:

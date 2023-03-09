@@ -138,11 +138,13 @@ const getTopicRequests = (
       const omitSearch = property === "search" && value === "";
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
-      const omitOperationType =
-        property === "operationType" &&
+      const omitRequestOperationType =
+        property === "requestOperationType" &&
         (value === "ALL" || value === undefined);
 
-      return omitIsMyRequest || omitSearch || omitEnv || omitOperationType;
+      return (
+        omitIsMyRequest || omitSearch || omitEnv || omitRequestOperationType
+      );
     }
   );
 

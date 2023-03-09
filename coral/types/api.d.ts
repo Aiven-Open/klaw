@@ -1349,7 +1349,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: components["schemas"]["RequestStatus"];
-        operationType?: components["schemas"]["RequestOperationType"];
+        requestOperationType?: components["schemas"]["RequestOperationType"];
         env?: string;
         search?: string;
         isMyRequest?: boolean;
