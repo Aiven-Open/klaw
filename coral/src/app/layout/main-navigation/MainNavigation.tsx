@@ -42,10 +42,10 @@ function MainNavigation() {
       paddingTop={"l2"}
     >
       <Flexbox direction={"column"} paddingLeft={"l3"}>
-        <dt className="inline-block mb-2 typography-small-strong text-grey-60">
+        <div className="inline-block mb-2 typography-small-strong text-grey-60">
           Team
-        </dt>
-        <dd>{getUserTeam()}</dd>
+        </div>
+        <div>{getUserTeam()}</div>
       </Flexbox>
       <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
         <Divider direction="horizontal" size={2} />
