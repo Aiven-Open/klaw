@@ -273,7 +273,8 @@ class SchemaServiceRegisterSchemaTest {
 
   @Test
   @Order(7)
-  public void givenSchemaWithForceRegisterEnabled_GetSchemaCompatibilityException_doNotRevert() {
+  public void
+      givenSchemaWithForceRegisterEnabled_GetSchemaCompatibilityException_applyGlobalCompatibility() {
 
     ClusterSchemaRequest schemaReq =
         ClusterSchemaRequest.builder()
@@ -311,7 +312,8 @@ class SchemaServiceRegisterSchemaTest {
 
   @Test
   @Order(8)
-  public void givenSchemaWithForceRegisterEnabled_ExistingCompatibilityIsFailValidationAndExit() {
+  public void
+      givenSchemaWithForceRegisterEnabled_ExistingCompatibilityIsFailValidationAndGetGlobalCompatibility() {
 
     ClusterSchemaRequest schemaReq =
         ClusterSchemaRequest.builder()
@@ -339,7 +341,7 @@ class SchemaServiceRegisterSchemaTest {
     schemaService.registerSchema(schemaReq);
     // change schema compatibility called once to change to none.
     verify(restTemplate, times(1)).put(any(), schemaCompatibility.capture(), eq(String.class));
-    // 2 calls to get the SchemaCompatibility subjct, global
+    // 2 calls to get the SchemaCompatibility subject, global
     verify(restTemplate, times(2))
         .exchange(
             eq(REGISTRY_URL),
@@ -351,8 +353,7 @@ class SchemaServiceRegisterSchemaTest {
 
   @Test
   @Order(9)
-  public void
-      givenSchemaWithForceRegisterEnabled_NotFoundFallBackToGlobalSchemaSettingReturnedNoResetSchemaCompatability() {
+  public void givenSchemaWithForceRegisterEnabled_NotFoundFallBackToGlobalSchemaSettingReturned() {
 
     ClusterSchemaRequest schemaReq =
         ClusterSchemaRequest.builder()
@@ -385,7 +386,7 @@ class SchemaServiceRegisterSchemaTest {
 
   @Test
   @Order(10)
-  public void givenSchemaWithForceRegisterEnabled_NotFoundAttempttoregisteranyway() {
+  public void givenSchemaWithForceRegisterEnabled_NotFoundGetGlobalCompatibility() {
 
     ClusterSchemaRequest schemaReq =
         ClusterSchemaRequest.builder()

@@ -683,11 +683,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         }
 
                         if($scope.addNewCluster.host === undefined  && $scope.addNewCluster.type !== 'kafkarestapi')
-                            {
-                                $scope.alertnote = "Please fill in bootstrap servers";
-                                $scope.showAlertToast();
-                                return;
-                            }
+                        {
+                            $scope.alertnote = "Please fill in bootstrap servers";
+                            $scope.showAlertToast();
+                            return;
+                        }
                         else if($scope.addNewCluster.host === undefined  && $scope.addNewCluster.type === 'kafkarestapi')
                         {
                             $scope.alertnote = "Please fill in Rest Api server";

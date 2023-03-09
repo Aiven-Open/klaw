@@ -50,16 +50,6 @@ public class SchemaService {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  /*
-  If force register is enabled
-    1. Get subject compatibility in a var 'x'
-    2. Set subject compatibility to NONE
-    3. Register schema
-    4. If x (subject compatibility) == NOT_SET, get global compatibility
-    5. Apply global compatibility on subject level
-  If force register is not enabled
-    1. Register schema
-   */
   public synchronized ApiResponse registerSchema(ClusterSchemaRequest clusterSchemaRequest) {
     String schemaCompatibility = null;
     boolean schemaCompatibilitySetOnSubject = false;
@@ -92,7 +82,7 @@ public class SchemaService {
               null);
         }
       }
-      // register schema
+
       String updateTopicReqStatus = registerSchemaPostCall(clusterSchemaRequest);
 
       return ApiResponse.builder().result(updateTopicReqStatus).build();
@@ -126,12 +116,12 @@ public class SchemaService {
                 clusterSchemaRequest.getProtocol(),
                 clusterSchemaRequest.getClusterIdentification());
       }
-      log.info(
-          "RegisterSchema - Force Commit revert to original Schema Compatibility {} for Topic {}",
-          schemaCompatibility,
-          clusterSchemaRequest.getTopicName());
       if (schemaCompatibility != null
           && !schemaCompatibility.equals(SCHEMA_COMPATIBILITY_NOT_SET)) {
+        log.info(
+            "RegisterSchema - Force Commit revert to original Schema Compatibility(Subject/Global) {} for Topic {}",
+            schemaCompatibility,
+            clusterSchemaRequest.getTopicName());
         setSchemaCompatibility(
             clusterSchemaRequest.getEnv(),
             clusterSchemaRequest.getTopicName(),
@@ -183,9 +173,10 @@ public class SchemaService {
           getSchemaVersions(environmentVal, topicName, protocol, clusterIdentification);
       String schemaCompatibility =
           getSubjectSchemaCompatibility(environmentVal, topicName, protocol, clusterIdentification);
-      if (Objects.equals(schemaCompatibility, SCHEMA_COMPATIBILITY_NOT_SET))
+      if (Objects.equals(schemaCompatibility, SCHEMA_COMPATIBILITY_NOT_SET)) {
         schemaCompatibility =
             getGlobalSchemaCompatibility(environmentVal, protocol, clusterIdentification);
+      }
       Map<Integer, Map<String, Object>> allSchemaObjects = new TreeMap<>();
 
       if (versionsList != null) {
