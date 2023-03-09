@@ -1,11 +1,16 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
+import { getUserTeamName } from "src/domain/auth-user";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
+
+const mockGetUserTeamName = getUserTeamName as jest.MockedFunction<
+  typeof getUserTeamName
+>;
 
 const navLinks = [
   {
@@ -41,7 +46,10 @@ const navOrderFirstLevel = [
 describe("MainNavigation.tsx", () => {
   describe("renders the main navigation in default state", () => {
     beforeAll(() => {
-      customRender(<MainNavigation />, { memoryRouter: true });
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
     });
 
     afterAll(cleanup);
@@ -49,6 +57,18 @@ describe("MainNavigation.tsx", () => {
     it("renders the main navigation", () => {
       const nav = screen.getByRole("navigation", { name: "Main navigation" });
       expect(nav).toBeVisible();
+    });
+
+    it("renders the user's current team", () => {
+      // This fails with
+      // TypeError: mockGetUserTeamName.mockResolvedValue is not a function
+      // Unsure how to fix it.
+      mockGetUserTeamName.mockResolvedValue("Ospo");
+
+      const teamLabel = screen.getByRole("definition", { name: "Team" });
+      const teamName = screen.getByRole("term", { name: "Ospo" });
+      expect(teamLabel).toBeVisible();
+      expect(teamName).toBeVisible();
     });
 
     navLinks.forEach((link) => {
@@ -104,7 +124,10 @@ describe("MainNavigation.tsx", () => {
 
   describe("user can open submenus and see more links", () => {
     beforeEach(() => {
-      customRender(<MainNavigation />, { memoryRouter: true });
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
     });
 
     afterEach(cleanup);
@@ -152,7 +175,10 @@ describe("MainNavigation.tsx", () => {
   describe("enables user to navigate with keyboard only", () => {
     describe("user can navigate through first level navigation", () => {
       beforeEach(() => {
-        customRender(<MainNavigation />, { memoryRouter: true });
+        customRender(<MainNavigation />, {
+          memoryRouter: true,
+          queryClient: true,
+        });
         const nav = screen.getByRole("navigation", { name: "Main navigation" });
         nav.focus();
       });
@@ -180,7 +206,10 @@ describe("MainNavigation.tsx", () => {
       beforeEach(() => {
         const lastElement =
           navOrderFirstLevel[navOrderFirstLevel.length - 1].name;
-        customRender(<MainNavigation />, { memoryRouter: true });
+        customRender(<MainNavigation />, {
+          memoryRouter: true,
+          queryClient: true,
+        });
         const lastNavItem = screen.getByRole("link", {
           name: lastElement,
         });

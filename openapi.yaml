@@ -1660,6 +1660,7 @@ components:
         - notificationsAcls
         - notificationsUsers
         - notifications
+        - teamname
       properties:
         notificationsSchemas:
           title: Schema Notifications
@@ -1686,6 +1687,11 @@ components:
           type: string
           example: "5"
           description: Number of topic requests waiting for approval
+        teamname:
+          title: Team name
+          type: string
+          example: "Ospo"
+          description: Name of the team the user is currently in
     RequestVerdict:
       type: object
       required:

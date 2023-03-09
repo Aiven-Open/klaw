@@ -1031,6 +1031,12 @@ export type components = {
        * @example 5
        */
       notifications: string;
+      /**
+       * Team name
+       * @description Name of the team the user is currently in
+       * @example Ospo
+       */
+      teamname: string;
     };
     RequestVerdict: {
       reason?: string;
