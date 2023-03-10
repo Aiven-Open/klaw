@@ -515,6 +515,9 @@
 										<td ng-show="allenv.clusterType == 'kafkaconnect'" >
 											<span class="badge badge-warning">{{ allenv.clusterType }}</span></td>
 
+										<td ng-show="allenv.clusterType == 'kafkarestapi'" >
+											<span class="badge badge-danger">{{ allenv.clusterType }}</span></td>
+
 										<td>{{ allenv.kafkaFlavor }}</td>
 
 										<td ng-show="allenv.projectName!='' && allenv.projectName!=null">project = {{ allenv.projectName }} , serviceName = {{ allenv.serviceName }}</td>
@@ -574,6 +577,27 @@
 											<input type="text" value="{{ allenv.clusterName }}{{ allenv.clusterId }}" id="kc{{ allenv.clusterName }}{{ allenv.clusterId }}" ng-show="false">
 
 											<button type="button" ng-click="copyClusterIdToClipboard('kc', allenv.clusterName, allenv.clusterId)"
+													class="btn btn-sm btn-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ allenv.clusterName }}{{ allenv.clusterId }} Cluster id to setup connectivity">
+												<i class="fa fa-clipboard"></i>
+											</button>
+
+											<button ng-show="allenv.showDeleteCluster == true" type="button" ng-click="deleteCluster(allenv.clusterId)"
+													class="btn btn-sm btn-outline-danger btn-circle">
+												<i class="fas fa-times"></i>
+											</button>
+										</td>
+										<td ng-show="dashboardDetails.addDeleteEditClusters=='Authorized' && allenv.clusterType == 'kafkarestapi'">
+
+											<a href="modifyCluster?clusterId={{ allenv.clusterId}}&clusterType=kafkarestapi">
+												<button type="button"
+														class="btn btn-sm btn-outline-secondary btn-circle">
+													<i class="fas fa-edit"></i>
+												</button>
+											</a>
+
+											<input type="text" value="{{ allenv.clusterName }}{{ allenv.clusterId }}" id="sr{{ allenv.clusterName }}{{ allenv.clusterId }}" ng-show="false">
+
+											<button type="button" ng-click="copyClusterIdToClipboard('sr', allenv.clusterName, allenv.clusterId)"
 													class="btn btn-sm btn-circle" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ allenv.clusterName }}{{ allenv.clusterId }} Cluster id to setup connectivity">
 												<i class="fa fa-clipboard"></i>
 											</button>

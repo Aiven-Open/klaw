@@ -5876,7 +5876,7 @@
           },
           "clusterType" : {
             "type" : "string",
-            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ],
+            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT", "KAFKA_REST_API" ],
             "writeOnly" : true
           }
         },
@@ -5906,7 +5906,7 @@
             "type" : "string",
             "maxLength" : 2147483647,
             "minLength" : 6,
-            "pattern" : "^[a-zA-Z0-9._:,-]{3,}$"
+            "pattern" : "^[a-zA-Z0-9._:,-/]{3,}$"
           },
           "protocol" : {
             "type" : "string",

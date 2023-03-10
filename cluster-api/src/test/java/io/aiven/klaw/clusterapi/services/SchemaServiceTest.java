@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -11,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
+import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,22 +41,67 @@ class SchemaServiceTest {
     mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build();
   }
 
-  // TODO need to add proper return value
   @Test
-  public void getSchema_returnMap() throws JsonProcessingException {
+  public void getSchema_returnMapWithSubjectCompatibility() throws JsonProcessingException {
     // getSchemaVersions
     String getSchemaVersionsUrl = "env/subjects/topic-value/versions";
-    when(getAdminClient.getRequestDetails(
-            eq(getSchemaVersionsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
-        .thenReturn(Pair.of(getSchemaVersionsUrl, restTemplate));
-    this.mockRestServiceServer
-        .expect(requestTo("/" + getSchemaVersionsUrl))
-        .andRespond(
-            withSuccess(
-                objectMapper.writeValueAsString(Lists.list(1)), MediaType.APPLICATION_JSON));
+    getSchemaVersions(getSchemaVersionsUrl);
 
     // getSchemaCompatibility
+    getSchemaCompatibilitySubject(true);
+
+    // getSchema
+    getSchema();
+
+    Map<Integer, Map<String, Object>> schemaResponse =
+        schemaService.getSchema("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", "topic");
+
+    assertThat(schemaResponse).isNotEmpty();
+    assertThat(schemaResponse.get(1).get("compatibility")).isEqualTo("BACKWARD");
+  }
+
+  @Test
+  public void getSchema_returnMapWithGlobalCompatibility() throws JsonProcessingException {
+    // getSchemaVersions
+    String getSchemaVersionsUrl = "env/subjects/topic-value/versions";
+    getSchemaVersions(getSchemaVersionsUrl);
+
+    // getSchemaCompatibility
+    getSchemaCompatibilitySubject(false);
+    getSchemaCompatibilityGlobal();
+    // getSchema
+    getSchema();
+
+    Map<Integer, Map<String, Object>> schemaResponse =
+        schemaService.getSchema("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", "topic");
+
+    assertThat(schemaResponse).isNotEmpty();
+    assertThat(schemaResponse.get(1).get("compatibility")).isEqualTo("FORWARD");
+  }
+
+  private void getSchemaCompatibilitySubject(boolean compatibilitySet)
+      throws JsonProcessingException {
     String getSchemaCompatibilityUrl = "env/config/topic-value";
+    when(getAdminClient.getRequestDetails(
+            eq(getSchemaCompatibilityUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(getSchemaCompatibilityUrl, restTemplate));
+    if (compatibilitySet) {
+      this.mockRestServiceServer
+          .expect(requestTo("/" + getSchemaCompatibilityUrl))
+          .andRespond(
+              withSuccess(
+                  objectMapper.writeValueAsString(
+                      Collections.singletonMap("compatibilityLevel", "BACKWARD")),
+                  MediaType.APPLICATION_JSON));
+    } else {
+      this.mockRestServiceServer
+          .expect(requestTo("/" + getSchemaCompatibilityUrl))
+          .andRespond(withServerError());
+    }
+  }
+
+  private void getSchemaCompatibilityGlobal() throws JsonProcessingException {
+    String getSchemaCompatibilityUrl = "env/config";
     when(getAdminClient.getRequestDetails(
             eq(getSchemaCompatibilityUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(getSchemaCompatibilityUrl, restTemplate));
@@ -63,10 +110,11 @@ class SchemaServiceTest {
         .andRespond(
             withSuccess(
                 objectMapper.writeValueAsString(
-                    Collections.singletonMap("compatibilityLevel", "great")),
+                    Collections.singletonMap("compatibilityLevel", "FORWARD")),
                 MediaType.APPLICATION_JSON));
+  }
 
-    // getSchema
+  private void getSchema() throws JsonProcessingException {
     String getSchemaUrl = "env/subjects/topic-value/versions/1";
     when(getAdminClient.getRequestDetails(eq(getSchemaUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(getSchemaUrl, restTemplate));
@@ -79,8 +127,16 @@ class SchemaServiceTest {
             withSuccess(
                 objectMapper.writeValueAsString(Collections.singletonMap("foo", "bar")),
                 MediaType.APPLICATION_JSON));
+  }
 
-    assertThat(schemaService.getSchema("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", "topic"))
-        .isNotEmpty();
+  private void getSchemaVersions(String getSchemaVersionsUrl) throws JsonProcessingException {
+    when(getAdminClient.getRequestDetails(
+            eq(getSchemaVersionsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(getSchemaVersionsUrl, restTemplate));
+    this.mockRestServiceServer
+        .expect(requestTo("/" + getSchemaVersionsUrl))
+        .andRespond(
+            withSuccess(
+                objectMapper.writeValueAsString(Lists.list(1)), MediaType.APPLICATION_JSON));
   }
 }

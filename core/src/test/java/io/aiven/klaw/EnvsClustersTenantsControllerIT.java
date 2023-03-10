@@ -65,7 +65,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwTenantModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
+    List<KwTenantModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
   }
 
@@ -101,15 +101,15 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwTenantModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
+    List<KwTenantModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(2);
   }
 
   // add cluster success
   @Test
   @Order(3)
-  public void addClusterSuccess() throws Exception {
-    KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
+  public void addKafkaClusterSuccess() throws Exception {
+    KwClustersModel kwClustersModel = mockMethods.getKafkaClusterModel("DEV_CLUSTER");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
 
     String response =
@@ -138,7 +138,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
+    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
   }
 
@@ -158,13 +158,13 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels).hasSize(1);
 
-    Map<String, Integer> hashMap = (Map<String, Integer>) clusterModels.get(0);
-
-    KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
-    kwClustersModel.setClusterId(hashMap.get("clusterId"));
+    Map<String, Object> hashMap = clusterModels.get(0);
+    KwClustersModel kwClustersModel = mockMethods.getKafkaClusterModel("DEV_CLUSTER");
+    kwClustersModel.setClusterId((Integer) hashMap.get("clusterId"));
     kwClustersModel.setBootstrapServers("localhost:9093");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
     response =
@@ -207,7 +207,7 @@ public class EnvsClustersTenantsControllerIT {
   @Test
   @Order(6)
   public void addAndDeleteClusterSuccess() throws Exception {
-    KwClustersModel kwClustersModel = mockMethods.getClusterModel("TST_CLUSTER");
+    KwClustersModel kwClustersModel = mockMethods.getKafkaClusterModel("TST_CLUSTER");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
 
     String response =
@@ -236,11 +236,11 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels).hasSize(2);
 
-    Map<String, Integer> hashMap = (Map) clusterModels.get(0);
-
+    Map<String, Object> hashMap = clusterModels.get(0);
     response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteCluster")
@@ -268,7 +268,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels).hasSize(1);
   }
 
@@ -305,7 +305,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels).hasSize(1);
   }
 
@@ -325,8 +326,9 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
-    Map<String, Object> envModel1 = (Map<String, Object>) clusterModels.get(0);
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    Map<String, Object> envModel1 = clusterModels.get(0);
     String envId = (String) envModel1.get("id");
     assertThat(clusterModels).hasSize(1);
 
@@ -363,8 +365,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    clusterModels = OBJECT_MAPPER.readValue(response, List.class);
-    Map<String, Object> envModel3 = (Map<String, Object>) clusterModels.get(0);
+    clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    Map<String, Object> envModel3 = clusterModels.get(0);
     String updatedOtherParams = (String) envModel3.get("otherParams");
     assertThat(updatedOtherParams).isEqualTo(otherParams);
   }
@@ -507,7 +509,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels).hasSize(1);
 
     response =
@@ -544,8 +547,9 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    HashMap clusterModels = OBJECT_MAPPER.readValue(response, HashMap.class);
-    ArrayList<String> defaultPartitions = (ArrayList) clusterModels.get("defaultPartitions");
+    HashMap<String, ArrayList<String>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    ArrayList<String> defaultPartitions = clusterModels.get("defaultPartitions");
     assertThat(defaultPartitions.get(0)).isEqualTo("4");
   }
 
@@ -565,7 +569,44 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<String> clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels.get(0)).isEqualTo("ACC");
+  }
+
+  // add kafka rest cluster success
+  @Test
+  @Order(14)
+  public void addKafkaRestApiClusterSuccess() throws Exception {
+    KwClustersModel kwClustersModel = mockMethods.getKafkaRestClusterModel("DEV_CLUSTER");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewCluster")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getClusters")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("clusterType", KafkaClustersType.KAFKA_REST_API.value)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<KwClustersModel> kwClustersModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(kwClustersModels).hasSize(1);
   }
 }
